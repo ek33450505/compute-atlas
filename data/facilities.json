@@ -104,9 +104,67 @@
         "publisher": "Epoch AI",
         "retrievedAt": "2026-07-05",
         "kind": "other"
+      },
+      {
+        "url": "https://measuredai.substack.com/p/stargate-site-by-site-status",
+        "label": "Stargate Data Centers Site-by-Site: Status, Dependencies, and What to Watch",
+        "publisher": "Measured AI",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://texasstandard.org/stories/stargate-data-center-abilene-texas-construction-ai-artificial-intelligence/",
+        "label": "Stargate data center poised to complete construction this year in Abilene",
+        "publisher": "Texas Standard",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://epochai.substack.com/p/openai-stargate-where-the-us-sites",
+        "label": "OpenAI Stargate: where the US sites stand",
+        "publisher": "Epoch AI",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://ktxs.com/news/local/taylor-county-residents-raise-concerns-on-lancium-tax-breaks-at-commissioners-meeting",
+        "label": "Taylor County residents raise concerns on tax breaks at commissioners meeting",
+        "publisher": "KTXS News",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "energy": {
+      "source": "mixed",
+      "utility": "AEP Texas",
+      "notes": "Epoch AI: power currently supplied by a mix of on-site natural gas and grid power within AEP's service territory; operator has cited plans for on-site and regional green generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Direct-to-chip liquid cooling with a zero-water-evaporation closed-loop system (per Measured AI, ~12,625 gallons per building per year). Mayor stated the facility would use less than 1% of Abilene's daily water. reportedMgd omitted — only per-building annual volume disclosed."
+    },
+    "investmentUsd": 3500000000,
+    "landAcres": 800,
+    "subsidies": [
+      {
+        "program": "85% property tax abatement (10-year reinvestment-zone agreement)",
+        "jurisdiction": "City of Abilene, Texas",
+        "year": "2025",
+        "sourceIndex": 3
+      },
+      {
+        "program": "85% property tax abatement (10-year reinvestment-zone agreement)",
+        "jurisdiction": "Taylor County, Texas",
+        "year": "2025",
+        "sourceIndex": 3
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Abilene City Council unanimously approved the abatement; Taylor County sought additional citizen input before finalizing. Residents raised concerns about energy reliability and possible groundwater contamination, and an opposition group (saveabilene.com) formed, alongside broad local economic support. The abatement contractually requires 357 permanent jobs at a minimum $57,600 salary.",
+      "sourceIndex": 6
+    }
   },
   {
     "id": "meta-prineville-or",
@@ -351,9 +409,73 @@
         "publisher": "Meta",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/meta-selects-northeast-louisiana-as-site-of-10-billion-artificial-intelligence-optimized-data-center-governor-jeff-landry-calls-investment-a-new-chapter-for-state",
+        "label": "Meta Selects Northeast Louisiana as Site of $10 Billion AI-Optimized Data Center",
+        "publisher": "Louisiana Economic Development",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://datacenters.atmeta.com/richland-parish-data-center/",
+        "label": "Richland Parish Data Center",
+        "publisher": "Meta",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://fortune.com/2026/05/14/meta-data-center-tax-break-hyperion-louisiana/",
+        "label": "Meta's $10 billion Louisiana data center is getting $3.3 billion in tax breaks",
+        "publisher": "Fortune",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.entergy.com/news/entergy-louisiana-announces-a-new-agreement-with-meta-that-will-deliver-an-additional-2b-in-customer-savings",
+        "label": "Entergy Louisiana announces new agreement with Meta",
+        "publisher": "Entergy Louisiana",
+        "kind": "filing",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.sierraclub.org/sierra/rural-louisiana-meta-s-new-data-center-promises-growth-what-cost",
+        "label": "In Rural Louisiana, Meta's New Data Center Promises Growth — But at What Cost?",
+        "publisher": "Sierra Club",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "energy": {
+      "source": "mixed",
+      "utility": "Entergy Louisiana",
+      "notes": "Entergy Louisiana is building new natural-gas combined-cycle generation (7+ units, 5,200+ MW) to serve the load, plus Meta committed up to 2,500 MW of new solar; Meta pledges to match total use with 100% clean and renewable energy. The gas buildout and its ratepayer impact are contested by advocates."
+    },
+    "water": {
+      "reportedMgd": 5.0,
+      "notes": "Sierra Club reporting states ~5 million gallons/day (~2 billion/year). Cooling type not disclosed in primary sources. Meta pledges 100% water restoration by 2030 via a 316-acre restoration project with Resource Environmental Solutions."
+    },
+    "investmentUsd": 10000000000,
+    "landAcres": 2250,
+    "subsidies": [
+      {
+        "program": "Louisiana Act 730 data center equipment sales/use tax exemption (20 years, state and local)",
+        "jurisdiction": "Louisiana",
+        "year": "2025",
+        "sourceIndex": 4
+      }
+    ],
+    "jobs": {
+      "construction": 5000,
+      "permanent": 500,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Local farmers and elected officials welcome road, hospital, and school investment; Sierra Club, ratepayer advocates, and The Lens raise concerns about the Entergy gas buildout's burden on customers, water use, and whether operational jobs go to locals. No documented litigation in Richland Parish.",
+      "sourceIndex": 6
+    }
   },
   {
     "id": "microsoft-mount-pleasant-wi",
@@ -402,9 +524,80 @@
         "publisher": "Milwaukee Journal Sentinel",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://blogs.microsoft.com/on-the-issues/2025/09/18/made-in-wisconsin-the-worlds-most-powerful-ai-datacenter/",
+        "label": "Made in Wisconsin: the world's most powerful AI datacenter",
+        "publisher": "Microsoft On the Issues",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/data-center-construction/microsoft-s-wisconsin-ai-campus-moves-from-construction-to-operations",
+        "label": "Microsoft's Wisconsin AI Data Center Campus Now Fully Operational",
+        "publisher": "Data Center Knowledge",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.wpr.org/news/wisconsin-data-centers-revenue-tax-subsidy-microsoft",
+        "label": "Local leaders see data centers as revenue boon, but critics say subsidy programs undermine those efforts",
+        "publisher": "Wisconsin Public Radio",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://rcedc.org/microsoft-in-racine-county/",
+        "label": "Microsoft in Racine County",
+        "publisher": "Racine County Economic Development Corp",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.wpr.org/news/microsoft-hired-375-people-for-mount-pleasant-data-center",
+        "label": "Microsoft says it hired around 375 people for its Mount Pleasant data center",
+        "publisher": "Wisconsin Public Radio",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "energy": {
+      "source": "mixed",
+      "utility": "We Energies",
+      "notes": "Microsoft pledges to match every fossil-fuel kilowatt-hour one-for-one with carbon-free energy; a 250 MW solar project in Portage County is under construction to support the commitment. No on-site generation reported."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "reportedMgd": 0.702,
+      "notes": "Primarily dry cooling with evaporative backup only above ~85°F, running waterless for 90%+ of the year. 0.702 MGD is the regulatory-filing peak for the full campus (Phase 1 peak ~0.234 MGD); water is sourced from the city of Racine (Lake Michigan)."
+    },
+    "investmentUsd": 3300000000,
+    "landAcres": 1575,
+    "subsidies": [
+      {
+        "program": "Wisconsin data center sales and use tax exemption",
+        "jurisdiction": "Wisconsin",
+        "year": "2023",
+        "sourceIndex": 4
+      },
+      {
+        "program": "Village of Mount Pleasant incentive payments (~42% of Phase 1 revenue, capped at $5M/year)",
+        "jurisdiction": "Village of Mount Pleasant, Wisconsin",
+        "year": "2023",
+        "sourceIndex": 4
+      }
+    ],
+    "jobs": {
+      "construction": 2300,
+      "permanent": 550,
+      "sourceIndex": 5
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Village and county leadership are supportive; Midwest Environmental Advocates sued the city of Racine over withheld water-usage records, and Marquette Law School polling found ~70% of Wisconsinites believe data-center costs outweigh benefits. The Microsoft deal itself carries no new public borrowing, against a Foxconn-era backdrop of local debt.",
+      "sourceIndex": 6
+    }
   },
   {
     "id": "amazon-project-rainier-new-carlisle-in",
@@ -459,9 +652,72 @@
         "publisher": "Indiana Economic Development Corporation",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.insideindianabusiness.com/articles/incentives-approved-for-amazon-data-center-project",
+        "label": "Incentives approved for Amazon data center project",
+        "publisher": "Inside INdiana Business",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/st-joseph-county-leaders-approve-11bn-amazon-data-center-in-indiana/",
+        "label": "St. Joseph County leaders approve $11bn Amazon data center",
+        "publisher": "Data Center Dynamics",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://measuredai.substack.com/p/aws-new-carlisle-data-center-campus",
+        "label": "AWS New Carlisle Data Center Campus: Project Rainier",
+        "publisher": "Measured AI",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://wsbt.com/news/local/wetland-impact-idem-sends-letter-halts-some-work-over-amazons-data-center-construction-impact",
+        "label": "IDEM halts some work over Amazon's unauthorized wetland impacts",
+        "publisher": "WSBT",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "energy": {
+      "source": "grid",
+      "utility": "Indiana Michigan Power (AEP)",
+      "notes": "Served by Indiana Michigan Power, an AEP subsidiary. Amazon states it matches consumption with 100% renewable energy; local grid mix is largely nuclear and coal. AEP is acquiring a natural gas plant in Ohio to help serve the load via the grid."
+    },
+    "water": {
+      "coolingType": "air",
+      "reportedMgd": 1.58,
+      "notes": "Outside-air (free) cooling for roughly 98% of operating hours, running essentially chiller-free. 1.58 MGD is the Phase 1 permitted cooling-water discharge cap (average discharge ~0.8 MGD). Full-campus water use is not publicly disclosed by AWS; residents have raised aquifer-withdrawal concerns."
+    },
+    "investmentUsd": 11000000000,
+    "subsidies": [
+      {
+        "program": "10-year 50% real property tax abatement (three parcels)",
+        "jurisdiction": "St. Joseph County, Indiana",
+        "year": "2024",
+        "sourceIndex": 2
+      },
+      {
+        "program": "85% personal property tax exemption on computing equipment (35-year term)",
+        "jurisdiction": "St. Joseph County, Indiana",
+        "year": "2024",
+        "sourceIndex": 2
+      }
+    ],
+    "jobs": {
+      "construction": 600,
+      "permanent": 400,
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "contested",
+      "notes": "IDEM cited Amazon and its contractor for unauthorized wetland impacts and halted work in affected areas pending Section 401 water-quality recertification; a April 2025 public hearing drew 100+ residents opposing a pending wetland-fill permit near Bendix Woods County Park, with concerns over aquifer depletion and utility rates. Amazon separately committed a ~$143M community enhancement agreement to St. Joseph County.",
+      "sourceIndex": 5
+    }
   },
   {
     "id": "meta-eagle-mountain-ut",
@@ -607,9 +863,57 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.constructionowners.com/news/oracle-and-openai-to-power-new-texas-data-center-off-the-grid",
+        "label": "Oracle and OpenAI Texas data center to run on 700MW natural gas microgrid",
+        "publisher": "Construction Owners",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://vantage-dc.com/data-center-locations/north-america/shackelford-county-tx",
+        "label": "Vantage Shackelford County, TX campus",
+        "publisher": "Vantage Data Centers",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.thealbanynews.net/news/data-center-plans-move-forward-shackelford-county",
+        "label": "Data center plans move forward in Shackelford County",
+        "publisher": "The Albany News",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 700,
+      "notes": "Off-grid, behind-the-meter natural gas microgrid (~210 industrial gas generators, 700 MW) built and managed by VoltaGrid, bypassing multi-year ERCOT interconnection queues. No grid utility connection."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Vantage describes a closed-loop chilled-water system with 'near zero' water utilization efficiency; no reported MGD figure disclosed."
+    },
+    "landAcres": 1200,
+    "subsidies": [
+      {
+        "program": "Chapter 312 property tax abatement (Reinvestment Zone 2025-1; ~$10M/yr payments in lieu of taxes for 10 years)",
+        "jurisdiction": "Shackelford County, Texas",
+        "year": "2025",
+        "sourceIndex": 4
+      }
+    ],
+    "jobs": {
+      "permanent": 250,
+      "sourceIndex": 4
+    },
+    "community": {
+      "status": "supported",
+      "notes": "Shackelford County Commissioners unanimously approved the 10-year abatement; Vantage committed up to 10 annual college scholarships and $150,000 to local charities over the first decade. No documented public opposition found. Peak construction workforce cited as up to ~6,500.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "stargate-port-washington-wi",
@@ -658,9 +962,60 @@
         "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.constructiondive.com/news/stargate-openai-oracle-vantage-data-center-wisconsin/808437/",
+        "label": "$15B Stargate data center breaks ground in Wisconsin",
+        "publisher": "Construction Dive",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://wisconsinwatch.org/2026/04/port-washington-data-center-project-voters-referendum-tif-district-wisconsin/",
+        "label": "Did Port Washington voters stop a $458 million data center project?",
+        "publisher": "Wisconsin Watch",
+        "kind": "filing",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.wpr.org/news/port-washington-referendum-concerns-data-center-project",
+        "label": "Port Washington voters pass referendum fueled by concerns about data center project",
+        "publisher": "Wisconsin Public Radio",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "energy": {
+      "source": "mixed",
+      "utility": "We Energies (WEC Energy Group)",
+      "notes": "Vantage commits to '100% Matched Zero-Emission Energy' via solar, wind, and battery storage; the four buildings need ~1.3 GW, served under a dedicated We Energies rate with Vantage underwriting the power infrastructure. A $1.4B transmission line was proposed by American Transmission Co."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop liquid cooling using minimal water; Vantage commits to 'water positivity,' restoring more water than the campus consumes."
+    },
+    "investmentUsd": 15000000000,
+    "landAcres": 672,
+    "subsidies": [
+      {
+        "program": "Tax Incremental District No. 5 (TID 5; ~$458.6M projected expenditure, mostly developer-reimbursement)",
+        "amountUsd": 458000000,
+        "jurisdiction": "Port Washington, Wisconsin",
+        "year": "2025",
+        "sourceIndex": 3
+      }
+    ],
+    "jobs": {
+      "construction": 4000,
+      "permanent": 1000,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "An April 2026 referendum passed (~66%) requiring voter approval for future TIDs over $10M; Marquette polling found ~70% believe data-center costs outweigh benefits (the biggest sentiment shift in 14 years of polling); Great Lakes Neighbors United sued over the TID's legality. The existing TID 5 stands.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "stargate-lordstown-oh",
@@ -709,9 +1064,28 @@
         "publisher": "WFMJ",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://businessjournaldaily.com/documents-shed-light-on-potential-expansion-at-foxconns-lordstown-plant/",
+        "label": "Documents Shed Light on Potential Expansion at Foxconn's Lordstown Plant",
+        "publisher": "Business Journal Daily",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.tribtoday.com/news/business/2026/01/positive-economic-news-bolsters-valley-in-2025/",
+        "label": "Positive economic news bolsters Valley in 2025",
+        "publisher": "Tribune Chronicle",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "community": {
+      "status": "supported",
+      "notes": "Local officials and the Youngstown/Warren Regional Chamber described the SoftBank acquisition and Stargate/Foxconn manufacturing partnership as a 'transformational investment.' (A separate Lordstown data-center moratorium and lawsuit involved an unrelated developer, not this SoftBank/Foxconn site.)",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "stargate-project-jupiter-dona-ana-nm",
@@ -760,9 +1134,52 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://truthout.org/articles/secretive-new-mexico-data-center-plan-races-forward-despite-community-pushback/",
+        "label": "Secretive New Mexico Data Center Plan Races Forward Despite Community Pushback",
+        "publisher": "Truthout",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.abqjournal.com/business/doa-na-countys-project-jupiter-joins-500-billion-stargate-initiative-led-by-openai-oracle/493927",
+        "label": "Doña Ana County's Project Jupiter joins $500 billion Stargate initiative",
+        "publisher": "Albuquerque Journal",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Two simple-cycle natural gas microgrids (700-900 MW range per permit filings), independent of the El Paso Electric grid; NM Environment Dept weighing air-quality permits. Developer commits to 100% carbon-free energy by 2045 via solar and battery storage."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.02,
+      "notes": "Closed-loop recycling: 20,000 gpd daily average (0.02 MGD), 60,000 gpd maximum, plus a one-time ~10M-gallon initial fill over two years; water via Camino Real Regional Utility Authority. Truthout notes hyperscale closed-loop cooling is not yet proven at a fully operational facility."
+    },
+    "investmentUsd": 50000000000,
+    "landAcres": 1400,
+    "subsidies": [
+      {
+        "program": "Industrial Revenue Bonds (property and gross-receipts tax abatement; bond authorization up to $165B over 30 years)",
+        "jurisdiction": "Doña Ana County, New Mexico",
+        "year": "2025",
+        "sourceIndex": 2
+      }
+    ],
+    "jobs": {
+      "construction": 2500,
+      "permanent": 750,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The NM Environmental Law Center sued the Doña Ana County Commission over the incentive approval; Sunland Park City Council asked for a postponement; the commission approved 4-1 amid audience opposition. Concerns center on water use in an arid region, air quality from the gas microgrids, and the speed and opacity of approvals. Investment is $50B over 5 years (up to $165B over 30 years).",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "stargate-saline-township-mi",
@@ -811,9 +1228,51 @@
         "publisher": "CNBC",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.related-digital.com/news/openai-oracle-and-related-digital-announce-stargate-data-center-site-in-michigan",
+        "label": "OpenAI, Oracle, and Related Digital Announce Stargate Data Center Site in Michigan",
+        "publisher": "Related Digital",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/openai-oracle-and-related-digital-announce-stargate-data-center-site-in-michigan-302600302.html",
+        "label": "OpenAI, Oracle, and Related Digital Announce Stargate Data Center Site in Michigan (PR Newswire)",
+        "publisher": "PR Newswire",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://fortune.com/2026/05/06/ai-data-center-michigan-saline-politics-farmland/",
+        "label": "A Michigan farm town voted down a giant OpenAI-Oracle data center. Weeks later, construction began",
+        "publisher": "Fortune",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-05",
+    "energy": {
+      "source": "grid",
+      "utility": "DTE Energy",
+      "notes": "DTE Energy supplies 100% of power using existing resources augmented by a new battery-storage investment financed entirely by the project, so as not to affect other DTE customers' supply or rates (per Related Digital and MPSC review)."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling system that, per Related Digital, limits daily water use to levels comparable to an office building."
+    },
+    "investmentUsd": 16000000000,
+    "landAcres": 250,
+    "jobs": {
+      "construction": 2500,
+      "permanent": 450,
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "The Saline Township board voted 4-1 to deny the rezoning (Sept 2025); Related Digital sued two days later and a court-approved settlement allowed construction to proceed with ~$14M in community benefits. A resident later filed an Open Meetings Act challenge. At least 19 Michigan municipalities enacted data-center moratoriums afterward.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "coreweave-kenilworth-nj",
@@ -7823,9 +8282,31 @@
         "publisher": "Grist",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://nebraskapublicmedia.org/en/news/news-articles/gage-county-planning-and-zoning-commission-approves-18-month-moratorium-on-data-centers/",
+        "label": "Gage County Planning and Zoning Commission recommends 18-month moratorium on data centers",
+        "publisher": "Nebraska Public Media",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.1011now.com/2026/05/20/otoe-county-commissioners-pass-moratorium-data-center-or-not/",
+        "label": "Otoe County commissioners pass moratorium, data center or not",
+        "publisher": "1011 Now (KOLN/KGIN)",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "notes": "Cooling technology not disclosed in public filings. County officials and residents have raised concerns about combined water demand from the proposed data center and its associated natural-gas power plant."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Otoe County commissioners passed a one-year moratorium on new data-center permits (May 2026), with the board chair describing sentiment as '50/50'; the Gage County planning commission unanimously recommended an 18-month moratorium (June 2026) to applause. Opposition centers on water supply, power costs, land use, and limited permanent employment.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "meta-sarpy-springfield-ne",
