@@ -2115,10 +2115,33 @@
         "publisher": "Spotlight Delaware",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/starwood-files-to-develop-12gw-11-building-data-center-campus-in-delaware/",
+        "label": "Starwood files to develop 1.2GW, 11-building data center campus in Delaware",
+        "publisher": "DataCenterDynamics",
+        "retrievedAt": "2026-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://whyy.org/articles/data-centers-water-usage/",
+        "label": "Proposed Delaware City data center could use between 10 to 20 million gallons of water a year",
+        "publisher": "WHYY",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
     "notes": "Largest proposed data center in Delaware history. 11 two-story buildings, 5 substations, 1 switch station, 516 emergency diesel generators on 580 acres. CZA permit denied February 4, 2026; denial unanimously upheld by Coastal Zone Industrial Control Board March 26, 2026. Appeal to Delaware Superior Court anticipated. Delaware Building Trades Council exclusive union labor agreement in place. Original $9.7B investment figure removed — not confirmed in any cited source. Coordinates approximate for Delaware City area.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Delmarva Power & Light",
+      "notes": "Primary supply from the PJM grid via Delmarva Power & Light's Red Lion substation. The project's 516 on-site diesel generators are emergency backup, not primary generation; no on-site gas generation is proposed."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Starwood states the campus would use about 12.7 million gallons of water per year at full build-out, with a one-time ~600,000-gallon fill for its closed-loop cooling system; the regulatory filing cited a broader range of roughly 9.9-20 million gallons/year, and reviewers questioned whether that is low for a 1.2 GW campus."
+    }
   },
   {
     "id": "nscale-monarch-mason-county-wv",
@@ -3059,10 +3082,45 @@
         "publisher": "Tampa Bay Times",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.fox13news.com/news/florida-secretary-commerce-concerns-fort-meade-data-center-plan",
+        "label": "Florida secretary of commerce raises concerns over $2.6B Fort Meade data center plan",
+        "publisher": "FOX 13 Tampa Bay",
+        "retrievedAt": "2026-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://propmodo.com/florida-data-center-plan-advances-amid-local-backlash/",
+        "label": "Florida Data Center Plan Advances Amid Local Backlash",
+        "publisher": "Propmodo",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
     "notes": "1,300-acre former phosphate mine site; 200-acre data center footprint. 20-year development agreement approved by Fort Meade City Commission approximately April 15, 2026. Requires 1.2 GW of electricity. No identified lessee or buyer publicly disclosed. Water use reduced in plans from 140,000 to 50,000 gallons daily; Southwest Florida Water Management District approval pending separately. Florida SB 484 signed May 2026 added new state-level data center siting requirements. Coordinates are Fort Meade city centroid; actual site is former phosphate mine outside city limits.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy Florida",
+      "notes": "Expected to be powered by Duke Energy (near its Hines Energy Complex); Fort Meade residents currently receive power through the Florida Municipal Power Agency. No on-site generation reported."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Stonebridge states it will use a closed-loop system to recycle cooling water; the City of Fort Meade reserved 50,000 gallons/day of potable water for the project (down from an original 150,000-gallon request), which the developer says serves restrooms and kitchens rather than cooling. Residents raised concerns that actual demand could exceed the city's limits, and no SWFWMD water-use permit had been filed as of April 2026."
+    },
+    "subsidies": [
+      {
+        "program": "10-year property-tax abatement under a 20-year development agreement (reported ~$150M value, tied to ~$2.6B planned investment)",
+        "jurisdiction": "Fort Meade, FL",
+        "year": "2026",
+        "sourceIndex": 3
+      }
+    ],
+    "jobs": {
+      "permanent": 450,
+      "sourceIndex": 3
+    }
   },
   {
     "id": "google-montgomery-county-tn",
