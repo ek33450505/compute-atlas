@@ -46,9 +46,46 @@
         "publisher": "Reuters",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/xai-doubles-number-of-onsite-gas-turbines-at-memphis-data-center-in-violation-of-permit-limits/",
+        "label": "xAI doubles number of on-site gas turbines at Memphis data center in violation of permit limits — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.governing.com/resilience/wastewater-will-cool-this-memphis-data-center",
+        "label": "Wastewater Will Cool This Memphis Data Center — Governing",
+        "publisher": "Governing",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.cnbc.com/2025/07/16/musks-xai-permits-challenged-by-naacp-environmental-groups-memphis.html",
+        "label": "Musk's xAI permits challenged by NAACP, environmental groups in Memphis — CNBC",
+        "publisher": "CNBC",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "mixed",
+      "utility": "Memphis Light Gas & Water (MLGW) / TVA",
+      "onSiteGenerationMw": 422,
+      "notes": "About 35 on-site natural-gas turbines (a combined 422 MW per SELC and aerial imagery) supplement a 150 MW grid substation and Tesla Megapack storage. The Shelby County Health Department permitted only 15 turbines; an SELC/NAACP appeal stays that permit. xAI said the Phase-I temporary turbines would be demobilized after grid connection, but 2025 aerial imagery shows 35 on site."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "reportedMgd": 3,
+      "notes": "The open cooling loop's design draw is roughly 3 MGD from the Memphis Sands aquifer via MLGW (xAI engineer, per Governing), though Protect Our Aquifer reported a lower early-operational actual of ~0.8 MGD (~812,000 gal/day) in early 2025 as the site was still ramping. xAI broke ground in Oct 2025 on an $80M greywater-recycling plant at the T.E. Maxson wastewater facility (targeting ~10 MGD of treated wastewater); construction was later paused."
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "The NAACP (with SELC and Earthjustice) sued xAI over roughly 35 unpermitted methane gas turbines; the county permitted only 15, and the NAACP/SELC appeal to the Shelby County Air Pollution Control Board stays it. The permit drew 1,700+ public comments, most opposed, and South Memphis (Boxtown) residents already face elevated asthma and cancer rates. xAI did not pursue a Shelby County EDGE PILOT tax abatement; no public subsidy is on record.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "stargate-abilene-tx",
@@ -212,9 +249,65 @@
         "publisher": "Meta",
         "retrievedAt": "2026-07-05",
         "kind": "filing"
+      },
+      {
+        "url": "https://datacenters.atmeta.com/wp-content/uploads/2025/02/Metas-Prineville-Data-Center.pdf",
+        "label": "Meta's Prineville Data Center (fact sheet)",
+        "publisher": "Meta",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://bendbulletin.com/2024/05/09/prineville-doubles-down-on-water-conservation-with-tech-giant-backed-project/",
+        "label": "Prineville doubles down on water conservation with tech giant-backed project — The Bulletin",
+        "publisher": "The Bulletin (Bend, OR)",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.bendsource.com/news/localnews/prineville-wants-more-out-of-its-next-data-center-deal/",
+        "label": "Prineville Wants More Out of Its Next Data Center Deal — The Source Weekly",
+        "publisher": "The Source Weekly (Bend, OR)",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/cloud/article/11430439/facebook-unveils-major-data-center-campus-expansion-in-prineville",
+        "label": "Facebook Unveils Major Data Center Campus Expansion in Prineville — Data Center Frontier",
+        "publisher": "Data Center Frontier",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Pacific Power (PacifiCorp)",
+      "notes": "100% renewable match via PPAs and RECs; Meta contracted 437 MW of new Oregon solar, including about 100 MW in the Prineville area. 2023 average PUE 1.08; no on-site generation."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Outdoor-air economizer cooling with evaporative assist on peak days. Annual withdrawal was ~68.4M gallons (2022), down from a ~117.5M-gallon peak (2020); use concentrates on roughly 10 hot summer days (about 10% of city consumption on those days). Meta co-funded a second aquifer storage-and-recovery injection well."
+    },
+    "landAcres": 240,
+    "subsidies": [
+      {
+        "program": "Oregon Long-Term Rural Enterprise Zone — 15-year property-tax abatement across multiple building phases since 2012 (per-company cumulative total not publicly disclosed)",
+        "jurisdiction": "Crook County / Prineville, OR",
+        "year": "2012",
+        "sourceIndex": 4
+      }
+    ],
+    "jobs": {
+      "construction": 1000,
+      "permanent": 350,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Broadly supportive — credited with reversing post-recession unemployment; city franchise fees from data-center power grew from ~$430K (2011) to ~$11M/year (2024). But Crook County schools forgo tens of millions per year in abated taxes, biologists have flagged aquifer-drawdown concerns, and in 2026 Oregon moved to pause data-center enterprise-zone exemptions for new applicants. A June 2026 contractor change cut 66 logistics jobs (Meta said most would be rehired).",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "google-the-dalles-or",
@@ -262,9 +355,73 @@
         "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/we-now-know-how-much-water-googles-oregon-data-centers-use-after-city-drops-lawsuit-against-journalists/",
+        "label": "We now know how much water Google's Oregon data centers use — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.thedalles.org/business/google_data_centers/ezandsipagreements.php",
+        "label": "Enterprise Zone & Strategic Investment Program Agreements with Google — City of The Dalles",
+        "publisher": "City of The Dalles, OR",
+        "kind": "subsidy",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://mailtribune.com/news/happening-now/google-touts-1-8-billion-investment-in-the-dalles-data-center",
+        "label": "Google touts $1.8 billion investment in The Dalles data center — Mail Tribune",
+        "publisher": "Mail Tribune",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.publicpower.org/periodical/article/northern-wasco-pud-supply-power-google-data-centers",
+        "label": "Northern Wasco PUD to Supply Power to Google Data Centers — American Public Power Association",
+        "publisher": "American Public Power Association",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.technostatecraft.com/p/how-google-is-reshaping-a-small-oregon",
+        "label": "How Google is Reshaping a Small Oregon Town — Technostatecraft",
+        "publisher": "Technostatecraft",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "hydro",
+      "utility": "Northern Wasco County PUD",
+      "notes": "Powered largely by Bonneville Power Administration Columbia River hydropower via Northern Wasco County PUD, supplemented by a 100+ MW wind PPA (Avangrid/Leaning Juniper IIB). Google claims a 100% renewable match."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "City records released after a 2021–22 public-records lawsuit — which the city, funded by Google (>$100K), later dropped — show Google consumed 355.1M gallons in 2021 (~29% of The Dalles' total water use), up from 104.3M gallons in 2012. Google committed $28.5M to upgrade city water infrastructure."
+    },
+    "investmentUsd": 1800000000,
+    "subsidies": [
+      {
+        "program": "Oregon Enterprise Zone (Wasco County) — 2005, 2013, and 2015 15-year property-tax abatement agreements; the city projects ~$45.78M in community payments over the 2013 and 2015 terms",
+        "jurisdiction": "The Dalles / Wasco County, OR",
+        "year": "2005/2013/2015",
+        "sourceIndex": 3
+      },
+      {
+        "program": "Oregon Strategic Investment Program (SIP) — 2021 agreement, 15-year abatement (payment amounts pending final valuation)",
+        "jurisdiction": "The Dalles / Wasco County, OR",
+        "year": "2021",
+        "sourceIndex": 3
+      }
+    ],
+    "community": {
+      "status": "contested",
+      "notes": "The city sued The Oregonian/OregonLive (with Google funding >$100K) to block release of Google's water data, then settled in December 2022 and released a decade of records. Concerns span water (Yakama Nation fishers and Dog River endangered-fish habitat), school funding, and abatement scale; Oregon enacted a 2025–26 pause on new data-center incentives.",
+      "sourceIndex": 6
+    }
   },
   {
     "id": "switch-citadel-storey-county-nv",
@@ -313,9 +470,53 @@
         "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.switch.com/switch-tahoe-reno-data-center-now-open/",
+        "label": "Switch TAHOE RENO Now Open — largest, most advanced data-center campus in the world",
+        "publisher": "Switch",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://thenevadaindependent.com/article/have-data-center-tax-breaks-helped-nevadas-economy-heres-what-we-found",
+        "label": "Have data center tax breaks helped Nevada's economy? — The Nevada Independent",
+        "publisher": "The Nevada Independent",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/colocation/article/11427861/switch-will-support-reno-data-center-campus-with-reclaimed-water",
+        "label": "Switch Will Support Reno Data Center Campus with Reclaimed Water — Data Center Frontier",
+        "publisher": "Data Center Frontier",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "solar",
+      "utility": "NV Energy (grid interconnect)",
+      "notes": "100% renewable since January 2016 via dedicated solar — Switch Station 1 & 2 (179 MW) and a 555 MW Nevada solar project (a reported 127 MW behind-the-meter at Citadel); Switch exited NV Energy's standard supply in 2016 ($27M exit fee). The campus is designed for up to 650 MW at about 4.9¢/kWh."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Uses reclaimed water via a ~16-mile pipeline (4,000 acre-feet/year capacity) from the Truckee Meadows Water Reclamation Facility; Switch's water-reuse approach eliminates cooling chemicals. No facility-specific consumption is disclosed (the pipeline serves all Tahoe Reno Industrial Center tenants)."
+    },
+    "landAcres": 2000,
+    "subsidies": [
+      {
+        "program": "Nevada data-center tax abatements (NRS 360.754) via the Governor's Office of Economic Development — sales/use tax reduced to ~2% and a 75% property-tax abatement for up to 20 years (Switch-specific totals not publicly itemized)",
+        "jurisdiction": "Nevada (GOED)",
+        "year": "2015",
+        "sourceIndex": 3
+      }
+    ],
+    "community": {
+      "status": "supported",
+      "notes": "Located in the purpose-built Tahoe Reno Industrial Center. Storey County officials are broadly supportive (abatements 'bring in revenue for the county and the state'), though USA Parkway traffic rose 382% (2013–2022) and in 2025 the county recommended the state revisit its abatement-award process.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "equinix-ashburn-va",
@@ -358,9 +559,51 @@
         "publisher": "Wikipedia",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://sustainability.equinix.com/wp-content/uploads/2022/04/GU_IBX-Sustainability-Quick-Reference_EN-LTR-1.pdf",
+        "label": "Equinix IBX Sustainability Quick Reference Guide",
+        "publisher": "Equinix",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.loudounwater.org/commercial-customers/reclaimed-water-program",
+        "label": "Loudoun Water — Reclaimed Water Program",
+        "publisher": "Loudoun Water",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.vedp.org/incentive/data-center-retail-sales-use-tax-exemption",
+        "label": "Data Center Retail Sales & Use Tax Exemption — Virginia EDP",
+        "publisher": "Virginia Economic Development Partnership",
+        "kind": "subsidy",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.hklaw.com/en/insights/publications/2025/04/loudoun-county-virginia-eliminates-by-right-data-center-development",
+        "label": "Loudoun County, Virginia Eliminates By-Right Data Center Development — Holland & Knight",
+        "publisher": "Holland & Knight",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Dominion Energy",
+      "notes": "100% renewable coverage since 2021 via U.S. wind VPPAs and Green-e certified wind RECs; no on-site generation. Dominion Energy serves all of Loudoun County, where data-center load reached roughly 5.3 GW by 2025."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Uses Loudoun Water reclaimed (non-potable) water for cooling; legacy buildings use chilled water, DC12 uses indirect evaporative cooling, and newer high-density AI buildings use chilled water. No facility-specific volume is disclosed."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Data centers generate a large share of Loudoun County's general-fund revenue and the county chair has called Equinix an 'excellent community partner,' but amid rising residential and environmental opposition the Board voted 7–2 in March 2025 to end by-right data-center development, now requiring special-exception public hearings. Equinix is eligible for Virginia's statewide data-center sales-and-use tax exemption, but state law bars disclosure of individual recipients and amounts.",
+      "sourceIndex": 5
+    }
   },
   {
     "id": "meta-hyperion-richland-parish-la",
@@ -1366,9 +1609,59 @@
         "publisher": "Axios",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.gevernova.com/news/press-releases/homer-city-redevelopment-kiewit-announce-country-largest-natural-gas-powered-data-center-support-ai-hpc-demand",
+        "label": "Homer City Redevelopment and Kiewit announce country's largest natural-gas-powered data-center campus — GE Vernova",
+        "publisher": "GE Vernova",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.pa.gov/agencies/dep/dep-regions/northwest-regional-office/homer-city-generation-redevelopment",
+        "label": "Homer City Generation Site Redevelopment — Pennsylvania DEP",
+        "publisher": "Pennsylvania DEP",
+        "kind": "permit",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/homer-city-gas-fired-power-station-data-center-firstenergy/744332/",
+        "label": "Largest US gas-fired power plant planned for data centers in Pennsylvania — Utility Dive",
+        "publisher": "Utility Dive",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.spotlightpa.org/news/2026/07/pennsylvania-data-centers-emissions-gas-plants-climate-environment/",
+        "label": "New power plants for data centers would worsen pollution — Spotlight PA",
+        "publisher": "Spotlight PA",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "PJM (via FirstEnergy Pennsylvania Electric)",
+      "notes": "Redevelopment of the former Homer City coal plant (Pennsylvania's largest, demolished 2023–25) into what developers call the largest US natural-gas plant powering an on-site AI data-center campus — seven GE Vernova 7HA.02 turbines cited at 'up to 4.4–4.7 GW' (a ceiling; no confirmed point value). EQT is to supply Marcellus gas; first power is targeted for 2027. PA DEP issued the air-quality plan approval on Nov 20, 2025. Developers describe the redevelopment site as spanning more than 3,200 acres."
+    },
+    "water": {
+      "notes": "A legacy 1,800-acre reservoir (Two Lick) remains available for cooling; NPDES permit PAD320011 (June 2026) covers Two Lick Creek outfalls. No cooling-water volume (MGD) is disclosed."
+    },
+    "subsidies": [
+      {
+        "program": "Pennsylvania state grant — natural-gas pipeline interconnection",
+        "amountUsd": 5000000,
+        "jurisdiction": "Pennsylvania",
+        "year": "2025",
+        "sourceIndex": 4
+      }
+    ],
+    "community": {
+      "status": "contested",
+      "notes": "A strong local-revival narrative (an economic anchor after the 2023 coal-plant closure, backed by state officials) meets organized environmental opposition — the air permit drew 500+ comments and Clean Air Council opposition citing ~17M tons CO2e/year, potentially Pennsylvania's largest single pollution source. Developers project ~10,000 construction and ~1,000 permanent jobs.",
+      "sourceIndex": 5
+    }
   },
   {
     "id": "qts-eagle-mountain-ut",
