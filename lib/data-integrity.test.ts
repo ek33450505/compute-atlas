@@ -60,6 +60,31 @@ describe("data integrity — facilities.json", () => {
     expect(failing, failing.join("\n")).toHaveLength(0);
   });
 
+  it("every civic-impact sourceIndex is within bounds", () => {
+    const failing: string[] = [];
+    for (const f of facilities) {
+      const sourceCount = f.sources.length;
+      f.subsidies?.forEach((s, idx) => {
+        if (s.sourceIndex !== undefined && s.sourceIndex >= sourceCount) {
+          failing.push(
+            `${f.id}: subsidies[${idx}].sourceIndex ${s.sourceIndex} out of range (sources.length=${sourceCount})`
+          );
+        }
+      });
+      if (f.jobs?.sourceIndex !== undefined && f.jobs.sourceIndex >= sourceCount) {
+        failing.push(
+          `${f.id}: jobs.sourceIndex ${f.jobs.sourceIndex} out of range (sources.length=${sourceCount})`
+        );
+      }
+      if (f.community?.sourceIndex !== undefined && f.community.sourceIndex >= sourceCount) {
+        failing.push(
+          `${f.id}: community.sourceIndex ${f.community.sourceIndex} out of range (sources.length=${sourceCount})`
+        );
+      }
+    }
+    expect(failing, failing.join("\n")).toHaveLength(0);
+  });
+
   it("every location.state is exactly 2 uppercase letters", () => {
     const failing = facilities
       .filter((f) => !/^[A-Z]{2}$/.test(f.location.state))

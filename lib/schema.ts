@@ -58,20 +58,77 @@ export const facilitySchema = z
     sources: z.array(sourceSchema).min(1, "at least one source is required"),
     lastUpdated: z.string().min(4),
     notes: z.string().optional(),
+    // energy / power
+    energy: z
+      .object({
+        source: z
+          .enum(["grid", "on_site_gas", "nuclear", "solar", "wind", "hydro", "mixed", "other"])
+          .optional(),
+        utility: z.string().optional(),
+        onSiteGenerationMw: z.number().positive().optional(),
+        notes: z.string().optional(),
+      })
+      .optional(),
+    // water
+    water: z
+      .object({
+        coolingType: z.enum(["evaporative", "air", "closed_loop", "hybrid", "unknown"]).optional(),
+        reportedMgd: z.number().nonnegative().optional(),
+        notes: z.string().optional(),
+      })
+      .optional(),
+    // public money
+    subsidies: z
+      .array(
+        z.object({
+          program: z.string().optional(),
+          amountUsd: z.number().nonnegative().optional(),
+          jurisdiction: z.string().optional(),
+          year: z.string().optional(),
+          sourceIndex: z.number().int().nonnegative().optional(),
+        })
+      )
+      .optional(),
+    // economics
+    investmentUsd: z.number().positive().optional(),
+    landAcres: z.number().positive().optional(),
+    jobs: z
+      .object({
+        construction: z.number().int().nonnegative().optional(),
+        permanent: z.number().int().nonnegative().optional(),
+        sourceIndex: z.number().int().nonnegative().optional(),
+      })
+      .optional(),
+    // community
+    community: z
+      .object({
+        status: z
+          .enum(["supported", "mixed", "contested", "opposed", "litigation", "unknown"])
+          .optional(),
+        notes: z.string().optional(),
+        sourceIndex: z.number().int().nonnegative().optional(),
+      })
+      .optional(),
   })
   .superRefine((data, ctx) => {
-    data.statusHistory.forEach((event, eventIdx) => {
-      if (
-        event.sourceIndex !== undefined &&
-        event.sourceIndex >= data.sources.length
-      ) {
+    const sourceCount = data.sources.length;
+    const checkIndex = (idx: number | undefined, path: (string | number)[]) => {
+      if (idx !== undefined && idx >= sourceCount) {
         ctx.addIssue({
           code: "custom",
-          message: `statusHistory[${eventIdx}].sourceIndex ${event.sourceIndex} is out of range (sources has ${data.sources.length} item(s))`,
-          path: ["statusHistory", eventIdx, "sourceIndex"],
+          message: `sourceIndex ${idx} is out of range (sources has ${sourceCount} item(s))`,
+          path,
         });
       }
-    });
+    };
+    data.statusHistory.forEach((event, i) =>
+      checkIndex(event.sourceIndex, ["statusHistory", i, "sourceIndex"])
+    );
+    data.subsidies?.forEach((s, i) =>
+      checkIndex(s.sourceIndex, ["subsidies", i, "sourceIndex"])
+    );
+    checkIndex(data.jobs?.sourceIndex, ["jobs", "sourceIndex"]);
+    checkIndex(data.community?.sourceIndex, ["community", "sourceIndex"]);
   });
 
 export const facilitiesSchema = z.array(facilitySchema);

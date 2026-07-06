@@ -39,6 +39,128 @@ describe("facilitySchema — happy path", () => {
   });
 });
 
+describe("facilitySchema — civic-impact fields (happy path)", () => {
+  it("parses a valid facility with all new fields populated", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      energy: {
+        source: "solar",
+        utility: "TVA",
+        onSiteGenerationMw: 50,
+        notes: "On-site solar array",
+      },
+      water: {
+        coolingType: "evaporative",
+        reportedMgd: 2.5,
+        notes: "Uses cooling towers",
+      },
+      subsidies: [
+        {
+          program: "Tax Increment Financing",
+          amountUsd: 1000000,
+          jurisdiction: "Shelby County",
+          year: "2024",
+          sourceIndex: 0,
+        },
+      ],
+      investmentUsd: 500000000,
+      landAcres: 120,
+      jobs: {
+        construction: 500,
+        permanent: 50,
+        sourceIndex: 0,
+      },
+      community: {
+        status: "supported",
+        notes: "Local council approved",
+        sourceIndex: 0,
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.energy?.source).toBe("solar");
+      expect(result.data.subsidies?.[0].amountUsd).toBe(1000000);
+    }
+  });
+
+  it("new fields are optional — omitting them still parses", () => {
+    const result = facilitySchema.safeParse(baseFacility);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.energy).toBeUndefined();
+      expect(result.data.water).toBeUndefined();
+      expect(result.data.subsidies).toBeUndefined();
+      expect(result.data.community).toBeUndefined();
+    }
+  });
+});
+
+describe("facilitySchema — civic-impact fields (invalid cases)", () => {
+  it("fails when energy.source is an invalid enum value", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      energy: { source: "coal" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when water.reportedMgd is negative", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      water: { reportedMgd: -1 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when investmentUsd is zero", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      investmentUsd: 0,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when investmentUsd is negative", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      investmentUsd: -1000,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when subsidies[0].sourceIndex is out of range", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      subsidies: [{ program: "TIF", sourceIndex: 5 }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when community.sourceIndex is out of range", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      community: { status: "supported", sourceIndex: 5 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when jobs.sourceIndex is out of range", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      jobs: { construction: 100, sourceIndex: 5 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when jobs.construction is negative", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      jobs: { construction: -5 },
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
 describe("facilitySchema — invalid cases", () => {
   it("fails when state is not 2 characters", () => {
     const result = facilitySchema.safeParse({
