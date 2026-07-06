@@ -55,11 +55,18 @@
 }
 
 :root {
-  /* Wong colorblind-safe palette — light mode */
+  /* Wong colorblind-safe palette — light mode
+   * All values verified ≥4.5:1 on white (#FFFFFF):
+   *   operational      #0072B2  4.75:1
+   *   under_construction #B45309 5.02:1  (was #E69F00 @ 2.25:1 — WCAG fail)
+   *   permitted        #007A53  5.37:1  (was #009E73 @ 3.35:1 — WCAG fail)
+   *   proposed         #9D2C6F  6.95:1  (was #CC79A7 @ 3.06:1 — WCAG fail)
+   *   cancelled        #6B7280  4.84:1
+   */
   --status-operational: #0072B2;
-  --status-under-construction: #E69F00;
-  --status-permitted: #009E73;
-  --status-proposed: #CC79A7;
+  --status-under-construction: #B45309;
+  --status-permitted: #007A53;
+  --status-proposed: #9D2C6F;
   --status-cancelled: #6B7280;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

@@ -9,7 +9,7 @@ import Map, {
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import { BASEMAP_STYLE_URL, INITIAL_VIEW_STATE } from "@/lib/map";
+import { BASEMAP_STYLE_URL, INITIAL_VIEW_STATE, getMarkerOffset } from "@/lib/map";
 import { FacilityMarker } from "@/components/map/facility-marker";
 import { FacilityPopup } from "@/components/map/facility-popup";
 import { MapLegend } from "@/components/map/map-legend";
@@ -75,6 +75,41 @@ export function FacilityMap({ facilities }: FacilityMapProps) {
     }
   }, []);
 
+  // MapLibre adds role="button" + aria-label="Map marker" to every Marker
+  // wrapper div automatically, creating a nested-interactive a11y violation
+  // (role="button" > <button>) flagged by WCAG 2.5.8 / axe nested-interactive.
+  // We strip the outer role/label via the map's onLoad event (fired after the
+  // maplibre Map and all markers have fully initialised) and then watch for any
+  // future additions via a MutationObserver.
+  const moRef = useRef<MutationObserver | null>(null);
+
+  const handleMapLoad = useCallback(() => {
+    const mapEl = mapRef.current?.getContainer();
+    if (!mapEl) return;
+
+    const strip = () => {
+      mapEl
+        .querySelectorAll<HTMLElement>('.maplibregl-marker[role="button"]')
+        .forEach((el) => {
+          el.removeAttribute("role");
+          el.removeAttribute("aria-label");
+        });
+    };
+
+    strip();
+
+    const mo = new MutationObserver(strip);
+    mo.observe(mapEl, {
+      childList: true,
+      subtree: true,
+      attributeFilter: ["role"],
+    });
+    moRef.current = mo;
+  }, []);
+
+  // Disconnect observer on unmount
+  useEffect(() => () => moRef.current?.disconnect(), []);
+
   return (
     <div
       role="region"
@@ -98,6 +133,7 @@ export function FacilityMap({ facilities }: FacilityMapProps) {
           initialViewState={INITIAL_VIEW_STATE}
           style={{ width: "100%", height: "100%" }}
           reuseMaps
+          onLoad={handleMapLoad}
         >
           <NavigationControl
             position="top-right"
@@ -111,6 +147,7 @@ export function FacilityMap({ facilities }: FacilityMapProps) {
               longitude={facility.location.lon}
               latitude={facility.location.lat}
               anchor="center"
+              offset={getMarkerOffset(facility.id)}
             >
               <FacilityMarker
                 ref={(el) => {

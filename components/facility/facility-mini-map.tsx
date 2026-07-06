@@ -1,6 +1,6 @@
 "use client";
 
-import Map, { Marker, NavigationControl } from "react-map-gl/maplibre";
+import Map, { Marker } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { BASEMAP_STYLE_URL } from "@/lib/map";
@@ -18,7 +18,10 @@ interface FacilityMiniMapProps {
  * Accessibility contract:
  * - Wrapped in role="img" with aria-label (decorative-supplementary;
  *   the location is fully conveyed in the Key facts text above)
- * - NavigationControl is intentionally hidden from AT (inside role="img")
+ * - All map interactions disabled (interactive={false}) and NavigationControl
+ *   removed so no focusable controls exist inside role="img" (WCAG nested-interactive)
+ * - Attribution control disabled (attributionControl={false}) to prevent
+ *   anchor links from appearing inside role="img"
  * - Color-only encoding avoided: the status dot is decorative (aria-hidden)
  * - No animation needed; no prefers-reduced-motion handling required
  *
@@ -44,9 +47,9 @@ export function FacilityMiniMap({ facility }: FacilityMiniMapProps) {
         }}
         style={{ width: "100%", height: "100%" }}
         reuseMaps
+        interactive={false}
+        attributionControl={false}
       >
-        <NavigationControl position="top-right" showCompass={false} />
-
         <Marker
           longitude={location.lon}
           latitude={location.lat}

@@ -19,7 +19,7 @@ interface FacilityMarkerProps {
  * - aria-label describes the facility (name, operator, location, status, capacity)
  * - aria-pressed conveys selected state
  * - Icon is aria-hidden (status is communicated by both shape AND color)
- * - Minimum 24×24 px tap area; visible :focus-visible ring
+ * - Fixed 28×28 px target meets WCAG 2.2 SC 2.5.8 (≥24×24 px); visible :focus-visible ring
  * - Hover scale animation is suppressed via `motion-safe:` variant
  *
  * TODO(M3+): clustering when dataset grows
@@ -39,7 +39,7 @@ export const FacilityMarker = forwardRef<HTMLButtonElement, FacilityMarkerProps>
         style={{ color: getStatusColor(facility.status) }}
         className={[
           "flex items-center justify-center",
-          "min-w-[28px] min-h-[28px] p-1",
+          "w-[28px] h-[28px]",
           "rounded-full border shadow-sm",
           "bg-background/90",
           isSelected ? "border-current ring-2 ring-current/30" : "border-current/40",
