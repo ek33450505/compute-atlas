@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Map, {
   Marker,
   Popup,
@@ -9,8 +9,10 @@ import Map, {
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import { BASEMAP_STYLE_URL, INITIAL_VIEW_STATE, getMarkerOffset } from "@/lib/map";
+import { BASEMAP_STYLE_URL, INITIAL_VIEW_STATE } from "@/lib/map";
+import { clusterFacilities, type Cluster } from "@/lib/cluster";
 import { FacilityMarker } from "@/components/map/facility-marker";
+import { ClusterMarker } from "@/components/map/cluster-marker";
 import { FacilityPopup } from "@/components/map/facility-popup";
 import { MapLegend } from "@/components/map/map-legend";
 import type { Facility } from "@/lib/schema";
@@ -24,21 +26,29 @@ interface FacilityMapProps {
  *
  * Design decisions:
  * - Accessible DOM markers (<button> elements), NOT canvas cluster layers.
- *   Screen readers can tab through all 22 markers; each has a descriptive aria-label.
- *   TODO(M3+): clustering when dataset grows beyond ~50 facilities.
+ *   Screen readers can tab through all visible markers/clusters; each has a descriptive aria-label.
+ *   Clustering is zoom-dependent: facilities within 44px of each other are grouped into a
+ *   ClusterMarker bubble. Activating a cluster calls fitBounds to zoom into that group.
  * - Basemap: OpenFreeMap positron (free, no API key, low-saturation).
  *   TODO: theme-aware/dark basemap + self-hosted PMTiles later.
- * - prefers-reduced-motion: when enabled, easeTo uses duration 0 (instant);
- *   otherwise the selected marker eases into view over 600 ms.
+ * - prefers-reduced-motion: when enabled, easeTo/fitBounds uses duration 0 (instant);
+ *   otherwise animation runs over 600 ms.
  * - Focus management: closing a popup returns focus to the triggering marker button.
  */
 export function FacilityMap({ facilities }: FacilityMapProps) {
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(
     null
   );
+  const [zoom, setZoom] = useState<number>(INITIAL_VIEW_STATE.zoom);
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
   const mapRef = useRef<MapRef>(null);
+
+  // Recompute clusters only when facilities or zoom changes (pan-invariant).
+  const clusters = useMemo(
+    () => clusterFacilities(facilities, zoom),
+    [facilities, zoom]
+  );
 
   // Lazy initializer is safe here: this component only renders client-side
   // via the ssr:false dynamic wrapper, so window is always defined at init.
@@ -74,6 +84,38 @@ export function FacilityMap({ facilities }: FacilityMapProps) {
       }, 0);
     }
   }, []);
+
+  /** Zooms the map to fit all members of a cluster. */
+  const zoomToCluster = useCallback(
+    (cluster: Cluster) => {
+      const map = mapRef.current;
+      if (!map) return;
+
+      const lons = cluster.members.map((f) => f.location.lon);
+      const lats = cluster.members.map((f) => f.location.lat);
+      const minLon = Math.min(...lons);
+      const maxLon = Math.max(...lons);
+      const minLat = Math.min(...lats);
+      const maxLat = Math.max(...lats);
+
+      // Degenerate bbox: all members are essentially co-located — just zoom in.
+      const isCoinPoint = maxLon - minLon < 0.001 && maxLat - minLat < 0.001;
+      if (isCoinPoint) {
+        map.easeTo({
+          center: [cluster.lon, cluster.lat],
+          zoom: Math.min(zoom + 3, 12),
+          duration: reducedMotion ? 0 : 600,
+        });
+      } else {
+        map.fitBounds([[minLon, minLat], [maxLon, maxLat]], {
+          padding: 80,
+          maxZoom: 12,
+          duration: reducedMotion ? 0 : 600,
+        });
+      }
+    },
+    [zoom, reducedMotion]
+  );
 
   // MapLibre adds role="button" + aria-label="Map marker" to every Marker
   // wrapper div automatically, creating a nested-interactive a11y violation
@@ -134,31 +176,50 @@ export function FacilityMap({ facilities }: FacilityMapProps) {
           style={{ width: "100%", height: "100%" }}
           reuseMaps
           onLoad={handleMapLoad}
+          onZoomEnd={(e) => setZoom(e.viewState.zoom)}
         >
           <NavigationControl
             position="top-right"
             showCompass={false}
           />
 
-          {/* TODO(M3+): clustering when dataset grows */}
-          {facilities.map((facility) => (
-            <Marker
-              key={facility.id}
-              longitude={facility.location.lon}
-              latitude={facility.location.lat}
-              anchor="center"
-              offset={getMarkerOffset(facility.id)}
-            >
-              <FacilityMarker
-                ref={(el) => {
-                  markerRefs.current[facility.id] = el;
-                }}
-                facility={facility}
-                isSelected={selectedFacility?.id === facility.id}
-                onSelect={handleSelectFacility}
-              />
-            </Marker>
-          ))}
+          {clusters.map((cluster) => {
+            if (cluster.members.length === 1) {
+              const facility = cluster.members[0];
+              return (
+                <Marker
+                  key={facility.id}
+                  longitude={facility.location.lon}
+                  latitude={facility.location.lat}
+                  anchor="center"
+                >
+                  <FacilityMarker
+                    ref={(el) => {
+                      markerRefs.current[facility.id] = el;
+                    }}
+                    facility={facility}
+                    isSelected={selectedFacility?.id === facility.id}
+                    onSelect={handleSelectFacility}
+                  />
+                </Marker>
+              );
+            }
+
+            return (
+              <Marker
+                key={cluster.id}
+                longitude={cluster.lon}
+                latitude={cluster.lat}
+                anchor="center"
+              >
+                <ClusterMarker
+                  count={cluster.members.length}
+                  label={`Cluster of ${cluster.members.length} datacenters — activate to zoom in`}
+                  onSelect={() => zoomToCluster(cluster)}
+                />
+              </Marker>
+            );
+          })}
 
           {selectedFacility && (
             <Popup
