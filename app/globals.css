@@ -107,56 +107,6 @@
   --sidebar-ring: #3F5B43;
 }
 
-.dark {
-  /* Cartographic Survey Atlas — dark mode (night chart)
-   *
-   * STATUS COLORS — retained from prior tuning (verified for dark bg #14161C, L=0.008):
-   *   operational        #4BA3D3  (L_text=0.324)  contrast 6.43:1  ✓
-   *   under-construction #F2B441  warm amber, high-contrast on dark  ✓
-   *   permitted          #3CBE97  teal, verified passing  ✓
-   *   proposed           #DE9EC1  rose, verified passing  ✓
-   *   cancelled          #9AA1AC  slate, verified passing  ✓
-   *
-   * muted-foreground #ABA389 on #14161C:  7.16:1  ✓
-   */
-  --status-operational: #4BA3D3;
-  --status-under-construction: #F2B441;
-  --status-permitted: #3CBE97;
-  --status-proposed: #DE9EC1;
-  --status-cancelled: #9AA1AC;
-  --background: #14161C;
-  --foreground: #E8E2D0;
-  --card: #1B1E26;
-  --card-foreground: #E8E2D0;
-  --popover: #1B1E26;
-  --popover-foreground: #E8E2D0;
-  --primary: #8FB08F;
-  --primary-foreground: #14161C;
-  --secondary: #262A33;
-  --secondary-foreground: #E8E2D0;
-  --muted: #262A33;
-  --muted-foreground: #ABA389;
-  --accent: #2A2F39;
-  --accent-foreground: #E8E2D0;
-  --destructive: #C2410C;
-  --border: #3A3E48;
-  --input: #3A3E48;
-  --ring: #8FB08F;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: #1B1E26;
-  --sidebar-foreground: #E8E2D0;
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: #E8E2D0;
-  --sidebar-accent: #262A33;
-  --sidebar-accent-foreground: #E8E2D0;
-  --sidebar-border: #3A3E48;
-  --sidebar-ring: #8FB08F;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -5,7 +5,6 @@ import { Fraunces } from "next/font/google";
 import "./globals.css";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
@@ -47,23 +46,21 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <NuqsAdapter>
-          <ThemeProvider>
-            <TooltipProvider>
-              {/* Skip to main content — first focusable element */}
-              <a
-                href="#main-content"
-                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:ring-2 focus:ring-ring"
-              >
-                Skip to main content
-              </a>
-              <SiteHeader />
-              <main id="main-content" className="flex-1">
-                {children}
-              </main>
-              <SiteFooter />
-              <Toaster />
-            </TooltipProvider>
-          </ThemeProvider>
+          <TooltipProvider>
+            {/* Skip to main content — first focusable element */}
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:ring-2 focus:ring-ring"
+            >
+              Skip to main content
+            </a>
+            <SiteHeader />
+            <main id="main-content" className="flex-1">
+              {children}
+            </main>
+            <SiteFooter />
+            <Toaster />
+          </TooltipProvider>
         </NuqsAdapter>
       </body>
     </html>

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Code2 } from "lucide-react";
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import { siteConfig } from "@/lib/site";
 
 const NAV_LINKS = [
@@ -45,7 +44,6 @@ export function SiteHeader() {
 
         {/* Right-side controls */}
         <div className="ml-auto flex items-center gap-1">
-          <ThemeToggle />
           <a
             href={siteConfig.repoUrl}
             target="_blank"

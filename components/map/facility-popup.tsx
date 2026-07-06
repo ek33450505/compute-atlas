@@ -66,7 +66,7 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
       </div>
 
       {/* Operator */}
-      <p className="text-xs text-muted-foreground mb-2">{facility.operator}</p>
+      <p className="text-xs text-foreground mb-2">{facility.operator}</p>
 
       {/* Status badge */}
       <div className="mb-2">
@@ -74,11 +74,11 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
       </div>
 
       {/* Location */}
-      <p className="text-xs text-muted-foreground mb-1">{cityState}</p>
+      <p className="text-xs text-foreground mb-1">{cityState}</p>
 
       {/* Capacity */}
       {capacityMw && (
-        <div className="text-xs tabular-nums text-muted-foreground mb-1 space-y-0.5">
+        <div className="text-xs tabular-nums text-foreground mb-1 space-y-0.5">
           {capacityMw.operational !== undefined && (
             <p>{capacityMw.operational} MW operational</p>
           )}
@@ -89,7 +89,7 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
       )}
 
       {/* Classification + confidence */}
-      <p className="text-xs text-muted-foreground mb-2 capitalize">
+      <p className="text-xs text-foreground mb-2 capitalize">
         {aiClassification.replace("_", " ")} · {confidence}
       </p>
 
@@ -106,7 +106,7 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
           target="_blank"
           rel="noreferrer noopener"
           aria-label={`${firstSource.label} (opens in new tab)`}
-          className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+          className="text-xs text-foreground/80 hover:text-foreground flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
         >
           <ExternalLink className="size-3" aria-hidden="true" />
           Source
