@@ -1420,6 +1420,27 @@
         "publisher": "Tribune Chronicle",
         "kind": "press",
         "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/machine-learning/article/55319132/scaling-stargate-openais-five-new-us-data-centers-push-toward-10-gw-ai-infrastructure",
+        "label": "Scaling Stargate: OpenAI's five new US data centers",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wfmj.com/archives/data-center-to-occupy-small-part-of-lordstown-ai-hub-feature-advanced-design/article_533f268a-ec1d-5378-9ccb-ceec7d6d343e.html",
+        "label": "Data center to occupy 'small part' of Lordstown AI hub; 'advanced' design",
+        "publisher": "WFMJ",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://signalohio.org/ohio-committed-at-least-2-3-billion-dollars-in-sales-tax-breaks-for-data-centers/",
+        "label": "Ohio committed at least $2.3B in data-center sales-tax breaks",
+        "publisher": "Signal Ohio",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-05",
@@ -1427,7 +1448,24 @@
       "status": "supported",
       "notes": "Local officials and the Youngstown/Warren Regional Chamber described the SoftBank acquisition and Stargate/Foxconn manufacturing partnership as a 'transformational investment.' (A separate Lordstown data-center moratorium and lawsuit involved an unrelated developer, not this SoftBank/Foxconn site.)",
       "sourceIndex": 2
-    }
+    },
+    "energy": {
+      "source": "grid",
+      "utility": "FirstEnergy (Ohio Edison)",
+      "notes": "Lordstown sits in FirstEnergy/Ohio Edison territory (eastern PJM); sources cite \"affordable electricity from FirstEnergy and American Electric Power\" and FirstEnergy's high-voltage transmission. FirstEnergy completed a $30M grid upgrade (2019–2022) anticipating large industrial load. DISCREPANCY: the existing poweredBy field says \"on-site natural gas generators\" (the adjacent independently-owned Lordstown Energy Center is a separate gas plant); on-site generation for the data center is not confirmed in site-specific filings. The 1,500 MW figure is a long-term campus ceiling — the initial data center uses \"a small part\" of the footprint."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "SoftBank spokesperson: \"The Lordstown site will also use a closed-loop cooling system that is designed to reduce water consumption.\" Oracle co-CEO Clay Magouyrk (via AP): \"These data centers are designed to not use water.\" No site-specific MGD figure published."
+    },
+    "subsidies": [
+      {
+        "program": "Ohio data-center sales-tax exemption (ORC §122.175, via JobsOhio / Ohio Tax Credit Authority) — statutory program; no OTCA approval confirmed for the Crescent Dune LLC / SoftBank / OpenAI site, and a moratorium on new data-center exemptions was in effect (2025–2026)",
+        "jurisdiction": "Ohio",
+        "sourceIndex": 6
+      }
+    ],
+    "notes": "Planned 1,500 MW is a long-term campus ceiling, not a near-term operational figure: a SoftBank spokesperson said the initial SoftBank/OpenAI data center uses \"a small part\" of the 6.2M-sq-ft site, which also hosts a Foxconn/SoftBank hub manufacturing modular data-center equipment. Crescent Dune LLC (a SoftBank affiliate) acquired the site from Foxconn for $375M (Sept 2025, Trumbull County Auditor). SoftBank's \"up to $3 billion\" is a ceiling covering both manufacturing and the data center — no data-center-only investment figure is confirmed."
   },
   {
     "id": "stargate-project-jupiter-dona-ana-nm",
@@ -3959,10 +3997,55 @@
         "publisher": "WEKU / NPR",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://ttc.tml1.org/2024/11/15/meta-data-center-begins-operations-gallatin",
+        "label": "Meta data center begins operations in Gallatin",
+        "publisher": "Tennessee Municipal League",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.pascalforgallatin.com/post/why-is-gallatin-giving-woolhawk-a-tax-break-when-they-are-considering-raising-our-property-taxes",
+        "label": "Why is Gallatin giving Woolhawk a tax break?",
+        "publisher": "Pascal for Gallatin",
+        "retrievedAt": "2026-07-06",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://w.media/meta-expands-gallatin-data-center-with-nearly-1b-total-investment/",
+        "label": "Meta expands Gallatin data center — cooling & water approach",
+        "publisher": "w.media",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "notes": "Campus coordinates are city-centroid approximation for Gallatin, TN. Up to 12 data halls planned on 900+ acres per DPR Construction (general contractor). Meta is deploying AI GPU clusters in waterproof tent structures (rapid deployment structures) at this campus to accelerate capacity ahead of permanent building construction.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "air",
+      "notes": "Direct air cooling (outside air + fan technology), no conventional AC units; \"use 80% less water than a typical data center\" (w.media). Goal of being water-positive by 2030. No site-specific MGD figure published."
+    },
+    "subsidies": [
+      {
+        "program": "Woolhawk LLC (Meta subsidiary) PILOT via the Gallatin Industrial Development Board — 20-year term plus construction; payments from $1M/yr (building 1) declining to $550K/yr (building 6), through an IDB land-leaseback mechanism",
+        "jurisdiction": "City of Gallatin / Sumner County, TN",
+        "sourceIndex": 3
+      },
+      {
+        "program": "Tennessee data-center sales/use-tax exemption (statutory; qualified facilities ≥$100M investment and ≥15 jobs at 150% of state avg wage) — Meta eligible; site-specific value not publicly disclosed",
+        "jurisdiction": "State of Tennessee"
+      }
+    ],
+    "jobs": {
+      "construction": 1100,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "supported",
+      "notes": "Construction peaked at an average of ~1,100 skilled-trade workers on site, and the facility supports \"over 100 operational jobs\" (a floor) — per the Tennessee Municipal League (Nov 2024). Meta has contributed more than $1M to local nonprofits, the county school system, Volunteer State Community College, and the chamber, plus a $250K grant to the Gallatin Shalom Zone; planted 30 acres of native pollinator habitat and partnered with the Tennessee Environmental Council on school pollinator gardens. LEED Gold; 100% renewable-matched. No public opposition found. Investment \"will exceed $1.5 billion once fully built out\" (forward-looking; not yet realized).",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "meta-huntsville-al",
@@ -4971,10 +5054,48 @@
         "publisher": "Converge Digest",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.thetexasspur.com/news/205m-tax-abatement-paves-way-galaxy-growth-dickens-county",
+        "label": "$20.5M tax abatement paves way for Galaxy growth in Dickens County",
+        "publisher": "The Texas Spur",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.thetexasspur.com/news/galaxy-inks-major-deal-dickens-helios-host-services-coreweave",
+        "label": "Galaxy inks major deal; Helios to host services for CoreWeave",
+        "publisher": "The Texas Spur",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://claycorp.com/project/galaxy-digital-helios-renovation",
+        "label": "Galaxy Digital Helios Renovation — 133MW liquid-cooled build",
+        "publisher": "Clayco",
+        "retrievedAt": "2026-07-06",
+        "kind": "other"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Converted from Bitcoin mining to AI/HPC. CoreWeave is the anchor tenant using the campus for large-scale AI model training. Location is near Afton, Dickens County (West Texas). Coordinates are approximate for the 160-acre site."
+    "notes": "Converted from Bitcoin mining to AI/HPC. CoreWeave is the anchor tenant using the campus for large-scale AI model training. Location is near Afton, Dickens County (West Texas). Coordinates are approximate for the 160-acre site.",
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Phase 1 (133 MW) is a liquid-cooled AI deployment with 90+ chillers and associated piping (Clayco). Chiller condenser type (air-cooled vs. water-cooled/evaporative) and water-consumption (MGD) not published. Site overlies the Ogallala Aquifer on the southern High Plains — a material water-risk context flag."
+    },
+    "subsidies": [
+      {
+        "program": "Dickens County PILOT (Payment in Lieu of Taxes), 10-year agreement — $20.5M total ($18.5M PILOT + $2M housing fund); initial $500K payment due Oct 1, 2026",
+        "jurisdiction": "Dickens County, TX",
+        "year": "2026",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "supported",
+      "notes": "Galaxy Digital is the largest employer and taxpayer in Dickens County (pop. <2,000). County official on the CoreWeave lease: \"It's the news we've been waiting to hear — news that will bring jobs and dollars to Dickens County's doorstep.\" No opposition or litigation found. Investment/jobs: Phase 1 financed by a $1.4B debt facility + $350M Galaxy equity; Phase 2 permits estimate $3.5B (Helios 2 ~$900M, Helios 3 & 4 ~$1.3B each). Helios expects \"more than 100 permanent jobs\" plus \"50 or more\" from CoreWeave — floors, not hard counts.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "aligned-project-caprock-hale-county-tx",
@@ -5190,10 +5311,51 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.readfrontier.org/stories/as-data-centers-boom-in-oklahoma-so-does-water-demand/",
+        "label": "As data centers boom in Oklahoma, so does water demand",
+        "publisher": "The Frontier",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.readfrontier.org/stories/oklahoma-lawmakers-tried-to-cut-a-costly-incentive-for-data-centers-but-gave-google-a-break/",
+        "label": "Oklahoma lawmakers tried to cut a costly data-center incentive, but gave Google a break",
+        "publisher": "The Frontier",
+        "retrievedAt": "2026-07-06",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.pryorinfopub.com/news/google-announces-support-for-local-schools-and-nonprofits/article_ddd319a6-4823-11ef-bbfd-9b7b0264f6f1.html",
+        "label": "Google announces support for local schools and nonprofits",
+        "publisher": "Pryor Information Publication",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Campus operational since 2011; Google's second-largest data center globally per Alphabet CIO Ruth Porat. Four expansions now underway. $5.7B+ invested historically in Oklahoma prior to August 2025 $9B commitment. Expansion capacity and MW not publicly specified. Coordinates are Pryor city center."
+    "notes": "Campus operational since 2011; Google's second-largest data center globally per Alphabet CIO Ruth Porat. Four expansions now underway. $5.7B+ invested historically in Oklahoma prior to August 2025 $9B commitment. Expansion capacity and MW not publicly specified. Coordinates are Pryor city center.",
+    "investmentUsd": 4400000000,
+    "water": {
+      "coolingType": "evaporative",
+      "reportedMgd": 3.0,
+      "notes": "Utility records (open-records request) show the Pryor center used more than 1.1 billion gallons Jul 2024–Jun 2025 (≈3.0 MGD, a floor) from the Neosho River via the state-owned MidAmerica Industrial Park; ~253M gallons were discharged back to the river, the remainder lost to evaporative cooling. Google was the park's second-largest water user that year."
+    },
+    "subsidies": [
+      {
+        "program": "Oklahoma ad valorem manufacturing exemption (5-year property-tax exemption on data-center equipment) — $45.9M in 2021 alone (largest single-year benefit; amountUsd reflects this 2021 figure); ~$239M reimbursed cumulatively over ~a decade for the Mayes County facility; existing qualifying equipment retains the exemption to 2036 under SB 609 (2021)",
+        "amountUsd": 45900000,
+        "jurisdiction": "Mayes County, OK",
+        "year": "2021",
+        "sourceIndex": 3
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Strong official support — Pryor Mayor Zac Doyle: Google has brought \"hundreds of jobs, economic growth, and billions in investment\" and supports local schools and nonprofits. Google reports more than 800 jobs created to date in Pryor and $4.4 billion invested in Mayes County to date (company-provided figures via The Frontier). Grassroots and state-level concerns are documented: local hiring practices, rising housing costs, and heavy water use (>1.1B gal/yr); the Oklahoma Water Resources Board warned (Oct 2025) that data centers \"will contribute to the strain\" on water supply. Subsidy scale also criticized: ~$239M ad valorem for this facility, plus $113.9M in income-tax credits Google has claimed statewide since 2017.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "amazon-northwest-louisiana",
@@ -8439,8 +8601,8 @@
     ],
     "community": {
       "status": "litigation",
-      "notes": "Residents formed Preserve Our Yorkville & Community LLC and filed lawsuit citing inadequate notice of annexation and rezoning. A second lawsuit by resident John Bryan also filed; as of April 2026 heading toward settlement.",
-      "sourceIndex": 2
+      "notes": "Two active lawsuits as of July 2026. (1) John Bryan (filed Oct 28, 2025): a conditional settlement was before the June 23, 2026 City Council — terms limited to a phasing-order revision (NE-SE-W instead of NE-W-SE), no monetary payment to Bryan. (2) Preserve Our Yorkville & Community LLC (filed April 2026): broader suit alleging inadequate annexation/rezoning notice and deviation from the 2016 Comprehensive Plan; still ongoing as of June 30, 2026. Pioneer Development also sought an 18-month extension (to Dec 31, 2027) to close on all parcels — failure voids the annexation agreement. A $51M developer impact-fee package flows FROM the developer TO the city (schools/fire/projects), not a subsidy; no DCEO certification found and Illinois paused its Data Center Investment Program on July 1, 2026.",
+      "sourceIndex": 5
     },
     "sources": [
       {
@@ -8463,10 +8625,41 @@
         "publisher": "Shaw Local / Kendall County Now",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.shawlocal.com/kendall-county-now/2026/03/12/yorkville-data-center-approval-comes-after-nearly-6-hour-contentious-city-council-meeting/",
+        "label": "Yorkville data-center approval after nearly 6-hour council meeting",
+        "publisher": "Shaw Local / Kendall County Now",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yorkville.il.us/906/Project-Cardinal-Data-Center-Campus-Anne",
+        "label": "Project Cardinal Data Center Campus Annexation",
+        "publisher": "United City of Yorkville",
+        "retrievedAt": "2026-07-06",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.yorkvilleherald.com/articles/yorkville-council-to-consider-settlement-in-project-cardinal-lawsuit",
+        "label": "Yorkville council to consider settlement in Project Cardinal lawsuit",
+        "publisher": "Yorkville Herald",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "notes": "Coordinates approximate NW of IL Rt 47 and Galena Rd in Yorkville; exact parcel spans ~1,037 acres. 14 two-story buildings at 17 million sq ft total. No confirmed hyperscale tenant named. Companion project 'Project Steel' (Prologis, 540 acres, 24 buildings) also approved in same Yorkville corridor. First data center operational target: 2029.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "ComEd",
+      "notes": "Served by a ComEd substation off Eldamain Road; full power allocation still pending ComEd approval. The annexation agreement prohibits on-site nuclear generation. No confirmed on-site generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.0425,
+      "notes": "Air-cooled closed-loop system uses ~42,500 gallons/day (Shaw Local, 2026-03-12), revised down from an original 350,000 gpd proposal; \"no municipal water will be used for cooling.\""
+    }
   },
   {
     "id": "joliet-technology-center-il",
@@ -8591,10 +8784,61 @@
         "publisher": "Google",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.thegazette.com/business/google-announces-7b-investment-in-iowa-to-expand-cloud-ai-infrastructure/article_41e8da2d-0034-5691-81a4-83ae2081f1aa.html",
+        "label": "Google announces $7B investment in Iowa; $576M Cedar Rapids data center",
+        "publisher": "The Gazette (Cedar Rapids)",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://dailyiowan.com/2025/12/09/cedar-rapids-data-centers-ignite-concern-from-energy-advocates-excitement-from-officials/",
+        "label": "Cedar Rapids data centers ignite concern from energy advocates",
+        "publisher": "The Daily Iowan",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://revenue.iowa.gov/taxes/tax-guidance/sales-use-excise-tax/data-centers",
+        "label": "Data Center Sales and Use Tax Incentives",
+        "publisher": "Iowa Department of Revenue",
+        "retrievedAt": "2026-07-06",
+        "kind": "filing"
       }
     ],
     "notes": "Coordinates approximate for Big Cedar Industrial Center at 76th Ave SW and Edgewood Rd SW in SW Cedar Rapids. Cedar Rapids campus investment ~$576M; part of Google's $7B+ total Iowa commitment announced May/June 2025. Adjacent to QTS campus in same 1,391-acre industrial park. Also exploring a second Linn County campus near Duane Arnold nuclear plant in Palo.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "investmentUsd": 576000000,
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Traditional evaporative (water-based) cooling (Daily Iowan, Dec 2025: \"the Google center is using the traditional water cooling method\"). Estimated use \"just over 4 million gallons of water a day\" — a pre-operational estimate, not a metered figure. For comparison, Google's Council Bluffs campus averaged ~3.9 MGD."
+    },
+    "subsidies": [
+      {
+        "program": "Cedar Rapids 20-year, 70% property-tax abatement (IEDA-approved) — ~$56M total over the term; contingent on a 31-job employment threshold",
+        "jurisdiction": "Cedar Rapids, IA",
+        "year": "2025",
+        "sourceIndex": 3
+      },
+      {
+        "program": "Iowa data-center sales/use-tax exemption (Iowa Code §423.3(92)–(95)) — 10-year electricity exemption under H.F. 976 for cities >30,000 pop.; site's $576M investment exceeds the $200M threshold",
+        "jurisdiction": "Iowa",
+        "year": "2025",
+        "sourceIndex": 5
+      },
+      {
+        "program": "Cedar Rapids development-agreement 75% franchise-fee rebate on electrical service, per data center, for 20 years",
+        "jurisdiction": "Cedar Rapids, IA",
+        "year": "2025",
+        "sourceIndex": 3
+      }
+    ],
+    "community": {
+      "status": "supported",
+      "notes": "City Council approved the project in Jan 2025; Mayor Tiffany O'Donnell called it \"a once-in-a-generation opportunity that changes the game for our city.\" Energy advocates raised water, grid, and emissions concerns (Daily Iowan, Dec 2025); no organized opposition or litigation found. Jobs (est.): \"more than 1,200 construction workers\" and \"about 100 operational employees,\" with an IEDA minimum of 31 jobs at ≥$31.44/hr — estimates/contractual floors, facility still under construction. Separate community-betterment obligation reportedly requires Google to pay $400K/yr per data center for 15 years to a city-managed fund.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "qts-cedar-rapids-ia",
