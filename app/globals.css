@@ -9,6 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
   /* Status color utilities — maps to CSS vars so dark mode works automatically */
   --color-status-operational: var(--status-operational);
   --color-status-under-construction: var(--status-under-construction);
@@ -55,91 +56,105 @@
 }
 
 :root {
-  /* Wong colorblind-safe palette — light mode
-   * All values verified ≥4.5:1 on white (#FFFFFF):
-   *   operational      #0072B2  4.75:1
-   *   under_construction #B45309 5.02:1  (was #E69F00 @ 2.25:1 — WCAG fail)
-   *   permitted        #007A53  5.37:1  (was #009E73 @ 3.35:1 — WCAG fail)
-   *   proposed         #9D2C6F  6.95:1  (was #CC79A7 @ 3.06:1 — WCAG fail)
-   *   cancelled        #6B7280  4.84:1
+  /* Cartographic Survey Atlas — light mode (warm parchment)
+   *
+   * STATUS COLORS — Wong-hue darkened, verified ≥4.6:1 on parchment bg (#F5F1E6, L=0.880):
+   *   operational        #005E90  6.20:1  ✓
+   *   under-construction #8F4108  6.34:1  ✓
+   *   permitted          #036A4A  5.88:1  ✓
+   *   proposed           #8A2661  7.35:1  ✓
+   *   cancelled          #565C64  5.98:1  ✓
+   *
+   * muted-foreground #5C5344 on #F5F1E6:  6.70:1  ✓
+   * primary #3F5B43 on #F5F1E6:           6.67:1  ✓
    */
-  --status-operational: #0072B2;
-  --status-under-construction: #B45309;
-  --status-permitted: #007A53;
-  --status-proposed: #9D2C6F;
-  --status-cancelled: #6B7280;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --status-operational: #005E90;
+  --status-under-construction: #8F4108;
+  --status-permitted: #036A4A;
+  --status-proposed: #8A2661;
+  --status-cancelled: #565C64;
+  --background: #F5F1E6;
+  --foreground: #2B2721;
+  --card: #FBF8EF;
+  --card-foreground: #2B2721;
+  --popover: #FBF8EF;
+  --popover-foreground: #2B2721;
+  --primary: #3F5B43;
+  --primary-foreground: #F5F1E6;
+  --secondary: #E9E2CF;
+  --secondary-foreground: #2B2721;
+  --muted: #E9E2CF;
+  --muted-foreground: #5C5344;
+  --accent: #E4DBC4;
+  --accent-foreground: #2B2721;
+  --destructive: #9A3412;
+  --border: #CDBFA0;
+  --input: #CDBFA0;
+  --ring: #3F5B43;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.25rem;
+  --sidebar: #FBF8EF;
+  --sidebar-foreground: #2B2721;
+  --sidebar-primary: #3F5B43;
+  --sidebar-primary-foreground: #F5F1E6;
+  --sidebar-accent: #E9E2CF;
+  --sidebar-accent-foreground: #2B2721;
+  --sidebar-border: #CDBFA0;
+  --sidebar-ring: #3F5B43;
 }
 
 .dark {
-  /* Wong palette lightened ~10-15% for dark-bg contrast */
+  /* Cartographic Survey Atlas — dark mode (night chart)
+   *
+   * STATUS COLORS — retained from prior tuning (verified for dark bg #14161C, L=0.008):
+   *   operational        #4BA3D3  (L_text=0.324)  contrast 6.43:1  ✓
+   *   under-construction #F2B441  warm amber, high-contrast on dark  ✓
+   *   permitted          #3CBE97  teal, verified passing  ✓
+   *   proposed           #DE9EC1  rose, verified passing  ✓
+   *   cancelled          #9AA1AC  slate, verified passing  ✓
+   *
+   * muted-foreground #ABA389 on #14161C:  7.16:1  ✓
+   */
   --status-operational: #4BA3D3;
   --status-under-construction: #F2B441;
   --status-permitted: #3CBE97;
   --status-proposed: #DE9EC1;
   --status-cancelled: #9AA1AC;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: #14161C;
+  --foreground: #E8E2D0;
+  --card: #1B1E26;
+  --card-foreground: #E8E2D0;
+  --popover: #1B1E26;
+  --popover-foreground: #E8E2D0;
+  --primary: #8FB08F;
+  --primary-foreground: #14161C;
+  --secondary: #262A33;
+  --secondary-foreground: #E8E2D0;
+  --muted: #262A33;
+  --muted-foreground: #ABA389;
+  --accent: #2A2F39;
+  --accent-foreground: #E8E2D0;
+  --destructive: #C2410C;
+  --border: #3A3E48;
+  --input: #3A3E48;
+  --ring: #8FB08F;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar: #1B1E26;
+  --sidebar-foreground: #E8E2D0;
   --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-primary-foreground: #E8E2D0;
+  --sidebar-accent: #262A33;
+  --sidebar-accent-foreground: #E8E2D0;
+  --sidebar-border: #3A3E48;
+  --sidebar-ring: #8FB08F;
 }
 
 @layer base {
@@ -151,5 +166,30 @@
   }
   html {
     @apply font-sans;
+  }
+  /* warm ONLY the basemap tiles (canvas), leaving DOM markers/controls crisp */
+  .maplibregl-canvas {
+    filter: sepia(0.28) saturate(0.72) brightness(1.03) contrast(0.96);
+  }
+}
+
+@layer utilities {
+  /* hairline lat/long graticule — subtle, flat */
+  .graticule {
+    background-image:
+      repeating-linear-gradient(to right, color-mix(in oklab, var(--border) 45%, transparent) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(to bottom, color-mix(in oklab, var(--border) 45%, transparent) 0 1px, transparent 1px 44px);
+  }
+  /* map neatline: hairline frame + inset rule, like a chart border */
+  .neatline {
+    border: 1px solid var(--border);
+    box-shadow:
+      inset 0 0 0 3px var(--background),
+      inset 0 0 0 4px color-mix(in oklab, var(--border) 60%, transparent);
+  }
+  /* display font utility — Fraunces engraved serif */
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+    font-optical-sizing: auto;
   }
 }

@@ -10,6 +10,7 @@ interface StatusBadgeProps {
 /**
  * Renders a status badge with icon + label in the status color.
  * Icon is aria-hidden; the status is conveyed by both shape and color (never color alone).
+ * Styled as a map-legend entry: mono uppercase tracking-wider.
  */
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const meta = getStatusMeta(status);
@@ -17,7 +18,10 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
 
   return (
     <span
-      className={cn("inline-flex items-center gap-1.5 text-sm font-medium", className)}
+      className={cn(
+        "inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider",
+        className,
+      )}
       style={{ color: getStatusColor(status) }}
     >
       <Icon aria-hidden="true" className="size-3.5 shrink-0" />
