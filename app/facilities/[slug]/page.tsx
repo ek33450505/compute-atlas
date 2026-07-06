@@ -7,6 +7,7 @@ import { getAllFacilities, getFacilityById } from "@/lib/data";
 import { getStatusMeta } from "@/lib/status";
 import { formatCapacity, formatLocation } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
+import { facilityJsonLdString } from "@/lib/seo";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -85,6 +86,10 @@ export default async function FacilityPage({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: facilityJsonLdString(facility) }}
+      />
       {/* Back link */}
       <Link
         href="/"

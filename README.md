@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Compute Atlas
 
-## Getting Started
+A free, neutral, open tracker of AI datacenters across the United States — from proposed and permitted to under construction and operational — with a source for every record.
 
-First, run the development server:
+## What it is
+
+There is no national registry of AI datacenters. "AI datacenter" is not a legal category. Compute Atlas fills that gap by curating a provenance-first dataset of large-scale GPU/accelerator facilities, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries confidence levels and links its sources.
+
+Intended audience: journalists, researchers, local officials, and residents.
+
+## Tech stack
+
+- **Next.js 16** (App Router, static export) with **React 19**
+- **TypeScript** + **Zod** for runtime-validated data
+- **MapLibre GL** + **react-map-gl** for the interactive map
+- **Tailwind CSS v4** + **shadcn/ui** components
+- **Vitest** + **React Testing Library** for unit tests
+- **Playwright** for end-to-end tests
+
+## Local development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # start dev server at http://localhost:3000
+npm run test       # run unit tests (Vitest)
+npm run test:e2e   # run E2E tests (Playwright — requires npm run build first)
+npm run build      # production build
+npm run lint       # ESLint
+npm run typecheck  # TypeScript type check
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Data model
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Facility records live in `data/facilities.json` — a JSON array validated at build time against the Zod schema in `lib/schema.ts`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Key fields per facility:
 
-## Learn More
+| Field | Description |
+|---|---|
+| `id` | Lowercase kebab slug (e.g. `xai-colossus-memphis-tn`) |
+| `name` | Facility name |
+| `operator` | Operating company |
+| `status` | `proposed` / `permitted` / `under_construction` / `operational` / `cancelled` |
+| `aiClassification` | `confirmed` / `likely` / `mixed_use` |
+| `confidence` | `confirmed` / `reported` / `rumored` |
+| `location` | `lat`, `lon`, `city?`, `county?`, `state` (2-letter) |
+| `capacityMw` | `planned?` and/or `operational?` in megawatts |
+| `statusHistory` | Ordered list of status transitions with dates and source references |
+| `sources` | At least one source with `url`, `label`, `kind`, and `retrievedAt` |
+| `lastUpdated` | ISO date string (YYYY or YYYY-MM or YYYY-MM-DD) |
 
-To learn more about Next.js, take a look at the following resources:
+### How to add a facility
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Add an entry to `data/facilities.json` following the schema above.
+2. Include at least one `sources` entry — every record must cite a public source.
+3. Run `npm run build` — the build validates all records against the schema and will fail loudly if any field is missing or malformed.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Accessibility
 
-## Deploy on Vercel
+Compute Atlas targets **WCAG 2.2 AA**. The data table is a first-class alternative to the map — all facilities are reachable and filterable without pointer interaction. Focus indicators, skip-to-content link, and semantic HTML throughout.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing and corrections
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open an issue at `https://github.com/ek33450505/compute-atlas/issues`. Corrections should include a public source URL. Pull requests welcome for new facilities and data updates.
+
+## Attribution and licenses
+
+- Map basemap: OpenStreetMap contributors (ODbL) via OpenFreeMap
+- Epoch AI data (where used): CC-BY 4.0
+- Codebase and original data: see repository license
