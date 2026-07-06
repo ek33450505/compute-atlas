@@ -14,8 +14,9 @@ describe("ThemeToggle", () => {
     expect(button).toBeInTheDocument();
   });
 
-  it("has the sr-only toggle label text", () => {
+  it("does not render a redundant visible sr-only label", () => {
     render(<ThemeToggle />, { wrapper: Wrapper });
-    expect(screen.getByText("Toggle theme")).toBeInTheDocument();
+    // The aria-label on the trigger is the only accessible name — no duplicate span.
+    expect(screen.queryByText("Toggle theme")).not.toBeInTheDocument();
   });
 });

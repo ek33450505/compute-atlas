@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { StatusLegend } from "@/components/status-legend";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -16,12 +17,11 @@ export default function HomePage() {
         {/* Hero copy */}
         <div className="space-y-6">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            US AI Datacenter Tracker
+            {siteConfig.name}
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            An open civic data project tracking AI datacenter development across
-            the United States. Each facility is logged by build status — from
-            early proposals and permits through active construction to
+            {siteConfig.tagline}. Each facility is logged by build status —
+            from early proposals and permits through active construction to
             operational sites.
           </p>
           <p className="text-sm text-muted-foreground">

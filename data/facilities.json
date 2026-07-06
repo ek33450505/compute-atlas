@@ -1,0 +1,106 @@
+[
+  {
+    "id": "xai-colossus-memphis-tn",
+    "name": "Colossus",
+    "operator": "xAI",
+    "status": "operational",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.06,
+      "lon": -90.02,
+      "city": "Memphis",
+      "state": "TN"
+    },
+    "capacityMw": {
+      "operational": 150
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Colossus_(supercomputer)",
+        "label": "Colossus (supercomputer) — Wikipedia",
+        "kind": "press",
+        "retrievedAt": "2026-07-05"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "stargate-abilene-tx",
+    "name": "Stargate Abilene",
+    "operator": "OpenAI / Oracle / Crusoe",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.45,
+      "lon": -99.73,
+      "city": "Abilene",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Stargate_LLC",
+        "label": "Stargate LLC — Wikipedia",
+        "kind": "press",
+        "retrievedAt": "2026-07-05"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "meta-prineville-or",
+    "name": "Meta Prineville Data Center",
+    "operator": "Meta",
+    "status": "operational",
+    "aiClassification": "mixed_use",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.3,
+      "lon": -120.83,
+      "city": "Prineville",
+      "state": "OR"
+    },
+    "announcedDate": "2010",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Prineville,_Oregon",
+        "label": "Prineville, Oregon — Wikipedia",
+        "kind": "press",
+        "retrievedAt": "2026-07-05"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  }
+]

@@ -1,12 +1,14 @@
 import Link from "next/link";
 
+import { siteConfig } from "@/lib/site";
+
 export function SiteFooter() {
   return (
     <footer className="border-t border-border py-6 text-sm text-muted-foreground">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 px-4 sm:flex-row sm:justify-between sm:px-6">
         <p>
-          Open civic data tracker — not affiliated with any corporation or
-          government agency.
+          {siteConfig.name} — open civic data tracker, not affiliated with any
+          corporation or government agency.
         </p>
         <div className="flex items-center gap-4">
           <Link

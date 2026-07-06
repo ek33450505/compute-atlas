@@ -8,20 +8,19 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ai-datacenter-tracker.vercel.app"),
+  metadataBase: new URL(siteConfig.url),
   title: {
-    template: "%s · AI Datacenter Tracker",
-    default:
-      "AI Datacenter Tracker — Tracking AI datacenters across the US",
+    default: siteConfig.name + " — " + siteConfig.tagline,
+    template: "%s · " + siteConfig.name,
   },
-  description:
-    "A civic open-data tracker following AI datacenter development across the United States — from proposed sites to operational facilities.",
+  description: siteConfig.description,
   openGraph: {
-    title: "AI Datacenter Tracker",
-    description:
-      "A civic open-data tracker following AI datacenter development across the United States.",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
     type: "website",
   },
 };

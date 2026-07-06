@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Code2 } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
+import { siteConfig } from "@/lib/site";
 
 const NAV_LINKS = [
   { label: "Map", href: "/" },
@@ -18,8 +19,7 @@ export function SiteHeader() {
           href="/"
           className="flex items-center gap-2 font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
         >
-          <span className="hidden sm:inline">AI Datacenter Tracker</span>
-          <span className="sm:hidden">ADC Tracker</span>
+          {siteConfig.name}
         </Link>
 
         {/* Primary nav */}
@@ -39,7 +39,7 @@ export function SiteHeader() {
         <div className="ml-auto flex items-center gap-1">
           <ThemeToggle />
           <a
-            href="https://github.com"
+            href={siteConfig.repoUrl}
             target="_blank"
             rel="noreferrer noopener"
             aria-label="View source on GitHub"
