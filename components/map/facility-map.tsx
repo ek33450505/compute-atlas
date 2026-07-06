@@ -175,6 +175,7 @@ export function FacilityMap({ facilities }: FacilityMapProps) {
           initialViewState={INITIAL_VIEW_STATE}
           style={{ width: "100%", height: "100%" }}
           reuseMaps
+          attributionControl={false}
           onLoad={handleMapLoad}
           onZoomEnd={(e) => setZoom(e.viewState.zoom)}
         >
@@ -241,6 +242,37 @@ export function FacilityMap({ facilities }: FacilityMapProps) {
 
         <MapLegend />
       </div>
+
+      {/* Basemap attribution rendered below the map canvas (not overlaid) so it
+          never collides with geo-positioned markers — WCAG 2.5.8 target-size.
+          Inline links in text flow are exempt from the minimum target-size rule. */}
+      <p className="mt-2 text-xs text-muted-foreground">
+        <a
+          href="https://openfreemap.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-foreground"
+        >
+          OpenFreeMap
+        </a>{" "}
+        <a
+          href="https://www.openmaptiles.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-foreground"
+        >
+          © OpenMapTiles
+        </a>{" "}
+        Data from{" "}
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-foreground"
+        >
+          OpenStreetMap
+        </a>
+      </p>
     </div>
   );
 }
