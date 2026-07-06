@@ -2586,10 +2586,48 @@
         "publisher": "Data Center Frontier",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/aligned-maryland-campus-iad04",
+        "label": "Aligned Maryland Campus IAD04",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-06",
+        "kind": "other"
+      },
+      {
+        "url": "https://aligneddc.com/maryland-data-centers/",
+        "label": "Aligned Maryland Data Centers",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-07-06",
+        "kind": "other"
+      },
+      {
+        "url": "https://commerce.maryland.gov/fund/data-center-maryland-sales-and-use-tax-exemption-incentive-program",
+        "label": "Maryland Data Center Sales & Use Tax Exemption Program",
+        "publisher": "Maryland Dept. of Commerce",
+        "retrievedAt": "2026-07-06",
+        "kind": "filing"
       }
     ],
     "notes": "Part of TPG Real Estate / Catellus Development's 2,100-acre Quantum Frederick campus on former Alcoa Eastalco aluminum plant (closed 2010, demolished 2017) in Frederick County MD. Coordinates are approximate for campus area near Buckeystown/Adamstown.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Potomac Edison / FirstEnergy",
+      "notes": "Utility-served (FirstEnergy / Potomac Edison, multi-gigawatt scale per Frederick Chamber). Aligned commits to \"100% renewable power\" (procurement, not dedicated generation). 172 emergency diesel generators (508 MW combined) MDE-approved (Jan 2025) for backup only."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Aligned describes \"Delta³ air cooling arrays\" plus \"DeltaFlow liquid cooling\" within a \"closed-loop chilled water system\" and markets \"near-zero water consumption\"; no facility MGD disclosed. Cooling spec is campus-level and may not be IAD-04-specific."
+    },
+    "subsidies": [
+      {
+        "program": "Maryland Data Center Sales & Use Tax Exemption — 10-year exemption on qualified data-center personal property (extendable to 20 years for $250M+ investment). Aligned's CEO cited \"attractive tax exemptions\" for choosing Frederick; statutory eligibility only, no project-specific certification confirmed.",
+        "jurisdiction": "Maryland",
+        "year": "2020",
+        "sourceIndex": 4
+      }
+    ]
   },
   {
     "id": "rowan-digital-frederick-md",
@@ -3347,10 +3385,38 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://news.monroelocal.org/social-circle-officials-clear-way-for-second-data-center/",
+        "label": "Social Circle officials clear way for second data center",
+        "publisher": "Monroe Local News",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.covnews.com/news/county/newton-county-enacts-moratoriums-data-centers-convenience-stores/",
+        "label": "Newton County enacts moratoriums on data centers",
+        "publisher": "The Covington News",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "notes": "Nine buildings, 2.56 million sq ft near I-20/SR-11 intersection. Construction planned to begin 2028; first phase operational target 2031. Formerly filed as Newton County Technology Park; renamed after jurisdictional ambiguity surfaced. Coordinates corrected to Social Circle city centroid (33.6562°N, 83.7182°W); original record had 33.5912°N which is approximately 4.5 miles south of the actual city center per multiple geocoding sources.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Georgia Power",
+      "notes": "Georgia Power committed to serve the site via an on-site substation (June 2025); power demand not disclosed."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Project representatives were in discussions with the Newton County Water & Sewerage Authority (June 2025), which states it has capacity; no volume or cooling type disclosed."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Social Circle City Council unanimously approved a special-use permit for SC Infrastructure LLC (June 2025). A jurisdictional dispute exists — Newton County does not recognize the 2008 annexation of the site into Social Circle. Newton County enacted a 30-day moratorium on new data-center applications (April 2026); Social Circle and Covington enacted their own moratoriums. The project is \"projected eventually to employ 200 people\" (developer — a projection). No lawsuit against this specific project.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "aws-richmond-county-nc",
@@ -3561,10 +3627,33 @@
         "publisher": "Blackridge Research",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.theassemblync.com/news/environment/data-center-rezoning-stokes-county/",
+        "label": "Lawsuit challenges Stokes County data-center rezoning",
+        "publisher": "The Assembly NC",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://spectrumlocalnews.com/nc/charlotte/news/2026/01/12/stokes-county-proposed-data-center-creates-backlash",
+        "label": "Stokes County proposed data center creates backlash",
+        "publisher": "Spectrum News NC",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "notes": "Site on US Highway 311 and Tuttle Road near Belews Creek Coal Plant on Dan River. End operator/tenant not publicly identified; rezoning approved for unidentified operator per lawsuit. Rezoning voided April 14, 2026 after court challenge over statutory notice failures. Developer ELS plans to resubmit. Capacity and investment not disclosed. Coordinates are Walnut Cove city centroid.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Duke Energy (Belews Creek proximity; no confirmed interconnection)",
+      "notes": "Developer plans temporary on-site natural-gas generators until a Duke Energy grid connection becomes feasible; no confirmed interconnection agreement found. Environmental groups flagged methane/CO2 from continuous generator use."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer estimates 50,000-100,000 gal/day (0.05-0.10 MGD) via a closed-loop system, sourced from municipal supply (not the Dan River) — a range, so no numeric MGD."
+    }
   },
   {
     "id": "meta-aiken-county-sc",
@@ -5258,10 +5347,48 @@
         "publisher": "Oklahoma Business Voice",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.readfrontier.org/stories/as-data-centers-boom-in-oklahoma-so-does-water-demand/",
+        "label": "As data centers boom in Oklahoma, so does water demand",
+        "publisher": "The Frontier",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://muskogee.okcounties.org/media/view/springboard_data_data_center_project_plan_6-30-25_2969.pdf",
+        "label": "Muskogee County 'Springboard' Data Center Project Plan (June 2025)",
+        "publisher": "Board of County Commissioners of Muskogee County",
+        "retrievedAt": "2026-07-06",
+        "kind": "permit"
+      },
+      {
+        "url": "https://ktul.com/news/local/google-announces-2-data-center-campuses-in-muskogee-county-summit-council-hill-electricity-grid-energy-investment-ai-cloud-workspace-search-maps-port-stephens-infrastructure-workforce-agriculture",
+        "label": "Google announces 2 data center campuses in Muskogee County",
+        "publisher": "KTUL",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Two separate campuses near Summit and Council Hill in Muskogee County. Combined into one record; site-by-site capacity and investment breakdown not publicly available. Coordinates corrected to approximate Council Hill location (35.57°N, 95.65°W); original coordinates (35.65, −95.37) fell near Muskogee city / Summit area rather than Council Hill. Summit campus is located near Muskogee city (~17 miles east). Exact parcels not disclosed. Part of Google's $9B Oklahoma investment announced August 2025."
+    "notes": "Two separate campuses near Summit and Council Hill in Muskogee County. Combined into one record; site-by-site capacity and investment breakdown not publicly available. Coordinates corrected to approximate Council Hill location (35.57°N, 95.65°W); original coordinates (35.65, −95.37) fell near Muskogee city / Summit area rather than Council Hill. Summit campus is located near Muskogee city (~17 miles east). Exact parcels not disclosed. Part of Google's $9B Oklahoma investment announced August 2025.",
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Council Hill campus anticipates ~20,000 gal/day (~0.02 MGD, ~0.6% of Pryor's use) per Muskogee Rural Water District #3 vice-chair Howard Whatley — a forward estimate for a proposed facility (the low figure implies dry/air-based cooling, not confirmed). Summit campus water not disclosed."
+    },
+    "subsidies": [
+      {
+        "program": "Oklahoma Local Development Act (62 O.S. §§850-869) Incentive District — 100% ad valorem tax exemption on qualifying new property in exchange for annual PILOT payments ($1.35M/yr Phase 1, CPI-indexed), Community Investment Payments ($1.7M/yr), and a one-time $400K EMS payment; >=$1B investment and >=50 jobs at >=$75K per phase. Per the Muskogee County 'Springboard' Project Plan (June 2025), whose applicant is \"Acacia House Group LLC\" — \"a leading U.S.-based data center operator\"; Google is NOT explicitly named in the plan, though it is the only operator to have publicly announced Muskogee County campuses.",
+        "jurisdiction": "Muskogee County, OK",
+        "year": "2025",
+        "sourceIndex": 3
+      }
+    ],
+    "community": {
+      "status": "supported",
+      "notes": "Google announced $1M for Muskogee-area school districts, small-business revitalization, and skilled-trades training (Nov 2025). The county's 'Springboard' incentive plan (applicant Acacia House Group LLC — see subsidies) adds $1.7M/yr community-investment payments and a $400K EMS payment. Statewide, Oklahoma water regulators have flagged data-center water strain.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "google-pryor-ok",
@@ -6651,10 +6778,41 @@
         "publisher": "Business Wire",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://hermistonherald.com/2023/11/07/sabey-data-centers-comes-to-umatilla/",
+        "label": "Sabey Data Centers comes to Umatilla",
+        "publisher": "Hermiston Herald",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.commercialsearch.com/news/sabey-data-centers-picks-oregon-for-950m-project/",
+        "label": "Sabey Data Centers picks Oregon",
+        "publisher": "Commercial Search",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "notes": "Two-building, 714,540 sq ft multi-tenant campus. Groundbreaking originally Q1 2025, revised to 2024 per DCD; construction start as of July 2026 not independently confirmed. Investment figures conflicting across sources ($520M in one report, ~$950M in another); investmentUsd omitted. Coordinates are Umatilla city centroid.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Sabey states it is \"relying less on water-based cooling\" for this development; a JetCool Technologies microjet liquid-cooling pilot is underway. No MGD disclosed."
+    },
+    "subsidies": [
+      {
+        "program": "Greater Umatilla Enterprise Zone — 15-year property-tax abatement (county commissioners approved Aug 15, 2023). Terms: >=$200M investment and >=10 FTE at >=130% of county average wage; a $2M community-investment fee (hospital district + river trail) plus $85K/yr school and $58K/yr fire-district fees. Total abatement value not disclosed.",
+        "jurisdiction": "Umatilla County, OR",
+        "year": "2023",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "supported",
+      "notes": "County commissioners approved the enterprise-zone agreement (Aug 15, 2023); the Port of Umatilla welcomed the project; the community-investment fee funds a hospital-district clinic and a river trail. No opposition recorded. Investment estimates conflict ($520M per DCD, $950M per Commercial Search) — estimates, not confirmed.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "meta-cheyenne-wy",
@@ -7090,6 +7248,20 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://hanfordsentinel.com/business/groundbreaking-for-big-nas-lemoore-data-center-and-energy-project-near-john-lindt/article_716c1006-1e5f-46cc-b4e9-eec31a7ee526.html",
+        "label": "Groundbreaking for NAS Lemoore data center & energy project",
+        "publisher": "Hanford Sentinel",
+        "retrievedAt": "2026-07-06",
+        "kind": "other"
+      },
+      {
+        "url": "https://hanfordsentinel.com/business/agriculture/gilcrease-calls-for-dialogue-over-data-center-john-lindt/article_6a2df66b-4581-4589-9d21-7208d166f35a.html",
+        "label": "Gilcrease calls for dialogue over data center",
+        "publisher": "Hanford Sentinel",
+        "retrievedAt": "2026-07-06",
+        "kind": "other"
       }
     ],
     "energy": {
@@ -7097,7 +7269,16 @@
       "notes": "Fully off-grid microgrid system including engine generators and control systems built by Ameresco. Aligned with Trump Administration AI Action Plan. Separate discussions ongoing for 425MW solar farm on 920 acres of surrounding DOD land."
     },
     "notes": "Located at Naval Air Station Lemoore on the Kings/Fresno county border. Ameresco leads energy infrastructure via its Intelliscale platform; CyrusOne operates the data center for federal and defense AI workloads (FedRAMP, FISMA High, DoD IL5/IL6). Land leased from DOD. Announced September 9, 2025; first phase expected online 2027.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Developer has not disclosed cooling method or water source (arid Central Valley; NAS Lemoore draws from the Kings River). Kings County Supervisor Gilcrease flagged water as a key opposition concern."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Kings County Supervisor Garrett Gilcrease (also Farm Bureau president) opposed the project on water grounds during his 2024 campaign; the project advanced with little public input; no formal legal challenge as of mid-2026. A 2023 EIR projects ~400 construction workers and ~20 permanent employees for the proposed facility (projections, not confirmed headcount). The ~$1B figure reported by the Hanford Sentinel covers the integrated project (data center + ~425 MW solar + battery storage), not the data center alone — so no data-center-only investmentUsd.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "ivcm-imperial-county-ca",
@@ -8448,10 +8629,29 @@
         "publisher": "Area Development",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.we-energies.com/company/area",
+        "label": "We Energies service area",
+        "publisher": "We Energies",
+        "retrievedAt": "2026-07-06",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.wpr.org/news/we-energies-plans-new-gas-fired-power-plant-to-meet-growing-demand-in-southeast-wisconsin",
+        "label": "We Energies plans new gas plant for SE Wisconsin demand",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
       }
     ],
     "notes": "Coordinates approximate for NW quadrant of I-94/Hwy 142 intersection, Kenosha County. Land was already properly zoned for data center operations per DCD; Navix Engineering filed November 2024 permit application for four-building campus. Site is 6 miles south of Microsoft's Mount Pleasant facility; part of Microsoft's broader Wisconsin investment commitment. No building permit issued as of Jan 2025.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "We Energies (WEC Energy Group)",
+      "notes": "We Energies serves Kenosha County; the utility received PSC approval (May 2025) for a 128 MW gas plant in the Town of Paris partly to meet data-center demand. Kenosha City Council unanimously annexed and rezoned ~240 acres (late 2024; four 250,000-sq-ft buildings planned). NOTE: Microsoft's larger Wisconsin figures ($3.3B/$4B investment, thousands of jobs) are for the SEPARATE Mount Pleasant / Racine County campus, NOT this Kenosha site; no Kenosha-specific investment, jobs, water, or site-specific tax-exemption figures have been disclosed."
+    }
   },
   {
     "id": "cassville-grant-county-wi",
@@ -10475,14 +10675,28 @@
     ],
     "community": {
       "status": "opposed",
-      "notes": "Smithfield Town Council voted 4-1 to ban data centers; residents packed the May 5, 2026 council meeting in opposition, citing noise, water consumption, environmental impact, and limited job creation. Town Council President Tassoni expects Hanton City Investments to sue the town to move forward.",
-      "sourceIndex": 0
+      "notes": "Smithfield Town Council voted 4-1 (May 5, 2025) to amend zoning to list data centers as \"not permitted\" in all districts; Hanton City Investments filed its application May 4 — one day before the vote — preserving pre-ban review (a use variance faces \"a pretty high bar\"). Council President Tassoni expects the developer to sue. The widely cited $59M is projected 30-year town tax REVENUE, not facility investment; the developer said the project \"may never happen\" absent a state tax break (RI SB 2346, a 30-year sales/use exemption, was held by the Senate as of April 2026).",
+      "sourceIndex": 1
     },
     "sources": [
       {
         "url": "https://www.oceanstatemedia.org/technology/proposed-data-center-still-looms-over-smithfield-even-after-town-council-enacts-ban",
         "label": "Proposed data center still looms over Smithfield, even after town council enacts ban",
         "publisher": "Ocean State Media",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.oceanstatemedia.org/technology/proposed-data-center-still-looms-over-smithfield-even-after-town-council-enacts-ban",
+        "label": "Proposed data center still looms over Smithfield after ban",
+        "publisher": "Ocean State Media",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.valleybreeze.com/news/smithfield-puts-the-brakes-on-potential-data-center/article_cd279d3e-1bda-4e2e-b3ac-a716d776ab2f.html",
+        "label": "Smithfield puts the brakes on potential data center",
+        "publisher": "Valley Breeze",
         "retrievedAt": "2026-07-06",
         "kind": "press"
       }
