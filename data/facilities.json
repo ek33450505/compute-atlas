@@ -8695,5 +8695,171 @@
     ],
     "notes": "Coordinates are approximate, based on Wiscasset area near former Maine Yankee site. Developer identity remains undisclosed per NDA. As of March 2026 Lincoln County reallocated ARPA funds to Waldoboro and Newcastle. Land remains undeveloped. investmentUsd removed: the $5B figure was cited in press at announcement but is not present in the Central Maine article (the only resolvable primary source) and could not be confirmed from any URL that returned content; Maine Morning Star (secondary source) returned HTTP 403. Operator field lists 'Unnamed developer (NDA with town)' as that is the factual status.",
     "lastUpdated": "2026-07-06"
+  },
+  {
+    "id": "hanton-city-smithfield-ri",
+    "name": "Hanton City Business Park (data center anchor)",
+    "operator": "Hanton City Investments LLC",
+    "status": "proposed",
+    "aiClassification": "mixed_use",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.867,
+      "lon": -71.527,
+      "state": "RI",
+      "city": "Smithfield",
+      "county": "Providence"
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "Hanton City Investments LLC (Ryan Polumbo of Revity Energy and John Branca) filed a zoning application for an industrial/warehousing park with a data center anchor tenant on undeveloped woodland near the Fidelity Investments campus. The application was filed May 4, 2026 — one day before the Smithfield Town Council voted 4-1 to ban data centers. No megawatt capacity has been publicly disclosed.",
+        "sourceIndex": 0
+      }
+    ],
+    "community": {
+      "status": "opposed",
+      "notes": "Smithfield Town Council voted 4-1 to ban data centers; residents packed the May 5, 2026 council meeting in opposition, citing noise, water consumption, environmental impact, and limited job creation. Town Council President Tassoni expects Hanton City Investments to sue the town to move forward.",
+      "sourceIndex": 0
+    },
+    "sources": [
+      {
+        "url": "https://www.oceanstatemedia.org/technology/proposed-data-center-still-looms-over-smithfield-even-after-town-council-enacts-ban",
+        "label": "Proposed data center still looms over Smithfield, even after town council enacts ban",
+        "publisher": "Ocean State Media",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      }
+    ],
+    "notes": "No megawatt capacity has been publicly disclosed, so capacityMw is omitted. The $59M figure cited in coverage is projected town tax revenue over 30 years, not facility investment, so investmentUsd is not set. Additional coverage (Rhode Island Current, ecoRI News) returned HTTP 403 to automated fetch and is not cited; the Ocean State Media article is the single independently verified resolvable source. Coordinates are approximate Smithfield-area coordinates.",
+    "lastUpdated": "2026-07-06"
+  },
+  {
+    "id": "gemini-data-center-sioux-falls-sd",
+    "name": "Sioux Falls Technology Park (Gemini Data Center)",
+    "operator": "Gemini Data Center SD LLC",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.583,
+      "lon": -96.685,
+      "state": "SD",
+      "city": "Sioux Falls",
+      "county": "Minnehaha"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "landAcres": 164,
+    "announcedDate": "2025",
+    "poweredBy": "Grid (Xcel Energy; adjacent to Xcel's Split Rock substation)",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Gemini Data Center SD LLC (a California family office under Michael Anvar) acquired ~164 acres from Xcel Energy northeast of Sioux Falls, adjacent to Xcel's Split Rock substation, and sought city approvals for a data center supporting up to 500 MW. Gemini is the land developer, not the operator; no tenant is signed.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-01",
+        "note": "Sioux Falls City Council approved annexation (October 8, 2025) and unanimously approved rezoning from agricultural to light industrial (January 2026), despite hours of opposing testimony. Construction was targeted for 2026 and operation for 2028. The developer committed to funding all utility extensions at its own cost.",
+        "sourceIndex": 1
+      }
+    ],
+    "energy": {
+      "source": "grid",
+      "utility": "Xcel Energy",
+      "notes": "Site adjacent to Xcel's Split Rock substation and Angus Anson power station; an Xcel facility study is in process. The developer committed to funding utility extensions and substation upgrades."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The city council approved rezoning unanimously despite hours of opposing public testimony; a citizen petition drive is gathering signatures that could force the rezoning to a public vote. A state 50-year sales-tax exemption bill failed in the 2026 legislative session.",
+      "sourceIndex": 1
+    },
+    "sources": [
+      {
+        "url": "https://siouxfalls.business/hyperscale-data-center-seeking-city-approvals-to-build-northeast-of-sioux-falls/",
+        "label": "Hyperscale data center seeking city approvals to build northeast of Sioux Falls",
+        "publisher": "SiouxFalls.Business",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://siouxfalls.business/sioux-falls-data-center-developers-detail-next-steps/",
+        "label": "Sioux Falls data center developers detail next steps",
+        "publisher": "SiouxFalls.Business",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.thedakotascout.com/p/planned-hyperscale-data-center-moving",
+        "label": "Planned hyperscale data center moving into South Dakota's largest city",
+        "publisher": "The Dakota Scout",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      }
+    ],
+    "notes": "aiClassification is 'likely' (not 'confirmed'): Gemini is the land developer, no tenant is signed, and only developer aspiration to attract a hyperscale/AI/neocloud tenant is on record. Capacity (500 MW) and acreage per SiouxFalls.Business; an earlier report cited 160 acres. Coordinates are approximate for the northeast Sioux Falls site.",
+    "lastUpdated": "2026-07-06"
+  },
+  {
+    "id": "applied-digital-deuel-county-sd",
+    "name": "Applied Digital Deuel County AI Campus",
+    "operator": "Applied Digital Corporation",
+    "status": "cancelled",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.567,
+      "lon": -96.62,
+      "state": "SD",
+      "city": "Toronto",
+      "county": "Deuel"
+    },
+    "capacityMw": {
+      "planned": 430
+    },
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Applied Digital proposed a 430 MW AI data center campus near Toronto, SD, with up to $16 billion of announced investment and up to 200 permanent jobs. Data Center Dynamics reported the company was 'proposing an AI data center development east of Toronto in South Dakota.'",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-03",
+        "note": "Applied Digital told Keloland (statement March 2026) that the project was 'unlikely to go forward,' citing the South Dakota legislature's failure to pass a 50-year sales-tax exemption on IT equipment, and said it would let its land option near Toronto lapse.",
+        "sourceIndex": 1
+      }
+    ],
+    "energy": {
+      "source": "grid",
+      "utility": "Otter Tail Power",
+      "notes": "Proposed site was near Otter Tail Power transmission lines and a natural gas plant in Astoria."
+    },
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/applied-digital-proposes-multi-billion-dollar-data-center-in-south-dakota/",
+        "label": "Applied Digital proposes multi-billion-dollar data center in South Dakota",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/applied-digital-says-data-center-near-toronto-south-dakota-unlikely-to-go-forward/",
+        "label": "Applied Digital says data center near Toronto, South Dakota, unlikely to go forward",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      }
+    ],
+    "notes": "Status is 'cancelled' per Applied Digital's own March 2026 statement (land option to lapse). The 'up to $16 billion' investment and up to 200 jobs were announced figures for the proposal and are recorded in statusHistory rather than as structured investmentUsd/jobs, since the project will not proceed. aiClassification is 'confirmed' — Data Center Dynamics reported it as an AI data center. The Otter Tail Power association reflects the proposed (now abandoned) siting.",
+    "lastUpdated": "2026-07-06"
   }
 ]
