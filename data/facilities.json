@@ -2365,9 +2365,16 @@
         "publisher": "Nature Forward",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://thebaynet.com/100-million-in-taxpayer-money-public-citizen-demands-terawulf-reveal-morgantown-power-plant-deal/",
+        "label": "$100M in taxpayer money: Public Citizen demands TeraWulf reveal Morgantown deal",
+        "publisher": "The BayNet",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
-    "notes": "Morgantown Generating Station is on the Potomac River near the Governor Harry W. Nice Memorial Bridge, Charles County MD. Acquisition funding and TeraWulf financial stability questioned by Maryland Office of People's Counsel (net losses $660M+ in 2025, 90% revenue from Bitcoin mining). Coordinates approximate.",
+    "notes": "Morgantown Generating Station is on the Potomac River near the Governor Harry W. Nice Memorial Bridge, Charles County MD. Acquisition funding and TeraWulf financial stability questioned by Maryland Office of People's Counsel (net losses $660M+ in 2025, 90% revenue from Bitcoin mining). Coordinates approximate. TeraWulf sought about $100M in Maryland state funds toward the Morgantown acquisition; the purchase price is withheld from FERC as confidential (FOIA Exemption 4), which Public Citizen is petitioning to disclose. No cooling design, water-withdrawal figure, confirmed subsidy, or job count has been publicly disclosed for the proposed AI campus.",
     "lastUpdated": "2026-07-06"
   },
   {
@@ -2540,10 +2547,22 @@
         "publisher": "The Citizen",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cowetaprojectsail.com/coweta-lp/",
+        "label": "Project Sail — developer project overview",
+        "publisher": "Prologis / Atlas Development",
+        "retrievedAt": "2026-07",
+        "kind": "other"
       }
     ],
-    "notes": "Nine buildings, 4.3 million sq ft. End tenant not publicly identified; project marketed to hyperscalers. Rezoning includes decommissioning and site restoration plan requirement if dormant over one year. Coordinates are Newnan city centroid; actual site is along US-27 southwest of Newnan.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Nine buildings, 4.3 million sq ft. End tenant not publicly identified; project marketed to hyperscalers. Rezoning includes decommissioning and site restoration plan requirement if dormant over one year. Coordinates are Newnan city centroid; actual site is along US-27 southwest of Newnan. A developer-commissioned fiscal study modeled roughly $488M in county and school property-tax abatements over 18 years, but the Coweta County Development Authority reported no incentive negotiations had occurred as of January 2025; no confirmed incentive agreement or job count has been published.",
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Georgia Power",
+      "notes": "Georgia Power is the service-territory utility for Coweta County; the site is adjacent to Georgia Power's Plant Yates, and the developer states the load was included in Georgia Power's 2025 Integrated Resource Plan. Reporting indicates Georgia Power was not yet under contract to serve the campus as of mid-2026. No on-site generation reported."
+    }
   },
   {
     "id": "tpa-social-circle-technology-park-ga",
@@ -3587,10 +3606,26 @@
         "publisher": "PR Newswire",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.ualrpublicradio.org/local-regional-news/2026-05-27/arkansas-most-populous-county-approves-data-center-moratorium-but-with-exemption",
+        "label": "Arkansas's most populous county approves data-center moratorium, but with an AVAIO exemption",
+        "publisher": "UALR Public Radio",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
-    "notes": "Location: off Interstate 530 near 145th Street, Pulaski County; coordinates are approximate for the I-530 corridor south of Little Rock. Named after the Leo constellation. Initial $6B investment may grow to $21B through full build-out. First phase completion targeted June 2027. Campus sits near long-haul fiber routes connecting Dallas, Atlanta, and Memphis. Q1 2026 construction start was planned as of announcement; current construction status unconfirmed as of research date. Fix: energy.source corrected from 'on_site_gas' to 'mixed'; onSiteGenerationMw removed — the 150 MW figure is the Entergy Arkansas grid supply contract, not on-site generation; on-site gas capacity is unquantified in sources.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Location: off Interstate 530 near 145th Street, Pulaski County; coordinates are approximate for the I-530 corridor south of Little Rock. Named after the Leo constellation. Initial $6B investment may grow to $21B through full build-out. First phase completion targeted June 2027. Campus sits near long-haul fiber routes connecting Dallas, Atlanta, and Memphis. Q1 2026 construction start was planned as of announcement; current construction status unconfirmed as of research date. Fix: energy.source corrected from 'on_site_gas' to 'mixed'; onSiteGenerationMw removed — the 150 MW figure is the Entergy Arkansas grid supply contract, not on-site generation; on-site gas capacity is unquantified in sources. Arkansas's data-center sales-and-use tax exemption (Act 819 of 2023, expanded by Act 548 of 2025) likely applies given the investment scale, but no AVAIO-specific incentive award has been published.",
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "unknown",
+      "notes": "AVAIO's project manager testified to the Pulaski County Quorum Court that the campus would demand about 200,000 gallons of water per day on average during warmer months, dropping to near zero in winter; the specific cooling technology was not disclosed."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Pulaski County adopted a one-year data-center moratorium (10 votes) in May 2026 but exempted AVAIO by a bare 8-vote majority — the minimum on the 15-member Quorum Court. Residents opposed the project over water use and farmland; it is backed by state and county leadership and the Little Rock Regional Chamber.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "powerhouse-louisville-ky",
@@ -4083,10 +4118,37 @@
         "publisher": "eVOLVE Inc.",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://therealdeal.com/texas/2026/05/01/cloudburst-secures-tax-breaks-for-central-texas-data-center/",
+        "label": "Cloudburst secures incentives for $14B central-Texas data center",
+        "publisher": "The Real Deal",
+        "retrievedAt": "2026-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://communityimpact.com/san-antonio/government/guadalupe-county-commissioners-vote-down-500m-tax-cut-for-proposed-data-center-in-new-braunfels/",
+        "label": "Guadalupe County commissioners vote down $500M tax cut for proposed data center",
+        "publisher": "Community Impact",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "706-acre campus spanning Hays and Guadalupe counties; coordinates use San Marcos city area as centroid. Developed with Evolve Holdings as construction manager. 10-12 hyperscale buildings totaling ~3 million sq ft planned. Tenant not publicly confirmed. Investment total not confirmed in available sources; $14.5B figure removed as unsupported."
+    "notes": "706-acre campus spanning Hays and Guadalupe counties; coordinates use San Marcos city area as centroid. Developed with Evolve Holdings as construction manager. 10-12 hyperscale buildings totaling ~3 million sq ft planned. Tenant not publicly confirmed. Investment total not confirmed in available sources; $14.5B figure removed as unsupported. Guadalupe County commissioners rejected a $500M abatement 3-2 on Feb 24, 2026, then approved a revised abatement on April 21, 2026; county records peg total campus investment at $14.5B (Hays County, home to 77.5 of the 220 abated acres, took no abatement action).",
+    "investmentUsd": 14500000000,
+    "subsidies": [
+      {
+        "program": "Chapter 312 property-tax abatement, 10-year term (estimated ~$500M value)",
+        "jurisdiction": "Guadalupe County, TX",
+        "year": "2026",
+        "sourceIndex": 2
+      }
+    ],
+    "jobs": {
+      "permanent": 480,
+      "sourceIndex": 2
+    }
   },
   {
     "id": "galaxy-helios-dickens-county-tx",
