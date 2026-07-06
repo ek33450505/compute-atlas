@@ -4,7 +4,8 @@ import AxeBuilder from "@axe-core/playwright";
 // Routes under audit
 const ROUTES = [
   "/",
-  "/?view=table",
+  "/map",
+  "/table",
   "/about",
   "/facilities/meta-prineville-or",
 ] as const;

@@ -4,7 +4,7 @@ import { Code2 } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 
 const NAV_LINKS = [
-  { label: "Map", href: "/" },
+  { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
   { label: "About", href: "/about" },
 ] as const;

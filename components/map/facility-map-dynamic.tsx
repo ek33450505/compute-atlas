@@ -30,8 +30,10 @@ const FacilityMapInner = dynamic(
 
 interface FacilityMapProps {
   facilities: Facility[];
+  /** Tailwind height classes forwarded to FacilityMap. */
+  heightClass?: string;
 }
 
-export function FacilityMap({ facilities }: FacilityMapProps) {
-  return <FacilityMapInner facilities={facilities} />;
+export function FacilityMap({ facilities, heightClass }: FacilityMapProps) {
+  return <FacilityMapInner facilities={facilities} heightClass={heightClass} />;
 }

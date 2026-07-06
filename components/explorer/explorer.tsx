@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import {
   useQueryState,
   parseAsStringLiteral,
@@ -23,15 +24,23 @@ import { FilterBar } from "@/components/explorer/filter-bar";
 const VIEW_VALUES = ["map", "table"] as const;
 type ViewValue = (typeof VIEW_VALUES)[number];
 
+type ExplorerMode = "toggle" | "map" | "table";
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 interface ExplorerProps {
   facilities: Facility[];
+  /** Controls whether the view-toggle UI is rendered.
+   *  - "toggle" (default): renders Map/Table toggle buttons (existing behavior)
+   *  - "map": renders FilterBar + map only; toggle buttons replaced by a cross-link
+   *  - "table": reserved; toggle hidden, table rendered
+   */
+  mode?: ExplorerMode;
 }
 
-export function Explorer({ facilities }: ExplorerProps) {
+export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
   const [view, setView] = useQueryState<ViewValue>(
     "view",
     parseAsStringLiteral(VIEW_VALUES).withDefault("map")
@@ -66,6 +75,48 @@ export function Explorer({ facilities }: ExplorerProps) {
     [facilities, status, state, operator, minMw, q]
   );
 
+  // -------------------------------------------------------------------------
+  // Map-only mode (no toggle)
+  // -------------------------------------------------------------------------
+  if (mode === "map") {
+    return (
+      <div className="space-y-4">
+        <FilterBar
+          facilities={facilities}
+          values={{ status, state, operator, minMw, q }}
+          setters={{ setStatus, setState, setOperator, setMinMw, setQ }}
+        />
+
+        {/* Result count + cross-link row */}
+        <div className="flex items-center justify-between gap-4">
+          <p
+            role="status"
+            aria-live="polite"
+            className="text-sm text-muted-foreground"
+          >
+            Showing {filtered.length} of {facilities.length} facilities
+          </p>
+          <Link
+            href="/table"
+            className="font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            View as table →
+          </Link>
+        </div>
+
+        <section aria-label="Interactive datacenter map">
+          <FacilityMap
+            facilities={filtered}
+            heightClass="h-[calc(100dvh-15rem)] min-h-[520px]"
+          />
+        </section>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Toggle mode (default — unchanged behavior)
+  // -------------------------------------------------------------------------
   return (
     <div className="space-y-4">
       <FilterBar

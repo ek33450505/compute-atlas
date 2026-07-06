@@ -19,6 +19,8 @@ import type { Facility } from "@/lib/schema";
 
 interface FacilityMapProps {
   facilities: Facility[];
+  /** Tailwind height classes for the map container. Defaults to "h-[70vh] min-h-[420px]". */
+  heightClass?: string;
 }
 
 /**
@@ -35,7 +37,10 @@ interface FacilityMapProps {
  *   otherwise animation runs over 600 ms.
  * - Focus management: closing a popup returns focus to the triggering marker button.
  */
-export function FacilityMap({ facilities }: FacilityMapProps) {
+export function FacilityMap({
+  facilities,
+  heightClass = "h-[70vh] min-h-[420px]",
+}: FacilityMapProps) {
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(
     null
   );
@@ -168,7 +173,7 @@ export function FacilityMap({ facilities }: FacilityMapProps) {
         .
       </p>
 
-      <div className="relative h-[70vh] min-h-[420px] w-full rounded-lg overflow-hidden border">
+      <div className={`relative ${heightClass} w-full rounded-lg overflow-hidden border`}>
         <Map
           ref={mapRef}
           mapStyle={BASEMAP_STYLE_URL}

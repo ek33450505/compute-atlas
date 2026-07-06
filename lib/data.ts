@@ -43,3 +43,25 @@ export function getStatusCounts(): Record<Status, number> {
   }
   return counts;
 }
+
+/** Returns aggregate stats for the whole dataset. */
+export function getStats(): { count: number; states: number; totalMw: number } {
+  const count = facilities.length;
+  const states = new Set(facilities.map((f) => f.location.state)).size;
+  const totalMw = facilities.reduce((sum, f) => {
+    const c = f.capacityMw;
+    return sum + Math.max(c?.operational ?? 0, c?.planned ?? 0);
+  }, 0);
+  return { count, states, totalMw };
+}
+
+/** Returns the top-N facilities sorted by highest capacity (operational or planned). */
+export function getNotableFacilities(n = 6): Facility[] {
+  return [...facilities]
+    .sort(
+      (a, b) =>
+        Math.max(b.capacityMw?.operational ?? 0, b.capacityMw?.planned ?? 0) -
+        Math.max(a.capacityMw?.operational ?? 0, a.capacityMw?.planned ?? 0)
+    )
+    .slice(0, n);
+}
