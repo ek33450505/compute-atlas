@@ -1006,9 +1006,71 @@
         "publisher": "Salt Lake Tribune",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://datacenters.atmeta.com/asset/eagle-mountain-data-center-sheet/",
+        "label": "Meta Eagle Mountain Data Center fact sheet",
+        "publisher": "Meta",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://grist.org/technology/utah-data-center-water-supply-meta-novva/",
+        "label": "Can you build data centers in a desert without draining the water supply? — Grist",
+        "publisher": "Grist",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.deseret.com/utah/2022/9/30/23380151/facebook-meta-announces-expansion-eagle-mountain-data-center-tax-breaks/",
+        "label": "Meta announces mega expansion to Eagle Mountain data center project — Deseret News",
+        "publisher": "Deseret News",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.heraldextra.com/news/2025/nov/21/rays-of-power-utahs-largest-solar-plant-becomes-operational-set-to-power-eagle-mountain-data-center/",
+        "label": "Utah's largest solar plant set to power Eagle Mountain data center — Daily Herald",
+        "publisher": "Daily Herald (Utah)",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "solar",
+      "utility": "Rocky Mountain Power (PacifiCorp)",
+      "notes": "100% renewable match via Rocky Mountain Power's Schedule 34 green tariff, backed by dedicated solar PPAs — including the 525 MWac Faraday Solar project (Utah's largest, online Oct 2025), Appaloosa Solar (120 MW), and Graphite Solar (104 MW). Meta says its Utah projects add 1,719 MW of new renewables; buildings are LEED Gold."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Air-side economizer with evaporative assist and multi-pass water reuse. The campus consumed ~35.1 million gallons in 2024 (city data reported by Grist), more than double 2021. A 2018 confidentiality agreement kept monthly water use private and obliged the city to alert Meta to records requests, drawing transparency criticism. Meta pledges 200% water restoration by 2030 (e.g., a $200K Hobble Creek flow-restoration grant)."
+    },
+    "landAcres": 500,
+    "subsidies": [
+      {
+        "program": "Local property-tax abatement — 100% personal-property + 80% real-property relief for 40 years (Eagle Mountain / Utah County / Alpine School District); one analysis projected up to ~$750M in potential value across all phases",
+        "jurisdiction": "Eagle Mountain / Utah County, UT",
+        "year": "2018",
+        "sourceIndex": 4
+      },
+      {
+        "program": "Utah data-center sales-tax exemption",
+        "jurisdiction": "Utah",
+        "year": "2018",
+        "sourceIndex": 4
+      }
+    ],
+    "jobs": {
+      "construction": 1200,
+      "permanent": 300,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "The city strongly supports the campus (it anchors the general fund; Meta reports $1.5B+ in cumulative Utah data-center investment and $4.1M+ in local school and nonprofit grants since 2019), but arid-Utah water use is contested — state lawmakers passed a 2026 data-center water-reporting law (HB76) partly in response, and the 2018 confidentiality agreement over water data drew criticism.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "stargate-milam-county-tx",
@@ -1024,7 +1086,7 @@
       "state": "TX"
     },
     "capacityMw": {
-      "planned": 300
+      "planned": 1200
     },
     "poweredBy": "on-site natural gas microgrid",
     "announcedDate": "2025-09-23",
@@ -1056,9 +1118,46 @@
         "publisher": "OpenAI",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/softbanks-sb-energy-to-build-and-operate-openais-12gw-stargate-data-center-in-milam-county-texas/",
+        "label": "SB Energy to build and operate OpenAI's 1.2GW Stargate data center in Milam County, Texas — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/openai-stargates-milam-texas-freebird-data-center-to-span-548950-sq-ft-in-first-phase/",
+        "label": "OpenAI Stargate's Milam 'Freebird' data center to span 548,950 sq ft in first phase ($470M) — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "kind": "permit",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://therealdeal.com/texas/austin/2025/06/10/softbank-groups-sb-energy-plans-3-billion-texas-data-center/",
+        "label": "SoftBank's SB Energy plans $3 billion Texas data center — The Real Deal",
+        "publisher": "The Real Deal",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "solar",
+      "utility": "ERCOT",
+      "notes": "SB Energy (SoftBank) is to fund and build new on-site solar generation and storage to supply the majority of the campus's power, adjacent to its operational Orion Solar Belt (900+ MW) in Milam County; no on-site gas is confirmed for this site. SoftBank and OpenAI are each investing $500M in SB Energy. Planned campus capacity is 1.2 GW."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "SB Energy states the facility uses a closed-loop water-cooling system 'designed to minimize water usage'; no permitted volume (MGD) is disclosed."
+    },
+    "investmentUsd": 470000000,
+    "landAcres": 595,
+    "community": {
+      "status": "supported",
+      "notes": "The site is the former Alcoa Sandow aluminum smelter (which shed ~2,000 jobs when it closed around 2008), and county officials welcome the tax base while acknowledging the campus will provide few long-term jobs. Milam County approved a reinvestment zone but said it would not consider a tax-abatement package until a tenant is signed. First-phase construction cost is put at ~$470M in a state permit filing; a larger multi-billion full-campus figure has been reported.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "vantage-frontier-shackelford-county-tx",
@@ -1561,9 +1660,61 @@
         "publisher": "News 12 New Jersey",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://newjersey.news12.com/2026/04/20/ai-data-center-under-construction-in-kenilworth-draws-mixed-reactions-from-residents/73qGMUnu1BjBupokxeSIjG",
+        "label": "AI data center under construction in Kenilworth draws mixed reactions from residents — News 12 New Jersey",
+        "publisher": "News 12 New Jersey",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/coreweave-acquires-nest-data-center-for-322m-at-life-sciences-campus-in-new-jersey/",
+        "label": "CoreWeave acquires NEST data center for $322m at life-sciences campus in New Jersey — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.njeda.gov/nextnjai/",
+        "label": "Next New Jersey Program – AI — NJ Economic Development Authority",
+        "publisher": "NJ Economic Development Authority",
+        "kind": "subsidy",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "capacityMw": {
+      "planned": 250
+    },
+    "energy": {
+      "source": "grid",
+      "utility": "PSE&G",
+      "notes": "Grid-served via PSE&G (PJM), which conducted load studies and committed grid infrastructure. The site is a former Merck research campus; reports of a legacy on-site power plant and substation are unconfirmed in primary sources."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The mayor states the facility uses a closed-loop cooling system that avoids continuous use of local water; no volume (MGD) is disclosed."
+    },
+    "investmentUsd": 1760000000,
+    "landAcres": 27,
+    "subsidies": [
+      {
+        "program": "New Jersey EDA 'Next New Jersey — AI' tax credit — up to $250M ($50M/year for five years, performance-based, 10-year retention); CoreWeave was the first award under the program, which NJ later froze",
+        "jurisdiction": "New Jersey",
+        "year": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "jobs": {
+      "permanent": 143,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The mayor backs the project as filling the economic gap left by Merck's departure, and CoreWeave is New Jersey-based. But residents circulated a petition with 1,500+ signatures citing water, flood-risk, and electricity-cost concerns, and the state froze the incentive program after broader backlash over power costs.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "homer-city-energy-campus-pa",
@@ -1707,9 +1858,66 @@
         "publisher": "Utah News Dispatch",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://q.com/data-centers/eagle-mountain/",
+        "label": "QTS Eagle Mountain — official data center page",
+        "publisher": "QTS Data Centers",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1158232.pdf",
+        "label": "Eagle Mountain RDA — Sweetwater #3 CRA / QTS participation agreement (Aug 2024 packet)",
+        "publisher": "Eagle Mountain City / Utah Public Notice",
+        "kind": "subsidy",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://kutv.com/news/utah-water/questions-grow-over-water-use-at-massive-qts-data-center-in-eagle-mountain",
+        "label": "Questions grow over water use at massive QTS Data Center in Eagle Mountain — KUTV",
+        "publisher": "KUTV (CBS Utah)",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://grist.org/business/ai-utah-data-center-boom-fossil-fuels-gas/",
+        "label": "To power Utah's data center boom, companies are turning to fossil fuels — Grist",
+        "publisher": "Grist",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Rocky Mountain Power (PacifiCorp)",
+      "notes": "Grid-served by Rocky Mountain Power. After the utility initially could not guarantee sufficient grid power, the city approved on-site gas turbines and a separate 200 MW gas plant as options, but QTS ultimately secured grid supply. QTS declines to disclose the campus's power capacity (third-party trackers estimate over 650 MW at full build-out); it reports portfolio-wide carbon-free electricity for 2024."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "A closed-loop system that QTS says does not consume water for cooling once operational — roughly a 600,000-gallon one-time fill per building plus modest domestic use — avoiding an estimated 250–300 million gallons/year versus evaporative cooling."
+    },
+    "investmentUsd": 6000000000,
+    "landAcres": 193,
+    "subsidies": [
+      {
+        "program": "Eagle Mountain RDA Sweetwater #3 community-reinvestment tax-increment financing — reimburses QTS/tenants 61% of real-property and 74% of personal-property tax increment, 20 years per phase (up to 40 years total); first-phase increment projected at ~$98.86M",
+        "jurisdiction": "Eagle Mountain City RDA, UT",
+        "year": "2023",
+        "sourceIndex": 3
+      }
+    ],
+    "jobs": {
+      "construction": 2000,
+      "permanent": 100,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "City officials are formally supportive (a projected ~$12M/year municipal energy tax funds roads, schools, and first responders), and no organized opposition to QTS specifically was found. But water and energy transparency are actively debated in arid Utah — the 2026 state water-reporting law (HB76) was driven partly by Eagle Mountain's data-center growth, though facilities operational before July 2026 are exempt.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "coreweave-lancaster-pa",
@@ -1745,9 +1953,52 @@
         "publisher": "CoreWeave",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/coreweave-plans-6bn-data-center-in-lancaster-pennsylvania/",
+        "label": "CoreWeave plans $6bn data center in Lancaster, Pennsylvania — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.witf.org/2025/09/27/data-centers-water-allotment-to-be-80-less-than-former-printing-plants-in-lancaster-city/",
+        "label": "Data centers' water allotment to be 80% less than former printing plants — WITF",
+        "publisher": "WITF Public Media",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.cityoflancasterpa.gov/wp-content/uploads/2025/11/Community-Benefits-Agreement-Summary-1-1.pdf",
+        "label": "Community Benefits Agreement Summary — City of Lancaster, PA",
+        "publisher": "City of Lancaster, PA",
+        "kind": "filing",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.govtech.com/products/lancaster-pa-zoning-may-limit-input-on-6b-data-center",
+        "label": "Lancaster, Pa., Zoning May Limit Input on $6B Data Center — Government Technology",
+        "publisher": "Government Technology",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
-    "lastUpdated": "2026-07-05"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "PPL Electric",
+      "notes": "Grid-served via PPL Electric (PJM); developers committed ~$200M with PPL for grid upgrades including two on-site substations, and the community benefits agreement requires 100% clean energy. An initial 100 MW phase is planned with potential expansion toward 300 MW."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Air-cooled, closed-loop design; the developer states no municipal water will be used in cooling. The community benefits agreement caps water at 20,000 gal/day per campus — a claimed >80% reduction from the former printing plants on the sites."
+    },
+    "landAcres": 144,
+    "community": {
+      "status": "contested",
+      "notes": "Repurposing two former printing plants drew strong resident opposition (about 20 speakers against, none in favor, at one hearing) and a challenge to the zoning classification that bypassed public hearings; the city is drafting a data-center-specific ordinance. Notably, the developer is receiving no local tax breaks — the city confirmed LERTA and CRIZ do not apply — and instead signed a 20-year, ~$20M community benefits agreement, described as the first data-center-specific CBA in the US. Reported job figures conflict: the binding agreement cites ~2,000 construction and 350 permanent, while CoreWeave's own release cites ~600 construction and 70–175 permanent.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "dc-blox-henrico-county-va",
@@ -2004,10 +2255,51 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://www.interconnection.fyi/data-center/project/microsoft-gainesville-data-center-mnz03-9f2b78f4",
+        "label": "Microsoft Gainesville/Bristow Data Center MNZ03 — interconnection.fyi",
+        "publisher": "interconnection.fyi",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.microsoft.com/en-us/microsoft-cloud/blog/2024/07/25/sustainable-by-design-transforming-datacenter-water-efficiency/",
+        "label": "Sustainable by design: Transforming datacenter water efficiency — Microsoft",
+        "publisher": "Microsoft",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-acquires-124-acres-in-virginias-prince-william-county-for-4655m/",
+        "label": "Microsoft acquires 124 acres in Virginia's Prince William County — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.insidenova.com/headlines/prince-william-supervisors-deny-bristow-campus-data-center-following-protest/article_62d95463-34e8-4a68-a82a-713d38dda8af.html",
+        "label": "Prince William supervisors deny Bristow Campus data center following protest — InsideNova",
+        "publisher": "InsideNova",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
     "notes": "Microsoft does not publicly disclose data center locations; sourced from public property records and third-party tracking databases. 8008 Devlin Road, Bristow. Adjacent to Amazon's Devlin Technology Park parcel and within Prince William County's Data Center Opportunity Zone Overlay District. Coordinates approximate. Status updated to operational per Baxtel (year built 2025); datacentermap.com returned HTTP 429 during fact-check and could not be independently read.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Dominion Energy Virginia",
+      "notes": "Grid-served by Dominion Energy Virginia (per an interconnection tracker); no on-site generation is reported."
+    },
+    "water": {
+      "notes": "MNZ03 became operational around the 2024–25 transition in Microsoft's cooling standard (from evaporative-assist to closed-loop, zero-water evaporation for new designs), and the specific system installed here is unconfirmed. Microsoft reported reaching corporate 'water-positive' status in FY2025."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "MNZ03 was built by-right on the former Atlantic Research rocket-testing site (existing heavy-industrial zoning within the county's data-center overlay), so it required no rezoning and faced no site-specific hearing. But it sits at the epicenter of Prince William County's data-center opposition — supervisors denied a nearby data center 4–2 in Sept 2025, residents sued over an adjacent rezoning, and the county is moving to end the overlay district. Microsoft is eligible for Virginia's data-center sales-and-use tax exemption, but state law bars disclosure of recipients and amounts.",
+      "sourceIndex": 5
+    }
   },
   {
     "id": "iron-mountain-white-oak-henrico-va",
@@ -2099,10 +2391,46 @@
         "publisher": "CloudHQ",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/cloud/article/11430643/cloudhq-unveils-massive-new-manassas-data-center",
+        "label": "CloudHQ Unveils Massive New Manassas Data Center — Data Center Frontier",
+        "publisher": "Data Center Frontier",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://pwcgov.granicus.com/DocumentViewer.php?file=pwcgov_c58bb783a384db5f364a5c3162dce923.pdf&view=1",
+        "label": "Prince William County Planning Commission — MCC-7 proffer amendment (REZ2024-00025)",
+        "publisher": "Prince William County, VA",
+        "kind": "permit",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://wjla.com/news/local/prince-william-county-digital-gateway-datacenter-appeal-lawsuit-rezoning-rural-farmland-manassas-battlefield-community-opposition-judges-construction-halted-developer-qts-compass-blackstone-supreme-virginia-economy-environment-landuse",
+        "label": "Legal battle over Prince William Digital Gateway data-center campus — WJLA",
+        "publisher": "WJLA ABC7",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
       }
     ],
     "notes": "Seven-building campus; 382 MW total planned critical IT load; 96 MW currently available. Coordinates sourced directly from CloudHQ website (38.71955, -77.49819). Connects via Manassas Fiber Highway to CloudHQ's MDC campus.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Dominion Energy (Clover Hill substation)",
+      "notes": "Served via Dominion Energy's Clover Hill substation (300 MVA); a local distribution cooperative is reported to supply part of the campus. On-site backup is diesel only (28 generators at the first building)."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "The first building (MCC1) uses a waterless air-side design — 152 Kyoto Cooling heat-wheel units driving PUE below 1.2; cooling for later buildings is not confirmed. The campus is within the Prince William Water service area."
+    },
+    "landAcres": 100,
+    "community": {
+      "status": "mixed",
+      "notes": "The campus opened in 2017 in a pre-designated data-center overlay zone away from the contested Manassas Battlefield corridor, and a 2025 proffer amendment for a new building was recommended for approval with no documented site-specific opposition. But Prince William County is a national data-center flashpoint — the nearby 'Digital Gateway' rezoning was voided by the Virginia Court of Appeals in 2026 after community litigation. CloudHQ is eligible for Virginia's data-center sales-and-use tax exemption, but state law bars disclosure of recipients and amounts.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "vantage-stafford-va4-va",
@@ -2737,10 +3065,66 @@
         "publisher": "Data Center Frontier",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-aiming-to-build-1-million-sq-ft-data-center-in-douglasville-ga-for-east-us-3/",
+        "label": "Microsoft aiming to build 1 million sq ft data center in Douglasville, GA — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.douglascountysentinel.com/douglasville_sentinel/commissioner-tax-incentives-arent-free-money/article_ad7fb909-1658-5c71-b502-2356c87ff705.html",
+        "label": "Commissioner: Tax incentives aren't 'free money' — Douglas County Sentinel",
+        "publisher": "Douglas County Sentinel",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://dor.georgia.gov/data-centers-sales-use-tax-exemption-aggregate-expenditures-county",
+        "label": "Data Centers Sales & Use Tax Exemption — Aggregate Expenditures by County — Georgia DOR",
+        "publisher": "Georgia Department of Revenue",
+        "kind": "subsidy",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.douglascountysentinel.com/douglasville_sentinel/data-center-moratorium-extended-to-determine-impact-on-ratepayers/article_3d610d7f-cec8-5be2-a4dc-9f3591440adc.html",
+        "label": "Data center moratorium extended to determine impact on ratepayers — Douglas County Sentinel",
+        "publisher": "Douglas County Sentinel",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.microsoft.com/en-us/microsoft-cloud/blog/2024/07/25/sustainable-by-design-transforming-datacenter-water-efficiency/",
+        "label": "Sustainable by design: Transforming datacenter water efficiency — Microsoft",
+        "publisher": "Microsoft",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
       }
     ],
     "notes": "Four 245,000 sq ft technology facilities totaling ~980,000 sq ft on 160-acre parcel at 1601 North River Road, Douglasville. Part of Azure East US 3 region alongside facilities in East Point and Palmetto. Coordinates are Douglasville city centroid; actual site is northern Douglasville.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Georgia Power",
+      "notes": "Grid-served by Georgia Power (the regulated utility). A secondary tracker reported ~144 MW critical / 216 MW total campus load, but the primary source could not be confirmed."
+    },
+    "water": {
+      "notes": "The Douglasville–Douglas County Water & Sewer Authority (Dog River Reservoir) is the provider; no facility-specific water volume is published. Microsoft pledges to be 'water positive' by 2030 and reports an 80%+ reduction in water intensity company-wide."
+    },
+    "subsidies": [
+      {
+        "program": "Development Authority of Douglas County property-tax abatement (a county official confirmed Microsoft is enrolled in an incentive program; amount and term are not in the public record), plus Georgia's statewide data-center sales-and-use tax exemption (the state does not disclose company-level amounts)",
+        "jurisdiction": "Douglas County / Georgia",
+        "year": "2021",
+        "sourceIndex": 3
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "The mayor welcomed Microsoft's arrival and a county official cited it as a model incentive recipient, but Douglas County enacted two 90-day moratoriums on new data centers in 2025 over ratepayer and infrastructure concerns and is reviewing abatement terms; no Microsoft-specific opposition was found.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "dc-blox-atlanta-west-ga",
@@ -3040,10 +3424,44 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.govtech.com/products/charlotte-considers-rezoning-for-biggest-data-center-in-n-c",
+        "label": "Charlotte Considers Rezoning for Biggest Data Center in N.C. — Government Technology",
+        "publisher": "Government Technology",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://qcnerve.com/charlotte-data-centers/",
+        "label": "Pushback Grows as Data Centers Proliferate in Charlotte Metro — Queen City Nerve",
+        "publisher": "Queen City Nerve",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://edpnc.com/incentives/data-centers-sales-use-tax-exemptions/",
+        "label": "Data Centers Sales & Use Tax Exemptions — EDPNC",
+        "publisher": "Economic Development Partnership of North Carolina",
+        "kind": "subsidy",
+        "retrievedAt": "2026-07-06"
       }
     ],
     "notes": "12899 Moores Chapel Road, 12 miles west of downtown Charlotte. Two two-story buildings totaling 3 million sq ft across two phases. Site acquired November 2024 for $160 million. If built, would be largest data center in North Carolina. Mecklenburg County Park and Recreation to receive greenway on site. Coordinates are approximate Moores Chapel Road area.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy Carolinas",
+      "notes": "Duke Energy Carolinas is the regional grid utility; the site sits near Duke's Sherwood H. Smith generation complex. No facility-specific interconnection filing was located."
+    },
+    "water": {
+      "notes": "No cooling type or water volume is disclosed. City Council members raised water-quality concerns at the May 2025 rezoning hearing given proximity to the Catawba River; Charlotte Water is the likely provider."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Charlotte City Council approved the rezoning 7–4 in May 2025 over environmental and neighborhood objections (an earlier rezoning of the same parcel drew a ~1,300-signature petition), and metro-wide data-center pushback is intensifying — a comparable Matthews project was withdrawn in Oct 2025 after opposition. The site would likely qualify for North Carolina's statewide data-center sales-and-use tax exemption (which requires $75M+ investment), but no Secretary of Commerce determination for it is in the public record.",
+      "sourceIndex": 1
+    }
   },
   {
     "id": "project-delta-walnut-cove-nc",
@@ -7610,10 +8028,70 @@
         "publisher": "Switch",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://www.switch.com/switch-grand-rapids-now-open-largest-advanced-data-center-campus-eastern-u-s/",
+        "label": "Switch GRAND RAPIDS Now Open — Switch",
+        "publisher": "Switch",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://bridgemi.com/michigan-environment-watch/data-centers-create-few-jobs-michigan-wants-give-them-big-tax-breaks/",
+        "label": "Data centers create few jobs; Michigan wants to give them big tax breaks — Bridge Michigan",
+        "publisher": "Bridge Michigan",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://www.governing.com/news/headlines/Has-Switch-Broken-Its-Transformational-Promise-from-2015.html",
+        "label": "Has Switch Broken Its Transformational Promise from 2015? — Governing",
+        "publisher": "Governing",
+        "kind": "press",
+        "retrievedAt": "2026-07-06"
+      },
+      {
+        "url": "https://baxtel.com/data-center/switch-grand-rapids-the-pyramid-campus",
+        "label": "Switch Grand Rapids (The Pyramid Campus) — Baxtel",
+        "publisher": "Baxtel",
+        "kind": "other",
+        "retrievedAt": "2026-07-06"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Steelcase Pyramid campus, Gaines Township, Kent County MI (south of Grand Rapids; NOT the city of Wyoming, which is a separate municipality ~5 km north). Total campus target: 1.8M sq ft, 320 MW, ~$5B investment across all phases. Phase 1 (225,000 sq ft white space) and Phase 2 (312,000 sq ft) operational; Phase 3 in planning/early construction as of 2025. Michigan's largest data center by capacity. Coordinates are approximate Pyramid campus location on East Paris Ave, Gaines Township."
+    "notes": "Steelcase Pyramid campus, Gaines Township, Kent County MI (south of Grand Rapids; NOT the city of Wyoming, which is a separate municipality ~5 km north). Total campus target: 1.8M sq ft, 320 MW, ~$5B investment across all phases. Phase 1 (225,000 sq ft white space) and Phase 2 (312,000 sq ft) operational; Phase 3 in planning/early construction as of 2025. Michigan's largest data center by capacity. Coordinates are approximate Pyramid campus location on East Paris Ave, Gaines Township.",
+    "energy": {
+      "source": "wind",
+      "utility": "Consumers Energy",
+      "notes": "100% renewable — Switch was Consumers Energy's first large-business renewable customer and negotiated a dedicated new wind project; an on-site substation provides grid interconnection (not generation). The campus is designed for up to 320 MW."
+    },
+    "water": {
+      "notes": "No facility-specific cooling type or water volume is disclosed; the City of Grand Rapids provides water and sewer service."
+    },
+    "landAcres": 138,
+    "subsidies": [
+      {
+        "program": "Michigan data-center sales-and-use tax exemption (PA 251/252 of 2015, enacted for Switch; saved ~$2M in 2022)",
+        "jurisdiction": "Michigan",
+        "year": "2016",
+        "sourceIndex": 3
+      },
+      {
+        "program": "Michigan Strategic Fund Renaissance Zone — 15-year personal-property tax exemption (from 2016; ~$1.1M/year), tied to a 103-job pledge that was not met",
+        "jurisdiction": "Michigan / Gaines Township / Kent County",
+        "year": "2016",
+        "sourceIndex": 3
+      }
+    ],
+    "jobs": {
+      "permanent": 148,
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "supported",
+      "notes": "The project repurposed the long-vacant, iconic Steelcase 'Pyramid' and is broadly welcomed locally, with the township receiving roughly $430K/year from Switch and its tenants. But it has drawn accountability friction: an initial 1,000-job vision became a 103-job commitment, of which only 26 were created by the 2021 deadline (about 148 by later reporting), and a dispute over school capital-debt millage reached the state legislature. An announced ~$400M construction budget contrasts with ~$150M reported as actually invested by 2018.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "thor-equities-augusta-township-mi",
