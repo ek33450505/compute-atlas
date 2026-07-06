@@ -50,3 +50,16 @@ export function formatLocation(f: Facility): string {
 export function formatStatusLabel(s: Status): string {
   return STATUS_META[s].label;
 }
+
+/**
+ * Formats a USD value using compact notation (e.g. "$3.5B", "$450M", "$2.9M").
+ * Uses at most one decimal digit.
+ */
+export function formatUsdCompact(n: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(n);
+}

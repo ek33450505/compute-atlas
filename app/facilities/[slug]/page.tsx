@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { StatusTimeline } from "@/components/facility/status-timeline";
 import { ProvenancePanel } from "@/components/facility/provenance-panel";
 import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-dynamic";
+import { CivicImpactSection, hasCivicImpact } from "@/components/facility/civic-impact";
 
 /** Human-readable labels for the aiClassification enum. */
 const AI_CLASSIFICATION_LABELS: Record<string, string> = {
@@ -210,6 +211,13 @@ export default async function FacilityPage({
           </div>
         </dl>
       </section>
+
+      {hasCivicImpact(facility) && (
+        <>
+          <Separator />
+          <CivicImpactSection facility={facility} />
+        </>
+      )}
 
       <Separator />
 

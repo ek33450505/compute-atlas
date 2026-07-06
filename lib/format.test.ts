@@ -4,6 +4,7 @@ import {
   formatCapacity,
   formatLocation,
   formatStatusLabel,
+  formatUsdCompact,
 } from "./format";
 import type { Facility } from "@/lib/schema";
 
@@ -112,6 +113,23 @@ describe("formatLocation", () => {
       location: { lat: 35, lon: -90, state: "TN" },
     });
     expect(formatLocation(f)).toBe("TN");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatUsdCompact
+// ---------------------------------------------------------------------------
+describe("formatUsdCompact", () => {
+  it("formats billions with one decimal digit", () => {
+    expect(formatUsdCompact(3_500_000_000)).toBe("$3.5B");
+  });
+
+  it("formats hundreds of millions without a decimal", () => {
+    expect(formatUsdCompact(450_000_000)).toBe("$450M");
+  });
+
+  it("formats millions with one decimal digit", () => {
+    expect(formatUsdCompact(2_900_000)).toBe("$2.9M");
   });
 });
 
