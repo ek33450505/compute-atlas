@@ -1,11 +1,9 @@
-import Link from "next/link";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { siteConfig } from "@/lib/site";
 import { getAllFacilities } from "@/lib/data";
-import { FacilityMap } from "@/components/map/facility-map-dynamic";
+import { Explorer } from "@/components/explorer/explorer";
 
 export const metadata: Metadata = {
   description: siteConfig.description,
@@ -13,7 +11,7 @@ export const metadata: Metadata = {
 
 /**
  * Landing page — server component.
- * Loads facilities at request time and passes them to the client-side map.
+ * Loads facilities at request time and passes them to the Explorer client component.
  */
 export default function HomePage() {
   const facilities = getAllFacilities();
@@ -34,21 +32,12 @@ export default function HomePage() {
           corporate announcements, and news records. This tracker is
           non-partisan and carries no editorial position.
         </p>
-
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/table"
-            className={cn(buttonVariants({ variant: "outline" }))}
-          >
-            View as data table
-          </Link>
-        </div>
       </div>
 
-      {/* Interactive map */}
-      <section id="map" aria-label="Interactive datacenter map">
-        <FacilityMap facilities={facilities} />
-      </section>
+      {/* Explorer: filter bar + view toggle + map/table */}
+      <Suspense>
+        <Explorer facilities={facilities} />
+      </Suspense>
     </div>
   );
 }
