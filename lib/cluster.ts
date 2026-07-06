@@ -2,7 +2,7 @@ import type { Facility } from "@/lib/schema";
 
 const TILE = 256;
 
-/** Web-Mercator world-pixel X at a given zoom (matches scripts/compute-marker-offsets.py). */
+/** Web-Mercator world-pixel X at a given zoom. */
 export function lonToX(lon: number, zoom: number): number {
   return ((lon + 180) / 360) * TILE * 2 ** zoom;
 }
