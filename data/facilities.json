@@ -3981,10 +3981,46 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://navarro.easydocs.us/minutes/LinkedDir/2024/Links%202024-10-15-Regular/Item%2016%20Approve%20Resolution%20for%20Tax%20Abatement%20Navarro%20County%20and%20Riot%20Corsicana%20LLC.pdf",
+        "label": "Navarro County Resolution 2024.13 — Tax Abatement Agreement with Riot Corsicana LLC (approved Oct 15, 2024)",
+        "publisher": "Navarro County, TX",
+        "retrievedAt": "2026-07",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.dlnews.com/articles/people-culture/bitcoin-miners-megadeal-stumbles-as-texans-sour-on-industry/",
+        "label": "Bitcoin miner's $640m megadeal stumbles as Texans sour on industry's promise of jobs and growth",
+        "publisher": "DL News",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Phase I (400 MW) operational for Bitcoin mining with immersion cooling. AMD contracted 50 MW for HPC workloads. Riot developing 112 MW Core and Shell infrastructure at Corsicana for future hyperscale AI tenants. Campus acquired in phases to 858 total acres. ERCOT-approved for 1 GW total."
+    "notes": "Phase I (400 MW) operational for Bitcoin mining with immersion cooling. AMD contracted 50 MW for HPC workloads. Riot developing 112 MW Core and Shell infrastructure at Corsicana for future hyperscale AI tenants. Campus acquired in phases to 858 total acres. ERCOT-approved for 1 GW total. Navarro County's October 2024 abatement records cite a considered $640M investment and 140 new jobs; the signed agreement sets a $380M minimum taxable value and 140 FTE by January 1, 2026 (a Riot spokesperson separately cited 180 jobs).",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Immersion cooling for the operational 400 MW Bitcoin-mining phase; cooling for the future AI/HPC phase is not yet confirmed. The facility is projected to consume up to 1.5 million gallons of water per day at peak summer demand under a city-water agreement — a seasonal peak, not an average daily rate."
+    },
+    "investmentUsd": 640000000,
+    "subsidies": [
+      {
+        "program": "Chapter 312 property-tax abatement, Reinvestment Zone 24-102 (10-year term from tax year 2025)",
+        "jurisdiction": "Navarro County, TX",
+        "year": "2024",
+        "sourceIndex": 2
+      }
+    ],
+    "jobs": {
+      "permanent": 140,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Organized local opposition (Concerned Citizens of Navarro County; Change.org petition). County commissioners declined an earlier, larger reinvestment-zone request in March 2024 after resident pushback; a smaller Chapter 312 abatement passed on a 3-2 vote in October 2024. Cited concerns: noise, peak water use, ERCOT grid strain, and limited permanent jobs relative to power draw.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "cloudburst-san-marcos-tx",
@@ -5553,10 +5589,28 @@
         "publisher": "Lincoln Chronicle / The Oregonian",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.aboutamazon.com/news/sustainability/amazon-data-center-water-usage",
+        "label": "How Amazon data centers use water for cooling",
+        "publisher": "Amazon",
+        "retrievedAt": "2026-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.morrowcountyor.gov/sites/default/files/fileattachments/planning_commission/page/16917/exhibit_08_-_economic_impact_analysis.pdf",
+        "label": "Johnson Economics — Economic Impact Analysis of Prospective Exascale Data Center Development in Morrow County (Jan 2025)",
+        "publisher": "Morrow County Planning Commission",
+        "retrievedAt": "2026-07",
+        "kind": "filing"
       }
     ],
-    "notes": "Amazon confirmed the land purchase ($37M per Morrow County property records, confirmed by multiple news sources) but stated development plans are not final. Planning documents submitted to Morrow County describe a 1 GW exascale campus with 20 buildings across 4 million sq ft; Johnson Economics estimated $8B-$12B total investment. Land previously owned by Threemile Canyon Farms dairy. Distinct from Amazon's existing ~800 acres of operating/under-construction OR facilities. Lincoln Chronicle source URL returned 403 on fetch — primary claim supported by DCD source. energy.utility corrected from 'Bonneville Power Administration' (wholesale) to 'PacifiCorp (Pacific Power)' (retail utility). Coordinates are Boardman city centroid; exact site not publicly confirmed.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Amazon confirmed the land purchase ($37M per Morrow County property records, confirmed by multiple news sources) but stated development plans are not final. Planning documents submitted to Morrow County describe a 1 GW exascale campus with 20 buildings across 4 million sq ft; Johnson Economics estimated $8B-$12B total investment. Land previously owned by Threemile Canyon Farms dairy. Distinct from Amazon's existing ~800 acres of operating/under-construction OR facilities. Lincoln Chronicle source URL returned 403 on fetch — primary claim supported by DCD source. energy.utility corrected from 'Bonneville Power Administration' (wholesale) to 'PacifiCorp (Pacific Power)' (retail utility). Coordinates are Boardman city centroid; exact site not publicly confirmed. Johnson Economics' economic-impact analysis (Morrow County Planning Commission, Jan 2025) models the full 1 GW campus at roughly $8 billion investment (potential range $7-12 billion), about 6,400 construction FTE over an eight-year build (~800/year) and about 560 operations FTE, assuming an Oregon Strategic Investment Program (SIP) property-tax abatement — modeled projections for a still-proposed campus, not firm commitments.",
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Reflects Amazon's documented Oregon cooling practice — primarily free-air cooling with evaporative assist, with up to ~96% of cooling water returned to local farmers. Planning documents model roughly 35 million gallons/year for the full 1 GW campus (a projection). The specific cooling design for this proposed campus is not confirmed."
+    }
   },
   {
     "id": "sabey-umatilla-or",
@@ -6353,10 +6407,25 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://signalohio.org/ohio-committed-at-least-2-3-billion-dollars-in-sales-tax-breaks-for-data-centers/",
+        "label": "Ohio has committed at least $2.3 billion in tax breaks for data centers",
+        "publisher": "Signal Ohio",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Baxtel reports campus as partially operational in 2026 with future phases planned; overall 1 GW build-out still in progress. Site address 1500 Beech Rd NW cited in permit filings but not confirmed from independently accessible sources this session. Nuclear PPA claims partially corroborated (Vistra/Oklo via SEC filings and news; TerraPower unconfirmed). On-site gas generation capacity removed pending accessible source confirmation. County listed as Licking — consistent with Beech Road corridor at Licking/Franklin county boundary per stopohiodatacenters.org."
+    "notes": "Baxtel reports campus as partially operational in 2026 with future phases planned; overall 1 GW build-out still in progress. Site address 1500 Beech Rd NW cited in permit filings but not confirmed from independently accessible sources this session. Nuclear PPA claims partially corroborated (Vistra/Oklo via SEC filings and news; TerraPower unconfirmed). On-site gas generation capacity removed pending accessible source confirmation. County listed as Licking — consistent with Beech Road corridor at Licking/Franklin county boundary per stopohiodatacenters.org.",
+    "subsidies": [
+      {
+        "program": "Ohio Computer Data Center sales-and-use tax exemption (via Meta operating entity Sidecat LLC); reported ~$600M over roughly 40 years",
+        "jurisdiction": "Ohio",
+        "year": "2017",
+        "sourceIndex": 3
+      }
+    ]
   },
   {
     "id": "meta-middleton-township-oh",
@@ -7048,10 +7117,33 @@
         "publisher": "WSBT CBS South Bend",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://wsbt.com/news/local/construction-microsoft-data-center-could-begin-in-late-april-or-early-may-farm-granger-mishawaka-water",
+        "label": "Construction of Microsoft data center could begin in late April or early May",
+        "publisher": "WSBT",
+        "retrievedAt": "2026-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wvpe.org/wvpe-news/2026-02-19/microsoft-data-center-concerns-spark-crowded-granger-meeting",
+        "label": "Microsoft data center concerns spark crowded Granger meeting",
+        "publisher": "WVPE",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Former St. Joe Farm, near Bittersweet Road and Currant Road, Granger IN (St. Joseph County). 939 acres; 5-6 buildings planned; ~1 GW power load estimated by county officials. Microsoft not seeking local tax incentives. Status downgraded from 'under_construction' to 'permitted': WSBT source (cited in original record for the construction claim) explicitly states 'no construction has begun' and no formal site plan submitted; WNDU March 2026 MOU covers pre-development evaluation only. Confidence downgraded to 'reported' pending construction confirmation. Coordinates are approximate Granger unincorporated community area."
+    "notes": "Former St. Joe Farm, near Bittersweet Road and Currant Road, Granger IN (St. Joseph County). 939 acres; 5-6 buildings planned; ~1 GW power load estimated by county officials. Microsoft not seeking local tax incentives. Status downgraded from 'under_construction' to 'permitted': WSBT source (cited in original record for the construction claim) explicitly states 'no construction has begun' and no formal site plan submitted; WNDU March 2026 MOU covers pre-development evaluation only. Confidence downgraded to 'reported' pending construction confirmation. Coordinates are approximate Granger unincorporated community area.",
+    "energy": {
+      "source": "grid",
+      "utility": "Indiana Michigan Power (I&M / AEP)",
+      "notes": "Grid-served; Microsoft is named among large-load customers in I&M's 2024 settlement. No on-site generation reported."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling: coolant is mixed outside St. Joseph County, trucked to the site, and transported out after about two years for cleaning. Mishawaka city water is used for domestic use only; on-site groundwater wells were capped (no aquifer withdrawal). No withdrawal-rate figure disclosed."
+    }
   },
   {
     "id": "switch-pyramid-campus-grand-rapids-mi",
@@ -8517,10 +8609,56 @@
         "publisher": "Talen Energy Investor Relations",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.tmia.com/sites/tmia.com/files/media/Amazon%20Testimony,%20(8_1_24)-2.pdf",
+        "label": "SRBC Consumptive Use Application No. 2024-056 (Amazon Cumulus) — public comment reproducing Amazon's application",
+        "publisher": "Susquehanna River Basin Commission / Three Mile Island Alert",
+        "retrievedAt": "2026-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://technical.ly/civics/amazon-data-centers-tax-break/",
+        "label": "Amazon approved for tax break to build Pennsylvania data centers",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-07",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://blackchronicle.com/mid-atlantic/pennsylvania/big-money-enforced-silence-play-roles-in-pennsylvanias-data-center-push/",
+        "label": "Big money, enforced silence play roles in Pennsylvania's data-center push",
+        "publisher": "The Center Square (via Black Chronicle)",
+        "retrievedAt": "2026-07",
+        "kind": "press"
       }
     ],
     "notes": "Adjacent to the 2.5GW Susquehanna Steam Electric Station. FERC blocked a proposed colocation agreement in April 2025, leading to the PPA structure instead. TeraWulf operates a separate Nautilus cryptomining facility (Nautilus) on the same property not included in this record.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "evaporative",
+      "reportedMgd": 0.06,
+      "notes": "0.060 MGD (30-day average) per Amazon's SRBC consumptive-use application, covering evaporative cooling for Buildings 2 and 3 of the initial phase (Building 1 has no consumptive use); water is drawn from an on-site production well, not the Susquehanna River directly. Full 960 MW build-out demand is not stated in the application."
+    },
+    "subsidies": [
+      {
+        "program": "Pennsylvania Computer Data Center Equipment sales-and-use tax exemption (Amazon approved)",
+        "jurisdiction": "Pennsylvania",
+        "year": "2025",
+        "sourceIndex": 3
+      },
+      {
+        "program": "Pennsylvania targeted workforce-development investment tied to the Amazon data-center deal (statewide; covers both PA Amazon campuses)",
+        "amountUsd": 10000000,
+        "jurisdiction": "Pennsylvania",
+        "year": "2025",
+        "sourceIndex": 3
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Local sentiment is divided per Salem Township officials. The township signed nondisclosure agreements with data-center developers, drawing transparency criticism from a state legislator, and there has been significant residential turnover near the site (homes bought out). No organized litigation specific to this campus was identified.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "aws-falls-township-pa",
