@@ -9,8 +9,12 @@ import {
 import { facilitySchema } from "@/lib/schema";
 
 describe("getAllFacilities", () => {
-  it("returns exactly 3 sample facilities", () => {
-    expect(getAllFacilities()).toHaveLength(3);
+  it("returns a non-empty array including known seed ids", () => {
+    const facilities = getAllFacilities();
+    expect(facilities.length).toBeGreaterThanOrEqual(20);
+    const ids = facilities.map((f) => f.id);
+    expect(ids).toContain("meta-prineville-or");
+    expect(ids).toContain("xai-colossus-memphis-tn");
   });
 
   it("each facility conforms to facilitySchema", () => {
@@ -63,9 +67,9 @@ describe("getOperators", () => {
 });
 
 describe("getStatusCounts", () => {
-  it("totals to 3 (one per facility)", () => {
+  it("totals match the full facility count", () => {
     const counts = getStatusCounts();
     const total = Object.values(counts).reduce((a, b) => a + b, 0);
-    expect(total).toBe(3);
+    expect(total).toBe(getAllFacilities().length);
   });
 });

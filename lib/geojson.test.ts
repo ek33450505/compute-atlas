@@ -8,9 +8,10 @@ describe("facilitiesToGeoJSON", () => {
     expect(geojson.type).toBe("FeatureCollection");
   });
 
-  it("has 3 features for 3 facilities", () => {
-    const geojson = facilitiesToGeoJSON(getAllFacilities());
-    expect(geojson.features).toHaveLength(3);
+  it("has one feature per facility", () => {
+    const facilities = getAllFacilities();
+    const geojson = facilitiesToGeoJSON(facilities);
+    expect(geojson.features).toHaveLength(facilities.length);
   });
 
   it("each feature has geometry.type === 'Point'", () => {

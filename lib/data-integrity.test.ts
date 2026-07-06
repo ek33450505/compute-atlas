@@ -1,0 +1,89 @@
+import { describe, it, expect } from "vitest";
+import { getAllFacilities } from "@/lib/data";
+import { facilitySchema } from "@/lib/schema";
+
+describe("data integrity — facilities.json", () => {
+  const facilities = getAllFacilities();
+
+  it("every record parses against facilitySchema", () => {
+    const failing: string[] = [];
+    for (const f of facilities) {
+      const result = facilitySchema.safeParse(f);
+      if (!result.success) {
+        const msgs = result.error.issues.map((i) => i.message).join("; ");
+        failing.push(`${f.id}: ${msgs}`);
+      }
+    }
+    expect(
+      failing,
+      `Schema violations:\n${failing.join("\n")}`
+    ).toHaveLength(0);
+  });
+
+  it("all ids are unique", () => {
+    const seen = new Set<string>();
+    const duplicates: string[] = [];
+    for (const f of facilities) {
+      if (seen.has(f.id)) duplicates.push(f.id);
+      seen.add(f.id);
+    }
+    expect(
+      duplicates,
+      `Duplicate ids: ${duplicates.join(", ")}`
+    ).toHaveLength(0);
+  });
+
+  it("every record has at least one source", () => {
+    const failing = facilities
+      .filter((f) => f.sources.length < 1)
+      .map((f) => f.id);
+    expect(
+      failing,
+      `Missing sources: ${failing.join(", ")}`
+    ).toHaveLength(0);
+  });
+
+  it("every statusHistory sourceIndex is within bounds", () => {
+    const failing: string[] = [];
+    for (const f of facilities) {
+      f.statusHistory.forEach((event, idx) => {
+        if (
+          event.sourceIndex !== undefined &&
+          event.sourceIndex >= f.sources.length
+        ) {
+          failing.push(
+            `${f.id}: statusHistory[${idx}].sourceIndex ${event.sourceIndex} out of range (sources.length=${f.sources.length})`
+          );
+        }
+      });
+    }
+    expect(failing, failing.join("\n")).toHaveLength(0);
+  });
+
+  it("every location.state is exactly 2 uppercase letters", () => {
+    const failing = facilities
+      .filter((f) => !/^[A-Z]{2}$/.test(f.location.state))
+      .map((f) => `${f.id}: state="${f.location.state}"`);
+    expect(failing, failing.join(", ")).toHaveLength(0);
+  });
+
+  it("coordinates are within plausible US bounds (lat 15–72, lon −180 to −65)", () => {
+    const failing = facilities
+      .filter(
+        (f) =>
+          f.location.lat < 15 ||
+          f.location.lat > 72 ||
+          f.location.lon < -180 ||
+          f.location.lon > -65
+      )
+      .map((f) => `${f.id}: lat=${f.location.lat}, lon=${f.location.lon}`);
+    expect(failing, failing.join("\n")).toHaveLength(0);
+  });
+
+  it("every lastUpdated is a parseable date", () => {
+    const failing = facilities
+      .filter((f) => isNaN(Date.parse(f.lastUpdated)))
+      .map((f) => `${f.id}: lastUpdated="${f.lastUpdated}"`);
+    expect(failing, failing.join(", ")).toHaveLength(0);
+  });
+});

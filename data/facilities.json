@@ -7,28 +7,45 @@
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
-      "lat": 35.06,
-      "lon": -90.02,
+      "lat": 35.0565,
+      "lon": -90.0148,
       "city": "Memphis",
+      "county": "Shelby",
       "state": "TN"
     },
     "capacityMw": {
       "operational": 150
     },
+    "poweredBy": "grid (Memphis Light Gas & Water)",
     "announcedDate": "2024",
     "statusHistory": [
       {
-        "status": "operational",
-        "date": "2024",
+        "status": "under_construction",
+        "date": "2024-06",
+        "note": "Construction began; completed in approximately 122 days",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2024-09",
+        "note": "Phase 1 online with ~100,000 NVIDIA H100 GPUs; later expanded with H200s",
+        "sourceIndex": 1
       }
     ],
     "sources": [
       {
         "url": "https://en.wikipedia.org/wiki/Colossus_(supercomputer)",
         "label": "Colossus (supercomputer) — Wikipedia",
-        "kind": "press",
-        "retrievedAt": "2026-07-05"
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.reuters.com/technology/artificial-intelligence/musk-says-xai-has-built-worlds-most-powerful-ai-training-cluster-2024-09-24/",
+        "label": "Musk says xAI has built world's most powerful AI training cluster — Reuters",
+        "publisher": "Reuters",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-05"
@@ -41,64 +58,1037 @@
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
-      "lat": 32.45,
-      "lon": -99.73,
+      "lat": 32.4487,
+      "lon": -99.7331,
       "city": "Abilene",
+      "county": "Taylor",
       "state": "TX"
     },
     "capacityMw": {
       "planned": 1200
     },
-    "announcedDate": "2025",
+    "poweredBy": "grid (AEP Texas)",
+    "announcedDate": "2025-01-21",
     "statusHistory": [
       {
         "status": "proposed",
-        "date": "2024",
+        "date": "2025-01-21",
+        "note": "Announced as flagship Stargate campus at White House event; $500B national AI infrastructure commitment",
         "sourceIndex": 0
       },
       {
         "status": "under_construction",
-        "date": "2025",
-        "sourceIndex": 0
+        "date": "2025-02",
+        "note": "Ground broken; Crusoe providing infrastructure; ~4 of 8 buildings reported operational by late 2025",
+        "sourceIndex": 1
       }
     ],
     "sources": [
       {
+        "url": "https://openai.com/index/announcing-the-stargate-project/",
+        "label": "Announcing the Stargate Project — OpenAI",
+        "publisher": "OpenAI",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
         "url": "https://en.wikipedia.org/wiki/Stargate_LLC",
         "label": "Stargate LLC — Wikipedia",
-        "kind": "press",
-        "retrievedAt": "2026-07-05"
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://epoch.ai/publications/openai-stargate-where-the-us-sites-stand",
+        "label": "OpenAI Stargate: where the US sites stand — Epoch AI",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-07-05",
+        "kind": "other"
       }
     ],
     "lastUpdated": "2026-07-05"
   },
   {
     "id": "meta-prineville-or",
-    "name": "Meta Prineville Data Center",
+    "name": "Meta Prineville Data Center Campus",
     "operator": "Meta",
     "status": "operational",
     "aiClassification": "mixed_use",
-    "confidence": "reported",
+    "confidence": "confirmed",
     "location": {
-      "lat": 44.3,
-      "lon": -120.83,
+      "lat": 44.3042,
+      "lon": -120.8515,
       "city": "Prineville",
+      "county": "Crook",
       "state": "OR"
     },
+    "capacityMw": {
+      "operational": 400
+    },
+    "poweredBy": "grid (PacifiCorp) + wind PPA",
     "announcedDate": "2010",
     "statusHistory": [
       {
+        "status": "under_construction",
+        "date": "2010",
+        "sourceIndex": 0
+      },
+      {
         "status": "operational",
         "date": "2011",
+        "note": "Meta's first company-owned data center; campus expanded with multiple buildings through 2023",
         "sourceIndex": 0
       }
     ],
     "sources": [
       {
-        "url": "https://en.wikipedia.org/wiki/Prineville,_Oregon",
-        "label": "Prineville, Oregon — Wikipedia",
-        "kind": "press",
-        "retrievedAt": "2026-07-05"
+        "url": "https://en.wikipedia.org/wiki/Meta_Platforms#Data_centers",
+        "label": "Meta Platforms data centers — Wikipedia",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://sustainability.fb.com/report/2023-sustainability-report/",
+        "label": "Meta 2023 Sustainability Report",
+        "publisher": "Meta",
+        "retrievedAt": "2026-07-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "google-the-dalles-or",
+    "name": "Google The Dalles Data Center Campus",
+    "operator": "Google",
+    "status": "operational",
+    "aiClassification": "mixed_use",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.5975,
+      "lon": -121.1776,
+      "city": "The Dalles",
+      "county": "Wasco",
+      "state": "OR"
+    },
+    "capacityMw": {
+      "operational": 300
+    },
+    "poweredBy": "grid (PacifiCorp) + Columbia River hydropower",
+    "announcedDate": "2005",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2005",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2006",
+        "note": "One of Google's earliest major data center campuses; expanded multiple times through 2023",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/The_Dalles,_Oregon#Google_data_centers",
+        "label": "The Dalles, Oregon — Google data centers (Wikipedia)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/google/google-s-enormous-the-dalles-data-center",
+        "label": "Google's enormous The Dalles data center — Data Center Knowledge",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "switch-citadel-storey-county-nv",
+    "name": "Switch CITADEL Campus",
+    "operator": "Switch",
+    "status": "operational",
+    "aiClassification": "mixed_use",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.6183,
+      "lon": -119.3732,
+      "city": "McCarran",
+      "county": "Storey",
+      "state": "NV"
+    },
+    "capacityMw": {
+      "planned": 650,
+      "operational": 250
+    },
+    "poweredBy": "100% renewable (wind + solar)",
+    "announcedDate": "2017",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2017",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2019",
+        "note": "Located in Tahoe Reno Industrial Center (TRIC); expanding toward 650 MW campus",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.switch.com/citadel/",
+        "label": "Switch CITADEL Campus — Switch.com",
+        "publisher": "Switch",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/switch/switch-unveils-650-mw-data-center-campus-in-reno-nevada",
+        "label": "Switch unveils 650 MW campus in Reno, Nevada — Data Center Knowledge",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "equinix-ashburn-va",
+    "name": "Equinix Ashburn Campus (DC1–DC15)",
+    "operator": "Equinix",
+    "status": "operational",
+    "aiClassification": "mixed_use",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.0437,
+      "lon": -77.4875,
+      "city": "Ashburn",
+      "county": "Loudoun",
+      "state": "VA"
+    },
+    "capacityMw": {
+      "operational": 500
+    },
+    "poweredBy": "grid (Dominion Energy) + renewable PPAs",
+    "announcedDate": "1999",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1999",
+        "note": "Ashburn is the world's largest internet exchange hub; Equinix operates 15+ buildings at this campus",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.equinix.com/data-centers/americas-colocation/united-states-colocation/ashburn-data-centers",
+        "label": "Equinix Ashburn Data Centers — Equinix",
+        "publisher": "Equinix",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Ashburn,_Virginia#Data_centers",
+        "label": "Ashburn, Virginia — Data centers (Wikipedia)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "meta-hyperion-richland-parish-la",
+    "name": "Meta Hyperion",
+    "operator": "Meta",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.4442,
+      "lon": -91.4906,
+      "city": "Delhi vicinity",
+      "county": "Richland",
+      "state": "LA"
+    },
+    "capacityMw": {
+      "planned": 2000
+    },
+    "poweredBy": "grid (Entergy Louisiana) + planned renewables",
+    "announcedDate": "2025-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01",
+        "note": "Announced as part of Meta's $65B 2025 capex plan; described as a 2-gigawatt AI data center campus",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Site preparation and construction underway",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.reuters.com/technology/meta-build-ai-data-center-louisiana-2025-01-24/",
+        "label": "Meta to build AI data center in Louisiana — Reuters",
+        "publisher": "Reuters",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://about.fb.com/news/2025/01/meta-announces-2-gigawatt-ai-data-center-in-louisiana/",
+        "label": "Meta Announces 2-Gigawatt AI Data Center in Louisiana — Meta Newsroom",
+        "publisher": "Meta",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "microsoft-mount-pleasant-wi",
+    "name": "Microsoft Mount Pleasant Data Center Campus",
+    "operator": "Microsoft",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.7209,
+      "lon": -87.9023,
+      "city": "Mount Pleasant",
+      "county": "Racine",
+      "state": "WI"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "poweredBy": "grid (We Energies) + planned renewables",
+    "announcedDate": "2025-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024",
+        "note": "Site reported as part of Microsoft's $80B global AI data center investment plan",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Construction active; Racine County site confirmed",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://blogs.microsoft.com/on-the-issues/2025/01/03/microsoft-will-invest-80-billion-to-build-out-ai-infrastructure/",
+        "label": "Microsoft will invest $80B to build out AI infrastructure — Microsoft On the Issues",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.jsonline.com/story/money/business/2025/01/09/microsoft-data-center-racine-county/77568940007/",
+        "label": "Microsoft data center coming to Racine County, Wisconsin — Milwaukee Journal Sentinel",
+        "publisher": "Milwaukee Journal Sentinel",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "amazon-project-rainier-new-carlisle-in",
+    "name": "Amazon Project Rainier",
+    "operator": "Amazon Web Services",
+    "status": "operational",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.6978,
+      "lon": -86.5117,
+      "city": "New Carlisle",
+      "county": "St. Joseph",
+      "state": "IN"
+    },
+    "capacityMw": {
+      "planned": 2200
+    },
+    "poweredBy": "grid (Indiana Michigan Power) + natural gas",
+    "announcedDate": "2024-04-25",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-04-25",
+        "note": "Gov. Holcomb announced $11B AWS data center campus; 1,200-acre site",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2024-09",
+        "note": "Construction began; seven of 32 planned buildings completed within 7 months",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2025-10",
+        "note": "Phase 1 online with ~500,000 Trainium2 chips; primary compute for Anthropic's Claude models; 18 buildings operational",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cnbc.com/2025/10/29/amazon-opens-11-billion-ai-data-center-project-rainier-in-indiana.html",
+        "label": "Amazon opens $11B AI data center Project Rainier in Indiana — CNBC",
+        "publisher": "CNBC",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://iedc.in.gov/events/news/details/2024/04/25/gov.-holcomb-announces-amazon-web-services-plans-to-invest-11b-to-create-a-new-data-center-campus-in-northern-indiana",
+        "label": "Gov. Holcomb announces AWS plans to invest $11B in Northern Indiana — IEDC",
+        "publisher": "Indiana Economic Development Corporation",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "meta-eagle-mountain-ut",
+    "name": "Meta Eagle Mountain Data Center Campus",
+    "operator": "Meta",
+    "status": "operational",
+    "aiClassification": "mixed_use",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.3138,
+      "lon": -111.9697,
+      "city": "Eagle Mountain",
+      "county": "Utah",
+      "state": "UT"
+    },
+    "poweredBy": "grid (Rocky Mountain Power) + renewable PPAs",
+    "announcedDate": "2018",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2018",
+        "note": "$750M initial campus announced",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2021",
+        "note": "First building operational; campus expanded to 7 buildings totaling 4.5 million sq ft",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/meta-eagle-mountain-utah-campus",
+        "label": "Meta Eagle Mountain Utah Campus — Baxtel",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://greatsaltlakenews.org/latest-news/salt-lake-tribune/can-utah-become-a-data-center-hub-without-draining-its-water-supply",
+        "label": "Can Utah become a data center hub without draining its water supply? — Great Salt Lake Collaborative / Salt Lake Tribune",
+        "publisher": "Salt Lake Tribune",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "stargate-milam-county-tx",
+    "name": "Stargate Milam County Campus",
+    "operator": "OpenAI / SoftBank (SB Energy)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.852,
+      "lon": -96.972,
+      "county": "Milam",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "poweredBy": "on-site natural gas microgrid",
+    "announcedDate": "2025-09-23",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09-23",
+        "note": "One of five new Stargate sites announced; SB Energy providing powered infrastructure on 595-acre site ~70 miles NE of Austin",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Steel framing and roofing visible in satellite imagery; first building delivery targeted October 2025",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://epoch.ai/publications/openai-stargate-where-the-us-sites-stand",
+        "label": "OpenAI Stargate: where the US sites stand — Epoch AI",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-07-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://openai.com/index/five-new-stargate-sites/",
+        "label": "OpenAI, Oracle, and SoftBank expand Stargate with five new AI data center sites — OpenAI",
+        "publisher": "OpenAI",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "vantage-frontier-shackelford-county-tx",
+    "name": "Vantage Frontier Campus",
+    "operator": "Vantage Data Centers (for OpenAI / Oracle)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.7272,
+      "lon": -99.2987,
+      "county": "Shackelford",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 1400
+    },
+    "poweredBy": "on-site natural gas microgrid (Voltagrid)",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Part of Stargate expansion; $25B mega-campus on 1,200 acres at Hwy 604 / Hwy 351 intersection; ~125 miles W of Fort Worth",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Ground broken; first building delivery targeted H2 2026; 10 buildings planned totaling 3.7M sq ft",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://vantage-dc.com/news/vantage-data-centers-unveils-plans-for-frontier-a-25b-mega-campus-in-texas-to-meet-unprecedented-ai-demand/",
+        "label": "Vantage Data Centers Unveils Plans for Frontier, a $25B Mega-campus in Texas — Vantage",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/vantage-breaks-ground-on-texas-gigawatt-data-center-campus-for-openai/",
+        "label": "Vantage breaks ground on Texas gigawatt data center campus for OpenAI — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "stargate-port-washington-wi",
+    "name": "Stargate Lighthouse Campus",
+    "operator": "Vantage Data Centers (for OpenAI / Oracle)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.3882,
+      "lon": -87.8753,
+      "city": "Port Washington",
+      "county": "Ozaukee",
+      "state": "WI"
+    },
+    "capacityMw": {
+      "planned": 902
+    },
+    "poweredBy": "70% renewable (solar + wind + battery) + grid",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Announced as Stargate Wisconsin site; $15B, 4-building campus on 674 acres north of Milwaukee",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-12",
+        "note": "Ground broken; foundation work visible in satellite imagery; Phase 1 ($8B) targeted 2028",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://vantage-dc.com/news/openai-oracle-and-vantage-data-centers-announce-stargate-data-center-site-in-wisconsin/",
+        "label": "OpenAI, Oracle, and Vantage Data Centers Announce Stargate Site in Wisconsin — Vantage",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/data-center-construction/vantage-breaks-ground-on-15b-stargate-campus-in-wisconsin",
+        "label": "Vantage Breaks Ground on $15B Stargate Campus in Wisconsin — Data Center Knowledge",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "stargate-lordstown-oh",
+    "name": "Stargate Lordstown Campus",
+    "operator": "OpenAI / SoftBank / Oracle",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1745,
+      "lon": -80.8534,
+      "city": "Lordstown",
+      "county": "Trumbull",
+      "state": "OH"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "poweredBy": "on-site natural gas generators",
+    "announcedDate": "2025-09-23",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09-23",
+        "note": "One of five new Stargate sites; SoftBank investing $3B to convert former GM EV plant into modular AI data center factory",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Ground broken; using former Lordstown Motors / GM assembly plant; modular prefab data center approach",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://openai.com/index/five-new-stargate-sites/",
+        "label": "OpenAI, Oracle, and SoftBank expand Stargate with five new AI data center sites — OpenAI",
+        "publisher": "OpenAI",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wfmj.com/story/53109325/lordstown-part-of-mammoth-dollar500-billion-artificial-intelligence-data-center-project",
+        "label": "Lordstown part of $500B AI data center project — WFMJ",
+        "publisher": "WFMJ",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "stargate-project-jupiter-dona-ana-nm",
+    "name": "Stargate Project Jupiter",
+    "operator": "OpenAI / Oracle / STACK Infrastructure",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.8636,
+      "lon": -106.6895,
+      "city": "Santa Teresa",
+      "county": "Dona Ana",
+      "state": "NM"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "poweredBy": "on-site natural gas microgrid",
+    "announcedDate": "2025-09-23",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09-23",
+        "note": "Doña Ana County Board approved $165B in Industrial Revenue Bonds; 1,400 acres near US-Mexico border; two natural gas microgrids planned",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Foundation work confirmed via satellite imagery; estimated operational end of 2026; two lawsuits filed challenging bond approval",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://elpasomatters.org/2025/09/25/stargate-open-ai-oracle-project-jupiter-data-center-dona-ana-new-mexico-el-paso-texas/",
+        "label": "New Mexico's Project Jupiter data center part of larger Stargate AI initiative — El Paso Matters",
+        "publisher": "El Paso Matters",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/groups-sue-to-stall-data-center-project-in-do%C3%B1a-ana-county-new-mexico/",
+        "label": "Groups sue to stall data center project in Doña Ana County, New Mexico — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "stargate-saline-township-mi",
+    "name": "Stargate The Barn Campus",
+    "operator": "OpenAI / Oracle / Related Digital",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.1740,
+      "lon": -83.8063,
+      "city": "Saline Township",
+      "county": "Washtenaw",
+      "state": "MI"
+    },
+    "capacityMw": {
+      "planned": 1400
+    },
+    "poweredBy": "grid (100% utility costs paid by Oracle)",
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10",
+        "note": "$16B campus on 250 acres SW of Ann Arbor; township initially voted against rezoning; resolved via lawsuit settlement",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-06-01",
+        "note": "Official groundbreaking with Gov. Whitmer; 3 buildings of 550,000 sq ft each; Oracle, OpenAI, Related Digital; first steel beams installed March 2026",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/oracle-and-openai-start-construction-on-stargate-data-center-campus-in-saline-township-michigan/",
+        "label": "Oracle and OpenAI start construction on Stargate campus in Saline Township, Michigan — Data Center Dynamics",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cnbc.com/2026/06/01/stargate-project-michigan-live-updates.html",
+        "label": "Stargate updates: OpenAI, Oracle building Michigan data center — CNBC",
+        "publisher": "CNBC",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "coreweave-kenilworth-nj",
+    "name": "CoreWeave NEST Campus",
+    "operator": "CoreWeave",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.6762,
+      "lon": -74.2913,
+      "city": "Kenilworth",
+      "county": "Union",
+      "state": "NJ"
+    },
+    "poweredBy": "on-site power (former Merck campus infrastructure) + PSE&G grid",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025",
+        "note": "Awarded $250M NJ state tax credit under new EDA program; CoreWeave purchased former Merck campus on Galloping Hill Rd for $322M",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-09",
+        "note": "Construction began September 2025; 392,600 sq ft facility; operational target early 2027",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://re-nj.com/coreweave-begins-1-8-billion-data-center-project-in-kenilworth-landing-first-award-under-new-eda-tax-credit-program/",
+        "label": "CoreWeave begins $1.8B data center project in Kenilworth — Real Estate NJ",
+        "publisher": "Real Estate NJ",
+        "retrievedAt": "2026-07-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://newjersey.news12.com/ai-data-center-under-construction-in-kenilworth-draws-mixed-reactions-from-residents",
+        "label": "AI Data Center Under Construction in Kenilworth draws mixed reactions — News 12 NJ",
+        "publisher": "News 12 New Jersey",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "homer-city-energy-campus-pa",
+    "name": "Homer City Energy Campus",
+    "operator": "Homer City Redevelopment / Kiewit",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.5383,
+      "lon": -79.1542,
+      "city": "Homer City",
+      "county": "Indiana",
+      "state": "PA"
+    },
+    "poweredBy": "on-site natural gas (GE Vernova turbines; 4.5 GW on-site generation; data center IT load not separately disclosed)",
+    "announcedDate": "2025-04-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-04-02",
+        "note": "Announced as conversion of former Homer City coal plant (retired 2023); $10B project; 3,200 acres; $5M PA state grant; environmental permit challenged by groups",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Ground broken; ~1,200 workers on-site as of 2026; first vertical steel beams raised; GE Vernova turbine deliveries beginning 2026; power targeted 2027",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alleghenyfront.org/homer-city-pennsylvania-gas-plant-data-center-ai/",
+        "label": "In Western Pennsylvania, a former coal town gets a gas-fired data center — The Allegheny Front",
+        "publisher": "The Allegheny Front",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.axios.com/local/pittsburgh/2026/03/31/homer-city-power-plant-grid-data-centers-pennsylvania",
+        "label": "Homer City power plant to boost grid as data-center demand rises — Axios Pittsburgh",
+        "publisher": "Axios",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "qts-eagle-mountain-ut",
+    "name": "QTS Eagle Mountain Data Center Campus",
+    "operator": "QTS Data Centers",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.3155,
+      "lon": -111.9847,
+      "city": "Eagle Mountain",
+      "county": "Utah",
+      "state": "UT"
+    },
+    "poweredBy": "grid (Rocky Mountain Power); water-free cooling",
+    "announcedDate": "2023",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2023",
+        "note": "City of Eagle Mountain approved construction; 193-acre campus adjacent to Meta campus",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2024",
+        "note": "Construction initially paused, then restarted; 3 buildings ranging 579,000–592,000 sq ft; water-free cooling system",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://eaglemountain.gov/qts-begins-construction-on-new-datacenter-campus-in-eagle-mountain/",
+        "label": "QTS begins construction on new datacenter campus in Eagle Mountain — Eagle Mountain City",
+        "publisher": "Eagle Mountain City",
+        "retrievedAt": "2026-07-05",
+        "kind": "permit"
+      },
+      {
+        "url": "https://utahnewsdispatch.com/2026/04/17/eagle-mountain-193-acre-data-center-campus-is-set-to-be-done-this-year-with-big-water-promises/",
+        "label": "Eagle Mountain 193-acre data center campus set to be done this year — Utah News Dispatch",
+        "publisher": "Utah News Dispatch",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "coreweave-lancaster-pa",
+    "name": "CoreWeave Lancaster Data Center",
+    "operator": "CoreWeave",
+    "status": "proposed",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.0379,
+      "lon": -76.3055,
+      "city": "Lancaster",
+      "county": "Lancaster",
+      "state": "PA"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "poweredBy": "grid",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "CoreWeave announced up to $6B commitment; initial 100 MW expanding to 300 MW; AI-focused",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://investors.coreweave.com/news/news-details/2025/CoreWeave-Announces-Multi-Billion-Dollar-Commitment-to-AI-Infrastructure-in-Pennsylvania/default.aspx",
+        "label": "CoreWeave Announces Multi-Billion Dollar Commitment to AI Infrastructure in Pennsylvania — CoreWeave",
+        "publisher": "CoreWeave",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "dc-blox-henrico-county-va",
+    "name": "DC Blox Henrico County Campus (withdrawn)",
+    "operator": "DC Blox",
+    "status": "cancelled",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.5532,
+      "lon": -77.4543,
+      "county": "Henrico",
+      "state": "VA"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-07",
+        "note": "$500M application deferred by Henrico County Planning Commission; concerns raised over noise, aesthetics",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2024-11",
+        "note": "DC Blox withdrew rezoning application after sustained community opposition; 195,000 sq ft, 50 MW capacity",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://heatmap.news/politics/data-center-cancellations-2025",
+        "label": "Scoop: Local Pushback, Canceled Data Centers Surged in 2025 — Heatmap News",
+        "publisher": "Heatmap News",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterwatch.org/report",
+        "label": "Data Center Watch — Blocked and Delayed Projects Report",
+        "publisher": "Data Center Watch",
+        "retrievedAt": "2026-07-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-05"
+  },
+  {
+    "id": "culpeper-brandy-station-va",
+    "name": "Culpeper Acquisitions Brandy Station Campus (denied)",
+    "operator": "Culpeper Acquisitions LLC",
+    "status": "cancelled",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.5095,
+      "lon": -77.8863,
+      "city": "Brandy Station",
+      "county": "Culpeper",
+      "state": "VA"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024",
+        "note": "$12B, 426-acre hyperscale campus proposed; end user not publicly confirmed (reported possibly Google or Meta)",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2024-06-12",
+        "note": "Unanimously denied by Culpeper County Planning Commission; concerns over rural preservation and proximity to Culpeper Battlefields State Park",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterwatch.org/report",
+        "label": "Data Center Watch — Blocked and Delayed Projects Report",
+        "publisher": "Data Center Watch",
+        "retrievedAt": "2026-07-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://fortune.com/2026/05/18/communities-are-blocking-billions-in-data-centers-big-tech-has-wagered-1-trillion-otherwise/",
+        "label": "Communities are blocking billions in data centers — Fortune",
+        "publisher": "Fortune",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-05"
