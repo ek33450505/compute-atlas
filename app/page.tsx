@@ -128,7 +128,7 @@ export default function HomePage() {
         <h2 className="font-display text-2xl text-foreground mb-5">
           Notable sites
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {notable.map((f) => {
             const cap =
               f.capacityMw?.operational ?? f.capacityMw?.planned ?? null;
@@ -145,10 +145,10 @@ export default function HomePage() {
 
                 {/* Operator + status row */}
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-xs text-muted-foreground truncate">
+                  <span className="font-mono text-xs text-muted-foreground truncate min-w-0">
                     {f.operator}
                   </span>
-                  <StatusBadge status={f.status} />
+                  <StatusBadge status={f.status} className="shrink-0" />
                 </div>
 
                 {/* Location */}
