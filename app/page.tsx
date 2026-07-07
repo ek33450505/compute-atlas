@@ -37,12 +37,12 @@ export default function HomePage() {
 
           {/* Headline */}
           <h1 className="font-display text-5xl leading-[1.03] text-foreground sm:text-6xl max-w-4xl">
-            The AI buildout is documented — just not in one place.
+            An open atlas of America&rsquo;s AI buildout.
           </h1>
 
           {/* Subhead */}
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl">
-            Permits, tax abatements, water filings, interconnection queues — the record is public but scattered across a hundred agencies. Compute Atlas assembles it, cites every figure, and is corrected in the open by the people who use it.
+            The record is public but scattered across a hundred agencies — permits, tax abatements, water filings, interconnection queues. Compute Atlas gathers it into one open, source-cited map, built and kept accurate by the people who use it: anyone can add a facility, correct a figure, or cite a missing source.
           </p>
         </div>
 
