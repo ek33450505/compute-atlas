@@ -36,15 +36,13 @@ export default function HomePage() {
           </p>
 
           {/* Headline */}
-          <h1 className="font-display text-5xl leading-[1.03] text-foreground sm:text-6xl">
-            A survey of AI datacenter infrastructure.
+          <h1 className="font-display text-5xl leading-[1.03] text-foreground sm:text-6xl max-w-4xl">
+            The AI buildout is documented — just not in one place.
           </h1>
 
           {/* Subhead */}
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl">
-            Data is sourced from public permit filings, corporate announcements,
-            and news records. This tracker is non-partisan and carries no
-            editorial position.
+            Permits, tax abatements, water filings, interconnection queues — the record is public but scattered across a hundred agencies. Compute Atlas assembles it, cites every figure, and is corrected in the open by the people who use it.
           </p>
         </div>
 
@@ -112,6 +110,15 @@ export default function HomePage() {
         >
           About the data &amp; method
         </Link>
+        <a
+          href={`${siteConfig.repoUrl}/issues`}
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label="Contribute a correction or new facility on GitHub (opens in new tab)"
+          className="inline-flex h-11 items-center font-mono text-sm uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+        >
+          Contribute
+        </a>
       </div>
 
       {/* ------------------------------------------------------------------ */}
