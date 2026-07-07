@@ -13242,5 +13242,1589 @@
       "sourceIndex": 2
     },
     "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "google-haskell-county-tx",
+    "name": "Google Haskell County Data Center Campus",
+    "operator": "Google",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.1576,
+      "lon": -99.7337,
+      "city": "Haskell",
+      "county": "Haskell County",
+      "state": "TX"
+    },
+    "poweredBy": "solar",
+    "announcedDate": "2025-11-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-14",
+        "note": "Google and Governor Abbott jointly announced a $40B Texas AI-infrastructure investment including two data center buildings at the Haskell County campus",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-11",
+        "note": "Ground broken; Google began engaging subcontractors for active construction",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.texastribune.org/2025/11/14/texas-google-data-centers-ai/",
+        "label": "Google data centers totaling $40 billion coming to Texas",
+        "publisher": "Texas Tribune",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://gov.texas.gov/news/post/governor-abbott-google-announce-40-billion-investment-in-texas",
+        "label": "Governor Abbott, Google Announce $40 Billion Investment In Texas",
+        "publisher": "Office of the Texas Governor",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenters.google/haskell-county/",
+        "label": "Google's investment in Haskell and West Central Texas",
+        "publisher": "Google",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.intersect.com/portfolio/quantum",
+        "label": "Quantum Clean Energy Project - Haskell County TX",
+        "publisher": "Intersect Power",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://ktxs.com/news/local/its-jarring-googles-40-billion-data-center-investment-to-transform-texas-town",
+        "label": "Google's $40 billion data center investment to transform Texas town",
+        "publisher": "KTXS ABC Abilene",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newschannel6now.com/2025/11/26/data-centers-bring-major-investment-growth-potential-haskell-county/",
+        "label": "Data centers bring major investment, growth potential to Haskell County",
+        "publisher": "KAUZ News Channel 6",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Two data center buildings at one Haskell County site; treated as a single campus record. Announced Nov 14 2025 as part of Google's $40B Texas investment through 2027 (which also covers Armstrong County and a Wilbarger County/Vernon site); no Haskell-specific investment figure disclosed, so investmentUsd is omitted (the $40B is a Texas-wide aggregate). Data-center IT capacity in MW not publicly disclosed. One building is co-located with the Quantum Clean Energy Project (Intersect Power, acquired by Google March 2026): 640 MW solar PV + 1.3 GWh battery storage, scheduled operational June 2026 - this is energy-project capacity, NOT data-center IT load. Job figures cited in press (1,200 construction / up to 11 permanent) come from the co-located Intersect energy project, not the data center, so they are noted here rather than in jobs. Coordinates are the Haskell city centroid (no parcel-level GPS found).",
+    "energy": {
+      "source": "solar",
+      "notes": "Dedicated supply is the co-located Quantum Clean Energy Project (Intersect Power / Google subsidiary): 640 MW solar PV + 1.3 GWh BESS, operational target June 2026. Haskell County selected partly for wind and solar availability."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Stamford Mayor James Decker called the buildout 'jarring' and voiced concern about the town being chewed up by the data-center boom; Haskell Mayor Christina Isbell anticipates long-term economic benefit for the ~3,000-resident town. County tax base expected to more than double. Google committed to fund training for 1,700+ TX electrical apprentices by 2030.",
+      "sourceIndex": 4
+    }
+  },
+  {
+    "id": "google-red-oak-tx",
+    "name": "Google Red Oak Campus",
+    "operator": "Google",
+    "status": "operational",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.5163,
+      "lon": -96.8011,
+      "city": "Red Oak",
+      "county": "Ellis",
+      "state": "TX"
+    },
+    "announcedDate": "2023-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2018-07",
+        "note": "Ellis County commissioners approved a 10-year tax abatement with Alamo Mission LLC (a Google shell entity)",
+        "sourceIndex": 4
+      },
+      {
+        "status": "under_construction",
+        "date": "2023-09",
+        "note": "Google publicly announced the Red Oak campus: 166 acres at FM 664/SH 342, 285,000 sq ft first building, $330M initial investment",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2025-11-14",
+        "note": "First building confirmed operational; second building still under construction per Mayor Mark Stanfill",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-announces-plans-for-red-oak-data-center-campus-in-texas/",
+        "label": "Google announces plans for Red Oak data center campus in Texas",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://datacenters.google/locations/texas/",
+        "label": "Texas - Google Data Center Location",
+        "publisher": "Google",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.elliscountypress.com/news/google-plans-invest-more-600-million-new-data-center",
+        "label": "Google plans to invest more than $600 million in a new data center",
+        "publisher": "Ellis County Press",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.elliscountypress.com/news/google-announces-plans-invest-nearly-40-billion-ellis-county-data-centers",
+        "label": "Google announces plans to invest nearly $40 billion in Ellis County Data Centers",
+        "publisher": "Ellis County Press",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/google-red-oak-tx",
+        "label": "Google Red Oak TX Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.dallasobserver.com/news/red-oak-data-center-meets-community-resistance-40674118/",
+        "label": "New Red Oak Data Center Project Meets Community Pushback",
+        "publisher": "Dallas Observer",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Google's second Dallas-Fort Worth campus. First building operational late 2025; second building under construction as of Nov 2025 per Mayor Stanfill. 166 acres at FM 664 (Ovilla Rd) and SH 342; shell entity Alamo Mission LLC used in Ellis County negotiations. investmentUsd records only the $330M confirmed initial investment; the frequently cited $600M+ is a multi-phase projection (in notes). Capacity in MW not publicly disclosed. Google pledged a $150,000 STEM grant to Red Oak ISD; grid reinforcements estimated ~$72M. Part of Google's broader $40B Texas commitment. Coordinates are the Red Oak town centroid (no parcel GPS confirmed). The 2018 abatement's scope vs the separate Midlothian campus is not fully disambiguated in the public record.",
+    "energy": {
+      "source": "grid"
+    },
+    "water": {
+      "coolingType": "closed_loop"
+    },
+    "subsidies": [
+      {
+        "program": "Ellis County 10-year property tax abatement (Alamo Mission LLC / Google, approved July 2018)"
+      }
+    ],
+    "investmentUsd": 330000000,
+    "landAcres": 166,
+    "community": {
+      "status": "mixed"
+    }
+  },
+  {
+    "id": "google-bosc-lima-oh",
+    "name": "Google Project BOSC (Lima)",
+    "operator": "Google",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.744,
+      "lon": -84.1052,
+      "city": "Lima",
+      "county": "Allen",
+      "state": "OH"
+    },
+    "poweredBy": "grid",
+    "announcedDate": "2026-03-16",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-12",
+        "note": "Project first surfaced as Project BOSC via Bistrozzi LLC (Delaware shell); 170-acre agricultural site on North Cole Street, American Township",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2025-09",
+        "note": "City of Lima water ordinance approved allowing 5 million gallons per day for the project",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-03-16",
+        "note": "Google publicly named as the operator behind Project BOSC; PILOT finalized with Elida Local Schools; Ohio EPA air permit still pending",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-confirmed-as-company-behind-500m-data-center-in-lima-ohio/",
+        "label": "Google confirmed as company behind $500m data center in Lima, Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.aedg.org/data-center-updates/google-to-build-data-center-in-lima-ohio-with-500-million-capital-investment/",
+        "label": "Google to Build Data Center in Lima, Ohio with $500 Million Capital Investment",
+        "publisher": "Allen Economic Development Group",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.allencountydatacenter.com/",
+        "label": "Allen County Data Center - Project Overview",
+        "publisher": "Google / Allen County Data Center",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.limaohio.com/top-stories/2026/03/16/google-officially-behind-data-center-project/",
+        "label": "Google officially behind data center project",
+        "publisher": "The Lima News",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Google's third Ohio data center (after New Albany and Lancaster). $500M confirmed capital investment. Codename Project BOSC; pre-announcement land/permit work via Bistrozzi LLC (Delaware shell). Coordinates are the Lima city centroid; the confirmed site is in American Township ~2 mi north of Lima (North Cole Street between Beery and Irvin Roads), ~170 acres. Capacity MW not disclosed. Google's project page states construction anticipated to begin late 2026; ~50 permanent jobs projected per DCD and 'hundreds' of construction jobs - projections, so omitted from jobs. Ohio EPA air-permit application (pending March 2026) covers 115 emergency diesel generators; 36 cooling towers specified. $50M of the investment is earmarked for local road infrastructure, $13.6M for water infrastructure.",
+    "energy": {
+      "source": "grid",
+      "notes": "Grid power via a planned on-site AEP substation. Ohio EPA air-permit application (pending as of March 2026) covers 115 diesel emergency generators and related fuel storage."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "36 cooling towers per the Ohio EPA permit application; described by Google as water-cooled. City of Lima granted 5 million gallons/day (Sept 2025)."
+    },
+    "subsidies": [
+      {
+        "program": "15-year PILOT tax abatement - Elida Local Schools offset ($250,000/yr for 15 years; total value undisclosed)"
+      }
+    ],
+    "investmentUsd": 500000000,
+    "landAcres": 170,
+    "community": {
+      "status": "mixed",
+      "notes": "Broad government/business support; opposing comments during the Ohio EPA air-permit comment period focused on transparency about the Bistrozzi LLC shell; resident construction-traffic concerns reported May 2026."
+    }
+  },
+  {
+    "id": "google-spring-sand-springs-ok",
+    "name": "Project Spring (Sand Springs)",
+    "operator": "Google",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.256,
+      "lon": -96.11,
+      "city": "Sand Springs",
+      "county": "Osage",
+      "state": "OK"
+    },
+    "poweredBy": "Public Service Company of Oklahoma (PSO)",
+    "announcedDate": "2025-11",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-06",
+        "note": "827-acre site annexed into Sand Springs city limits to enable PSO grid connection"
+      },
+      {
+        "status": "proposed",
+        "date": "2025-11-21",
+        "note": "DCD first reports the rezoning application for the 827-acre site near HWY 97 and Rock School Rd; operator undisclosed at this stage"
+      },
+      {
+        "status": "proposed",
+        "date": "2026-01-15",
+        "note": "Tulsa Flyer first publicly identifies Google as interested end-user/purchaser; White Rose Partners launches projectspringok.com"
+      },
+      {
+        "status": "proposed",
+        "date": "2026-02-03",
+        "note": "Sand Springs City Council votes 6-1 to approve rezoning; multiple lawsuits and a recall effort remain active - no construction permit issued"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://tulsaflyer.org/2026/01/15/government/post/google-connected-sand-springs-data-center-project/",
+        "label": "Google connected to Sand Springs data center project",
+        "publisher": "Tulsa Flyer",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/sand-springs-oklahoma-to-consider-project-spring-data-center-proposal/",
+        "label": "Sand Springs, Oklahoma, to consider Project Spring data center proposal",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-gets-greenlight-for-data-center-in-tulsa-oklahoma/",
+        "label": "Google gets greenlight for data center in Tulsa, Oklahoma",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox23.com/news/sand-springs-city-council-approves-rezoning-for-proposed-google-data-center/article_ae464644-a5bf-4d2a-ba4c-fedcf7b113f8.html",
+        "label": "Sand Springs city council approves rezoning for proposed Google data center",
+        "publisher": "Fox23",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.publicradiotulsa.org/local-regional/2026-01-29/sand-springs-advances-proposed-google-data-center-rezoning",
+        "label": "Sand Springs advances proposed Google data center rezoning",
+        "publisher": "Public Radio Tulsa",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.projectspringok.com/",
+        "label": "Project Spring official developer website",
+        "publisher": "White Rose Partners",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://osagenews.org/proposed-sand-springs-data-center-raises-water-and-sovereignty-concerns/",
+        "label": "Proposed Sand Springs Data Center raises water and sovereignty concerns",
+        "publisher": "Osage News",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Google is identified as the interested purchaser/end-user by Tulsa Flyer, Fox23, DCD and Public Radio Tulsa, but there is no standalone Google announcement for this site (developer White Rose Partners is titleholder) - hence confidence 'reported'. County: physical property is in Osage County (per the official project site and Osage News); the annexing City of Sand Springs is primarily Tulsa County, and the annexation lawsuit moved from Osage to Tulsa County court. Capacity: trackers allege 500+ MW but no primary source confirms it - omitted. Google's $9B Oklahoma commitment (Aug 2025) is a statewide figure, not project-specific. Up to 3 data-center buildings + one office building; construction targeted 2027, completion 2029 (developer). Jobs (~1,000 peak construction, ~50+ FTE/building) are developer projections. A ~$100M/25yr PILOT was cited by the city manager but no executed agreement is confirmed. Coordinates estimated from the site description (near HWY 97 / Rock School Rd), not geocoder-verified.",
+    "energy": {
+      "source": "grid",
+      "notes": "PSO (Public Service Company of Oklahoma) to supply power via existing transmission crossing the property; developer states Google would fund a dedicated substation and new transmission at no cost to local ratepayers."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Developer states initial phases use non-evaporative air cooling; water for domestic use only; future phases may evolve (projectspringok.com)."
+    },
+    "landAcres": 827,
+    "community": {
+      "status": "contested",
+      "notes": "Protect Sand Springs Alliance filed an annexation-challenge lawsuit (Jan 2026); Land Legacy filed a conservation-easement enforcement suit (Mar 2026) covering 270 of the 827 acres; a recall petition targets the City Council and mayor; Osage Nation raised mineral-estate sovereignty and consultation concerns."
+    }
+  },
+  {
+    "id": "google-jackson-county-stevenson-al",
+    "name": "Google Jackson County Campus",
+    "operator": "Google",
+    "status": "operational",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.8842,
+      "lon": -85.755,
+      "city": "Stevenson",
+      "county": "Jackson County",
+      "state": "AL"
+    },
+    "poweredBy": "Tennessee Valley Authority (TVA)",
+    "announcedDate": "2015-06-24",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2015-06-24",
+        "note": "Google announced a $600M data center at the former TVA Widows Creek coal-plant site in Jackson County"
+      },
+      {
+        "status": "under_construction",
+        "date": "2018-04",
+        "note": "Groundbreaking on the original $600M campus; 360-acre site off County Road 96"
+      },
+      {
+        "status": "operational",
+        "date": "2019-01",
+        "note": "Original campus operational with two buildings (~135,000 sq ft each)"
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-06-15",
+        "note": "$1.5B expansion announced; construction planned for 2026-2027; 1,000+ contract workers expected"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/alabama-investment-june-2026/",
+        "label": "Google Blog: Alabama Investment - Jackson County Campus Expansion (June 2026)",
+        "publisher": "Google",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-to-spend-15bn-expanding-its-data-center-campus-in-jackson-county-alabama/",
+        "label": "Google to spend $1.5bn expanding Jackson County campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.alreporter.com/2026/06/16/google-plans-1-5-billion-jackson-county-data-center-expansion/",
+        "label": "Google plans $1.5B Jackson County data center expansion",
+        "publisher": "Alabama Reporter",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://9to5google.com/2026/06/15/google-announces-one-point-five-billion-dollar-data-center-expansion/",
+        "label": "Google announces $1.5B Alabama data center expansion",
+        "publisher": "9to5Google",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Widows_Creek_Fossil_Plant",
+        "label": "Widows Creek Fossil Plant - coordinates and site history",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Campus operational since 2019 at the former TVA Widows Creek coal-plant site (~4.8 mi east of Stevenson). Recorded status is 'operational' (the campus is built and running); a $1.5B expansion announced June 15 2026 is under construction for 2026-2027 (captured in statusHistory). CAPACITY OMITTED: the widely cited 300 MW is Google's contracted new generation across the Tennessee Valley REGION, not a campus-specific figure. TVA partnership also includes a 2025 Kairos Power agreement for up to 50 MW of advanced nuclear for Google's AL/TN data centers (~2035). Construction workforce of 1,000+ is a projection (in notes, not jobs). Baxtel labels this 'Google Bridgeport'; TVA/Wikipedia/postal (35772) place Widows Creek near Stevenson - Stevenson used. 360-acre site; coordinates from the Widows Creek plant.",
+    "energy": {
+      "source": "grid",
+      "notes": "Powered by TVA (federal utility). Google covers 100% of its power and infrastructure costs. Kairos Power advanced-nuclear partnership (up to 50 MW for the AL/TN region) expected ~2035."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Site sits on Guntersville Reservoir (Tennessee River), which historically cooled the coal plant; data-center cooling type not publicly confirmed."
+    },
+    "investmentUsd": 1500000000,
+    "landAcres": 360,
+    "community": {
+      "status": "supported",
+      "notes": "$2M Energy Impact Fund (with TVA/CAANEAL) for weatherization; $550,000 STEM-kit donation to Jackson County schools; Google reports training 130,000+ Alabamians in digital skills; watershed stewardship in the Paint Rock River watershed."
+    }
+  },
+  {
+    "id": "google-loch-midlothian-va",
+    "name": "Google Project Loch",
+    "operator": "Google",
+    "status": "proposed",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.454,
+      "lon": -77.71,
+      "city": "Midlothian",
+      "county": "Chesterfield County",
+      "state": "VA"
+    },
+    "announcedDate": "2025-08-28",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-06-06",
+        "note": "Chesterfield Board of Supervisors approved rezoning of ~350 acres at 750 Watkins Centre Pkwy (Watkins Centre South) for data-center use; 30-year fixed tax agreement approved"
+      },
+      {
+        "status": "proposed",
+        "date": "2025-08-28",
+        "note": "Google publicly confirmed as operator of Project Loch (alongside Projects Peanut and Skye); Google stated Loch and Skye are not in near-term development plans"
+      },
+      {
+        "status": "proposed",
+        "date": "2026-05-14",
+        "note": "Army Corps of Engineers (Norfolk District) permit application filed for impacts to ~5 acres of wetlands and 2,828 ft of stream channels near Tomahawk Creek"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-files-for-data-center-campus-outside-richmond-virginia/",
+        "label": "Google files for data center campus outside Richmond, Virginia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://richmondbizsense.com/2025/08/28/chesterfield-scores-a-google-trifecta-tech-giant-reveals-ties-to-3-massive-sites-across-the-county/",
+        "label": "Chesterfield scores a Google trifecta: ties to 3 sites across the county",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.chesterfield.gov/m/newsflash/Home/Detail/6383",
+        "label": "In Google, Chesterfield landed the Rolls-Royce of data center operators",
+        "publisher": "Chesterfield County, VA",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.grpva.com/news/chesterfield-county-approves-two-data-center-developments/",
+        "label": "Chesterfield County approves two data center developments",
+        "publisher": "Greater Richmond Partnership",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      },
+      {
+        "url": "https://richmondbizsense.com/2025/05/29/chesterfield-eda-secures-zoning-approval-for-two-data-center-projects/",
+        "label": "Chesterfield EDA secures zoning approval for two data center projects",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Codename Project Loch; land acquired via shell entity Aeris Investments LLC (~$29M for ~340 acres). Site: 750 Watkins Centre Pkwy (Watkins Centre South), west of Rt 288 and south of Rt 60, near Westchester Commons. Three data-center buildings planned, each with a dedicated on-site substation. Google stated in Aug 2025 it has no near-term plans to develop Loch. Capacity MW not disclosed. Virginia law bars per-company subsidy value disclosure, so the 30-year fixed tax agreement is recorded as a program label with no dollar value. Coordinates are an approximate site centroid (address-derived, not GPS-verified).",
+    "energy": {
+      "source": "grid",
+      "notes": "Three on-site substations planned. Dominion Energy (sole regional utility) has filed with the VA SCC to build 230-kV lines to a new Duval Substation (~$121M) to serve western Chesterfield data-center load. Dominion is inferred (service territory), not confirmed in a Loch-specific filing."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Site adjacent to Tomahawk Creek (Chesapeake Bay watershed). Army Corps permit (May 2026) covers ~5 acres of wetlands and 2,828 ft of stream channels; proposed mitigation ~11 acres of replacement wetlands + 34.2 acres preserved."
+    },
+    "subsidies": [
+      {
+        "program": "30-year fixed property-tax-rate agreement (Chesterfield County; dollar value undisclosed under VA law)",
+        "sourceIndex": 3
+      }
+    ],
+    "landAcres": 340,
+    "community": {
+      "status": "supported",
+      "notes": "Rezoning filed by the Chesterfield EDA for a confidential project; Board of Supervisors approved June 6 2025; county called Google the 'Rolls-Royce of data center operators.' No organized opposition documented."
+    }
+  },
+  {
+    "id": "google-spade-new-florence-mo",
+    "name": "Google Project Spade Campus",
+    "operator": "Google",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.791,
+      "lon": -91.508,
+      "city": "New Florence",
+      "county": "Montgomery County",
+      "state": "MO"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "poweredBy": "Ameren Missouri",
+    "announcedDate": "2026-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "Google confirmed as Project Spade end user; administrative review completed"
+      },
+      {
+        "status": "permitted",
+        "date": "2026-03",
+        "note": "Construction permits delivered"
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-04-01",
+        "note": "Ground broken"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-pledges-15bn-investment-in-new-florence-missouri/",
+        "label": "Google pledges $15bn investment in New Florence, Missouri",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/google-project-spade-campus",
+        "label": "Google Project Spade Campus - Baxtel tracker",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.columbiamissourian.com/news/state_news/two-huge-data-center-projects-in-montgomery-county-are-dividing-the-community/article_cce0a3c1-97f9-4ccc-abb4-b7287a32ad1d.html",
+        "label": "Two huge data center projects in Montgomery County are dividing the community",
+        "publisher": "Columbia Missourian",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.komu.com/news/midmissourinews/data-center-development-sparks-conflict-in-montgomery-county/article_9a7d8b05-1eff-4757-9ea7-f7c0bb33c43c.html",
+        "label": "Montgomery County data center development sparks conflict",
+        "publisher": "KOMU 8 News",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "DISTINCT from aws-green-new-florence-mo (AWS Project Green): the two are on opposite sides of I-70 (Project Green north; Project Spade south, SE quadrant of the I-70/Hwy 19 interchange) - independently verified via DCD and Columbia Missourian. Site ~934 acres (~780 unincorporated + ~130 in New Florence). Developer: Related Digital. Campus targets 1.2 GW. INVESTMENT OMITTED: the $15B is Google's Missouri-STATEWIDE infrastructure pledge ('Google will invest $15 billion in building infrastructure in Missouri, including a data center in New Florence'); the campus itself is described only as 'multi-billion-dollar', so no firm campus investmentUsd is recorded. Amended from three buildings to two ~800,000 sq ft buildings; first operations targeted 2028. ~2,000 construction jobs and 'hundreds' of permanent jobs are projections (in notes, not jobs). Coordinates are an approximate site centroid (no verified parcel record).",
+    "energy": {
+      "source": "grid"
+    },
+    "water": {
+      "coolingType": "closed_loop"
+    },
+    "landAcres": 934,
+    "community": {
+      "status": "litigation",
+      "notes": "County commissioners unanimously approved; opposition group Preserve Montgomery County filed a Missouri Sunshine Law lawsuit against the commissioners (Feb 2026)."
+    }
+  },
+  {
+    "id": "microsoft-tyrone-ga",
+    "name": "Microsoft Tyrone Campus (Project Rita)",
+    "operator": "Microsoft",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.494,
+      "lon": -84.588,
+      "city": "Tyrone",
+      "county": "Fayette County",
+      "state": "GA"
+    },
+    "capacityMw": {
+      "planned": 96
+    },
+    "announcedDate": "2023-11",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-11",
+        "note": "DRI (Development of Regional Impact) application filed; project first surfaced publicly",
+        "sourceIndex": 1
+      },
+      {
+        "status": "permitted",
+        "date": "2024-03-28",
+        "note": "Rezoning approved by Tyrone Town Council",
+        "sourceIndex": 2
+      },
+      {
+        "status": "permitted",
+        "date": "2026-05-05",
+        "note": "Microsoft publicly confirmed the project via Microsoft Local blog; no site plan or building permits filed as of June 2 2026",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-confirms-plans-for-data-center-in-tyrone-georgia/",
+        "label": "Microsoft confirms plans for data center in Tyrone, Georgia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/96mw-data-center-campus-proposed-in-tyrone-georgia/",
+        "label": "96MW data center campus proposed in Tyrone, Georgia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.tyronega.gov/datacenter",
+        "label": "Data Center Information - Town of Tyrone, GA",
+        "publisher": "Town of Tyrone",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://local.microsoft.com/blog/tyrone-datacenter-update/",
+        "label": "Tyrone Datacenter Update - Microsoft Local",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/microsoft-to-build-data-center-in-tyrone-georgia",
+        "label": "Microsoft to Build Data Center in Tyrone, Georgia",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://thecitizen.com/2024/03/19/now-its-tyrones-turn-for-a-big-data-center-project/",
+        "label": "Now it's Tyrone's turn for a big data center project",
+        "publisher": "The Citizen",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Two-building campus (two 48 MW buildings = 96 MW, ~490,000-500,000 sq ft) plus an on-site substation; codename Project Rita. Part of Microsoft's East US 3 Azure region (planned 2027). Total site ~161 acres (~146.4 in Tyrone + ~14.5 in Fairburn). As of June 2 2026 no site plan or building permits filed. Microsoft requested no tax abatements (none offered). No investment figure disclosed. Coordinates approximate (address-derived; 2044 GA-74). Estimated ~4,000 gallons/day operational water use.",
+    "energy": {
+      "source": "grid",
+      "notes": "Utility not named in any public filing. Georgia Power is the incumbent Fayette County utility but is not source-confirmed for this project. Microsoft said it will pay for transmission/substation improvements and that costs should not transfer to residential ratepayers."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Source: Fayette County Water System. Microsoft estimates ~4,000 gallons/day operational."
+    },
+    "landAcres": 161,
+    "community": {
+      "status": "contested",
+      "notes": "2024 rezoning drew limited opposition; by 2026 residents launched a Change.org petition seeking an independent environmental/infrastructure study and a moratorium on future data centers."
+    }
+  },
+  {
+    "id": "t5-atlanta-iv-palmetto-ga",
+    "name": "T5 @ Atlanta IV",
+    "operator": "T5 Data Centers",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.548,
+      "lon": -84.724,
+      "city": "Palmetto",
+      "county": "Fulton",
+      "state": "GA"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2024-08-28",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-08-28",
+        "note": "Land acquisition finalized; 91-acre site already zoned for data-center use; use permit still required",
+        "sourceIndex": 2
+      },
+      {
+        "status": "proposed",
+        "date": "2025-05-23",
+        "note": "T5 refiled modified plans: 1.32M sq ft, 3 buildings, up to 300 MW; the original June 2024 filing (495K sq ft, 2 buildings) was withdrawn",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/t5-files-to-develop-data-center-campus-outside-atlanta-georgia/",
+        "label": "T5 files to develop data center campus outside Atlanta, Georgia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://t5datacenters.com/locations/t5-atlanta-iv/",
+        "label": "T5 @ Atlanta IV - Official Operator Location Page",
+        "publisher": "T5 Data Centers",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/t5-finalizes-land-acquisition-in-atlanta-to-support-a-300-mw-data-center-campus-302232913.html",
+        "label": "T5 Finalizes Land Acquisition in Atlanta to Support a 300 MW Data Center Campus",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.bisnow.com/atlanta/news/data-center/t5-plotting-data-center-campus-in-fairburn-124663",
+        "label": "T5 Plotting Data Center Campus In Fairburn",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ajc.com/news/business/t5-data-centers-pursues-495k-square-foot-campus-in-fairburn/UVYQWF3CD5F2NM7JTKVPDX7E3E/",
+        "label": "T5 Data Centers pursues 495K square foot campus in Fairburn",
+        "publisher": "Atlanta Journal-Constitution",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "City discrepancy: the ledger cited Fairburn, but T5's own page and PR Newswire list Palmetto, GA; DCD describes it as Fairburn/Fulton County with a 91-acre site in Palmetto - site is on the Fairburn/Palmetto border in South Fulton County (I-85 and Gullatt Rd). Capacity: T5's page lists '200 MW available' (Phase 1) while the Aug 2024 land-acquisition PR cites '300 MW' campus total - 300 MW recorded as planned. No tenant disclosed (T5 is a wholesale/build-to-suit developer targeting hyperscalers; page cites AI/liquid-cooling suitability). Phase 1 construction targeted Q2 2027; on-site substation expected 2026. No investment or jobs figure disclosed. Coordinates approximate (I-85/Gullatt Rd corridor).",
+    "energy": {
+      "source": "grid",
+      "notes": "On-site electrical substation providing grid power; substation expected operational 2026."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Air and liquid cooling designed for high-density AI workloads."
+    },
+    "landAcres": 91,
+    "community": {
+      "status": "unknown"
+    }
+  },
+  {
+    "id": "lambda-chicago-edgeconnex-il",
+    "name": "Lambda Chicago EdgeConneX AI Factory",
+    "operator": "Lambda",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.8781,
+      "lon": -87.6298,
+      "city": "Chicago",
+      "county": "Cook",
+      "state": "IL"
+    },
+    "capacityMw": {
+      "planned": 23
+    },
+    "announcedDate": "2025-08-21",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-08-21",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lambda.ai/blog/lambda-edgeconnex-dc-pr",
+        "label": "Lambda/EdgeConneX joint press release - AI Factory in Chicago and Atlanta",
+        "publisher": "Lambda.ai",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.edgeconnex.com/news/press-releases/edgeconnex-and-lambda-to-build-ai-factory-in-chicago-with-industry-leading-high-density-data-center-infrastructure/",
+        "label": "EdgeConneX press release - AI Factory in Chicago and Atlanta",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/edgeconnex-to-build-data-centers-in-chicago-and-atlanta-for-lambda/",
+        "label": "EdgeConneX to build data centers in Chicago and Atlanta for Lambda",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/edgeconnex-chi03",
+        "label": "EdgeConneX CHI03 - Elk Grove Village campus, Cook County",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "EdgeConneX is the developer/facility owner; Lambda is the sole tenant in a build-to-suit, single-tenant, purpose-built 23 MW building for Lambda's AI workloads (600+ kW/rack, hybrid liquid-to-chip + air cooling). Distinct from the excluded CoreWeave/Flexential colo tenancy (a shared multi-tenant colo cage) - this is a dedicated purpose-built building. Press releases say 'Chicago' but EdgeConneX's Chicago-area campus is in Elk Grove Village, IL (Cook County); the Lambda building address is unpublished, so coordinates use the Chicago centroid. Ready-for-Service targeted 2026; operational status as of 2026-07-07 unconfirmed (may already be online - revisit).",
+    "water": {
+      "coolingType": "hybrid"
+    }
+  },
+  {
+    "id": "aws-hobart-in",
+    "name": "AWS Hobart Campus",
+    "operator": "Amazon Web Services (AWS)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.517,
+      "lon": -87.263,
+      "city": "Hobart",
+      "county": "Lake",
+      "state": "IN"
+    },
+    "poweredBy": "NIPSCO (GenCo subsidiary)",
+    "announcedDate": "2025-11-24",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-11-06",
+        "note": "Fill permit approved for Hobart Devco prior to public announcement"
+      },
+      {
+        "status": "proposed",
+        "date": "2025-11-24",
+        "note": "Amazon publicly announces a $15B NW Indiana investment; Hobart city agreement announced the next day"
+      },
+      {
+        "status": "permitted",
+        "date": "2026-05-08",
+        "note": "Hobart Plan Commission approves site plans after majority-opposition testimony"
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-06",
+        "note": "Development begun; spring 2026 groundbreaking confirmed active per press"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/aws-data-center-coming-to-hobart-indiana/",
+        "label": "AWS data center coming to Hobart, Indiana",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://wsbt.com/news/local/amazon-data-center-15-billion-data-center-jobs-ai-nipsco-electric-grid-governor-mike-braun-northern-indiana-hobart-lake-county-indiana",
+        "label": "Newly announced Amazon data center to be built in Hobart",
+        "publisher": "WSBT 22",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.21alivenews.com/2025/11/25/hobart-reaches-agreement-with-amazon-next-gen-data-center/",
+        "label": "Hobart reaches agreement with Amazon for next-gen data center",
+        "publisher": "21Alive News",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.insideindianabusiness.com/articles/hobart-commission-approves-site-plans-for-amazon-data-center",
+        "label": "Hobart commission approves site plans for Amazon data center",
+        "publisher": "Inside INdiana Business",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.nbcchicago.com/news/local/hobart-to-vote-on-property-tax-abatement-on-amazon-data-center-project/3872989/",
+        "label": "Hobart to vote on property tax abatement on Amazon data center project",
+        "publisher": "NBC Chicago",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox32chicago.com/news/lawsuit-seeks-block-amazon-data-center-permit-hobart-ind",
+        "label": "Lawsuit seeks to block Amazon data center permit in Hobart",
+        "publisher": "Fox 32 Chicago",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nwiforum.org/amazon-invests-15b-in-northwest-indiana",
+        "label": "Amazon Invests $15B in Northwest Indiana",
+        "publisher": "NWI Forum",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "One of AWS's Northwest Indiana campuses (part of a $15B NW Indiana / 2.4 GW umbrella; distinct from aws-project-rainier-new-carlisle-in and the separate Wheatfield IN campus). CAPACITY OMITTED: the 2.4 GW figure is the NW Indiana total, not Hobart-specific. INVESTMENT OMITTED: $15B is the NW Indiana total, no Hobart-specific figure. Up to 25 buildings on 725+ acres ('Hobart Tech Park'); shell entities include Hobart Devco, Hobart Owner LLC, TUHAUS LLC/Wylie Capital. ~400 permanent jobs ($37-44/hr) are projections (in notes, not jobs). $47M upfront community payment is city revenue, not facility capex. Coordinates estimated from 61st Ave/Colorado St; verify via Lake County GIS. Active litigation: 'No Data Centers Hobart Indiana' sought a TRO on the fill permit (unresolved).",
+    "energy": {
+      "source": "grid",
+      "notes": "NIPSCO (GenCo, Merrillville); Amazon pays 100% of new power-infrastructure costs under a cost-allocation framework."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Outside-air cooling ~98% of the year; water-based cooling on peak days (~2%); ~14 million gallons/year; ~80% more water-efficient than industry average."
+    },
+    "subsidies": [
+      {
+        "program": "10-year real property tax abatement - Amazon Data Services (Resolution 2026-02)",
+        "sourceIndex": 4
+      },
+      {
+        "program": "35-year 100% IT-equipment tax exemption - Hobart Owner LLC (Resolution 2026-03)",
+        "sourceIndex": 4
+      }
+    ],
+    "landAcres": 725,
+    "community": {
+      "status": "contested",
+      "notes": "Active opposition group 'No Data Centers Hobart Indiana'; majority of Plan Commission testimony opposed; concerns include noise, light, water/power use, property values; lawsuit filed in Lake County Court. Neighboring NWI communities have rejected similar projects."
+    }
+  },
+  {
+    "id": "aws-wheatfield-in",
+    "name": "AWS Wheatfield Campus (Project Rise)",
+    "operator": "Amazon Web Services (AWS)",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.1955,
+      "lon": -87.0586,
+      "city": "Wheatfield",
+      "county": "Jasper",
+      "state": "IN"
+    },
+    "poweredBy": "NIPSCO (Northern Indiana Public Service Company)",
+    "announcedDate": "2026-06-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-03",
+        "note": "AWS presented plans at a public open house at Kankakee Valley High School"
+      },
+      {
+        "status": "permitted",
+        "date": "2026-06-17",
+        "note": "Jasper County Commissioners unanimously approved development agreements and a zoning change"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/amazon-plans-nine-building-data-center-campus-in-wheatfield-indiana/",
+        "label": "Amazon plans nine-building data center campus in Wheatfield, Indiana",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.insideindianabusiness.com/articles/jasper-county-approves-amazon-web-services-7b-data-center-project",
+        "label": "Jasper County approves $7B Amazon Web Services data center project",
+        "publisher": "Inside INdiana Business",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://nwindianabusiness.com/industries/professional-services/information-technology/officials-approve-jasper-county-amazon-data-center/78353/",
+        "label": "Officials approve Jasper County Amazon data center",
+        "publisher": "Northwest Indiana Business Magazine",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://nwitimes.com/news/local/article_54c53d5c-d0d8-4910-97a7-87b9d5391664.html",
+        "label": "Amazon gets greenlight for $7 billion data center bringing 250 jobs to NW Indiana",
+        "publisher": "NWI Times",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Codename Project Rise. Nine-building campus on 304 acres of NIPSCO-owned land ~0.5 mi from the R.M. Schahfer Generating Station; part of AWS's $15B Northern Indiana commitment. CAPACITY OMITTED: data-center IT load not disclosed; the 400 MW figure is NIPSCO's new gas peaker plant, not the facility's load. INVESTMENT OMITTED: DCD reports AWS is 'estimating an investment of around $7 billion' - a soft estimate, so no firm investmentUsd is recorded (noted here). ~250 permanent jobs are a projection (in notes, not jobs). AWS commits to restore 425 acres of Kankakee River watershed habitat and provide $25M for Wheatfield Township water access; AWS committed $1.25B to offset NIPSCO ratepayer impacts across the broader buildout. Coordinates are the Wheatfield centroid. Distinct from Project Rainier (New Carlisle) and the Hobart IN campus.",
+    "energy": {
+      "source": "grid",
+      "notes": "Grid power via NIPSCO, which is building a 400 MW gas peaker (target 2027) and a combined-cycle gas plant (target 2029) on adjacent property to serve the campus."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Natural air cooling ~98% of the year; supplemental water cooling on hot days; campus will not connect to public water systems and will fund its own water/wastewater infrastructure."
+    },
+    "subsidies": [
+      {
+        "program": "Host Community Agreement / PILOT - Jasper County development agreement (upfront community payment + annual payments in lieu of taxes)"
+      }
+    ],
+    "landAcres": 304,
+    "community": {
+      "status": "supported",
+      "notes": "Jasper County Commissioners voted unanimously to approve; residents invited to a June 3 2026 open house; no opposition on record in available sources."
+    }
+  },
+  {
+    "id": "nebius-bhm01-birmingham-al",
+    "name": "Nebius Birmingham AI Factory (BHM01)",
+    "operator": "Nebius Group",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.4556,
+      "lon": -86.8131,
+      "city": "Birmingham",
+      "county": "Jefferson County",
+      "state": "AL"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "poweredBy": "Alabama Power (APCO)",
+    "announcedDate": "2025-09-30",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-09-30",
+        "note": "Land acquisition closed: ~80 acres at Milan Pkwy / Venice Rd acquired for $90M via affiliate Alabama ADC Holdings LLC"
+      },
+      {
+        "status": "permitted",
+        "date": "2026-01-29",
+        "note": "Building permit BLD2026-00195 filed; project grandfathered before Birmingham's proposed data-center moratorium"
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-04-01",
+        "note": "First construction permits issued (~$855M under contract); Hoar Construction begins work"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://nebius.com/birminghamal",
+        "label": "Nebius x Birmingham, Alabama - Official Project Page",
+        "publisher": "Nebius Group",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/nebius-targets-data-center-development-in-birmingham-alabama/",
+        "label": "Nebius targets data center development in Birmingham, Alabama",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://northwiseproject.com/nbis-alabama-data-center/",
+        "label": "NBIS Alabama Data Center: Inside the Birmingham AI Factory",
+        "publisher": "Northwise Project",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://yellowhammernews.com/permit-filed-for-multibillion-dollar-75-acre-data-center-in-birmingham/",
+        "label": "Permit filed for multibillion-dollar, 75-acre data center in Birmingham",
+        "publisher": "Yellowhammer News",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://birminghamwatch.org/2026/06/29/new-lawsuit-against-nebius-data-center-challenges-validity-of-regs-and-decisions/",
+        "label": "New Lawsuit Against Nebius Data Center Challenges Validity of Regs and Decisions",
+        "publisher": "Birmingham Watch",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/nebius-birmingham-alabama",
+        "label": "Nebius Birmingham, Alabama - Baxtel (Site Code BHM01)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Nebius Group's Birmingham AI Factory (site code BHM01); distinct from nebius-vineland-nj and nebius-independence-mo. Capacity phased: Phase I = 100 MW (targeted H2 2026), Phase II adds 200 MW (full 300 MW by 2027-2028). Land acquisition $90M confirmed (2025-09-30); ~$855M in construction permits issued (April 2026) with $2.1B more under review; total capex described as 'tens of billions' (a projection) - so investmentUsd is omitted. ~100-125 projected permanent jobs (in notes, not jobs). Site: former Regions Lakeshore Operations Center (~80 acres) acquired from UAB, Regions Bank, and U.S. Steel; general contractor Hoar Construction. Coordinates address-approximate (201 Milan Pkwy, Oxmoor Corporate Park).",
+    "energy": {
+      "source": "grid",
+      "notes": "Alabama Power (APCO) confirmed as utility per Nebius's official page; APCO to build new switching/substation infrastructure funded by Nebius."
+    },
+    "water": {
+      "coolingType": "closed_loop"
+    },
+    "landAcres": 80,
+    "community": {
+      "status": "litigation",
+      "notes": "Two lawsuits filed by Oxmoor Valley residents seeking injunctions; the first was dismissed May 29 2026, a second filed June 29 2026. Birmingham City Council approved a revised zoning ordinance June 9 2026 adding 20 data-center regulations, ending the moratorium debate over whether the January permit was validly grandfathered."
+    }
+  },
+  {
+    "id": "qts-dane-county-deforest-wi",
+    "name": "QTS Dane County Hyperscale Campus (DeForest)",
+    "operator": "QTS Data Centers",
+    "status": "cancelled",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.2428,
+      "lon": -89.3401,
+      "city": "DeForest",
+      "county": "Dane County",
+      "state": "WI"
+    },
+    "poweredBy": "Alliant Energy",
+    "announcedDate": "2025-10-30",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-30",
+        "note": "QTS publicly announced the Dane County hyperscale campus; zoning and annexation applications submitted to DeForest in November 2025",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-01-28",
+        "note": "Village of DeForest declared the proposal not feasible; QTS withdrew all applications after the Village Board signaled a 7-0 rejection of annexation. WI DOA separately found the annexation not in the public interest.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://qtsdatacenters.com/news/qts-advances-plans-for-state-of-the-art-data-center-campus-and-announces-50-million-community-commitment-for-dane-county/",
+        "label": "QTS advances plans for Dane County campus - official press release",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://spectrumnews1.com/wi/milwaukee/news/2025/10/30/qts-data-centers-dane-county",
+        "label": "QTS plans multibillion-dollar data center campus in Dane County",
+        "publisher": "Spectrum News 1 Wisconsin",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.engagedeforest.com/QTS",
+        "label": "Village of DeForest - QTS project public engagement portal",
+        "publisher": "Village of DeForest",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/qts-drops-plan-for-data-center-near-madison-wisconsin-amid-opposition-from-local-officials/",
+        "label": "QTS drops plan for data center near Madison, Wisconsin",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://dailyreporter.com/2026/01/29/deforest-cancels-qts-data-center/",
+        "label": "DeForest cancels $12 billion QTS data center plan",
+        "publisher": "The Daily Reporter",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://wtmj.com/news/2026/01/28/update-qts-withdraws-data-center-project-in-village-of-deforest/",
+        "label": "QTS withdraws data center project in Village of DeForest",
+        "publisher": "WTMJ",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/qts-deforest-wisconsin",
+        "label": "QTS DeForest, Wisconsin - Baxtel facility record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "CANCELLED: QTS withdrew Jan 28-29 2026 after DeForest found the proposal not feasible and the Village Board signaled a 7-0 rejection of the required annexation; WI DOA found the 1,572.5-acre annexation petition not in the public interest. Active footprint was 650 acres (five buildings). Capacity omitted: no source discloses facility IT load; the 750 MW figure was a grid renewable-energy-credit commitment via Alliant, not the campus draw. INVESTMENT OMITTED: the $12B figure is secondary press only (QTS said 'multibillion-dollar') and unrealized. Projected 5,000+ construction and 'hundreds' of permanent jobs were never realized (project cancelled). The $50M community commitment was a QTS-to-county pledge, not a government subsidy. Coordinates are the DeForest centroid.",
+    "energy": {
+      "source": "grid",
+      "notes": "Alliant Energy confirmed as utility. QTS proposed enabling ~750 MW of new renewables on Alliant's grid via RECs - a grid-level commitment, not the facility's power draw. Facility IT load never disclosed."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "QTS stated the campus would use water-free cooling with no cooling-water consumption or impact on the Yahara Watershed."
+    },
+    "landAcres": 650,
+    "community": {
+      "status": "opposed",
+      "notes": "The group 'No Data Center in DeForest' had 4,100+ members at withdrawal; the Village Board signaled a unanimous 7-0 denial of the annexation petition, citing transparency and watershed/land-use concerns. Opposition led directly to cancellation."
+    }
+  },
+  {
+    "id": "menomonie-data-center-wi",
+    "name": "Menomonie Data Center Campus",
+    "operator": "Undisclosed (Balloonist LLC)",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.8769,
+      "lon": -91.9193,
+      "city": "Menomonie",
+      "county": "Dunn",
+      "state": "WI"
+    },
+    "poweredBy": "Xcel Energy",
+    "announcedDate": "2025-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07",
+        "note": "Balloonist LLC filed an annexation petition and I-1 rezoning for a ~324-acre site on County Highway B (Town of Red Cedar)",
+        "sourceIndex": 3
+      },
+      {
+        "status": "proposed",
+        "date": "2025-08-04",
+        "note": "Menomonie City Council approved annexation and I-1 rezoning 8-3; rezoning is not a building permit",
+        "sourceIndex": 1
+      },
+      {
+        "status": "proposed",
+        "date": "2025-09-22",
+        "note": "Mayor Knaack declared the project 'on pause'; TID/development-agreement talks ended; Balloonist subsequently purchased the land",
+        "sourceIndex": 4
+      },
+      {
+        "status": "proposed",
+        "date": "2026-01-06",
+        "note": "City Council adopted a new I-4 Data Center Industrial District ordinance with stricter parameters, effectively requiring Balloonist to reapply",
+        "sourceIndex": 6
+      },
+      {
+        "status": "proposed",
+        "date": "2026-06-30",
+        "note": "Mayor Crowe: city still refining the I-4 ordinance, draft to be introduced Aug 3 2026; Balloonist retains the land",
+        "sourceIndex": 7
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wtmj.com/news/2025/12/23/a-look-back-at-wisconsins-year-of-the-data-center/",
+        "label": "Wisconsin's Year of the Data Center",
+        "publisher": "WTMJ",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://volumeone.org/articles/2025/08/26/370164-tech-giant-is-considering-16-billion-data-center-dunn-county",
+        "label": "Tech Giant Considering $1.6B Data Center in Dunn County",
+        "publisher": "Volume One",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/data-center-in-red-cedar-wisconsin-could-be-16bn-investment/",
+        "label": "Data center in Red Cedar, Wisconsin, could be $1.6bn investment",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://menomonienewsnet.org/3707/city/proposed-data-center/",
+        "label": "Proposed Data Center - Menomonie News Net",
+        "publisher": "Menomonie News Net",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wpr.org/news/menomonie-mayor-puts-data-center-proposal-on-hold",
+        "label": "Menomonie mayor puts $1.6B data center proposal on hold",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/data-center-development-in-menomonie-wisconsin-delayed/",
+        "label": "Data center development in Menomonie, Wisconsin, delayed",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://wcfw.fm/news/2026/01/06/menomonie-data-center-ordinance",
+        "label": "Menomonie City Council Approves Data Center Ordinance Change",
+        "publisher": "WCFW",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.menomonieminute.com/post/mayor-crowe-releases-statement-regarding-proposed-data-center-ordinance",
+        "label": "Mayor Crowe statement on proposed data center ordinance (June 2026)",
+        "publisher": "Menomonie Minute",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "End operator undisclosed behind Balloonist LLC (a Delaware foreign LLC). Multiple outlets note Balloonist's Delaware address and registered agent match prior Meta data-center SPV patterns, but NO source names Meta or any operator - recorded as undisclosed. A council member said the end user is 'one of the top tech giants' without naming them. Status corrected from the ledger's 'permitted' to 'proposed': the original I-1 rezoning was superseded by a January 2026 I-4 ordinance; no building permits were ever issued. Proposed investment up to $1.6B and 50-75 FTE jobs are developer projections (not recorded as firm fields). No MW capacity disclosed. Site: ~324 acres along County Highway B (annexed from Town of Red Cedar Aug 2025). Coordinates are the Menomonie centroid. aiClassification 'likely' rests on hyperscale scale + 'tech giant' attribution, not an explicit AI-workload statement.",
+    "energy": {
+      "source": "grid",
+      "notes": "Balloonist LLC confirmed working with Xcel Energy and the WI Public Service Commission on supply/grid; no MW load or substation figure disclosed."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Proposed closed-loop cooling requiring ~75,000 gallons/day of municipal water/wastewater - would rank as Menomonie's fifth-largest water user."
+    },
+    "landAcres": 324,
+    "community": {
+      "status": "contested",
+      "notes": "Active opposition group 'Stop the Menomonie Data Center'; Mayor Knaack (Sept 2025) called it 'not a suitable fit'; the city administrator signed an NDA limiting transparency; residents built a national toolkit for similar proposals; the new mayor is continuing the I-4 ordinance process."
+    }
+  },
+  {
+    "id": "terawulf-muskie-eastpark-ky",
+    "name": "TeraWulf Muskie Data Campus (EastPark)",
+    "operator": "TeraWulf",
+    "status": "proposed",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.4042,
+      "lon": -82.79,
+      "city": "Ashland",
+      "county": "Greenup",
+      "state": "KY"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "poweredBy": "Kentucky Power (AEP)",
+    "announcedDate": "2026-05-26",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-26",
+        "note": "TeraWulf announced the acquisition of the 285-acre Muskie Data Campus from Industrial Equity Partners at EastPark Industrial Park; land purchase closed effective 2026-05-22",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wowktv.com/news/kentucky/boyd-county-ky/new-ai-data-center-coming-to-eastern-kentucky/",
+        "label": "New AI data center coming to eastern Kentucky",
+        "publisher": "WOWK-TV",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://investors.terawulf.com/news-events/press-releases/detail/141/terawulf-expands-infrastructure-platform-with-acquisition-of-1-gw-eastern-kentucky-hpc-campus",
+        "label": "TeraWulf Expands Infrastructure Platform with Acquisition of 1+ GW Eastern Kentucky HPC Campus",
+        "publisher": "TeraWulf Inc.",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lpm.org/news/2026-05-28/massive-new-data-center-project-announced-in-northeastern-kentucky",
+        "label": "Massive new data center project announced in northeastern Kentucky",
+        "publisher": "Louisville Public Media",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.weku.org/the-commonwealth/2026-05-26/new-data-center-project-announced-in-northeastern-kentucky",
+        "label": "New data center project announced in northeastern Kentucky",
+        "publisher": "WEKU Public Radio",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://wchstv.com/news/local/boyd-county-leaders-counting-the-economic-impact-of-proposed-data-center",
+        "label": "Boyd County leaders on the economic impact of the proposed data center",
+        "publisher": "WCHS-TV",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/EastPark,_Kentucky",
+        "label": "EastPark, Kentucky - Wikipedia",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "TeraWulf's second Kentucky campus (alongside the Justified/Hawesville campus tracked separately). TeraWulf (Nasdaq: WULF), historically a bitcoin miner, repositioning toward HPC/AI. Muskie is a 285-acre site at EastPark Industrial Park (a 1,000-acre former strip mine). Planned 1+ GW phased: initial 500 MW ramp H2 2028, additional 500 MW targeted H2 2030. County discrepancy: local TV cites Boyd County, but Wikipedia and the Lane Report place EastPark primarily in Greenup County (site straddles Boyd/Greenup/Carter); Greenup used, city Ashland retained as the regional reference. INVESTMENT OMITTED: the $4B figure came from a Boyd County official, not TeraWulf's investor PR or 8-K. ~300 permanent jobs are official projections (in notes, not jobs). TeraWulf stated it will pay the full standard industrial tariff with no subsidies. Coordinates are the EastPark park centroid.",
+    "energy": {
+      "source": "grid",
+      "notes": "Kentucky Power (an AEP company) is building a 345 kV substation on the existing 765 kV network to serve the campus. TeraWulf confirmed it will pay the full Industrial General Service tariff with no discounts or exemptions. Phased power: 500 MW H2 2028, +500 MW H2 2030."
+    },
+    "water": {
+      "coolingType": "unknown"
+    },
+    "landAcres": 285,
+    "community": {
+      "status": "mixed",
+      "notes": "Boyd County Judge-Executive Eric Chaney and FIVCO-region officials are broadly supportive; the City of Ashland enacted a moratorium on new data-center applications within city limits (site is outside city limits). Tax revenue projected to benefit schools across the five FIVCO counties."
+    }
+  },
+  {
+    "id": "compass-lauderdale-meridian-ms",
+    "name": "Compass Datacenters Lauderdale County Hyperscale Campus",
+    "operator": "Compass Datacenters",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.3644,
+      "lon": -88.7037,
+      "city": "Meridian",
+      "county": "Lauderdale County",
+      "state": "MS"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "poweredBy": "Mississippi Power Company",
+    "announcedDate": "2025-01-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01-09",
+        "note": "Campus announced by Compass Datacenters; confirmed by the Mississippi Development Authority and Governor's office"
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-01-28",
+        "note": "Official groundbreaking ceremony at the I-20/59 Industrial Park, Meridian"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mississippi.org/news/compass-datacenters-project-generates-10-billion-investment-in-lauderdale-county/",
+        "label": "Compass Datacenters Project Generates $10B Investment in Lauderdale County",
+        "publisher": "Mississippi Development Authority",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://governorreeves.ms.gov/compass-datacenters-project-generates-10-billion-investment-in-lauderdale-county/",
+        "label": "Compass Datacenters Project Generates $10B Investment - Governor's Office",
+        "publisher": "Office of Governor Tate Reeves",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.compassdatacenters.com/news/compass-10b-investment-lauderdale-county-mississippi/",
+        "label": "Compass Project Generates $10B Investment in Lauderdale County",
+        "publisher": "Compass Datacenters",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/compass-to-invest-10-billion-in-mississippi-data-center-campus/",
+        "label": "Compass to develop $10 billion data center campus in Mississippi",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wtok.com/2025/01/29/compass-data-centers-hosts-official-groundbreaking-ceremony-lauderdale-county/",
+        "label": "Compass Data Centers hosts official groundbreaking ceremony in Lauderdale County",
+        "publisher": "WTOK",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://msindy.org/p/mississippis-data-center-boom-and",
+        "label": "Mississippi's Data Center Boom",
+        "publisher": "Mississippi Independent",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Eight-data-center campus over an eight-year buildout at the I-20/59 Industrial Park, Meridian. Groundbreaking Jan 28 2025 (under construction). Mississippi Power to supply ~500 MW via a dedicated substation. INVESTMENT OMITTED: the widely cited $10B is a projected full-occupancy total INCLUDING future tenants' IT equipment ('an investment of $10 billion, including future tenants' information technology equipment'), not a firm Compass outlay. 'Thousands of jobs' is a projection. First confirmed tenant: Corderill LLC ($100M equipment, 20 jobs, April 2026). Coordinates are the Meridian centroid (no parcel coordinates published).",
+    "energy": {
+      "source": "grid",
+      "notes": "Mississippi Power to supply ~500 MW; the utility invested in a dedicated substation at the I-20/59 Industrial Park to enable the campus."
+    },
+    "water": {
+      "coolingType": "unknown"
+    },
+    "subsidies": [
+      {
+        "program": "Mississippi Data Center Incentive - 10-year state income and franchise tax exemption",
+        "sourceIndex": 0
+      },
+      {
+        "program": "Mississippi Data Center Incentive - sales and use tax exemption on construction materials, equipment, and hardware/software",
+        "sourceIndex": 0
+      },
+      {
+        "program": "Lauderdale County site grant ($4M via the Mississippi Legislature)",
+        "sourceIndex": 0
+      },
+      {
+        "program": "MDA additional site-preparation grant (amount unspecified)",
+        "sourceIndex": 0
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Named both 'worst economic development deal of 2025' (Center for Economic Accountability) and 'best' (Business Facilities magazine)."
+    }
   }
 ]
