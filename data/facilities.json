@@ -14826,5 +14826,2304 @@
       "status": "mixed",
       "notes": "Named both 'worst economic development deal of 2025' (Center for Economic Accountability) and 'best' (Business Facilities magazine)."
     }
+  },
+  {
+    "id": "fluidstack-abernathy-tx",
+    "name": "Fluidstack Abernathy AI Campus",
+    "operator": "Fluidstack",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.84,
+      "lon": -101.84,
+      "city": "Abernathy",
+      "county": "Hale",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 168
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "TeraWulf developed and then sold the ~120-acre Abernathy campus to Fluidstack in a Google-backed deal; delivery targeted H2 2026",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/terawulf-and-fluidstack-to-develop-texas-data-center-in-google-backed-deal/",
+        "label": "TeraWulf and Fluidstack to develop Texas data center in Google-backed deal",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://investors.terawulf.com/news-events/press-releases/detail/142/",
+        "label": "TeraWulf announces Anthropic lease at Justified Data Campus and sale of majority interest in Abernathy JV to Fluidstack",
+        "publisher": "TeraWulf Inc.",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~120-acre campus in Abernathy (Hale/Lubbock counties). Distinct from the separately-tracked Aligned 'Project Caprock' Abernathy campus (313 acres, different operator/parcel). 168 MW critical IT load (240 MW gross). Google-backed via a ~$1.3B lease obligation backstop. The frequently cited $9.5B is 25-year contracted revenue, not capex (in notes only). NOTE: the Anthropic lease associated with this deal is at TeraWulf's Justified/Hawesville KY campus, not Abernathy. Coordinates are the Abernathy town centroid.",
+    "energy": {
+      "source": "grid",
+      "notes": "Adjacent Aligned Caprock campus uses Xcel Energy; Fluidstack's Abernathy power provider not named in sources reviewed."
+    }
+  },
+  {
+    "id": "corscale-gainesville-crossing-va",
+    "name": "Gainesville Crossing Digital Campus (GCDC)",
+    "operator": "Corscale Data Centers (Patrinely / USAA Real Estate)",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.78,
+      "lon": -77.62,
+      "city": "Gainesville",
+      "county": "Prince William",
+      "state": "VA"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "poweredBy": "Dominion Energy",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2022",
+        "note": "Gainesville Crossing Data Campus underway on I-66 in Prince William County; ~130 acres, Phase 1 online 2022",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/new-hyperscale-developer-corscale-is-behind-300mw-gainesville-crossing-campus-in-prince-william-county/",
+        "label": "New hyperscale developer Corscale is behind 300MW Gainesville Crossing campus in Prince William County",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://wtop.com/prince-william-county/2026/07/digital-gateway-data-center-project-dies-after-final-developer-withdraws-appeal/",
+        "label": "Digital Gateway data center project dies after final developer withdraws appeal",
+        "publisher": "WTOP",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~130-acre campus on Interstate 66; ~306 MW via an on-site Dominion substation. Distinct from the separately-tracked QTS/Compass 'PW Digital Gateway' site (~2,100 acres at Pageland Lane) — which QTS terminated in July 2026. Capacity recorded at 300 MW per the DCD primary source (a 326 MW figure also circulates). Coordinates are the Gainesville area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "Dominion Energy"
+    }
+  },
+  {
+    "id": "tallgrass-project-jade-cheyenne-wy",
+    "name": "Cheyenne Power Hub / Project Jade",
+    "operator": "Tallgrass Energy (data center operator undisclosed)",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.12,
+      "lon": -104.82,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY"
+    },
+    "capacityMw": {
+      "planned": 1800
+    },
+    "poweredBy": "On-site natural gas (Tallgrass Cheyenne Power Hub)",
+    "announcedDate": "2026-01",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-01",
+        "note": "Laramie County approved the project Jan 2026; site work underway at Switchgrass Industrial Park (Hwy 85 south of Cheyenne). Crusoe (original builder) exited June 2026; Tallgrass now works directly with the unnamed DC client",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/crusoe-gets-go-ahead-for-18gw-data-center-campus-and-power-plant-in-cheyenne-wyoming/",
+        "label": "Crusoe gets go-ahead for 1.8GW data center campus and power plant in Cheyenne, Wyoming",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://cowboystatedaily.com/2026/06/11/partner-pulling-out-doesnt-slow-huge-2-7gw-cheyenne-project-jade-data-center/",
+        "label": "Partner pulling out doesn't slow huge 2.7GW Cheyenne Project Jade data center",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Switchgrass Industrial Park, Hwy 85 south of Cheyenne, Laramie County — geographically distinct from Meta (Project Cosmo) and Microsoft's Cheyenne campuses. Data-center capacity announced at 1.8 GW, later cited as expanding to 2.7 GW (with an ultimate 10 GW ceiling — in notes). The Cheyenne Power Hub on-site natural-gas plant supplies power (Tallgrass; Black Hills Energy co-invested). Crusoe exited June 2026; Tallgrass proceeds with an unnamed client (Google rumored by Bloomberg but no signed agreement confirmed — not recorded as operator). ~$50B total project figure is a projection (notes). Service targeted early 2028.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Cheyenne Power Hub natural-gas plant (Tallgrass), scalable toward multi-GW; Black Hills Energy co-invested."
+    },
+    "community": {
+      "status": "mixed"
+    }
+  },
+  {
+    "id": "stack-nova-loudoun-va",
+    "name": "STACK NVA Loudoun 144MW Hyperscale Campus",
+    "operator": "STACK Infrastructure",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.04,
+      "lon": -77.49,
+      "city": "Ashburn",
+      "county": "Loudoun",
+      "state": "VA"
+    },
+    "capacityMw": {
+      "planned": 144
+    },
+    "announcedDate": "2025-02",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-02",
+        "note": "STACK announced a 122-acre, 144 MW campus near Dulles Airport (Evergreen Mills Rd), Loudoun County",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.stackinfra.com/about/news-press/press-releases/stack-infrastructure-expands-loudoun-county-footprint-with-144mw-hyperscale-campus/",
+        "label": "STACK Infrastructure Expands Loudoun County Footprint with 144MW Hyperscale Campus",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "122-acre campus, two 72 MW buildings, near Dulles Airport / Evergreen Mills Rd. Announced Feb 2025. Distinct from Equinix's separately-branded Ashburn portfolio. Powered by an on-site substation with a 100%-renewable commitment. Coordinates are the Ashburn/Dulles area centroid.",
+    "energy": {
+      "source": "grid",
+      "notes": "On-site substation; STACK commits to 100% renewable energy. Utility not named in the release."
+    }
+  },
+  {
+    "id": "core-scientific-pecos-tx",
+    "name": "Core Scientific Pecos AI Campus",
+    "operator": "Core Scientific",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.44,
+      "lon": -103.58,
+      "city": "Pecos",
+      "county": "Reeves",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Core Scientific announced expansion of its Pecos campus toward ~1.5 GW gross power; first data hall reached interior-footing milestone, first capacity expected early 2027",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://investors.corescientific.com/news-events/press-releases/detail/134/core-scientific-plans-expansion-to-1-5-gigawatts-of-gross-power-at-pecos-texas-campus",
+        "label": "Core Scientific plans expansion to 1.5 gigawatts of gross power at Pecos, Texas campus",
+        "publisher": "Core Scientific Inc.",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "High-density AI/HPC colocation. ~1.5 GW gross / ~1.0 GW leasable is an expansion ceiling (in notes). Co-located in Reeves County with Microsoft's separate 'Project Kirby' Pecos campus (distinct operator/parcel; tracked separately). Address on record: 1939 FM 2119. Core Scientific historically a bitcoin miner, repositioned to HDC. Coordinates are the Pecos area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "cologix-johnstown-oh",
+    "name": "Cologix Johnstown AI-Ready Campus",
+    "operator": "Cologix",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.15,
+      "lon": -82.68,
+      "city": "Johnstown",
+      "county": "Licking",
+      "state": "OH"
+    },
+    "capacityMw": {
+      "planned": 800
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Cologix acquired 154 acres in Johnstown for an 8-building AI-ready campus; first-phase development anticipated to begin 2025",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cologix.com/news/cologix-expands-central-ohio-footprint-with-land-acquisition-for-new-ai-ready-800mw-data-center-campus/",
+        "label": "Cologix Expands Central Ohio Footprint with Land Acquisition for New AI-Ready 800MW Data Center Campus",
+        "publisher": "Cologix",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "154 acres; up to 800 MW scalable across eight data centers / 2.0M sq ft (800 MW is a full-buildout potential — in notes). The '>$7 billion' figure is a company-wide expansion plan, not a Johnstown-specific committed amount (in notes). Coordinates are the Johnstown, Licking County area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "lambda-kansas-city-mo",
+    "name": "Lambda Kansas City AI Supercomputer",
+    "operator": "Lambda",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.33,
+      "lon": -94.72,
+      "city": "Kansas City",
+      "county": "Platte",
+      "state": "MO"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "poweredBy": "Evergy",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Lambda to build an AI factory at 11155 N. Airworld Dr (former Bank of America campus); launching early 2026 with 24 MW, scaling toward 100+ MW",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/ai-cloud-firm-lambda-targets-data-center-deployment-in-kansas-city-missouri/",
+        "label": "AI cloud firm Lambda targets data center deployment in Kansas City, Missouri",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://lambda.ai/blog/lambda-to-build-a-100mw-ai-factory-in-kansas-city-mo",
+        "label": "Lambda to build a 100MW AI factory in Kansas City, MO",
+        "publisher": "Lambda",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "11155 N. Airworld Dr (former Bank of America campus, ~16.9 acres), Platte County near KCI airport. Launches early 2026 with 24 MW confirmed; >100 MW is a scale-up ceiling (planned figure). Distinct parcels from Google (Project Mica) and Meta's Kansas City sites. Eligible for the Missouri Data Center Sales Tax Exemption (eligibility only — no award amount confirmed; honest-zero). The >$500M figure is a press estimate (notes). Dedicated to a single unnamed AI customer under a multi-year agreement.",
+    "energy": {
+      "source": "grid",
+      "utility": "Evergy",
+      "notes": "Evergy electricity; Spire natural gas listed as a partner."
+    }
+  },
+  {
+    "id": "cielo-clarksville-tn",
+    "name": "Cielo Montgomery County AI Campus",
+    "operator": "Cielo Digital Infrastructure",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.53,
+      "lon": -87.36,
+      "city": "Clarksville",
+      "county": "Montgomery",
+      "state": "TN"
+    },
+    "capacityMw": {
+      "planned": 350
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Cielo Digital Infrastructure proposed a ~350 MW AI campus on ~107 acres in Montgomery County (Clarksville)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cleanview.co/data-centers/tennessee/2037/cielo-clarksville-data-center",
+        "label": "Cielo Clarksville Data Center",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://cieloinfra.com/",
+        "label": "Cielo Digital Infrastructure",
+        "publisher": "Cielo Digital Infrastructure",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~107-acre proposed site, ~350 MW. Distinct operator/parcel from Google's operational Clarksville (Montgomery County) campus. Sourcing is thin (tracker + developer site) → confidence reported. Cielo specializes in power/fiber-ready campus development. Coordinates are the Clarksville area centroid.",
+    "community": {
+      "status": "mixed",
+      "notes": "Local community posts flag awareness/opposition to the proposal."
+    }
+  },
+  {
+    "id": "meta-altoona-ia",
+    "name": "Meta Altoona Data Center Campus",
+    "operator": "Meta",
+    "status": "operational",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.6459,
+      "lon": -93.4696,
+      "city": "Altoona",
+      "county": "Polk",
+      "state": "IA"
+    },
+    "capacityMw": {
+      "operational": 350
+    },
+    "poweredBy": "MidAmerican Energy",
+    "announcedDate": "2013",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2013",
+        "note": "Meta (Facebook) began building the Altoona campus in 2013; now its largest cloud campus at 5M+ sq ft after a seventh expansion; hosts GenAI/LLaMA compute",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterfrontier.com/cloud/article/11427725/meta-adds-more-data-centers-in-iowa-pushing-campus-to-5-million-sf",
+        "label": "Meta Adds More Data Centers in Iowa, Pushing Campus to 5 Million SF",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://engineering.fb.com/2024/03/12/data-center-engineering/building-metas-genai-infrastructure/",
+        "label": "Building Meta's GenAI Infrastructure",
+        "publisher": "Engineering at Meta",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Operational since 2013; 5M+ sq ft after seven expansions — Meta's largest cloud campus. Meta's engineering blog documents Altoona as a GenAI infrastructure / LLaMA training site. INVESTMENT: 'more than $2.5 billion' is a cumulative multi-year figure across all expansions (in notes, not investmentUsd). 400+ on-site operations staff is a cumulative daily figure (in notes). ~350 MW per third-party index. Coordinates are the Altoona town centroid.",
+    "energy": {
+      "source": "wind",
+      "utility": "MidAmerican Energy",
+      "notes": "MidAmerican Energy, backed by Meta's Iowa wind PPAs (utility targets 100% renewable in Iowa)."
+    }
+  },
+  {
+    "id": "whitefiber-nc1-madison-nc",
+    "name": "WhiteFiber NC-1 AI Data Center Campus",
+    "operator": "WhiteFiber (Bit Digital)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.3801,
+      "lon": -79.9692,
+      "city": "Madison",
+      "county": "Rockingham",
+      "state": "NC"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "poweredBy": "Duke Energy",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "WhiteFiber (Bit Digital's AI unit) acquired a ~1M sq ft NC industrial property for an AI/HPC campus; Nscale signed a 10-year, 40 MW anchor colocation (~$865M TCV)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/nscale-agrees-865m-deal-for-40mw-of-space-at-whitefiber-data-center-in-north-carolina/",
+        "label": "Nscale agrees $865m deal for 40MW of space at WhiteFiber data center in North Carolina",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.whitefiber.com/blog/nc-1-data-center",
+        "label": "Announcing NC-1: New Flagship Data Center in North Carolina",
+        "publisher": "WhiteFiber",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Operator is WhiteFiber (Bit Digital's AI unit); Nscale is the 40 MW anchor tenant (10-year, ~$865M total contract value = revenue, not capex — in notes). ~1M sq ft, up to 150 kW/cabinet, 99 MW secured from Duke Energy, 200 MW eventual site potential (planned figure). $150M WhiteFiber equity. Madison is in Rockingham County, NC. Coordinates are the Madison town centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy",
+      "notes": "99 MW power agreement with Duke Energy."
+    }
+  },
+  {
+    "id": "aws-laveen-az",
+    "name": "AWS Laveen Data Center Campus",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "aiClassification": "mixed_use",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.3727,
+      "lon": -112.1669,
+      "city": "Laveen",
+      "county": "Maricopa",
+      "state": "AZ"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Amazon (via Amazon Data Services) acquired ~220 acres near Loop 202 & Dobbins Rd in Laveen (Phoenix) for a possible data center; $277M land purchase",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/amazon-acquires-220-acres-in-phoenix-arizona-for-possible-data-center/",
+        "label": "Amazon acquires 220 acres in Phoenix, Arizona for possible data center",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~220-acre land acquisition ($277M) near Loop 202 & Dobbins Rd, Laveen (Phoenix), Maricopa County. No capacity, utility, or AI-specific program announced yet — recorded as proposed / mixed_use pending a construction announcement (re-review trigger). Coordinates are the Laveen area centroid.",
+    "community": {
+      "status": "unknown"
+    }
+  },
+  {
+    "id": "microsoft-fairwater-fayetteville-ga",
+    "name": "Microsoft Fairwater Atlanta (Azure AI Superfactory)",
+    "operator": "Microsoft",
+    "status": "operational",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.4487,
+      "lon": -84.4549,
+      "city": "Fayetteville",
+      "county": "Fayette",
+      "state": "GA"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "poweredBy": "Georgia Power",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-10",
+        "note": "Microsoft's Atlanta Fairwater AI datacenter began operation in October 2025 — the second in the Fairwater family; two-story, no UPS/gensets",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://news.microsoft.com/source/features/ai/from-wisconsin-to-atlanta-microsoft-connects-datacenters-to-build-its-first-ai-superfactory/",
+        "label": "From Wisconsin to Atlanta, Microsoft connects datacenters to build its first AI superfactory",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-launches-atlanta-fairwater-data-center-two-stories-no-ups-or-gen-sets/",
+        "label": "Microsoft launches Atlanta Fairwater data center, two stories, no UPS or gen sets",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "615-acre, up-to-13-building QTS-built campus on Hwy 54W near Fayetteville, Fayette County (Microsoft's materials say 'Atlanta'). Began operation Oct 2025 as Fairwater 2 — a 'multi-gigawatt' AI campus. ~1,500 MW is the anticipated ultimate Georgia Power load across all buildings (planned figure; ~433 MW cited as initially online). Distinct from Microsoft's smaller Tyrone, GA campus. Two-story design with no UPS or backup generators. Coordinates are the Fayetteville area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "Georgia Power"
+    }
+  },
+  {
+    "id": "aws-mattermeade-caroline-va",
+    "name": "AWS Mattermeade Tech Campus",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.044,
+      "lon": -77.3527,
+      "city": "Bowling Green",
+      "county": "Caroline",
+      "state": "VA"
+    },
+    "capacityMw": {
+      "planned": 770
+    },
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-02",
+        "note": "Amazon filed for Army Corps permits for the 11-building 'Mattermeade' campus (1,143 acres across Caroline & Spotsylvania counties, SE of I-95 & Mudd Tavern Rd); public comment through March 2025",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/amazon-requests-permit-for-11-building-data-center-campus-in-caroline-county-virginia/",
+        "label": "Amazon requests permit for 11-building data center campus in Caroline County, Virginia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "1,143 acres across Caroline & Spotsylvania counties, SE of the I-95 / Mudd Tavern Rd interchange; 11 two-story data center buildings plus an office. Amazon is 'seeking to develop a minimum of 770 MW by 2027'. Recorded as proposed (federal permit application filed / public-comment stage as of early 2025). Coordinates are the Bowling Green / Woodford area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "google-meitner-pampa-tx",
+    "name": "Google Meitner Energy Center",
+    "operator": "Google (with Intersect Power)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.5365,
+      "lon": -100.9609,
+      "city": "Pampa",
+      "county": "Gray",
+      "state": "TX"
+    },
+    "poweredBy": "Co-located on-site generation (Intersect Power)",
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Google and Intersect Power announced a new data center built alongside new co-located energy generation in Gray and Roberts Counties, TX",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.intersect.com/news/google-and-intersect-deepen-texas-roots-with-new-data-center-and-energy-investments-in-gray-and-roberts-counties",
+        "label": "Google and Intersect deepen Texas roots with new data center and energy investments in Gray and Roberts Counties",
+        "publisher": "Intersect Power",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Data center co-located with new energy generation, spanning Gray and Roberts counties near Pampa. Part of Google's ~$40B Texas commitment; Google took a stake in Intersect Power. IT capacity not disclosed. Coordinates are the Pampa area centroid.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Built directly alongside new co-located Intersect Power generation (solar/gas/storage)."
+    }
+  },
+  {
+    "id": "google-wilbarger-vernon-tx",
+    "name": "Google Wilbarger County Campus",
+    "operator": "Google (with AES)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.1551,
+      "lon": -99.294,
+      "city": "Vernon",
+      "county": "Wilbarger",
+      "state": "TX"
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Google announced a new air-cooled data center in Wilbarger County in a 'power-first' initiative with AES",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/data-center-wilbarger-county/",
+        "label": "A new data center in Wilbarger County, Texas",
+        "publisher": "Google",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Air-cooled data center near Vernon, Wilbarger County — a Google/AES 'power-first' initiative. Part of Google's broader Texas expansion. IT capacity not disclosed. Coordinates are the Vernon area centroid.",
+    "energy": {
+      "source": "grid",
+      "notes": "'Power-first' initiative with AES; air-cooled."
+    },
+    "water": {
+      "coolingType": "air"
+    }
+  },
+  {
+    "id": "iren-woods-county-ok",
+    "name": "IREN Woods County Campus",
+    "operator": "IREN (Iris Energy)",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.8031,
+      "lon": -98.667,
+      "city": "Alva",
+      "county": "Woods",
+      "state": "OK"
+    },
+    "capacityMw": {
+      "planned": 1600
+    },
+    "poweredBy": "Southwest Power Pool (SPP) grid",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "IREN land bank of ~2,000 acres in Woods County with a secured 1.6 GW power allocation on the SPP grid; power ramp from 2028",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/iren-woods-county-oklahoma",
+        "label": "IREN Woods County Oklahoma",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~2,000-acre land bank near Alva, Woods County, with a secured 1.6 GW power allocation on the Southwest Power Pool grid; initial power ramp scheduled for 2028. IREN's land-bank expansion beyond its operational Texas campuses (Childress, Sweetwater). Single-tracker source → confidence reported. Coordinates are the Alva area centroid.",
+    "energy": {
+      "source": "grid",
+      "notes": "Southwest Power Pool (SPP) grid; 1.6 GW allocation."
+    }
+  },
+  {
+    "id": "crusoe-blue-energy-victoria-tx",
+    "name": "Crusoe Victoria AI Factory",
+    "operator": "Crusoe (with Blue Energy)",
+    "status": "proposed",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 28.8053,
+      "lon": -97.0036,
+      "city": "Victoria",
+      "county": "Victoria",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "poweredBy": "On-site generation (Blue Energy: gas bridge → nuclear)",
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10",
+        "note": "Blue Energy and Crusoe announced a nuclear-powered AI factory campus at the Port of Victoria; gas bridge power ~2028, nuclear ~2031",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.crusoe.ai/resources/newsroom/blue-energy-and-crusoe-partner-to-develop-nuclear-powered-ai-data-center",
+        "label": "Blue Energy and Crusoe partner to develop nuclear-powered AI data center",
+        "publisher": "Crusoe",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Crusoe-developed AI factory campus at the Port of Victoria, powered by Blue Energy (natural-gas bridge as early as 2028, nuclear targeted ~2031). Distinct from Crusoe's Stargate Abilene campus. ~1.5 GW planned. Coordinates are the Victoria area centroid.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Blue Energy on-site generation: natural-gas bridge (~2028) transitioning to nuclear (~2031)."
+    }
+  },
+  {
+    "id": "bitdeer-clarington-oh",
+    "name": "Bitdeer Clarington HPC/AI Campus",
+    "operator": "Bitdeer",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.7748,
+      "lon": -80.8731,
+      "city": "Clarington",
+      "county": "Monroe",
+      "state": "OH"
+    },
+    "capacityMw": {
+      "planned": 570
+    },
+    "poweredBy": "AEP Ohio",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-11",
+        "note": "Bitdeer signed a Letter of Agreement with AEP Ohio; full 570 MW targeted available by end of Q3 2026 (crypto→HPC/AI)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ir.bitdeer.com/news-releases/news-release-details/bitdeer-announces-november-2025-production-and-operations-update",
+        "label": "Bitdeer announces November 2025 production and operations update",
+        "publisher": "Bitdeer Technologies Group",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Clarington, Monroe County; 570 MW via an AEP Ohio LOA, targeted available by end of Q3 2026. Bitdeer transitioning from bitcoin mining toward HPC/AI. Coordinates are the Clarington area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "AEP Ohio"
+    }
+  },
+  {
+    "id": "hut8-beacon-point-robstown-tx",
+    "name": "Hut 8 Beacon Point AI Campus",
+    "operator": "Hut 8",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 27.7897,
+      "lon": -97.6689,
+      "city": "Robstown",
+      "county": "Nueces",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 352
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-05",
+        "note": "Hut 8 commercialized Phase 1 of its 1 GW Beacon Point campus with a 15-year, 352 MW IT lease ($9.8B base-term contract value); delivery Q3 2027",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/hut-8-commercializes-first-phase-of-1-gw-beacon-point-ai-data-center-campus-with-15-year-352-mw-it-lease-with-base-term-contract-value-of-9-8-billion-302763484.html",
+        "label": "Hut 8 commercializes first phase of 1 GW Beacon Point AI data center campus with 15-year, 352 MW IT lease",
+        "publisher": "Hut 8 Corp.",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "1 GW site near Robstown, Nueces County; Phase 1 = a 15-year, 352 MW IT lease. The $9.8B base-term contract value is revenue, not capex (in notes). Delivery targeted Q3 2027. Coordinates are the Robstown area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "cipher-black-pearl-wink-tx",
+    "name": "Cipher Black Pearl Campus",
+    "operator": "Cipher Mining",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.751,
+      "lon": -103.1607,
+      "city": "Wink",
+      "county": "Winkler",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Cipher Mining signed a 15-year AWS lease to deliver ~300 gross MW at its Black Pearl campus near Wink; Phase I targeted Q4 2026",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/cipher-digital-black-pearl",
+        "label": "Cipher Digital Black Pearl",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~300 gross MW HPC/AI campus near Wink, Winkler County, under a 15-year AWS lease; Phase I targeted Q4 2026. Cipher transitioning crypto → HPC/AI. Coordinates are the Wink area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "cipher-barber-lake-colorado-city-tx",
+    "name": "Cipher Barber Lake Campus",
+    "operator": "Cipher Mining",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.3954,
+      "lon": -100.8687,
+      "city": "Colorado City",
+      "county": "Mitchell",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Cipher Mining acquired the 587-acre Barber Lake site near Colorado City for HPC/AI; Phase I targeted Sept 2026 (Fluidstack/Google lease)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/cipher-mining-acquires-more-than-500-acres-across-two-sites-in-texas-for-crypto-and-hpc-use/",
+        "label": "Cipher Mining acquires more than 500 acres across two sites in Texas for crypto and HPC use",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "587-acre Barber Lake site near Colorado City, Mitchell County; ~300 MW HPC/AI under a Fluidstack/Google lease; Phase I targeted Sept 2026. Coordinates are the Colorado City area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "coreweave-digital-crossroads-hammond-in",
+    "name": "CoreWeave Digital Crossroads",
+    "operator": "CoreWeave",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.5836,
+      "lon": -87.5,
+      "city": "Hammond",
+      "county": "Lake",
+      "state": "IN"
+    },
+    "capacityMw": {
+      "planned": 180
+    },
+    "poweredBy": "NIPSCO",
+    "announcedDate": "2025-06",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-06",
+        "note": "Hammond approved a 180 MW CoreWeave data center at the Digital Crossroads campus (June 2025); targeted 2027",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/coreweave-to-develop-180mw-data-center-at-digital-crossroads-campus-in-hammond-indiana/",
+        "label": "CoreWeave to develop 180MW data center at Digital Crossroads campus in Hammond, Indiana",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "180 MW facility at the Digital Crossroads campus in Hammond, Lake County; city approved June 2025, NIPSCO lease pending, targeted 2027. Coordinates are the Hammond area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "NIPSCO"
+    }
+  },
+  {
+    "id": "powerhouse-chirisa-chester-va",
+    "name": "Chirisa Technology Park — Richmond (Chester)",
+    "operator": "PowerHouse Data Centers / Chirisa (Blue Owl JV)",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3554,
+      "lon": -77.4416,
+      "city": "Chester",
+      "county": "Chesterfield",
+      "state": "VA"
+    },
+    "capacityMw": {
+      "planned": 120
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2024",
+        "note": "Blue Owl / Chirisa / PowerHouse JV first phase: initial 50 MW by 2025 expanding to a 120 MW facility (1 GW eventual plan); $600M construction loan closed",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/blue-owl-chirisa-technology-parks-and-powerhouse-data-centers-announce-first-phase-of-5-billion-joint-venture-development-partnership-302233967.html",
+        "label": "Blue Owl, Chirisa Technology Parks and PowerHouse Data Centers announce first phase of $5 billion JV development partnership",
+        "publisher": "PowerHouse Data Centers",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Chester, Chesterfield County — first phase of a Blue Owl / Chirisa / PowerHouse JV: initial 50 MW (2025) → 120 MW facility, with a ~1 GW eventual plan (in notes). $600M construction loan closed. Distinct parcel from Google's Midlothian (Chesterfield) campus. Coordinates are the Chester area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "soluna-project-kati-willacy-tx",
+    "name": "Soluna Project Kati",
+    "operator": "Soluna Holdings",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 26.4804,
+      "lon": -97.7836,
+      "city": "Raymondville",
+      "county": "Willacy",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 166
+    },
+    "poweredBy": "ERCOT grid",
+    "announcedDate": "2025-09",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-09",
+        "note": "Soluna broke ground on Project Kati (its largest site) in the Rio Grande Valley, Willacy County; 166 MW in two phases, Phase 1 live early 2026",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.businesswire.com/news/home/20250911683738/en/Soluna-Breaks-Ground-on-its-Largest-Site-to-Date-Project-Kati",
+        "label": "Soluna Breaks Ground on its Largest Site to Date, Project Kati",
+        "publisher": "Soluna Holdings",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Rio Grande Valley, Willacy County; 166 MW clean computing in two phases (scaling toward 300+ MW — in notes), ERCOT-approved, Phase 1 live early 2026. Coordinates are anchored to Raymondville (county seat); the exact parcel is unspecified.",
+    "energy": {
+      "source": "grid",
+      "notes": "ERCOT grid; Soluna markets 'clean computing' co-located with renewables."
+    }
+  },
+  {
+    "id": "lambda-aligned-plano-tx",
+    "name": "Lambda Plano AI Data Center (Aligned DFW-04)",
+    "operator": "Lambda",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.0198,
+      "lon": -96.6989,
+      "city": "Plano",
+      "county": "Collin",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Lambda to occupy a new ~$700M Aligned data center (DFW-04) under construction in Plano, Texas; 2026 target",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.devx.com/daily-news/lambda-cloud-to-occupy-aligned-data-center/",
+        "label": "Lambda Cloud to occupy Aligned data center in Plano",
+        "publisher": "DevX",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Lambda to occupy the ~$700M Aligned DFW-04 data center under construction in Plano, Collin County; 2026 target. Distinct from Lambda's Chicago and Kansas City sites. Coordinates are the Plano area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "tract-caldwell-valley-uhland-tx",
+    "name": "Tract Caldwell Valley Technology Park",
+    "operator": "Tract",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 29.9499,
+      "lon": -97.7889,
+      "city": "Uhland",
+      "county": "Caldwell",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 2000
+    },
+    "poweredBy": "Blue Bonnet Electric Cooperative",
+    "announcedDate": "2025-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-05",
+        "note": "Tract closed on 1,515 acres in Caldwell County (between Austin and San Antonio) for a multi-gigawatt data-center technology park; Facility Design Agreement with Blue Bonnet Electric Coop; initial 360 MW energization H1 2028",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tract.com/news/tract-closes-acquisition-of-1515-acres-in-caldwell-county-texas-for-multi-gigawatt-data-center-technology-park/",
+        "label": "Tract closes acquisition of 1,515 acres in Caldwell County, Texas for multi-gigawatt data center technology park",
+        "publisher": "Tract",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "1,515-acre megasite in Caldwell County (Uhland area, between Austin and San Antonio); over 2 GW at full buildout (expansion toward ~4 GW is a ceiling — in notes), initial 360 MW utility delivery H1 2028 via Blue Bonnet Electric Cooperative. Land acquisition closed May 2025 (pre-construction). Coordinates are the Uhland area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "Blue Bonnet Electric Cooperative"
+    }
+  },
+  {
+    "id": "qts-blue-hole-blakely-ga",
+    "name": "QTS Project Blue Hole",
+    "operator": "QTS Data Centers (Blackstone)",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.3763,
+      "lon": -84.9346,
+      "city": "Blakely",
+      "county": "Early",
+      "state": "GA"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026",
+        "note": "QTS filed a DRI for a data center campus in Blakely, Early County; construction start targeted July 2026, first delivery Sept 2027, ~12M sq ft at 2035 buildout",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/qts-targets-two-data-center-campuses-in-georgia/",
+        "label": "QTS targets two data center campuses in Georgia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Project Blue Hole in Blakely, Early County; DRI filed 2026, ~12M sq ft at full buildout by ~2035. ~1 GW+ is an estimate of ultimate scale (in notes). Coordinates are the Blakely area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "cleanarc-ruther-glen-va",
+    "name": "CleanArc VA1",
+    "operator": "CleanArc Data Centers",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.9374,
+      "lon": -77.4837,
+      "city": "Ruther Glen",
+      "county": "Caroline",
+      "state": "VA"
+    },
+    "capacityMw": {
+      "planned": 900
+    },
+    "announcedDate": "2025-11",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-11",
+        "note": "CleanArc broke ground on its 900 MW flagship campus in Ruther Glen, Caroline County; 200 MW online targeted Q3 2026, phased to mid-2030s",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/cleanarc-gets-green-light-for-600mw-data-center-campus-in-caroline-county-virginia/",
+        "label": "CleanArc gets green light for data center campus in Caroline County, Virginia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.vedp.org/press-release/2025-11/cleanarc-caroline",
+        "label": "CleanArc to establish data center campus in Caroline County",
+        "publisher": "Virginia Economic Development Partnership",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "900 MW flagship campus in Ruther Glen, Caroline County, phased into the mid-2030s (200 MW online targeted Q3 2026). Distinct operator/parcel from the AWS Mattermeade campus (also Caroline County). Coordinates are the Ruther Glen area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "qts-eisenhower-augusta-ga",
+    "name": "QTS Project Eisenhower",
+    "operator": "QTS Data Centers (Blackstone)",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.4735,
+      "lon": -82.0105,
+      "city": "Augusta",
+      "county": "Richmond",
+      "state": "GA"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "QTS 'Project Eisenhower' in Augusta (Richmond County): 6 buildings on ~170 acres, $2B+; rezoned 2024-25, preliminary grading underway",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wrdw.com/2025/12/26/flying-under-radar-new-data-center-will-twice-big-augusta-mall/",
+        "label": "New data center will be twice as big as Augusta Mall",
+        "publisher": "WRDW",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Project Eisenhower in Augusta, Richmond County — 6 buildings across ~170 acres, $2B+ project. Rezoned 2024-25 with preliminary grading underway. Estimated 300-500 MW (not officially disclosed — omitted from capacity). Coordinates are the Augusta area centroid.",
+    "energy": {
+      "source": "grid"
+    },
+    "landAcres": 170
+  },
+  {
+    "id": "rowan-temple-tx",
+    "name": "Rowan Project Temple",
+    "operator": "Rowan Digital Infrastructure",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.0982,
+      "lon": -97.3428,
+      "city": "Temple",
+      "county": "Bell",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Rowan Digital began construction on a 300 MW data center in Temple, Bell County; $3B financing secured, operations targeted 2027",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://rowan.digital/news/rowan-powers-texas-growth-as-construction-begins-on-300-mw-temple-data-center/",
+        "label": "Rowan powers Texas growth as construction begins on 300 MW Temple data center",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "300 MW campus in Temple, Bell County; $3B financing secured, operations targeted 2027. Distinct from Rowan's separately-tracked Frederick, MD campus. Coordinates are the Temple area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "prologis-mila-trenton-oh",
+    "name": "Prologis Project Mila",
+    "operator": "Prologis",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.48,
+      "lon": -84.4638,
+      "city": "Trenton",
+      "county": "Butler",
+      "state": "OH"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-03",
+        "note": "Trenton planning commission unanimously approved Prologis 'Project Mila' (4 × 220k sq ft buildings + on-site substation) in March 2026; construction from fall 2026",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/prologis-details-plans-for-data-center-campus-outside-cincinnati-ohio/",
+        "label": "Prologis details plans for data center campus outside Cincinnati, Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Project Mila in Trenton, Butler County (outside Cincinnati): four 220,000 sq ft single-story buildings (880k sq ft total) plus an on-site substation. Planning approved March 2026; construction from fall 2026. Estimated ~100-200 MW (not officially disclosed — omitted from capacity). Distinct from Prologis's Newnan, GA campus. Coordinates are the Trenton area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "raeden-taurus-colorado-springs-co",
+    "name": "Raeden Project Taurus",
+    "operator": "Raeden",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.8339,
+      "lon": -104.8214,
+      "city": "Colorado Springs",
+      "county": "El Paso",
+      "state": "CO"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026",
+        "note": "A 50 MW data center approved at the former Intel plant in Colorado Springs",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/50mw-data-center-could-be-built-in-colorado-springs/",
+        "label": "50MW data center could be built in Colorado Springs",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "50 MW data center at the former Intel plant in Colorado Springs, El Paso County. Coordinates are the Colorado Springs area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "coresite-de3-denver-co",
+    "name": "CoreSite DE3",
+    "operator": "CoreSite (American Tower)",
+    "status": "under_construction",
+    "aiClassification": "mixed_use",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.7392,
+      "lon": -104.9903,
+      "city": "Denver",
+      "county": "Denver",
+      "state": "CO"
+    },
+    "capacityMw": {
+      "planned": 60
+    },
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-10",
+        "note": "CoreSite reached a key construction milestone on DE3, a Denver campus expansion (~600k sq ft, 60 critical MW)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.businesswire.com/news/home/20251006047627/en/CoreSite-Achieves-Key-Construction-Milestone-for-New-DE3-Data-Center-in-Denver",
+        "label": "CoreSite Achieves Key Construction Milestone for New DE3 Data Center in Denver",
+        "publisher": "CoreSite / American Tower",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "DE3 Denver campus expansion: ~600,000 sq ft, 60 critical MW. CoreSite is a colocation/interconnection operator hosting AI/cloud tenants → mixed_use. Coordinates are the Denver centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "aws-wallula-gap-walla-walla-wa",
+    "name": "AWS Wallula Gap Campus",
+    "operator": "Amazon Web Services",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 46.0726,
+      "lon": -118.9135,
+      "city": "Wallula",
+      "county": "Walla Walla",
+      "state": "WA"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "A ~$4.8B, ~300 MW data center in Walla Walla County (Wallula), widely reported to be AWS",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/aws-likely-behind-48bn-data-center-in-walla-walla-washington/",
+        "label": "AWS likely behind $4.8bn data center in Walla Walla, Washington",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~$4.8B, ~300 MW campus near Wallula, Walla Walla County; operator reported (not officially confirmed) to be AWS → confidence reported. Coordinates are the Wallula area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "microsoft-fernley-nv",
+    "name": "Microsoft Victory Logistics District Campus",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.6082,
+      "lon": -119.2169,
+      "city": "Fernley",
+      "county": "Lyon",
+      "state": "NV"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-04",
+        "note": "Microsoft purchased ~300.7 acres at the Victory Logistics District in Fernley, Lyon County (potential data center)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nevadaappeal.com/news/2025/apr/17/microsoft-buy-300-acres-in-fernley-lyon-county-victory-logistics-district/",
+        "label": "Microsoft to buy 300 acres in Fernley's Lyon County Victory Logistics District",
+        "publisher": "Nevada Appeal",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~300.7-acre land acquisition at the Victory Logistics District in Fernley, Lyon County. Capacity and timeline not yet announced → proposed. Coordinates are the Fernley area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "google-skyway-pine-island-mn",
+    "name": "Google Project Skyway (Pine Island)",
+    "operator": "Google",
+    "status": "proposed",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.2019,
+      "lon": -92.6496,
+      "city": "Pine Island",
+      "county": "Goodhue",
+      "state": "MN"
+    },
+    "poweredBy": "Xcel Energy",
+    "announcedDate": "2026-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "Xcel Energy signed an agreement to power a new Google data center in Pine Island, MN; Electric Service Agreement pending MPUC approval",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://newsroom.xcelenergy.com/news/xcel-energy-to-power-new-google-data-center-in-minnesota",
+        "label": "Xcel Energy to power new Google data center in Minnesota",
+        "publisher": "Xcel Energy",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/data-center-pine-island/",
+        "label": "A new data center in Pine Island, Minnesota",
+        "publisher": "Google",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Google's first Minnesota campus, Pine Island (Goodhue County), powered by Xcel Energy; ~250,000 sq ft initial building for AI applications. Electric Service Agreement pending MPUC approval as of Feb 2026 → proposed. The associated 1,900 MW (1,400 MW wind + 200 MW solar + 300 MW storage) is a new clean-energy build-out, NOT the data center's IT load — DC capacity not disclosed (omitted). Faces a local legal challenge. Coordinates are the Pine Island area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "Xcel Energy",
+      "notes": "Xcel Energy; Google to cover new grid infrastructure costs. A separate 1,900 MW clean-energy build-out (wind/solar/storage) is tied to the ESA but is generation, not DC load."
+    },
+    "community": {
+      "status": "litigation"
+    }
+  },
+  {
+    "id": "microsoft-person-county-roxboro-nc",
+    "name": "Microsoft Person County Mega Park",
+    "operator": "Microsoft",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.396,
+      "lon": -78.9828,
+      "city": "Roxboro",
+      "county": "Person",
+      "state": "NC"
+    },
+    "poweredBy": "Duke Energy",
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026",
+        "note": "Microsoft bought the 1,385-acre Person County Mega Park (Woodsdale) for ~$26.85M and began permitting; powered by Duke Energy (large-load contract filed under seal)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://businessnc.com/microsoft-buys-person-county-mega-park-for-27-million/",
+        "label": "Microsoft buys Person County Mega Park for $27 million",
+        "publisher": "Business North Carolina",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-to-start-permitting-for-1385-acre-data-center-campus-in-north-carolina/",
+        "label": "Microsoft to start permitting for 1,385-acre data center campus in North Carolina",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "1,385-acre Person County Mega Park (Woodsdale township, near Roxboro); ~$26.85M land purchase. Powered by Duke Energy per a Q4-2025 8-K; the campus's MW is in a large-load contract filed under seal (NCUC) — not publicly disclosed (omitted). Coordinates are the Roxboro / Woodsdale area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy"
+    },
+    "landAcres": 1385
+  },
+  {
+    "id": "powerhouse-charlotte-nc",
+    "name": "PowerHouse Charlotte Campus",
+    "operator": "PowerHouse Data Centers (AREP)",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.2271,
+      "lon": -80.8431,
+      "city": "Charlotte",
+      "county": "Mecklenburg",
+      "state": "NC"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "PowerHouse acquired 120 acres in Charlotte for a 300 MW campus",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/powerhouse-acquires-120-acres-in-charlotte-north-carolina-for-300mw-campus/",
+        "label": "PowerHouse acquires 120 acres in Charlotte, North Carolina, for 300MW campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "120-acre, ~300 MW campus in Charlotte, Mecklenburg County. Distinct operator/parcel from the separately-tracked Digital Realty Charlotte site. Coordinates are the Charlotte centroid.",
+    "energy": {
+      "source": "grid"
+    },
+    "landAcres": 120
+  },
+  {
+    "id": "natelli-new-hill-nc",
+    "name": "Natelli New Hill Digital Campus",
+    "operator": "Natelli Holdings",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.6526,
+      "lon": -79.0033,
+      "city": "New Hill",
+      "county": "Wake",
+      "state": "NC"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Natelli Holdings proposed a 300 MW digital campus in New Hill, Wake County",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.blackridgeresearch.com/blog/latest-list-of-biggest-largest-upcoming-data-centers-north-carolina-united-states-us",
+        "label": "List of upcoming data centers in North Carolina",
+        "publisher": "Blackridge Research",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Proposed 300 MW digital campus in New Hill, Wake County. Single-tracker source → confidence reported. Coordinates are the New Hill area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "impactdata-greensboro-nc",
+    "name": "ImpactData Greensboro",
+    "operator": "ImpactData",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0726,
+      "lon": -79.792,
+      "city": "Greensboro",
+      "county": "Guilford",
+      "state": "NC"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "ImpactData building a 20 MW facility in Greensboro, targeting completion mid-2026",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.blackridgeresearch.com/blog/latest-list-of-biggest-largest-upcoming-data-centers-north-carolina-united-states-us",
+        "label": "List of upcoming data centers in North Carolina",
+        "publisher": "Blackridge Research",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "20 MW facility in Greensboro, Guilford County, targeting mid-2026 completion. Single-tracker source → confidence reported. Coordinates are the Greensboro centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "crane-pdx01-forest-grove-or",
+    "name": "Crane PDX01",
+    "operator": "Crane Data Centers",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.5207,
+      "lon": -123.1087,
+      "city": "Forest Grove",
+      "county": "Washington",
+      "state": "OR"
+    },
+    "capacityMw": {
+      "planned": 76
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Forest Grove planning commission greenlit Crane's PDX01 campus (76 MW by 2026), Washington County",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/planning-commission-greenlights-crane-dcs-forest-grove-data-center-in-northwest-oregon-again/",
+        "label": "Planning commission greenlights Crane DC's Forest Grove data center in northwest Oregon, again",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "PDX01 data center campus in Forest Grove, Washington County; 76 MW by 2026. Coordinates are the Forest Grove area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "stack-hillsboro-or",
+    "name": "STACK Hillsboro Campus",
+    "operator": "STACK Infrastructure",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5229,
+      "lon": -122.9898,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "state": "OR"
+    },
+    "capacityMw": {
+      "planned": 75
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "STACK Infrastructure project in Washington County (Hillsboro), OR, expected to deliver 75 MW by 2029",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cleanview.co/data-centers/oregon",
+        "label": "Oregon data centers",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~75 MW STACK campus in Hillsboro, Washington County, targeted 2029. Single-tracker source → confidence reported. Distinct from STACK's Loudoun, VA campus. Coordinates are the Hillsboro area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "powerhouse-pax-carlisle-pa",
+    "name": "PAX — Pennsylvania Digital I",
+    "operator": "PowerHouse Data Centers / Pennsylvania Data Center Partners",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.2015,
+      "lon": -77.1889,
+      "city": "Carlisle",
+      "county": "Cumberland",
+      "state": "PA"
+    },
+    "capacityMw": {
+      "planned": 1350
+    },
+    "announcedDate": "2025-07",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-07",
+        "note": "PA Data Center Partners and PowerHouse launched a $15B JV for a 1.35 GW hyperscale campus (Pennsylvania Digital I / PAX) in Carlisle; near-term 300 MW by Q2 2027",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/07/15/3115977/0/en/pennsylvania-data-center-partners-and-powerhouse-data-centers-launch-joint-venture-to-build-next-gen-1-35-gw-hyperscale-data-center-campus-in-carlisle-pennsylvania.html",
+        "label": "Pennsylvania Data Center Partners and PowerHouse Data Centers launch JV to build 1.35 GW hyperscale campus in Carlisle",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "'Pennsylvania Digital I' (PAX) in Carlisle, Cumberland County: a ~700-acre, three-campus development delivering 1.35 GW (expandable to 1.8 GW — in notes), each campus with six buildings and a 450 MW substation. The $15B is the project value across all three campuses (in notes). Near-term 300 MW by Q2 2027. Coordinates are the Carlisle area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "t5-chicago-iv-grayslake-il",
+    "name": "T5 Chicago IV (CHI IV)",
+    "operator": "T5 Data Centers",
+    "status": "proposed",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.3442,
+      "lon": -88.0417,
+      "city": "Grayslake",
+      "county": "Lake",
+      "state": "IL"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "poweredBy": "ComEd",
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "T5 announced its CHI IV campus in Grayslake (Lake County): up to 1.2 GW IT / 1.6 GW secured utility power; Phase 1 (3 × 60 MW) targeted Q4 2027",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/t5-plans-five-gigawatt-scale-data-center-campuses-announces-chicago-campus/",
+        "label": "T5 plans five gigawatt-scale data center campuses, announces Chicago campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "CHI IV in Grayslake, Lake County (~40 mi north of Chicago): up to 1.2 GW IT capacity with 1.6 GW secured ComEd power; envisions 20 × 60 MW buildings, Phase 1 (3 × 60 MW) targeted Q4 2027. Recorded as proposed (announced; no groundbreaking confirmed). Distinct from T5's Palmetto, GA campus. Coordinates are the Grayslake area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "ComEd",
+      "notes": "1.6 GW of secured ComEd utility power via an on-site substation."
+    }
+  },
+  {
+    "id": "equinix-ch8-minooka-il",
+    "name": "Equinix CH8 Minooka",
+    "operator": "Equinix",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.4506,
+      "lon": -88.262,
+      "city": "Minooka",
+      "county": "Grundy",
+      "state": "IL"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Equinix proposed a billion-dollar data center investment on ~300 acres in Minooka, IL",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://patch.com/illinois/channahon-minooka/equinix-proposes-billion-dollar-data-center-investment-minooka-nodx",
+        "label": "Equinix proposes billion-dollar data center investment in Minooka",
+        "publisher": "Patch",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Proposed ~300-acre, $1B+ Equinix campus in Minooka, Grundy County. Capacity not disclosed (omitted). Coordinates are the Minooka area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "metrobloks-liberty-mo",
+    "name": "Metrobloks Liberty Campus",
+    "operator": "Metrobloks (Lincoln Property Company)",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.2459,
+      "lon": -94.4191,
+      "city": "Liberty",
+      "county": "Clay",
+      "state": "MO"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Metrobloks announced a $1.4B, 150 MW AI-ready campus in Liberty, Clay County",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.metrobloks.com/press-release/metrobloks-announces-data-center-investment-in-liberty-missouri",
+        "label": "Metrobloks announces data center investment in Liberty, Missouri",
+        "publisher": "Metrobloks",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "$1.4B, 150 MW AI-ready campus in Liberty, Clay County. Coordinates are the Liberty area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "cloverleaf-troy-mo",
+    "name": "Cloverleaf Troy Campus",
+    "operator": "Cloverleaf Infrastructure",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9784,
+      "lon": -90.9832,
+      "city": "Troy",
+      "county": "Lincoln",
+      "state": "MO"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Cloverleaf Infrastructure planning a 500 MW campus near Troy, Lincoln County (near St. Louis); construction from early 2027",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.blackridgeresearch.com/blog/latest-list-new-ai-proposed-upcoming-data-center-projects-missouri-usa",
+        "label": "List of upcoming data center projects in Missouri",
+        "publisher": "Blackridge Research",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "500 MW full-buildout campus near Troy, Lincoln County (near St. Louis); construction from early 2027. Single-tracker source → confidence reported. Coordinates are the Troy area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "patmos-kansas-city-mo",
+    "name": "Patmos KC Star Building Campus",
+    "operator": "Patmos Hosting",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.0997,
+      "lon": -94.5786,
+      "city": "Kansas City",
+      "county": "Jackson",
+      "state": "MO"
+    },
+    "capacityMw": {
+      "planned": 35
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Patmos Hosting redeveloping the former Kansas City Star building into a ~35 MW, ~$1B data center",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.blackridgeresearch.com/blog/latest-list-new-ai-proposed-upcoming-data-center-projects-missouri-usa",
+        "label": "List of upcoming data center projects in Missouri",
+        "publisher": "Blackridge Research",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "~$1B redevelopment of the former Kansas City Star building into a ~35 MW data center, Jackson County. Distinct (downtown KC, Jackson County) from the Lambda/Google/Meta Kansas City sites. Single-tracker source → confidence reported. Coordinates are the Kansas City centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "google-winding-woods-st-george-sc",
+    "name": "Google Winding Woods Campus",
+    "operator": "Google",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.1843,
+      "lon": -80.5793,
+      "city": "St. George",
+      "county": "Dorchester",
+      "state": "SC"
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Google's second South Carolina campus, in Winding Woods Commerce Park, St. George (Dorchester County); part of a $9B SC investment",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-to-invest-9bn-in-south-carolina-data-centers/",
+        "label": "Google to invest $9bn in South Carolina data centers",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Google's second SC campus, in Winding Woods Commerce Park, St. George, Dorchester County; part of a $9B South Carolina investment (statewide figure — not a single-campus capex). Distinct from Google's Ridgeville, SC campus. IT capacity not disclosed. Coordinates are the St. George area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "ranalli-lysander-ny",
+    "name": "Ranalli Lysander Data Center",
+    "operator": "Ranalli",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "rumored",
+    "location": {
+      "lat": 43.17,
+      "lon": -76.39,
+      "city": "Lysander",
+      "county": "Onondaga",
+      "state": "NY"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Early-stage hyperscale data center proposal on ~120 acres in Lysander, Onondaga County; interconnection request up to 300 MW",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cleanview.co/public/data-centers/new-york/2042/ranalli-lysander-data-center",
+        "label": "Ranalli Lysander Data Center",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Early-stage proposal on ~120 acres in Lysander, Onondaga County, with a grid interconnection request of up to 300 MW. Very early / single-source → confidence rumored. Coordinates are the Lysander area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "aligned-phx13-glendale-az",
+    "name": "Aligned PHX-13",
+    "operator": "Aligned Data Centers",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.5387,
+      "lon": -112.186,
+      "city": "Glendale",
+      "county": "Maricopa",
+      "state": "AZ"
+    },
+    "capacityMw": {
+      "planned": 72
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Aligned broke ground on PHX-13, a 72 MW campus in Glendale, expanding its Arizona footprint",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://news.constructconnect.com/aligned-data-centers-breaks-ground-on-glendale-expanding-arizona-infrastructure",
+        "label": "Aligned Data Centers breaks ground on Glendale, expanding Arizona infrastructure",
+        "publisher": "ConstructConnect",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "PHX-13, a 72 MW campus in Glendale, Maricopa County. Coordinates are the Glendale area centroid.",
+    "energy": {
+      "source": "grid"
+    }
+  },
+  {
+    "id": "powerhouse-provident-grand-prairie-tx",
+    "name": "PowerHouse Grand Prairie Campus",
+    "operator": "PowerHouse Data Centers / Provident",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.62,
+      "lon": -97.02,
+      "city": "Grand Prairie",
+      "county": "Ellis",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 1800
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "PowerHouse and Provident developing a 1.8 GW campus in the DFW area (Grand Prairie): 24 buildings across three phases, 1.8 GW switchyard",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/powerhouse-and-provident-to-develop-18gw-campus-in-dfw-texas/",
+        "label": "PowerHouse and Provident to develop 1.8GW campus in DFW, Texas",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "1.8 GW DFW-area campus (Grand Prairie): 24 buildings across three phases with an on-site 1.8 GW switchyard. Grand Prairie spans Dallas/Tarrant/Ellis counties; the campus is in the Ellis County (southern) portion. Coordinates reflect the southern Grand Prairie / Ellis County zone.",
+    "energy": {
+      "source": "grid",
+      "notes": "On-site 1.8 GW switchyard."
+    }
+  },
+  {
+    "id": "compass-statesville-nc",
+    "name": "Compass Statesville Campus",
+    "operator": "Compass Datacenters",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.7826,
+      "lon": -80.8873,
+      "city": "Statesville",
+      "county": "Iredell",
+      "state": "NC"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "poweredBy": "Duke Energy",
+    "announcedDate": "2025-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09",
+        "note": "Statesville City Council rezoned a 333-acre site for a Compass Datacenters campus (5 buildings, ~500 MW); Duke Energy contracted power per a Feb 2026 8-K",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/compass-datacenters-proposes-333-acre-campus-in-statesville-north-carolina/",
+        "label": "Compass Datacenters proposes 333-acre campus in Statesville, North Carolina",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001326160/000110465926080476/tm2619723d1_8k.htm",
+        "label": "Duke Energy Form 8-K (Feb 2026) — large-load contracts",
+        "publisher": "U.S. SEC / Duke Energy",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "333-acre site in Statesville, Iredell County; five buildings, ~500 MW (per JLL marketing), near a Duke Energy substation. Rezoned Sept 2025; Duke's Feb 2026 8-K referenced ~4.5 GW of contracted large load including Compass and Microsoft. Coordinates are the Statesville area centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy"
+    },
+    "landAcres": 333
+  },
+  {
+    "id": "databank-indo-cartersville-ga",
+    "name": "DataBank Project Indo",
+    "operator": "DataBank",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.1651,
+      "lon": -84.7996,
+      "city": "Cartersville",
+      "county": "Bartow",
+      "state": "GA"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "DataBank filed a DRI for a 200 MW campus on 69 acres at 218 Industrial Park Rd in Cartersville (Bartow County); ~288 MW grid connection; 2032 first phase",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/databank-files-for-200mw-data-center-campus-outside-atlanta-georgia/",
+        "label": "DataBank files for 200MW data center campus outside Atlanta, Georgia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-07",
+    "notes": "Project Indo: a 200 MW campus on 69 acres at 218 Industrial Park Rd, Cartersville, Bartow County (~288 MW grid connection filed); DRI submitted, first phase targeted 2032. Coordinates are the Cartersville area centroid.",
+    "energy": {
+      "source": "grid"
+    },
+    "landAcres": 69
   }
 ]
