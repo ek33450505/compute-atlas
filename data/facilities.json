@@ -2685,10 +2685,22 @@
         "publisher": "The Tech Capital",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.fredericknewspost.com/news/continuing_coverage/quantum_loophole/potomac-edison-granted-waiver-to-connect-doubs-substation-with-rowan-data-center/article_d578a843-2a4a-5461-9ddb-cb03fefceaea.html",
+        "label": "Potomac Edison granted waiver to connect Doubs substation with Rowan data center",
+        "publisher": "Frederick News-Post",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
     "notes": "Rowan (Quinbrook Infrastructure Partners + Birch Infrastructure JV) serves as AWS hyperscale host at Quantum Frederick. Three campuses planned on-site total; Bauxite I is Phase 1 at 300MW. 777,150 sq ft total campus footprint. Coordinates approximate for same Quantum Frederick campus area as Aligned record.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Potomac Edison (FirstEnergy)",
+      "notes": "Served from the regional grid; the Maryland PSC approved Potomac Edison's plan to loop two existing 230 kV lines from the Doubs substation into a new switching station feeding the on-site Bauxite substation (built by Potomac Edison). County filings describe up to 92 x 2.75 MW backup generators (~253 MW, diesel or HVO)."
+    }
   },
   {
     "id": "lerner-brightseat-tech-park-md",
@@ -3255,10 +3267,34 @@
         "publisher": "DC BLOX",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://www.douglascountysentinel.com/douglasville_sentinel/city-approves-98-million-tax-break-for-expanded-data-site/article_7356b1e6-2fd1-548d-9990-ad97c861be9d.html",
+        "label": "City approves $98 million tax break for expanded data site",
+        "publisher": "Douglas County Sentinel",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "notes": "Initial 120 MW phase (Building A); site plan includes additional 80 MW Building B (delivery early 2028) and 80 MW Building C (early 2029) totaling 200+ MW. investmentUsd reflects green loan construction financing announced August 11, 2025. Located adjacent to Microsoft Douglasville campus, 2.5 miles from Google facility. Coordinates are Lithia Springs area centroid. Original DCD source URL returned HTTP 404 and was replaced with the DC BLOX official press release, which resolves and supports all claims.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Initial 120 MW phase (Building A); site plan includes additional 80 MW Building B (delivery early 2028) and 80 MW Building C (early 2029) totaling 200+ MW. investmentUsd reflects green loan construction financing announced August 11, 2025. Located adjacent to Microsoft Douglasville campus, 2.5 miles from Google facility. Coordinates are Lithia Springs area centroid. Original DCD source URL returned HTTP 404 and was replaced with the DC BLOX official press release, which resolves and supports all claims. The $98M Douglasville abatement was granted for the campus in the Riverside West Business Park (New River Road); city/authority filings cite 25 permanent jobs (~$130k average) and up to 500 construction jobs over five years — projections, not confirmed headcounts.",
+    "lastUpdated": "2026-07-06",
+    "subsidies": [
+      {
+        "program": "City of Douglasville property-tax abatement — $98M over 11 years (graduated: 0% years 1-3, 10% years 4-5, then 20%/40%/50% years 6-8, 60% years 9-10; applies to buildings/land, not servers)",
+        "jurisdiction": "City of Douglasville, GA",
+        "year": "2025",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Douglasville City Council unanimously approved the $98M abatement for the expanded campus (Mayor Pro Tem Terry Miller: 'It's hard to scoff at $2 billion coming into your community'); the project sits within a broader Douglas County data-center growth and zoning debate. No DC BLOX-specific organized opposition or litigation found.",
+      "sourceIndex": 2
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "DC BLOX's campus design specifies high-efficiency magnetic-bearing air-cooled chillers with thermal storage and provisions for a future liquid-cooling tie-in (operator campus page); the company characterizes the design as effectively waterless. Air-cooled chillers still use minimal water (humidification/occasional evaporative assist); no quantified water-use (MGD) figure has been published, and use could change if the liquid-cooling provision is activated."
+    }
   },
   {
     "id": "prologis-project-sail-coweta-ga",
@@ -4197,10 +4233,23 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://whnt.com/news/huntsville/facebook-parent-company-meta-invests-1-5-billion-in-huntsville-data-center/",
+        "label": "Facebook parent company Meta invests $1.5 billion in Huntsville Data Center",
+        "publisher": "WHNT",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "notes": "Address: 5400 Prosperity Dr NW, Huntsville, AL. Coordinates are approximate for Cummings Research Park area. Original 2.5M sq ft campus operational; expansion to 3.5M sq ft paused December 2022 for AI architecture redesign; Meta stated no intent to abandon site. Over 85 grants and $4.2M in sponsorships to Huntsville-area schools since 2019.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Address: 5400 Prosperity Dr NW, Huntsville, AL. Coordinates are approximate for Cummings Research Park area. Original 2.5M sq ft campus operational; expansion to 3.5M sq ft paused December 2022 for AI architecture redesign; Meta stated no intent to abandon site. Over 85 grants and $4.2M in sponsorships to Huntsville-area schools since 2019. Meta's stated investment rose to more than $1.5B with the June 2022 expansion (original 2018 build ~$750M); the 3.5M-sq-ft expansion was later paused for AI redesign, so the ultimately realized figure is uncertain. Alabama's standard data-center abatement (Chapter 9B) likely applies, but no dollar figure was found in public sources.",
+    "lastUpdated": "2026-07-06",
+    "investmentUsd": 1500000000,
+    "community": {
+      "status": "supported",
+      "notes": "Meta framed Huntsville as a 'natural fit'; since 2019 it has provided 85+ grants and $4.2M+ in sponsorships to area schools and STEM programs. No organized opposition found.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "meta-montgomery-al",
@@ -5246,7 +5295,12 @@
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Six facilities totaling 1.65 million sq ft across 313 acres. Largest data center groundbreaking in West Texas at time of announcement. TeraWulf separately targeting a data center campus in Abernathy for Fluidstack. Coordinates corrected: Abernathy TX is at approximately 33.84°N, 101.84°W; original record had longitude −101.55 which is ~15 miles east of the city."
+    "notes": "Six facilities totaling 1.65 million sq ft across 313 acres. Largest data center groundbreaking in West Texas at time of announcement. TeraWulf separately targeting a data center campus in Abernathy for Fluidstack. Coordinates corrected: Abernathy TX is at approximately 33.84°N, 101.84°W; original record had longitude −101.55 which is ~15 miles east of the city.",
+    "community": {
+      "status": "mixed",
+      "notes": "Hale County finalized a development agreement and the April 2026 groundbreaking was billed as the largest data-center groundbreaking in West Texas; Aligned emphasized funding dedicated electrical infrastructure to protect local ratepayers. Local coverage also documents some resident concern; no formal opposition or litigation found.",
+      "sourceIndex": 0
+    }
   },
   {
     "id": "google-stillwater-ok",
@@ -5976,8 +6030,13 @@
         "kind": "press"
       }
     ],
-    "notes": "Elliot Road Technology Corridor, Mesa. CEO stated 'Greater Phoenix is fast becoming the AI center of the West.' Expansion land purchase adds 43.87 acres to 40-acre original site. EdgeCore raised $2B equity and $2B debt in 2024. Coordinates approximate for Elliot Road corridor.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Elliot Road Technology Corridor, Mesa. CEO stated 'Greater Phoenix is fast becoming the AI center of the West.' Expansion land purchase adds 43.87 acres to 40-acre original site. EdgeCore raised $2B equity and $2B debt in 2024. Coordinates approximate for Elliot Road corridor. Arizona's data-center sales/use-tax exemption (A.R.S. Sec. 41-1519) applies by statute, but no campus-specific certified award was publicly verifiable (eligibility != confirmed award); the $150M cited is first-building capex and the $2B equity + $2B debt EdgeCore raised in 2024 is corporate financing, not Mesa-campus capex.",
+    "lastUpdated": "2026-07-06",
+    "community": {
+      "status": "supported",
+      "notes": "EdgeCore's Mesa campus (Elliot Road Technology Corridor) has operated since 2023 and expanded without documented project-specific opposition; the CEO framed Greater Phoenix as 'the AI center of the West.' Broader metro-Phoenix water and power scrutiny applies at the sector level.",
+      "sourceIndex": 0
+    }
   },
   {
     "id": "ntt-global-mesa-az",
@@ -6104,10 +6163,34 @@
         "publisher": "AZBEX",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/mesa-council-approves-1bn-google-arizona-data-center-16m-tax-breaks/",
+        "label": "Mesa Council approves $1bn Google data center, with $16m in tax breaks",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "notes": "Three-phase campus through 2030; originally filed anonymously as Project Red Hawk via LLC Stone Applications. Phase 1 operational July 2025. Phase 2 under construction. Coordinates at Elliot and Sossaman roads, SE Mesa.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Three-phase campus through 2030; originally filed anonymously as Project Red Hawk via LLC Stone Applications. Phase 1 operational July 2025. Phase 2 under construction. Coordinates at Elliot and Sossaman roads, SE Mesa. 2019 development agreement requires >=$600M capex by 2025, >=$1B by 2029, 750,000 sq ft built by 2030, and a >=$65,000 average full-time data-center salary; construction workforce has been cited around 1,200 (an estimate, not a permanent-jobs count).",
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "air",
+      "notes": "Google built the Mesa campus as air-cooled, chosen for Arizona's watershed scarcity; Mesa's economic-development director described it at groundbreaking as a 'cutting-edge, air-cooled data center campus.' The 2019 City of Mesa development agreement separately provided for the city to supply up to ~1 million gallons/day at launch, scaling toward ~4 million gallons/day at full build-out — a contractual water allocation/backup (on-site storage, existing wells, acquired water rights, long-term storage credits), not confirmed operational cooling consumption. No operational water-use figure has been published."
+    },
+    "subsidies": [
+      {
+        "program": "Government Property Lease Excise Tax (GPLET) — approx. $16M property-tax reduction over 25 years",
+        "jurisdiction": "City of Mesa, AZ",
+        "year": "2019",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "supported",
+      "notes": "Mesa City Council approved the $1B development and GPLET agreement in July 2019 (Mayor John Giles called it 'a home run'); one councilmember abstained as a Google shareholder and voiced reservations about large-corporation tax breaks. The city projected net positive tax revenue.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "meta-los-lunas-ai-nm",
@@ -6430,7 +6513,12 @@
       }
     ],
     "notes": "Founders Mark McDougal and David Gray converting family 4,000-acre alfalfa farm near Holden. Described by founders as largest private project in Utah history. Partnership with Caterpillar for generator sets; MOU with EnergySolutions for nuclear feasibility study. Part of Governor Cox's Operation Gigawatt initiative. Site at 4,800+ ft elevation for cooling efficiency. Coordinates approximate for Holden, Millard County.",
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "community": {
+      "status": "mixed",
+      "notes": "The Millard County Commission approved the project (Aug 2025) and it is widely framed as a landmark rural-Utah investment (part of Gov. Cox's Operation Gigawatt). Local coverage also notes resident concern about the campus's scale, off-grid gas generation, and water; the founders' family holds the water rights. No organized opposition or litigation surfaced.",
+      "sourceIndex": 1
+    }
   },
   {
     "id": "creekstone-delta-ut",
@@ -6552,7 +6640,7 @@
     "energy": {
       "source": "hydro",
       "utility": "Chelan County PUD",
-      "notes": "Carbon-free hydropower from Chelan PUD; 18 MW surplus hydropower through end of 2025, then long-term arrangement under utility energy marketing strategy"
+      "notes": "Carbon-free hydropower from Chelan PUD; 18 MW surplus hydropower through end of 2025, then long-term arrangement under utility energy marketing strategy. Under the June 2025 large-load contract, Microsoft will import new clean power from a third-party supplier for 2026-2040 (source undetermined); Chelan PUD is not obligated to serve its own hydropower. Microsoft funded the $86.5M Jumpoff Ridge substation."
     },
     "water": {
       "coolingType": "air",
@@ -6579,10 +6667,22 @@
         "publisher": "Cleanview",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://www.chelanpud.org/about-us/news/2025/06/17/pud-commissioners-approve-power-contract-for-microsoft-data-center",
+        "label": "PUD commissioners approve power contract for Microsoft data center",
+        "publisher": "Chelan County PUD",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. 288 MW figure from secondary aggregator Cleanview only; primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; original statusHistory incorrectly dated under_construction to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. 288 MW figure from secondary aggregator Cleanview only; primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; original statusHistory incorrectly dated under_construction to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway. A Building-1 permit cites ~72 peak-shift staff (a single-building figure, not a facility employment total); no confirmed total campus capital-expenditure figure is public.",
+    "lastUpdated": "2026-07-06",
+    "community": {
+      "status": "mixed",
+      "notes": "Chelan County PUD commissioners approved Microsoft's large-load power contract on June 16, 2025 (the first under the PUD's new large-load framework), structured so Microsoft bears the full cost and risk of its demand. Public comments centered on preserving reliability and affordable rates for existing customers, with some concern about service priority during energy shortfalls. No litigation.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "meta-kuna-id",
@@ -7193,6 +7293,20 @@
         "publisher": "Gilroy Dispatch",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.aboutamazon.com/news/aws/amazon-data-center-investment-community-impact",
+        "label": "Amazon data center investment: local jobs, education, sustainability",
+        "publisher": "Amazon",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://gilroydispatch.com/guest-view-what-amazon-didnt-tell-you-and-what-happened-when-we-asked/",
+        "label": "Guest View: What Amazon didn't tell you (Gilroy data center FEIR water figures)",
+        "publisher": "Gilroy Dispatch",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
     "energy": {
@@ -7205,8 +7319,14 @@
       "notes": "Organized resident opposition active. Concerns cited: utility cost spikes, noise, fire and explosion risk from large-scale lithium BESS, and objection to AI use. An appeal was filed July 21, 2025, subsequently withdrawn August 18, 2025. Opponents requested Amazon guarantee the facility would not be used exclusively for AI workloads.",
       "sourceIndex": 0
     },
-    "notes": "Status updated to under_construction: grading permit issued December 11, 2025; building permit issued March 19, 2026; City of Gilroy lists project as Under Construction as of July 2026. Site at 8050 Camino Arroyo in east Gilroy along Hwy 101. Full build-out: 438,000 sq ft across 56 acres.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Status updated to under_construction: grading permit issued December 11, 2025; building permit issued March 19, 2026; City of Gilroy lists project as Under Construction as of July 2026. Site at 8050 Camino Arroyo in east Gilroy along Hwy 101. Full build-out: 438,000 sq ft across 56 acres. Amazon cites a ~$2 billion investment for the Gilroy project (recorded as investmentUsd); its broader Northern California investment of ~$5.1B and ~1,890 jobs since 2009 is regional and not attributable to this site. The 2020 land purchase was $31.3M. Operational job figures conflict and are unconfirmed: the FEIR says employment 'may grow to 50 full-time employees' (a ceiling), the permit application lists 25, and Amazon's promotional materials cite ~90 on-site; the construction workforce is not disclosed.",
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "hybrid",
+      "reportedMgd": 0.016,
+      "notes": "Final EIR-certified use is 23 acre-feet/year total (~7.49 million gallons/yr) at full build-out — 18 AFY for cooling (~0.016 MGD), 3 AFY landscaping, 2 AFY domestic (FEIR p.186); drawn from Gilroy potable supply pending a recycled-water pipeline. Evaporative cooling is triggered only when outdoor temperature exceeds 83F (~3% of the year). Amazon's promotional figure of ~4 million gallons/yr (~36 households) is roughly half the FEIR-certified total and is disputed in a CEQA challenge; Amazon says it aims for 100% reclaimed cooling water by 2030."
+    },
+    "investmentUsd": 2000000000
   },
   {
     "id": "cyrusone-nas-lemoore-ca",
@@ -9351,7 +9471,7 @@
         "sourceIndex": 1
       }
     ],
-    "notes": "Campus is 400 MW fully contracted to CoreWeave under ~15-year lease agreements valued at ~$11B total revenue. Three buildings: Building 1 (100 MW) complete Dec 2025; Building 2 (150 MW) expected mid-2026; Building 3 (150 MW) expected 2027. Coordinates are Ellendale city centroid; exact site is northeast of the city.",
+    "notes": "Campus is 400 MW fully contracted to CoreWeave under ~15-year lease agreements valued at ~$11B total revenue. Three buildings: Building 1 (100 MW) complete Dec 2025; Building 2 (150 MW) expected mid-2026; Building 3 (150 MW) expected 2027. Coordinates are Ellendale city centroid; exact site is northeast of the city. Local jobs are reported only as projections — 'as many as 85 new jobs' (Dec 2024) and up to ~110 total local workforce at full expansion — not confirmed headcounts. No confirmed total campus capital-expenditure figure is public (the ~$11B CoreWeave figure is 15-year lease revenue, not capex); North Dakota's data-center sales-tax exemption applies but individual award amounts are statutorily confidential.",
     "sources": [
       {
         "url": "https://ir.applieddigital.com/news-events/press-releases/detail/123/applied-digital-announces-250mw-ai-data-center-lease-with",
@@ -9366,9 +9486,21 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://northernsentry.com/2024/12/19/a-shot-in-the-arm-for-ellendale/",
+        "label": "A shot in the arm for Ellendale",
+        "publisher": "Northern Sentry",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06"
+    "lastUpdated": "2026-07-06",
+    "community": {
+      "status": "supported",
+      "notes": "Ellendale (pop. ~1,000) has welcomed the campus as a transformative economic boost; the state's R-WISH rural-workforce housing program is funding new homes for incoming workers. No documented opposition or litigation. Coverage notes workforce and housing strain as growing pains.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "applied-digital-polaris-forge-2-harwood-nd",
