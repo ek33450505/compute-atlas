@@ -44,15 +44,33 @@ export function getStatusCounts(): Record<Status, number> {
   return counts;
 }
 
-/** Returns aggregate stats for the whole dataset. */
-export function getStats(): { count: number; states: number; totalMw: number } {
+/**
+ * Returns aggregate stats for the whole dataset.
+ *
+ * `operationalMw` — sum of `capacityMw.operational` across non-cancelled facilities.
+ * `plannedMw`     — sum of `capacityMw.planned` across non-cancelled facilities.
+ * Both lenses exclude cancelled projects so the displayed figures are not
+ * inflated by withdrawn announcements. They are intentionally independent
+ * (running vs announced) rather than a combined max/total.
+ */
+export function getStats(): {
+  count: number;
+  states: number;
+  operationalMw: number;
+  plannedMw: number;
+} {
   const count = facilities.length;
   const states = new Set(facilities.map((f) => f.location.state)).size;
-  const totalMw = facilities.reduce((sum, f) => {
-    const c = f.capacityMw;
-    return sum + Math.max(c?.operational ?? 0, c?.planned ?? 0);
-  }, 0);
-  return { count, states, totalMw };
+  const active = facilities.filter((f) => f.status !== "cancelled");
+  const operationalMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.operational ?? 0),
+    0
+  );
+  const plannedMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.planned ?? 0),
+    0
+  );
+  return { count, states, operationalMw, plannedMw };
 }
 
 /** Returns the top-N facilities sorted by highest capacity (operational or planned). */

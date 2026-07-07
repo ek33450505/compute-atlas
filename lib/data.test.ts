@@ -5,6 +5,7 @@ import {
   getStates,
   getOperators,
   getStatusCounts,
+  getStats,
 } from "@/lib/data";
 import { facilitySchema } from "@/lib/schema";
 
@@ -71,5 +72,52 @@ describe("getStatusCounts", () => {
     const counts = getStatusCounts();
     const total = Object.values(counts).reduce((a, b) => a + b, 0);
     expect(total).toBe(getAllFacilities().length);
+  });
+});
+
+describe("getStats", () => {
+  it("returns count matching full facility list", () => {
+    const { count } = getStats();
+    expect(count).toBe(getAllFacilities().length);
+  });
+
+  it("returns states matching unique state count", () => {
+    const { states } = getStats();
+    const expectedStates = new Set(
+      getAllFacilities().map((f) => f.location.state)
+    ).size;
+    expect(states).toBe(expectedStates);
+  });
+
+  it("operationalMw excludes cancelled facilities", () => {
+    const { operationalMw } = getStats();
+    const manual = getAllFacilities()
+      .filter((f) => f.status !== "cancelled")
+      .reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0);
+    expect(operationalMw).toBe(manual);
+  });
+
+  it("plannedMw excludes cancelled facilities", () => {
+    const { plannedMw } = getStats();
+    const manual = getAllFacilities()
+      .filter((f) => f.status !== "cancelled")
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    expect(plannedMw).toBe(manual);
+  });
+
+  it("operationalMw is non-negative", () => {
+    const { operationalMw } = getStats();
+    expect(operationalMw).toBeGreaterThanOrEqual(0);
+  });
+
+  it("plannedMw is substantially larger than operationalMw", () => {
+    const { operationalMw, plannedMw } = getStats();
+    // Project characteristic: planned pipeline dwarfs operational capacity
+    expect(plannedMw).toBeGreaterThan(operationalMw);
+  });
+
+  it("does not expose totalMw (old API is removed)", () => {
+    const stats = getStats();
+    expect((stats as Record<string, unknown>).totalMw).toBeUndefined();
   });
 });

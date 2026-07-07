@@ -14,7 +14,7 @@ export const metadata: Metadata = {
  * Server component: no client state needed.
  */
 export default function HomePage() {
-  const { count, states, totalMw } = getStats();
+  const { count, states, operationalMw, plannedMw } = getStats();
   const notable = getNotableFacilities(6);
 
   return (
@@ -74,10 +74,18 @@ export default function HomePage() {
         </div>
         <div className="flex flex-col gap-1">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {(totalMw / 1000).toFixed(0)} GW
+            {(operationalMw / 1000).toFixed(1)} GW
           </span>
           <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Capacity tracked
+            Operational
+          </span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+            {(plannedMw / 1000).toFixed(0)} GW
+          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            Planned pipeline
           </span>
         </div>
       </div>
