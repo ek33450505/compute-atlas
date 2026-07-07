@@ -93,21 +93,29 @@ export default async function FacilityPage({
       />
       {/* Back link */}
       <Link
-        href="/"
-        className="inline-flex items-center text-sm font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+        href="/map"
+        className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
       >
-        ← All facilities
+        ← Back to the map
       </Link>
 
-      {/* Header */}
+      {/* Plate masthead */}
       <header className="space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        <p className="font-mono text-xs uppercase tracking-widest text-primary">
+          {location}
+          {facility.location.county ? ` · ${facility.location.county} County` : ""}
+          {" · "}
+          <span
+            aria-label={`Coordinates: ${facility.location.lat.toFixed(3)} degrees north, ${Math.abs(facility.location.lon).toFixed(3)} degrees west`}
+          >
+            {facility.location.lat.toFixed(3)}°N {Math.abs(facility.location.lon).toFixed(3)}°W
+          </span>
+        </p>
+        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
           {facility.name}
         </h1>
-
-        <p className="text-lg text-muted-foreground">{facility.operator}</p>
-
-        <div className="flex flex-wrap items-center gap-2">
+        <p className="text-base text-muted-foreground">{facility.operator}</p>
+        <div className="flex flex-wrap items-center gap-2 pt-1">
           <StatusBadge status={facility.status} className="text-base" />
           <Badge variant="outline">
             {AI_CLASSIFICATION_LABELS[facility.aiClassification] ??
@@ -117,6 +125,7 @@ export default async function FacilityPage({
             {CONFIDENCE_LABELS[facility.confidence] ?? facility.confidence}
           </Badge>
         </div>
+        <div className="border-t border-border" />
       </header>
 
       {/* Provisional / rumored banner */}
@@ -158,12 +167,12 @@ export default async function FacilityPage({
 
       {/* Key facts */}
       <section aria-labelledby="key-facts-heading">
-        <h2 id="key-facts-heading" className="text-base font-semibold mb-4">
+        <h2 id="key-facts-heading" className="font-display text-xl text-foreground mb-4">
           Key facts
         </h2>
-        <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+        <dl className="neatline grid grid-cols-1 gap-x-8 gap-y-4 rounded-sm border border-border p-5 sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Location
             </dt>
             <dd className="mt-1 text-sm">
@@ -175,16 +184,16 @@ export default async function FacilityPage({
           </div>
 
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Capacity
             </dt>
-            <dd className="mt-1 text-sm tabular-nums">
+            <dd className="mt-1 text-sm font-mono tabular-nums">
               {formatCapacity(facility)}
             </dd>
           </div>
 
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Powered by
             </dt>
             <dd className="mt-1 text-sm">
@@ -193,19 +202,19 @@ export default async function FacilityPage({
           </div>
 
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Announced
             </dt>
-            <dd className="mt-1 text-sm tabular-nums">
+            <dd className="mt-1 text-sm font-mono tabular-nums">
               {facility.announcedDate ?? "—"}
             </dd>
           </div>
 
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Last updated
             </dt>
-            <dd className="mt-1 text-sm tabular-nums">
+            <dd className="mt-1 text-sm font-mono tabular-nums">
               <time dateTime={facility.lastUpdated}>{facility.lastUpdated}</time>
             </dd>
           </div>
@@ -223,7 +232,7 @@ export default async function FacilityPage({
 
       {/* Status timeline */}
       <section aria-labelledby="timeline-heading">
-        <h2 id="timeline-heading" className="text-base font-semibold mb-4">
+        <h2 id="timeline-heading" className="font-display text-xl text-foreground mb-4">
           Status history
         </h2>
         <StatusTimeline
@@ -236,7 +245,7 @@ export default async function FacilityPage({
 
       {/* Mini map */}
       <section aria-labelledby="map-heading">
-        <h2 id="map-heading" className="text-base font-semibold mb-4">
+        <h2 id="map-heading" className="font-display text-xl text-foreground mb-4">
           Location
         </h2>
         <FacilityMiniMapDynamic facility={facility} />
@@ -260,7 +269,7 @@ export default async function FacilityPage({
           target="_blank"
           rel="noreferrer noopener"
           aria-label="Suggest a correction for this facility (opens GitHub in a new tab)"
-          className="inline-flex items-center text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+          className="inline-flex items-center gap-1 font-mono text-sm uppercase tracking-wider text-primary underline-offset-4 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
         >
           Suggest a correction →
         </a>
