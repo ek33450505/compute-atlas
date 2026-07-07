@@ -139,3 +139,43 @@
     font-optical-sizing: auto;
   }
 }
+
+/* ── MapLibre popup — themed as a parchment atlas card (Track B, Phase 1b) ─────
+   Overrides maplibre-gl.css defaults (imported in components/map/facility-map.tsx).
+   Scoped via `.atlas-popup` (the react-map-gl <Popup className>) so it only skins
+   our facility popups, never other MapLibre chrome. Kept UNLAYERED so it competes
+   with maplibre-gl.css (also unlayered); the compound selectors raise specificity
+   above MapLibre's own rules regardless of stylesheet import order. */
+.atlas-popup .maplibregl-popup-content {
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem;
+  /* MapLibre sets Helvetica on .maplibregl-map, which the popup inherits — restore Geist. */
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* neatline inset frame (gap ring = card colour) + a soft, warm float shadow */
+  box-shadow:
+    inset 0 0 0 3px var(--popover),
+    inset 0 0 0 4px color-mix(in oklab, var(--border) 60%, transparent),
+    0 6px 20px -8px color-mix(in oklab, var(--foreground) 30%, transparent);
+}
+
+/* Tip triangle: fill with the card colour on whichever border faces the card
+   (MapLibre colours these #fff per anchor). */
+.atlas-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.atlas-popup.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.atlas-popup.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  border-bottom-color: var(--popover);
+}
+.atlas-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.atlas-popup.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.atlas-popup.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  border-top-color: var(--popover);
+}
+.atlas-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--popover);
+}
+.atlas-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--popover);
+}

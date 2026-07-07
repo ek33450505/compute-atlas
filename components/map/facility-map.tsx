@@ -238,6 +238,8 @@ export function FacilityMap({
               closeButton={false}
               anchor="bottom"
               offset={16}
+              className="atlas-popup"
+              maxWidth="none"
             >
               <FacilityPopup
                 facility={selectedFacility}
