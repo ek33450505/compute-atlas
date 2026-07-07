@@ -5,63 +5,127 @@ import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "About & methodology",
+  title: "About & method",
   description:
-    "How Compute Atlas defines, classifies, and tracks AI datacenters across the United States — data sources, confidence levels, status definitions, and known limitations.",
+    "Why Compute Atlas exists, how it is compiled, and the standards behind it — a community-driven, source-verified survey of U.S. AI-datacenter infrastructure.",
 };
 
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
-      <header className="space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          About &amp; methodology
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          How Compute Atlas defines, classifies, and tracks AI datacenters
-          across the United States.
-        </p>
+      {/* ---- Masthead ---- */}
+      <header className="relative">
+        <div
+          aria-hidden="true"
+          className="graticule pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]"
+        />
+        <div className="relative space-y-4 pb-8">
+          <p className="font-mono text-xs uppercase tracking-widest text-primary">
+            Manifesto &amp; method · Edition 2026
+          </p>
+          <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
+            Public, but scattered.
+          </h1>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            Compute Atlas is a community-driven, open, source-verified survey of
+            the AI-datacenter buildout across the United States — where it is
+            being built, by whom, and at what cost to energy, water, and the
+            communities nearby.
+          </p>
+        </div>
+        <div className="border-t border-border" />
       </header>
 
-      {/* What Compute Atlas is */}
-      <section aria-labelledby="about-heading" className="space-y-4">
-        <h2
-          id="about-heading"
-          className="text-xl font-semibold tracking-tight"
-        >
-          What Compute Atlas is
+      {/* ---- Manifesto ---- */}
+      <section aria-labelledby="manifesto-heading" className="space-y-8">
+        <h2 id="manifesto-heading" className="sr-only">
+          Manifesto
         </h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Compute Atlas is a free, neutral, open tracker of AI datacenters
-          across the United States, organized by build status and backed by a
-          source for every record. It is not affiliated with any company,
-          advocacy group, or government agency.
-        </p>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          The intended audience includes journalists, researchers, local
-          officials, and residents who want a factual starting point for
-          understanding where large-scale AI compute infrastructure is being
-          built, planned, or cancelled — and how confident the data is.
-        </p>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          The source code and data are public.{" "}
-          <a
-            href={siteConfig.repoUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="underline underline-offset-2 hover:text-foreground"
-          >
-            View the repository on GitHub
-          </a>
-          .
-        </p>
+
+        <div className="space-y-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § The problem
+          </p>
+          <h3 className="font-display text-2xl text-foreground">
+            The information is public. Assembling it is the hard part.
+          </h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            The facts about any given datacenter are, in principle, on the
+            record — scattered across county permit filings, tax-abatement
+            agreements, water-authority applications, interconnection queues,
+            and local news. No one keeps them in one place. Gathering them,
+            cross-checking them, and turning them into something comparable is
+            genuinely difficult work. That difficulty is the problem this atlas
+            exists to solve.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § The method
+          </p>
+          <h3 className="font-display text-2xl text-foreground">
+            A source for every record.
+          </h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Every field traces back to a public source, cited on the facility&rsquo;s
+            page. We record what the documents say and no more: ranges and
+            projections are marked as estimates, not presented as fact; where a
+            figure genuinely isn&rsquo;t known, the record says so rather than
+            guessing. Nothing here is fabricated or inferred beyond what a reader
+            can check for themselves.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § The invitation
+          </p>
+          <h3 className="font-display text-2xl text-foreground">
+            Built in the open, correctable by anyone.
+          </h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            The code and the data are public, and the atlas is meant to be
+            stewarded by the people who use it — journalists, researchers, local
+            officials, and residents. If a record is wrong, incomplete, or
+            missing, you can fix it. Every contribution needs one thing: a
+            public source anyone can verify.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § The stance
+          </p>
+          <h3 className="font-display text-2xl text-foreground">
+            Non-partisan, and not affiliated with anyone.
+          </h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Compute Atlas takes no editorial position on whether any facility
+            should be built. It is not affiliated with any company, advocacy
+            group, or government agency. The aim is a factual, honest starting
+            point — what to make of it is up to the reader.{" "}
+            <a
+              href={siteConfig.repoUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="View the source code and data on GitHub (opens in new tab)"
+              className="underline underline-offset-2 hover:text-foreground"
+            >
+              The source code and data are public.
+            </a>
+          </p>
+        </div>
       </section>
 
       {/* What counts as an AI datacenter */}
-      <section aria-labelledby="definition-heading" className="space-y-4">
+      <section aria-labelledby="definition-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § 01 · Definition
+        </p>
         <h2
           id="definition-heading"
-          className="text-xl font-semibold tracking-tight"
+          className="font-display text-2xl text-foreground"
         >
           What counts as an &ldquo;AI datacenter&rdquo;
         </h2>
@@ -109,10 +173,13 @@ export default function AboutPage() {
       </section>
 
       {/* Status definitions */}
-      <section aria-labelledby="status-heading" className="space-y-4">
+      <section aria-labelledby="status-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § 02 · Status
+        </p>
         <h2
           id="status-heading"
-          className="text-xl font-semibold tracking-tight"
+          className="font-display text-2xl text-foreground"
         >
           Status definitions
         </h2>
@@ -135,10 +202,13 @@ export default function AboutPage() {
       </section>
 
       {/* Confidence levels */}
-      <section aria-labelledby="confidence-heading" className="space-y-4">
+      <section aria-labelledby="confidence-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § 03 · Confidence
+        </p>
         <h2
           id="confidence-heading"
-          className="text-xl font-semibold tracking-tight"
+          className="font-display text-2xl text-foreground"
         >
           Confidence levels
         </h2>
@@ -177,10 +247,13 @@ export default function AboutPage() {
       </section>
 
       {/* How data is compiled */}
-      <section aria-labelledby="data-heading" className="space-y-4">
+      <section aria-labelledby="data-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § 04 · Sources
+        </p>
         <h2
           id="data-heading"
-          className="text-xl font-semibold tracking-tight"
+          className="font-display text-2xl text-foreground"
         >
           How the data is compiled
         </h2>
@@ -205,10 +278,13 @@ export default function AboutPage() {
       </section>
 
       {/* Limitations */}
-      <section aria-labelledby="limitations-heading" className="space-y-4">
+      <section aria-labelledby="limitations-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § 05 · Limitations
+        </p>
         <h2
           id="limitations-heading"
-          className="text-xl font-semibold tracking-tight"
+          className="font-display text-2xl text-foreground"
         >
           Limitations
         </h2>
@@ -245,10 +321,13 @@ export default function AboutPage() {
       </section>
 
       {/* Attribution and licenses */}
-      <section aria-labelledby="attribution-heading" className="space-y-4">
+      <section aria-labelledby="attribution-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § 06 · License
+        </p>
         <h2
           id="attribution-heading"
-          className="text-xl font-semibold tracking-tight"
+          className="font-display text-2xl text-foreground"
         >
           Attribution &amp; licenses
         </h2>
@@ -316,24 +395,28 @@ export default function AboutPage() {
       </section>
 
       {/* Contribute / corrections */}
-      <section aria-labelledby="contribute-heading" className="space-y-4">
+      <section aria-labelledby="contribute-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § 07 · Contribute
+        </p>
         <h2
           id="contribute-heading"
-          className="text-xl font-semibold tracking-tight"
+          className="font-display text-2xl text-foreground"
         >
           Contribute &amp; corrections
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Compute Atlas is community-correctable. If you have a correction,
-          missing facility, or updated source, please open an issue on GitHub.
-          Every submitted change should include a public source URL.
+          Community contribution is how this atlas stays accurate and grows.
+          If you have a correction, a missing facility, or an updated source,
+          open an issue on GitHub — every submitted change needs one thing: a
+          public source URL anyone can verify.
         </p>
         <a
           href={`${siteConfig.repoUrl}/issues`}
           target="_blank"
           rel="noreferrer noopener"
           aria-label="Open an issue on GitHub to suggest a correction or new facility (opens in new tab)"
-          className="inline-flex items-center text-sm font-medium text-primary hover:underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+          className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           Open an issue on GitHub →
         </a>
