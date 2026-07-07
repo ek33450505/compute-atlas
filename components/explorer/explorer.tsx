@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
   useQueryState,
   parseAsStringLiteral,
@@ -63,6 +65,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
   );
   const [q, setQ] = useQueryState("q", parseAsString.withDefault(""));
 
+  const searchParams = useSearchParams();
+
   const filtered = useMemo(
     () =>
       filterFacilities(facilities, {
@@ -96,6 +100,43 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
             <FacilityMap facilities={filtered} heightClass="h-full min-h-[320px]" />
           </section>
         </div>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Table-only mode — /table page (Phase 1d(b)).
+  // Reuses the shared nuqs filter state so /map and /table share one URL
+  // schema; the "View map" cross-link copies the current query so filters
+  // carry between the two views.
+  // -------------------------------------------------------------------------
+  if (mode === "table") {
+    const qs = searchParams.toString();
+    const mapHref = qs ? `/map?${qs}` : "/map";
+
+    return (
+      <div className="space-y-4">
+        <Link
+          href={mapHref}
+          className="inline-flex items-center gap-1 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          ← View map
+        </Link>
+        <FilterBar
+          facilities={facilities}
+          values={{ status, state, operator, minMw, q }}
+          setters={{ setStatus, setState, setOperator, setMinMw, setQ }}
+        />
+        <p
+          role="status"
+          aria-live="polite"
+          className="font-mono text-xs uppercase tracking-wider text-muted-foreground"
+        >
+          Showing {filtered.length} of {facilities.length} facilities
+        </p>
+        <section aria-label="Facilities data table">
+          <FacilityTable facilities={filtered} />
+        </section>
       </div>
     );
   }

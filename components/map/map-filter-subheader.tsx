@@ -70,6 +70,19 @@ export function MapFilterSubheader({
     setIsOpen(window.matchMedia("(min-width: 640px)").matches);
   }, []);
 
+  // Build the "View as table" href from the current filter values so filters
+  // carry to /table via the URL. Derived from `values` (not useSearchParams)
+  // so this component renders in isolation (unit tests) without an App Router
+  // context; the param schema matches the nuqs parsers on /table.
+  const tableParams = new URLSearchParams();
+  if (values.status.length) tableParams.set("status", values.status.join(","));
+  if (values.state.length) tableParams.set("state", values.state.join(","));
+  if (values.operator.length) tableParams.set("operator", values.operator.join(","));
+  if (values.minMw > 0) tableParams.set("minMw", String(values.minMw));
+  if (values.q.trim()) tableParams.set("q", values.q);
+  const tableQs = tableParams.toString();
+  const tableHref = tableQs ? `/table?${tableQs}` : "/table";
+
   const activeCount = countActiveFilters(values);
 
   return (
@@ -117,7 +130,7 @@ export function MapFilterSubheader({
 
         {/* "View as table →" cross-link — hidden on mobile to keep bar compact */}
         <Link
-          href="/table"
+          href={tableHref}
           className="hidden sm:block font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm shrink-0"
         >
           View as table →

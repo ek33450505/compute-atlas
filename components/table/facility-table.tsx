@@ -28,6 +28,7 @@ import {
   formatLocation,
   getFacilityMaxMw,
 } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { Facility } from "@/lib/schema";
 
 // ---------------------------------------------------------------------------
@@ -71,7 +72,7 @@ const columns: ColumnDef<Facility>[] = [
     cell: ({ row }) => (
       <Link
         href={`/facilities/${row.original.id}`}
-        className="font-medium underline underline-offset-2 hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+        className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-primary hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
       >
         {row.original.name}
       </Link>
@@ -128,20 +129,20 @@ function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
     return (
       <ArrowUp
         aria-hidden="true"
-        className="ml-1 size-3.5 shrink-0 text-muted-foreground"
+        className="ml-1 size-3.5 shrink-0 text-foreground"
       />
     );
   if (direction === "desc")
     return (
       <ArrowDown
         aria-hidden="true"
-        className="ml-1 size-3.5 shrink-0 text-muted-foreground"
+        className="ml-1 size-3.5 shrink-0 text-foreground"
       />
     );
   return (
     <ArrowUpDown
       aria-hidden="true"
-      className="ml-1 size-3.5 shrink-0 text-muted-foreground/50"
+      className="ml-1 size-3.5 shrink-0 text-muted-foreground"
     />
   );
 }
@@ -168,7 +169,8 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
   });
 
   return (
-    <Table>
+    <div className="overflow-hidden rounded-sm border border-border">
+      <Table>
       <TableCaption className="sr-only">
         AI datacenters — sortable table
       </TableCaption>
@@ -197,14 +199,17 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
                   key={header.id}
                   scope="col"
                   aria-sort={ariaSort}
-                  className={isRightAligned ? "text-right" : undefined}
+                  className={cn(
+                    "font-mono text-[11px] uppercase tracking-wider text-muted-foreground",
+                    isRightAligned && "text-right"
+                  )}
                 >
                   {canSort ? (
                     <button
                       type="button"
                       onClick={header.column.getToggleSortingHandler()}
                       aria-label={`Sort by ${header.column.columnDef.header as string}`}
-                      className="inline-flex items-center font-medium text-foreground hover:text-foreground/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+                      className="inline-flex items-center gap-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                     >
                       {flexRender(
                         header.column.columnDef.header,
@@ -259,5 +264,6 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
         )}
       </TableBody>
     </Table>
+    </div>
   );
 }

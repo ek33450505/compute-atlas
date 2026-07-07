@@ -104,6 +104,48 @@ test("/map status filter updates URL and reduces results; Clear all resets", asy
   await expect(page).not.toHaveURL(/status=/);
 });
 
+test("filter state carries from /map to /table via the shared URL", async ({
+  page,
+}) => {
+  await page.goto("/map");
+
+  const statusEl = page.getByRole("status");
+  // Capture the unfiltered count: "Showing N of N facilities"
+  await expect(statusEl).toContainText(/Showing \d+ of \d+ facilities/);
+
+  // Click the "Operational" status checkbox to apply a filter
+  const operationalCheckbox = page.getByRole("checkbox", {
+    name: "Operational",
+  });
+  await operationalCheckbox.click();
+
+  // Assert the URL now includes the filter parameter
+  await expect(page).toHaveURL(/[?&]status=operational/);
+
+  // Click "View as table" link to navigate to /table
+  const tableLink = page.getByRole("link", { name: /View as table/i });
+  await tableLink.click();
+
+  // Assert the /table URL also has the status filter in the query string
+  await expect(page).toHaveURL(/\/table\?.*status=operational/);
+
+  // Verify the status region is visible and shows filtered results
+  const tableStatusEl = page.getByRole("status");
+  await expect(tableStatusEl).toContainText(/Showing \d+ of \d+ facilities/);
+
+  // Parse the status text to confirm the filter is actually applied:
+  // The filtered count (first number) should be less than the total (second number)
+  const statusText = await tableStatusEl.textContent();
+  const match = statusText?.match(/Showing (\d+) of (\d+)/);
+  expect(match).toBeTruthy();
+  const filteredCount = Number(match![1]);
+  const totalCount = Number(match![2]);
+  expect(filteredCount).toBeLessThan(totalCount);
+
+  // Verify the table is visible on /table
+  await expect(page.getByRole("table")).toBeVisible();
+});
+
 // ---------------------------------------------------------------------------
 // /table page — data table
 // ---------------------------------------------------------------------------
