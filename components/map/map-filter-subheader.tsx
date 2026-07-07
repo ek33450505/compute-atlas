@@ -109,7 +109,7 @@ export function MapFilterSubheader({
           aria-live="polite"
           className="sr-only sm:not-sr-only sm:ml-1 shrink-0 font-mono text-xs text-muted-foreground"
         >
-          Showing {filteredCount} of {totalCount}
+          Showing {filteredCount} of {totalCount} facilities
         </p>
 
         {/* Spacer */}
