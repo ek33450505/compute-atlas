@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
+    <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
       {/* ---- Masthead ---- */}
       <header className="relative">
         <div
@@ -420,6 +420,12 @@ export default function AboutPage() {
         >
           Open an issue on GitHub →
         </a>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Prefer to support the work directly?{" "}
+          <a href={siteConfig.sponsorUrl} target="_blank" rel="noreferrer noopener"
+             aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
+             className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">Sponsor this project on GitHub</a>.
+        </p>
       </section>
 
       {/* Back navigation */}

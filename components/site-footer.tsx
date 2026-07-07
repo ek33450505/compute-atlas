@@ -17,7 +17,7 @@ export function SiteFooter() {
         className="graticule pointer-events-none absolute inset-0 opacity-30 [mask-image:linear-gradient(to_bottom,transparent,black_60%)]"
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6">
+      <div data-footer-inner className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr]">
           {/* Colophon — identity, mission, attribution */}
           <div className="space-y-3">
@@ -40,6 +40,11 @@ export function SiteFooter() {
             <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
               An independent project by Edward Kubiak
             </p>
+            <a href={siteConfig.sponsorUrl} target="_blank" rel="noreferrer noopener"
+               aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
+               className="inline-flex min-h-11 items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
+              Sponsor this project <span aria-hidden="true">↗</span>
+            </a>
           </div>
 
           {/* Navigate */}
@@ -76,7 +81,11 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li className="leading-relaxed">
-                Map data © OpenStreetMap contributors
+                Map data &copy;{" "}
+                <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer noopener"
+                   aria-label="OpenStreetMap copyright and license (opens in new tab)"
+                   className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">OpenStreetMap</a>{" "}
+                contributors
               </li>
               <li>
                 <a

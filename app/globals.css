@@ -221,3 +221,10 @@
 .atlas-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
   border-left-color: var(--popover);
 }
+
+/* Footer aligns to each page's content width. Atlas-plate pages declare their
+   reading width via data-content-width; the footer matches so its left/right edges
+   line up with the article above it. Unlayered + compound selector to beat the
+   Tailwind max-w-7xl utility on the footer inner container. */
+body:has([data-content-width="3xl"]) [data-footer-inner] { max-width: 48rem; }
+body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
