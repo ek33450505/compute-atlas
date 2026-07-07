@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { siteConfig } from "@/lib/site";
 import { getStats } from "@/lib/data";
 
@@ -23,12 +25,10 @@ export const alt = `${siteConfig.name} — ${siteConfig.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// TODO: Fraunces serif wordmark enhancement — bundle the Fraunces-600.ttf locally
-// (in public/fonts/) and load via fs.readFileSync instead of fetching from Google Fonts
-// at build time. The Google Fonts CSS API returns a format Satori cannot parse at build,
-// causing "Unsupported OpenType signature" even with the legacy IE UA trick.
+// Fraunces-72pt-SemiBold.ttf is vendored in public/fonts/ — loaded via readFileSync below.
 
 export default function OGImage() {
+  const fraunces = readFileSync(join(process.cwd(), "public/fonts/Fraunces-72pt-SemiBold.ttf"));
   const { count, states, operationalMw } = getStats();
   const statLine = `${count} SITES · ${states} STATES · ${(operationalMw / 1000).toFixed(1)} GW OPERATIONAL`;
 
@@ -104,6 +104,7 @@ export default function OGImage() {
                   color: INK,
                   letterSpacing: "-1.5px",
                   lineHeight: 1,
+                  fontFamily: "Fraunces",
                 }}
               >
                 {siteConfig.name}
@@ -148,6 +149,7 @@ export default function OGImage() {
     ),
     {
       ...size,
+      fonts: [{ name: "Fraunces", data: fraunces, weight: 600, style: "normal" }],
     }
   );
 }
