@@ -31,8 +31,10 @@ interface FacilityMapProps {
  *   Screen readers can tab through all visible markers/clusters; each has a descriptive aria-label.
  *   Clustering is zoom-dependent: facilities within 44px of each other are grouped into a
  *   ClusterMarker bubble. Activating a cluster calls fitBounds to zoom into that group.
- * - Basemap: OpenFreeMap positron (free, no API key, low-saturation).
- *   TODO: theme-aware/dark basemap + self-hosted PMTiles later.
+ * - Basemap: custom "flat parchment atlas" style at /basemap/parchment.json,
+ *   generated from OpenFreeMap positron/openmaptiles tiles by
+ *   `scripts/build-parchment-style.mjs`. Warm parchment land, slate-blue water,
+ *   ink hairlines. Regenerate the snapshot with `npm run build:basemap`.
  * - prefers-reduced-motion: when enabled, easeTo/fitBounds uses duration 0 (instant);
  *   otherwise animation runs over 600 ms.
  * - Focus management: closing a popup returns focus to the triggering marker button.

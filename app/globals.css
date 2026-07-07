@@ -117,10 +117,6 @@
   html {
     @apply font-sans;
   }
-  /* warm ONLY the basemap tiles (canvas), leaving DOM markers/controls crisp */
-  .maplibregl-canvas {
-    filter: sepia(0.28) saturate(0.72) brightness(1.03) contrast(0.96);
-  }
 }
 
 @layer utilities {
