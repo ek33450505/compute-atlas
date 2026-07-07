@@ -2757,8 +2757,13 @@
         "kind": "press"
       }
     ],
-    "notes": "2101 Brightseat Road, Landover MD. Project has final plan approvals but is politically frozen pending task force report. Five buildings on 87 acres of former mall site.",
-    "lastUpdated": "2026-07-06"
+    "notes": "2101 Brightseat Road, Landover MD. Project has final plan approvals but is politically frozen pending task force report. Five buildings on 87 acres of former mall site. As a permitted-but-frozen project, no facility-specific water design, subsidy award, or committed job figures have been disclosed; job figures circulating in press are Maryland Tech Council sector benchmarks, not Brightseat commitments.",
+    "lastUpdated": "2026-07-06",
+    "energy": {
+      "source": "grid",
+      "utility": "Pepco (Exelon)",
+      "notes": "Prince George's County is Pepco (Exelon) service territory. The 820 MW campus holds final plan approvals but has been politically frozen since a September 2025 county-executive order and a council moratorium, so interconnection/PJM and on-site generation details remain undisclosed."
+    }
   },
   {
     "id": "starwood-digital-project-washington-de",
@@ -4948,10 +4953,33 @@
         "publisher": "Datacenters.com",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.texasmonthly.com/news-politics/data-center-water-shortage-medina-county/",
+        "label": "How One Texas County Struck a Deal With Its Data Centers",
+        "publisher": "Texas Monthly",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://sanantonioreport.org/medina-county-farmland-data-centers-strain/",
+        "label": "Data centers replacing Medina County farmland, straining resources",
+        "publisher": "San Antonio Report",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Two single-story facilities (SAT89 and SAT90), each 244,700 sq ft, along US Hwy 90 in Medina County. Part of Microsoft's broader San Antonio campus (operating since 2005). $765M investment covers the two new buildings; broader expansion including Texas Research Park adds another $1B. Coordinates are approximate Castroville area centroid; exact parcel not publicly identified. Completion target corrected to July 2027 per permit filings."
+    "notes": "Two single-story facilities (SAT89 and SAT90), each 244,700 sq ft, along US Hwy 90 in Medina County. Part of Microsoft's broader San Antonio campus (operating since 2005). $765M investment covers the two new buildings; broader expansion including Texas Research Park adds another $1B. Coordinates are approximate Castroville area centroid; exact parcel not publicly identified. Completion target corrected to July 2027 per permit filings. Tax abatements for SAT89/SAT90 are shielded under Texas competitive-information law (a Chapter 312 abatement is confirmed only for the earlier SAT82 building); site-specific job counts are unpublished (an earlier SAT82 building cited ~50 permanent / ~1,500 construction).",
+    "water": {
+      "coolingType": "air",
+      "notes": "Microsoft switched the Medina County design from evaporative to air-cooling at the request of Yancey Water Supply (which serves the area), cutting projected water use ~85% (~150,000 gpd). No site-specific residual water-use (MGD) figure is published."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Medina County, west of San Antonio, hosts one of the densest Microsoft data-center clusters in the U.S.; residents and officials have raised concern over farmland conversion and groundwater strain, while the local tax base benefits and a cooperative water-supply redesign (air-cooling) resolved one supplier's objection. No litigation found.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "riot-platforms-corsicana-tx",
@@ -5353,10 +5381,48 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.thestillwegian.news/2025-storylines-big-tech-comes-to-town/",
+        "label": "The Google Deal: Stillwater's Biggest Story of 2025",
+        "publisher": "The Stillwegian",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://kfor.com/news/local/payne-county-commissioner-raises-water-concerns-over-planned-google-data-center-complex-in-stillwater/",
+        "label": "Payne County commissioner raises water concerns over planned Google data center",
+        "publisher": "KFOR",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.stwnewspress.com/news/update-stillwater-hoa-suing-google-over-claims-of-contamination-from-construction-site/article_350151c1-124a-405d-ad75-ca84c842556d.html",
+        "label": "Stillwater HOA suing Google over claims of contamination from construction site",
+        "publisher": "Stillwater News Press",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Campus at intersection of Perkins Road and Richmond Road, north of Stillwater. Coordinates are approximate (city centroid shifted north). Up to 6 data center buildings, each 300,000 sq ft. Phase I targeted for 2027. City Council acceptance of final plat required before recording with Payne County Clerk."
+    "notes": "Campus at intersection of Perkins Road and Richmond Road, north of Stillwater. Coordinates are approximate (city centroid shifted north). Up to 6 data center buildings, each 300,000 sq ft. Phase I targeted for 2027. City Council acceptance of final plat required before recording with Payne County Clerk. Job figures are projections (~30 permanent per phase; construction cited as 'thousands') - not recorded as confirmed counts. Oklahoma's Sec. 1357 data-center sales-tax exemption applies by statute but no Stillwater-specific award amount is published.",
+    "water": {
+      "reportedMgd": 2.7,
+      "notes": "Planned (permitted; not yet operational): the first two buildings would use ~2.7 million gallons/day, rising toward ~8.1 MGD if all six are built (~20% of the city's daily supply), drawn from Kaw Lake (Stillwater holds 50 MGD in rights and uses ~7 MGD on average). Cooling mechanism not specified in public sources."
+    },
+    "subsidies": [
+      {
+        "program": "25-year ad valorem (property-tax) exemption via a PILOT agreement with Stillwater/Payne County taxing jurisdictions (Stillwater Public Schools, Meridian Technology Center, Payne County, county health dept); PILOT payments rise 1%/yr, estimated ~$58.2M over 25 years for the first two phases",
+        "jurisdiction": "Stillwater / Payne County, OK",
+        "year": "2025",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "contested",
+      "notes": "All local taxing jurisdictions approved the 25-year incentive agreement, but Payne County Commissioner Rhonda Markum cast the lone dissenting vote, citing water and transparency concerns (officials were required to sign NDAs before learning project details). A Park View Estates homeowners association filed a civil suit in Payne County District Court against Google's Kipper LLC and its contractors over stormwater runoff/pollution from site grading.",
+      "sourceIndex": 4
+    }
   },
   {
     "id": "google-muskogee-county-ok",
@@ -5826,10 +5892,26 @@
         "publisher": "Arizona Technology Council",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-files-to-expand-el-mirage-data-center-campus-in-arizona/",
+        "label": "Microsoft files to expand El Mirage data center campus in Arizona",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "notes": "investmentUsd is land-purchase cost only; total campus investment is higher. PHX-83 is the fifth building on existing El Mirage campus. Coordinates are El Mirage city centroid; site is at SE corner of Dysart Rd and Olive Ave.",
-    "lastUpdated": "2026-07-06"
+    "notes": "investmentUsd is land-purchase cost only; total campus investment is higher. PHX-83 is the fifth building on existing El Mirage campus. Coordinates are El Mirage city centroid; site is at SE corner of Dysart Rd and Olive Ave. Arizona's Sec. 41-1519 sales/use-tax exemption applies by statute but no campus-specific certified award was found; published job figures cover the combined West Valley (El Mirage/Goodyear) campus, not El Mirage alone.",
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Microsoft's Arizona datacenters use adiabatic cooling - zero water for cooling more than half the year (outside air below 85F), switching to evaporative ('swamp-cooler'-style) above 85F; Microsoft and Gila River Water Storage replenish Phoenix-AMA groundwater with long-term storage credits dedicated to El Mirage and Goodyear. No El Mirage-specific water-use (MGD) figure is published."
+    },
+    "community": {
+      "status": "supported",
+      "notes": "El Mirage Planning & Zoning recommended the PHX-83 expansion 4-0 and the City Council approved the site-plan amendment (2024); Microsoft's Datacenter Community Pledge commits to not raising residents' electricity prices, replenishing more water than it uses, local jobs, and tax base. Luke AFB flagged a bird-strike mitigation note on cooling ponds. No organized opposition found.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "microsoft-goodyear-az",
@@ -7875,10 +7957,41 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://signalohio.org/ohio-data-centers-tax-breaks/",
+        "label": "Ohio data centers exploit tax break",
+        "publisher": "Signal Ohio",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://local.microsoft.com/blog/understanding-microsoft-datacenters-in-licking-county/",
+        "label": "Understanding Microsoft datacenters in Licking County",
+        "publisher": "Microsoft Local",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "223 acres west of Ohio 79, between North High Street and Canyon Road, Hebron OH 43025. Six-data-center campus planned. Part of Microsoft's $1B Licking County commitment; individual site investment not separately disclosed. Coordinates are approximate Hebron village area."
+    "notes": "223 acres west of Ohio 79, between North High Street and Canyon Road, Hebron OH 43025. Six-data-center campus planned. Part of Microsoft's $1B Licking County commitment; individual site investment not separately disclosed. Coordinates are approximate Hebron village area. The $1B figure is Microsoft's three-campus Licking County commitment (not disaggregated); an 'up to $3B' Hebron figure appears only in a secondary blog and is not a committed capital-expenditure figure.",
+    "energy": {
+      "source": "grid",
+      "utility": "AEP Ohio",
+      "notes": "Powered from the AEP Ohio grid as part of Microsoft's Central Ohio (Licking County) expansion."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Microsoft's Licking County datacenters use direct evaporative cooling per Microsoft; county filings cite a ~252 gal/min water-capacity request for Hebron (a capacity request, not metered consumption). No confirmed operational MGD figure is published."
+    },
+    "subsidies": [
+      {
+        "program": "Ohio data-center sales/use-tax exemption (R.C. 122.175), 15-yr, awarded by the Ohio Tax Credit Authority Oct 28 2024 for Microsoft's three Licking County campuses (New Albany, Heath, Hebron); combined value estimated ~$72.5M (Policy Matters Ohio), not disaggregated by site. Microsoft declined real-estate tax abatements at Hebron/Heath, benefiting Lakewood Local Schools.",
+        "jurisdiction": "State of Ohio",
+        "year": "2024",
+        "sourceIndex": 3
+      }
+    ]
   },
   {
     "id": "microsoft-heath-oh",
@@ -7939,10 +8052,41 @@
         "publisher": "ABC 6 WSYX Columbus",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://signalohio.org/ohio-data-centers-tax-breaks/",
+        "label": "Ohio data centers exploit tax break",
+        "publisher": "Signal Ohio",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://local.microsoft.com/blog/understanding-microsoft-datacenters-in-licking-county/",
+        "label": "Understanding Microsoft datacenters in Licking County",
+        "publisher": "Microsoft Local",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Site at 975 Thornwood Dr SW, Heath OH 43056; 227 acres. Part of Microsoft's $1B Licking County three-campus investment alongside Hebron and New Albany. Coordinates are approximate Heath city centroid; exact Thornwood Dr parcel not pinned."
+    "notes": "Site at 975 Thornwood Dr SW, Heath OH 43056; 227 acres. Part of Microsoft's $1B Licking County three-campus investment alongside Hebron and New Albany. Coordinates are approximate Heath city centroid; exact Thornwood Dr parcel not pinned. The $1B is Microsoft's three-campus Licking County commitment; no Heath-specific capital-investment figure is published (do not derive by subtraction).",
+    "energy": {
+      "source": "grid",
+      "utility": "AEP Ohio",
+      "notes": "Powered from the AEP Ohio grid as part of Microsoft's Central Ohio (Licking County) expansion."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Microsoft's Licking County datacenters use direct evaporative cooling per Microsoft; no Heath-specific operational water-use (MGD) figure is published."
+    },
+    "subsidies": [
+      {
+        "program": "Ohio data-center sales/use-tax exemption (R.C. 122.175), 15-yr, awarded by the Ohio Tax Credit Authority Oct 28 2024 for Microsoft's three Licking County campuses (New Albany, Heath, Hebron); combined value estimated ~$72.5M (Policy Matters Ohio), not disaggregated by site. Microsoft declined real-estate tax abatements at Hebron/Heath, benefiting Lakewood Local Schools.",
+        "jurisdiction": "State of Ohio",
+        "year": "2024",
+        "sourceIndex": 2
+      }
+    ]
   },
   {
     "id": "aws-project-cosmos-marysville-oh",
@@ -8882,10 +9026,22 @@
         "publisher": "Edged US",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nprillinois.org/2026-03-26/aurora-passes-some-of-the-strongest-data-center-regulations-in-illinois",
+        "label": "Aurora passes some of the strongest data center regulations in Illinois",
+        "publisher": "NPR Illinois",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "notes": "Address: 2835 Bilter Rd, Aurora IL (DuPage County). Total campus planned at 96 MW across three buildings. Explicitly purpose-built for high-density AI workloads. Coordinates approximate for Bilter Rd area of north Aurora; address confirmed in operator press release.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Address: 2835 Bilter Rd, Aurora IL (DuPage County). Total campus planned at 96 MW across three buildings. Explicitly purpose-built for high-density AI workloads. Coordinates approximate for Bilter Rd area of north Aurora; address confirmed in operator press release. A confirmed capex figure of ~$300M covers the first building (ORD01-1) only, not the ~96 MW three-building campus; construction-workforce figures (~2,000 full campus) are projections. No Illinois DCEO data-center exemption certification was found for Edged.",
+    "lastUpdated": "2026-07-06",
+    "community": {
+      "status": "mixed",
+      "notes": "Aurora officials approved the Edged campus (rezoning + preliminary plan) and the state EDC lists it as an economic-development win, but city-wide data-center concern led Aurora to pass some of Illinois's strongest data-center regulations in March 2026 (sound limits, resource-consumption reporting, mandatory council approval, a prior moratorium). No Edged-specific organized opposition identified.",
+      "sourceIndex": 1
+    }
   },
   {
     "id": "project-cardinal-yorkville-il",
@@ -9284,10 +9440,33 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.axios.com/local/des-moines/2026/01/16/microsoft-west-des-moines-data-center-water-zero",
+        "label": "Microsoft's next data center buildings to use 'zero-water' technology",
+        "publisher": "Axios Des Moines",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wpr.org/news/microsoft-data-center-iowa-wisconsin-expect",
+        "label": "Microsoft built 5 data center campuses in this Iowa city. Here's what Wisconsin can expect.",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "notes": "Site at 11100 Booneville Rd area, West Des Moines (Polk County). 1.8M sq ft planned across multiple buildings. Turner Construction is general contractor; completion estimated summer 2028. Companion Ginger East campus (124 acres, 5 buildings) is a separate site in West Des Moines. Part of Microsoft's multi-billion dollar total Iowa investment since 2009. Planned MW capacity not confirmed from primary sources; 444 MW figure removed as unsupported.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Site at 11100 Booneville Rd area, West Des Moines (Polk County). 1.8M sq ft planned across multiple buildings. Turner Construction is general contractor; completion estimated summer 2028. Companion Ginger East campus (124 acres, 5 buildings) is a separate site in West Des Moines. Part of Microsoft's multi-billion dollar total Iowa investment since 2009. Planned MW capacity not confirmed from primary sources; 444 MW figure removed as unsupported. Iowa's Sec. 423.3(95) data-center sales-tax exemption applies, but Iowa data-center incentive awards are not publicly disclosed; no Ginger West-specific job count is published.",
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Microsoft's West Des Moines datacenters use direct evaporative cooling (water ~10% of the year, air-cooled the rest); a planned Ginger West building is committed to next-generation 'zero-water' cooling under WDM's 2023 policy favoring reduced peak water use. Microsoft's WDM fleet (five campuses) used ~70M gallons in 2024 (fleet-wide, not Ginger West-specific); Microsoft funded ~$25M in WDM Water Works improvements incl. a 2M-gallon tank."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "WDM Mayor Russ Trimble has praised Microsoft as a 'game changer' and 'great corporate citizens' (never exceeding agreed water allotments); neighboring residents cite light pollution, traffic, noise, and water-use concerns. No formal opposition group or litigation identified.",
+      "sourceIndex": 3
+    }
   },
   {
     "id": "meta-rosemount-mn",
@@ -10718,10 +10897,37 @@
         "publisher": "The Harvard Crimson",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cbsnews.com/boston/news/inside-lowell-markley-data-center/",
+        "label": "Take a rare look inside the largest data center in Massachusetts",
+        "publisher": "CBS Boston",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://working-mass.com/2026/06/10/the-dungeon-over-lowell-how-the-data-center-boom-has-divided-one-citys-working-people/",
+        "label": "The Dungeon Over Lowell: How the Data Center Boom Divided One City's Working People",
+        "publisher": "Working Mass",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
       }
     ],
-    "notes": "Coordinates are approximate city centroid (Sacred Heart/Back Central neighborhoods, Lowell). Facility serves 100+ customers including hospitals, universities, and police departments. Expansion includes land purchases by Markley near old power plant. Expansion plans stalled by moratorium. AI demand cited as driver of expansion since 2022.",
-    "lastUpdated": "2026-07-06"
+    "notes": "Coordinates are approximate city centroid (Sacred Heart/Back Central neighborhoods, Lowell). Facility serves 100+ customers including hospitals, universities, and police departments. Expansion includes land purchases by Markley near old power plant. Expansion plans stalled by moratorium. AI demand cited as driver of expansion since 2022. Delivered permanent-job counts are disputed - the abatement promised 100 jobs; the city and critics count ~26-30 full-time local workers while Markley cites ~100 total, with construction peaking ~120 (IBEW Local 103); recorded as unresolved (honest-zero). No confirmed total capital-investment figure is public ('hundreds of millions'). Massachusetts' 2024 sales-tax exemption is statutory eligibility, not a confirmed Markley award.",
+    "lastUpdated": "2026-07-06",
+    "water": {
+      "coolingType": "evaporative",
+      "reportedMgd": 0.12,
+      "notes": "16 evaporative cooling towers, Merrimack River-sourced. Markley self-reports daily use of 60,000-120,000 gallons (0.06-0.12 MGD), peaking ~118,000 gpd in summer, corroborated by WBZ-TV water-bill records - far below hyperscale AI campuses."
+    },
+    "subsidies": [
+      {
+        "program": "Lowell 20-year property & personal-property tax abatement (~$77M in foregone city taxes over 20 yrs; ~$12M net to the city)",
+        "jurisdiction": "City of Lowell, MA",
+        "year": "2015",
+        "sourceIndex": 3
+      }
+    ]
   },
   {
     "id": "wiscasset-proposed-me",
@@ -10903,7 +11109,7 @@
         "kind": "press"
       }
     ],
-    "notes": "aiClassification is 'likely' (not 'confirmed'): Gemini is the land developer, no tenant is signed, and only developer aspiration to attract a hyperscale/AI/neocloud tenant is on record. Capacity (500 MW) and acreage per SiouxFalls.Business; an earlier report cited 160 acres. Coordinates are approximate for the northeast Sioux Falls site.",
+    "notes": "aiClassification is 'likely' (not 'confirmed'): Gemini is the land developer, no tenant is signed, and only developer aspiration to attract a hyperscale/AI/neocloud tenant is on record. Capacity (500 MW) and acreage per SiouxFalls.Business; an earlier report cited 160 acres. Coordinates are approximate for the northeast Sioux Falls site. As a developer land project with no signed tenant, its water, subsidy, investment, and job figures remain developer projections only (South Dakota has no state income tax and rejected data-center incentive bills); all recorded as honest-zeros pending a confirmed tenant.",
     "lastUpdated": "2026-07-06"
   },
   {
