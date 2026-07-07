@@ -40,11 +40,18 @@ export function SiteFooter() {
             <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
               An independent project by Edward Kubiak
             </p>
-            <a href={siteConfig.sponsorUrl} target="_blank" rel="noreferrer noopener"
-               aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
-               className="inline-flex min-h-11 items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
-              Sponsor this project <span aria-hidden="true">↗</span>
-            </a>
+            <div className="flex flex-col items-start gap-1">
+              <a href={`${siteConfig.repoUrl}/issues/new/choose`} target="_blank" rel="noreferrer noopener"
+                 aria-label="Contribute a correction or new facility on GitHub (opens in new tab)"
+                 className="inline-flex min-h-11 items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
+                Contribute a correction <span aria-hidden="true">↗</span>
+              </a>
+              <a href={siteConfig.sponsorUrl} target="_blank" rel="noreferrer noopener"
+                 aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
+                 className="inline-flex min-h-11 items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
+                Sponsor this project <span aria-hidden="true">↗</span>
+              </a>
+            </div>
           </div>
 
           {/* Navigate */}

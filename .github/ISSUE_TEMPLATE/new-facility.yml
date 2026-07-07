@@ -1,0 +1,57 @@
+name: New facility
+description: Suggest an AI-datacenter facility that's missing from the atlas
+title: "[New facility]: "
+labels: ["data", "new-facility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping map the U.S. AI-datacenter buildout. **Every submission needs at least one public source URL** anyone can verify — it is the core rule of this project.
+  - type: input
+    id: name
+    attributes:
+      label: Facility name
+      placeholder: e.g. Stargate — Abilene
+    validations:
+      required: true
+  - type: input
+    id: operator
+    attributes:
+      label: Operator / company
+      placeholder: e.g. OpenAI, Meta, Google, QTS…
+  - type: input
+    id: location
+    attributes:
+      label: Location (city, state)
+      placeholder: e.g. Abilene, TX
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Status
+      options:
+        - proposed
+        - permitted
+        - under-construction
+        - operational
+        - cancelled
+    validations:
+      required: true
+  - type: input
+    id: capacity
+    attributes:
+      label: Capacity (MW, if known)
+      placeholder: e.g. 1200
+  - type: textarea
+    id: sources
+    attributes:
+      label: Source URL(s)
+      description: Public links (permit filing, county records, utility/ISO queue, news). One per line.
+      placeholder: https://…
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?

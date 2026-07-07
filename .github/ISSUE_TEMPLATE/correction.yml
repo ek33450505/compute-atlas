@@ -1,0 +1,39 @@
+name: Correction
+description: Fix or update an existing facility record
+title: "[Correction]: "
+labels: ["data", "correction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Corrections keep the atlas trustworthy. **A public source URL is required** for any changed value.
+  - type: input
+    id: facility
+    attributes:
+      label: Which facility?
+      description: Name or the URL slug (e.g. xai-colossus-memphis-tn)
+    validations:
+      required: true
+  - type: input
+    id: field
+    attributes:
+      label: Which field is wrong?
+      placeholder: e.g. capacity, status, water usage, subsidy amount…
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Current value → corrected value
+      placeholder: |
+        Current: 300 MW
+        Corrected: 1,200 MW
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Source URL(s)
+      description: Public link(s) that verify the correction. One per line.
+    validations:
+      required: true

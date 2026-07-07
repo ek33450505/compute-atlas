@@ -98,27 +98,6 @@ export default function HomePage() {
         >
           Explore the map →
         </Link>
-        <Link
-          href="/table"
-          className="inline-flex h-11 items-center font-mono text-sm uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          Browse the data table
-        </Link>
-        <Link
-          href="/about"
-          className="inline-flex h-11 items-center font-mono text-sm uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          About the data &amp; method
-        </Link>
-        <a
-          href={`${siteConfig.repoUrl}/issues`}
-          target="_blank"
-          rel="noreferrer noopener"
-          aria-label="Contribute a correction or new facility on GitHub (opens in new tab)"
-          className="inline-flex h-11 items-center font-mono text-sm uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          Contribute
-        </a>
       </div>
 
       {/* ------------------------------------------------------------------ */}

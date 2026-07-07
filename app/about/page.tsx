@@ -412,7 +412,7 @@ export default function AboutPage() {
           public source URL anyone can verify.
         </p>
         <a
-          href={`${siteConfig.repoUrl}/issues`}
+          href={`${siteConfig.repoUrl}/issues/new/choose`}
           target="_blank"
           rel="noreferrer noopener"
           aria-label="Open an issue on GitHub to suggest a correction or new facility (opens in new tab)"
