@@ -425,10 +425,10 @@ export default function AboutPage() {
       {/* Back navigation */}
       <div className="pt-4 border-t border-border">
         <Link
-          href="/"
+          href="/map"
           className="inline-flex items-center text-sm font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
         >
-          ← Back to map
+          ← Back to the map
         </Link>
       </div>
     </div>
