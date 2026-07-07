@@ -12303,5 +12303,944 @@
       "sourceIndex": 8
     },
     "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "aligned-conesville-oh",
+    "name": "Aligned Data Centers – Conesville Industrial Park",
+    "operator": "Aligned Data Centers",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.27,
+      "lon": -81.83,
+      "city": "Conesville",
+      "county": "Coshocton County",
+      "state": "OH"
+    },
+    "poweredBy": "AEP Ohio (PJM grid)",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07-24",
+        "note": "Aligned press release; 197-acre campus at Conesville Industrial Park, foundational customer secured, initial delivery mid-2026",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-10-11",
+        "note": "Groundbreaking ceremony held at Conesville Industrial Park",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://aligneddc.com/press-release/aligned-data-centers-expands-in-ohio-with-new-mega-scale-ai-campus/",
+        "label": "Aligned Data Centers official press release – Ohio mega-scale AI campus expansion",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/aligned-to-develop-200-acre-data-center-campus-in-coshocton-ohio/",
+        "label": "Aligned to develop 200-acre data center campus in Coshocton, Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://frontier-companies.com/aligned-data-centers-expands-with-new-mega-scale-ai-campus-at-conesville-industrial-park/",
+        "label": "Aligned Data Centers expands with new mega-scale AI campus at Conesville Industrial Park",
+        "publisher": "Frontier Group of Companies",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yourohionews.com/coshocton/ground-broken-for-new-aligned-data-centers-campus-in-conesville/975588",
+        "label": "Ground broken for new Aligned Data Centers campus in Conesville",
+        "publisher": "Your Ohio News",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/site-selection/article/55306993/from-brownfield-to-breakthrough-aligned-data-centers-extends-its-ai-first-infrastructure-vision-from-ohio-to-the-edge-of-innovation",
+        "label": "From Brownfield to Breakthrough – Aligned Data Centers extends AI-first vision in Ohio",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://frontier-companies.com/coshocton-port-authority-secures-58-7-million-from-ohio-department-of-development-for-site-redevelopment-at-the-conesville-industrial-park/",
+        "label": "Coshocton Port Authority secures $58.7M from Ohio Department of Development – All Ohio Future Fund",
+        "publisher": "Frontier Group of Companies",
+        "retrievedAt": "2026-07-07",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://egeneration.org/aligned-data-centers-expands-in-ohio-considering-nuclear-power-for-resilience",
+        "label": "Aligned Data Centers expands in Ohio, considering nuclear power for resilience",
+        "publisher": "eGeneration Foundation",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "Brownfield redevelopment of former AEP Conesville coal plant (2 GW, operational 62 years, closed May 2020). Frontier Group of Companies acquired the plant in 2020 and built the Conesville Industrial Park across ~2,500 acres; Aligned purchased a 197-acre parcel. Aligned describes the project as 'AI/HPC' and 'Gigascale' in its press materials, and this is its third Ohio campus (others: Perkins Township/Sandusky, 96 MW total; Pataskala). Multi-building campus — renderings show up to four buildings; second, third, and fourth buildings referenced at groundbreaking. Capacity MW not publicly disclosed. Investment described as 'multi-billion dollar' — no firm figure confirmed; field omitted per policy. Construction jobs described as 'thousands'; permanent roles as 'hundreds of high-quality long-term positions' — projections only, numeric fields omitted. Aligned is exploring on-site nuclear power (SMRs) for this campus and nearby Zanesville/Cambridge sites; no agreement confirmed. Coordinates approximate (village-level). Site infrastructure funding note: the Coshocton Port Authority received a $58.7M grant (Ohio Dept of Development All Ohio Future Fund, announced July 21, 2025) for utility upgrades, water/wastewater extensions, and roadway improvements across the broader industrial park — this benefits Aligned indirectly but is not a direct subsidy to Aligned and is therefore not listed under subsidies.",
+    "energy": {
+      "source": "grid",
+      "utility": "AEP Ohio (PJM interconnect)",
+      "notes": "Site is in AEP Ohio service territory. Brownfield location retains former plant's high-capacity grid infrastructure, which is a primary site-selection advantage. Aligned is publicly exploring on-site SMR/nuclear additions but no confirmed agreement. Nuclear would be future supplemental supply.",
+      "sourceIndex": 6
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "No cooling type or water consumption data disclosed. Former coal plant had access to Muskingum River cooling water infrastructure; Aligned has not confirmed whether this will be utilized.",
+      "sourceIndex": 1
+    },
+    "landAcres": 197,
+    "community": {
+      "status": "supported",
+      "notes": "Strong positive reception at October 2025 groundbreaking. Coshocton County Commissioners and Port Authority executive director spoke favorably. Site revitalization fills a significant local tax and employment gap left by AEP plant closure (plant formerly provided ~10% of River View Local Schools' annual budget and employed ~600 workers). Broader Ohio policy context: a proposed constitutional amendment that would ban large data centers was under debate at the time of announcement; some community and policy advocates cited this project as evidence of the economic value data centers bring to rural counties.",
+      "sourceIndex": 3
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "avaio-taurus-brandon-ms",
+    "name": "AVAIO Digital Taurus",
+    "operator": "AVAIO Digital Partners",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.27,
+      "lon": -89.99,
+      "city": "Brandon",
+      "county": "Rankin County",
+      "state": "MS"
+    },
+    "capacityMw": {
+      "planned": 116
+    },
+    "poweredBy": "Entergy Mississippi",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-19",
+        "note": "AVAIO Digital announced $6B AI-ready data center campus in Brandon, Rankin County, MS; Mississippi Development Authority approved Data Center Enterprises tax exemption.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-09-10",
+        "note": "Groundbreaking held at East Metropolitan Center Business and Industrial Park in Brandon.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/avaio-digital-to-build-new-ai-ready-6-billion-data-center-hub-in-brandon-mississippi-302533141.html",
+        "label": "AVAIO Digital Taurus announcement press release",
+        "publisher": "PR Newswire / AVAIO Digital Partners",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.avaiodigital.com/developments/brandon-mississippi",
+        "label": "AVAIO Digital Taurus official project page",
+        "publisher": "AVAIO Digital",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://mississippi.org/news/avaio-digital-to-locate-6-billion-data-center-campus-in-rankin-county/",
+        "label": "Mississippi Development Authority project announcement",
+        "publisher": "Mississippi Development Authority",
+        "retrievedAt": "2026-07-07",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://governorreeves.ms.gov/avaio-digital-to-locate-6-billion-data-center-campus-in-rankin-county-campus-represents-the-third-largest-economic-development-project-in-state-history/",
+        "label": "Governor Reeves office announcement — third-largest project in MS history",
+        "publisher": "Office of the Governor of Mississippi",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://brandonms.org/city-of-brandon-welcomes-avaio-digitals-6-billion-investment-in-new-ai-ready-data-center-campus/",
+        "label": "City of Brandon welcome announcement",
+        "publisher": "City of Brandon, MS",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://mississippitoday.org/2025/09/03/data-center-petition-brandon-mississippi-environment-pollution-energy/",
+        "label": "Brandon residents petition — water, power, pollution concerns",
+        "publisher": "Mississippi Today",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "notes": "Distinct from AVAIO's 'Leo' campus in Little Rock/Pulaski County AR — do not conflate. Site: East Metropolitan Center Business and Industrial Park, Brandon. Land acreage: AVAIO's own project page and groundbreaking materials cite 329 acres; the August 19 press release cited 175 acres — 329 used as more authoritative per operator's site. Capacity: 116 MW initial via executed ESA with Entergy Mississippi (energized June 2027 per operator site); Entergy guiding an additional 420 MW of grid power available by end of 2030; access to Gulf South Pipeline for up to 500 MW of on-site behind-the-meter thermal generation starting Q2 2027 — total baseload path to over 1 GW. The 116 MW planned figure reflects the executed first-phase ESA only; full buildout remains a projection. Investment: $6B stated without 'up to' qualifier across operator, MDA, and Governor's office sources; Governor's office describes it as the third-largest economic development project in Mississippi history. Jobs: 'at least 60 direct, high-tech jobs' and 'hundreds of indirect jobs ranging from construction to other related industries' — projections, not firm figures; no construction vs permanent breakdown confirmed. Rooftop solar of 20+ MW planned (behind-the-meter). Recycled water and new sewer line extension cited by operator as water infrastructure options. Estimated $23M in ad valorem tax revenue annually per Rankin First (county economic development group). Coordinates approximate (Brandon city center, Rankin County).",
+    "energy": {
+      "source": "mixed",
+      "utility": "Entergy Mississippi",
+      "notes": "Initial 116 MW grid power via executed ESA with Entergy Mississippi (June 2027 target energization). Additional 420 MW grid power from Entergy projected by end of 2030. On-site thermal generation via Gulf South Pipeline access (up to 500 MW planned, Q2 2027 start) — on-site gas not yet built. Rooftop solar 20+ MW planned. Behind-the-meter generation noted by operator.",
+      "sourceIndex": 1
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Operator describes water-efficient cooling, rainwater recapture, cooling system economization (air-side economization implied), and recycled water as an available option. New sewer line extension under construction for wastewater. No specific MGD figure disclosed.",
+      "sourceIndex": 1
+    },
+    "subsidies": [
+      {
+        "program": "Mississippi Data Center Enterprises tax exemption (approved by MDA; sales & use tax incentives for campus tenants; multi-year, no confirmed total amount)",
+        "jurisdiction": "Mississippi",
+        "year": "2025",
+        "sourceIndex": 2
+      }
+    ],
+    "investmentUsd": 6000000000,
+    "landAcres": 329,
+    "community": {
+      "status": "mixed",
+      "notes": "Strong official support: Governor Reeves, Mayor Butch Lee (Brandon), Rankin County, and MDA all endorsed project. Community opposition emerged before groundbreaking: online petition to Rankin County Board of Supervisors demanded written guarantees against utility bill increases and air/water pollution, and called for construction halt if guarantees cannot be made. Residents cited concerns about water consumption, air pollution (referencing xAI Memphis gas turbine precedent), power demands, and traffic. Community group 'Mississippi For Mississippi' produced an impact-distance map. Rankin County supervisors did not respond to press inquiries. No litigation reported.",
+      "sourceIndex": 5
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "aws-galaxy-sidney-oh",
+    "name": "AWS Project Galaxy — Sidney, OH",
+    "operator": "Amazon Web Services (AWS)",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.29,
+      "lon": -84.16,
+      "city": "Sidney",
+      "county": "Shelby County",
+      "state": "OH"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "poweredBy": "AES Ohio (Dayton Power and Light)",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025",
+        "note": "Sidney City Council approved 30-year 100% property tax abatement and development agreement; NDA executed mid-2025",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Construction began January 2026; site clearing and earthworks underway by March 2026; initial operations targeted Sept 15, 2026",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/amazon-secures-tax-break-for-3bn-data-center-campus-in-sidney-ohio/",
+        "label": "Amazon secures tax break for $3bn data center campus in Sidney, Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://stopohiodatacenters.org/shelby-county",
+        "label": "Project Galaxy Amazon Data Center — Shelby County",
+        "publisher": "Stop Ohio Data Centers",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/amazon-project-galaxy",
+        "label": "Amazon: Project Galaxy Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/ohio-ratepayer-occ-ferc-amazon-data-center-aes/733169/",
+        "label": "FERC urged to shield AES Ohio customers from grid costs for 1.5-GW Amazon data center",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sidneyoh.com/526/Proposed-Data-Center-FAQ",
+        "label": "Proposed Data Center FAQ",
+        "publisher": "City of Sidney, OH",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "notes": "Codename 'Project Galaxy.' Coordinates approximate (parcel: north of Millcreek Road, west of Vandemark Road, Sidney OH). AES Ohio FERC filing shows phased power ramp: 65 MW at initial operations (Sept 15, 2026 target), 480 MW within one year, 1,500 MW by January 2031 — 1,500 MW taken as planned total capacity. $3B investment described as a firm commitment in the approved development agreement (not 'up to'). AWS has committed an estimated $23B in Ohio data centers through 2029–2030. Baxtel lists a 'West Hub' expansion site associated with this campus. FERC filing lists location as 'Jefferson Township, Ohio'; confirmed as Sidney/Shelby County campus from all other sources.",
+    "energy": {
+      "source": "grid",
+      "utility": "AES Ohio (Dayton Power and Light)",
+      "notes": "AES Ohio confirmed as primary grid supplier per FERC filing; Phase 1 network upgrade costs $22.8M recovered via Transmission Cost Recovery Rider (TCRR). AEP Ohio's 85% data-center tariff (eff. July 23, 2025) may apply given service-territory overlap corridor. AEP Ohio onsite Bloom Energy fuel cells approved for some AWS Ohio locations (PUCO order), but not confirmed specifically for this Sidney site.",
+      "sourceIndex": 3
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "City of Sidney public water system (groundwater wells, Great Miami River, Tawawa Creek). Development agreement caps withdrawal at 1.0 million gallons per day (694 gpm maximum); projected average annual usage is 4.6 million gallons per year (~12,600 gpd average). All wastewater including cooling discharge routed to city sanitary sewer. Miami Valley Conservancy District raised concerns citing peak draw up to 300 gpm. Cooling type inferred from industrial-scale water-in / wastewater-out pattern; not explicitly stated in sources.",
+      "sourceIndex": 4
+    },
+    "subsidies": [
+      {
+        "program": "30-year 100% real-property tax abatement (est. $180M–$350M foregone over term); $50M PILOT payment by AWS to City of Sidney ($25M) and Sidney City Schools ($25M) over 15 years",
+        "jurisdiction": "Sidney, OH / Shelby County",
+        "year": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 3000000000,
+    "jobs": {
+      "permanent": 75,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Active opposition from 'Sidney Citizens for Responsible Development' (founded by Kristin Allen, 4th-generation farm family) and 'Sidney Citizens Data Center Watch' (150+ Facebook members). Core concerns: per-job tax abatement economics ($2.4M–$4.6M in foregone tax revenue per permanent job), water capacity strain, and NDA limiting public transparency during approval process. Community town hall held March 6, 2026 with Shelby County Commissioners attending; no Sidney City Council members attended. City published FAQ in response to community pressure.",
+      "sourceIndex": 1
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "cerebras-oklahoma-city-ok",
+    "name": "Cerebras Oklahoma City Data Center",
+    "operator": "Cerebras Systems",
+    "status": "operational",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.4676,
+      "lon": -97.5164,
+      "city": "Oklahoma City",
+      "county": "Oklahoma County",
+      "state": "OK"
+    },
+    "capacityMw": {
+      "operational": 10
+    },
+    "poweredBy": "OG&E",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Cerebras announced six new AI datacenters including OKC; Scale Datacenters selected as host colo; 300+ CS-3 systems expected online by June 2025",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2025-09",
+        "note": "Ribbon cutting September 22, 2025; 10 MW facility with 300+ CS-3 wafer-scale systems confirmed online",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterfrontier.com/hyperscale/article/55273769/cerebras-unveils-six-data-centers-to-meet-accelerating-demand-for-ai-inference-at-scale",
+        "label": "Cerebras Unveils Six Data Centers to Meet Accelerating Demand for AI Inference at Scale",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cerebras.ai/press-release/cerebras-announces-six-new-ai-datacenters-across-north-america-and-europe-to-deliver-industry-s",
+        "label": "Cerebras Announces Six New AI Datacenters Across North America and Europe",
+        "publisher": "Cerebras Systems",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cerebras.ai/blog/okc",
+        "label": "Cerebras OKC Data Center — Official Blog",
+        "publisher": "Cerebras Systems",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/cerebras-opens-10mw-data-center-in-oklahoma-city/",
+        "label": "Cerebras Opens 10MW Data Center in Oklahoma City",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/cerebras-oklahoma-city",
+        "label": "Cerebras: Oklahoma City Data Center — Baxtel Profile",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "notes": "Colocation tenancy: Cerebras Systems is the AI infrastructure operator; Scale Datacenters is the facility host/colo provider (acquired the 82,000 sq ft building from Expand Energy, formerly Chesapeake Energy, originally built ~2013). Facility address: 512 NW 62nd St (corner of NW 61st/62nd St and N Lee Ave), Oklahoma City. Ribbon cutting September 22, 2025. Houses 300+ CS-3 Wafer Scale Engine systems delivering 44+ exaflops of AI compute. Facility features Tier III-quality infrastructure, tornado and seismic shielding, triple-redundant power stations. Cerebras matches all kWh consumption with renewable energy (REC-based, not on-site generation). OG&E reported as grid utility — consistent with OKC service territory but not explicitly named in Cerebras primary sources. Investment amount not disclosed. Jobs: Cerebras blog references 'hundreds of good-paying jobs' in engineering, IT, and operations plus local college workforce partnerships — no firm headcount confirmed. Coordinates are approximate (dispatch seed); actual facility is at 512 NW 62nd St.",
+    "energy": {
+      "source": "grid",
+      "utility": "OG&E",
+      "notes": "Every kWh matched with renewable energy (REC-based offset; no on-site generation disclosed). OG&E (Oklahoma Gas and Electric) reported as serving utility — consistent with OKC service territory; not explicitly named in Cerebras primary sources but cited in secondary coverage.",
+      "sourceIndex": 2
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Direct-to-chip liquid cooling via closed-loop system; Cerebras describes it as minimizing water consumption. Custom water-cooling solution designed for CS-3 wafer-scale servers. No mgd figure disclosed.",
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "supported",
+      "notes": "Cerebras reports workforce development partnerships with local colleges and technical programs; 'hundreds of good-paying jobs' in engineering, IT, and operations noted on official blog. No public opposition or contention reported in any source reviewed.",
+      "sourceIndex": 2
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "crusoe-warrenton-mo",
+    "name": "Crusoe Warrenton Campus",
+    "operator": "Crusoe",
+    "status": "permitted",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.8125,
+      "lon": -91.1432,
+      "city": "Warrenton",
+      "county": "Warren County",
+      "state": "MO"
+    },
+    "poweredBy": "Ameren Missouri (grid)",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Crusoe named as developer at Warrenton Board of Aldermen meeting on November 4, 2025; announcement made by Greater Warren County Economic Development Council consultant.",
+        "sourceIndex": 5
+      },
+      {
+        "status": "permitted",
+        "date": "2026",
+        "note": "Warrenton Planning & Zoning Commission approved conditional use permit and site plan 8-2 on January 8, 2026; Board of Aldermen approved unanimously (two 6-0 votes) on January 20, 2026. Still requires land disturbance review and construction permits before groundbreaking.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/crusoe-data-center-could-be-built-west-of-st-louis-missouri/",
+        "label": "Crusoe data center could be built west of St. Louis, Missouri",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://fox2now.com/news/missouri/warrenton-aldermen-approve-data-center-site-plan-near-i-70/",
+        "label": "Warrenton aldermen approve data center site plan near I-70",
+        "publisher": "Fox 2 Now",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.midriversnewsmagazine.com/news/site-plan-for-large-scale-data-center-approved-in-warrenton/article_3d2d80af-c12a-4edf-bad2-753a3c5aed9c.html",
+        "label": "Site plan for large-scale data center approved in Warrenton",
+        "publisher": "Mid Rivers Newsmagazine",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://mlq.ai/news/meta-signs-16gw-capacity-deal-with-crusoe-spanning-texas-and-missouri-campuses/",
+        "label": "Meta signs 1.6GW capacity deal with Crusoe spanning Texas and Missouri campuses",
+        "publisher": "MLQ.ai",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.crusoe.ai/resources/newsroom/crusoes-contracted-ai-infrastructure-capacity-approaches-5-gigawatts-across-data-centers-and-cloud",
+        "label": "Crusoe's Contracted AI Infrastructure Capacity Approaches 5 Gigawatts",
+        "publisher": "Crusoe (newsroom)",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.warrencountyrecord.com/stories/crusoe-named-as-developer-for-data-center-project,170695",
+        "label": "Crusoe named as developer for data center project",
+        "publisher": "Warren County Record",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.warrencountyrecord.com/stories/warrenton-planning-and-zoning-approves-data-center-site-plan-conditional-use,180583",
+        "label": "Warrenton Planning and Zoning approves data center site plan, conditional use",
+        "publisher": "Warren County Record",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.firstalert4.com/2025/12/05/warrenton-planning-commission-approves-data-center-ordinance-amid-resident-concerns/",
+        "label": "Warrenton planning commission approves data center ordinance amid resident concerns",
+        "publisher": "First Alert 4",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.stlpr.org/health-science-environment/2026-02-12/ameren-missouri-signed-confidential-contracts-with-multiple-big-data-centers-this-week",
+        "label": "Ameren Missouri signed confidential contracts with multiple big data centers",
+        "publisher": "St. Louis Public Radio",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "Coordinates approximate. Site address: 22151 NW Service Road, Warrenton MO; north of NW Service Road, west of Hwy. W. Two 805,000 sq ft data center buildings + 40,000 sq ft administration building + 621,250 sq ft Ameren-owned switch yard + 603,200 sq ft Crusoe-owned electrical substation. Crusoe described as its 'fifth campus' in its national AI data center portfolio as of June 2026 per Crusoe newsroom. Meta signed agreement with Crusoe in June 2026 for approximately 1.6GW of AI computing capacity split across Childress TX and Warrenton MO campuses — per-site split not disclosed; confirms Warrenton as AI anchor customer site (sourceRef 3). Status: conditional use permit and site plan approved; land disturbance review and construction permits still outstanding before groundbreaking. Crusoe committed publicly to seek no real property tax or gross receipt tax abatements; would pursue state incentives only (sourceRef 2). Developer projected annual property taxes ~$80M/year (sourceRef 1), with ~$44M to local schools. Construction jobs projected ~2,000-2,500 over ~3-year build; permanent tech jobs projected ~100 (developer estimates, sourceRef 1 and 2 — not firm contractual commitments). Crusoe historically used on-site flared natural gas but divested those operations; Warrenton campus is grid-connected via Ameren Missouri — no on-site gas generation reported here. Distinct from the Google/Crusoe 'Goodnight' campus in Armstrong County TX.",
+    "energy": {
+      "source": "grid",
+      "utility": "Ameren Missouri",
+      "notes": "Ameren Missouri owns and will operate the on-site switch yard; Crusoe owns the on-site electrical substation. Ameren signed confidential large-load agreements totaling 2.2GW with multiple Missouri data centers in February 2026; individual customer details not disclosed (sourceRef 8). No on-site gas generation reported for this campus.",
+      "sourceIndex": 0
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling system using food-grade polypropylene glycol continuously recycled within the system; no reported MGD figure disclosed. Company claims 40% less water usage compared to a conventional light industrial facility (sourceRef 2).",
+      "sourceIndex": 2
+    },
+    "landAcres": 337,
+    "community": {
+      "status": "mixed",
+      "notes": "Over 40 community members testified during the January 20, 2026 Board of Aldermen hearing — both supporters and opponents. Supporters cited economic development and tax revenue; opponents (including neighboring landowners) raised concerns about noise, light pollution, and water supply impacts. Planning & Zoning voted 8-2 to approve; Board of Aldermen approved unanimously (6-0) with conditions: additional native trees, shorter lighting poles, stricter noise limits, generators moved indoors. One opponent stated: 'The county residents surrounding this parcel have been ignored and forgotten' (sourceRef 2).",
+      "sourceIndex": 2
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "dcblox-atlanta-east-conyers-ga",
+    "name": "DC BLOX Atlanta East Hyperscale Data Center Campus",
+    "operator": "DC BLOX",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.66,
+      "lon": -84.02,
+      "city": "Conyers",
+      "county": "Rockdale County",
+      "state": "GA"
+    },
+    "capacityMw": {
+      "planned": 216
+    },
+    "poweredBy": "Georgia Power",
+    "announcedDate": "2023",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023",
+        "note": "DC BLOX announced 72-acre land acquisition in Conyers; campus designed for 750,000 sq ft and 216MW at full build-out; hyperscale anchor client named for Phase 1",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2024",
+        "note": "Site preparation underway as of September 2024; Georgia EPD 30-day public comment period on stormwater/wetlands permit (SAS-2024-00075) closed December 18, 2025; non-water-quality construction began December 2025",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.dcblox.com/dc-blox-to-build-hyperscale-ready-data-center-campus-rockdale-county-ga/",
+        "label": "DC BLOX announces Rockdale County hyperscale campus (Dec 12 2023)",
+        "publisher": "DC BLOX",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.dcblox.com/data-centers/atlanta-data-centers/rockdale-county-ga-hyperscale-data-center-campus/",
+        "label": "DC BLOX Atlanta East facility page",
+        "publisher": "DC BLOX",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/dc-blox-files-for-data-center-campus-outside-atlanta-georgia/",
+        "label": "DC Blox files for data center campus outside Atlanta, Georgia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.fox5atlanta.com/news/epd-launches-comment-period-proposed-rockdale-data-campus",
+        "label": "EPD launches comment period for proposed Rockdale data campus",
+        "publisher": "Fox 5 Atlanta",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.dcblox.com/rockdale-county-ga-community-outreach/",
+        "label": "DC BLOX Rockdale County GA community outreach page",
+        "publisher": "DC BLOX",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "notes": "Coordinates approximate; physical address is 1726 Farmer Road NW, Conyers GA 30012. Land: 72 acres acquired per press release; Georgia EPD permit SAS-2024-00075 references 52.84-acre development footprint with three 40MW buildings. Capacity: 216MW total committed by Georgia Power per utility agreement and DRI filing; DC BLOX facility page cites 154 critical/IT MW (1 × 10MW + 3 × 48MW buildings = 154MW IT load). Phase 1 targeted Q4 2025 delivery (hyperscale anchor + 160,000 sq ft available to additional tenants); non-water-quality construction began December 2025; water-quality permitted work may begin October 2026 with full build taking ~1 year. Dark fiber metro ring planned around Atlanta connecting Atlanta East and Atlanta West campuses and continuing to Myrtle Beach cable landing station. AI/ML applications explicitly cited in press materials as key driver of Atlanta hyperscale demand. DISTINCT from DC BLOX Atlanta West campus in Douglas County (Lithia Springs, ~55 acres, 180MW). Investment amount not publicly disclosed. Job counts not disclosed.",
+    "energy": {
+      "source": "grid",
+      "utility": "Georgia Power",
+      "notes": "216MW committed by Georgia Power; annualized design PUE of 1.3 at full load",
+      "sourceIndex": 1
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "High-efficiency magnetic bearing air-cooled chillers with thermal storage; N+2 chiller redundancy; N+5 vertical fan coolers; provisions for future liquid cooling tie-ins. EPD permit SAS-2024-00075 covers permanent impact of 0.213 acres wetlands, 3.30 acres pond, and over 1,200 linear feet of streams in Yellow River watershed; developer to purchase mitigation credits.",
+      "sourceIndex": 3
+    },
+    "subsidies": [
+      {
+        "program": "Development Authority of Rockdale County incentives via CREDC — confirmed granted; specific terms not publicly disclosed",
+        "jurisdiction": "Rockdale County, GA",
+        "year": "2023",
+        "sourceIndex": 0
+      }
+    ],
+    "landAcres": 72,
+    "community": {
+      "status": "mixed",
+      "notes": "Development Authority chairman and CREDC president publicly supportive; CREDC president cited DC BLOX as 'foundation of an ecosystem' for tech investment in Rockdale County. DC BLOX operates an active community outreach page acknowledging resident concerns including utility bill impacts, water usage, environmental impacts, noise, and lighting. Georgia EPD 30-day comment period on stormwater/wetlands permit closed December 18 2025.",
+      "sourceIndex": 4
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "google-project-louie-monrovia-in",
+    "name": "Google Project Louie (Morgan County)",
+    "operator": "Google",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.57,
+      "lon": -86.35,
+      "city": "Monrovia",
+      "county": "Morgan County",
+      "state": "IN"
+    },
+    "poweredBy": "AES Indiana",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Rezoning applications filed under shell company 'Woodland Caribou LLC'; Google confirmed as developer October 2025 via public affairs manager Broderick Green",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2025",
+        "note": "Morgan County approved first rezoning (Sept 2025) and second rezoning adding ~158 acres (Oct 2025), bringing campus to ~550 acres; development agreement including tax abatements approved May 2025",
+        "sourceIndex": 2
+      },
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Site preparation underway April 2026; Mortenson (general contractor), Gradex (site prep/earthwork); AES Indiana IURC Cause No. 46394 filed Apr 22 2026",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-behind-390-acre-data-center-development-in-morgan-county-indiana/",
+        "label": "Google behind 390-acre data center development in Morgan County, Indiana",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://specials.idsnews.com/data-center-morgan-county-indiana-billion-dollar/",
+        "label": "The billion-dollar neighbor: Data center special report",
+        "publisher": "Indiana Daily Student",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://dailyjournal.net/2025/10/22/google-reveals-itself-as-developer-behind-500-acre-morgan-county-data-center-campus/",
+        "label": "Google reveals itself as developer behind 500-acre Morgan County data center campus",
+        "publisher": "Daily Journal",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.citact.org/news/iurc-must-prioritize-public-interest-aes-indiana-data-center-proposal",
+        "label": "IURC Must Prioritize Public Interest in AES Indiana Data Center Proposal",
+        "publisher": "Citizens Action Coalition",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://iurc.portal.in.gov/_entity/sharepointdocumentlocation/9859d501-903e-f111-88b3-001dd802f839/bb9c6bba-fd52-45ad-8e64-a444aef13c39?file=46394_AESIN_Lee+Direct+Testimony+-+3_042226.pdf",
+        "label": "AES Indiana Lee Direct Testimony, IURC Cause No. 46394 (filed Apr 22 2026)",
+        "publisher": "Indiana Utility Regulatory Commission",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      },
+      {
+        "url": "https://morgancountycorrespondent.com/2026/07/02/google-pressures-monrovia-to-end-annexation-effort/",
+        "label": "Google pressures Monrovia to end annexation effort",
+        "publisher": "Morgan County Correspondent",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.idsnews.com/article/2026/05/the-billion-dollar-neighbor-coming-to-morgan-county",
+        "label": "The billion-dollar neighbor coming to Morgan County",
+        "publisher": "Indiana Daily Student",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wthr.com/article/news/local/morgan-co-data-center-project-advances-county-commissioner-vote-indiana/531-d9e68593-a393-4db9-b04e-292eeddda454",
+        "label": "Morgan County data center project advances despite major community pushback",
+        "publisher": "WTHR (NBC Indianapolis)",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "Codename 'Project Louie'; Google initially concealed via shell company 'Woodland Caribou LLC'. Campus totals approximately 550 acres in Morgan Township east of Monrovia (bounded by Keller Hill Rd, N Antioch Rd, SR-42, W Union Church Rd); additional ~80 acres acquired within Monrovia town limits, bringing total Google holdings to ~628 acres. Planned 1,200 MW AES Indiana substation per IURC Cause No. 46394 (filed Apr 22 2026); that figure is the utility substation capacity ceiling, not a confirmed steady-state data center load — treated as notes per spec. Six buildings plus substation planned. Reported total investment ~$1 billion (IDS News; not confirmed as a firm Google-stated commitment — left out of investmentUsd). Land acquisition spend: ~$78 million for ~15 parcels Sep–Nov 2025. Coordinates approximate (site east of Monrovia near SR-42/Keller Hill Rd area). Annexation dispute with Town of Monrovia active July 2026: county transferred Google parcels to RDC under IC 36-4-3-4.3 to block annexation; Google offered $12M sewer plant upgrade to Monrovia to drop the effort.",
+    "energy": {
+      "source": "grid",
+      "utility": "AES Indiana",
+      "notes": "AES Indiana sole utility provider. IURC Cause No. 46394 filed Apr 22 2026 under HEA 1007; AES planning 1,200 MW on-site substation; 15-year Customer Specific Contract (CSC); all incremental infrastructure costs paid by Google; IURC order expected Sept 2026.",
+      "sourceIndex": 4
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Each building estimated to use up to 4 million gallons per day at maximum capacity per IURC filings; total campus water demand not confirmed as a single figure. Cooling type not confirmed in available sources.",
+      "sourceIndex": 4
+    },
+    "subsidies": [
+      {
+        "program": "Morgan County 40-year local tax exemption on qualified computing equipment (approved May 2025)",
+        "jurisdiction": "Morgan County, IN",
+        "year": "2025",
+        "sourceIndex": 1
+      },
+      {
+        "program": "Morgan County 10-year 50% property tax abatement on data center buildings (approved May 2025)",
+        "jurisdiction": "Morgan County, IN",
+        "year": "2025",
+        "sourceIndex": 1
+      },
+      {
+        "program": "Indiana Economic Development Corp (IEDC) state tax incentives — up to $42 million over 35 years",
+        "jurisdiction": "State of Indiana",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
+    "landAcres": 550,
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "Significant opposition. 'KEEP MONROVIA RURAL' signs appeared along roads and fields; multiple lawsuits filed challenging rezoning decisions, consolidated January 2026, ongoing as of mid-2026. Annexation dispute active July 2026: Monrovia sought to annex Google parcels; county transferred property to RDC under IC 36-4-3-4.3 to block; Google offered $12M sewer plant upgrade in exchange for dropping effort. County commissioners generally supportive (Commissioner Don Adams called Google 'good neighbors'). Google donated $200K to Monrovia FFA and $1M to local nonprofits.",
+      "sourceIndex": 5
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "microsoft-firecracker-rome-ga",
+    "name": "Microsoft Data Center Campus – Rome, GA",
+    "operator": "Microsoft",
+    "status": "permitted",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.27,
+      "lon": -85.16,
+      "city": "Rome",
+      "county": "Floyd County",
+      "state": "GA"
+    },
+    "announcedDate": "2023",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2021",
+        "note": "Rome Floyd County Development Authority begins working with property owner Floyd County 118 LLC to rezone 347-acre Huffaker Road parcel to Heavy Industrial",
+        "sourceIndex": 1
+      },
+      {
+        "status": "permitted",
+        "date": "2023",
+        "note": "Publicly announced October 30, 2023 at RFCDA meeting; authority votes to issue industrial revenue bonds and grant partial tax abatements; project entering design phase with completion target 2027–2028",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-to-develop-350-acre-data-center-campus-in-rome-georgia/",
+        "label": "Microsoft to develop 350-acre data center campus in Rome, Georgia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.northwestgeorgianews.com/rome/news/local/updated-microsoft-to-invest-1-billion-in-data-center-in-floyd-county/article_128f3c2c-772f-11ee-a991-7fb8d4f28f86.html",
+        "label": "Microsoft To Invest $1 Billion In Data Center in Floyd County",
+        "publisher": "Northwest Georgia News",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://thegeorgiasun.com/2023/10/30/1-billion-microsoft-data-center-campus-coming-to-northwest-georgia/",
+        "label": "$1 Billion Microsoft Data Center Campus Coming to Northwest Georgia",
+        "publisher": "The Georgia Sun",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://allongeorgia.com/chattooga-local-news/microsoft-to-invest-1-billion-in-rome-ga-data-center-campus/",
+        "label": "Microsoft to invest $1 Billion in Rome, GA Data Center Campus",
+        "publisher": "AllOnGeorgia",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.northwestgeorgianews.com/rome/news/local/floyd-county-commission-enacts-80-day-moratorium-on-new-data-centers/article_f6a7cc37-9486-42af-85b0-5705c980691e.html",
+        "label": "Floyd County Commission enacts 80-day moratorium on new data centers",
+        "publisher": "Northwest Georgia News",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "Investment described as '$1 billion' in RFCDA announcement; Data Center Dynamics and Business Facilities use 'more than $1 billion' framing — treated as a floor, not a firm single figure (investmentUsd omitted per data policy). Completion targeted 2027–2028. Site is 347 acres on Huffaker Road, east of Fouche Gap Road, in unincorporated Floyd County, adjacent to Georgia Power-owned land; land purchased at $40,000/acre (~$13.9M). Microsoft stated site selection was driven by 'Rome and Floyd County's industrial zoning and strong infrastructure.' Microsoft committed to covering all costs for additional infrastructure (power, water, roads) so ratepayers and taxpayers are not burdened. Part of Microsoft's broader East US 3 Georgia cloud build-out; announced to bolster Azure cloud services. Floyd County enacted an 80-day moratorium on new data center permits (2025) but explicitly noted previously filed projects including Microsoft's can proceed. Capacity MW not disclosed. Coordinates are approximate; actual parcel is on Huffaker Road in unincorporated Floyd County.",
+    "energy": {
+      "source": "grid",
+      "notes": "No public utility service agreement confirmed as of 2026-07-07. Georgia Power is the regional electric utility for Floyd County. A January 2025 Georgia PSC rule approved special terms for new large data center customers using >100 MW.",
+      "sourceIndex": 0
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "No water usage figures or cooling system type disclosed publicly as of 2026-07-07.",
+      "sourceIndex": 0
+    },
+    "subsidies": [
+      {
+        "program": "12-year partial property tax abatement on buildings + 9-year partial abatement on equipment, granted by Floyd County Development Authority via industrial revenue bonds; land value taxes and Floyd County school taxes remain payable on the land portion",
+        "jurisdiction": "Floyd County, GA",
+        "year": "2023",
+        "sourceIndex": 1
+      }
+    ],
+    "landAcres": 347,
+    "jobs": {
+      "permanent": 150,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "supported",
+      "notes": "RFCDA chair Jimmy Byars: 'This is a tremendous economic opportunity for our community that will have positive impacts for decades to come.' Floyd County Schools and Rome City Schools superintendents both expressed enthusiasm for workforce training partnership. Microsoft Director of Community Engagement Paul Englis noted 150 jobs is likely 'a bit on the low side.' No opposition documented at October 2023 announcement. Floyd County's 2025 moratorium on new data centers was not directed at the Microsoft project, which had already been filed.",
+      "sourceIndex": 1
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "vermaland-la-osa-eloy-az",
+    "name": "La Osa Data Center Park",
+    "operator": "Vermaland LLC",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.75,
+      "lon": -111.55,
+      "city": "Eloy",
+      "county": "Pinal County",
+      "state": "AZ"
+    },
+    "poweredBy": "WAPA grid interconnect; on-site natural gas (phase 1); solar (planned)",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Vermaland publicly announces La Osa Project (DCD: Aug 4, 2025; AZ Big Media: Sep 15, 2025); rezoning application filed with Pinal County ~April 2025. $33B/3 GW ceiling figures publicized. Pinal County Planning & Zoning Commission holds non-voting informational session July 17, 2025.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "April 17, 2026: Pinal County land-use committee recommends advancing to full rezoning and site-plan review. No construction authorization granted; comprehensive plan amendment, drainage, flood mitigation, and road improvements still required.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "May 2026: Operator announces 80% scale-back after all ~60 public comments opposed the project — revised plan reduces to 11 data centers and a 1 GW energy demand ceiling (down from 59 DCs / 3 GW). Board of Supervisors hearing rescheduled to August 26, 2026.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/land-developer-vermaland-plans-33bn-data-center-in-arizona/",
+        "label": "Land developer Vermaland pitches $33bn data center in Arizona",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://azbigmedia.com/business/33-billion-data-center-industrial-park-coming-to-pinal-county/",
+        "label": "$33 billion data center industrial park coming to Pinal County",
+        "publisher": "AZ Big Media",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kjzz.org/fronteras-desk/2026-05-28/largest-proposed-data-center-in-arizona-to-be-scaled-back-80-after-opposition",
+        "label": "Largest proposed data center in Arizona to be scaled back 80% after opposition",
+        "publisher": "KJZZ (Arizona Public Radio)",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/04/pinal-county-panel-backs-massive-la-osa-data-center-in-eloy-desert/",
+        "label": "Pinal County Advances Vermaland's La Osa Data Center Plan",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.commercialsearch.com/news/33b-data-center-park-eyed-in-arizona/",
+        "label": "$33B Data Center Park Eyed in Arizona",
+        "publisher": "Commercial Property Executive",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "Vermaland LLC is a Phoenix-area land developer and land-banking company (CEO Kuldip 'Ken' Verma, founded 2006, controls ~25,000 acres of metro Phoenix land). DCD explicitly noted 'it is unclear whether Vermaland would operate its own data center facilities' — Vermaland plans to sell or rent parcels/buildings to tenants. No end tenants or hyperscaler operators have been named as of July 2026. Original plan: 59 data centers, up to 3 GW capacity ceiling, up to $33B investment ceiling, 3,300-acre site south of Eloy along the Greene Canal. A separate adjacent 1,700-acre parcel already holds Industrial-2 zoning for data centers, gas plants, battery storage, and solar. After strong public opposition (all ~60 public comments opposed), operator announced May 2026 scale-back to 11 data centers and 1 GW ceiling. Board of Supervisors hearing scheduled August 26, 2026; no permits issued as of record date. Site lies adjacent to a Qualified Opportunity Zone (investor tax benefit; not a direct subsidy to Vermaland — no subsidy award confirmed, omitted). Coordinates are approximate (parcel south of Eloy city center along Greene Canal; no precise APN published). $33B investment and all GW figures are announced ceilings, not firm commitments.",
+    "energy": {
+      "source": "mixed",
+      "utility": "Western Area Power Administration (WAPA) — proposed grid transmission line upgrades for interconnect. APS and SRP not confirmed as utility providers.",
+      "notes": "Phase 1 would rely on on-site natural gas turbines as primary power source, transitioning to solar as adjacent solar projects come online. Utility-scale battery storage included in original 3 GW plan. Hybrid model: gas + solar + battery + WAPA grid. On-site generation MW not specified in any source.",
+      "sourceIndex": 0
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer's attorney stated commitment to air-cooled or closed-loop cooling to minimize water demand. Site borders the Greene Canal, raising concerns about water access and consumption in an arid region. No MGD figures have been published. Critics cited Pima County's 'Project Blue' hyperscale data center as a cautionary precedent for water misuse in Arizona desert developments.",
+      "sourceIndex": 3
+    },
+    "landAcres": 3300,
+    "community": {
+      "status": "opposed",
+      "notes": "All approximately 60 public comments and 50 emails received by the Pinal County Board opposed the project. Concerns raised: location in a high-risk flood zone, wildlife and environmental impacts, water use risk, power bill impacts for local residents, construction timeline (gas plant likely last, 5-7 year timeline). Scale-back from 3 GW to 1 GW was a direct response to this opposition. Pinal County Supervisor Rich Vitiello expressed concern about constituent energy cost impacts.",
+      "sourceIndex": 2
+    },
+    "lastUpdated": "2026-07-07"
   }
 ]
