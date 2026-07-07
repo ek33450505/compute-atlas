@@ -42,7 +42,7 @@ const CAPACITY_OPTIONS = [
 // Types
 // ---------------------------------------------------------------------------
 
-interface FilterValues {
+export interface FilterValues {
   status: Status[];
   state: string[];
   operator: string[];
@@ -50,7 +50,7 @@ interface FilterValues {
   q: string;
 }
 
-interface FilterSetters {
+export interface FilterSetters {
   setStatus: (v: Status[]) => void;
   setState: (v: string[]) => void;
   setOperator: (v: string[]) => void;

@@ -140,6 +140,48 @@
   }
 }
 
+/* ── MapLibre chrome — parchment/ink theme (Phase 1c) ──────────────────────────
+   Themes the zoom NavigationControl group and the imperial ScaleControl to match
+   the atlas aesthetic. UNLAYERED (same as .atlas-popup below) so compound
+   selectors beat maplibre-gl.css regardless of import order.
+
+   Contrast audit:
+     --muted-foreground (#5C5344) on --popover (#FBF8EF):  6.70:1  ✓
+     --muted-foreground (#5C5344) on --background/85:      6.70:1  ✓  (scale bar text)
+   MapLibre zoom button icons are dark SVG data-URIs (rgba(0,0,0,0.85)) on
+   --popover (#FBF8EF): well above 4.5:1. */
+
+/* Zoom control group (NavigationControl) */
+.maplibregl-ctrl-group {
+  background-color: var(--popover);
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+
+/* Divider between stacked buttons within the group */
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--border);
+}
+
+/* Remove MapLibre's own 1px inset box-shadow on the group (it fights our border) */
+.maplibregl-ctrl-group:not(:empty) {
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+
+/* Scale bar */
+.maplibregl-ctrl-scale {
+  background-color: color-mix(in oklab, var(--background) 85%, transparent);
+  backdrop-filter: blur(3px);
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1;
+  padding: 2px 5px;
+}
+
 /* ── MapLibre popup — themed as a parchment atlas card (Track B, Phase 1b) ─────
    Overrides maplibre-gl.css defaults (imported in components/map/facility-map.tsx).
    Scoped via `.atlas-popup` (the react-map-gl <Popup className>) so it only skins

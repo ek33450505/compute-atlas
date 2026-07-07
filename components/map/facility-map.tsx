@@ -5,6 +5,7 @@ import Map, {
   Marker,
   Popup,
   NavigationControl,
+  ScaleControl,
   type MapRef,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -15,6 +16,7 @@ import { FacilityMarker } from "@/components/map/facility-marker";
 import { ClusterMarker } from "@/components/map/cluster-marker";
 import { FacilityPopup } from "@/components/map/facility-popup";
 import { MapLegend } from "@/components/map/map-legend";
+import { CompassRose } from "@/components/map/compass-rose";
 import type { Facility } from "@/lib/schema";
 
 interface FacilityMapProps {
@@ -38,6 +40,9 @@ interface FacilityMapProps {
  * - prefers-reduced-motion: when enabled, easeTo/fitBounds uses duration 0 (instant);
  *   otherwise animation runs over 600 ms.
  * - Focus management: closing a popup returns focus to the triggering marker button.
+ * - Full-bleed layout (Phase 1c): container has no rounded corners or side border so
+ *   it meets viewport edges. Filter controls live in a sub-header above the map (in
+ *   normal document flow); compass, legend, and scale float over the canvas.
  */
 export function FacilityMap({
   facilities,
@@ -47,6 +52,7 @@ export function FacilityMap({
     null
   );
   const [zoom, setZoom] = useState<number>(INITIAL_VIEW_STATE.zoom);
+  const [bearing, setBearing] = useState<number>(0);
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
   const mapRef = useRef<MapRef>(null);
@@ -124,6 +130,15 @@ export function FacilityMap({
     [zoom, reducedMotion]
   );
 
+  /** Resets map bearing and pitch to north-up. */
+  const handleResetNorth = useCallback(() => {
+    mapRef.current?.easeTo({
+      bearing: 0,
+      pitch: 0,
+      duration: reducedMotion ? 0 : 400,
+    });
+  }, [reducedMotion]);
+
   // MapLibre adds role="button" + aria-label="Map marker" to every Marker
   // wrapper div automatically, creating a nested-interactive a11y violation
   // (role="button" > <button>) flagged by WCAG 2.5.8 / axe nested-interactive.
@@ -163,6 +178,7 @@ export function FacilityMap({
     <div
       role="region"
       aria-label="Map of AI datacenters in the United States"
+      className={heightClass}
     >
       {/* Visually-hidden guidance for screen reader users */}
       <p className="sr-only">
@@ -175,7 +191,12 @@ export function FacilityMap({
         .
       </p>
 
-      <div className={`relative ${heightClass} w-full rounded-lg overflow-hidden border`}>
+      {/*
+       * Full-bleed container (Phase 1c): no rounded-lg or side border so the map
+       * meets the viewport edges below the sticky header. A bottom hairline (border-b)
+       * separates map from content below the fold.
+       */}
+      <div className="relative h-full w-full overflow-hidden border-b">
         <Map
           ref={mapRef}
           mapStyle={BASEMAP_STYLE_URL}
@@ -185,11 +206,16 @@ export function FacilityMap({
           attributionControl={false}
           onLoad={handleMapLoad}
           onZoomEnd={(e) => setZoom(e.viewState.zoom)}
+          onMoveEnd={(e) => setBearing(e.viewState.bearing)}
         >
+          {/* Zoom controls — compass arrow hidden (replaced by custom CompassRose below) */}
           <NavigationControl
             position="top-right"
             showCompass={false}
           />
+
+          {/* Imperial scale bar — themed to parchment/ink via globals.css */}
+          <ScaleControl position="bottom-right" unit="imperial" />
 
           {clusters.map((cluster) => {
             if (cluster.members.length === 1) {
@@ -249,39 +275,52 @@ export function FacilityMap({
           )}
         </Map>
 
-        <MapLegend />
-      </div>
+        {/*
+         * Top-right: custom compass rose, stacked below NavigationControl.
+         * NavigationControl (~29 px buttons × 2 = ~70 px) + margin → top-20 (~80 px).
+         * Not a MapLibre control — a plain positioned element so it doesn't fight
+         * MapLibre's ctrl-group z-index stacking.
+         */}
+        <div className="absolute top-20 right-2 z-20">
+          <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
+        </div>
 
-      {/* Basemap attribution rendered below the map canvas (not overlaid) so it
-          never collides with geo-positioned markers — WCAG 2.5.8 target-size.
-          Inline links in text flow are exempt from the minimum target-size rule. */}
-      <p className="mt-2 text-xs text-muted-foreground">
-        <a
-          href="https://openfreemap.org"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-foreground"
-        >
-          OpenFreeMap
-        </a>{" "}
-        <a
-          href="https://www.openmaptiles.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-foreground"
-        >
-          © OpenMapTiles
-        </a>{" "}
-        Data from{" "}
-        <a
-          href="https://www.openstreetmap.org/copyright"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-foreground"
-        >
-          OpenStreetMap
-        </a>
-      </p>
+        {/* Bottom-left: map legend (unchanged position) */}
+        <MapLegend />
+
+        {/*
+         * Bottom-right: basemap attribution as a small semi-opaque overlay, stacked
+         * beneath the MapLibre ScaleControl. Inline text links are EXEMPT from
+         * WCAG 2.5.8 target-size — these are inline flow links, not interactive controls.
+         */}
+        <p className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm">
+          <a
+            href="https://openfreemap.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground"
+          >
+            OpenFreeMap
+          </a>{" "}
+          <a
+            href="https://www.openmaptiles.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground"
+          >
+            © OpenMapTiles
+          </a>{" "}
+          Data from{" "}
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground"
+          >
+            OpenStreetMap
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

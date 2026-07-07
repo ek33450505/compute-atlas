@@ -11,27 +11,21 @@ export const metadata: Metadata = {
 };
 
 /**
- * /map — immersive map page.
- * Server component: facilities loaded at request time, passed to Explorer in map mode.
+ * /map — immersive full-bleed map page (Phase 1c).
+ *
+ * Renders Explorer in map mode at full viewport width — no max-width container,
+ * no page-level padding, no title strip. The sticky header (h-16 = 4 rem) sits
+ * above; the map fills `h-[calc(100dvh-4rem)]` below it. The filter panel,
+ * compass rose, scale bar, and legend float as overlays over the map canvas.
+ *
+ * Server component: facilities loaded at request time, passed to Explorer.
  */
 export default function MapPage() {
   const facilities = getAllFacilities();
 
   return (
-    <div className="mx-auto w-full max-w-[100rem] px-4 py-6 sm:px-6">
-      {/* Compact title strip */}
-      <div className="mb-4 flex items-baseline gap-3">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          The Map
-        </p>
-        <p className="font-mono text-xs text-muted-foreground">
-          AI datacenter infrastructure · United States
-        </p>
-      </div>
-
-      <Suspense>
-        <Explorer facilities={facilities} mode="map" />
-      </Suspense>
-    </div>
+    <Suspense>
+      <Explorer facilities={facilities} mode="map" />
+    </Suspense>
   );
 }

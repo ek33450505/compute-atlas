@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
 import {
   useQueryState,
   parseAsStringLiteral,
@@ -16,6 +15,7 @@ import type { Facility } from "@/lib/schema";
 import { FacilityTable } from "@/components/table/facility-table";
 import { FacilityMap } from "@/components/map/facility-map-dynamic";
 import { FilterBar } from "@/components/explorer/filter-bar";
+import { MapFilterSubheader } from "@/components/map/map-filter-subheader";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -76,40 +76,26 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
   );
 
   // -------------------------------------------------------------------------
-  // Map-only mode (no toggle)
+  // Map-only mode — immersive full-bleed layout (Phase 1c)
+  // Filter sub-header sits in normal document flow ABOVE the map; the map
+  // flexes to fill the remaining viewport height below the site header (4 rem).
   // -------------------------------------------------------------------------
   if (mode === "map") {
     return (
-      <div className="space-y-4">
-        <FilterBar
+      <div className="flex flex-col h-[calc(100dvh-4rem)]">
+        <MapFilterSubheader
           facilities={facilities}
           values={{ status, state, operator, minMw, q }}
           setters={{ setStatus, setState, setOperator, setMinMw, setQ }}
+          filteredCount={filtered.length}
+          totalCount={facilities.length}
         />
-
-        {/* Result count + cross-link row */}
-        <div className="flex items-center justify-between gap-4">
-          <p
-            role="status"
-            aria-live="polite"
-            className="text-sm text-muted-foreground"
-          >
-            Showing {filtered.length} of {facilities.length} facilities
-          </p>
-          <Link
-            href="/table"
-            className="font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            View as table →
-          </Link>
+        {/* min-h-0 prevents the flex child from overflowing its parent */}
+        <div className="relative flex-1 min-h-0">
+          <section aria-label="Interactive datacenter map" className="h-full">
+            <FacilityMap facilities={filtered} heightClass="h-full min-h-[320px]" />
+          </section>
         </div>
-
-        <section aria-label="Interactive datacenter map">
-          <FacilityMap
-            facilities={filtered}
-            heightClass="h-[calc(100dvh-15rem)] min-h-[520px]"
-          />
-        </section>
       </div>
     );
   }
