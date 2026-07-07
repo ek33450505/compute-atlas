@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Code2 } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
+import { Wordmark } from "@/components/wordmark";
 
 const NAV_LINKS = [
   { label: "Map", href: "/map" },
@@ -16,17 +17,10 @@ export function SiteHeader() {
         {/* Wordmark */}
         <Link
           href="/"
+          aria-label={`${siteConfig.name}, home`}
           className="flex shrink-0 whitespace-nowrap flex-col items-start gap-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
         >
-          <span className="flex items-center gap-1.5">
-            <span aria-hidden="true" className="text-primary text-base leading-none">⌖</span>
-            <span className="font-display text-lg sm:text-xl font-semibold tracking-tight text-foreground leading-none">
-              {siteConfig.name}
-            </span>
-          </span>
-          <span className="hidden sm:block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground leading-tight mt-0.5">
-            A survey of U.S. AI-datacenter infrastructure
-          </span>
+          <Wordmark showTagline />
         </Link>
 
         {/* Primary nav */}
