@@ -11167,5 +11167,1141 @@
     ],
     "notes": "Status is 'cancelled' per Applied Digital's own March 2026 statement (land option to lapse). The 'up to $16 billion' investment and up to 200 jobs were announced figures for the proposal and are recorded in statusHistory rather than as structured investmentUsd/jobs, since the project will not proceed. aiClassification is 'confirmed' — Data Center Dynamics reported it as an AI data center. The Otter Tail Power association reflects the proposed (now abandoned) siting.",
     "lastUpdated": "2026-07-06"
+  },
+  {
+    "id": "aws-green-new-florence-mo",
+    "name": "AWS Project Green Campus",
+    "operator": "Amazon Web Services (AWS)",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.852,
+      "lon": -91.52,
+      "city": "New Florence",
+      "county": "Montgomery County",
+      "state": "MO"
+    },
+    "poweredBy": "Ameren Missouri",
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Application filed via NorthPoint Development, LLC for a 1,000-acre parcel at the northeast quadrant of I-70 and Highway 19 interchange near New Florence; two-phase campus of up to 21 data center buildings.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "permitted",
+        "date": "2025-12",
+        "note": "Montgomery County Commission unanimously approved the project and tax abatement incentive framework in December 2025; public safety entities (ambulance district, fire protection district) opted out of Chapter 100 participation and retained full tax allocations.",
+        "sourceIndex": 5
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-04",
+        "note": "Construction under way by April 2026; Preserve Montgomery County LLC lawsuit filed in February 2026 pending. Governor Kehoe and AWS made the official public $10B investment announcement on June 15, 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.komu.com/news/midmissourinews/amazon-missouri-officials-announce-10b-montgomery-county-data-center-plan/article_cb50e268-0d98-48e6-9c0a-3dc1978aa2c5.html",
+        "label": "Amazon announces $10B Montgomery County data center plan",
+        "publisher": "KOMU",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/amazon-commits-10bn-to-data-center-campus-in-montgomery-city-missouri/",
+        "label": "Amazon commits $10bn to data center campus in Montgomery County, Missouri",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/1000-acre-aws-data-center-campus-under-consideration-in-montgomery-county-missouri/",
+        "label": "1,000-acre AWS data center campus under consideration in Montgomery County, Missouri",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://themissouritimes.com/aws-new-facilities-near-new-florence-will-double-tax-revenue-for-montgomery-county/",
+        "label": "AWS new facilities near New Florence will double tax revenue for Montgomery County",
+        "publisher": "The Missouri Times",
+        "retrievedAt": "2026-07-07",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.kq2.com/news/regional/missouri/2026/06/03/new-florence-aws-data-center-to-tap-local-aquifer-for-water/",
+        "label": "New Florence AWS data center to tap local aquifer for water",
+        "publisher": "KQ2",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://abc17news.com/news/montgomery/2025/12/03/montgomery-county-approves-land-for-two-large-scale-projects-on-amazon-data-center-campus/",
+        "label": "Montgomery County approves land for two large-scale projects on Amazon data center campus",
+        "publisher": "ABC17 News",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://baxtel.com/data-center/amazon-project-green-campus",
+        "label": "Amazon Project Green Campus — Baxtel listing",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "notes": "Codename 'Project Green'; application filed via NorthPoint Development, LLC. Two-phase build-out: Phase 1 = 8 data center buildings; Phase 2 = 13 additional buildings (21 total). Located on ~1,000 acres at northeast quadrant of I-70 and Highway 19 interchange near New Florence. Official AWS/Governor Kehoe announcement on June 15, 2026 cited a $10B investment commitment. Earlier county planning documents and initial filings referenced a maximum capital investment ceiling of up to $35B — that figure is a speculative ceiling, not a committed amount. AWS separately announced a 138MW renewable energy project in Missouri; not confirmed as dedicated to this campus. Community investments included in announcement: $3M for county 911/emergency dispatch upgrades, $3M for community programs, $1M for Montgomery County Fairgrounds, $150K community fund, $50K teacher grant. Preserve Montgomery County LLC filed suit in February 2026 alleging ten counts of Missouri Sunshine Law violations (closed-session negotiations, NDAs with Amazon); case pending as of mid-2026. First buildings targeted operational by 2027; full campus potentially complete ~2032. Coordinates are approximate (parcel centroid at I-70 / Hwy 19 NE quadrant). Jobs: KOMU reported ~400 permanent jobs; DCD's coverage of the same $10B announcement cited no specific permanent figure (only 'thousands of construction jobs') — permanent count left unstructured pending firm corroboration.",
+    "energy": {
+      "source": "grid",
+      "utility": "Ameren Missouri",
+      "notes": "Powered by Ameren Missouri grid. AWS committed to working with Ameren to ensure project energy costs are not passed to other ratepayers. AWS announced a separate 138MW renewable energy project in Missouri (not confirmed as on-site or dedicated to this campus).",
+      "sourceIndex": 0
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Water sourced from Cambrian-Ordovician aquifer via wells drilled to ~1,500 ft depth (to avoid impacting local private wells at shallower depths). Initial phase projected at 2.9M gallons/year; full 17-building campus projected at ~50M gallons/year (~0.137 MGD equivalent). Regional aquifer capacity exceeds 23 trillion gallons; current regional utilization ~8%; this project adds ~0.03%. On-site stormwater management ponds and water treatment plant planned. Cooling methodology not publicly specified.",
+      "sourceIndex": 4
+    },
+    "subsidies": [
+      {
+        "program": "Montgomery County Chapter 100 bond / PILOT — personal property tax abatements on declining schedule approved December 2025; real property taxes paid in full; public safety districts (ambulance, fire) opted out and retain full allocations. Total multi-year abatement value not publicly disclosed.",
+        "jurisdiction": "Montgomery County, MO",
+        "year": "2025",
+        "sourceIndex": 3
+      }
+    ],
+    "investmentUsd": 10000000000,
+    "landAcres": 1000,
+    "community": {
+      "status": "contested",
+      "notes": "Preserve Montgomery County LLC (coalition of local residents, farmers, and business owners) filed a 10-count lawsuit in February 2026 alleging Missouri Sunshine Law violations — specifically that county commissioners conducted negotiations in closed sessions and signed NDAs with Amazon. Community concerns at public meetings included water usage impacts, potential electric rate increases, and loss of rural character. Some residents and officials expressed support for the project's economic benefits. Construction proceeded despite the pending suit. Montgomery County Commission stated real property taxes are not abated and projected the project would double the county's tax revenue at full buildout.",
+      "sourceIndex": 5
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "fermi-matador-amarillo-tx",
+    "name": "Project Matador",
+    "operator": "Fermi America",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.396,
+      "lon": -101.543,
+      "city": "Amarillo",
+      "county": "Carson County",
+      "state": "TX"
+    },
+    "poweredBy": "on_site_gas",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Fermi America founded January 2025 by Rick Perry, Toby Neugebauer, and Griffin Perry. Project Matador announced on ~5,769-acre site in Carson County under 99-year lease with Texas Tech University System, adjacent to DOE Pantex Plant.",
+        "sourceIndex": 6
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "600MW+ natural gas turbines acquired across two deals (July 2025); COLA for four AP1000 reactors filed with NRC June 17 2025; NRC accepted COLA for review September 2025; TCEQ preliminary approval for first 6GW gas generation (November 2025); geotechnical work commenced on campus.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/fermi-america-acquires-600mw-of-gas-turbines-for-11gw-ai-mega-campus-in-amarillo-texas/",
+        "label": "Fermi America acquires 600MW of gas turbines for 11GW AI mega campus in Amarillo, Texas",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/fermi-america-makes-initial-draw-on-200-million-equipment-facility-from-keystone-national-group-and-cape-commercial-finance-to-accelerate-the-delivery-of-the-first-2-3gw-of-project-matadors-11gw-private-hypergrid-campus-302693111.html",
+        "label": "Fermi America Makes Initial Draw on $200M Equipment Facility to Accelerate 2.3GW Delivery",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/fermi-america-and-the-state-of-texas-announce-preliminary-approval-for-first-6-gw-of-one-of-the-worlds-largest-clean-natural-gas-facilities-on-project-matadors-11-gw-private-hypergrid-campus-302603582.html",
+        "label": "Fermi America and State of Texas Announce TCEQ Preliminary Approval for First 6GW Natural Gas Facilities",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.nrc.gov/reactors/new-reactors/large-lwr/col/fermi-energy-intel-campus",
+        "label": "Fermi America Project Matador AP1000 Units 1-4 Combined License Application",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-07",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.ans.org/news/2025-09-10/article-7357/fermi-america-looks-to-go-public-as-nrc-accepts-cola-for-ap1000s/",
+        "label": "Fermi America looks to go public as NRC accepts COLA for AP1000s",
+        "publisher": "ANS Nuclear Newswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sierraclub.org/texas/blog/2025/12/project-matador-trump-ai-data-center-texas",
+        "label": "Project Matador: Massive AI Data Center in Texas Panhandle Promises Pollution",
+        "publisher": "Sierra Club Texas",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://fortune.com/2025/10/10/rick-perry-ai-power-startup-fermi-ipo-zero-revenue/",
+        "label": "Rick Perry's AI power startup Fermi already has a $16 billion market cap—and zero revenue",
+        "publisher": "Fortune",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://fortune.com/2026/04/20/financially-struggling-ai-power-startup-fermi-loses-ceo-reset/",
+        "label": "Financially struggling, AI power startup Fermi loses its CEO and CFO for '2.0' reset",
+        "publisher": "Fortune",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "11GW is the long-term ceiling for the HyperGrid campus; near-term company targets include 1GW by end of 2026 and 2.3GW first-phase delivery — these are company goals, not firm commitments. Land acreage reported variously (5,769 acres per DCD July 2025 and 5,855 acres per other sources; later company materials cite 7,570 acres on 7,570 acres); using 5,769 as the earliest confirmed figure, sourced from the gas turbine acquisition announcement. Coordinates approximate (seed-provided; site in Carson County ~12 miles NE of Amarillo, adjacent to DOE Pantex Plant). Fermi America co-founded January 2025 by former Texas Governor and U.S. Energy Secretary Rick Perry, Toby Neugebauer (CEO, departed April 2026 after being fired 'without cause'), and Griffin Perry. IPO raised $682M on Nasdaq under ticker FRMI (October 2025), valuing company at ~$19B at opening; market cap collapsed to ~$3.4B by April 2026 after leadership exits and loss of anchor tenant ($150M LOI canceled December 2025). Company organized as a REIT; had zero revenue at IPO. Investment: equipment financing commitments exceed $600M ($500M MUFG turbine warehouse + $200M Keystone/Cape facility); projected total project cost $70–90B is a range/projection, not a firm figure — omitted from investmentUsd per data-rigor policy. Jobs: 50,000+ projected across campus lifetime — projection only, omitted from jobs field. Nuclear campus name in NRC COLA filings: 'President Donald J. Trump Advanced Energy and Intelligence Campus'; publicly marketed as Project Matador / HyperGrid.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Initial generation: on-site natural gas. Fermi acquired 600MW+ of gas turbines in two deals (July 2025): 478MW from Firebird LNG/Siemens Energy (six SGT800 turbines + heat recovery steam generators + one SST600 steam turbine) and 135MW from GE 6B Frame units acquired from a New Jersey facility. TCEQ issued preliminary approval for up to 6GW of combined-cycle gas (November 2025); air permit secured February 2026 after ~279 public comments. Long-term plan adds four Westinghouse AP1000 reactors (~4.4GW nuclear baseload; COLA filed June 17 2025, NRC accepted two of three parts for review September 2025, Part 3 deadline December 31 2026, first reactor targeted 2031, all four by 2038) plus solar and battery storage. Fermi is also evaluating SMRs (MOU with Doosan Enerbility). Entire campus is behind-the-meter — private grid, no public utility offtake.",
+      "sourceIndex": 0
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "No confirmed water use figures published. Community opposition raised concerns about Ogallala Aquifer impacts from combined cooling demand of gas plants and data centers. Arid Texas Panhandle location heightens water supply risk.",
+      "sourceIndex": 5
+    },
+    "landAcres": 5769,
+    "community": {
+      "status": "contested",
+      "notes": "TCEQ air permit process (for 93 planned gas turbines) drew 279+ public comments, majority opposed. 63 contested case hearing requests filed before State Office of Administrative Hearings; 21 additional public meeting requests. Primary opposition group: Panhandle Taxpayers for Transparency. Key concerns: air quality (modeled 2,140 tpy CO and 1,591 tpy NOx), water demand, impacts on farmland and nearby cattle operations (Tyson Foods facility adjacent). Fermi bused in college students to a December 2025 public meeting, stoking further controversy.",
+      "sourceIndex": 5
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "google-armstrong-county-tx",
+    "name": "Goodnight Campus",
+    "operator": "Google / Crusoe",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.973,
+      "lon": -101.367,
+      "city": "Claude",
+      "county": "Armstrong County",
+      "state": "TX"
+    },
+    "poweredBy": "mixed",
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024",
+        "note": "Armstrong County Commissioners Court approved tax abatement agreement with GN DC1, LLC (Crusoe Energy entity) at November 12, 2024 public hearing. Tenant not publicly named at that time.",
+        "sourceIndex": 6
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Google confirmed partnership with Crusoe for Goodnight campus as part of $40B statewide Texas announcement, November 2025. Satellite imagery (Cleanview, Feb 24 2026) confirmed two buildings under active construction with roof installation and steel framing underway.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-commits-40bn-to-expand-cloud-and-ai-infrastructure-in-texas-through-2027/",
+        "label": "Google commits $40bn to expand cloud and AI infrastructure in Texas through 2027",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://e360.yale.edu/digest/google-natural-gas-data-center",
+        "label": "Google to Use Natural Gas to Power Massive Data Center in Texas",
+        "publisher": "Yale Environment 360",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.distilled.earth/p/google-is-weighing-natural-gas-without",
+        "label": "Google Is Considering Natural Gas Without Carbon Capture in Its AI Data Center Strategy",
+        "publisher": "Distilled",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.latitudemedia.com/news/how-a-crusoe-google-campus-became-texas-co-location-test-case/",
+        "label": "How a Crusoe-Google campus became Texas' co-location test case",
+        "publisher": "Latitude Media",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/google-launches-1-gw-plus-co-located-data-center-and-generation-complex-in-texas-panhandle/",
+        "label": "Google Launches 1-GW-Plus Co-Located Data Center and Generation Complex in Texas Panhandle",
+        "publisher": "Power Magazine",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newschannel10.com/2025/10/18/armstrong-county-ai-data-center-project-scaled-back-original-plan/",
+        "label": "Armstrong County AI data center project scaled back from original plan",
+        "publisher": "NewsChannel 10 (Amarillo)",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.co.armstrong.tx.us/upload/page/5361/docs/2024/NOV/Tax%20Abatement%20Agreement%202%20Phase%201.pdf",
+        "label": "Tax Abatement Agreement between Armstrong County, Texas and GN DC1, LLC (Phase 1)",
+        "publisher": "Armstrong County, Texas",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      }
+    ],
+    "notes": "Campus name: Goodnight, near the town of Claude, TX (known address: 10001 Lima Rd, Claude, TX 79019). Coordinates approximate (based on dispatch seed; county parcel area). Developed by Crusoe Energy via entity GN DC1, LLC (Delaware LLC, 255 Filmore St., Denver, CO 80206); Google is the hyperscale tenant/customer, confirmed publicly November 2025. Tax abatement agreement was signed with GN DC1, LLC in late 2024 without publicly naming the tenant. Google confirmed the Crusoe partnership but had not signed an offtake agreement for the on-site gas plant as of early 2026; negotiations on power amounts still ongoing per Google spokesperson. Planned IT capacity: Phase 1 described in tax abatement agreement as 'anticipated to consume up to 530 MW,' 4 buildings each with 4 x 25 MW data halls, on approximately 350 acres; Phase 2 (possible additional 3+ buildings) reported at up to ~500 MW additional; combined full build-out reported as 1 GW+ — all capacity figures are 'up to' ceilings from permit and abatement documents, not firm contracted amounts. Project was scaled back from an original 7-building plan (October 2025 local reporting); 4 buildings with construction permits from TDLR as of early 2026; Crusoe described 3-4 buildings as likely; grading on additional parcels suggests total program may reach 5+ buildings. First phase expected online 2026; initial county PILOT payment expected June/July 2026. The $40B Google Texas investment is a statewide commitment through 2027 covering multiple sites (Armstrong County, Haskell County, Ellis County) with no site-specific investment figure disclosed by Google. A $29B campus investment figure appeared in Aterio/Crusoe reporting — this is a projected ceiling, not a firm committed amount; omitted from investmentUsd per data-rigor policy. Distinct from Google's separate Haskell County TX site and Red Oak (Ellis County) TX sites — do not conflate.",
+    "energy": {
+      "source": "mixed",
+      "onSiteGenerationMw": 933,
+      "notes": "Crusoe Energy filed TCEQ air construction permit (TCEQ announcement Feb 5, 2026) for a 933 MW natural gas power plant on-site at the Goodnight campus. Gas plant operates off-grid with no ERCOT grid connection for this generation asset. No carbon capture technology. Estimated emissions up to 4.5 million tons CO2/year and 1,600 tons criteria air pollutants/year per permit application. A portion of the campus also co-locates behind the meter with Goodnight Wind farm (265.5 MW, Serena Energy, came online 2024) under Texas SB6 net metering arrangement; proposal submitted to Public Utility Commission of Texas (PUCT), regulatory review ongoing as of mid-2026. Separate TCEQ wastewater permit WQ0016881001 filed under same entity, indicating water/utility infrastructure planning underway.",
+      "sourceIndex": 1
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "No water volume or cooling system type disclosed in sources reviewed. TCEQ wastewater permit WQ0016881001 filed under the same GN DC1 LLC entity, indicating water infrastructure is being permitted; no public details available on cooling approach or projected water consumption.",
+      "sourceIndex": 6
+    },
+    "subsidies": [
+      {
+        "program": "Armstrong County Tax Abatement Agreement (Chapter 312, Texas Tax Code) with GN DC1, LLC — ad valorem property tax abatement up to 10 years on eligible improvements; amended 2025 to per-building Payments in Lieu of Taxes (PILOTs) of $1.35M/year/building once operational; original structure was $5.4M/year per phase ($10.8M/year at full build-out) for 10 years; county attorney noted total money would not change under amendment",
+        "jurisdiction": "Armstrong County, TX",
+        "year": "2024",
+        "sourceIndex": 6
+      }
+    ],
+    "landAcres": 350,
+    "community": {
+      "status": "supported",
+      "notes": "Armstrong County Commissioners Court approved the original tax abatement agreement unanimously at the November 12, 2024 public hearing. The amended PILOT structure was also approved unanimously in 2025 after hearing from elected officials from multiple taxing entities and members of the public. County Judge Adam Ensey publicly supported the amendment, noting it allows revenue collection to begin with each completed building rather than waiting for phase completion. Initial county payment expected June/July 2026.",
+      "sourceIndex": 5
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "iren-horizon-childress-tx",
+    "name": "IREN Horizon — Childress, TX",
+    "operator": "IREN (Iris Energy)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.4276,
+      "lon": -100.2046,
+      "city": "Childress",
+      "county": "Childress County",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 750
+    },
+    "poweredBy": "ERCOT",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Horizon 1 (75 MW gross / 50 MW IT) announced March 11, 2025; construction underway at existing Childress campus",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "IREN signs $9.7B five-year Microsoft GPU cloud contract November 2025; Horizons 1–4 at Childress targeted for end-2026 full deployment",
+        "sourceIndex": 2
+      },
+      {
+        "status": "operational",
+        "date": "2025",
+        "note": "Horizon 1 (50 MW IT / 75 MW gross) energized Q4 2025 — IREN's first purpose-built AI data center; Horizons 2–4 remain under construction",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/iren-plans-75mw-liquid-cooled-ai-data-center-in-texas/",
+        "label": "IREN plans 75MW liquid-cooled AI data center in Texas",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://iren.com/data-centers/childress",
+        "label": "Childress Data Center — 750MW AI-Optimised Facility",
+        "publisher": "IREN (official)",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/11/03/3178993/0/en/IREN-Secures-9-7bn-AI-Cloud-Contract-with-Microsoft.html",
+        "label": "IREN Secures $9.7bn AI Cloud Contract with Microsoft",
+        "publisher": "GlobeNewsWire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/iren-horizon-1",
+        "label": "IREN: Horizon 1 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newschannel10.com/2026/05/18/iren-continues-developing-data-center-campus-childress/",
+        "label": "IREN continues developing data center campus in Childress",
+        "publisher": "NewsChannel 10 (Amarillo)",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-signs-97bn-cloud-capacity-deal-with-iren/",
+        "label": "Microsoft signs $9.7bn cloud capacity deal with IREN",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "SEPARATE SITE from IREN Sweetwater (Nolan/Fisher County — do not conflate). Full 750 MW figure is total campus transmission capacity; the AI/Microsoft Horizon 1–4 build-out comprises four 50 MW IT (75 MW gross) liquid-cooled data halls = 200 MW IT total, targeting end-2026 delivery. Horizon 1 (50 MW IT / 75 MW gross) energized Q4 2025 — operational; Horizons 2–4 remain under construction as of mid-2026. Coordinates approximate (county seat area). Site is a 576-acre freehold parcel with on-site 345 kV substations connecting directly to ERCOT. Investment for Horizon 1–4 reported as $300–350M (range; not a firm figure — omitted from investmentUsd). Microsoft contract ($9.7B total, 5-year through ~2031) covers NVIDIA GB300 Blackwell Ultra GPU cloud services; 20% upfront prepayment funded capex. Dell Technologies hardware supply agreement: $5.8B. IREN also holds a separate NVIDIA cloud services contract at Childress. Rack density 130–200 kW per rack; projected PUE 1.05–1.10. Approximately 25 current full-time local employees, 50+ expected at 750 MW full build-out; over 500 contractors during construction phase (approximate reported figures — omitted from jobs numeric fields). IREN Community Grants Program distributes $250,000 annually to the Childress area.",
+    "energy": {
+      "source": "grid",
+      "utility": "ERCOT",
+      "notes": "Direct 345 kV grid connection via on-site substations owned by IREN. IREN states it utilizes abundant low-cost renewable energy available on ERCOT and actively curtails consumption during high-demand periods. No on-site gas generation confirmed for this site.",
+      "sourceIndex": 1
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Direct-to-chip closed-loop liquid cooling. IREN states the system does not consume water on an ongoing basis; annual top-ups require roughly as much water as a few houses. Water is trucked in externally — deliberately not drawn from Childress municipal supply. System described as analogous to a vehicle radiator.",
+      "sourceIndex": 4
+    },
+    "landAcres": 576,
+    "community": {
+      "status": "supported",
+      "notes": "Local leadership and community described as strongly supportive. IREN COO stated community partnership was essential to construction progress. Community Grants Program distributes $250,000 annually to Childress area. IREN committed to local hiring and contracting with local businesses where possible.",
+      "sourceIndex": 4
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "iren-sweetwater-tx",
+    "name": "IREN Sweetwater Campus",
+    "operator": "IREN (Iris Energy)",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.4707,
+      "lon": -100.4059,
+      "city": "Sweetwater",
+      "county": "Nolan County",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "planned": 2000
+    },
+    "poweredBy": "ERCOT grid",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01",
+        "note": "Jan 21, 2025 IREN business update: first formal public announcement of 1,400 MW Sweetwater data center development. October 2024 update had disclosed HPC/AI pivot on 1,300+ acres.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "proposed",
+        "date": "2025-03",
+        "note": "Mar 17, 2025: IREN announces 600 MW grid connection agreement for Sweetwater 2 in Fisher County, bringing total secured power to 2.75 GW across West Texas.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-05",
+        "note": "May 1, 2026: Sweetwater 1 1,400 MW substation energized, connecting to ERCOT grid via 345kV high-voltage line. Data centers commissioning in phases; power to ramp with construction.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://irisenergy.gcs-web.com/news-releases/news-release-details/iren-announces-successful-energization-sweetwater-1",
+        "label": "IREN Announces Successful Energization of Sweetwater 1",
+        "publisher": "IREN investor relations",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/05/01/3286213/0/en/iren-announces-successful-energization-of-sweetwater-1.html",
+        "label": "IREN Announces Successful Energization of Sweetwater 1 (May 1, 2026)",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://irisenergy.gcs-web.com/news-releases/news-release-details/iren-business-update",
+        "label": "IREN Business Update Jan 21, 2025 — first 1,400 MW Sweetwater announcement",
+        "publisher": "IREN investor relations",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://irisenergy.gcs-web.com/static-files/899b6969-7d10-4722-a259-f0ed5576bef3",
+        "label": "IREN Secures 2.75GW for Data Centers in West Texas — Sweetwater 2 600 MW announcement (Mar 17, 2025)",
+        "publisher": "IREN investor relations",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://irisenergy.gcs-web.com/news-releases/news-release-details/iren-secures-97bn-ai-cloud-contract-microsoft",
+        "label": "IREN Secures $9.7bn AI Cloud Contract with Microsoft (Nov 3, 2025)",
+        "publisher": "IREN investor relations",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/iren-energizes-first-phase-of-2gw-sweetwater-data-center-campus-in-texas/",
+        "label": "Iren energizes first phase of 2GW Sweetwater data center campus in Texas",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.stocktitan.net/news/IREN/iren-secures-2-75gw-for-data-centers-in-west-texas-with-new-600mw-s2dozeguu2xw.html",
+        "label": "IREN Expands Data Center Power to 2.75GW with New Texas Agreement (Sweetwater 2)",
+        "publisher": "StockTitan",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globaldatacenterhub.com/p/nvidia-anchors-iren-with-34b-contract",
+        "label": "NVIDIA Anchors IREN With $3.4B Contract And $2.1B Equity Warrant (May 2026)",
+        "publisher": "Global Data Center Hub",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sweetwaterreporter.com/county-approves-tax-increment-reinvestment-zone-to-enable-development-of-hyperscale-data-center-solar-power/article_1905ef84-a73c-4e87-8f02-e62e4aa72a74.html",
+        "label": "Nolan County approves Tax Increment Reinvestment Zone No. 1 for hyperscale data center development (June 2025)",
+        "publisher": "Sweetwater Reporter",
+        "retrievedAt": "2026-07-07",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.texastribune.org/2025/10/02/rural-texas-data-centers-water/",
+        "label": "Rural Texas casting skeptical eye on data center openings — water concerns (Oct 2025)",
+        "publisher": "Texas Tribune",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.interconnection.fyi/data-center/project/iren-sweetwater-1-8d9cdcbd",
+        "label": "IREN Sweetwater 1 — interconnection queue record",
+        "publisher": "Interconnection.fyi",
+        "retrievedAt": "2026-07-07",
+        "kind": "iso_queue"
+      }
+    ],
+    "notes": "Two-site campus: Sweetwater 1 (1,400 MW, ~1,700 acres, Nolan/Jones County boundary area) substation energized May 1, 2026 via 345kV ERCOT connection; data centers commissioning in phases. Sweetwater 2 (600 MW, ~500 acres, Fisher County, near Hamlin TX, ~28 miles from SW1) targeted energization late 2027 per IREN (some sources cite 2028). Direct fiber loop planned between sites for single 2 GW compute hub with <10ms latency to Dallas. Coordinates are approximate (Sweetwater city center, Nolan County seat). County boundary sources conflicting: DCD says Fisher County for both sites; interconnection.fyi and dispatch brief cite Nolan County for SW1; northwiseproject.com says Nolan and Jones Counties span the campus. IREN's $9.7B Microsoft contract (Nov 2025) and $3.4B NVIDIA contract (May 2026) are company-wide deals currently deployed at Childress, TX campus (Horizon 1-4); the NVIDIA partnership press release specifically names Sweetwater as the flagship future deployment site for NVIDIA DSX factory architecture. No confirmed customer contracts specific to Sweetwater site as of 2026-07-07. IREN was in Sweetwater since 2022 as a Bitcoin mining site; HPC/AI pivot announced October 2024. Interconnection.fyi lists renewable energy sourcing via RECs (wind/solar) at this site.",
+    "energy": {
+      "source": "grid",
+      "utility": "ERCOT",
+      "notes": "345kV high-voltage connection to ERCOT grid. IREN and third-party sources describe West Texas as one of the world's largest renewable energy markets; interconnection.fyi lists renewable energy via RECs (wind/solar) for this site.",
+      "sourceIndex": 10
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Direct-to-chip liquid cooling plus supplemental air cooling. Closed-loop design described by IREN and analysts as dramatically reducing water consumption vs. traditional evaporative approaches. West Texas arid climate noted as a water-conservation design driver. No reported MGD figure confirmed.",
+      "sourceIndex": 5
+    },
+    "landAcres": 2200,
+    "community": {
+      "status": "mixed",
+      "notes": "No documented site-specific opposition to IREN Sweetwater found. Nolan County TIRZ public hearing (June 2025) recorded zero opposition comments. Broader rural West Texas context: Texas Tribune (Oct 2025) reported growing community concern over data center water use; Texas PUC water survey (June 2026) found most operators non-responsive. TIRZ was approved by Nolan County to enable hyperscale data center development; specific operator in TIRZ article is Deriva Energy (ROW agreement), not confirmed as IREN.",
+      "sourceIndex": 9
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "meta-anthem-tulsa-ok",
+    "name": "Meta Project Anthem — Tulsa",
+    "operator": "Meta",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.14,
+      "lon": -95.88,
+      "city": "Tulsa",
+      "county": "Tulsa County",
+      "state": "OK"
+    },
+    "poweredBy": "Public Service Company of Oklahoma (PSO)",
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024",
+        "note": "Preliminary plat filed with Tulsa Metropolitan Area Planning Commission as 'Project Anthem'; Meta identity not publicly confirmed at time of filing",
+        "sourceIndex": 4
+      },
+      {
+        "status": "permitted",
+        "date": "2024",
+        "note": "Preliminary plat approved August 7, 2024 by TMAPC; developer entity listed as Atmoss LLC",
+        "sourceIndex": 4
+      },
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Meta publicly confirmed as operator; groundbreaking ceremony held April 21, 2026 with Oklahoma Governor Kevin Stitt; completion targeted 2028",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://about.fb.com/news/2026/04/breaking-ground-new-ai-optimized-data-center-tulsa-oklahoma/",
+        "label": "Breaking Ground on a New AI-Optimized Data Center in Tulsa, Oklahoma",
+        "publisher": "Meta (about.fb.com)",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://datacenters.atmeta.com/2026/04/hello-tulsa/",
+        "label": "Hello, Tulsa! — Meta Data Centers",
+        "publisher": "Meta (atmeta.com)",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.okcommerce.gov/meta-breaks-ground-on-data-center-in-tulsa/",
+        "label": "Meta Breaks Ground on New $1 Billion Data Center in Tulsa",
+        "publisher": "Oklahoma Department of Commerce",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://tulsaflyer.org/2026/04/22/news/post/meta-east-tulsa-data-center/",
+        "label": "Meta's east Tulsa data center earns praise and protests",
+        "publisher": "Tulsa Flyer",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/340-acre-data-center-campus-planned-in-tulsa-oklahoma/",
+        "label": "340-acre data center campus planned in Tulsa, Oklahoma",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/tulsa-meta-data-center-project-announcement",
+        "label": "Gov. Stitt announces Meta behind Tulsa data center known as 'Project Anthem'",
+        "publisher": "NewsOn6",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "Codename: Project Anthem (used in TMAPC filings; Meta confirmed publicly April 21, 2026). Meta's 28th US data center and 32nd globally; first in Oklahoma and first built within Tulsa city limits. Anchor tenant at Fair Oaks Innovation Park (a 2,000-acre campus) near 11th Street and Creek Turnpike, East Tulsa. Investment stated as 'more than $1 billion' by Meta — a floor figure only; PartnerTulsa estimates construction costs at ~$800M. investmentUsd omitted: no firm single confirmed figure. Facility size: 2+ million sq ft; completion targeted 2028; general contractor Fortis Construction. No facility-specific MW capacity disclosed; Meta separately adding 1,500+ MW of clean energy to the Oklahoma grid statewide. Jobs: Meta states 'more than 1,000 construction workers at peak' and 'approximately 100 permanent jobs' — approximations from press release, not firm figures; omitted from numeric fields. Phase 2 expansion (375 additional acres west of original parcel, developer Atmoss LLC) proposed but withdrawn March 2026 before city council vote. Coordinates approximate (near 11th St & Creek Turnpike, East Tulsa).",
+    "energy": {
+      "source": "mixed",
+      "utility": "Public Service Company of Oklahoma (PSO)",
+      "notes": "Meta committed to matching 100% of facility electricity use with clean energy added to the Oklahoma grid. Existing Oklahoma projects add 1,500+ MW of clean energy statewide (not facility-specific). Meta covers full energy costs directly via PSO utility bills; stated commitment to avoid ratepayer burden. Tulsa Metropolitan Utility Authority also listed as a utility partner (water/wastewater).",
+      "sourceIndex": 0
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Water-efficient closed-loop liquid-cooled system. Meta states zero water use for the majority of the year and a water-positive goal by 2030. Water restoration partnership with Phytech across ~1,500 acres targeting 50+ million gallons of annual water savings. Additional partnership with Tulsa Community Foundation on water stewardship. No reportedMgd figure confirmed.",
+      "sourceIndex": 0
+    },
+    "subsidies": [
+      {
+        "program": "Tax Incentive District (TID) — 85% annual property tax exemption; 15% collected projected at ~$36 million to taxing entities (city of Tulsa, Wagoner County, Catoosa Public Schools, others) over 25-year incentive period",
+        "jurisdiction": "Tulsa, OK",
+        "year": "2024",
+        "sourceIndex": 3
+      }
+    ],
+    "landAcres": 340,
+    "community": {
+      "status": "contested",
+      "notes": "Tulsa City Council passed a 9-month moratorium on new data centers in March 2026 to evaluate ecological impact; Project Anthem was carved out as it was approved before the moratorium vote. Approximately a dozen protesters from Stop Data Colonialism coalition gathered at the April 21, 2026 groundbreaking, raising concerns about environmental impact, financial burden on nearby residents, and 'data colonialism.' Meta's water-neutrality claims challenged by protesters as corporate narrative. Councilor Christian Bengel voted for the moratorium while separately supporting Project Anthem. Meta announced $3 million in community grants (Eastside Rise neighborhood enhancement, Data Center Community Action Grants) and workforce development partnerships with Tulsa Tech and Tulsa Community College targeting 200+ graduates annually in technical trades.",
+      "sourceIndex": 3
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "nebius-vineland-nj",
+    "name": "Nebius Vineland Data Center",
+    "operator": "Nebius Group",
+    "status": "operational",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.4862,
+      "lon": -74.992,
+      "city": "Vineland",
+      "county": "Cumberland County",
+      "state": "NJ"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "poweredBy": "on-site natural gas (primary, ~85%); Vineland MUA (supplemental, ~15%)",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-03",
+        "note": "Nebius and DataOne announce phased AI data center in Vineland, NJ; 20-week first-phase build target, total ceiling 'up to 300 MW'",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2025",
+        "note": "First phase completed in approximately 20 weeks (summer 2025); Nebius committed to 100 MW installed capacity by year-end 2025; Microsoft GPU capacity deliveries begin late 2025. Full campus buildout targeting November 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://nebius.com/newsroom/nebius-accelerates-us-expansion-adding-up-to-300-mw-capacity-at-new-data-center-in-new-jersey",
+        "label": "Nebius accelerates US expansion, adding up to 300 MW capacity at new data center in New Jersey",
+        "publisher": "Nebius",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://nebius.com/blog/posts/300-mw-new-jersey-and-iceland-regions",
+        "label": "We're introducing the 300 MW New Jersey region and expanding to Iceland",
+        "publisher": "Nebius",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/dataone-to-build-nebius-data-center-in-new-jersey/",
+        "label": "DataOne to build Nebius data center in New Jersey",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://whyy.org/articles/data-center-artificial-intelligence-vineland-new-jersey/",
+        "label": "Vineland residents are protesting AI data center as concerns mount over emissions",
+        "publisher": "WHYY",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://pinelandsalliance.org/dataone-vineland-town-hall/",
+        "label": "A Town Hall Too Late – Vineland Data Center",
+        "publisher": "Pinelands Alliance",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.inquirer.com/news/new-jersey/ai-data-center-vineland-south-jersey-expansion-20260122.html",
+        "label": "South Jersey's largest data center is being built in Vineland. Some residents say they've had no say in the process.",
+        "publisher": "Philadelphia Inquirer",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "Phase-1 (~100 MW) completed summer 2025 in approximately 20 weeks from March 2025 announcement; full campus buildout targeting November 2026. Total design capacity cited as 'up to 300 MW' in Nebius press releases (sourceRef 0); DataOne CEO and local/community coverage consistently cite 350 MW; long-term campus potential described as approaching 1 GW. Coordinates are approximate (site: South Lincoln and Sheridan Avenues, East Vineland; Baxtel lists 805 Sheridan Ave). DataOne is the developer/builder — BSO's data center unit (launched 2024) backed by Ardian; CEO Charles-Antoine Beyney; this is DataOne's first US site (previously Grenoble and Lyon, France). Nebius is the ~10-year tenant; Microsoft GPU infrastructure agreement commencing late 2025 under multi-year AI infrastructure deal. Facility is 100% privately funded; DataOne declined a $6.2M city equipment loan amid community backlash. Distinct from Nebius's Independence, MO (Kansas City) site. NJDEP air permit pending as of early 2026; construction proceeded ahead of final permit issuance. DataOne stated 200+ permanent full-time jobs; construction job count not disclosed.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Vineland Municipal Utilities Authority (supplemental, ~15%)",
+      "notes": "32 high-efficiency natural gas engines generate approximately 85% of facility power; 6 diesel generators for backup. Proposed 1.5-million-gallon LNG storage tank as pipeline contingency (pending approval). NJDEP air permit under review as of early 2026; Sierra Club and Pinelands Alliance objecting to emissions profile. Facility located in Wellhead Protected Area near Kirkwood-Cohansey aquifer.",
+      "sourceIndex": 3
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Developer explicitly states facility will not consume water for equipment cooling (Philadelphia Inquirer, Jan 2026). A four-step exhaust reclamation system on the gas engines (selective catalytic reduction, oxy catalyst, wet scrubbers, biofilters) captures condensate from engine exhaust for recycling — this is emissions control on the power plant side, not IT-equipment cooling. City department figures show 1.1 million gallons/year municipal water draw (Inquirer, Jan 2026); a separate source (WHYY) cites 'up to 20 million gallons annually' — discrepancy unresolved, likely reflecting different accounting (total throughput vs. net municipal draw). Reporting 'reportedMgd' field omitted due to conflicting figures.",
+      "sourceIndex": 3
+    },
+    "subsidies": [
+      {
+        "program": "5-year PILOT (Payment in Lieu of Taxes), Ordinance 2026-3 — dollar amount not publicly disclosed",
+        "jurisdiction": "City of Vineland, NJ",
+        "year": "2026",
+        "sourceIndex": 4
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "City council and mayor formally support the project; PILOT Ordinance 2026-3 adopted unanimously January 27, 2026. Approximately 100 residents rallied in opposition (noise, emissions, water, property values, health concerns). Pinelands Alliance hosted community town hall. Sierra Club and Sustain South Jersey formally oppose, citing construction without final environmental permits, proximity to Pinelands, and lack of public process. NJDEP reviewing air permit and investigating facility's emissions as a single-source with adjacent parcels.",
+      "sourceIndex": 4
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "powerhouse-95-spotsylvania-va",
+    "name": "PowerHouse 95",
+    "operator": "PowerHouse Data Centers (American Real Estate Partners / AREP, joint venture with Harrison Street)",
+    "status": "under_construction",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.17,
+      "lon": -77.66,
+      "city": "Spotsylvania",
+      "county": "Spotsylvania County",
+      "state": "VA"
+    },
+    "capacityMw": {
+      "planned": 800
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-01",
+        "note": "PowerHouse announced completed purchase of 145 acres in Spotsylvania County along I-95/Hwy 17 corridor for PowerHouse 95 campus; three 300 MW substations planned.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2024-07",
+        "note": "Groundbreaking announced; company posted on LinkedIn 'Construction on PH 95 North is underway!' DCD coverage July 19, 2024.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.powerhousedata.com/news/powerhouse-breaks-ground-on-800mw-data-center-campus-in-spotsylvania-county-virginia",
+        "label": "PowerHouse breaks ground on 800MW data center campus in Spotsylvania County, Virginia",
+        "publisher": "PowerHouse Data Centers (press release)",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.powerhousedata.com/news/powerhouse-data-centers-announces-purchase-of-145-acres-in-spotsylvania-va-for-powerhouse-95-campus",
+        "label": "PowerHouse Data Centers announces purchase of 145 acres in Spotsylvania, VA for PowerHouse 95 campus",
+        "publisher": "PowerHouse Data Centers (press release)",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/powerhouse-breaks-ground-on-800mw-data-center-campus-in-spotsylvania-county-virginia/",
+        "label": "PowerHouse breaks ground on 800MW data center campus in Spotsylvania County, Virginia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/powerhouse-data-centers-closes-on-site-of-800-mw-data-center-campus-in-spotsylvania-virginia-302041246.html",
+        "label": "PowerHouse Data Centers Closes on Site of 800 MW Data Center Campus in Spotsylvania, Virginia",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/powerhouse-95",
+        "label": "PowerHouse 95 Data Center — Baxtel profile",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.americanrepartners.com/properties/powerhouse-95",
+        "label": "PowerHouse 95 — AREP property page",
+        "publisher": "American Real Estate Partners",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.dominionenergy.com/tributary",
+        "label": "Tributary 230 kV Transmission Project — Dominion Energy Spotsylvania data center infrastructure",
+        "publisher": "Dominion Energy",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.fredericksburgfreepress.com/2025/12/10/spotsylvania-board-of-supervisors-approves-data-center-design-standards-but-they-may-be-short-lived/",
+        "label": "Spotsylvania Board of Supervisors approves data center design standards",
+        "publisher": "Fredericksburg Free Press",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "notes": "Campus located at approximately 4189 Turner Ct, Spotsylvania County, VA along the I-95/Hwy 17 corridor; coordinates are approximate. Three 300 MW substations planned (800 MW total); first substation delivering 150 MW targeted for Q4 2025. Up to 8 buildings, 3.5 million sq ft. Phased delivery Q3 2025–Q4 2027. Joint venture between PowerHouse/AREP and Harrison Street. Harrison Street managing director explicitly cited 'high-powered computing, AI, and other advancements' as the demand driver for this campus class, supporting likely AI classification. Named tenant not disclosed. Dominion Energy utility attribution is inferred from service territory: Dominion's Tributary 230 kV project was approved by Virginia SCC (June 30, 2024) specifically to serve growing Spotsylvania data center demand; PH95 press materials do not name the utility directly. Investment amount, job figures, and water draw not disclosed in any sourced press materials.",
+    "energy": {
+      "source": "grid",
+      "notes": "Utility inferred from geographic service area and Dominion's Tributary 230 kV transmission project (SCC Final Order June 30, 2024) built specifically to serve Spotsylvania County data center demand. PH95-specific press materials do not name the utility. Rappahannock Electric Cooperative also serves parts of Spotsylvania County and cannot be ruled out.",
+      "sourceIndex": 6
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Press materials do not disclose cooling approach for PH 95 specifically. PowerHouse has deployed direct-to-chip and closed-loop cooling at other campuses; no water draw figures available.",
+      "sourceIndex": 0
+    },
+    "landAcres": 145,
+    "community": {
+      "status": "mixed",
+      "notes": "Spotsylvania County has experienced significant data center controversy: the board voted 4-3 in December 2025 to approve design standards; required special use permits for data centers in February 2026 (mirroring Loudoun, Prince William, and Henrico); public comments cited noise, grid strain, water supply risk, and visual impact. One project (Hunters Ridge South, 2.2M sq ft) passed 5-2 in August 2025. PowerHouse 95 itself was not identified as the specific target of organized opposition in sourced materials — it appears to have proceeded under earlier by-right industrial zoning rules. Rappahannock Electric Cooperative CEO told Spotsylvania officials that one data center can require as much energy as REC's entire customer base during peak demand.",
+      "sourceIndex": 7
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "qts-marvel-bessemer-al",
+    "name": "QTS Bessemer (Project Marvel)",
+    "operator": "QTS Data Centers (Blackstone)",
+    "status": "proposed",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.44,
+      "lon": -86.97,
+      "city": "Bessemer",
+      "county": "Jefferson County",
+      "state": "AL"
+    },
+    "poweredBy": "Alabama Power",
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Project Marvel first surfaced March 2025; unnamed developer (via Logistics Land Investment LLC, an affiliate of Atlanta-based TPA Group) sought rezoning of ~700 acres in Bessemer for hyperscale data center",
+        "sourceIndex": 4
+      },
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Bessemer City Council voted 5-2 to approve rezoning ~700 acres from agricultural (A-1) to light industrial (I-1) on November 18, 2025; developer identity still not publicly disclosed",
+        "sourceIndex": 2
+      },
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Bessemer City Council approved rezoning of 914 additional acres in April 2026, expanding total site to ~1,607 acres; 18-building count unchanged, additional land used for wider buffers and layout flexibility",
+        "sourceIndex": 3
+      },
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "QTS Data Centers (Blackstone) publicly confirmed as operator behind Project Marvel, July 1-2, 2026; project described as in active planning stage",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wbrc.com/2026/07/02/qts-confirms-plans-proposed-data-center-campus-bessemer/",
+        "label": "QTS confirms plans for proposed data center campus in Bessemer",
+        "publisher": "WBRC Fox6",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/purported-developer-of-14bn-project-marvel-data-center-in-bessemer-alabama-unveiled-as-qts/",
+        "label": "Purported Developer of $14bn Project Marvel Data Center in Bessemer Unveiled as QTS",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wbrc.com/2025/11/19/bessemer-city-council-approves-149-billion-data-center-project-despite-transparency-concerns/",
+        "label": "Bessemer City Council approves data center project despite transparency concerns (November 2025)",
+        "publisher": "WBRC Fox6",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://abc3340.com/news/local/alabama-bessemer-approves-rezoning-of-914-acres-for-project-marvel-data-center-april-2026",
+        "label": "Bessemer approves rezoning of 914 acres for Project Marvel data center",
+        "publisher": "ABC 3340",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/alabamas-planned-14bn-project-marvel-data-center-could-double-in-size/",
+        "label": "Alabama's planned $14bn Project Marvel data center could double in size",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://abc3340.com/news/local/qts-data-centers-behind-bessemer-project-marvel-plans",
+        "label": "QTS Data Centers behind Bessemer Project Marvel plans",
+        "publisher": "ABC 3340",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://tuscaloosathread.com/bessemer-data-center-concerns/",
+        "label": "How Will Project Marvel Affect Bessemer And Surrounding Areas?",
+        "publisher": "Tuscaloosa Thread",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://communitysentinel.media/2026/02/18/bessemer-residents-are-speaking-out-against-ai-data-center-development/",
+        "label": "Bessemer Residents Are Speaking Out Against AI Data Center Development",
+        "publisher": "Community Sentinel",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      }
+    ],
+    "notes": "Codename: Project Marvel. 18-building hyperscale campus on Red Ridge near I-459 and I-20/59 interchange in Bessemer (Jefferson County). Announced capacity: up to 1,200 MW — reported as a planned ceiling, representing roughly 9% of Alabama Power's current generating capacity; left out of capacityMw field as sources use 'up to' framing. Investment: reported at $14–14.5B across sources (Logistics Land Investment anticipated 'close to $14.4B'; WBRC reported $14.5B at November 2025 rezoning; DCD reported ~$14B); no single firm company-confirmed figure exists — treated as a projected cost range and excluded from investmentUsd. Land: ~1,607.42 acres total after two rezoning rounds (initial ~700 acres November 2025 + 914-acre expansion April 2026). QTS affiliate purchased land from TPA Group affiliate for $431.73M. Chapter 9B statutory eligibility would have provided a 30-year abatement estimated at $500M+; QTS committed not to seek local property tax incentives (per WBRC July 2026) — subsidy excluded as eligibility does not equal award and QTS renounced pursuit. Full buildout timeline: 7+ years. Birmingham Business Alliance estimated ~$4B net benefit over 30 years; Bessemer City Schools projected ~$25M/year. AI framing not officially confirmed by QTS or the city as of July 2026 — size and scale (hyperscale, cloud/AI demand framing in QTS statement) support 'likely' classification. Coordinates are approximate for the Red Ridge parcel area. Jobs: ~1,000 construction and ~330 permanent are projected figures for the proposed (not-yet-built) campus (WBRC, Nov 2025) — recorded as projections in notes, not structured jobs fields, per data-rigor policy.",
+    "energy": {
+      "source": "grid",
+      "utility": "Alabama Power",
+      "notes": "Alabama Power confirmed 1,200 MW power availability for the campus. QTS committed project-related energy costs will not be passed on to local utility ratepayers. Opponents (NAACP, Black Warrior Riverkeeper, SELC) raised concerns that the facility will rely on fossil fuels. Bibb County residents identified as potentially facing higher power bills due to grid strain.",
+      "sourceIndex": 2
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "QTS committed to a closed-loop cooling system that does not consume water for cooling once operational. Opposition groups including Black Warrior Riverkeeper raised concerns about water impacts during construction and operation, citing proximity to a Black Warrior River tributary. Tuscaloosa County flagged for potential irreversible water impacts.",
+      "sourceIndex": 0
+    },
+    "landAcres": 1607,
+    "community": {
+      "status": "contested",
+      "notes": "Strong and ongoing opposition. Public Facebook group 'Bessemer Data Center - We Say No!' grew to 720+ members. NAACP cited environmental justice concerns for majority-minority Bessemer community. Black Warrior Riverkeeper (BWR) and Southern Environmental Law Center (SELC) opposed construction over fossil fuel and water impacts. U.S. Fish and Wildlife Service raised concerns. Rezoning lawsuit filed in Jefferson County Circuit Court (temporarily enjoined; later dismissed). Bessemer City Council approved initial rezoning 5-2 in November 2025 despite crowd opposition (Councilman King and Councilwoman Thigpen dissented). 914-acre expansion rezoning approved April 2026. Some elected officials operated under NDAs with the developer prior to QTS confirmation. Homeowners filed additional lawsuits against the project.",
+      "sourceIndex": 7
+    },
+    "lastUpdated": "2026-07-07"
+  },
+  {
+    "id": "terawulf-hawesville-ky",
+    "name": "Justified Data Campus",
+    "operator": "TeraWulf",
+    "status": "under_construction",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.8999,
+      "lon": -86.7569,
+      "city": "Hawesville",
+      "county": "Hancock County",
+      "state": "KY"
+    },
+    "capacityMw": {
+      "planned": 401
+    },
+    "poweredBy": "Big Rivers Electric Corporation",
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026",
+        "note": "TeraWulf acquired ~750-acre former Century Aluminum smelter site from Century Aluminum subsidiary; Justified Data campus announced February 2, 2026.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "20-year lease signed with Anthropic PBC (via TeraWulf's Raylan Data LLC entity) for 401 MW critical IT load; ~$19B contracted lease revenue over initial term. Initial capacity targeted H2 2027; full 401 MW ramp by early 2028. Announced July 6, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://investors.terawulf.com/news-events/press-releases/detail/142/terawulf-announces-anthropic-lease-at-justified-data-campus-and-sale-of-majority-interest-in-abernathy-joint-venture-to-fluidstack",
+        "label": "TeraWulf Announces Anthropic Lease at Justified Data Campus",
+        "publisher": "TeraWulf Inc.",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/07/06/3322382/0/en/terawulf-announces-anthropic-lease-at-justified-data-campus-and-sale-of-majority-interest-in-abernathy-joint-venture-to-fluidstack",
+        "label": "TeraWulf Announces Anthropic Lease at Justified Data Campus (GlobeNewswire)",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://investors.terawulf.com/news-events/press-releases/detail/129/terawulf-expands-digital-and-power-infrastructure-portfolio-with-strategic-acquisitions-in-kentucky-and-maryland",
+        "label": "TeraWulf Expands Digital and Power Infrastructure Portfolio — Kentucky and Maryland Acquisitions",
+        "publisher": "TeraWulf Inc.",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/2/2/3230607/0/en/terawulf-expands-digital-and-power-infrastructure-portfolio-with-strategic-acquisitions-in-kentucky-and-maryland",
+        "label": "TeraWulf Expands Digital and Power Infrastructure Portfolio (GlobeNewswire, Feb 2026)",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://psc.ky.gov/trf4/uploadedFiles/900_Big_Rivers_Electric_Corporation/04142026121035/Cover_Letter_Redacted.pdf",
+        "label": "Big Rivers Electric Corporation — PSC Retail Service Agreement Filing for Justified Data Project",
+        "publisher": "Kentucky Public Service Commission",
+        "retrievedAt": "2026-07-07",
+        "kind": "filing"
+      },
+      {
+        "url": "https://spectrumnews1.com/ky/louisville/news/2026/02/14/ai-database-hawesville",
+        "label": "Hawesville smelter to become AI data center; community split on economic impact",
+        "publisher": "Spectrum News 1",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://blockspace.media/insight/terawulf-signs-anthropic-lease-sells-abernathy/",
+        "label": "TeraWulf signs 20-year Anthropic lease for 401 MW at Kentucky data campus",
+        "publisher": "Blockspace",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/anthropic-signs-19bn-20-year-lease-for-kentucky-data-center-with-terawulf/",
+        "label": "Anthropic signs $19bn, 20-year lease for Kentucky data center with TeraWulf",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://spectrumnews1.com/ky/louisville/news/2026/07/06/ai-company-anthropic-commits-to-long-term-hawesville-campus",
+        "label": "AI company Anthropic commits to long-term Hawesville campus",
+        "publisher": "Spectrum News 1",
+        "retrievedAt": "2026-07-07",
+        "kind": "other"
+      }
+    ],
+    "notes": "Brownfield redevelopment of former Century Aluminum smelter. Site acquired February 2026 from Century Aluminum subsidiary; acquisition price reported by multiple outlets as $200M cash plus a 6.8% minority equity interest in TeraWulf (not confirmed in official PR text fetched). Lease entity: TeraWulf's Raylan Data LLC to Anthropic PBC. The ~$19B is contracted lease revenue over the 20-year term — not capex; excluded from investmentUsd. TeraWulf indicated a $3B–$4B construction investment for two data center buildings (range, not a firm single figure; excluded from investmentUsd). Site has ~480 MW of existing power availability; 401 MW is the Anthropic lease capacity. Total site ~750 acres per news sources; TeraWulf's official PR cited 'over 250 buildable acres.' Coordinates are approximate (Hawesville town center). Fluidstack/Abernathy JV is a separate unrelated transaction — excluded from this record.",
+    "energy": {
+      "source": "grid",
+      "utility": "Big Rivers Electric Corporation",
+      "notes": "Site connects directly to regional transmission network via on-site energized substation and multiple high-voltage transmission lines, bypassing local distribution. Big Rivers Electric filed a retail service agreement with the Kentucky PSC in April 2026 covering 482 MW transmission capacity for the Justified Data project; TeraWulf bears identified costs and risks for obtaining and transmitting capacity. TeraWulf is covering the full cost of required grid upgrades.",
+      "sourceIndex": 4
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "TeraWulf stated at community meetings that no river water or municipal water will be used. Advanced closed-loop liquid cooling system; company stated campus will use less water over several years than the former aluminum smelter consumed in a single day. No reported MGD figure available.",
+      "sourceIndex": 5
+    },
+    "landAcres": 750,
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 8
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Online petition with 1,200+ signatures asking county officials, the governor, and the state utility regulator to pause approvals pending disclosure of energy, environmental, and infrastructure impacts. Hancock County Judge-Executive Johnny Roberts publicly supportive, citing 100–120 high-paying permanent jobs and significant new annual tax revenue for schools and emergency services. Opposition concerns center on water use, traffic, and environmental effects. TeraWulf held community meetings (March 2026) to address water and cooling questions.",
+      "sourceIndex": 8
+    },
+    "lastUpdated": "2026-07-07"
   }
 ]
