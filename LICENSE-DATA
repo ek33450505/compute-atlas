@@ -1,0 +1,75 @@
+Compute Atlas — Data License
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Edward Kubiak
+
+------------------------------------------------------------------------------
+
+WHAT THIS COVERS
+
+This license applies to the dataset — the facility records in `data/`
+(principally `data/facilities.json`) and any files derived directly from it.
+The source code of this project is licensed separately under the MIT License;
+see the `LICENSE` file.
+
+Third-party data incorporated into or displayed alongside this dataset remains
+under its own terms and is not relicensed here, including:
+
+  - Map basemap tiles and geometry: © OpenStreetMap contributors, licensed
+    under the Open Database License (ODbL), served via OpenFreeMap.
+  - Any figures attributed to Epoch AI: CC BY 4.0, © Epoch AI.
+
+Individual facility records cite their own primary sources (permit filings,
+utility interconnection queues, company announcements, subsidy disclosures,
+and news reporting). Those underlying sources are the property of their
+respective publishers; Compute Atlas licenses only its own compilation,
+structuring, and curation of the data.
+
+------------------------------------------------------------------------------
+
+YOU ARE FREE TO
+
+  - Share — copy and redistribute the data in any medium or format.
+  - Adapt — remix, transform, and build upon the data for any purpose, even
+    commercially.
+
+under the following term:
+
+  - Attribution — You must give appropriate credit, provide a link to this
+    license, and indicate if changes were made. You may do so in any
+    reasonable manner, but not in any way that suggests Compute Atlas endorses
+    you or your use.
+
+No additional restrictions — You may not apply legal terms or technological
+measures that legally restrict others from doing anything the license permits.
+
+------------------------------------------------------------------------------
+
+HOW TO ATTRIBUTE
+
+A suggested attribution string:
+
+  "AI datacenter data from Compute Atlas by Edward Kubiak, licensed under
+  CC BY 4.0 — https://github.com/ek33450505/compute-atlas"
+
+------------------------------------------------------------------------------
+
+DISCLAIMER
+
+The data is provided "as is," without warranty of any kind. It is compiled
+from public sources and is necessarily incomplete and subject to revision;
+records carry explicit confidence levels. Nothing here is legal, financial, or
+professional advice. See the README for the accuracy and neutrality statement.
+
+------------------------------------------------------------------------------
+
+FULL LEGAL TEXT
+
+The complete, legally operative text of the Creative Commons Attribution 4.0
+International license governs this dataset and is available at:
+
+  https://creativecommons.org/licenses/by/4.0/legalcode
+
+A human-readable summary (not a substitute for the license) is at:
+
+  https://creativecommons.org/licenses/by/4.0/

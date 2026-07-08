@@ -1,33 +1,32 @@
 # Compute Atlas
 
+[![facilities](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fek33450505%2Fcompute-atlas%2Fmain%2Fdata%2Ffacilities.json&query=%24.length&label=facilities&color=3F5B43&style=flat)](data/facilities.json)
+[![code: MIT](https://img.shields.io/badge/code-MIT-informational?style=flat)](LICENSE)
+[![data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational?style=flat)](LICENSE-DATA)
+
 A free, neutral, open tracker of AI datacenters across the United States — from proposed and permitted to under construction and operational — with a source for every record.
 
 ## What it is
 
-There is no national registry of AI datacenters. "AI datacenter" is not a legal category. Compute Atlas fills that gap by curating a provenance-first dataset of large-scale GPU/accelerator facilities, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries confidence levels and links its sources.
+There is no national registry of AI datacenters. "AI datacenter" is not a legal category. Compute Atlas fills that gap by curating a provenance-first dataset of large-scale GPU/accelerator facilities, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries a confidence level and links its sources.
+
+The project also tracks the civic footprint of these facilities — energy, water, subsidies, jobs, and community impact — because that information is public but scattered across county records, water-authority applications, and local reporting, and assembling it is genuinely hard. That difficulty is the problem the atlas exists to solve.
 
 Intended audience: journalists, researchers, local officials, and residents.
 
-## Tech stack
+## The numbers
 
-- **Next.js 16** (App Router, static export) with **React 19**
-- **TypeScript** + **Zod** for runtime-validated data
-- **MapLibre GL** + **react-map-gl** for the interactive map
-- **Tailwind CSS v4** + **shadcn/ui** components
-- **Vitest** + **React Testing Library** for unit tests
-- **Playwright** for end-to-end tests
+The live facility count is shown in the badge above (read directly from `data/facilities.json`). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the **Statistics** page on the live site, or read the raw data in [`data/facilities.json`](data/facilities.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
 
-## Local development
+## How the data is built
 
-```bash
-npm install
-npm run dev        # start dev server at http://localhost:3000
-npm run test       # run unit tests (Vitest)
-npm run test:e2e   # run E2E tests (Playwright — requires npm run build first)
-npm run build      # production build
-npm run lint       # ESLint
-npm run typecheck  # TypeScript type check
-```
+Compute Atlas is compiled by hand from primary sources, with a deliberate bias against fabrication:
+
+- **A source for every record.** Each facility cites at least one public source with a URL, a label, a source `kind`, and a retrieval date. Nothing is recorded without provenance.
+- **Honest confidence.** Records are marked `confirmed`, `reported`, or `rumored`, and facilities are classified `confirmed`, `likely`, or `mixed_use` as AI datacenters. Uncertainty is surfaced, not hidden.
+- **Numbers only when firm.** Ranges, ceilings, and modeled projections go in a record's notes — never into a numeric field. Multi-year subsidy totals are described in the program label rather than asserted as a single dollar amount. Statutory *eligibility* for an incentive is not recorded as a confirmed award.
+- **Independent verification.** Consequential claims (capacity, investment, subsidies) are checked against the underlying filing or announcement before they enter the dataset.
+- **Additive and correctable.** Coverage grows over time; corrections are welcome and expected. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Data model
 
@@ -49,22 +48,54 @@ Key fields per facility:
 | `sources` | At least one source with `url`, `label`, `kind`, and `retrievedAt` |
 | `lastUpdated` | ISO date string (YYYY or YYYY-MM or YYYY-MM-DD) |
 
-### How to add a facility
+## Contributing and corrections
 
-1. Add an entry to `data/facilities.json` following the schema above.
-2. Include at least one `sources` entry — every record must cite a public source.
-3. Run `npm run build` — the build validates all records against the schema and will fail loudly if any field is missing or malformed.
+Contributions and corrections are welcome — every submission needs a public source URL. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for how to propose a new facility or a correction, and the standard the data is held to. Participation is governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Tech stack
+
+- **Next.js 16** (App Router, static export) with **React 19**
+- **TypeScript** + **Zod** for runtime-validated data
+- **MapLibre GL** + **react-map-gl** for the interactive map
+- **Tailwind CSS v4** + **shadcn/ui** components
+- **Vitest** + **React Testing Library** for unit tests
+- **Playwright** for end-to-end tests
+
+## Local development
+
+```bash
+npm install
+npm run dev        # start dev server at http://localhost:3000
+npm run test       # run unit tests (Vitest)
+npm run test:e2e   # run E2E tests (Playwright — requires npm run build first)
+npm run build      # production build (validates all records against the schema)
+npm run lint       # ESLint
+npm run typecheck  # TypeScript type check
+```
+
+The build fails loudly if any facility record is missing a required field or violates the schema, so a green build is also a data-integrity check.
 
 ## Accessibility
 
-Compute Atlas targets **WCAG 2.2 AA**. The data table is a first-class alternative to the map — all facilities are reachable and filterable without pointer interaction. Focus indicators, skip-to-content link, and semantic HTML throughout.
+Compute Atlas targets **WCAG 2.2 AA**. The data table is a first-class alternative to the map — all facilities are reachable and filterable without pointer interaction. Focus indicators, a skip-to-content link, and semantic HTML are used throughout, and the end-to-end suite runs automated accessibility audits on every major route.
 
-## Contributing and corrections
+## Accuracy, neutrality, and disclaimer
 
-Open an issue at `https://github.com/ek33450505/compute-atlas/issues`. Corrections should include a public source URL. Pull requests welcome for new facilities and data updates.
+Compute Atlas is non-partisan and takes no position for or against any facility or operator; it aims only to make public information findable and verifiable. The dataset is compiled from public sources and is necessarily incomplete and subject to revision — which is why every record carries an explicit confidence level and cites its sources. It is provided "as is," without warranty of any kind, and is **not** legal, financial, investment, or professional advice. If you spot an error, please [open a correction](CONTRIBUTING.md) with a source.
 
-## Attribution and licenses
+## License
 
-- Map basemap: OpenStreetMap contributors (ODbL) via OpenFreeMap
-- Epoch AI data (where used): CC-BY 4.0
-- Codebase and original data: see repository license
+This project is dual-licensed:
+
+- **Source code** — [MIT License](LICENSE).
+- **Data** (`data/`) — [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE-DATA). Reuse freely, including commercially; please attribute.
+
+Third-party data keeps its own terms: the map basemap is © OpenStreetMap contributors (ODbL) via OpenFreeMap, and any figures attributed to Epoch AI are CC BY 4.0.
+
+## Attribution
+
+Compute Atlas is an independent project by **Edward Kubiak**.
+
+Suggested citation:
+
+> AI datacenter data from Compute Atlas by Edward Kubiak, licensed under CC BY 4.0 — https://github.com/ek33450505/compute-atlas
