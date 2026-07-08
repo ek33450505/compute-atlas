@@ -4,11 +4,13 @@ import { getAllFacilities } from "@/lib/data";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
-  it("static routes include /, /table, and /about", () => {
+  it("static routes include /, /map, /table, /stats, and /about", () => {
     const routes = buildStaticRoutes();
     const urls = routes.map((r) => r.url);
     expect(urls).toContain(siteConfig.url);
+    expect(urls).toContain(`${siteConfig.url}/map`);
     expect(urls).toContain(`${siteConfig.url}/table`);
+    expect(urls).toContain(`${siteConfig.url}/stats`);
     expect(urls).toContain(`${siteConfig.url}/about`);
   });
 
@@ -18,12 +20,12 @@ describe("sitemap", () => {
     expect(facilityRoutes).toHaveLength(facilities.length);
   });
 
-  it("total route count equals facilities.length + 3", () => {
+  it("total route count equals facilities.length + 5", () => {
     const staticRoutes = buildStaticRoutes();
     const facilityRoutes = buildFacilityRoutes();
     const total = staticRoutes.length + facilityRoutes.length;
     const facilities = getAllFacilities();
-    expect(total).toBe(facilities.length + 3);
+    expect(total).toBe(facilities.length + 5);
   });
 
   it("all URLs are absolute and under siteConfig.url", () => {

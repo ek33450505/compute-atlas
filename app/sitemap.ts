@@ -15,10 +15,22 @@ export function buildStaticRoutes(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
+      url: `${siteConfig.url}/map`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
       url: `${siteConfig.url}/table`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
+    },
+    {
+      url: `${siteConfig.url}/stats`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7,
     },
     {
       url: `${siteConfig.url}/about`,
