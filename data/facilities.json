@@ -15461,14 +15461,41 @@
         "publisher": "WhiteFiber",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://bit-digital.com/press-releases/whitefiber-inc-bit-digitals-ai-unit-acquires-1000000-square-foot-north-carolina-industrial-property-to-support-up-to-200-mw-hpc-data-center-campus/",
+        "label": "WhiteFiber (Bit Digital's AI unit) acquires North Carolina property; confirmed qualifying data center",
+        "publisher": "Bit Digital",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wfdd.org/2025-06-03/rockingham-county-set-to-welcome-a-1-billion-ai-data-center",
+        "label": "Rockingham County set to welcome a $1 billion AI data center",
+        "publisher": "WFDD",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "Operator is WhiteFiber (Bit Digital's AI unit); Nscale is the 40 MW anchor tenant (10-year, ~$865M total contract value = revenue, not capex — in notes). ~1M sq ft, up to 150 kW/cabinet, 99 MW secured from Duke Energy, 200 MW eventual site potential (planned figure). $150M WhiteFiber equity. Madison is in Rockingham County, NC. Coordinates are the Madison town centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "Operator is WhiteFiber (Bit Digital's AI unit); Nscale is the 40 MW anchor tenant (10-year, ~$865M total contract value = revenue, not capex — in notes). ~1M sq ft, up to 150 kW/cabinet, 99 MW secured from Duke Energy, 200 MW eventual site potential (planned figure). $150M WhiteFiber equity. Madison is in Rockingham County, NC. Coordinates are the Madison town centroid. Property acquired for $45M (2025, from Unifi); the total buildout described as 'over $1B' is conditional on reaching 200 MW -> investmentUsd omitted. ~60 permanent jobs (~$67k avg) were pledged (Rockingham County) - a commitment, with the facility still under construction -> jobs honest-zero. Cooling type not publicly disclosed -> water honest-zero.",
     "energy": {
       "source": "grid",
       "utility": "Duke Energy",
-      "notes": "99 MW power agreement with Duke Energy."
+      "notes": "99 MW power agreement with Duke Energy (24 MW targeted for delivery ~Sept 1, 2025), scalable to 200 MW over time."
+    },
+    "subsidies": [
+      {
+        "program": "North Carolina sales & use tax exemption for qualifying data centers (G.S. 105-164.13(55a)) - facility confirmed as a qualifying data center; no dollar value disclosed",
+        "jurisdiction": "North Carolina",
+        "year": "2025",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "supported",
+      "notes": "Officials welcomed the project at the June 2025 announcement (Governor, Rockingham County commissioners, Madison mayor); the site is a converted former Unifi textile plant (brownfield reuse). No documented opposition found.",
+      "sourceIndex": 3
     }
   },
   {
@@ -15687,13 +15714,51 @@
         "publisher": "Intersect Power",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/google-launches-1-gw-plus-co-located-data-center-and-generation-complex-in-texas-panhandle/",
+        "label": "Google launches 1 GW+ co-located data center and generation complex in Texas Panhandle",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newschannel10.com/2026/01/17/pampas-3-billion-ai-data-center-signals-new-era-growth-gray-county/",
+        "label": "Pampa's $3 billion AI data center signals new era of growth in Gray County",
+        "publisher": "NewsChannel 10",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://abc7amarillo.com/news/local/intersect-powers-1-billion-project-ignites-ogallala-aquifer-protection-talks-meinter-intersect-power-project-pampa-chris-porter-mitchell-locke-highway-152-panhandle-groundwater-conservation-district-terry-hall-levi-berry-gray-county-roberts-county-texas",
+        "label": "Intersect Power's project ignites Ogallala Aquifer protection talks in Gray County",
+        "publisher": "ABC 7 Amarillo",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "Data center co-located with new energy generation, spanning Gray and Roberts counties near Pampa. Part of Google's ~$40B Texas commitment; Google took a stake in Intersect Power. IT capacity not disclosed. Coordinates are the Pampa area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "Data center co-located with new energy generation, spanning Gray and Roberts counties near Pampa. Part of Google's ~$40B Texas commitment; Google took a stake in Intersect Power. IT capacity not disclosed. Coordinates are the Pampa area centroid. Local reporting cites a ~$3B project cost (est. ~$1B/phase across 3 phases per the abatement filing) - an estimate -> investmentUsd omitted. ~40 permanent jobs projected across phases (abatement filing); facility not yet operational -> jobs honest-zero.",
     "energy": {
       "source": "mixed",
-      "notes": "Built directly alongside new co-located Intersect Power generation (solar/gas/storage)."
+      "notes": "Built directly alongside new co-located Intersect Power generation - >1 GW of wind, solar, and battery storage with on-site gas-fired firming (component MW undisclosed). The data center is largely off-grid, powered by the co-located generation (mayor: 'on the electricity side, it's all off-grid')."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Air-cooling used in place of evaporative cooling to eliminate cooling-tower water withdrawals - a required condition of the Gray County Chapter 312 tax abatement. Ogallala Aquifer protection was the central abatement concern."
+    },
+    "subsidies": [
+      {
+        "program": "Gray County Chapter 312 property-tax abatement - air-cooling (no water) required as a condition; reported ~100% relief for 10 years per phase across up to 3 phases (per New Project Media / local reporting)",
+        "jurisdiction": "Gray County, TX",
+        "year": "2025",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Gray County abatement approved on a split 3-1 commissioners' vote (per local reporting); documented public opposition over Ogallala Aquifer groundwater from area agricultural producers, alongside chamber, mayor, and county-judge support.",
+      "sourceIndex": 3
     }
   },
   {
@@ -16002,12 +16067,31 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-07",
         "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/engie-teams-up-with-cipher-mining-to-power-texas-data-center-302454171.html",
+        "label": "ENGIE teams up with Cipher Mining to power Texas data center (up to 300 MW wind PPA)",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://finance.yahoo.com/news/cipher-mining-pursues-2-billion-161628888.html",
+        "label": "Cipher Mining pursues $2 billion debt offering for Amazon data center",
+        "publisher": "Yahoo Finance",
+        "retrievedAt": "2026-07-08",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "~300 gross MW HPC/AI campus near Wink, Winkler County, under a 15-year AWS lease; Phase I targeted Q4 2026. Cipher transitioning crypto → HPC/AI. Coordinates are the Wink area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "~300 gross MW HPC/AI campus near Wink, Winkler County, under a 15-year AWS lease; Phase I targeted Q4 2026. Cipher transitioning crypto → HPC/AI. Coordinates are the Wink area centroid. Cipher Mining (Nasdaq: CIFR) financed Black Pearl via ~$2.0B senior secured notes (Black Pearl Compute LLC, Feb 2026) plus a ~$232.5M equity reimbursement (~$2.23B implied total, inferred across two instruments) -> investmentUsd omitted; the ~$9.3-9.8B AWS figure is 15-year lease revenue, not capex. No jobs figures disclosed -> jobs honest-zero. Mining-era cooling was ~250 MW air-cooled + ~50 MW liquid-cooled; the HPC/AI cooling architecture is undisclosed -> water honest-zero. No confirmed public subsidy surfaced.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "notes": "138-kV Oncor interconnection (ERCOT West); a preliminary PPA with ENGIE (up to 300 MW of wind) was announced May 2025 - grid-sourced renewable via PPA, not on-site generation."
+    },
+    "community": {
+      "status": "unknown",
+      "notes": "No documented local reception found (Wink is a small West-Texas oil-field community; coverage is exclusively financial/industry press). No council votes, opposition, litigation, or moratorium located."
     }
   },
   {
@@ -16054,7 +16138,7 @@
     "id": "coreweave-digital-crossroads-hammond-in",
     "name": "CoreWeave Digital Crossroads",
     "operator": "CoreWeave",
-    "status": "under_construction",
+    "status": "cancelled",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16075,6 +16159,12 @@
         "date": "2025-06",
         "note": "Hammond approved a 180 MW CoreWeave data center at the Digital Crossroads campus (June 2025); targeted 2027",
         "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-06-30",
+        "note": "City of Hammond announced the development agreement expired June 30, 2026 - required milestones and obligations were not completed by the deadline, and no further extensions were offered; no groundbreaking occurred.",
+        "sourceIndex": 1
       }
     ],
     "sources": [
@@ -16084,10 +16174,17 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.gohammond.com/hammond-announces-expiration-of-data-center-development-agreement/",
+        "label": "Hammond announces expiration of data center development agreement",
+        "publisher": "City of Hammond",
+        "retrievedAt": "2026-07-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "180 MW facility at the Digital Crossroads campus in Hammond, Lake County; city approved June 2025, NIPSCO lease pending, targeted 2027. Coordinates are the Hammond area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "180 MW facility at the Digital Crossroads campus in Hammond, Lake County; city approved June 2025, NIPSCO lease pending, targeted 2027. Coordinates are the Hammond area centroid. UPDATE (2026-07): the City of Hammond announced the CoreWeave / Decennial development agreement EXPIRED June 30, 2026 - required milestones were not met and no extensions were offered; no groundbreaking occurred. The June 2025 city approval, the 10-year real-property and 20-year personal-property tax abatements, and the ~$2B construction / ~$5B equipment figures were all tied to this now-lapsed agreement (never triggered). Status corrected under_construction -> cancelled.",
     "energy": {
       "source": "grid",
       "utility": "NIPSCO"
@@ -16125,12 +16222,37 @@
         "publisher": "PowerHouse Data Centers",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/chirisa-technology-parks-and-powerhouse-data-centers-to-launch-next-generation-hyperscale-campus-in-chesterfield-county-302259869.html",
+        "label": "Chirisa Technology Parks and PowerHouse launch hyperscale campus in Chesterfield County",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.govtech.com/products/richmond-va-area-counties-split-on-data-centers",
+        "label": "Richmond, Va.-area counties split on data centers",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "Chester, Chesterfield County — first phase of a Blue Owl / Chirisa / PowerHouse JV: initial 50 MW (2025) → 120 MW facility, with a ~1 GW eventual plan (in notes). $600M construction loan closed. Distinct parcel from Google's Midlothian (Chesterfield) campus. Coordinates are the Chester area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "Chester, Chesterfield County — first phase of a Blue Owl / Chirisa / PowerHouse JV: initial 50 MW (2025) → 120 MW facility, with a ~1 GW eventual plan (in notes). $600M construction loan closed. Distinct parcel from Google's Midlothian (Chesterfield) campus. Coordinates are the Chester area centroid. The $600M is a construction loan (financing) and the $5B is the multi-site JV total - neither is this campus's capex -> investmentUsd omitted. 800-1,200 jobs projected over 5-7 years spanning construction and operations -> jobs honest-zero. Virginia law bars per-company data-center subsidy disclosure -> subsidy honest-zero.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Dominion Energy",
+      "notes": "300 MW secured via a new Meadowville Technology Park substation built in partnership with Dominion Energy; eventual park goal >1 GW."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Chirisa 'direct-on-chip' liquid cooling (closed-loop, ~2x more power-efficient than air-cooled); site water sourced from a Chesterfield County reclaimed-water system. No MGD figure published."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "The Chesterfield County Board of Supervisors approved the Chirisa / Meadowville plans and cited a positive economic impact (redevelopment of the former Capital One campus); county-wide, data-center expansion is actively debated (residential-bill, water, and diesel-generator concerns; a Jan 2026 zoning ordinance now requires conditional-use approval for new data centers). No lawsuit or moratorium against this campus.",
+      "sourceIndex": 2
     }
   },
   {
@@ -16428,14 +16550,46 @@
         "publisher": "WRDW",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wrdw.com/2026/05/11/qts-data-center-project-raises-questions-about-savannah-river-water-use/",
+        "label": "QTS data center project raises questions about Savannah River water use",
+        "publisher": "WRDW",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wrdw.com/2026/06/02/augustans-urge-city-leaders-put-data-centers-hold/",
+        "label": "Augustans urge city leaders to put data centers on hold",
+        "publisher": "WRDW",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wrdw.com/2026/05/28/luncheon-provides-information-qts-data-center-project-augusta/",
+        "label": "Luncheon provides information on QTS data center project in Augusta",
+        "publisher": "WRDW",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "Project Eisenhower in Augusta, Richmond County — 6 buildings across ~170 acres, $2B+ project. Rezoned 2024-25 with preliminary grading underway. Estimated 300-500 MW (not officially disclosed — omitted from capacity). Coordinates are the Augusta area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "Project Eisenhower in Augusta, Richmond County — 6 buildings across ~170 acres, $2B+ project. Rezoned 2024-25 with preliminary grading underway. Estimated 300-500 MW (not officially disclosed — omitted from capacity). Coordinates are the Augusta area centroid. The ~$2B figure is a developer projection from a 2024 zoning hearing (building permits not yet issued) -> investmentUsd omitted. QTS projects ~1,000 construction and ~160-220 permanent jobs (projections) -> jobs honest-zero. Georgia's high-technology data-center sales-tax exemption and an Augusta EDA bond/PILOT are available programs, but no confirmed award for this campus was found -> subsidy honest-zero.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Georgia Power",
+      "notes": "Georgia Power confirmed as the electric utility (Georgia Power Region Executive at a May 2026 community luncheon)."
     },
-    "landAcres": 170
+    "landAcres": 170,
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling that 'does not consume water for cooling once operational' (QTS); QTS discontinued evaporative cooling in 2018. An anticipated ~18,000 gal/day per building is for sanitation/domestic use (early-planning estimate, not a permitted figure). Augusta Utilities is in talks to supply treated wastewater as cooling feedstock; water source is the Savannah River basin via Augusta Utilities."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Organized neighborhood opposition (Haynes Station / Captain's Corner) over transparency, noise, environmental impact, and Savannah River water use; residents spoke at Augusta Commission meetings (May-June 2026). Augusta approved a 49-day moratorium on NEW data centers (June 2026) that explicitly excludes this already-approved QTS campus. No lawsuit against this campus.",
+      "sourceIndex": 2
+    }
   },
   {
     "id": "rowan-temple-tx",
@@ -16470,12 +16624,52 @@
         "publisher": "Rowan Digital Infrastructure",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.templetx.gov/community/faq__data_center_development_.php",
+        "label": "City of Temple - Data Center Development FAQ (closed-loop cooling, 4,000 gpd cap)",
+        "publisher": "City of Temple",
+        "retrievedAt": "2026-07-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://kdhnews.com/news/region/third-rowan-data-center-minimum-700-million-investment-temple-withholds-utility-records/",
+        "label": "Third Rowan data center; minimum $700 million investment; Temple withholds utility records",
+        "publisher": "Killeen Daily Herald",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kxxv.com/news/local-news/temple-residents-raise-concerns-over-proposed-rowan-data-center-expansion",
+        "label": "Temple residents raise concerns over proposed Rowan data center expansion",
+        "publisher": "KXXV",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "300 MW campus in Temple, Bell County; $3B financing secured, operations targeted 2027. Distinct from Rowan's separately-tracked Frederick, MD campus. Coordinates are the Temple area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "300 MW campus in Temple, Bell County; $3B financing secured, operations targeted 2027. Distinct from Rowan's separately-tracked Frederick, MD campus. Coordinates are the Temple area centroid. The '$3B' figure is green debt financing (May 2026), not campus capex; the abatement cites a ~$700M minimum investment floor -> investmentUsd omitted. ~600 construction / ~40 permanent jobs projected (abatement requires >=48 permanent) -> jobs honest-zero.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Oncor",
+      "notes": "Power secured via a partnership with Oncor (ERCOT grid); no on-site generation documented."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "City of Temple requires closed-loop cooling for data-center projects; Project Temple's domestic water use is contractually capped at 4,000 gal/day (a contractual requirement, not an estimate) with no ongoing cooling-water withdrawal. The full utility-services agreement was withheld by the City in response to a records request."
+    },
+    "subsidies": [
+      {
+        "program": "City of Temple property-tax abatement (Chapter 312) - reported 50% of city property tax for 10 years per construction phase (Killeen Daily Herald); project generates ~$7M/yr during abatement years and ~$12M/yr fully on the tax rolls (City of Temple)",
+        "jurisdiction": "City of Temple, TX",
+        "year": "2025",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Temple City Council approved unanimously and Bell County supported; organized resident opposition (town halls, council testimony) raised concerns over an undisclosed additional Rowan campus, water/grid/noise, and the abatement. Rowan held a March 2026 open house and community partnerships. The named tenant is undisclosed ('top global technology company'); opposition speculates Meta, unconfirmed.",
+      "sourceIndex": 3
     }
   },
   {
@@ -16602,7 +16796,7 @@
     "operator": "Amazon Web Services",
     "status": "under_construction",
     "aiClassification": "confirmed",
-    "confidence": "reported",
+    "confidence": "confirmed",
     "location": {
       "lat": 46.0726,
       "lon": -118.9135,
@@ -16628,12 +16822,25 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.tricitiesbusinessnews.com/articles/amazon-wallula-gap",
+        "label": "Port of Walla Walla names Amazon Data Services as Wallula Gap buyer",
+        "publisher": "Tri-Cities Area Journal of Business",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "~$4.8B, ~300 MW campus near Wallula, Walla Walla County; operator reported (not officially confirmed) to be AWS → confidence reported. Coordinates are the Wallula area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "~$4.8B, ~300 MW campus near Wallula, Walla Walla County; operator reported (not officially confirmed) to be AWS → confidence reported. Coordinates are the Wallula area centroid. Operator confirmed as Amazon Data Services when the Port of Walla Walla amended the buyer from Advance Phase LLC to Amazon Data Services (Feb 12, 2026 commission vote; >550 acres for >$36M land) — confidence upgraded to confirmed. The reported ~$4.8B (DCD) / ~$5B (local) campus figure is an estimate across ~4 phases, not a firm pledge -> investmentUsd omitted. Port projects ~720 direct+indirect jobs at full build-out (projection) -> jobs honest-zero. Eligible for Washington's rural-county server-equipment sales/use-tax exemption (RCW 82.08.986) but no DOR certificate is confirmed -> subsidy honest-zero. Water source and cooling type are undisclosed pending SEPA (no water rights were conveyed in the land deal).",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "notes": "In Pacific Power (PacifiCorp) service territory (utility inferred from territory, not company-confirmed); regional supply is hydro-dominant."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Port of Walla Walla commissioners approved the amended land sale unanimously (Feb 12, 2026), calling the project transformative; documented concerns from the Confederated Tribes of the Umatilla Indian Reservation (sacred Snake/Columbia confluence), environmental and academic voices, and a commissioner over water and power. No litigation or moratorium; a SEPA environmental review with tribal and public comment is still pending.",
+      "sourceIndex": 1
     }
   },
   {
@@ -16925,12 +17132,37 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/oregons-forest-grove-data-center-gets-city-council-approval-again-again/",
+        "label": "Oregon's Forest Grove data center gets City Council approval, again",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://forestgrovenewstimes.com/2025/08/18/construction-boots-up-on-first-data-center-in-forest-grove/",
+        "label": "Construction boots up on first data center in Forest Grove (air cooling; municipal utility)",
+        "publisher": "Forest Grove News-Times",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "PDX01 data center campus in Forest Grove, Washington County; 76 MW by 2026. Coordinates are the Forest Grove area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "PDX01 data center campus in Forest Grove, Washington County; 76 MW by 2026. Coordinates are the Forest Grove area centroid. Development cost not disclosed (partner: Principal Asset Management) -> investmentUsd omitted. No job counts disclosed -> jobs honest-zero. Crane markets property-tax / enterprise-zone incentives, but no signed agreement is on record (statewide Oregon EZ moratorium eff. June 2026) -> subsidy honest-zero.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Forest Grove Light & Power",
+      "notes": "Served by Forest Grove Light & Power (municipal), which purchases ~90% of its power from the Bonneville Power Administration (hydro-dominant); Crane built a developer-funded on-site 115 kV substation (no on-site generation)."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Phase 1 confirmed air-based cooling (City Community Development Director; Crane CEO): the company 'has not applied to use water cooling for its first building ... will rely on air-based cooling, limiting water consumption to typical plumbing needs.' A 2023 release mentioned recycled water for cooling (likely a later phase)."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Two-round appeal fight: planning staff approved (July 2024); a resident appeal was denied by the Planning Commission (4-2, Sept 3, 2024); a further appeal was denied by City Council (5-0, Oct 14, 2024). Opposition centered on building scale (~75 ft), shadowing of homes, wetlands/habitat, and grid strain. The project prevailed; no lawsuit found.",
+      "sourceIndex": 1
     }
   },
   {
@@ -17369,12 +17601,45 @@
         "publisher": "ConstructConnect",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://dcnnmagazine.com/data-centres/aligned-data-centers-breaks-ground-on-glendale-facility/",
+        "label": "Aligned Data Centers breaks ground on Glendale facility (APS 230 kV line; closed-loop cooling)",
+        "publisher": "DCNN Magazine",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.glendalestar.com/news/aligned-data-centers-breaks-ground/article_4c7a2620-ccc3-4821-a236-dbfedb40ae85.html",
+        "label": "Aligned Data Centers breaks ground - Glendale mayor praises PHX-13",
+        "publisher": "Glendale Star",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/aligned-breaks-ground-on-data-center-in-phoenix-arizona/",
+        "label": "Aligned breaks ground on data center in Phoenix, Arizona ($86.5M for 100 acres)",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "PHX-13, a 72 MW campus in Glendale, Maricopa County. Coordinates are the Glendale area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "PHX-13, a 72 MW campus in Glendale, Maricopa County. Coordinates are the Glendale area centroid. Land acquired for $86.5M (100 acres at 8785 N Reems Rd, Dec 2024, from LXP Industrial Trust) - land cost, not campus capex -> investmentUsd omitted. No job counts disclosed -> jobs honest-zero. The campus likely uses Arizona's statutory data-center TPT exemption (A.R.S. 41-1519), but no ACA certification or GPLET agreement for this campus is public -> subsidy honest-zero.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Arizona Public Service (APS)",
+      "notes": "APS is building a new 230 kV transmission line to serve the campus (DCNN); grid-sourced renewables, no on-site generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Aligned Delta-cube closed-loop air-cooling arrays with water recycling (no evaporative draw); DeltaFlow liquid cooling planned for dense AI workloads. A marketed '>73% water reduction' is versus the site's prior agricultural (rose-farm) use, not a data-center withdrawal figure -> no MGD recorded."
+    },
+    "landAcres": 100,
+    "community": {
+      "status": "supported",
+      "notes": "Glendale Mayor Jerry Weiers attended and praised the April 2025 groundbreaking; the City of Glendale issued its own release. No opposition, contested vote, or litigation documented.",
+      "sourceIndex": 2
     }
   },
   {
