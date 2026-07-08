@@ -6,6 +6,8 @@
 
 A free, neutral, open tracker of AI datacenters across the United States — from proposed and permitted to under construction and operational — with a source for every record.
 
+**Live site → [compute-atlas-five.vercel.app](https://compute-atlas-five.vercel.app)**
+
 ## What it is
 
 There is no national registry of AI datacenters. "AI datacenter" is not a legal category. Compute Atlas fills that gap by curating a provenance-first dataset of large-scale GPU/accelerator facilities, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries a confidence level and links its sources.
@@ -16,7 +18,7 @@ Intended audience: journalists, researchers, local officials, and residents.
 
 ## The numbers
 
-The live facility count is shown in the badge above (read directly from `data/facilities.json`). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the **Statistics** page on the live site, or read the raw data in [`data/facilities.json`](data/facilities.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
+The live facility count is shown in the badge above (read directly from `data/facilities.json`). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the live **[Statistics page](https://compute-atlas-five.vercel.app/stats)**, or read the raw data in [`data/facilities.json`](data/facilities.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
 
 ## How the data is built
 
@@ -54,7 +56,7 @@ Contributions and corrections are welcome — every submission needs a public so
 
 ## Tech stack
 
-- **Next.js 16** (App Router, static export) with **React 19**
+- **Next.js 16** (App Router, static site generation) with **React 19**
 - **TypeScript** + **Zod** for runtime-validated data
 - **MapLibre GL** + **react-map-gl** for the interactive map
 - **Tailwind CSS v4** + **shadcn/ui** components
