@@ -84,7 +84,7 @@ export default function OGImage() {
             </div>
           </div>
 
-          {/* Wordmark block — ⌖ crosshair glyph + site name + tagline */}
+          {/* Wordmark block — graticule mark + site name + tagline */}
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               <svg
@@ -93,9 +93,10 @@ export default function OGImage() {
                 viewBox="0 0 24 24"
                 style={{ display: "flex", flexShrink: 0 }}
               >
-                <circle cx="12" cy="12" r="6" fill="none" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
-                <line x1="12" y1="1" x2="12" y2="23" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
-                <line x1="1" y1="12" x2="23" y2="12" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
+                <rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
+                <line x1="12" y1="4" x2="12" y2="20" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
+                <line x1="4" y1="12" x2="20" y2="12" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
+                <circle cx="12" cy="12" r="2.4" fill={PRIMARY_GREEN} />
               </svg>
               <span
                 style={{

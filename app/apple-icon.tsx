@@ -33,40 +33,12 @@ export default function AppleIcon() {
           }}
         />
 
-        {/* Centered ⌖ crosshair — inline SVG; ~55% of 180px canvas = ~99px */}
-        <svg
-          width="99"
-          height="99"
-          viewBox="0 0 32 32"
-          style={{ display: "flex" }}
-        >
-          <circle
-            cx="16"
-            cy="16"
-            r="7.5"
-            fill="none"
-            stroke={PRIMARY_GREEN}
-            strokeWidth="2.6"
-            strokeLinecap="round"
-          />
-          <line
-            x1="16"
-            y1="3"
-            x2="16"
-            y2="29"
-            stroke={PRIMARY_GREEN}
-            strokeWidth="2.6"
-            strokeLinecap="round"
-          />
-          <line
-            x1="3"
-            y1="16"
-            x2="29"
-            y2="16"
-            stroke={PRIMARY_GREEN}
-            strokeWidth="2.6"
-            strokeLinecap="round"
-          />
+        {/* Centered graticule mark — inline SVG; ~55% of 180px canvas = ~99px */}
+        <svg width="99" height="99" viewBox="0 0 32 32" style={{ display: "flex" }}>
+          <rect x="6" y="6" width="20" height="20" rx="2.5" fill="none" stroke={PRIMARY_GREEN} strokeWidth="2.4" />
+          <line x1="16" y1="6" x2="16" y2="26" stroke={PRIMARY_GREEN} strokeWidth="2.4" />
+          <line x1="6" y1="16" x2="26" y2="16" stroke={PRIMARY_GREEN} strokeWidth="2.4" />
+          <circle cx="16" cy="16" r="3.2" fill={PRIMARY_GREEN} />
         </svg>
       </div>
     ),
