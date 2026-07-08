@@ -173,3 +173,57 @@ export function getNotableFacilities(n = 6): Facility[] {
     )
     .slice(0, n);
 }
+
+// ============================================================
+// Water use helpers (used by /stats Water use section)
+// ============================================================
+
+export interface WaterUsage {
+  /** Non-cancelled facilities disclosing a positive daily water figure. */
+  reportingCount: number;
+  /** Sum of reportedMgd (million gallons/day) across those facilities. */
+  totalMgd: number;
+}
+
+/**
+ * Returns the count and total daily water usage (MGD) across non-cancelled
+ * facilities that disclose a positive `water.reportedMgd` figure.
+ * This is a reported floor — most facilities do not publish a daily water figure.
+ */
+export function getWaterUsage(): WaterUsage {
+  const reporting = facilities.filter(
+    (f) =>
+      f.status !== "cancelled" &&
+      typeof f.water?.reportedMgd === "number" &&
+      f.water.reportedMgd > 0
+  );
+  const totalMgd = reporting.reduce((sum, f) => sum + (f.water!.reportedMgd!), 0);
+  return { reportingCount: reporting.length, totalMgd };
+}
+
+/** All 5 cooling type keys (stable, exhaustive set). */
+const COOLING_TYPE_KEYS = [
+  "evaporative",
+  "air",
+  "closed_loop",
+  "hybrid",
+  "unknown",
+] as const;
+
+export type CoolingType = (typeof COOLING_TYPE_KEYS)[number];
+
+/**
+ * Returns a count per cooling type among non-cancelled facilities that declare
+ * `water.coolingType`. All 5 keys are always present (seeded at 0).
+ */
+export function getCoolingTypeCounts(): Record<CoolingType, number> {
+  const counts = Object.fromEntries(
+    COOLING_TYPE_KEYS.map((k) => [k, 0])
+  ) as Record<CoolingType, number>;
+  for (const f of facilities) {
+    if (f.status !== "cancelled" && f.water?.coolingType) {
+      counts[f.water.coolingType]++;
+    }
+  }
+  return counts;
+}

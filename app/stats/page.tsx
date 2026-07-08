@@ -9,6 +9,9 @@ import {
   getConfidenceCounts,
   getTopStates,
   getTopOperators,
+  getWaterUsage,
+  getCoolingTypeCounts,
+  type CoolingType,
 } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import type { Facility } from "@/lib/schema";
@@ -55,6 +58,8 @@ export default function StatsPage() {
   const confidenceCounts = getConfidenceCounts();
   const topStates = getTopStates(10);
   const topOperators = getTopOperators(10);
+  const water = getWaterUsage();
+  const cooling = getCoolingTypeCounts();
 
   const total = stats.count;
 
@@ -126,6 +131,97 @@ export default function StatsPage() {
           </span>
         </div>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § Water use                                                         */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="water-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Water use
+        </p>
+        <h2
+          id="water-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          Water use
+        </h2>
+
+        {/* Lead figure */}
+        <div className="flex flex-col gap-1">
+          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+            {water.totalMgd.toFixed(1)} MGD
+          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            Reported daily water &middot; million gal/day
+          </span>
+        </div>
+
+        {/* Context line */}
+        <p className="text-sm text-muted-foreground">
+          Across {water.reportingCount} of {total} facilities that disclose a daily
+          figure &middot; &asymp;{(water.totalMgd * 365 / 1000).toFixed(1)}B gallons/year
+        </p>
+
+        {/* Honest caveat */}
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          These figures represent a{" "}
+          <strong className="font-medium text-foreground">reported floor</strong>,
+          not a dataset total — the vast majority of AI datacenter campuses do not
+          publish a daily water figure. Cooling water is the least-transparent civic
+          dimension in this dataset. Cooling method is a meaningful proxy for water
+          intensity: evaporative systems consume far more water than air-cooled or
+          closed-loop alternatives.
+        </p>
+
+        {/* Cooling-method breakdown */}
+        {(() => {
+          // Ordered by water intensity (high → minimal) — a rearrangement of CoolingType.
+          const coolingEntries: { key: CoolingType; label: string }[] = [
+            { key: "evaporative", label: "Evaporative (high water)" },
+            { key: "hybrid", label: "Hybrid" },
+            { key: "closed_loop", label: "Closed-loop (low water)" },
+            { key: "air", label: "Air-cooled (minimal)" },
+            { key: "unknown", label: "Unknown" },
+          ];
+          const coolingSum = Object.values(cooling).reduce((a, b) => a + b, 0);
+          return (
+            <div className="space-y-4">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                Cooling method
+              </p>
+              {coolingEntries.map(({ key, label }) => {
+                const count = cooling[key];
+                const pct =
+                  coolingSum > 0 ? (count / coolingSum) * 100 : 0;
+                return (
+                  <div key={key} className="space-y-1.5">
+                    <div className="flex items-baseline justify-between gap-2 text-sm">
+                      <span className="text-foreground">{label}</span>
+                      <span className="font-mono tabular-nums text-muted-foreground">
+                        {count}
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        aria-hidden="true"
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${pct.toFixed(2)}%`,
+                          backgroundColor: "var(--primary)",
+                          opacity: 0.7,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+      </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* § By status                                                         */}

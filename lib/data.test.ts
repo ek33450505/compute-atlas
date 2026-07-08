@@ -11,6 +11,8 @@ import {
   getTopOperators,
   getAiClassificationCounts,
   getConfidenceCounts,
+  getWaterUsage,
+  getCoolingTypeCounts,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 
@@ -272,5 +274,101 @@ describe("getConfidenceCounts", () => {
     const counts = getConfidenceCounts();
     const sum = Object.values(counts).reduce((a, b) => a + b, 0);
     expect(sum).toBe(getAllFacilities().length);
+  });
+});
+
+describe("getWaterUsage", () => {
+  it("reportingCount is between 0 and non-cancelled count", () => {
+    const { reportingCount } = getWaterUsage();
+    const nonCancelledCount = getAllFacilities().filter(
+      (f) => f.status !== "cancelled"
+    ).length;
+    expect(reportingCount).toBeGreaterThanOrEqual(0);
+    expect(reportingCount).toBeLessThanOrEqual(nonCancelledCount);
+  });
+
+  it("totalMgd is non-negative", () => {
+    const { totalMgd } = getWaterUsage();
+    expect(totalMgd).toBeGreaterThanOrEqual(0);
+  });
+
+  it("reportingCount equals manual recomputation", () => {
+    const { reportingCount } = getWaterUsage();
+    const expected = getAllFacilities().filter(
+      (f) =>
+        f.status !== "cancelled" &&
+        typeof f.water?.reportedMgd === "number" &&
+        f.water.reportedMgd > 0
+    ).length;
+    expect(reportingCount).toBe(expected);
+  });
+
+  it("totalMgd equals manual recomputation", () => {
+    const { totalMgd } = getWaterUsage();
+    const expected = getAllFacilities()
+      .filter(
+        (f) =>
+          f.status !== "cancelled" &&
+          typeof f.water?.reportedMgd === "number" &&
+          f.water.reportedMgd > 0
+      )
+      .reduce((sum, f) => sum + f.water!.reportedMgd!, 0);
+    expect(totalMgd).toBeCloseTo(expected, 5);
+  });
+
+  it("no cancelled facility is counted", () => {
+    const facilities = getAllFacilities();
+    const countedIds = facilities
+      .filter(
+        (f) =>
+          f.status !== "cancelled" &&
+          typeof f.water?.reportedMgd === "number" &&
+          f.water.reportedMgd > 0
+      )
+      .map((f) => f.id);
+    const cancelledIds = new Set(
+      facilities.filter((f) => f.status === "cancelled").map((f) => f.id)
+    );
+    for (const id of countedIds) {
+      expect(cancelledIds.has(id)).toBe(false);
+    }
+  });
+});
+
+describe("getCoolingTypeCounts", () => {
+  const COOLING_KEYS = ["evaporative", "air", "closed_loop", "hybrid", "unknown"] as const;
+
+  it("has exactly the 5 cooling type keys", () => {
+    const counts = getCoolingTypeCounts();
+    expect(Object.keys(counts).sort()).toEqual([...COOLING_KEYS].sort());
+  });
+
+  it("each value is non-negative", () => {
+    const counts = getCoolingTypeCounts();
+    for (const key of COOLING_KEYS) {
+      expect(counts[key]).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("sum is at most the non-cancelled facility count", () => {
+    const counts = getCoolingTypeCounts();
+    const sum = Object.values(counts).reduce((a, b) => a + b, 0);
+    const nonCancelledCount = getAllFacilities().filter(
+      (f) => f.status !== "cancelled"
+    ).length;
+    expect(sum).toBeLessThanOrEqual(nonCancelledCount);
+  });
+
+  it("equals manual recomputation per key", () => {
+    const counts = getCoolingTypeCounts();
+    const facilities = getAllFacilities().filter(
+      (f) => f.status !== "cancelled" && f.water?.coolingType
+    );
+    for (const key of COOLING_KEYS) {
+      const expected = facilities.filter(
+        (f) => f.water?.coolingType === key
+      ).length;
+      expect(counts[key]).toBe(expected);
+    }
   });
 });
