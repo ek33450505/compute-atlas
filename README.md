@@ -6,7 +6,7 @@
 
 A free, neutral, open tracker of AI datacenters across the United States — from proposed and permitted to under construction and operational — with a source for every record.
 
-**Live site → [compute-atlas-five.vercel.app](https://compute-atlas-five.vercel.app)**
+**Live site → [www.compute-atlas.com](https://www.compute-atlas.com)**
 
 ## What it is
 
@@ -18,7 +18,7 @@ Intended audience: journalists, researchers, local officials, and residents.
 
 ## The numbers
 
-The live facility count is shown in the badge above (read directly from `data/facilities.json`). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the live **[Statistics page](https://compute-atlas-five.vercel.app/stats)**, or read the raw data in [`data/facilities.json`](data/facilities.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
+The live facility count is shown in the badge above (read directly from `data/facilities.json`). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the live **[Statistics page](https://www.compute-atlas.com/stats)**, or read the raw data in [`data/facilities.json`](data/facilities.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
 
 ## How the data is built
 
