@@ -37,7 +37,7 @@ export default function HomePage() {
 
           {/* Headline */}
           <h1 className="font-display text-5xl leading-[1.03] text-foreground sm:text-6xl max-w-4xl">
-            An open atlas of America&rsquo;s AI buildout.
+            An open map of America&rsquo;s AI datacenters.
           </h1>
 
           {/* Subhead */}

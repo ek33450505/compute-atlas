@@ -136,7 +136,7 @@ export default function AboutPage() {
           rather than general-purpose cloud or enterprise compute.
         </p>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          The category is inherently fuzzy — hyperscale cloud campuses
+          The category is inherently imprecise — hyperscale cloud campuses
           increasingly colocate AI workloads alongside other compute, and
           company announcements often do not distinguish between the two. Every
           record therefore carries an{" "}
