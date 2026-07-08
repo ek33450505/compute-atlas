@@ -42,3 +42,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# internal planning notes — kept local, not part of the public repo
+/docs/NEXT-SESSION.md
+/docs/track-c-candidate-ledger.md
