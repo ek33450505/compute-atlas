@@ -14916,13 +14916,44 @@
         "publisher": "WTOP",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/new-hyperscale-developer-corscale-is-behind-300mw-gainesville-crossing-campus-in-prince-william-county/",
+        "label": "New hyperscale developer Corscale is behind 300MW Gainesville Crossing campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://affiniuscapital.com/projects/gcdc/",
+        "label": "Gainesville Crossing Digital Campus (GCDC)",
+        "publisher": "Affinius Capital",
+        "retrievedAt": "2026-07-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://protectpwc.org/gainesville-crossing-data-center-complex/",
+        "label": "Gainesville Crossing data center complex",
+        "publisher": "Coalition to Protect Prince William County",
+        "retrievedAt": "2026-07-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "~130-acre campus on Interstate 66; ~306 MW via an on-site Dominion substation. Distinct from the separately-tracked QTS/Compass 'PW Digital Gateway' site (~2,100 acres at Pageland Lane) — which QTS terminated in July 2026. Capacity recorded at 300 MW per the DCD primary source (a 326 MW figure also circulates). Coordinates are the Gainesville area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "~130-acre campus on Interstate 66; ~306 MW via an on-site Dominion substation. Distinct from the separately-tracked QTS/Compass 'PW Digital Gateway' site (~2,100 acres at Pageland Lane) — which QTS terminated in July 2026. Capacity recorded at 300 MW per the DCD primary source (a 326 MW figure also circulates). Coordinates are the Gainesville area centroid. The only confirmed money figure is the ~$74.5M 2020 land purchase (a real-estate transaction, not construction capex) -> investmentUsd omitted; no headcount is disclosed; the VA sales-and-use tax exemption is eligibility-gated with no public award.",
     "energy": {
       "source": "grid",
-      "utility": "Dominion Energy"
+      "utility": "Dominion Energy",
+      "notes": "Powered via a dedicated on-site Dominion Energy 135 kV substation (~306 MW); the design targets a PUE of 1.25. No confirmed renewable PPA or on-site generation."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Air-cooled chillers (Airedale by Modine) with liquid-cooled options available; LEED / water-use-efficiency targets. No confirmed operational daily-use figure published."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The Prince William County BOS approved the Gainesville Crossing rezoning (REZ2018-00008) 7-1 on Dec 10 2019 over opposition from the Coalition to Protect Prince William County (Elena Schlossberg: 'Citizens are carrying the burden of the massive infrastructure bills for these energy hogs'). Distinct from the separately-contested PW Digital Gateway / Pageland Lane project (voided by courts in 2025); GCDC's own approval is not under legal challenge.",
+      "sourceIndex": 4
     }
   },
   {
@@ -15052,12 +15083,32 @@
         "publisher": "Core Scientific Inc.",
         "retrievedAt": "2026-07-07",
         "kind": "filing"
+      },
+      {
+        "url": "https://investors.corescientific.com/news-events/press-releases/detail/134/core-scientific-plans-expansion-to-1-5-gigawatts-of-gross-power-at-pecos-texas-campus",
+        "label": "Core Scientific plans expansion to 1.5 GW of gross power at Pecos, Texas campus",
+        "publisher": "Core Scientific",
+        "retrievedAt": "2026-07-08",
+        "kind": "filing"
+      },
+      {
+        "url": "https://investors.corescientific.com/news-events/press-releases/detail/127/core-scientific-announces-fourth-quarter-fiscal-year-2025-results",
+        "label": "Core Scientific announces Q4 FY2025 results",
+        "publisher": "Core Scientific",
+        "retrievedAt": "2026-07-08",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "High-density AI/HPC colocation. ~1.5 GW gross / ~1.0 GW leasable is an expansion ceiling (in notes). Co-located in Reeves County with Microsoft's separate 'Project Kirby' Pecos campus (distinct operator/parcel; tracked separately). Address on record: 1939 FM 2119. Core Scientific historically a bitcoin miner, repositioned to HDC. Coordinates are the Pecos area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "High-density AI/HPC colocation. ~1.5 GW gross / ~1.0 GW leasable is an expansion ceiling (in notes). Co-located in Reeves County with Microsoft's separate 'Project Kirby' Pecos campus (distinct operator/parcel; tracked separately). Address on record: 1939 FM 2119. Core Scientific historically a bitcoin miner, repositioned to HDC. Coordinates are the Pecos area centroid. No Pecos-specific capex is disclosed (Q4 FY2025 capex of $279.2M is company-wide; the $226.2M CoreWeave-funded portion is contract revenue, not capex) -> investmentUsd omitted. No Reeves County abatement attributable to Core Scientific was found (the 'Pecos Power Plant LLC' abatement is a separate gas-plant entity).",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "notes": "Served by the ERCOT grid; Texas-New Mexico Power (TNMP) is the regional distribution utility for Pecos but Core Scientific's filings do not name it. Core Scientific announced a 'scalable behind-the-meter' power solution on 200+ acres (April 2026) with generation type/MW undisclosed - distinct from Microsoft's separate Project Kirby and the Chevron/Energy Forge One gas plant in the same county."
+    },
+    "community": {
+      "status": "unknown",
+      "notes": "No community opposition or formal support vote was found specific to Core Scientific's Pecos campus; regional officials have publicly welcomed the adjacent Microsoft campus. Investor-level opposition to the CoreWeave acquisition (Two Seas Capital) is a corporate-finance matter, not community reception.",
+      "sourceIndex": 1
     }
   },
   {
@@ -15092,12 +15143,68 @@
         "publisher": "Cologix",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://signalohio.org/ohio-approves-last-data-center-exemption-before-moratorium/",
+        "label": "Ohio approves last data-center exemption before moratorium",
+        "publisher": "Signal Ohio",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://columbusregion.com/press-release/cologix-expands-in-central-ohio/",
+        "label": "Cologix expands in Central Ohio",
+        "publisher": "Columbus Region",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/cologix-plans-7-billion-800-mw-data-center-complex-in-ohio/",
+        "label": "Cologix plans 800-MW data center complex in Ohio",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://cologix.com/news/cologix-expands-central-ohio-footprint-with-land-acquisition-for-new-ai-ready-800mw-data-center-campus/",
+        "label": "Cologix expands Central Ohio footprint with land acquisition for new AI-ready 800MW campus",
+        "publisher": "Cologix",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "154 acres; up to 800 MW scalable across eight data centers / 2.0M sq ft (800 MW is a full-buildout potential — in notes). The '>$7 billion' figure is a company-wide expansion plan, not a Johnstown-specific committed amount (in notes). Coordinates are the Johnstown, Licking County area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "154 acres; up to 800 MW scalable across eight data centers / 2.0M sq ft (800 MW is a full-buildout potential — in notes). The '>$7 billion' figure is a company-wide expansion plan, not a Johnstown-specific committed amount (in notes). Coordinates are the Johnstown, Licking County area centroid. The '>$7B' figure is Cologix's company-wide expansion plan; the $1.17B commitment is combined across Johnstown + Orange Township (not split) -> investmentUsd omitted. Land: ~$45M for 154 acres (Sept 2024).",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "AEP Ohio",
+      "notes": "AEP Ohio serves Licking County; in late 2024 it filed a large-load tariff requiring data-center customers to pay for at least 85% of contracted capacity. First-phase load ~75 MW, scalable to 176 MW (Signal Ohio). No on-site generation disclosed."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Cologix states 'closed-loop cooling systems that minimize water usage' (Columbus Region, June 2026). Under construction - no metered operational figure."
+    },
+    "subsidies": [
+      {
+        "program": "Ohio data-center sales-tax exemption (50%, 10-year) - TCA-approved June 1 2026; the $42.3M award is combined with Cologix's Orange Township (Delaware Co.) project and is not split per site",
+        "jurisdiction": "State of Ohio",
+        "year": "2026",
+        "sourceIndex": 1
+      },
+      {
+        "program": "City of Johnstown 15-year, 100% property-tax abatement",
+        "jurisdiction": "Johnstown, OH",
+        "sourceIndex": 1
+      }
+    ],
+    "jobs": {
+      "notes": "The TCA condition is 90 FTE combined across Johnstown + Orange Township by 2035 ($10M payroll) - not per-site or delivered; 'hundreds' of construction jobs are projected. Honest-zero on the numeric fields.",
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Johnstown Mayor Donald Barnard endorsed the project; Ohio's data-center sales-tax program drew statewide controversy (a legislative repeal was vetoed June 2025; a new-award moratorium followed June 2026). No Johnstown-specific opposition group was found.",
+      "sourceIndex": 4
     }
   },
   {
@@ -15240,14 +15347,77 @@
         "publisher": "Engineering at Meta",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/meta-signs-225mw-wind-ppa-in-iowa/",
+        "label": "Meta signs 225MW wind PPA in Iowa",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.constructiondive.com/news/facebook-receives-tax-incentive-to-build-fifth-altoona-iowa-data-center/554481/",
+        "label": "Facebook receives tax incentive to build fifth Altoona data center",
+        "publisher": "Construction Dive",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/cloud/article/11427725/meta-adds-more-data-centers-in-iowa-pushing-campus-to-5-million-sf",
+        "label": "Meta Adds More Data Centers in Iowa, Pushing Campus to 5 Million SF",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://kdsm17.com/news/local/how-much-water-do-iowa-data-centers-use",
+        "label": "How much water do Iowa data centers use",
+        "publisher": "KDSM17 (CBS Iowa)",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.warrencountyrecord.com/stories/trip-to-iowa-gives-officials-close-look-at-meta-data-center,163085",
+        "label": "Trip to Iowa gives officials close look at Meta data center",
+        "publisher": "Warren County Record",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "Operational since 2013; 5M+ sq ft after seven expansions — Meta's largest cloud campus. Meta's engineering blog documents Altoona as a GenAI infrastructure / LLaMA training site. INVESTMENT: 'more than $2.5 billion' is a cumulative multi-year figure across all expansions (in notes, not investmentUsd). 400+ on-site operations staff is a cumulative daily figure (in notes). ~350 MW per third-party index. Coordinates are the Altoona town centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "Operational since 2013; 5M+ sq ft after seven expansions — Meta's largest cloud campus. Meta's engineering blog documents Altoona as a GenAI infrastructure / LLaMA training site. INVESTMENT: 'more than $2.5 billion' is a cumulative multi-year figure across all expansions (in notes, not investmentUsd). 400+ on-site operations staff is a cumulative daily figure (in notes). ~350 MW per third-party index. Coordinates are the Altoona town centroid. Meta cites a cumulative capital investment of 'more than $2.5 billion' across seven Altoona expansions since 2013 (Data Center Frontier); the 2019 Building 5 phase was ~$400M (IEDA). Both are cumulative/single-phase figures -> investmentUsd omitted.",
     "energy": {
       "source": "wind",
       "utility": "MidAmerican Energy",
-      "notes": "MidAmerican Energy, backed by Meta's Iowa wind PPAs (utility targets 100% renewable in Iowa)."
+      "notes": "Served by MidAmerican Energy; Meta matches load with long-term Iowa wind PPAs, including the 225 MW Great Pathfinder Wind project (Boone & Hamilton Counties, Apex Clean Energy, ~2022) tied to Altoona. MidAmerican delivered ~100% renewable to its Iowa customers in 2022. No on-site generation."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Evaporative cooling with outside-air economization ~93% of the year (Meta design). Altoona utility director Daniel Scott: the campus 'can use up to a million gallons of water a day, one fifth of what the city can produce' - a permit peak/ceiling, not a measured average; a city agreement caps Meta at up to 16% of Altoona's supply. Water drawn from the Jordan Aquifer. No verified operational daily-use figure has been disclosed."
+    },
+    "subsidies": [
+      {
+        "program": "City of Altoona 20-year property-tax waiver (Building 5 / Siculus LLC, ~1M sq ft) - Meta instead pays ~$3/sq ft (~$3M/yr), roughly a 40% discount; IEDA High Quality Jobs program",
+        "jurisdiction": "City of Altoona, IA",
+        "year": "2019",
+        "sourceIndex": 3
+      },
+      {
+        "program": "Iowa data-center sales & use tax exemption (Iowa Code sec. 423.3(95)) on equipment, cooling, and electricity - eligibility met; per-campus dollar value undisclosed",
+        "jurisdiction": "State of Iowa",
+        "year": "2013",
+        "sourceIndex": 3
+      }
+    ],
+    "jobs": {
+      "permanent": 400,
+      "notes": "Meta: 'more than 400 people work on-site in data center operations each day' (operational count). Construction peaked ~1,300 trades and averaged ~1,000 across 12+ years of continuous building - ranges -> notes.",
+      "sourceIndex": 4
+    },
+    "community": {
+      "status": "supported",
+      "notes": "Altoona Mayor Dean O'Connor, initially opposed, became supportive as the campus grew; Meta donated two water towers to the city and has given $4M+ locally; LEED Gold buildings. Resident-level concerns (water share, electricity rates, noise/light) are documented but no organized opposition or litigation was found.",
+      "sourceIndex": 6
     }
   },
   {
@@ -15379,13 +15549,70 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.ajc.com/business/2025/11/microsofts-newest-ai-superfactory-opens-at-sprawling-fayetteville-campus/",
+        "label": "Microsoft debuts AI 'superfactory' data center south of Atlanta",
+        "publisher": "The Atlanta Journal-Constitution",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://thecitizen.com/2026/05/11/behind-fayettes-qts-water-controversy-a-missed-meter-8000-workers-and-a-massive-construction-project/",
+        "label": "Behind Fayette's QTS water controversy: a missed meter, 8,000 workers",
+        "publisher": "The Citizen",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://measuredai.substack.com/p/microsoft-fairwater-atlanta-data-center",
+        "label": "Microsoft Fairwater Atlanta: a grid-only gigawatt AI data center",
+        "publisher": "Measured AI",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wbrc.com/2026/02/22/georgia-data-center-boom-what-its-like-have-one-your-community/",
+        "label": "Georgia data center boom: what it's like to have one in your community",
+        "publisher": "WBRC",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://fayettega.org/doing-business/incentives-tax-rates/",
+        "label": "Incentives & tax rates",
+        "publisher": "Fayette County Development Authority",
+        "retrievedAt": "2026-07-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "615-acre, up-to-13-building QTS-built campus on Hwy 54W near Fayetteville, Fayette County (Microsoft's materials say 'Atlanta'). Began operation Oct 2025 as Fairwater 2 — a 'multi-gigawatt' AI campus. ~1,500 MW is the anticipated ultimate Georgia Power load across all buildings (planned figure; ~433 MW cited as initially online). Distinct from Microsoft's smaller Tyrone, GA campus. Two-story design with no UPS or backup generators. Coordinates are the Fayetteville area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "615-acre, up-to-13-building QTS-built campus on Hwy 54W near Fayetteville, Fayette County (Microsoft's materials say 'Atlanta'). Began operation Oct 2025 as Fairwater 2 — a 'multi-gigawatt' AI campus. ~1,500 MW is the anticipated ultimate Georgia Power load across all buildings (planned figure; ~433 MW cited as initially online). Distinct from Microsoft's smaller Tyrone, GA campus. Two-story design with no UPS or backup generators. Coordinates are the Fayetteville area centroid. Microsoft has not disclosed tenant capex for the Fairwater Fayetteville space; the ~$1B/$6.5B figures are QTS developer build-out estimates for the full multi-tenant campus, and the widely-cited $14.5M abatement / $1.8B / $75M figures attach to different Microsoft/Fulton-County sites (the $75M was FCDA land-sale proceeds, not a subsidy to QTS) -> investmentUsd omitted.",
     "energy": {
       "source": "grid",
-      "utility": "Georgia Power"
+      "utility": "Georgia Power",
+      "notes": "Two-story design with no UPS or backup generators (DCD, Oct 2025) — no on-site generation. Microsoft states Fairwater uses improved closed-loop cooling that 'consumes almost zero water in its operation.' Georgia Power 2025 IRP testimony cites the QTS Fayetteville campus as a single load of just under 1,500 MW at full build-out."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "QTS closed-loop 'water-free' design (COO Ryan Hunter: 'Once the water's in there, it stays in there for the life of the asset'); ~600,000-gal one-time fill per building, ongoing per-building use 'equivalent to four American households per month.' During construction the campus drew ~29-30M gallons through two unmetered connections (2024-25); Fayette County issued a ~$147,000 retroactive charge and no fine. No operational daily figure for the Microsoft tenant space specifically."
+    },
+    "subsidies": [
+      {
+        "program": "Fayette County Development Authority 10-year stepped property-tax abatement (0% yr 1 -> 100% yr 10, +10%/yr) on the QTS 'Project Excalibur' campus; also qualifies for Georgia's statewide data-center sales-and-use tax exemption",
+        "jurisdiction": "Fayette County, GA",
+        "year": "2023",
+        "sourceIndex": 4
+      }
+    ],
+    "jobs": {
+      "notes": "QTS (the developer) job figures for the full 13-16-building campus have shifted repeatedly - 100 (2022 city estimate) -> 200 (June 2025 FCDA) -> '800 to 1,000' (QTS written statement to WBRC, Feb 2026) - with no written commitment and none confirmed for the Microsoft Fairwater tenant space; peak construction workforce estimated ~8,000 daily across the full campus. All projections -> honest-zero on the numeric fields.",
+      "sourceIndex": 5
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Fayetteville adopted a 90-day moratorium (Jan 29 2026) then unanimously passed Ordinance 26-O-12 (March 5 2026) banning new data centers in all zoning districts; existing Fairwater 1/2 and the Dec 2025 East Campus rezoning are grandfathered. Opposition centered on construction traffic, the ~29M-gal unmetered water draw, and new 500 kV transmission lines; Mayor Edward Johnson expressed support. A competing Crow Holdings proposal withdrew its appeal after the ban. No litigation against the Fairwater campus.",
+      "sourceIndex": 4
     }
   },
   {
@@ -15629,13 +15856,40 @@
         "publisher": "Bitdeer Technologies Group",
         "retrievedAt": "2026-07-07",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/10/14/3166667/0/en/Bitdeer-Announces-September-2025-Production-and-Operations-Update.html",
+        "label": "Bitdeer announces September 2025 production and operations update",
+        "publisher": "GlobeNewswire / Bitdeer",
+        "retrievedAt": "2026-07-08",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2024/06/28/2905800/0/en/Bitdeer-Expands-Power-Capacity-Pipeline-to-2-5-GW-with-570-MW-Strategic-Partnership-with-Monroe-County-Port-Authority-in-Ohio.html",
+        "label": "Bitdeer expands power pipeline with 570 MW Monroe County partnership",
+        "publisher": "GlobeNewswire / Bitdeer",
+        "retrievedAt": "2026-07-08",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001899123/000121390026012756/ea0275775-6k_bitdeer.htm",
+        "label": "Bitdeer Form 6-K (American Heavy Plate Solutions leasehold litigation disclosure)",
+        "publisher": "U.S. Securities and Exchange Commission",
+        "retrievedAt": "2026-07-08",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "Clarington, Monroe County; 570 MW via an AEP Ohio LOA, targeted available by end of Q3 2026. Bitdeer transitioning from bitcoin mining toward HPC/AI. Coordinates are the Clarington area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "Clarington, Monroe County; 570 MW via an AEP Ohio LOA, targeted available by end of Q3 2026. Bitdeer transitioning from bitcoin mining toward HPC/AI. Coordinates are the Clarington area centroid. No Clarington-specific capex, water, or jobs figures are disclosed; Bitdeer's 2026 mining capex guidance is company-wide and excludes AI/HPC. Some cooling/jobs figures in secondary coverage describe Bitdeer's separate Shalersville (Portage County) site, not Clarington.",
     "energy": {
       "source": "grid",
-      "utility": "AEP Ohio"
+      "utility": "AEP Ohio",
+      "notes": "570 MW via a Letter of Agreement with AEP Ohio (May 2025); the utility confirmed the full 570 MW available by end of Q3 2026, ~1 year ahead of schedule. The site is the former Hannibal aluminum-processing plant at the Monroe County Port Authority's Hannibal Industrial Park. No on-site generation confirmed."
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "American Heavy Plate Solutions LLC (a neighboring tenant leasing 9.9 of the 100-acre Hannibal Industrial Park) sued Bitdeer subsidiaries (Erie Creek LLC, Whitetail Creek LLC, Bitdeer Inc.) and the Monroe County Port Authority in the Court of Common Pleas of Monroe County, OH (disclosed in Bitdeer's SEC Form 6-K, Feb 2 2026), seeking declaratory and injunctive relief over a restrictive covenant in AHP's 2018 lease; Bitdeer says it will 'vigorously defend' and that construction/power timing 'may be affected.'",
+      "sourceIndex": 3
     }
   },
   {
@@ -15671,12 +15925,49 @@
         "publisher": "Hut 8 Corp.",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/hut-8-announces-pricing-of-4-25-billion-of-investment-grade-senior-secured-notes-for-beacon-point-data-center-project-302792238.html",
+        "label": "Hut 8 prices $4.25 billion of senior secured notes for Beacon Point data center project",
+        "publisher": "PR Newswire / Hut 8 Corp.",
+        "retrievedAt": "2026-07-08",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.kristv.com/news/local-news/in-your-neighborhood/corpus-christi/calallen/beacon-point-ai-massive-data-center-planned-for-nueces-county",
+        "label": "Beacon Point: massive AI data center planned for Nueces County",
+        "publisher": "KRIS-TV (Corpus Christi)",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://finance.yahoo.com/sectors/technology/articles/ai-data-center-bring-17b-211739130.html",
+        "label": "AI data center to bring $17B investment to Nueces County",
+        "publisher": "Yahoo Finance / Axios",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "1 GW site near Robstown, Nueces County; Phase 1 = a 15-year, 352 MW IT lease. The $9.8B base-term contract value is revenue, not capex (in notes). Delivery targeted Q3 2027. Coordinates are the Robstown area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "1 GW site near Robstown, Nueces County; Phase 1 = a 15-year, 352 MW IT lease. The $9.8B base-term contract value is revenue, not capex (in notes). Delivery targeted Q3 2027. Coordinates are the Robstown area centroid. Hut 8 declined to confirm any tax abatement and the Nueces County Judge said the county's abatement policy was out of date, so none could have been granted -> subsidies honest-zero. investmentUsd records the $4.25B non-recourse project-bond financing for Phase 1 construction (352 MW + substation), distinct from the $9.8B lease contract value; the ~$17B combined Phase 1-2 figure is a projection.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "AEP Texas",
+      "notes": "1,000 MW interconnection agreement with AEP Texas; energization expected Q1 2027. Hut 8 is funding an on-site substation via the $4.25B project bond; no on-site generation disclosed."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling filled once with water trucked from outside Nueces County (~4-7 year refill cycle); no municipal draw for cooling. Municipal use is ~10,000 gal/day domestic only (restrooms/sinks) - not cooling water -> reportedMgd omitted."
+    },
+    "investmentUsd": 4250000000,
+    "jobs": {
+      "notes": "Projected ~1,900 construction and ~230 permanent jobs across Phases 1-2 combined; construction has not started (energization Q1 2027) -> projections, not delivered counts. Honest-zero on the numeric fields.",
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Residents raised concerns at public meetings about water use amid Nueces County Stage 3 restrictions, power demand, and proximity to homes; Corpus Christi officials said they were 'surprised by the announcement.' Hut 8 CEO Asher Genoot publicly defended the project against 'misinformation'; the AA-/higher-rated hyperscale tenant is undisclosed. No litigation as of 2026-07-08.",
+      "sourceIndex": 2
     }
   },
   {
@@ -16049,12 +16340,63 @@
         "publisher": "Virginia Economic Development Partnership",
         "retrievedAt": "2026-07-07",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.vedp.org/press-release/2025-11/cleanarc-caroline",
+        "label": "CleanArc Data Centers invests $3 billion in Caroline County",
+        "publisher": "Virginia Economic Development Partnership",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/cleanarc-gets-green-light-for-600mw-data-center-campus-in-caroline-county-virginia/",
+        "label": "CleanArc gets green light for data center campus in Caroline County, Virginia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanarc-data-centers-breaks-ground-on-900mw-flagship-hyperscale-campus-in-virginia-302621903.html",
+        "label": "CleanArc Data Centers breaks ground on 900MW flagship campus in Virginia",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "900 MW flagship campus in Ruther Glen, Caroline County, phased into the mid-2030s (200 MW online targeted Q3 2026). Distinct operator/parcel from the AWS Mattermeade campus (also Caroline County). Coordinates are the Ruther Glen area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "900 MW flagship campus in Ruther Glen, Caroline County, phased into the mid-2030s (200 MW online targeted Q3 2026). Distinct operator/parcel from the AWS Mattermeade campus (also Caroline County). Coordinates are the Ruther Glen area centroid. investmentUsd records the confirmed $3B first-phase pledge (VEDP); the ~$8.8B full-buildout figure is a projection and is excluded.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Dominion Energy Virginia",
+      "notes": "Dominion Energy Virginia is the sole investor-owned utility serving Caroline County (attribution via SCC territory; not named directly in CleanArc materials). 900 MW phased in three 300 MW stages (2027 / 2030 / 2033-2035); the VA SCC approved a large-load rate class in Nov 2025. CleanArc markets a 'True Additionality' clean-energy model; no confirmed on-site generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The Caroline County performance agreement prohibits potable water for industrial cooling (county water for washing/flushing only); closed-loop recirculation with initial water brought off-site. Not yet operational - no daily-use figure."
+    },
+    "subsidies": [
+      {
+        "program": "Caroline County EDA annual grant - 25% of incremental tax revenue for 15 years (40% for 10 years if the first data hall is operational by Sept 30 2027), capped at 10% of taxable investment",
+        "jurisdiction": "Caroline County, VA",
+        "year": "2025",
+        "sourceIndex": 3
+      },
+      {
+        "program": "Virginia Data Center Retail Sales & Use Tax exemption (eligibility per VEDP; no certified award value)",
+        "jurisdiction": "Commonwealth of Virginia",
+        "year": "2025",
+        "sourceIndex": 2
+      }
+    ],
+    "investmentUsd": 3000000000,
+    "jobs": {
+      "notes": "The performance agreement commits to at least 50 permanent jobs at >=150% of the county average wage - a forward commitment for a not-yet-operational site, not a delivered count; construction is described as 'hundreds' (projection). Honest-zero on the numeric fields.",
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "The Caroline County Board of Supervisors approved the performance agreement 5-1 (Aug 12 2025; lone dissent from Vice-Chair Jeff Sili). Governor Youngkin attended the Nov 20 2025 groundbreaking. No organized community opposition or litigation was found.",
+      "sourceIndex": 3
     }
   },
   {
@@ -16664,12 +17006,55 @@
         "publisher": "GlobeNewswire",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.powerhousedata.com/news/pennsylvania-data-center-partners-and-powerhouse-data-centers-launch-joint-venture-to-build-next-gen-1-35-gw-hyperscale-data-center-campus-in-carlisle-pennsylvania",
+        "label": "PA Data Center Partners and PowerHouse launch 1.35 GW Carlisle JV",
+        "publisher": "PowerHouse Data Centers",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.commondreams.org/news/data-center-pennsylvania-town",
+        "label": "Data center's $14.1M deal to consume 40% of a PA town's excess water",
+        "publisher": "Common Dreams",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.govtech.com/artificial-intelligence/cumberland-county-pa-data-centers-take-new-step-forward",
+        "label": "Cumberland County, PA data centers take new step forward",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://protectcumberlandcountypa.org/middlesex/",
+        "label": "Middlesex Township data center overlay",
+        "publisher": "Protect Cumberland County PA",
+        "retrievedAt": "2026-07-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "'Pennsylvania Digital I' (PAX) in Carlisle, Cumberland County: a ~700-acre, three-campus development delivering 1.35 GW (expandable to 1.8 GW — in notes), each campus with six buildings and a 450 MW substation. The $15B is the project value across all three campuses (in notes). Near-term 300 MW by Q2 2027. Coordinates are the Carlisle area centroid.",
+    "lastUpdated": "2026-07-08",
+    "notes": "'Pennsylvania Digital I' (PAX) in Carlisle, Cumberland County: a ~700-acre, three-campus development delivering 1.35 GW (expandable to 1.8 GW — in notes), each campus with six buildings and a 450 MW substation. The $15B is the project value across all three campuses (in notes). Near-term 300 MW by Q2 2027. Coordinates are the Carlisle area centroid. The $15B figure is the three-campus JV total, not broken out per campus -> investmentUsd omitted. Pennsylvania's data-center sales-tax exemption eligibility is likely but no confirmed award or LERTA designation was found.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "PPL Electric Utilities",
+      "notes": "PPL Electric Utilities will connect the campuses via a new 500 kV-138 kV switching station; 1.35 GW delivered via the PJM grid. No on-site generation confirmed."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Evaporative cooling for peak thermal conditions. A $14.1M agreement with the Middlesex Township Municipal Authority grants access to up to 400,000 gal/day (0.4 MGD) - a contracted ceiling (~2,367 dwelling units), not measured operational use; regulated by PA DEP and the Susquehanna River Basin Commission."
+    },
+    "jobs": {
+      "notes": "Developer projections only for this under-construction site: ~1,400 peak construction trades and a minimum ~450 permanent jobs at full build-out -> honest-zero on the numeric fields.",
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Middlesex Township supervisors voted 3-0 (Ordinance 3-2025, May 30 2025) to create a 694-acre Data Center Overlay District making data centers a by-right use; Protect Cumberland County PA documents organized opposition over water, pollution, utility rates, and private-well impacts (Rep. Barb Gleim questioned utility-bill effects). No litigation as of 2026-07-08.",
+      "sourceIndex": 4
     }
   },
   {
@@ -17024,13 +17409,33 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.bisnow.com/national/news/data-center/provident-powerhouse-partner-on-768-acre-texas-data-center-campus-127465",
+        "label": "Provident, PowerHouse partner on 768-acre Texas data center campus",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://dallasinnovates.com/doe-funded-uta-project-tackles-cooling-costs-in-ai-data-center-boom/",
+        "label": "DOE-funded UTA project tackles cooling costs amid AI data center demand",
+        "publisher": "Dallas Innovates",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "1.8 GW DFW-area campus (Grand Prairie): 24 buildings across three phases with an on-site 1.8 GW switchyard. Grand Prairie spans Dallas/Tarrant/Ellis counties; the campus is in the Ellis County (southern) portion. Coordinates reflect the southern Grand Prairie / Ellis County zone.",
+    "lastUpdated": "2026-07-08",
+    "notes": "1.8 GW DFW-area campus (Grand Prairie): 24 buildings across three phases with an on-site 1.8 GW switchyard. Grand Prairie spans Dallas/Tarrant/Ellis counties; the campus is in the Ellis County (southern) portion. Coordinates reflect the southern Grand Prairie / Ellis County zone. Provident cited 'at least $5B in direct construction impact' over the multi-year build-out (Bisnow) and ~$300M for one 360,000-sq-ft building (Dallas Innovates) - neither a confirmed campus capex pledge -> investmentUsd omitted. Ellis County adopted Chapter 312 abatement guidelines (~Oct 2025, $50M threshold); no executed abatement agreement for this campus was found.",
     "energy": {
       "source": "grid",
-      "notes": "On-site 1.8 GW switchyard."
+      "utility": "Oncor",
+      "notes": "On-site 1.8 GW switchyard; ERCOT approved the first 500 MW tranche. Provident CEO Leon Backes said the company spent 'the past two years working closely with ERCOT and Oncor.' Oncor is Ellis County's incumbent transmission/distribution utility."
+    },
+    "community": {
+      "status": "unknown",
+      "notes": "The site was newly rezoned with all permits secured (Feb 2025); no independent reporting documents community support or opposition specific to this Ellis County campus as of 2026-07-08.",
+      "sourceIndex": 1
     }
   },
   {
