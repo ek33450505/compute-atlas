@@ -89,6 +89,18 @@ export default function HomePage() {
       </div>
 
       {/* ------------------------------------------------------------------ */}
+      {/* Statistics link                                                     */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="mb-6">
+        <Link
+          href="/stats"
+          className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+        >
+          View full statistics →
+        </Link>
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
       {/* Entry points                                                        */}
       {/* ------------------------------------------------------------------ */}
       <div className="mb-12 flex flex-wrap items-center gap-4">

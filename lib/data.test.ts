@@ -6,8 +6,13 @@ import {
   getOperators,
   getStatusCounts,
   getStats,
+  getCivicCoverage,
+  getTopStates,
+  getTopOperators,
+  getAiClassificationCounts,
+  getConfidenceCounts,
 } from "@/lib/data";
-import { facilitySchema } from "@/lib/schema";
+import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 
 describe("getAllFacilities", () => {
   it("returns a non-empty array including known seed ids", () => {
@@ -119,5 +124,153 @@ describe("getStats", () => {
   it("does not expose totalMw (old API is removed)", () => {
     const stats = getStats();
     expect((stats as Record<string, unknown>).totalMw).toBeUndefined();
+  });
+});
+
+describe("getCivicCoverage", () => {
+  it("returns an object with all 6 dimensions", () => {
+    const coverage = getCivicCoverage();
+    expect(Object.keys(coverage).sort()).toEqual(
+      ["community", "energy", "investment", "jobs", "subsidies", "water"]
+    );
+  });
+
+  it("each dimension count is between 0 and total", () => {
+    const total = getAllFacilities().length;
+    const coverage = getCivicCoverage();
+    for (const key of Object.keys(coverage) as (keyof typeof coverage)[]) {
+      expect(coverage[key]).toBeGreaterThanOrEqual(0);
+      expect(coverage[key]).toBeLessThanOrEqual(total);
+    }
+  });
+
+  it("energy count matches manual recomputation", () => {
+    const facilities = getAllFacilities();
+    const expected = facilities.filter(
+      (f) =>
+        !!f.energy &&
+        !!(f.energy.source || f.energy.utility || f.energy.onSiteGenerationMw != null || f.energy.notes)
+    ).length;
+    expect(getCivicCoverage().energy).toBe(expected);
+  });
+
+  it("water count matches manual recomputation", () => {
+    const facilities = getAllFacilities();
+    const expected = facilities.filter(
+      (f) =>
+        !!f.water &&
+        !!(f.water.coolingType || f.water.reportedMgd != null || f.water.notes)
+    ).length;
+    expect(getCivicCoverage().water).toBe(expected);
+  });
+
+  it("subsidies count matches manual recomputation", () => {
+    const facilities = getAllFacilities();
+    const expected = facilities.filter(
+      (f) => Array.isArray(f.subsidies) && f.subsidies.length > 0
+    ).length;
+    expect(getCivicCoverage().subsidies).toBe(expected);
+  });
+
+  it("investment count matches manual recomputation", () => {
+    const facilities = getAllFacilities();
+    const expected = facilities.filter((f) => f.investmentUsd != null).length;
+    expect(getCivicCoverage().investment).toBe(expected);
+  });
+
+  it("jobs count matches manual recomputation", () => {
+    const facilities = getAllFacilities();
+    const expected = facilities.filter(
+      (f) =>
+        !!f.jobs && (f.jobs.construction != null || f.jobs.permanent != null)
+    ).length;
+    expect(getCivicCoverage().jobs).toBe(expected);
+  });
+
+  it("community count matches manual recomputation", () => {
+    const facilities = getAllFacilities();
+    const expected = facilities.filter(
+      (f) =>
+        !!f.community && !!(f.community.status || f.community.notes)
+    ).length;
+    expect(getCivicCoverage().community).toBe(expected);
+  });
+});
+
+describe("getTopStates", () => {
+  it("returns at most n entries", () => {
+    expect(getTopStates(10).length).toBeLessThanOrEqual(10);
+  });
+
+  it("counts are in descending (non-increasing) order", () => {
+    const topStates = getTopStates(10);
+    for (let i = 1; i < topStates.length; i++) {
+      expect(topStates[i].count).toBeLessThanOrEqual(topStates[i - 1].count);
+    }
+  });
+
+  it("each count is at least 1", () => {
+    for (const { count } of getTopStates(10)) {
+      expect(count).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it("sum of all states (n=all) equals total facility count", () => {
+    const facilities = getAllFacilities();
+    const allStates = getTopStates(facilities.length);
+    const sumAll = allStates.reduce((s, { count }) => s + count, 0);
+    expect(sumAll).toBe(facilities.length);
+  });
+});
+
+describe("getTopOperators", () => {
+  it("returns at most n entries", () => {
+    expect(getTopOperators(10).length).toBeLessThanOrEqual(10);
+  });
+
+  it("counts are in descending (non-increasing) order", () => {
+    const topOps = getTopOperators(10);
+    for (let i = 1; i < topOps.length; i++) {
+      expect(topOps[i].count).toBeLessThanOrEqual(topOps[i - 1].count);
+    }
+  });
+
+  it("each count is at least 1", () => {
+    for (const { count } of getTopOperators(10)) {
+      expect(count).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it("sum of all operators (n=all) equals total facility count", () => {
+    const facilities = getAllFacilities();
+    const allOps = getTopOperators(facilities.length);
+    const sumAll = allOps.reduce((s, { count }) => s + count, 0);
+    expect(sumAll).toBe(facilities.length);
+  });
+});
+
+describe("getAiClassificationCounts", () => {
+  it("has exactly the aiClassificationEnum option keys", () => {
+    const counts = getAiClassificationCounts();
+    expect(Object.keys(counts).sort()).toEqual([...aiClassificationEnum.options].sort());
+  });
+
+  it("values sum to total facility count", () => {
+    const counts = getAiClassificationCounts();
+    const sum = Object.values(counts).reduce((a, b) => a + b, 0);
+    expect(sum).toBe(getAllFacilities().length);
+  });
+});
+
+describe("getConfidenceCounts", () => {
+  it("has exactly the confidenceEnum option keys", () => {
+    const counts = getConfidenceCounts();
+    expect(Object.keys(counts).sort()).toEqual([...confidenceEnum.options].sort());
+  });
+
+  it("values sum to total facility count", () => {
+    const counts = getConfidenceCounts();
+    const sum = Object.values(counts).reduce((a, b) => a + b, 0);
+    expect(sum).toBe(getAllFacilities().length);
   });
 });

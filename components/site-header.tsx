@@ -7,6 +7,7 @@ import { Wordmark } from "@/components/wordmark";
 const NAV_LINKS = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
+  { label: "Stats", href: "/stats" },
   { label: "About", href: "/about" },
 ] as const;
 

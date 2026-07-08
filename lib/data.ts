@@ -1,4 +1,4 @@
-import { facilitiesSchema, type Facility } from "@/lib/schema";
+import { facilitiesSchema, type Facility, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import facilitiesRaw from "@/data/facilities.json";
 
@@ -71,6 +71,96 @@ export function getStats(): {
     0
   );
   return { count, states, operationalMw, plannedMw };
+}
+
+// ============================================================
+// Dataset-coverage helpers (used by /stats aggregate page)
+// ============================================================
+
+/**
+ * Per-dimension counts of facilities carrying at least one substantive value.
+ * Each dimension predicate matches the documented coverage counts verified
+ * 2026-07-07 — do not alter the predicates.
+ */
+export interface CivicCoverage {
+  energy: number;
+  water: number;
+  subsidies: number;
+  investment: number;
+  jobs: number;
+  community: number;
+}
+
+/** Returns the count of facilities with at least one sourced value per civic dimension. */
+export function getCivicCoverage(): CivicCoverage {
+  let energy = 0, water = 0, subsidies = 0, investment = 0, jobs = 0, community = 0;
+  for (const f of facilities) {
+    if (!!f.energy && !!(f.energy.source || f.energy.utility || f.energy.onSiteGenerationMw != null || f.energy.notes)) energy++;
+    if (!!f.water && !!(f.water.coolingType || f.water.reportedMgd != null || f.water.notes)) water++;
+    if (Array.isArray(f.subsidies) && f.subsidies.length > 0) subsidies++;
+    if (f.investmentUsd != null) investment++;
+    if (!!f.jobs && (f.jobs.construction != null || f.jobs.permanent != null)) jobs++;
+    if (!!f.community && !!(f.community.status || f.community.notes)) community++;
+  }
+  return { energy, water, subsidies, investment, jobs, community };
+}
+
+/**
+ * Returns the top-N states by facility count, sorted by count desc then state A→Z
+ * (deterministic tie-break).
+ */
+export function getTopStates(n = 10): { state: string; count: number }[] {
+  const stateCounts = new Map<string, number>();
+  for (const f of facilities) {
+    stateCounts.set(f.location.state, (stateCounts.get(f.location.state) ?? 0) + 1);
+  }
+  return [...stateCounts.entries()]
+    .map(([state, count]) => ({ state, count }))
+    .sort((a, b) => b.count - a.count || a.state.localeCompare(b.state))
+    .slice(0, n);
+}
+
+/**
+ * Returns the top-N operators by facility count, sorted by count desc then operator A→Z
+ * (deterministic tie-break).
+ */
+export function getTopOperators(n = 10): { operator: string; count: number }[] {
+  const opCounts = new Map<string, number>();
+  for (const f of facilities) {
+    opCounts.set(f.operator, (opCounts.get(f.operator) ?? 0) + 1);
+  }
+  return [...opCounts.entries()]
+    .map(([operator, count]) => ({ operator, count }))
+    .sort((a, b) => b.count - a.count || a.operator.localeCompare(b.operator))
+    .slice(0, n);
+}
+
+/**
+ * Returns a count per AI classification for all facilities.
+ * Seeds all keys from `aiClassificationEnum.options` at 0 before tallying.
+ */
+export function getAiClassificationCounts(): Record<Facility["aiClassification"], number> {
+  const counts = Object.fromEntries(
+    aiClassificationEnum.options.map((k) => [k, 0])
+  ) as Record<Facility["aiClassification"], number>;
+  for (const f of facilities) {
+    counts[f.aiClassification]++;
+  }
+  return counts;
+}
+
+/**
+ * Returns a count per confidence level for all facilities.
+ * Seeds all keys from `confidenceEnum.options` at 0 before tallying.
+ */
+export function getConfidenceCounts(): Record<Facility["confidence"], number> {
+  const counts = Object.fromEntries(
+    confidenceEnum.options.map((k) => [k, 0])
+  ) as Record<Facility["confidence"], number>;
+  for (const f of facilities) {
+    counts[f.confidence]++;
+  }
+  return counts;
 }
 
 /** Returns the top-N facilities sorted by highest capacity (operational or planned). */

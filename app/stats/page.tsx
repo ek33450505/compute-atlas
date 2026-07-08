@@ -1,0 +1,376 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+import {
+  getStats,
+  getStatusCounts,
+  getCivicCoverage,
+  getAiClassificationCounts,
+  getConfidenceCounts,
+  getTopStates,
+  getTopOperators,
+} from "@/lib/data";
+import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
+import type { Facility } from "@/lib/schema";
+
+export const metadata: Metadata = {
+  title: "Statistics",
+  description:
+    "Coverage and completeness of the Compute Atlas dataset — facilities tracked, lifecycle status, civic-data coverage, and evidence quality across the U.S. AI-datacenter buildout.",
+};
+
+/** Display labels for AI classification enum keys. */
+const AI_CLASSIFICATION_LABELS: Record<Facility["aiClassification"], string> = {
+  confirmed: "Confirmed",
+  likely: "Likely",
+  mixed_use: "Mixed use",
+};
+
+/** Display labels for confidence enum keys. */
+const CONFIDENCE_LABELS: Record<Facility["confidence"], string> = {
+  confirmed: "Confirmed",
+  reported: "Reported",
+  rumored: "Rumored",
+};
+
+/** Ordered civic coverage dimensions with display labels. */
+const COVERAGE_DIMENSIONS = [
+  { key: "energy" as const, label: "Energy" },
+  { key: "water" as const, label: "Water" },
+  { key: "subsidies" as const, label: "Subsidies" },
+  { key: "investment" as const, label: "Investment" },
+  { key: "jobs" as const, label: "Jobs" },
+  { key: "community" as const, label: "Community" },
+];
+
+/**
+ * /stats — aggregate statistics page.
+ * Server component: all data is static at build time.
+ */
+export default function StatsPage() {
+  const stats = getStats();
+  const statusCounts = getStatusCounts();
+  const coverage = getCivicCoverage();
+  const aiCounts = getAiClassificationCounts();
+  const confidenceCounts = getConfidenceCounts();
+  const topStates = getTopStates(10);
+  const topOperators = getTopOperators(10);
+
+  const total = stats.count;
+
+  return (
+    <div
+      data-content-width="4xl"
+      className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16 space-y-12"
+    >
+      {/* ------------------------------------------------------------------ */}
+      {/* Masthead                                                            */}
+      {/* ------------------------------------------------------------------ */}
+      <header className="relative">
+        <div
+          aria-hidden="true"
+          className="graticule pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]"
+        />
+        <div className="relative space-y-4 pb-8">
+          <p className="font-mono text-xs uppercase tracking-widest text-primary">
+            Coverage &amp; completeness · Edition 2026
+          </p>
+          <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
+            The atlas in numbers.
+          </h1>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            These are live aggregate figures recomputed from the dataset as
+            records are added. The atlas is measured by total facilities and
+            coverage — not average completeness — because a
+            source-verified record that says &ldquo;unknown&rdquo; is more
+            honest than a record that guesses.
+          </p>
+        </div>
+        <div className="border-t border-border" />
+      </header>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Survey stats row                                                    */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="flex flex-wrap gap-8 border-b border-border pb-10">
+        <div className="flex flex-col gap-1">
+          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+            {total}
+          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            Sites tracked
+          </span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+            {stats.states}
+          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            States covered
+          </span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+            {(stats.operationalMw / 1000).toFixed(1)} GW
+          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            Operational
+          </span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+            {(stats.plannedMw / 1000).toFixed(0)} GW
+          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            Planned pipeline
+          </span>
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § By status                                                         */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="status-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § By status
+        </p>
+        <h2
+          id="status-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          Lifecycle status
+        </h2>
+        <div className="space-y-4">
+          {STATUS_ORDER.map((status) => {
+            const count = statusCounts[status];
+            const pct = total > 0 ? (count / total) * 100 : 0;
+            return (
+              <div key={status} className="space-y-1.5">
+                <div className="flex items-baseline justify-between gap-2 text-sm">
+                  <span className="text-foreground">
+                    {STATUS_META[status].label}
+                  </span>
+                  <span className="font-mono tabular-nums text-muted-foreground">
+                    {count} &middot; {pct.toFixed(0)}%
+                  </span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    aria-hidden="true"
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${pct.toFixed(2)}%`,
+                      backgroundColor: getStatusColor(status),
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § Data coverage                                                     */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="coverage-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Data coverage
+        </p>
+        <h2
+          id="coverage-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          Civic-data coverage
+        </h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Each figure counts facilities carrying at least one{" "}
+          <strong className="font-medium text-foreground">sourced</strong> value
+          in that dimension — not average completeness. A facility with any
+          documented energy source, utility, or note counts as covered for
+          energy; the same logic applies across all six dimensions.
+        </p>
+        <div className="space-y-4">
+          {COVERAGE_DIMENSIONS.map(({ key, label }) => {
+            const count = coverage[key];
+            const pct = total > 0 ? (count / total) * 100 : 0;
+            return (
+              <div key={key} className="space-y-1.5">
+                <div className="flex items-baseline justify-between gap-2 text-sm">
+                  <span className="text-foreground">{label}</span>
+                  <span className="font-mono tabular-nums text-muted-foreground">
+                    {count} / {total} &middot; {pct.toFixed(0)}%
+                  </span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    aria-hidden="true"
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${pct.toFixed(2)}%`,
+                      backgroundColor: "var(--primary)",
+                      opacity: 0.7,
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § Evidence quality                                                  */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="evidence-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Evidence quality
+        </p>
+        <h2
+          id="evidence-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          Evidence quality
+        </h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          The atlas follows the &ldquo;a source for every record&rdquo; standard
+          — every field traces back to a public source. AI classification and
+          confidence levels make that evidence quality explicit.
+        </p>
+
+        <div className="grid gap-8 sm:grid-cols-2">
+          {/* AI classification */}
+          <div className="space-y-3">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              AI classification
+            </p>
+            <dl className="space-y-2 text-sm">
+              {(Object.keys(AI_CLASSIFICATION_LABELS) as Facility["aiClassification"][]).map(
+                (key) => (
+                  <div key={key} className="flex items-baseline justify-between gap-2">
+                    <dt className="text-foreground">{AI_CLASSIFICATION_LABELS[key]}</dt>
+                    <dd className="font-mono tabular-nums text-muted-foreground">
+                      {aiCounts[key]}
+                    </dd>
+                  </div>
+                )
+              )}
+            </dl>
+          </div>
+
+          {/* Confidence */}
+          <div className="space-y-3">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              Confidence
+            </p>
+            <dl className="space-y-2 text-sm">
+              {(Object.keys(CONFIDENCE_LABELS) as Facility["confidence"][]).map(
+                (key) => (
+                  <div key={key} className="flex items-baseline justify-between gap-2">
+                    <dt className="text-foreground">{CONFIDENCE_LABELS[key]}</dt>
+                    <dd className="font-mono tabular-nums text-muted-foreground">
+                      {confidenceCounts[key]}
+                    </dd>
+                  </div>
+                )
+              )}
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § Geography & Operators (two-column grid)                           */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="grid gap-10 sm:grid-cols-2">
+        {/* § Geography */}
+        <section
+          aria-labelledby="geography-heading"
+          className="space-y-4 border-t border-border pt-10"
+        >
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § Geography
+          </p>
+          <h2
+            id="geography-heading"
+            className="font-display text-2xl text-foreground"
+          >
+            Top states
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {stats.states} state{stats.states !== 1 ? "s" : ""} covered &middot; top 10 by
+            facility count
+          </p>
+          <ul className="space-y-2 text-sm">
+            {topStates.map(({ state, count }) => (
+              <li
+                key={state}
+                className="flex items-baseline justify-between gap-2"
+              >
+                <span className="font-mono uppercase text-foreground">
+                  {state}
+                </span>
+                <span className="font-mono tabular-nums text-muted-foreground">
+                  {count}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* § Operators */}
+        <section
+          aria-labelledby="operators-heading"
+          className="space-y-4 border-t border-border pt-10"
+        >
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § Operators
+          </p>
+          <h2
+            id="operators-heading"
+            className="font-display text-2xl text-foreground"
+          >
+            Top operators
+          </h2>
+          <p className="text-sm text-muted-foreground">Top 10 by facility count</p>
+          <ul className="space-y-2 text-sm">
+            {topOperators.map(({ operator, count }) => (
+              <li
+                key={operator}
+                className="flex items-baseline justify-between gap-2"
+              >
+                <span className="text-foreground truncate min-w-0 pr-2">
+                  {operator}
+                </span>
+                <span className="font-mono tabular-nums text-muted-foreground shrink-0">
+                  {count}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Back navigation                                                     */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="pt-4 border-t border-border">
+        <Link
+          href="/map"
+          className="inline-flex items-center text-sm font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+        >
+          ← Back to the map
+        </Link>
+      </div>
+    </div>
+  );
+}

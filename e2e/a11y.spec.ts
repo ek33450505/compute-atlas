@@ -6,6 +6,7 @@ const ROUTES = [
   "/",
   "/map",
   "/table",
+  "/stats",
   "/about",
   "/facilities/meta-prineville-or",
 ] as const;

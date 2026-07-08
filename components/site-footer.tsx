@@ -5,6 +5,7 @@ import { siteConfig } from "@/lib/site";
 const FOOTER_NAV = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
+  { label: "Statistics", href: "/stats" },
   { label: "About & method", href: "/about" },
 ] as const;
 
