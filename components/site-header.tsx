@@ -3,6 +3,7 @@ import { Code2 } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
 import { Wordmark } from "@/components/wordmark";
+import { MobileNav } from "@/components/mobile-nav";
 
 const NAV_LINKS = [
   { label: "Map", href: "/map" },
@@ -24,8 +25,8 @@ export function SiteHeader() {
           <Wordmark showTagline />
         </Link>
 
-        {/* Primary nav */}
-        <nav aria-label="Primary" className="flex items-center gap-1 ml-2 sm:ml-4">
+        {/* Primary nav — desktop only; MobileNav handles mobile */}
+        <nav aria-label="Primary" className="hidden sm:flex items-center gap-1 ml-2 sm:ml-4">
           {NAV_LINKS.map(({ label, href }) => (
             <Link
               key={href}
@@ -39,6 +40,7 @@ export function SiteHeader() {
 
         {/* Right-side controls */}
         <div className="ml-auto flex items-center gap-1">
+          {/* GitHub icon — desktop only */}
           <a
             href={siteConfig.repoUrl}
             target="_blank"
@@ -48,6 +50,8 @@ export function SiteHeader() {
           >
             <Code2 aria-hidden className="size-4" />
           </a>
+          {/* Mobile menu — hidden on sm+ */}
+          <MobileNav links={NAV_LINKS} />
         </div>
       </div>
     </header>
