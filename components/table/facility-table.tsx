@@ -99,11 +99,15 @@ const columns: ColumnDef<Facility>[] = [
   {
     id: "capacity",
     header: "Capacity",
-    accessorFn: (f) => getFacilityMaxMw(f) ?? -1,
+    // Return undefined (not a -1 sentinel) for no-capacity facilities so that
+    // `sortUndefined: "last"` keeps them at the bottom in BOTH sort directions
+    // — otherwise a descending sort floats the ~89 no-capacity rows to the top.
+    accessorFn: (f) => getFacilityMaxMw(f),
     cell: ({ row }) => (
       <span className="tabular-nums">{formatCapacity(row.original)}</span>
     ),
     sortingFn: capacitySortFn,
+    sortUndefined: "last",
     meta: { align: "right" },
   },
   {
@@ -156,7 +160,12 @@ interface FacilityTableProps {
 }
 
 export function FacilityTable({ facilities }: FacilityTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  // Default view: capacity, largest first. Every column stays user-sortable;
+  // the capacity column's `sortUndefined: "last"` keeps no-capacity rows at the
+  // bottom regardless of direction.
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "capacity", desc: true },
+  ]);
 
   // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table v8's useReactTable returns non-memoizable functions; the React Compiler is not enabled, so this advisory is accepted. Revisit when TanStack adds compiler support.
   const table = useReactTable({

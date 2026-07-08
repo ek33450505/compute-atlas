@@ -218,3 +218,24 @@ describe("FacilityTable — empty state", () => {
     expect(rows).toHaveLength(2);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Default sort — capacity descending, no-capacity last
+// ---------------------------------------------------------------------------
+
+describe("FacilityTable — default sort", () => {
+  it("defaults to capacity descending: largest first, no-capacity last", () => {
+    render(<FacilityTable facilities={fixtures} />);
+    const rows = screen.getAllByRole("row");
+    // rows[0] = header. Beta (1200) > Alpha (150) > Gamma (no capacity).
+    expect(within(rows[1]).getByRole("link")).toHaveTextContent("Beta Farm");
+    expect(within(rows[2]).getByRole("link")).toHaveTextContent("Alpha Center");
+    expect(within(rows[3]).getByRole("link")).toHaveTextContent("Gamma Hub");
+  });
+
+  it("capacity header starts with aria-sort='descending'", () => {
+    render(<FacilityTable facilities={fixtures} />);
+    const capHeader = screen.getByRole("columnheader", { name: /capacity/i });
+    expect(capHeader).toHaveAttribute("aria-sort", "descending");
+  });
+});
