@@ -17,7 +17,10 @@ import { ClusterMarker } from "@/components/map/cluster-marker";
 import { FacilityPopup } from "@/components/map/facility-popup";
 import { MapLegend } from "@/components/map/map-legend";
 import { CompassRose } from "@/components/map/compass-rose";
+import { LocationSearch } from "@/components/map/location-search";
+import { ViewToggle3D } from "@/components/map/view-toggle-3d";
 import type { Facility } from "@/lib/schema";
+import type { GeocodeResult } from "@/lib/geocode";
 
 interface FacilityMapProps {
   facilities: Facility[];
@@ -53,6 +56,8 @@ export function FacilityMap({
   );
   const [zoom, setZoom] = useState<number>(INITIAL_VIEW_STATE.zoom);
   const [bearing, setBearing] = useState<number>(0);
+  const [is3D, setIs3D] = useState<boolean>(false);
+
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
   const mapRef = useRef<MapRef>(null);
@@ -137,7 +142,36 @@ export function FacilityMap({
       pitch: 0,
       duration: reducedMotion ? 0 : 400,
     });
+    setIs3D(false);
   }, [reducedMotion]);
+
+  /** Eases pitch between flat (0°) and tilted (55°) to toggle 3D view. */
+  const handleToggle3D = useCallback(() => {
+    const next = !is3D;
+    setIs3D(next);
+    mapRef.current?.easeTo({ pitch: next ? 55 : 0, duration: reducedMotion ? 0 : 600 });
+  }, [is3D, reducedMotion]);
+
+  /** Flies the map to a geocoded place, capping zoom at 8 to land at state level. */
+  const handleGoToPlace = useCallback(
+    (r: GeocodeResult) => {
+      const map = mapRef.current;
+      if (!map) return;
+      const duration = reducedMotion ? 0 : 800;
+      if (r.bbox) {
+        map.fitBounds(
+          [
+            [r.bbox[0], r.bbox[1]],
+            [r.bbox[2], r.bbox[3]],
+          ],
+          { padding: 60, maxZoom: 8, duration }
+        );
+      } else {
+        map.flyTo({ center: [r.lon, r.lat], zoom: 8, duration });
+      }
+    },
+    [reducedMotion]
+  );
 
   // MapLibre adds role="button" + aria-label="Map marker" to every Marker
   // wrapper div automatically, creating a nested-interactive a11y violation
@@ -150,6 +184,14 @@ export function FacilityMap({
   const handleMapLoad = useCallback(() => {
     const mapEl = mapRef.current?.getContainer();
     if (!mapEl) return;
+
+    // Enable globe projection imperatively here (not in the shared parchment style JSON)
+    // so the flat facility mini-map that reuses the same style is unaffected.
+    try {
+      mapRef.current?.getMap().setProjection({ type: "globe" });
+    } catch {
+      // Globe projection unsupported (older maplibre) — fall back to mercator silently.
+    }
 
     const strip = () => {
       mapEl
@@ -206,7 +248,10 @@ export function FacilityMap({
           attributionControl={false}
           onLoad={handleMapLoad}
           onZoomEnd={(e) => setZoom(e.viewState.zoom)}
-          onMoveEnd={(e) => setBearing(e.viewState.bearing)}
+          onMoveEnd={(e) => {
+            setBearing(e.viewState.bearing);
+            setIs3D(e.viewState.pitch > 5);
+          }}
         >
           {/* Zoom controls — compass arrow hidden (replaced by custom CompassRose below) */}
           <NavigationControl
@@ -275,14 +320,20 @@ export function FacilityMap({
           )}
         </Map>
 
+        {/* Top-left: location search widget */}
+        <div className="absolute top-3 left-3 z-20 max-w-[calc(100%-1rem)]">
+          <LocationSearch onSelect={handleGoToPlace} />
+        </div>
+
         {/*
          * Top-right: custom compass rose, stacked below NavigationControl.
          * NavigationControl (~29 px buttons × 2 = ~70 px) + margin → top-20 (~80 px).
          * Not a MapLibre control — a plain positioned element so it doesn't fight
          * MapLibre's ctrl-group z-index stacking.
          */}
-        <div className="absolute top-20 right-2 z-20">
+        <div className="absolute top-20 right-2 z-20 flex flex-col gap-2">
           <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
+          <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
         </div>
 
         {/* Bottom-left: map legend (unchanged position) */}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { clusterFacilities, lonToX, latToY } from "@/lib/cluster";
+import { clusterFacilities, lonToX, latToY, UNCLUSTER_ZOOM } from "@/lib/cluster";
 import { getAllFacilities } from "@/lib/data";
 import { INITIAL_VIEW_STATE } from "@/lib/map";
 import type { Facility } from "@/lib/schema";
@@ -115,6 +115,36 @@ describe("clusterFacilities", () => {
 
   it("returns an empty array for an empty input", () => {
     expect(clusterFacilities([], 3.4)).toHaveLength(0);
+  });
+
+  // --- UNCLUSTER_ZOOM gate ---
+
+  it("at UNCLUSTER_ZOOM, two nearby facilities that would cluster at low zoom each get their own marker", () => {
+    // Co-located: would always group at low zoom, but must split at UNCLUSTER_ZOOM.
+    const a = makeFacility("aa", 35.0, -90.0);
+    const b = makeFacility("bb", 35.0, -90.0);
+    const clusters = clusterFacilities([a, b], UNCLUSTER_ZOOM, 44);
+    expect(clusters).toHaveLength(2);
+  });
+
+  it("above UNCLUSTER_ZOOM, every cluster has members.length===1 and id===facility.id (no cluster- prefix)", () => {
+    const a = makeFacility("alpha", 35.0, -90.0);
+    const b = makeFacility("beta", 35.0, -90.0);
+    const clusters = clusterFacilities([a, b], UNCLUSTER_ZOOM + 1, 44);
+    expect(clusters).toHaveLength(2);
+    expect(clusters.every((c) => c.members.length === 1)).toBe(true);
+    // ids should be the raw facility ids, not prefixed
+    const ids = clusters.map((c) => c.id).sort();
+    expect(ids).toEqual(["alpha", "beta"]);
+  });
+
+  it("below UNCLUSTER_ZOOM, nearby facilities still group (existing behavior unchanged)", () => {
+    const a = makeFacility("c-fac", 35.0, -90.0);
+    const b = makeFacility("d-fac", 35.0, -90.0);
+    // At zoom 3, co-located facilities always cluster
+    const clusters = clusterFacilities([a, b], 3, 44);
+    expect(clusters).toHaveLength(1);
+    expect(clusters[0].members).toHaveLength(2);
   });
 
   // MIN-SEPARATION INVARIANT: every pair of cluster anchors is ≥ radiusPx apart

@@ -2,6 +2,13 @@ import type { Facility } from "@/lib/schema";
 
 const TILE = 256;
 
+/**
+ * At or above this zoom, clustering is disabled entirely: every facility renders
+ * as its own marker. Chosen so that by the time the viewport shows roughly a
+ * single state (~600 mi across), all individual sites are visible for impact.
+ */
+export const UNCLUSTER_ZOOM = 5.5;
+
 /** Web-Mercator world-pixel X at a given zoom. */
 export function lonToX(lon: number, zoom: number): number {
   return ((lon + 180) / 360) * TILE * 2 ** zoom;
@@ -31,9 +38,21 @@ export interface Cluster {
 export function clusterFacilities(
   facilities: Facility[],
   zoom: number,
-  radiusPx = 44
+  radiusPx = 44,
+  unclusterZoom = UNCLUSTER_ZOOM
 ): Cluster[] {
   const sorted = [...facilities].sort((a, b) => a.id.localeCompare(b.id));
+
+  // Above the uncluster threshold, every facility is its own marker —
+  // no greedy grouping needed. Sorted-by-id order is preserved for determinism.
+  if (zoom >= unclusterZoom) {
+    return sorted.map((f) => ({
+      id: f.id,
+      lon: f.location.lon,
+      lat: f.location.lat,
+      members: [f],
+    }));
+  }
   const clusters: Array<Cluster & { _x: number; _y: number }> = [];
   const r2 = radiusPx * radiusPx;
 
