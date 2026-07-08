@@ -56,7 +56,6 @@ const defaultValues = {
   state: [] as string[],
   operator: [] as string[],
   minMw: 0,
-  q: "",
 };
 
 const defaultSetters = {
@@ -64,7 +63,6 @@ const defaultSetters = {
   setState: vi.fn(),
   setOperator: vi.fn(),
   setMinMw: vi.fn(),
-  setQ: vi.fn(),
 };
 
 function renderSubheader(overrides?: {

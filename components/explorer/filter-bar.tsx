@@ -10,20 +10,12 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
@@ -47,7 +39,6 @@ export interface FilterValues {
   state: string[];
   operator: string[];
   minMw: number;
-  q: string;
 }
 
 export interface FilterSetters {
@@ -55,7 +46,6 @@ export interface FilterSetters {
   setState: (v: string[]) => void;
   setOperator: (v: string[]) => void;
   setMinMw: (v: number) => void;
-  setQ: (v: string) => void;
 }
 
 interface FilterBarProps {
@@ -136,22 +126,95 @@ function FacetedPopover({
 }
 
 // ---------------------------------------------------------------------------
+// CapacityPopover — single-select minimum-capacity popover (mirrors FacetedPopover)
+// ---------------------------------------------------------------------------
+
+interface CapacityPopoverProps {
+  value: number;
+  onChange: (v: number) => void;
+}
+
+function CapacityPopover({ value, onChange }: CapacityPopoverProps) {
+  const [open, setOpen] = useState(false);
+  const active =
+    CAPACITY_OPTIONS.find((o) => Number(o.value) === value) ?? CAPACITY_OPTIONS[0];
+  const isActive = value > 0;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        aria-expanded={open}
+        aria-label={isActive ? `Capacity (minimum ${active.label})` : "Capacity"}
+        className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
+      >
+        Capacity
+        {isActive && (
+          <Badge
+            variant="secondary"
+            className="ml-1 px-1.5 py-0 text-xs leading-tight"
+            aria-hidden="true"
+          >
+            {active.label}
+          </Badge>
+        )}
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-52 p-2"
+        align="start"
+        aria-label="Minimum capacity options"
+      >
+        <fieldset className="border-0 p-0 m-0">
+          <legend className="sr-only">Minimum capacity</legend>
+          <ul role="list" className="space-y-1">
+            {CAPACITY_OPTIONS.map((opt) => {
+              const id = `capacity-${opt.value}`;
+              const checked = Number(opt.value) === value;
+              return (
+                <li key={opt.value} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id={id}
+                    name="min-capacity"
+                    value={opt.value}
+                    checked={checked}
+                    onChange={() => {
+                      onChange(Number(opt.value));
+                      setOpen(false);
+                    }}
+                    className="h-4 w-4 accent-[var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                  />
+                  <Label
+                    htmlFor={id}
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    {opt.label}
+                  </Label>
+                </li>
+              );
+            })}
+          </ul>
+        </fieldset>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // FilterBar
 // ---------------------------------------------------------------------------
 
 export function FilterBar({ facilities, values, setters }: FilterBarProps) {
   const options = getFilterOptions(facilities);
 
-  const { status, state, operator, minMw, q } = values;
-  const { setStatus, setState, setOperator, setMinMw, setQ } = setters;
+  const { status, state, operator, minMw } = values;
+  const { setStatus, setState, setOperator, setMinMw } = setters;
 
   // Count active filters for clear-all aria-label
   const activeCount =
     status.length +
     state.length +
     operator.length +
-    (minMw > 0 ? 1 : 0) +
-    (q.trim().length > 0 ? 1 : 0);
+    (minMw > 0 ? 1 : 0);
 
   const hasActiveFilters = activeCount > 0;
 
@@ -184,7 +247,6 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
     setState([]);
     setOperator([]);
     setMinMw(0);
-    setQ("");
   }
 
   return (
@@ -242,46 +304,8 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
         onToggle={toggleOperator}
       />
 
-      {/* Min capacity select */}
-      <div className="flex items-center gap-1.5">
-        <Label htmlFor="min-capacity-select" className="text-sm whitespace-nowrap">
-          Min capacity
-        </Label>
-        <Select
-          value={String(minMw)}
-          onValueChange={(v) => setMinMw(Number(v))}
-        >
-          <SelectTrigger
-            id="min-capacity-select"
-            className="w-36 h-8 text-sm"
-            aria-label={`Minimum capacity: ${CAPACITY_OPTIONS.find((o) => o.value === String(minMw))?.label ?? "Any"}`}
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {CAPACITY_OPTIONS.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Search input */}
-      <div className="flex items-center gap-1.5">
-        <Label htmlFor="facility-search" className="sr-only">
-          Search facilities
-        </Label>
-        <Input
-          id="facility-search"
-          type="search"
-          placeholder="Search name, operator, city"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          className="h-8 w-52 text-sm"
-        />
-      </div>
+      {/* Capacity popover — single-select minimum */}
+      <CapacityPopover value={minMw} onChange={setMinMw} />
 
       {/* Clear all */}
       {hasActiveFilters && (

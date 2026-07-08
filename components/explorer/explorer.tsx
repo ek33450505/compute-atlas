@@ -63,7 +63,6 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
     "minMw",
     parseAsInteger.withDefault(0)
   );
-  const [q, setQ] = useQueryState("q", parseAsString.withDefault(""));
 
   const searchParams = useSearchParams();
 
@@ -74,9 +73,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
         states: state,
         operators: operator,
         minMw,
-        query: q,
       }),
-    [facilities, status, state, operator, minMw, q]
+    [facilities, status, state, operator, minMw]
   );
 
   // -------------------------------------------------------------------------
@@ -89,8 +87,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
       <div className="flex flex-col h-[calc(100dvh-4rem)]">
         <MapFilterSubheader
           facilities={facilities}
-          values={{ status, state, operator, minMw, q }}
-          setters={{ setStatus, setState, setOperator, setMinMw, setQ }}
+          values={{ status, state, operator, minMw }}
+          setters={{ setStatus, setState, setOperator, setMinMw }}
           filteredCount={filtered.length}
           totalCount={facilities.length}
         />
@@ -124,8 +122,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
         </Link>
         <FilterBar
           facilities={facilities}
-          values={{ status, state, operator, minMw, q }}
-          setters={{ setStatus, setState, setOperator, setMinMw, setQ }}
+          values={{ status, state, operator, minMw }}
+          setters={{ setStatus, setState, setOperator, setMinMw }}
         />
         <p
           role="status"
@@ -148,8 +146,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
     <div className="space-y-4">
       <FilterBar
         facilities={facilities}
-        values={{ status, state, operator, minMw, q }}
-        setters={{ setStatus, setState, setOperator, setMinMw, setQ }}
+        values={{ status, state, operator, minMw }}
+        setters={{ setStatus, setState, setOperator, setMinMw }}
       />
 
       {/* Result count — live region so screen readers announce changes */}

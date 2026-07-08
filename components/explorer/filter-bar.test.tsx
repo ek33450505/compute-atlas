@@ -91,7 +91,6 @@ interface FilterValues {
   state: string[];
   operator: string[];
   minMw: number;
-  q: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -104,7 +103,6 @@ function makeMocks() {
     setState: vi.fn(),
     setOperator: vi.fn(),
     setMinMw: vi.fn(),
-    setQ: vi.fn(),
   };
 }
 
@@ -126,7 +124,6 @@ function ControlledFilterBar({
     state: [],
     operator: [],
     minMw: 0,
-    q: "",
     ...initial,
   });
 
@@ -146,10 +143,6 @@ function ControlledFilterBar({
     setMinMw: (v: number) => {
       setValues((prev) => ({ ...prev, minMw: v }));
       mocks.setMinMw(v);
-    },
-    setQ: (v: string) => {
-      setValues((prev) => ({ ...prev, q: v }));
-      mocks.setQ(v);
     },
   };
 
@@ -252,40 +245,50 @@ describe("FilterBar — Operator facet", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Search input
+// Capacity popover — single-select minimum
 // ---------------------------------------------------------------------------
 
-describe("FilterBar — Search input", () => {
-  it("typing in the search box calls setQ with the typed value", async () => {
+describe("FilterBar — Capacity popover", () => {
+  it("clicking the Capacity trigger opens the popover", async () => {
     const user = userEvent.setup();
-    const { mocks } = renderFilterBar();
+    renderFilterBar();
 
-    const searchInput = screen.getByRole("searchbox", { name: "Search facilities" });
-    await user.type(searchInput, "Alpha");
+    const trigger = screen.getByRole("button", { name: "Capacity" });
+    await user.click(trigger);
 
-    // setQ is called once per character; the last call should be the full string
-    expect(mocks.setQ).toHaveBeenLastCalledWith("Alpha");
+    expect(screen.getByLabelText("Minimum capacity options")).toBeInTheDocument();
   });
-});
 
-// ---------------------------------------------------------------------------
-// Min capacity select
-// ---------------------------------------------------------------------------
-
-describe("FilterBar — Min capacity select", () => {
-  it("selecting a capacity option calls setMinMw with the numeric threshold", async () => {
+  it("selecting ≥100 MW calls setMinMw with 100 and closes the popover", async () => {
     const user = userEvent.setup();
     const { mocks } = renderFilterBar();
 
-    // Open the combobox
-    const combobox = screen.getByRole("combobox");
-    await user.click(combobox);
+    const trigger = screen.getByRole("button", { name: "Capacity" });
+    await user.click(trigger);
 
-    // Select ≥100 MW option
-    const option = await screen.findByRole("option", { name: "≥100 MW" });
-    await user.click(option);
+    const radio = screen.getByLabelText("≥100 MW");
+    await user.click(radio);
 
     expect(mocks.setMinMw).toHaveBeenCalledWith(100);
+    // Popover closes after selection
+    expect(
+      screen.queryByLabelText("Minimum capacity options")
+    ).not.toBeInTheDocument();
+  });
+
+  it("trigger shows active badge when a non-zero capacity is set", () => {
+    renderFilterBar({ minMw: 100 });
+
+    // aria-label reflects the active state
+    expect(
+      screen.getByRole("button", { name: "Capacity (minimum ≥100 MW)" })
+    ).toBeInTheDocument();
+  });
+
+  it("trigger shows no badge when capacity is Any (0)", () => {
+    renderFilterBar({ minMw: 0 });
+
+    expect(screen.getByRole("button", { name: "Capacity" })).toBeInTheDocument();
   });
 });
 
@@ -335,7 +338,6 @@ describe("FilterBar — Clear all", () => {
       state: ["TX"],
       operator: ["BetaInc"],
       minMw: 100,
-      q: "alpha",
     });
 
     const clearBtn = screen.getByRole("button", { name: /clear all/i });
@@ -347,7 +349,6 @@ describe("FilterBar — Clear all", () => {
     expect(mocks.setState).toHaveBeenCalledWith([]);
     expect(mocks.setOperator).toHaveBeenCalledWith([]);
     expect(mocks.setMinMw).toHaveBeenCalledWith(0);
-    expect(mocks.setQ).toHaveBeenCalledWith("");
   });
 
   it("Clear all button disappears after clearing all filters", async () => {
