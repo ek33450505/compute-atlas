@@ -2041,7 +2041,7 @@
   {
     "id": "dc-blox-henrico-county-va",
     "name": "DC Blox Henrico County Campus (withdrawn)",
-    "operator": "DC Blox",
+    "operator": "DC BLOX",
     "status": "cancelled",
     "aiClassification": "likely",
     "confidence": "confirmed",
@@ -5769,7 +5769,7 @@
   {
     "id": "applied-digital-delta-forge-1-la",
     "name": "Applied Digital Delta Forge 1 AI Factory Campus",
-    "operator": "Applied Digital",
+    "operator": "Applied Digital Corporation",
     "status": "under_construction",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
@@ -6847,7 +6847,7 @@
   {
     "id": "aws-boardman-morrow-county-or",
     "name": "Amazon Boardman Exascale Data Center Campus",
-    "operator": "Amazon (AWS)",
+    "operator": "Amazon Web Services",
     "status": "proposed",
     "aiClassification": "likely",
     "confidence": "reported",
@@ -8777,7 +8777,7 @@
   {
     "id": "meta-beaver-dam-wi",
     "name": "Meta Beaver Dam Data Center Campus",
-    "operator": "Meta Platforms",
+    "operator": "Meta",
     "status": "under_construction",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
@@ -9471,7 +9471,7 @@
   {
     "id": "meta-rosemount-mn",
     "name": "Meta Rosemount Data Center",
-    "operator": "Meta Platforms",
+    "operator": "Meta",
     "status": "under_construction",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
@@ -9829,7 +9829,7 @@
   {
     "id": "meta-kansas-city-northland-mo",
     "name": "Meta Kansas City Northland",
-    "operator": "Meta Platforms",
+    "operator": "Meta",
     "status": "operational",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
@@ -9899,7 +9899,7 @@
   {
     "id": "google-project-mica-kc-northland-mo",
     "name": "Google Project Mica",
-    "operator": "Google / Alphabet",
+    "operator": "Google",
     "status": "under_construction",
     "aiClassification": "likely",
     "confidence": "confirmed",
@@ -9978,7 +9978,7 @@
   {
     "id": "google-nebraska-ai-campus-proposed",
     "name": "Google Nebraska AI Campus (proposed)",
-    "operator": "Google / Alphabet",
+    "operator": "Google",
     "status": "proposed",
     "aiClassification": "likely",
     "confidence": "reported",
@@ -10049,7 +10049,7 @@
   {
     "id": "meta-sarpy-springfield-ne",
     "name": "Meta Sarpy Campus (Springfield expansion)",
-    "operator": "Meta Platforms",
+    "operator": "Meta",
     "status": "under_construction",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
@@ -10197,7 +10197,7 @@
   {
     "id": "aws-cumulus-salem-township-pa",
     "name": "AWS Cumulus Data Center Campus, Salem Township",
-    "operator": "Amazon Web Services (AWS)",
+    "operator": "Amazon Web Services",
     "status": "under_construction",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
@@ -10309,7 +10309,7 @@
   {
     "id": "aws-falls-township-pa",
     "name": "Amazon Web Services Innovation Campus, Falls Township",
-    "operator": "Amazon Web Services (AWS)",
+    "operator": "Amazon Web Services",
     "status": "under_construction",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
@@ -11171,7 +11171,7 @@
   {
     "id": "aws-green-new-florence-mo",
     "name": "AWS Project Green Campus",
-    "operator": "Amazon Web Services (AWS)",
+    "operator": "Amazon Web Services",
     "status": "under_construction",
     "aiClassification": "likely",
     "confidence": "confirmed",
@@ -12514,7 +12514,7 @@
   {
     "id": "aws-galaxy-sidney-oh",
     "name": "AWS Project Galaxy — Sidney, OH",
-    "operator": "Amazon Web Services (AWS)",
+    "operator": "Amazon Web Services",
     "status": "under_construction",
     "aiClassification": "likely",
     "confidence": "reported",
@@ -14129,7 +14129,7 @@
   {
     "id": "aws-hobart-in",
     "name": "AWS Hobart Campus",
-    "operator": "Amazon Web Services (AWS)",
+    "operator": "Amazon Web Services",
     "status": "under_construction",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
@@ -14244,7 +14244,7 @@
   {
     "id": "aws-wheatfield-in",
     "name": "AWS Wheatfield Campus (Project Rise)",
-    "operator": "Amazon Web Services (AWS)",
+    "operator": "Amazon Web Services",
     "status": "permitted",
     "aiClassification": "likely",
     "confidence": "confirmed",
