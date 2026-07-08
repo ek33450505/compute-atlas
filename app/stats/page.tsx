@@ -161,8 +161,9 @@ export default function StatsPage() {
 
         {/* Context line */}
         <p className="text-sm text-muted-foreground">
-          Across {water.reportingCount} of {total} facilities that disclose a daily
-          figure &middot; &asymp;{(water.totalMgd * 365 / 1000).toFixed(1)}B gallons/year
+          Across {water.reportingCount} of {total}{" "}
+          facilities that disclose a daily figure &middot; &asymp;
+          {(water.totalMgd * 365 / 1000).toFixed(1)}B gallons/year
         </p>
 
         {/* Honest caveat */}
