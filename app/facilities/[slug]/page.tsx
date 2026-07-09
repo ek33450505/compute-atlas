@@ -261,8 +261,8 @@ export default async function FacilityPage({
       {/* Correction link */}
       <div className="space-y-1">
         <p className="text-sm text-muted-foreground">
-          Compute Atlas is community-correctable. If you have better data,
-          please open an issue.
+          Compute Atlas is meant to be corrected. If you have better data on
+          this facility, please open an issue.
         </p>
         <a
           href={correctionUrl}

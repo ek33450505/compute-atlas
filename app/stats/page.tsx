@@ -87,7 +87,7 @@ export default function StatsPage() {
             These are live aggregate figures recomputed from the dataset as
             records are added. The atlas is measured by total facilities and
             coverage — not average completeness — because a
-            source-verified record that says &ldquo;unknown&rdquo; is more
+            source-cited record that says &ldquo;unknown&rdquo; is more
             honest than a record that guesses.
           </p>
         </div>

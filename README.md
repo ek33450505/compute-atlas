@@ -4,7 +4,7 @@
 [![code: MIT](https://img.shields.io/badge/code-MIT-informational?style=flat)](LICENSE)
 [![data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational?style=flat)](LICENSE-DATA)
 
-A free, neutral, open tracker of AI datacenters across the United States — from proposed and permitted to under construction and operational — with a source for every record.
+An open, source-cited dataset of AI datacenters across the United States — from proposed and permitted to under construction and operational — with a public source behind every record.
 
 **Live site → [www.compute-atlas.com](https://www.compute-atlas.com)**
 
@@ -12,7 +12,7 @@ A free, neutral, open tracker of AI datacenters across the United States — fro
 
 There is no national registry of AI datacenters. "AI datacenter" is not a legal category. Compute Atlas fills that gap by curating a provenance-first dataset of large-scale GPU/accelerator facilities, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries a confidence level and links its sources.
 
-The project also tracks the civic footprint of these facilities — energy, water, subsidies, jobs, and community impact — because that information is public but scattered across county records, water-authority applications, and local reporting, and assembling it is genuinely hard. That difficulty is the problem the atlas exists to solve.
+The project also tracks the civic footprint of these facilities — energy, water, subsidies, jobs, and community impact — because that information is public but scattered across county records, water-authority applications, and local reporting, and assembling it is genuinely hard. That's the gap the atlas tries to close.
 
 Intended audience: journalists, researchers, local officials, and residents.
 

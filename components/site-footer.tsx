@@ -32,7 +32,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-              An open, source-verified survey of U.S. AI-datacenter
+              An open, source-cited survey of U.S. AI-datacenter
               infrastructure and its civic impacts. Not affiliated with any
               corporation or government agency.
             </p>
