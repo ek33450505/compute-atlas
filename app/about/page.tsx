@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "About & method",
   description:
-    "Why Compute Atlas exists, how it is compiled, and the standards behind it — a community-driven, source-verified survey of U.S. AI-datacenter infrastructure.",
+    "Why Compute Atlas exists, how it is compiled, and the standards behind it — a community-driven, source-cited survey of U.S. AI-datacenter infrastructure.",
 };
 
 export default function AboutPage() {
@@ -21,25 +21,24 @@ export default function AboutPage() {
         />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            Manifesto &amp; method · Edition 2026
+            About &amp; method · Edition 2026
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             Public, but scattered.
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Compute Atlas is a community-driven, open, source-verified survey of
-            the AI-datacenter buildout across the United States — where it is
-            being built, by whom, and at what cost to energy, water, and the
-            communities nearby.
+            Compute Atlas is an open, source-cited survey of the AI-datacenter
+            buildout across the United States — where it&rsquo;s being built, by
+            whom, and at what cost to energy, water, and the communities nearby.
           </p>
         </div>
         <div className="border-t border-border" />
       </header>
 
-      {/* ---- Manifesto ---- */}
-      <section aria-labelledby="manifesto-heading" className="space-y-8">
-        <h2 id="manifesto-heading" className="sr-only">
-          Manifesto
+      {/* ---- About & method ---- */}
+      <section aria-labelledby="about-method-heading" className="space-y-8">
+        <h2 id="about-method-heading" className="sr-only">
+          About &amp; method
         </h2>
 
         <div className="space-y-3">
@@ -55,8 +54,8 @@ export default function AboutPage() {
             agreements, water-authority applications, interconnection queues,
             and local news. No one keeps them in one place. Gathering them,
             cross-checking them, and turning them into something comparable is
-            genuinely difficult work. That difficulty is the problem this atlas
-            exists to solve.
+            genuinely difficult work. That&rsquo;s the gap this atlas tries to
+            close.
           </p>
         </div>
 
@@ -289,8 +288,8 @@ export default function AboutPage() {
           Limitations
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Compute Atlas aims to be accurate and honest, but there are real
-          constraints on what the data can reliably represent:
+          There are real constraints on what this data can reliably represent,
+          and it&rsquo;s better to name them plainly:
         </p>
         <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
           <li>

@@ -36,13 +36,13 @@ export default function HomePage() {
           </p>
 
           {/* Headline */}
-          <h1 className="font-display text-5xl leading-[1.03] text-foreground sm:text-6xl max-w-4xl">
-            An open map of America&rsquo;s AI datacenters.
+          <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl max-w-4xl">
+            America&rsquo;s AI datacenters, mapped and sourced.
           </h1>
 
           {/* Subhead */}
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl">
-            The record is public but scattered across a hundred agencies — permits, tax abatements, water filings, interconnection queues. Compute Atlas gathers it into one open, source-cited map, built and kept accurate by the people who use it: anyone can add a facility, correct a figure, or cite a missing source.
+            The record is public but scattered across a hundred agencies — permits, tax abatements, water filings, interconnection queues. Compute Atlas gathers it into a single open, source-cited map, built and kept honest by the people who use it. Anyone can add a facility, correct a figure, or supply a missing source.
           </p>
         </div>
 
