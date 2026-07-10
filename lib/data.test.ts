@@ -257,10 +257,13 @@ describe("getAiClassificationCounts", () => {
     expect(Object.keys(counts).sort()).toEqual([...aiClassificationEnum.options].sort());
   });
 
-  it("values sum to total facility count", () => {
+  it("values sum to data_center facility count (crypto_mining facilities have no aiClassification)", () => {
     const counts = getAiClassificationCounts();
     const sum = Object.values(counts).reduce((a, b) => a + b, 0);
-    expect(sum).toBe(getAllFacilities().length);
+    const dataCenterCount = getAllFacilities().filter(
+      (f) => f.facilityType === "data_center"
+    ).length;
+    expect(sum).toBe(dataCenterCount);
   });
 });
 

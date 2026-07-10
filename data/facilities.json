@@ -19475,5 +19475,258 @@
     ],
     "lastUpdated": "2026-07-09",
     "notes": "950 Fourth Ave N, former paper mill site. Developer reportedly affiliated with PNK Group USA. Conditional use permit application filed with the city April 30, 2026. Scale/investment not yet disclosed. Coordinates are approximate."
+  },
+  {
+    "id": "riot-platforms-rockdale-tx",
+    "name": "Riot Platforms Whinstone Facility",
+    "operator": "Riot Platforms",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.6549,
+      "lon": -97.0025,
+      "city": "Rockdale",
+      "county": "Milam",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "operational": 450,
+      "planned": 750
+    },
+    "investmentUsd": 651000000,
+    "mining": {
+      "coolingType": "unknown",
+      "powerArrangement": "grid"
+    },
+    "sources": [
+      {
+        "url": "https://www.riotplatforms.com/riot-to-acquire-whinstone-creating-a-us-based-industry-leader-in-bitcoin-mining/",
+        "label": "Riot to Acquire Whinstone, Creating a U.S.-Based Industry Leader in Bitcoin Mining",
+        "publisher": "Riot Platforms",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1167419/000107997321000426/ex99x1.htm",
+        "label": "Riot Blockchain Whinstone acquisition closing (SEC filing exhibit)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-07-10",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.greenpeace.org/usa/riot-platforms-the-company-behind-the-most-energy-intensive-bitcoin-mine-in-the-u-s/",
+        "label": "Riot Platforms: The Company Behind the Most Energy-Intensive Bitcoin Mine in the U.S.",
+        "publisher": "Greenpeace USA",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/01/16/3220348/0/en/Riot-Announces-Fee-Simple-Acquisition-of-Land-and-First-Data-Center-Lease-with-AMD-at-the-Rockdale-Site.html",
+        "label": "Riot Announces Fee-Simple Acquisition of Land and First Data Center Lease with AMD at the Rockdale Site",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Acquired by Riot (then Riot Blockchain) from Northern Data AG, deal closed May 26, 2021. Operational capacity figure is date-unstable across sources: a Nov 2024 Greenpeace report cites 450 MW, while a Jan 2026 Riot release describing a new AMD data-center lease references a 700 MW site interconnection tied to site expansion. Recorded here as operational: 450 MW (earlier-confirmed baseline) with planned: 750 MW reflecting the site's AI/HPC-adjacent expansion (AMD lease) as of Jan 2026 \u2014 the site is mid-expansion and figures should be treated as approximate pending a fully reconciled capacity disclosure. Coordinates are Rockdale, TX city-center (not facility-exact) \u2014 no facility-specific coordinates were found in any source this pass.",
+    "community": {
+      "status": "unknown"
+    },
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "bitdeer-rockdale-tx",
+    "name": "Bitdeer Rockdale Facility",
+    "operator": "Bitdeer",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.6549,
+      "lon": -97.0025,
+      "city": "Rockdale",
+      "county": "Milam",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "operational": 170
+    },
+    "mining": {
+      "coolingType": "hydro"
+    },
+    "sources": [
+      {
+        "url": "https://www.datacentermap.com/usa/texas/austin/bitdeer-rockdale-texas/",
+        "label": "Bitdeer Rockdale, Texas",
+        "publisher": "Data Center Map",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://ir.bitdeer.com/news-releases/news-release-details/bitdeer-announces-september-2025-production-and-operations",
+        "label": "Bitdeer Announces September 2025 Production and Operations Update",
+        "publisher": "Bitdeer Technologies Group",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Facility-specific hash rate is not disclosed; only Bitdeer's group-wide self-hosted hash rate (22.3 EH/s as of the Sept 2025 update) is public, so hashRateThPerS is left unknown rather than apportioned. The gem.wiki page for this site is titled 'BitDeer Douglas County facility' \u2014 confirmed as a naming/title error, not a different location; GEM's own page text places the facility near Rockdale, TX (Milam County), consistent with all other sources. Coordinates are Rockdale, TX city-center (not facility-exact).",
+    "community": {
+      "status": "unknown"
+    },
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "marathon-digital-garden-city-tx",
+    "name": "Marathon Digital Garden City Facility",
+    "operator": "Marathon Digital",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.8724,
+      "lon": -101.4849,
+      "city": "Garden City",
+      "county": "Glasscock",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "operational": 200
+    },
+    "investmentUsd": 87300000,
+    "mining": {
+      "powerArrangement": "behind_meter"
+    },
+    "sources": [
+      {
+        "url": "https://ir.applieddigital.com/news-events/press-releases/detail/89/applied-digital-announces-agreement-to-sell-garden-city",
+        "label": "Applied Digital Announces Agreement to Sell Garden City",
+        "publisher": "Applied Digital Investor Relations",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://finance.yahoo.com/news/applied-digital-announces-agreement-sell-120000361.html",
+        "label": "Applied Digital Announces Agreement to Sell Garden City Facility to Marathon Digital",
+        "publisher": "Yahoo Finance",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://theminermag.com/news/2024-03-15/marathon-bitcoin-mining-applied-digital-garden-city-acquire",
+        "label": "Marathon to acquire Applied Digital's Garden City bitcoin mining site",
+        "publisher": "The Miner Mag",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Acquisition from Applied Digital announced March 15, 2024, closed April 2, 2024, for $87.3M. Facility is sited adjacent to a wind farm; power arrangement is predominantly renewable, behind-the-meter. Coordinates are Garden City, TX city-center (not facility-exact).",
+    "community": {
+      "status": "unknown"
+    },
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "lancium-fort-stockton-tx",
+    "name": "Lancium Fort Stockton Clean Campus",
+    "operator": "Lancium",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.894,
+      "lon": -102.879,
+      "city": "Fort Stockton",
+      "county": "Pecos",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "operational": 25,
+      "planned": 325
+    },
+    "mining": {
+      "powerArrangement": "curtailed_renewable"
+    },
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/lancium-breaks-ground-on-first-clean-campus-in-fort-stockton-texas-301377974.html",
+        "label": "Lancium Breaks Ground on First Clean Campus in Fort Stockton, Texas",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/lanciums-fort-stockton-facility-qualifies-as-ercot-controllable-load-resource-301666370.html",
+        "label": "Lancium's Fort Stockton Facility Qualifies as ERCOT Controllable Load Resource",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "ERCOT-qualified Controllable Load Resource (CLR); participates in demand-response/curtailment-avoidance programs and is renewable-paired. A previously-claimed ~110-acre land-area figure could not be independently confirmed this pass and is omitted rather than reported unverified. Coordinates are Fort Stockton, TX city-center (not facility-exact).",
+    "community": {
+      "status": "unknown"
+    },
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "cipher-digital-odessa-tx",
+    "name": "Cipher Digital Odessa Facility",
+    "operator": "Cipher Digital",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.8457,
+      "lon": -102.3676,
+      "city": "Odessa",
+      "county": "Ector",
+      "state": "TX"
+    },
+    "capacityMw": {
+      "operational": 207
+    },
+    "mining": {
+      "hashRateThPerS": 7200000,
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    },
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/cipher-mining-odessa",
+        "label": "Cipher Mining Odessa",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.insidermonkey.com/blog/cipher-mining-inc-nasdaqcifr-q1-2026-earnings-call-transcript-1754845/",
+        "label": "Cipher Mining, Inc. (NASDAQ:CIFR) Q1 2026 Earnings Call Transcript",
+        "publisher": "Insider Monkey",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Company rebranded Cipher Mining \u2192 Cipher Digital after its Q1 2026 earnings call (May 5, 2026), announcing a strategic pivot toward hyperscale AI/HPC hosting. Bitcoin-mining wind-down across the company's sites is planned to complete by July 2027, not immediately \u2014 as of this writing Odessa remains an active bitcoin-mining facility mid-transition. Power arrangement is grid-sourced; company discloses ERCOT Responsive Reserve Service demand-response participation. Coordinates are Odessa, TX city-center (not facility-exact).",
+    "community": {
+      "status": "unknown"
+    },
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
   }
 ]
