@@ -7,7 +7,7 @@ export interface FacilityFeatureProps {
   name: string;
   operator: string;
   status: Status;
-  aiClassification: "confirmed" | "likely" | "mixed_use";
+  aiClassification?: "confirmed" | "likely" | "mixed_use";
   confidence: "confirmed" | "reported" | "rumored";
   state: string;
   capacityPlanned?: number;

@@ -14,6 +14,7 @@ import {
 import { filterFacilities } from "@/lib/filters";
 import { STATUS_ORDER } from "@/lib/status";
 import type { Facility } from "@/lib/schema";
+import { facilityTypeEnum } from "@/lib/schema";
 import { FacilityTable } from "@/components/table/facility-table";
 import { FacilityMap } from "@/components/map/facility-map-dynamic";
 import { FilterBar } from "@/components/explorer/filter-bar";
@@ -59,6 +60,10 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
     "operator",
     parseAsArrayOf(parseAsString).withDefault([])
   );
+  const [facilityType, setFacilityType] = useQueryState(
+    "facilityType",
+    parseAsArrayOf(parseAsStringLiteral(facilityTypeEnum.options)).withDefault([])
+  );
   const [minMw, setMinMw] = useQueryState(
     "minMw",
     parseAsInteger.withDefault(0)
@@ -72,9 +77,10 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
         statuses: status,
         states: state,
         operators: operator,
+        facilityTypes: facilityType,
         minMw,
       }),
-    [facilities, status, state, operator, minMw]
+    [facilities, status, state, operator, facilityType, minMw]
   );
 
   // -------------------------------------------------------------------------
@@ -87,8 +93,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
       <div className="flex flex-col h-[calc(100dvh-4rem)]">
         <MapFilterSubheader
           facilities={facilities}
-          values={{ status, state, operator, minMw }}
-          setters={{ setStatus, setState, setOperator, setMinMw }}
+          values={{ status, state, operator, facilityType, minMw }}
+          setters={{ setStatus, setState, setOperator, setFacilityType, setMinMw }}
           filteredCount={filtered.length}
           totalCount={facilities.length}
         />
@@ -122,8 +128,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
         </Link>
         <FilterBar
           facilities={facilities}
-          values={{ status, state, operator, minMw }}
-          setters={{ setStatus, setState, setOperator, setMinMw }}
+          values={{ status, state, operator, facilityType, minMw }}
+          setters={{ setStatus, setState, setOperator, setFacilityType, setMinMw }}
         />
         <p
           role="status"
@@ -146,8 +152,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
     <div className="space-y-4">
       <FilterBar
         facilities={facilities}
-        values={{ status, state, operator, minMw }}
-        setters={{ setStatus, setState, setOperator, setMinMw }}
+        values={{ status, state, operator, facilityType, minMw }}
+        setters={{ setStatus, setState, setOperator, setFacilityType, setMinMw }}
       />
 
       {/* Result count — live region so screen readers announce changes */}

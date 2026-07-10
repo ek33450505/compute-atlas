@@ -13,12 +13,29 @@ const baseFacility = {
   name: "Test Facility",
   operator: "Test Operator",
   status: "operational" as const,
+  facilityType: "data_center" as const,
   aiClassification: "confirmed" as const,
   confidence: "reported" as const,
   location: {
     lat: 35.0,
     lon: -90.0,
     state: "TN",
+  },
+  sources: [baseSource],
+  lastUpdated: "2026-07-05",
+};
+
+const baseCryptoMiningFacility = {
+  id: "test-mining-facility",
+  name: "Test Mining Facility",
+  operator: "Test Mining Operator",
+  status: "operational" as const,
+  facilityType: "crypto_mining" as const,
+  confidence: "reported" as const,
+  location: {
+    lat: 30.0,
+    lon: -97.0,
+    state: "TX",
   },
   sources: [baseSource],
   lastUpdated: "2026-07-05",
@@ -156,6 +173,72 @@ describe("facilitySchema — civic-impact fields (invalid cases)", () => {
     const result = facilitySchema.safeParse({
       ...baseFacility,
       jobs: { construction: -5 },
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("facilitySchema — crypto_mining branch (happy path)", () => {
+  it("parses a minimal valid crypto_mining record", () => {
+    const result = facilitySchema.safeParse(baseCryptoMiningFacility);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.facilityType).toBe("crypto_mining");
+    }
+  });
+
+  it("aiClassification is optional and omitted for crypto_mining", () => {
+    const result = facilitySchema.safeParse(baseCryptoMiningFacility);
+    expect(result.success).toBe(true);
+    if (result.success && result.data.facilityType === "crypto_mining") {
+      expect(result.data.aiClassification).toBeUndefined();
+    }
+  });
+
+  it("parses a crypto_mining record with mining and environmental fields populated", () => {
+    const result = facilitySchema.safeParse({
+      ...baseCryptoMiningFacility,
+      mining: {
+        hashRateThPerS: 500,
+        hardwareType: "asic",
+        coolingType: "immersion",
+        powerArrangement: "stranded_gas",
+      },
+      environmental: {
+        carbonIntensityProxy: 350,
+        carbonIntensityBasis: "estimated",
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success && result.data.facilityType === "crypto_mining") {
+      expect(result.data.mining?.powerArrangement).toBe("stranded_gas");
+      expect(result.data.environmental?.carbonIntensityBasis).toBe("estimated");
+    }
+  });
+});
+
+describe("facilitySchema — crypto_mining branch (invalid cases)", () => {
+  it("fails when facilityType is missing", () => {
+    const withoutType: Record<string, unknown> = { ...baseCryptoMiningFacility };
+    delete withoutType.facilityType;
+    const result = facilitySchema.safeParse(withoutType);
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when mining.hardwareType is an invalid enum value", () => {
+    const result = facilitySchema.safeParse({
+      ...baseCryptoMiningFacility,
+      mining: { hardwareType: "quantum" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when statusHistory sourceIndex is out of range on the crypto_mining branch", () => {
+    const result = facilitySchema.safeParse({
+      ...baseCryptoMiningFacility,
+      statusHistory: [
+        { status: "operational", date: "2024", sourceIndex: 5 },
+      ],
     });
     expect(result.success).toBe(false);
   });

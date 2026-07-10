@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { filterFacilities, getFilterOptions } from "./filters";
-import type { Facility } from "@/lib/schema";
+import type { Facility, DataCenterFacility } from "@/lib/schema";
 
 function makeFacility(
-  overrides: Partial<Facility> & {
+  overrides: Partial<DataCenterFacility> & {
     id: string;
     name: string;
     operator: string;
@@ -12,9 +12,10 @@ function makeFacility(
     city?: string;
     capacityMw?: Facility["capacityMw"];
   }
-): Facility {
+): DataCenterFacility {
   const { state, city, capacityMw, ...rest } = overrides;
   return {
+    facilityType: "data_center",
     aiClassification: "confirmed",
     confidence: "confirmed",
     location: { lat: 35, lon: -90, state, city },

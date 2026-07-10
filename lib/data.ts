@@ -1,3 +1,4 @@
+import type { z } from "zod";
 import { facilitiesSchema, type Facility, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import facilitiesRaw from "@/data/facilities.json";
@@ -136,15 +137,23 @@ export function getTopOperators(n = 10): { operator: string; count: number }[] {
 }
 
 /**
- * Returns a count per AI classification for all facilities.
+ * Returns a count per AI classification across data-center facilities only.
+ * `aiClassification` is optional on the `crypto_mining` union branch, so
+ * non-data-center facilities (and data-center records that somehow omit it)
+ * are excluded from the tally.
  * Seeds all keys from `aiClassificationEnum.options` at 0 before tallying.
  */
-export function getAiClassificationCounts(): Record<Facility["aiClassification"], number> {
+export function getAiClassificationCounts(): Record<
+  z.infer<typeof aiClassificationEnum>,
+  number
+> {
   const counts = Object.fromEntries(
     aiClassificationEnum.options.map((k) => [k, 0])
-  ) as Record<Facility["aiClassification"], number>;
+  ) as Record<z.infer<typeof aiClassificationEnum>, number>;
   for (const f of facilities) {
-    counts[f.aiClassification]++;
+    if (f.facilityType === "data_center" && f.aiClassification) {
+      counts[f.aiClassification]++;
+    }
   }
   return counts;
 }

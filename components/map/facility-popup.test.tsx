@@ -25,6 +25,7 @@ const fixture: Facility = {
   name: "Test Facility",
   operator: "Test Operator",
   status: "operational",
+  facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "confirmed",
   location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN" },

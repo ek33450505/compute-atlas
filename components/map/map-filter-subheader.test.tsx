@@ -22,6 +22,7 @@ const facilityA: Facility = {
   name: "Alpha Datacenter",
   operator: "AlphaCorp",
   status: "operational",
+  facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "confirmed",
   location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN" },
@@ -36,6 +37,7 @@ const facilityB: Facility = {
   name: "Beta Farm",
   operator: "BetaInc",
   status: "proposed",
+  facilityType: "data_center",
   aiClassification: "likely",
   confidence: "reported",
   location: { lat: 30.0, lon: -97.0, city: "Austin", state: "TX" },
@@ -55,6 +57,7 @@ const defaultValues = {
   status: [] as Facility["status"][],
   state: [] as string[],
   operator: [] as string[],
+  facilityType: [] as Facility["facilityType"][],
   minMw: 0,
 };
 
@@ -62,6 +65,7 @@ const defaultSetters = {
   setStatus: vi.fn(),
   setState: vi.fn(),
   setOperator: vi.fn(),
+  setFacilityType: vi.fn(),
   setMinMw: vi.fn(),
 };
 

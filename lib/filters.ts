@@ -1,11 +1,13 @@
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import type { Facility } from "@/lib/schema";
+import { facilityTypeEnum } from "@/lib/schema";
 import { getFacilityMaxMw } from "@/lib/format";
 
 export interface FacilityFilters {
   statuses?: Status[];
   states?: string[];
   operators?: string[];
+  facilityTypes?: Facility["facilityType"][];
   /** Minimum MW (inclusive). Facilities with no capacity data are excluded when minMw > 0. */
   minMw?: number;
   /** Case-insensitive substring match over name, operator, city, and state. */
@@ -34,6 +36,11 @@ export function filterFacilities(
     // Operators: same membership pattern
     if (f.operators && f.operators.length > 0) {
       if (!f.operators.includes(facility.operator)) return false;
+    }
+
+    // Facility type: same membership pattern
+    if (f.facilityTypes && f.facilityTypes.length > 0) {
+      if (!f.facilityTypes.includes(facility.facilityType)) return false;
     }
 
     // MinMw: exclude facilities with no capacity when minMw > 0
@@ -67,6 +74,8 @@ export interface FilterOptions {
   states: string[];
   /** Unique operator names, sorted A→Z. */
   operators: string[];
+  /** Only facility types present in the dataset, ordered by facilityTypeEnum declaration order. */
+  facilityTypes: Facility["facilityType"][];
   /** Highest MW value across all facilities (0 if none have capacity). */
   maxMw: number;
 }
@@ -81,11 +90,14 @@ export function getFilterOptions(facilities: Facility[]): FilterOptions {
 
   const states = [...new Set(facilities.map((f) => f.location.state))].sort();
   const operators = [...new Set(facilities.map((f) => f.operator))].sort();
+  const facilityTypes = facilityTypeEnum.options.filter((t) =>
+    facilities.some((f) => f.facilityType === t)
+  );
 
   const mwValues = facilities
     .map((f) => getFacilityMaxMw(f))
     .filter((mw): mw is number => mw !== undefined);
   const maxMw = mwValues.length > 0 ? Math.max(...mwValues) : 0;
 
-  return { statuses: presentStatuses, states, operators, maxMw };
+  return { statuses: presentStatuses, states, operators, facilityTypes, maxMw };
 }

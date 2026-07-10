@@ -8,6 +8,7 @@ const FACILITY: Facility = {
   name: "Test Facility",
   operator: "Test Operator",
   status: "operational",
+  facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "reported",
   location: {

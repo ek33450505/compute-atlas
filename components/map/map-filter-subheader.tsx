@@ -27,6 +27,7 @@ function countActiveFilters(values: FilterValues): number {
     values.status.length +
     values.state.length +
     values.operator.length +
+    values.facilityType.length +
     (values.minMw > 0 ? 1 : 0)
   );
 }
@@ -77,6 +78,7 @@ export function MapFilterSubheader({
   if (values.status.length) tableParams.set("status", values.status.join(","));
   if (values.state.length) tableParams.set("state", values.state.join(","));
   if (values.operator.length) tableParams.set("operator", values.operator.join(","));
+  if (values.facilityType.length) tableParams.set("facilityType", values.facilityType.join(","));
   if (values.minMw > 0) tableParams.set("minMw", String(values.minMw));
   const tableQs = tableParams.toString();
   const tableHref = tableQs ? `/table?${tableQs}` : "/table";

@@ -42,8 +42,7 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
       document.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [onClose]);
 
-  const { location, capacityMw, sources, aiClassification, confidence } =
-    facility;
+  const { location, capacityMw, sources, confidence } = facility;
   const firstSource = sources[0];
   const cityState = location.city
     ? `${location.city}, ${location.state}`
@@ -88,10 +87,34 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
         </div>
       )}
 
-      {/* Classification + confidence */}
-      <p className="text-xs text-foreground mb-2 capitalize">
-        {aiClassification.replace("_", " ")} · {confidence}
-      </p>
+      {/* Type-specific detail: AI classification for data centers, mining/environmental
+          signals for crypto-mining facilities. */}
+      {facility.facilityType === "data_center" ? (
+        <p className="text-xs text-foreground mb-2 capitalize">
+          {facility.aiClassification
+            ? `${facility.aiClassification.replace("_", " ")} · ${confidence}`
+            : confidence}
+        </p>
+      ) : (
+        <div className="text-xs text-foreground mb-2 space-y-0.5">
+          {facility.mining?.hashRateThPerS !== undefined && (
+            <p className="tabular-nums">
+              {facility.mining.hashRateThPerS} TH/s
+            </p>
+          )}
+          {facility.mining?.powerArrangement && (
+            <p className="capitalize">
+              {facility.mining.powerArrangement.replace(/_/g, " ")}
+            </p>
+          )}
+          {facility.environmental?.carbonIntensityProxy !== undefined && (
+            <p className="tabular-nums">
+              Carbon proxy: {facility.environmental.carbonIntensityProxy}
+            </p>
+          )}
+          <p className="capitalize">{confidence}</p>
+        </div>
+      )}
 
       {/* Footer links */}
       <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">

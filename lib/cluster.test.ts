@@ -19,6 +19,7 @@ function makeFacility(id: string, lat: number, lon: number): Facility {
     name: id,
     operator: "Test",
     status: "operational",
+    facilityType: "data_center",
     aiClassification: "confirmed",
     confidence: "confirmed",
     location: { lat, lon, state: "TX" },

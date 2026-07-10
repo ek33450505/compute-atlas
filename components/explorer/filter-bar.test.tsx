@@ -26,6 +26,7 @@ const facilityA: Facility = {
   name: "Alpha Datacenter",
   operator: "AlphaCorp",
   status: "operational",
+  facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "confirmed",
   location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN" },
@@ -40,6 +41,7 @@ const facilityB: Facility = {
   name: "Beta Farm",
   operator: "BetaInc",
   status: "proposed",
+  facilityType: "data_center",
   aiClassification: "likely",
   confidence: "reported",
   location: { lat: 30.0, lon: -97.0, city: "Austin", state: "TX" },
@@ -54,6 +56,7 @@ const facilityC: Facility = {
   name: "Gamma Hub",
   operator: "GammaTech",
   status: "under_construction",
+  facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "rumored",
   location: { lat: 38.0, lon: -77.0, city: "Reston", state: "VA" },
@@ -68,6 +71,7 @@ const facilityD: Facility = {
   // Shares operator with A (≥2 states covered by AlphaCorp)
   operator: "AlphaCorp",
   status: "cancelled",
+  facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "confirmed",
   location: { lat: 40.0, lon: -74.0, city: "Newark", state: "NJ" },
@@ -90,6 +94,7 @@ interface FilterValues {
   status: Status[];
   state: string[];
   operator: string[];
+  facilityType: Facility["facilityType"][];
   minMw: number;
 }
 
@@ -102,6 +107,7 @@ function makeMocks() {
     setStatus: vi.fn(),
     setState: vi.fn(),
     setOperator: vi.fn(),
+    setFacilityType: vi.fn(),
     setMinMw: vi.fn(),
   };
 }
@@ -123,6 +129,7 @@ function ControlledFilterBar({
     status: [],
     state: [],
     operator: [],
+    facilityType: [],
     minMw: 0,
     ...initial,
   });
@@ -139,6 +146,10 @@ function ControlledFilterBar({
     setOperator: (v: string[]) => {
       setValues((prev) => ({ ...prev, operator: v }));
       mocks.setOperator(v);
+    },
+    setFacilityType: (v: Facility["facilityType"][]) => {
+      setValues((prev) => ({ ...prev, facilityType: v }));
+      mocks.setFacilityType(v);
     },
     setMinMw: (v: number) => {
       setValues((prev) => ({ ...prev, minMw: v }));
@@ -348,6 +359,7 @@ describe("FilterBar — Clear all", () => {
     expect(mocks.setStatus).toHaveBeenCalledWith([]);
     expect(mocks.setState).toHaveBeenCalledWith([]);
     expect(mocks.setOperator).toHaveBeenCalledWith([]);
+    expect(mocks.setFacilityType).toHaveBeenCalledWith([]);
     expect(mocks.setMinMw).toHaveBeenCalledWith(0);
   });
 

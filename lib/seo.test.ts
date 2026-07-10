@@ -7,6 +7,7 @@ const baseFacility: Facility = {
   name: "Test Datacenter",
   operator: "Acme Corp",
   status: "operational",
+  facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "confirmed",
   location: {

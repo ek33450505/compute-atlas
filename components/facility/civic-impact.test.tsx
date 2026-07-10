@@ -1,15 +1,18 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { CivicImpactSection, hasCivicImpact } from "./civic-impact";
-import type { Facility } from "@/lib/schema";
+import type { DataCenterFacility } from "@/lib/schema";
 
-/** Minimal Facility stub with required fields. */
-function makeFacility(overrides: Partial<Facility> = {}): Facility {
+/** Minimal data-center Facility stub with required fields. */
+function makeFacility(
+  overrides: Partial<DataCenterFacility> = {}
+): DataCenterFacility {
   return {
     id: "test-dc",
     name: "Test Datacenter",
     operator: "Test Corp",
     status: "operational",
+    facilityType: "data_center",
     aiClassification: "confirmed",
     confidence: "confirmed",
     location: { lat: 40.0, lon: -90.0, city: "Springfield", state: "IL" },

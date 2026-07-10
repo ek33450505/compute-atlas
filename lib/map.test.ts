@@ -9,6 +9,7 @@ const facilityFull: Facility = {
   name: "Colossus",
   operator: "xAI",
   status: "operational",
+  facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "confirmed",
   location: {
@@ -35,6 +36,7 @@ const facilityNoCapacity: Facility = {
   name: "Proposed Hub",
   operator: "SomeOperator",
   status: "proposed",
+  facilityType: "data_center",
   aiClassification: "likely",
   confidence: "rumored",
   location: {

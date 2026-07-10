@@ -4,6 +4,7 @@
     "name": "Colossus",
     "operator": "xAI",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -92,6 +93,7 @@
     "name": "Stargate Abilene",
     "operator": "OpenAI / Oracle / Crusoe",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -208,6 +210,7 @@
     "name": "Meta Prineville Data Center Campus",
     "operator": "Meta",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -314,6 +317,7 @@
     "name": "Google The Dalles Data Center Campus",
     "operator": "Google",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -428,6 +432,7 @@
     "name": "Switch CITADEL Campus",
     "operator": "Switch",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -523,6 +528,7 @@
     "name": "Equinix Ashburn Campus (DC1\u2013DC15)",
     "operator": "Equinix",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -610,6 +616,7 @@
     "name": "Meta Hyperion",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -725,6 +732,7 @@
     "name": "Microsoft Mount Pleasant Data Center Campus",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -847,6 +855,7 @@
     "name": "Amazon Project Rainier",
     "operator": "Amazon Web Services",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -967,6 +976,7 @@
     "name": "Meta Eagle Mountain Data Center Campus",
     "operator": "Meta",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -1077,6 +1087,7 @@
     "name": "Stargate Milam County Campus",
     "operator": "OpenAI / SoftBank (SB Energy)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1164,6 +1175,7 @@
     "name": "Vantage Frontier Campus",
     "operator": "Vantage Data Centers (for OpenAI / Oracle)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1262,6 +1274,7 @@
     "name": "Stargate Lighthouse Campus",
     "operator": "Vantage Data Centers (for OpenAI / Oracle)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1364,6 +1377,7 @@
     "name": "Stargate Lordstown Campus",
     "operator": "OpenAI / SoftBank / Oracle",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1472,6 +1486,7 @@
     "name": "Stargate Project Jupiter",
     "operator": "OpenAI / Oracle / STACK Infrastructure",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1566,6 +1581,7 @@
     "name": "Stargate The Barn Campus",
     "operator": "OpenAI / Oracle / Related Digital",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1659,6 +1675,7 @@
     "name": "CoreWeave NEST Campus",
     "operator": "CoreWeave",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1759,6 +1776,7 @@
     "name": "Homer City Energy Campus",
     "operator": "Homer City Redevelopment / Kiewit",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1857,6 +1875,7 @@
     "name": "QTS Eagle Mountain Data Center Campus",
     "operator": "QTS Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -1962,6 +1981,7 @@
     "name": "CoreWeave Lancaster Data Center",
     "operator": "CoreWeave",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -2043,6 +2063,7 @@
     "name": "DC Blox Henrico County Campus (withdrawn)",
     "operator": "DC BLOX",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -2092,6 +2113,7 @@
     "name": "Culpeper Acquisitions Brandy Station Campus (denied)",
     "operator": "Culpeper Acquisitions LLC",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -2139,6 +2161,7 @@
     "name": "Prince William Digital Gateway",
     "operator": "QTS / Compass Datacenters",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -2199,6 +2222,7 @@
     "name": "Amazon Devlin Technology Park",
     "operator": "Amazon Web Services",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -2254,6 +2278,7 @@
     "name": "Microsoft Bristow Data Center Campus (MNZ03)",
     "operator": "Microsoft",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "reported",
     "location": {
@@ -2344,6 +2369,7 @@
     "name": "Iron Mountain White Oak Technology Park Campus",
     "operator": "Iron Mountain",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -2395,6 +2421,7 @@
     "name": "CloudHQ Manassas MCC Campus",
     "operator": "CloudHQ",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -2475,6 +2502,7 @@
     "name": "Vantage Data Centers VA4 Stafford Campus",
     "operator": "Vantage Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -2540,6 +2568,7 @@
     "name": "Aligned Data Centers IAD-04 Frederick",
     "operator": "Aligned Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -2634,6 +2663,7 @@
     "name": "Rowan Digital Infrastructure Frederick Campus (Bauxite I)",
     "operator": "Rowan Digital Infrastructure",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -2707,6 +2737,7 @@
     "name": "Brightseat Tech Park",
     "operator": "Lerner Enterprises / The Tower Companies (Brightseat Associates LLC)",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -2770,6 +2801,7 @@
     "name": "Project Washington (Starwood Digital Ventures)",
     "operator": "Starwood Digital Ventures",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "reported",
     "location": {
@@ -2862,6 +2894,7 @@
     "name": "Monarch Compute Campus",
     "operator": "Nscale",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -2925,6 +2958,7 @@
     "name": "Bedington Campus",
     "operator": "Penzance Management",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -2991,6 +3025,7 @@
     "name": "AWS Calvert County Data Center Campus",
     "operator": "Amazon Web Services",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "reported",
     "location": {
@@ -3050,6 +3085,7 @@
     "name": "TeraWulf Morgantown Generating Station AI Campus",
     "operator": "TeraWulf",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -3119,6 +3155,7 @@
     "name": "Microsoft Douglasville Data Center Campus",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -3224,6 +3261,7 @@
     "name": "DC BLOX Atlanta West (ATL1)",
     "operator": "DC BLOX",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -3306,6 +3344,7 @@
     "name": "Project Sail \u2013 Prologis Data Center Campus",
     "operator": "Prologis",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -3386,6 +3425,7 @@
     "name": "Social Circle Technology Park",
     "operator": "TPA Group (developer; end tenant undisclosed)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -3464,6 +3504,7 @@
     "name": "Amazon Web Services Richmond County Data Center Campus",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -3535,6 +3576,7 @@
     "name": "Digital Realty Moores Chapel Data Center Campus",
     "operator": "Digital Realty",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -3613,6 +3655,7 @@
     "name": "Project Delta Data Center \u2013 Stokes County",
     "operator": "Undisclosed (rezoning applicant: Engineered Land Solutions)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -3701,6 +3744,7 @@
     "name": "Meta Aiken Data Center",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -3766,6 +3810,7 @@
     "name": "Google Ridgeville Data Center (Project Dawson)",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -3836,6 +3881,7 @@
     "name": "Project Tango AI Data Center Campus",
     "operator": "PBA Holdings (end tenant undisclosed)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -3902,6 +3948,7 @@
     "name": "Florida Ecopark AI Data Center Campus",
     "operator": "Stonebridge (via Florida Ecopark LLC; end tenant undisclosed)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -4006,6 +4053,7 @@
     "name": "Google Montgomery County Data Center",
     "operator": "Google",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -4076,6 +4124,7 @@
     "name": "Meta Gallatin Data Center Campus",
     "operator": "Meta",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -4182,6 +4231,7 @@
     "name": "Meta Huntsville Data Center Campus",
     "operator": "Meta",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -4261,6 +4311,7 @@
     "name": "Meta Montgomery Data Center",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -4328,6 +4379,7 @@
     "name": "AWS Project Atlas \u2013 Madison County Campus",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -4400,6 +4452,7 @@
     "name": "xAI Southaven",
     "operator": "xAI",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -4478,6 +4531,7 @@
     "name": "Google West Memphis Data Center Campus",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -4556,6 +4610,7 @@
     "name": "AVAIO Digital Leo Campus",
     "operator": "AVAIO Digital Partners",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -4627,6 +4682,7 @@
     "name": "PowerHouse Data Centers \u2013 Louisville (Camp Ground Road)",
     "operator": "PowerHouse Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -4704,6 +4760,7 @@
     "name": "TenKey LandCo Project Lionsgate \u2013 Franklin Data Center",
     "operator": "TenKey LandCo I LLC",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -4768,6 +4825,7 @@
     "name": "Meta El Paso AI Data Center Campus",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -4848,6 +4906,7 @@
     "name": "Microsoft Pecos Data Center Campus",
     "operator": "Microsoft",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -4909,6 +4968,7 @@
     "name": "Microsoft San Antonio SAT89/SAT90 Data Centers",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -4986,6 +5046,7 @@
     "name": "Riot Platforms Corsicana Facility",
     "operator": "Riot Platforms",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -5080,6 +5141,7 @@
     "name": "CloudBurst San Marcos GigaCenter",
     "operator": "CloudBurst Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -5173,6 +5235,7 @@
     "name": "Galaxy Helios Data Center Campus",
     "operator": "Galaxy Digital",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -5281,6 +5344,7 @@
     "name": "Aligned Data Centers Project Caprock",
     "operator": "Aligned Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -5348,6 +5412,7 @@
     "name": "Google Stillwater Data Center Campus",
     "operator": "Google",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -5442,6 +5507,7 @@
     "name": "Google Muskogee County Data Center Campuses",
     "operator": "Google",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -5528,6 +5594,7 @@
     "name": "Google Pryor Data Center Campus (Mayes County Expansion)",
     "operator": "Google",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -5622,6 +5689,7 @@
     "name": "Amazon Data Center Campuses (Caddo and Bossier Parishes)",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -5695,6 +5763,7 @@
     "name": "Hut 8 River Bend AI Data Center Campus",
     "operator": "Hut 8",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -5784,6 +5853,7 @@
     "name": "Applied Digital Delta Forge 1 AI Factory Campus",
     "operator": "Applied Digital Corporation",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -5860,6 +5930,7 @@
     "name": "Microsoft El Mirage Data Center Campus",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -5931,6 +6002,7 @@
     "name": "Microsoft Goodyear Data Center Campus",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -6006,6 +6078,7 @@
     "name": "Novva Mesa Data Center Campus",
     "operator": "Novva Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -6072,6 +6145,7 @@
     "name": "EdgeCore Mesa Data Center Campus",
     "operator": "EdgeCore Digital Infrastructure",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -6138,6 +6212,7 @@
     "name": "NTT Global Data Centers Mesa \u2014 Pacific Proving Technology Park",
     "operator": "NTT Global Data Centers",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -6204,6 +6279,7 @@
     "name": "Google Redhawk Mesa Data Center Campus",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -6292,6 +6368,7 @@
     "name": "Meta Los Lunas AI Expansion",
     "operator": "Meta (Greater Kudu LLC)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -6367,6 +6444,7 @@
     "name": "Vantage Data Centers NV1",
     "operator": "Vantage Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -6428,6 +6506,7 @@
     "name": "QTS Aurora-Denver Data Center Campus (DEN1)",
     "operator": "QTS (Blackstone)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -6494,6 +6573,7 @@
     "name": "Stratos AI Data Center Campus",
     "operator": "O'Leary Digital",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -6554,6 +6634,7 @@
     "name": "Joule Energy and Data Center Campus",
     "operator": "Joule Capital Partners",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -6620,6 +6701,7 @@
     "name": "Creekstone Energy Delta Gigasite",
     "operator": "Creekstone Energy",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -6697,6 +6779,7 @@
     "name": "Microsoft Malaga Campus",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -6784,6 +6867,7 @@
     "name": "Meta Kuna Data Center",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -6862,6 +6946,7 @@
     "name": "Amazon Boardman Exascale Data Center Campus",
     "operator": "Amazon Web Services",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -6932,6 +7017,7 @@
     "name": "SDC Umatilla Campus",
     "operator": "Sabey Data Centers",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -7014,6 +7100,7 @@
     "name": "Meta Cheyenne Data Center",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -7080,6 +7167,7 @@
     "name": "Microsoft Cheyenne Mega-Campus Expansion",
     "operator": "Microsoft",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -7134,6 +7222,7 @@
     "name": "Big Sky Digital Infrastructure Campus",
     "operator": "Quantica Infrastructure",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -7197,6 +7286,7 @@
     "name": "Stak Energy North Slope Data Center",
     "operator": "Stak Energy",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -7258,6 +7348,7 @@
     "name": "CoreSite Bowers Data Center",
     "operator": "CoreSite",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -7333,6 +7424,7 @@
     "name": "Amazon AWS Gilroy Data Center",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -7428,6 +7520,7 @@
     "name": "CyrusOne AI Data Center at NAS Lemoore",
     "operator": "CyrusOne",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -7500,6 +7593,7 @@
     "name": "Imperial Valley Computer Manufacturing AI Data Center",
     "operator": "Imperial Valley Computer Manufacturing (IVCM)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -7578,6 +7672,7 @@
     "name": "ECL CSC-1 FlexGrid AI Data Center",
     "operator": "ECL",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -7633,6 +7728,7 @@
     "name": "Prime Data Centers SMF02",
     "operator": "Prime Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -7698,6 +7794,7 @@
     "name": "Servpac MTP Building 2",
     "operator": "Servpac",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -7743,6 +7840,7 @@
     "name": "Meta Prometheus",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -7821,6 +7919,7 @@
     "name": "Meta Bowling Green (Project Accordion)",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -7909,6 +8008,7 @@
     "name": "Microsoft Hebron Data Center",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -8011,6 +8111,7 @@
     "name": "Microsoft Heath Data Center",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -8106,6 +8207,7 @@
     "name": "AWS Project Cosmos",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -8186,6 +8288,7 @@
     "name": "Google Fort Wayne Data Center (Project Zodiac)",
     "operator": "Google",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -8273,6 +8376,7 @@
     "name": "Meta Jeffersonville Data Center",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -8353,6 +8457,7 @@
     "name": "Meta Lebanon (Project Domino)",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -8440,6 +8545,7 @@
     "name": "Microsoft La Porte Data Center",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -8509,6 +8615,7 @@
     "name": "Microsoft Granger Data Center",
     "operator": "Microsoft",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "reported",
     "location": {
@@ -8601,6 +8708,7 @@
     "name": "Switch Pyramid Campus",
     "operator": "Switch",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -8718,6 +8826,7 @@
     "name": "Thor Equities Augusta Township Data Center (Form8tion)",
     "operator": "Thor Equities",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -8792,6 +8901,7 @@
     "name": "Meta Beaver Dam Data Center Campus",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -8868,6 +8978,7 @@
     "name": "Microsoft Kenosha Data Center Campus",
     "operator": "Microsoft",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -8935,6 +9046,7 @@
     "name": "Cassville Data Center Campus (Undisclosed Developer)",
     "operator": "Undisclosed (major tech company, NDA not signed)",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -8997,6 +9109,7 @@
     "name": "Edged Chicago Campus \u2014 Aurora (ORD01)",
     "operator": "Edged US",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -9061,6 +9174,7 @@
     "name": "Project Cardinal Data Center Campus",
     "operator": "Pioneer Development LLC",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -9155,6 +9269,7 @@
     "name": "Joliet Technology Center",
     "operator": "HW Technology Park (Hillwood Investment Properties / PowerHouse Data Centers)",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -9223,6 +9338,7 @@
     "name": "Google Cedar Rapids Data Center Campus",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -9334,6 +9450,7 @@
     "name": "QTS Cedar Rapids Data Center Campus",
     "operator": "QTS Data Centers (Blackstone)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -9409,6 +9526,7 @@
     "name": "Microsoft Project Ginger West Data Center",
     "operator": "Microsoft",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -9486,6 +9604,7 @@
     "name": "Meta Rosemount Data Center",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -9566,6 +9685,7 @@
     "name": "Amazon Becker Data Center (Suspended)",
     "operator": "Amazon Web Services",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -9620,6 +9740,7 @@
     "name": "Applied Digital Polaris Forge 1",
     "operator": "Applied Digital Corporation",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -9699,6 +9820,7 @@
     "name": "Applied Digital Polaris Forge 2",
     "operator": "Applied Digital Corporation",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -9762,6 +9884,7 @@
     "name": "Beale Project Pilot (De Soto)",
     "operator": "Beale Infrastructure",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -9844,6 +9967,7 @@
     "name": "Meta Kansas City Northland",
     "operator": "Meta",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -9914,6 +10038,7 @@
     "name": "Google Project Mica",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -9993,6 +10118,7 @@
     "name": "Google Nebraska AI Campus (proposed)",
     "operator": "Google",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -10064,6 +10190,7 @@
     "name": "Meta Sarpy Campus (Springfield expansion)",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -10122,6 +10249,7 @@
     "name": "Nebius AI Factory (Independence)",
     "operator": "Nebius Group",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -10212,6 +10340,7 @@
     "name": "AWS Cumulus Data Center Campus, Salem Township",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -10324,6 +10453,7 @@
     "name": "Amazon Web Services Innovation Campus, Falls Township",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -10386,6 +10516,7 @@
     "name": "Niagara Digital Campus",
     "operator": "Urbacon Data Centre Solutions",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -10467,6 +10598,7 @@
     "name": "9LDG Niagara AI Data Center",
     "operator": "9 Lives Digital Group (9LDG)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -10518,6 +10650,7 @@
     "name": "TeraWulf AI Data Center Campus, Lansing",
     "operator": "TeraWulf / Cayuga Operating Company",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -10590,6 +10723,7 @@
     "name": "Loring LiquidCool Data Center (Green 4 Maine Campus)",
     "operator": "LiquidCool Solutions / Green 4 Maine",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -10650,6 +10784,7 @@
     "name": "Sentinel Data Centers Androscoggin Mill Campus, Jay",
     "operator": "Sentinel Data Centers / JGT2 Redevelopment",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -10736,6 +10871,7 @@
     "name": "NE Edge Millstone Nuclear Data Center",
     "operator": "NE Edge",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -10804,6 +10940,7 @@
     "name": "Andover HPC Data Center (former Newton Airport Site)",
     "operator": "Andover HPC Development",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -10856,6 +10993,7 @@
     "name": "Markley Group One Lowell Data Center",
     "operator": "Markley Group",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -10947,6 +11085,7 @@
     "name": "Wiscasset Data Center (Old Ferry Road Site)",
     "operator": "Unnamed developer (NDA with town)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -11006,6 +11145,7 @@
     "name": "Hanton City Business Park (data center anchor)",
     "operator": "Hanton City Investments LLC",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "reported",
     "location": {
@@ -11060,6 +11200,7 @@
     "name": "Sioux Falls Technology Park (Gemini Data Center)",
     "operator": "Gemini Data Center SD LLC",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -11130,6 +11271,7 @@
     "name": "Applied Digital Deuel County AI Campus",
     "operator": "Applied Digital Corporation",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -11186,6 +11328,7 @@
     "name": "AWS Project Green Campus",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -11302,6 +11445,7 @@
     "name": "Project Matador",
     "operator": "Fermi America",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -11409,6 +11553,7 @@
     "name": "Goodnight Campus",
     "operator": "Google / Crusoe",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -11518,6 +11663,7 @@
     "name": "IREN Horizon \u2014 Childress, TX",
     "operator": "IREN (Iris Energy)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -11621,6 +11767,7 @@
     "name": "IREN Sweetwater Campus",
     "operator": "IREN (Iris Energy)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -11759,6 +11906,7 @@
     "name": "Meta Project Anthem \u2014 Tulsa",
     "operator": "Meta",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -11867,6 +12015,7 @@
     "name": "Nebius Vineland Data Center",
     "operator": "Nebius Group",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -11971,6 +12120,7 @@
     "name": "PowerHouse 95",
     "operator": "PowerHouse Data Centers (American Real Estate Partners / AREP, joint venture with Harrison Street)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -12080,6 +12230,7 @@
     "name": "QTS Bessemer (Project Marvel)",
     "operator": "QTS Data Centers (Blackstone)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -12200,6 +12351,7 @@
     "name": "Justified Data Campus",
     "operator": "TeraWulf",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -12322,6 +12474,7 @@
     "name": "Aligned Data Centers \u2013 Conesville Industrial Park",
     "operator": "Aligned Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -12423,6 +12576,7 @@
     "name": "AVAIO Digital Taurus",
     "operator": "AVAIO Digital Partners",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -12529,6 +12683,7 @@
     "name": "AWS Project Galaxy \u2014 Sidney, OH",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -12631,6 +12786,7 @@
     "name": "Cerebras Oklahoma City Data Center",
     "operator": "Cerebras Systems",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -12720,6 +12876,7 @@
     "name": "Crusoe Warrenton Campus",
     "operator": "Crusoe",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -12835,6 +12992,7 @@
     "name": "DC BLOX Atlanta East Hyperscale Data Center Campus",
     "operator": "DC BLOX",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -12933,6 +13091,7 @@
     "name": "Google Project Louie (Morgan County)",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -13071,6 +13230,7 @@
     "name": "Microsoft Data Center Campus \u2013 Rome, GA",
     "operator": "Microsoft",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -13168,6 +13328,7 @@
     "name": "La Osa Data Center Park",
     "operator": "Vermaland LLC",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -13261,6 +13422,7 @@
     "name": "Google Haskell County Data Center Campus",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -13347,6 +13509,7 @@
     "name": "Google Red Oak Campus",
     "operator": "Google",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -13445,6 +13608,7 @@
     "name": "Google Project BOSC (Lima)",
     "operator": "Google",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -13533,6 +13697,7 @@
     "name": "Project Spring (Sand Springs)",
     "operator": "Google",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -13638,6 +13803,7 @@
     "name": "Google Jackson County Campus",
     "operator": "Google",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -13730,6 +13896,7 @@
     "name": "Google Project Loch",
     "operator": "Google",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -13821,6 +13988,7 @@
     "name": "Google Project Spade Campus",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -13901,6 +14069,7 @@
     "name": "Microsoft Tyrone Campus (Project Rita)",
     "operator": "Microsoft",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -13999,6 +14168,7 @@
     "name": "T5 @ Atlanta IV",
     "operator": "T5 Data Centers",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -14083,6 +14253,7 @@
     "name": "Lambda Chicago EdgeConneX AI Factory",
     "operator": "Lambda",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -14144,6 +14315,7 @@
     "name": "AWS Hobart Campus",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -14259,6 +14431,7 @@
     "name": "AWS Wheatfield Campus (Project Rise)",
     "operator": "Amazon Web Services",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -14338,6 +14511,7 @@
     "name": "Nebius Birmingham AI Factory (BHM01)",
     "operator": "Nebius Group",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -14433,6 +14607,7 @@
     "name": "QTS Dane County Hyperscale Campus (DeForest)",
     "operator": "QTS Data Centers",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -14530,6 +14705,7 @@
     "name": "Menomonie Data Center Campus",
     "operator": "Undisclosed (Balloonist LLC)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -14652,6 +14828,7 @@
     "name": "TeraWulf Muskie Data Campus (EastPark)",
     "operator": "TeraWulf",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -14738,6 +14915,7 @@
     "name": "Compass Datacenters Lauderdale County Hyperscale Campus",
     "operator": "Compass Datacenters",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -14845,6 +15023,7 @@
     "name": "Fluidstack Abernathy AI Campus",
     "operator": "Fluidstack",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -14894,6 +15073,7 @@
     "name": "Gainesville Crossing Digital Campus (GCDC)",
     "operator": "Corscale Data Centers (Patrinely / USAA Real Estate)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -14974,6 +15154,7 @@
     "name": "Project Tembo",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -15040,6 +15221,7 @@
     "name": "STACK NVA Loudoun 144MW Hyperscale Campus",
     "operator": "STACK Infrastructure",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -15082,6 +15264,7 @@
     "name": "Core Scientific Pecos AI Campus",
     "operator": "Core Scientific",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -15142,6 +15325,7 @@
     "name": "Cologix Johnstown AI-Ready Campus",
     "operator": "Cologix",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -15238,6 +15422,7 @@
     "name": "Lambda Kansas City AI Supercomputer",
     "operator": "Lambda",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -15289,6 +15474,7 @@
     "name": "Cielo Montgomery County AI Campus",
     "operator": "Cielo Digital Infrastructure",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -15337,6 +15523,7 @@
     "name": "Meta Altoona Data Center Campus",
     "operator": "Meta",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -15451,6 +15638,7 @@
     "name": "WhiteFiber NC-1 AI Data Center Campus",
     "operator": "WhiteFiber (Bit Digital)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -15529,6 +15717,7 @@
     "name": "AWS Laveen Data Center Campus",
     "operator": "Amazon Web Services",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "reported",
     "location": {
@@ -15566,6 +15755,7 @@
     "name": "Microsoft Fairwater Atlanta (Azure AI Superfactory)",
     "operator": "Microsoft",
     "status": "operational",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -15673,6 +15863,7 @@
     "name": "AWS Mattermeade Tech Campus",
     "operator": "Amazon Web Services",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -15714,6 +15905,7 @@
     "name": "Google Meitner Energy Center",
     "operator": "Google (with Intersect Power)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -15792,6 +15984,7 @@
     "name": "Google Wilbarger County Campus",
     "operator": "Google (with AES)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -15834,6 +16027,7 @@
     "name": "IREN Woods County Campus",
     "operator": "IREN (Iris Energy)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -15876,6 +16070,7 @@
     "name": "Crusoe Victoria AI Factory",
     "operator": "Crusoe (with Blue Energy)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -15919,6 +16114,7 @@
     "name": "Bitdeer Clarington HPC/AI Campus",
     "operator": "Bitdeer",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -15988,6 +16184,7 @@
     "name": "Hut 8 Beacon Point AI Campus",
     "operator": "Hut 8",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16066,6 +16263,7 @@
     "name": "Cipher Black Pearl Campus",
     "operator": "Cipher Mining",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16125,6 +16323,7 @@
     "name": "Cipher Barber Lake Campus",
     "operator": "Cipher Mining",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16165,6 +16364,7 @@
     "name": "CoreWeave Digital Crossroads",
     "operator": "CoreWeave",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16221,6 +16421,7 @@
     "name": "Chirisa Technology Park \u2014 Richmond (Chester)",
     "operator": "PowerHouse Data Centers / Chirisa (Blue Owl JV)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -16286,6 +16487,7 @@
     "name": "Soluna Project Kati",
     "operator": "Soluna Holdings",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -16329,6 +16531,7 @@
     "name": "Lambda Plano AI Data Center (Aligned DFW-04)",
     "operator": "Lambda",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16370,6 +16573,7 @@
     "name": "Tract Caldwell Valley Technology Park",
     "operator": "Tract",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -16413,6 +16617,7 @@
     "name": "QTS Project Blue Hole",
     "operator": "QTS Data Centers (Blackstone)",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -16453,6 +16658,7 @@
     "name": "CleanArc VA1",
     "operator": "CleanArc Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -16552,6 +16758,7 @@
     "name": "QTS Project Eisenhower",
     "operator": "QTS Data Centers (Blackstone)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -16622,6 +16829,7 @@
     "name": "Rowan Project Temple",
     "operator": "Rowan Digital Infrastructure",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16703,6 +16911,7 @@
     "name": "Prologis Project Mila",
     "operator": "Prologis",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -16740,6 +16949,7 @@
     "name": "Raeden Project Taurus",
     "operator": "Raeden",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -16780,6 +16990,7 @@
     "name": "CoreSite DE3",
     "operator": "CoreSite (American Tower)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -16821,6 +17032,7 @@
     "name": "AWS Wallula Gap Campus",
     "operator": "Amazon Web Services",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16874,6 +17086,7 @@
     "name": "Microsoft Victory Logistics District Campus",
     "operator": "Microsoft",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -16911,6 +17124,7 @@
     "name": "Google Project Skyway (Pine Island)",
     "operator": "Google",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -16962,6 +17176,7 @@
     "name": "Microsoft Person County Mega Park",
     "operator": "Microsoft",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -17010,6 +17225,7 @@
     "name": "PowerHouse Charlotte Campus",
     "operator": "PowerHouse Data Centers (AREP)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -17051,6 +17267,7 @@
     "name": "Natelli New Hill Digital Campus",
     "operator": "Natelli Holdings",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -17091,6 +17308,7 @@
     "name": "ImpactData Greensboro",
     "operator": "ImpactData",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -17131,6 +17349,7 @@
     "name": "Crane PDX01",
     "operator": "Crane Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -17196,6 +17415,7 @@
     "name": "STACK Hillsboro Campus",
     "operator": "STACK Infrastructure",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -17236,6 +17456,7 @@
     "name": "PAX \u2014 Pennsylvania Digital I",
     "operator": "PowerHouse Data Centers / Pennsylvania Data Center Partners",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -17320,6 +17541,7 @@
     "name": "T5 Chicago IV (CHI IV)",
     "operator": "T5 Data Centers",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -17364,6 +17586,7 @@
     "name": "Equinix CH8 Minooka",
     "operator": "Equinix",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -17401,6 +17624,7 @@
     "name": "Metrobloks Liberty Campus",
     "operator": "Metrobloks (Lincoln Property Company)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -17442,6 +17666,7 @@
     "name": "Cloverleaf Troy Campus",
     "operator": "Cloverleaf Infrastructure",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -17482,6 +17707,7 @@
     "name": "Patmos KC Star Building Campus",
     "operator": "Patmos Hosting",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -17522,6 +17748,7 @@
     "name": "Google Winding Woods Campus",
     "operator": "Google",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -17560,6 +17787,7 @@
     "name": "Ranalli Lysander Data Center",
     "operator": "Ranalli",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "rumored",
     "location": {
@@ -17600,6 +17828,7 @@
     "name": "Aligned PHX-13",
     "operator": "Aligned Data Centers",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -17673,6 +17902,7 @@
     "name": "PowerHouse Grand Prairie Campus",
     "operator": "PowerHouse Data Centers / Provident",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -17734,6 +17964,7 @@
     "name": "Compass Statesville Campus",
     "operator": "Compass Datacenters",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -17785,6 +18016,7 @@
     "name": "DataBank Project Indo",
     "operator": "DataBank",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -17827,6 +18059,7 @@
     "name": "Riverview Innovation & Technology Campus",
     "operator": "Riverview Innovation & Technology Campus",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -17915,6 +18148,7 @@
     "name": "Luckett Road Data Centers (Fremont Peak Properties)",
     "operator": "Fremont Peak Properties LLC (Beale Infrastructure)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18000,6 +18234,7 @@
     "name": "Project Hazelnut",
     "operator": "NorthPoint Development (NP Hazleton Holdings 1 LLC)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "reported",
     "location": {
@@ -18075,6 +18310,7 @@
     "name": "Sentinel East Whiteland Data Center",
     "operator": "Sentinel Data Centers",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18116,6 +18352,7 @@
     "name": "Rural Hall Data Center (The Drox Group)",
     "operator": "The Drox Group",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18157,6 +18394,7 @@
     "name": "Project Boulder",
     "operator": "Eagle Rock Partners",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18188,6 +18426,7 @@
     "name": "A1 Data Center Campus",
     "operator": "A1 Data Center",
     "status": "cancelled",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18230,6 +18469,7 @@
     "name": "Sabey Decatur Technology Park",
     "operator": "Sabey Data Centers",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -18265,6 +18505,7 @@
     "name": "DC BLOX Warren Township Data Center",
     "operator": "DC BLOX",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -18301,6 +18542,7 @@
     "name": "Project Flex",
     "operator": "Verrus (Sidewalk Infrastructure Partners)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18333,6 +18575,7 @@
     "name": "Project Cannoli",
     "operator": "Google (via Panattoni Development Co.)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -18372,6 +18615,7 @@
     "name": "Project Blue",
     "operator": "Beale Infrastructure (AWS confirmed end-customer)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -18406,6 +18650,7 @@
     "name": "Project Baccara",
     "operator": "Takanock, LLC",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -18451,6 +18696,7 @@
     "name": "White Oak Technology Park",
     "operator": "Trammell Crow Company (CBRE subsidiary)",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "mixed_use",
     "confidence": "confirmed",
     "location": {
@@ -18479,6 +18725,7 @@
     "name": "Whitetail Creek Data Center",
     "operator": "Bitdeer (via subsidiary Whitetail Creek LLC)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18510,6 +18757,7 @@
     "name": "Project Aquila",
     "operator": "RCM Hill, LLC",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -18544,6 +18792,7 @@
     "name": "Comanche Circle",
     "operator": "Sailfish Digital Ventures (SDV)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18583,6 +18832,7 @@
     "name": "Fort Spunky",
     "operator": "Pacifico Energy",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18624,6 +18874,7 @@
     "name": "GW Ranch",
     "operator": "Pacifico Energy (data center tenant unidentified)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "rumored",
     "location": {
@@ -18661,6 +18912,7 @@
     "name": "Texas Critical Data Centers (TCDC)",
     "operator": "Sharon AI + New Era Energy & Digital (joint venture)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -18690,6 +18942,7 @@
     "name": "CalEthos Lithium Valley Data Center Campus",
     "operator": "CalEthos, Inc.",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18721,6 +18974,7 @@
     "name": "Project Clydesdale",
     "operator": "Beale Infrastructure (end-user unnamed)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "confirmed",
     "location": {
@@ -18757,6 +19011,7 @@
     "name": "Core Scientific Muskogee Campus",
     "operator": "Core Scientific (CoreWeave is anchor customer)",
     "status": "under_construction",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "confirmed",
     "location": {
@@ -18802,6 +19057,7 @@
     "name": "Beale Infrastructure Gardner Campus",
     "operator": "Beale Infrastructure",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18834,6 +19090,7 @@
     "name": "Tuckahoe Technology Park",
     "operator": "Tract",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18871,6 +19128,7 @@
     "name": "PowerHouse Caldwell County Data Center",
     "operator": "PowerHouse Data Centers",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18910,6 +19168,7 @@
     "name": "QTS Clinton Data Center Campus",
     "operator": "QTS Data Centers",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18944,6 +19203,7 @@
     "name": "CyrusOne Dugway Proving Ground Data Center",
     "operator": "CyrusOne (in exclusive negotiations with the US Army)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -18978,6 +19238,7 @@
     "name": "Prologis Silver Creek Valley Road Data Center",
     "operator": "Prologis",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -19008,6 +19269,7 @@
     "name": "Project Gravity",
     "operator": "Archbald 25 Developer LLC",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -19042,6 +19304,7 @@
     "name": "Wildcat Ridge AI Data Center Campus",
     "operator": "Cornell Realty Management",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "confirmed",
     "confidence": "reported",
     "location": {
@@ -19079,6 +19342,7 @@
     "name": "Triboro Industrial Park / Triboro Commerce Park",
     "operator": "Ercor Triboro LLC (Sansone Group)",
     "status": "permitted",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -19106,6 +19370,7 @@
     "name": "Project Shirley",
     "operator": "Sentinel Data Centers",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -19146,6 +19411,7 @@
     "name": "Nobles County Powered Data Park",
     "operator": "Geronimo Power (Brookfield Asset Management subsidiary)",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -19187,6 +19453,7 @@
     "name": "Wisconsin Rapids Data Center",
     "operator": "PCH WI Holdings LLC",
     "status": "proposed",
+    "facilityType": "data_center",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {

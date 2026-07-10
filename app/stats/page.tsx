@@ -15,6 +15,7 @@ import {
 } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import type { Facility } from "@/lib/schema";
+import { aiClassificationEnum } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Statistics",
@@ -23,7 +24,10 @@ export const metadata: Metadata = {
 };
 
 /** Display labels for AI classification enum keys. */
-const AI_CLASSIFICATION_LABELS: Record<Facility["aiClassification"], string> = {
+const AI_CLASSIFICATION_LABELS: Record<
+  (typeof aiClassificationEnum.options)[number],
+  string
+> = {
   confirmed: "Confirmed",
   likely: "Likely",
   mixed_use: "Mixed use",
@@ -351,7 +355,9 @@ export default function StatsPage() {
               AI classification
             </p>
             <dl className="space-y-2 text-sm">
-              {(Object.keys(AI_CLASSIFICATION_LABELS) as Facility["aiClassification"][]).map(
+              {(
+                Object.keys(AI_CLASSIFICATION_LABELS) as (typeof aiClassificationEnum.options)[number][]
+              ).map(
                 (key) => (
                   <div key={key} className="flex items-baseline justify-between gap-2">
                     <dt className="text-foreground">{AI_CLASSIFICATION_LABELS[key]}</dt>

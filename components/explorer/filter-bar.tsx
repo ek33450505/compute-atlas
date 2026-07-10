@@ -6,6 +6,15 @@ import { STATUS_ORDER, STATUS_META } from "@/lib/status";
 import { getFilterOptions } from "@/lib/filters";
 import { StatusBadge } from "@/components/status-badge";
 import type { Facility } from "@/lib/schema";
+
+// ---------------------------------------------------------------------------
+// Facility-type labels
+// ---------------------------------------------------------------------------
+
+const FACILITY_TYPE_LABELS: Record<Facility["facilityType"], string> = {
+  data_center: "Data center",
+  crypto_mining: "Crypto mining",
+};
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,6 +47,7 @@ export interface FilterValues {
   status: Status[];
   state: string[];
   operator: string[];
+  facilityType: Facility["facilityType"][];
   minMw: number;
 }
 
@@ -45,6 +55,7 @@ export interface FilterSetters {
   setStatus: (v: Status[]) => void;
   setState: (v: string[]) => void;
   setOperator: (v: string[]) => void;
+  setFacilityType: (v: Facility["facilityType"][]) => void;
   setMinMw: (v: number) => void;
 }
 
@@ -63,6 +74,8 @@ interface FacetedPopoverProps {
   options: string[];
   selected: string[];
   onToggle: (value: string) => void;
+  /** Optional display-label override per option value (defaults to the raw value). */
+  getOptionLabel?: (value: string) => string;
 }
 
 function FacetedPopover({
@@ -70,6 +83,7 @@ function FacetedPopover({
   options,
   selected,
   onToggle,
+  getOptionLabel,
 }: FacetedPopoverProps) {
   const [open, setOpen] = useState(false);
   const count = selected.length;
@@ -113,7 +127,7 @@ function FacetedPopover({
                     htmlFor={id}
                     className="text-sm font-normal cursor-pointer truncate"
                   >
-                    {opt}
+                    {getOptionLabel ? getOptionLabel(opt) : opt}
                   </Label>
                 </li>
               );
@@ -206,14 +220,15 @@ function CapacityPopover({ value, onChange }: CapacityPopoverProps) {
 export function FilterBar({ facilities, values, setters }: FilterBarProps) {
   const options = getFilterOptions(facilities);
 
-  const { status, state, operator, minMw } = values;
-  const { setStatus, setState, setOperator, setMinMw } = setters;
+  const { status, state, operator, facilityType, minMw } = values;
+  const { setStatus, setState, setOperator, setFacilityType, setMinMw } = setters;
 
   // Count active filters for clear-all aria-label
   const activeCount =
     status.length +
     state.length +
     operator.length +
+    facilityType.length +
     (minMw > 0 ? 1 : 0);
 
   const hasActiveFilters = activeCount > 0;
@@ -242,10 +257,20 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
     }
   }
 
+  function toggleFacilityType(t: string) {
+    const typed = t as Facility["facilityType"];
+    if (facilityType.includes(typed)) {
+      setFacilityType(facilityType.filter((x) => x !== typed));
+    } else {
+      setFacilityType([...facilityType, typed]);
+    }
+  }
+
   function clearAll() {
     setStatus([]);
     setState([]);
     setOperator([]);
+    setFacilityType([]);
     setMinMw(0);
   }
 
@@ -302,6 +327,15 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
         options={options.operators}
         selected={operator}
         onToggle={toggleOperator}
+      />
+
+      {/* Facility type facet popover */}
+      <FacetedPopover
+        label="Type"
+        options={options.facilityTypes}
+        selected={facilityType}
+        onToggle={toggleFacilityType}
+        getOptionLabel={(v) => FACILITY_TYPE_LABELS[v as Facility["facilityType"]] ?? v}
       />
 
       {/* Capacity popover — single-select minimum */}

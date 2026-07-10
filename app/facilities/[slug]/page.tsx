@@ -117,10 +117,12 @@ export default async function FacilityPage({
         <p className="text-base text-muted-foreground">{facility.operator}</p>
         <div className="flex flex-wrap items-center gap-2 pt-1">
           <StatusBadge status={facility.status} className="text-base" />
-          <Badge variant="outline">
-            {AI_CLASSIFICATION_LABELS[facility.aiClassification] ??
-              facility.aiClassification}
-          </Badge>
+          {facility.aiClassification && (
+            <Badge variant="outline">
+              {AI_CLASSIFICATION_LABELS[facility.aiClassification] ??
+                facility.aiClassification}
+            </Badge>
+          )}
           <Badge variant="outline">
             {CONFIDENCE_LABELS[facility.confidence] ?? facility.confidence}
           </Badge>
