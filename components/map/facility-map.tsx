@@ -6,11 +6,19 @@ import Map, {
   Popup,
   NavigationControl,
   ScaleControl,
+  Source,
+  Layer,
   type MapRef,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import { BASEMAP_STYLE_URL, INITIAL_VIEW_STATE } from "@/lib/map";
+import {
+  BASEMAP_STYLE_URL,
+  INITIAL_VIEW_STATE,
+  SATELLITE_TILE_URL,
+  SATELLITE_ATTRIBUTION,
+  SATELLITE_MAX_ZOOM,
+} from "@/lib/map";
 import { clusterFacilities, type Cluster } from "@/lib/cluster";
 import { FacilityMarker } from "@/components/map/facility-marker";
 import { ClusterMarker } from "@/components/map/cluster-marker";
@@ -19,6 +27,7 @@ import { MapLegend } from "@/components/map/map-legend";
 import { CompassRose } from "@/components/map/compass-rose";
 import { LocationSearch } from "@/components/map/location-search";
 import { ViewToggle3D } from "@/components/map/view-toggle-3d";
+import { BasemapToggle } from "@/components/map/basemap-toggle";
 import type { Facility } from "@/lib/schema";
 import type { GeocodeResult } from "@/lib/geocode";
 
@@ -57,6 +66,7 @@ export function FacilityMap({
   const [zoom, setZoom] = useState<number>(INITIAL_VIEW_STATE.zoom);
   const [bearing, setBearing] = useState<number>(0);
   const [is3D, setIs3D] = useState<boolean>(false);
+  const [isSatellite, setIsSatellite] = useState<boolean>(false);
 
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
@@ -262,6 +272,26 @@ export function FacilityMap({
           {/* Imperial scale bar — themed to parchment/ink via globals.css */}
           <ScaleControl position="bottom-right" unit="imperial" />
 
+          {/* Esri World Imagery satellite raster, toggled over the vector basemap.
+              Added as a layer (NOT a mapStyle swap) so the globe projection set in
+              handleMapLoad and the DOM markers persist. Sits above the parchment
+              style layers; hidden via layout.visibility unless satellite mode is on. */}
+          <Source
+            id="esri-satellite"
+            type="raster"
+            tiles={[SATELLITE_TILE_URL]}
+            tileSize={256}
+            maxzoom={SATELLITE_MAX_ZOOM}
+            attribution={SATELLITE_ATTRIBUTION}
+          >
+            <Layer
+              id="esri-satellite-layer"
+              type="raster"
+              layout={{ visibility: isSatellite ? "visible" : "none" }}
+              paint={{ "raster-fade-duration": 0 }}
+            />
+          </Source>
+
           {clusters.map((cluster) => {
             if (cluster.members.length === 1) {
               const facility = cluster.members[0];
@@ -334,6 +364,10 @@ export function FacilityMap({
         <div className="absolute top-20 right-2 z-20 flex flex-col gap-2">
           <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
           <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
+          <BasemapToggle
+            isSatellite={isSatellite}
+            onToggle={() => setIsSatellite((s) => !s)}
+          />
         </div>
 
         {/* Bottom-left: map legend (unchanged position) */}
@@ -344,33 +378,48 @@ export function FacilityMap({
          * beneath the MapLibre ScaleControl. Inline text links are EXEMPT from
          * WCAG 2.5.8 target-size — these are inline flow links, not interactive controls.
          */}
-        <p className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm">
-          <a
-            href="https://openfreemap.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-foreground"
-          >
-            OpenFreeMap
-          </a>{" "}
-          <a
-            href="https://www.openmaptiles.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-foreground"
-          >
-            © OpenMapTiles
-          </a>{" "}
-          Data from{" "}
-          <a
-            href="https://www.openstreetmap.org/copyright"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-foreground"
-          >
-            OpenStreetMap
-          </a>
-        </p>
+        {isSatellite ? (
+          <p className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm">
+            Imagery ©{" "}
+            <a
+              href="https://www.esri.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              Esri
+            </a>
+            , Vantor, Earthstar Geographics
+          </p>
+        ) : (
+          <p className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm">
+            <a
+              href="https://openfreemap.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              OpenFreeMap
+            </a>{" "}
+            <a
+              href="https://www.openmaptiles.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              © OpenMapTiles
+            </a>{" "}
+            Data from{" "}
+            <a
+              href="https://www.openstreetmap.org/copyright"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              OpenStreetMap
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );

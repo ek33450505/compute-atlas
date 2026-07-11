@@ -25,6 +25,23 @@ export const INITIAL_VIEW_STATE = {
 export const BASEMAP_STYLE_URL = "/basemap/parchment.json";
 
 /**
+ * Esri World Imagery — keyless raster satellite basemap for the map's
+ * streets↔satellite toggle. Sub-meter imagery in most US areas down to ~z19.
+ * Tile path is /tile/{z}/{y}/{x} (level/row/col), which maps directly to
+ * MapLibre's {z}/{y}/{x} raster template. No API key; attribution required
+ * by Esri's ToS. The legacy services.arcgisonline.com endpoint is the
+ * community-standard keyless access path.
+ */
+export const SATELLITE_TILE_URL =
+  "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+
+/** Live MapServer copyrightText (Maxar rebranded to Vantor in 2025). */
+export const SATELLITE_ATTRIBUTION = "Esri, Vantor, Earthstar Geographics";
+
+/** Cap native tile requests at z19 (sub-meter ceiling); MapLibre oversamples above, avoiding z20+ 404 gaps in rural areas. */
+export const SATELLITE_MAX_ZOOM = 19;
+
+/**
  * Builds a descriptive accessible label for a facility map marker.
  * Format: "Name, Operator — City, ST — Type — Status — N MW [operational|planned]"
  * Capacity segment is omitted when capacityMw is not present.
