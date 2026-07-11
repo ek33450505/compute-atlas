@@ -21,19 +21,32 @@ export const metadata: Metadata = {
  * /operators — index of all tracked operators. Static server component.
  *
  * Links to /operators/[operator] for each operator with at least one tracked
- * facility, sorted by facility count desc (tie-break: name A→Z).
+ * facility, sorted by total capacity (operational + planned) desc — many top
+ * operators are planned-only buildouts, so operational alone would bury them
+ * (tie-break: facility count desc, then name A→Z). Operators with zero
+ * disclosed capacity are split into a collapsed <details> toggle below the
+ * main grid rather than diluting it.
  */
 export default function OperatorsIndexPage() {
   const rows = getOperators()
-    .map((name) => ({
-      name,
-      slug: operatorSlug(name),
-      summary: getOperatorSummary(name)!,
-    }))
+    .map((name) => {
+      const summary = getOperatorSummary(name)!;
+      return {
+        name,
+        slug: operatorSlug(name),
+        summary,
+        total: summary.operationalMw + summary.plannedMw,
+      };
+    })
     .sort(
       (a, b) =>
-        b.summary.count - a.summary.count || a.name.localeCompare(b.name)
+        b.total - a.total ||
+        b.summary.count - a.summary.count ||
+        a.name.localeCompare(b.name)
     );
+
+  const disclosed = rows.filter((r) => r.total > 0);
+  const undisclosed = rows.filter((r) => r.total === 0);
 
   const totalFacilities = getAllFacilities().length;
 
@@ -61,7 +74,8 @@ export default function OperatorsIndexPage() {
           Operators
         </h1>
         <p className="text-base text-muted-foreground">
-          {rows.length} operators &middot; {totalFacilities} facilities tracked
+          {rows.length} operators &middot; {disclosed.length} with disclosed
+          capacity &middot; {totalFacilities} facilities tracked
         </p>
         <div className="border-t border-border" />
       </header>
@@ -74,7 +88,7 @@ export default function OperatorsIndexPage() {
           All tracked operators
         </h2>
         <ul className="grid gap-2 sm:grid-cols-2">
-          {rows.map(({ name, slug, summary }) => (
+          {disclosed.map(({ name, slug, summary, total }) => (
             <li key={slug}>
               <Link
                 href={`/operators/${slug}`}
@@ -85,7 +99,7 @@ export default function OperatorsIndexPage() {
                     {name}
                   </span>
                   <span className="font-mono text-xs text-muted-foreground">
-                    {formatPower(summary.operationalMw)} operational
+                    {formatPower(total)} total
                   </span>
                 </span>
                 <span className="font-mono tabular-nums text-sm text-muted-foreground shrink-0">
@@ -96,6 +110,45 @@ export default function OperatorsIndexPage() {
           ))}
         </ul>
       </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Zero-capacity operators — collapsed by default                     */}
+      {/* ------------------------------------------------------------------ */}
+      {undisclosed.length > 0 && (
+        <details className="group border-t border-border pt-6">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            Show {undisclosed.length} operators with no disclosed capacity
+            <span
+              aria-hidden="true"
+              className="transition-transform motion-reduce:transition-none group-open:rotate-90"
+            >
+              →
+            </span>
+          </summary>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {undisclosed.map(({ name, slug, summary }) => (
+              <li key={slug}>
+                <Link
+                  href={`/operators/${slug}`}
+                  className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <span className="flex flex-col gap-0.5 min-w-0">
+                    <span className="text-sm text-foreground truncate">
+                      {name}
+                    </span>
+                    <span className="font-mono text-xs text-muted-foreground">
+                      No disclosed capacity
+                    </span>
+                  </span>
+                  <span className="font-mono tabular-nums text-sm text-muted-foreground shrink-0">
+                    {summary.count}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </div>
   );
 }
