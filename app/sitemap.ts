@@ -40,6 +40,12 @@ export function buildStaticRoutes(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${siteConfig.url}/opposition`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
       url: `${siteConfig.url}/stats`,
       lastModified: new Date(),
       changeFrequency: "weekly",

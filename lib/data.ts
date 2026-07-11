@@ -534,3 +534,14 @@ export function getGenerationStats(): GenerationStats {
     offtakerCount: offtakers.size,
   };
 }
+
+// ============================================================
+// Community-friction helpers (used by /opposition)
+// ============================================================
+
+/** Facilities whose community.status matches `status`, sorted by max capacity desc then name A→Z. */
+export function getFacilitiesByCommunityStatus(status: CommunityReception): Facility[] {
+  return facilities
+    .filter((f) => f.community?.status === status)
+    .sort((a, b) => (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name));
+}

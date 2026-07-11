@@ -22,6 +22,7 @@ import {
   normalizeOfftaker,
   getGenerationByOfftaker,
   getGenerationStats,
+  getFacilitiesByCommunityStatus,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
@@ -639,5 +640,39 @@ describe("getGenerationStats", () => {
         .map(normalizeOfftaker)
     );
     expect(getGenerationStats().offtakerCount).toBe(distinct.size);
+  });
+});
+
+describe("getFacilitiesByCommunityStatus", () => {
+  it("returns exactly the litigation subset, each with that status", () => {
+    const expected = getAllFacilities().filter(
+      (f) => f.community?.status === "litigation"
+    );
+    const results = getFacilitiesByCommunityStatus("litigation");
+    expect(results.length).toBe(expected.length);
+    for (const f of results) {
+      expect(f.community?.status).toBe("litigation");
+    }
+  });
+
+  it("sorts results by capacity desc", () => {
+    const contested = getFacilitiesByCommunityStatus("contested");
+    expect(contested.length).toBeGreaterThan(1);
+    const maxMws = contested.map((f) => getFacilityMaxMw(f) ?? -1);
+    for (let i = 1; i < maxMws.length; i++) {
+      expect(maxMws[i - 1]).toBeGreaterThanOrEqual(maxMws[i]);
+    }
+  });
+
+  it("the three friction statuses partition the friction subset of the dataset", () => {
+    const frictionStatuses = ["contested", "opposed", "litigation"] as const;
+    const sum = frictionStatuses.reduce(
+      (n, status) => n + getFacilitiesByCommunityStatus(status).length,
+      0
+    );
+    const expected = getAllFacilities().filter((f) =>
+      (frictionStatuses as readonly string[]).includes(f.community?.status ?? "")
+    ).length;
+    expect(sum).toBe(expected);
   });
 });

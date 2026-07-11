@@ -9,15 +9,16 @@ import { ExploreMenu } from "@/components/explore-menu";
 const PRIMARY_LINKS = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
+  { label: "Stats", href: "/stats" },
 ] as const;
 
 const EXPLORE_LINKS = [
   { label: "States", href: "/states" },
   { label: "Power", href: "/power" },
+  { label: "Opposition", href: "/opposition" },
 ] as const;
 
 const TRAILING_LINKS = [
-  { label: "Stats", href: "/stats" },
   { label: "About", href: "/about" },
 ] as const;
 
