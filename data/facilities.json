@@ -20114,10 +20114,17 @@
         "publisher": "TeraWulf",
         "retrievedAt": "2026-07-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
+        "label": "S10642 - Responsible Data Center Development Act",
+        "publisher": "New York State Senate",
+        "retrievedAt": "2026-07-10",
+        "kind": "filing"
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Built on the site of the former coal-fired Somerset Generating Station (shut 2019/2020). Address 7725 Lake Rd, Barker, NY — coordinates are a town-level geocode, not a confirmed parcel pin (approximate). TeraWulf holds exclusive access to up to 750 MW of site infrastructure capacity. The AI/HPC pivot here is a SIGNED, revenue-generating deal, not speculative: two 10-year HPC colocation agreements with Fluidstack (buildings CB-3 42MW + CB-4 162MW, later expanded with CB-5 +160MW) worth $3.7B in contracted revenue, backed by a $1.8B Google backstop and Google equity stake (~14% pro forma). Tagged mixed_use since Bitcoin mining (145MW) remains the larger operational segment versus HPC (60MW energized as of Mar 2026), but the AI/HPC business is real and growing, not aspirational.",
+    "notes": "Built on the site of the former coal-fired Somerset Generating Station (shut 2019/2020). Address 7725 Lake Rd, Barker, NY — coordinates are a town-level geocode, not a confirmed parcel pin (approximate). TeraWulf holds exclusive access to up to 750 MW of site infrastructure capacity. The AI/HPC pivot here is a SIGNED, revenue-generating deal, not speculative: two 10-year HPC colocation agreements with Fluidstack (buildings CB-3 42MW + CB-4 162MW, later expanded with CB-5 +160MW) worth $3.7B in contracted revenue, backed by a $1.8B Google backstop and Google equity stake (~14% pro forma). Tagged mixed_use since Bitcoin mining (145MW) remains the larger operational segment versus HPC (60MW energized as of Mar 2026), but the AI/HPC business is real and growing, not aspirational. A New York statewide bill (Responsible Data Center Development Act, S10642/A11560) passed both legislative chambers June 4, 2026, imposing a one-year moratorium on new permits for large (≥20MW) data centers; it remained unsigned/pending before Gov. Hochul as of July 2026. Facilities with construction already underway are exempt, so TeraWulf's current build here is likely grandfathered, but any future unbuilt expansion phase requiring new permits could be affected if the bill is signed before construction starts.",
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
@@ -20220,10 +20227,17 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
+        "label": "S10642 - Responsible Data Center Development Act",
+        "publisher": "New York State Senate",
+        "retrievedAt": "2026-07-10",
+        "kind": "filing"
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "1070 Erie Ave, North Tonawanda, NY. 60 MW operating with potential for another 60 MW unbuilt. Under an unresolved legal/regulatory cloud: a NY Supreme Court ruling (Nov 2024) required the Public Service Commission to complete a CLCPA climate-impact review of the site's power-plant-sale approval; the NY Appellate Division, Third Dept affirmed that ruling on May 28, 2026 — the required CLCPA review remains incomplete as of this writing, and the facility continues operating pending it. The company (now \"Digi Power X,\" ticker DGXX) has filed for Planning Commission approval to convert the site to an 80,000 sq ft AI/HPC data center, but this is blocked by North Tonawanda's data-center moratorium (imposed July 2024, extended again ~June 2026 after resident pushback) — the AI pivot is a real, filed proposal, not vaporware, but has no live AI hosting revenue at this site.",
+    "notes": "1070 Erie Ave, North Tonawanda, NY. 60 MW operating with potential for another 60 MW unbuilt. Under an unresolved legal/regulatory cloud: a NY Supreme Court ruling (Nov 2024) required the Public Service Commission to complete a CLCPA climate-impact review of the site's power-plant-sale approval; the NY Appellate Division, Third Dept affirmed that ruling on May 28, 2026 — the required CLCPA review remains incomplete as of this writing, and the facility continues operating pending it. The company (now \"Digi Power X,\" ticker DGXX) has filed for Planning Commission approval to convert the site to an 80,000 sq ft AI/HPC data center, but this is blocked by North Tonawanda's data-center moratorium (imposed July 2024, extended again ~June 2026 after resident pushback) — the AI pivot is a real, filed proposal, not vaporware, but has no live AI hosting revenue at this site. A New York statewide bill (Responsible Data Center Development Act, S10642/A11560) passed both legislative chambers June 4, 2026 and remained unsigned/pending before Gov. Hochul as of July 2026; it would impose a one-year moratorium on new permits for large (≥20MW) data centers. This would be a second, largely redundant obstacle behind North Tonawanda's own binding local moratorium, which already blocks the AI/HPC conversion described above.",
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
@@ -20526,5 +20540,730 @@
     "community": {
       "status": "unknown"
     }
+  },
+  {
+    "id": "tierpoint-hawthorne-westchester-ny",
+    "name": "TierPoint Hawthorne (11 & 17 Skyline Drive)",
+    "operator": "TierPoint, LLC",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.108,
+      "lon": -73.804,
+      "city": "Hawthorne",
+      "county": "Westchester",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/new-york/new-york-hawthorne/",
+        "label": "TierPoint Hawthorne, New York Data Center",
+        "publisher": "TierPoint, LLC",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/tierpoint-hawthorne",
+        "label": "TierPoint: Hawthorne Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Two adjacent buildings on a shared campus with Westchester County Medical Center and New York Medical College: 11 Skyline Drive (46,000+ sqft total, 28,000+ sqft raised floor, backup generation two 2MW + three 1MW) and 17 Skyline Drive (172,000+ sqft total, 28,000+ sqft raised floor, backup generation two 2,000kW). No whole-campus IT-load MW figure is publicly disclosed — generator specs are backup capacity, not confirmed critical load, so capacityMw is omitted. SOC 1/2 Type II, HITRUST, GLBA, HIPAA, PCI-DSS, NIST SP 800-53, ISO 27001, ITAR-registered. No AI/HPC marketing found. Coordinates are an approximate geocode of the Skyline Drive campus, not a confirmed parcel pin."
+  },
+  {
+    "id": "digital-realty-jfk10-manhattan-ny",
+    "name": "Digital Realty JFK10 (111 Eighth Avenue)",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.7407,
+      "lon": -74.0028,
+      "city": "New York",
+      "county": "New York",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/new-york/jfk10",
+        "label": "Digital Realty JFK10 Data Center",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://oqc.tech/company/newsroom/oqc-quantum-ai-data-centre",
+        "label": "OQC, Digital Realty and NVIDIA launch Quantum-AI data centre in New York",
+        "publisher": "Oxford Quantum Circuits",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.hpcwire.com/off-the-wire/oqc-and-digital-realty-team-with-nvidia-to-launch-new-york-quantum-ai-data-center/",
+        "label": "OQC and Digital Realty Team with NVIDIA to Launch New York Quantum-AI Data Center",
+        "publisher": "HPCwire",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-09",
+        "note": "Digital Realty, Oxford Quantum Circuits, and NVIDIA launched what they describe as New York's first Quantum-AI data centre inside JFK10, combining NVIDIA GH200 Grace Hopper Superchips with OQC's GENESIS quantum computer (16 logical qubits, dilution refrigerator below 7mK).",
+        "sourceIndex": 1
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "111 Eighth Avenue (the historic 1932 Union Inland Terminal #1 / \"Google Building\"), Chelsea, Manhattan — Google owns the building; Digital Realty operates JFK10 as a colocation tenant. 111,000 sq ft (Digital Realty's own figure). A third-party estimate of ~18MW capacity is not confirmed by the operator and is omitted. Major carrier hotel with DE-CIX New York and MegaIX New York peering. Coordinates are an approximate geocode of the building, not a confirmed parcel pin."
+  },
+  {
+    "id": "cyrusone-new-albany-col1-licking-county-oh",
+    "name": "CyrusOne New Albany COL-1",
+    "operator": "CyrusOne",
+    "status": "under_construction",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.079,
+      "lon": -82.774,
+      "city": "Johnstown",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "investmentUsd": 150000000,
+    "landAcres": 93.8,
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-09",
+        "note": "Ceremonial groundbreaking September 18, 2025; state filings show construction beginning November 1, 2024. Estimated construction completion September 22, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nbc4i.com/news/local-news/new-albany/permits-offer-details-after-groundbreaking-of-150-million-new-albany-data-center/",
+        "label": "Permits offer details after groundbreaking of $150 million New Albany data center",
+        "publisher": "NBC4 (WCMH)",
+        "retrievedAt": "2026-07-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/cyrusone-breaks-ground-on-new-albany-ohio-data-center/",
+        "label": "CyrusOne breaks ground on New Albany, Ohio data center",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "12181 Jug St, Johnstown — in the Licking County section of the New Albany International Business Park. 274,518 sq ft, two-story building. Ohio Tax Credit Authority approved a 10-year, 75% data center sales tax exemption valued at $5.4M (approved ~April 2024). No IT-load MW figure is publicly disclosed for this site — an earlier 60MW figure found in some secondary sources actually belongs to a different operator's nearby New Albany campus (STACK Infrastructure NAL01) and is not attributable to CyrusOne COL-1; capacityMw is omitted rather than guessed. No AI/HPC-specific marketing found — treated as generic hyperscale colo."
+  },
+  {
+    "id": "qts-new-albany-1-franklin-county-oh",
+    "name": "QTS New Albany 1",
+    "operator": "QTS Data Centers (Blackstone)",
+    "status": "under_construction",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.088,
+      "lon": -82.789,
+      "city": "New Albany",
+      "county": "Franklin",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 144
+    },
+    "landAcres": 56,
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/qts-plans-four-building-data-center-campus-in-new-albany-ohio/",
+        "label": "QTS plans four-building data center campus in New Albany, Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nbc4i.com/news/local-news/new-albany/data-center-company-qts-to-invest-1-5-billion-in-new-albany/",
+        "label": "Data center company QTS to invest $1.5 billion in New Albany",
+        "publisher": "NBC4 (WCMH)",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://q.com/data-centers/new-albany-1/",
+        "label": "QTS New Albany 1",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "675 Beech Road SW, New Albany — in the Franklin County section of the New Albany Business Park, a distinct submarket from CyrusOne's and Vantage's Licking County sites nearby. First of two adjacent QTS buildings (see also QTS New Albany 2); 885,600 sq ft. Combined QTS New Albany 1+2 investment ~$1.5B, enabled by a New Albany City Council Community Reinvestment Area tax agreement. 144MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found — QTS materials describe generic hyperscale/enterprise colo (\"QTS Freedom Design\")."
+  },
+  {
+    "id": "qts-new-albany-2-franklin-county-oh",
+    "name": "QTS New Albany 2",
+    "operator": "QTS Data Centers (Blackstone)",
+    "status": "under_construction",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.089,
+      "lon": -82.788,
+      "city": "New Albany",
+      "county": "Franklin",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 78
+    },
+    "landAcres": 37,
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/qts-plans-four-building-data-center-campus-in-new-albany-ohio/",
+        "label": "QTS plans four-building data center campus in New Albany, Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://q.com/data-centers/new-albany-2/",
+        "label": "QTS New Albany 2",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "785 Beech Road SW, New Albany — second of two adjacent QTS buildings on the same Franklin County campus as QTS New Albany 1 (combined 93 acres, ~1.5M sq ft, ~$1.5B investment, 222MW planned total). 612,600 sq ft. 78MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found."
+  },
+  {
+    "id": "vantage-oh1-new-albany-licking-county-oh",
+    "name": "Vantage Data Centers OH1",
+    "operator": "Vantage Data Centers",
+    "status": "under_construction",
+    "facilityType": "data_center",
+    "aiClassification": "likely",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.082,
+      "lon": -82.76,
+      "city": "Johnstown",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 192
+    },
+    "investmentUsd": 2000000000,
+    "landAcres": 70,
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2024-10",
+        "note": "Groundbreaking October 25, 2024. First of three buildings targeted operational late 2025/December 2025; additional phases through 2028.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://vantage-dc.com/news/vantage-data-centers-breaks-ground-on-192mw-campus-enters-growing-ohio-data-center-market-with-over-2-billion-investment-in-hyperscale-digital-infrastructure/",
+        "label": "Vantage Data Centers Breaks Ground on 192MW Campus, Enters Growing Ohio Data Center Market",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/vantage-breaks-ground-on-new-albany-data-center-in-ohio/",
+        "label": "Vantage breaks ground on New Albany data center in Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "3325 Horizon Court, Johnstown — Licking County section of the New Albany International Business Park. Vantage's first Midwest campus and seventh North American market. 3 buildings, 1.5M+ sq ft total, 192MW total planned IT capacity (not yet fully operational). LEED Silver target, part of Vantage's 2030 net-zero operational carbon commitment. Vantage's own press release states OH1 \"will provide secure and reliable infrastructure for cloud technologies and artificial intelligence\" — real operator-stated AI-adjacent marketing (paired with \"cloud,\" not an exclusive/GPU-specific claim), so tagged aiClassification: likely rather than confirmed."
+  },
+  {
+    "id": "google-new-albany-oh",
+    "name": "Google New Albany Data Center",
+    "operator": "Google (Montauk Innovations LLC)",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.086,
+      "lon": -82.789,
+      "city": "New Albany",
+      "county": "Franklin",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "investmentUsd": 600000000,
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021",
+        "note": "Facility operational since 2021, per Baxtel; groundbreaking occurred November 2019 under Google's Ohio subsidiary Montauk Innovations LLC.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/ohio/",
+        "label": "Google Data Centers — Ohio",
+        "publisher": "Google",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-plans-1bn-new-albany-data-center-expansion-acquires-618-acres-for-more-data-centers/",
+        "label": "Google plans $1bn New Albany data center expansion, acquires 618 acres for more data centers",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/google-new-albany-ohio",
+        "label": "Google: New Albany, Ohio Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-acquires-85-acres-in-new-albany-ohio/",
+        "label": "Google acquires 85 acres in New Albany, Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "1101 Beech Rd SW, New Albany — operated via Google's Ohio subsidiary Montauk Innovations LLC. 275,000 sq ft initial building on a ~440-447 acre campus. $600M confirmed initial capital investment; 100% real-property tax abatement (15yr) and 100% sales-tax exemption (~$43.5M value, 15yr) granted. Distinct from Google's Lima \"Project BOSC\" facility (different county) and Google's Lancaster campus (tracked separately). No IT-load MW figure publicly disclosed. In June 2025, the same Montauk Innovations entity acquired an adjacent 85-acre parcel at 2565 Harrison Road NW (~4 miles north) for $63M; Google has NOT confirmed this parcel will become a data center (\"we want to ensure we have the option to further grow, should our business demand it\" per a spokesperson) — tracked as a note here rather than a standalone facility pending confirmation. No AI/HPC-specific marketing found — Google's own materials describe this and its other Ohio campuses generically as cloud/digital infrastructure."
+  },
+  {
+    "id": "google-lancaster-oh",
+    "name": "Google Lancaster Data Center",
+    "operator": "Google",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.755,
+      "lon": -82.615,
+      "city": "Lancaster",
+      "county": "Fairfield",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "landAcres": 120,
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2021-08",
+        "note": "120 acres at 105 Whiley Rd purchased for ~$4M as part of a larger 618-acre Columbus+Lancaster land bank.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2023-05",
+        "note": "Groundbreaking May 4, 2023, announced alongside a separate Columbus, OH site as part of Google's \"two new data centers in central Ohio.\"",
+        "sourceIndex": 2
+      },
+      {
+        "status": "operational",
+        "date": "2024",
+        "note": "First building completed and operational in 2024; additional buildings still under construction as of mid-2025.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/ohio/",
+        "label": "Google Data Centers — Ohio",
+        "publisher": "Google",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-plans-1bn-new-albany-data-center-expansion-acquires-618-acres-for-more-data-centers/",
+        "label": "Google plans $1bn New Albany data center expansion, acquires 618 acres for more data centers",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.constructiondive.com/news/google-plans-2-new-data-centers-ohio-columbus-lancaster/649470/",
+        "label": "Google plans 2 new data centers in Ohio: Columbus, Lancaster",
+        "publisher": "Construction Dive",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/google-constructing-2-new-data-centers-in-ohio/",
+        "label": "Google constructing 2 new data centers in Ohio",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "105 Whiley Rd, Lancaster — distinct from Google's New Albany and Lima \"Project BOSC\" Ohio facilities. No site-specific investment figure is disclosed; Google has only published cumulative bundled totals across its New Albany+Lancaster+Columbus Ohio campuses ($1.7B Aug 2023, +$2.3B June 2024, ~$4.4B+ cumulative since 2019). No IT-load MW figure publicly disclosed. One 2024 article notes future buildings will \"support Google's artificial intelligence innovation,\" but this is generic AI-as-one-of-many-workloads boilerplate rather than facility-specific AI/HPC/GPU marketing — no aiClassification set. Coordinates are an approximate geocode."
+  },
+  {
+    "id": "ark-data-centers-independence-cuyahoga-county-oh",
+    "name": "Ark Data Centers Independence (fka Involta)",
+    "operator": "Ark Data Centers (formerly Involta)",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.393,
+      "lon": -81.629,
+      "city": "Independence",
+      "county": "Cuyahoga",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2017",
+        "note": "Facility opened at 25,000 sq ft.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2022-08",
+        "note": "Expanded by 14,000 sq ft (to 40,000 sq ft total) and +1MW of power capacity.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/involta-expands-data-center-in-independence-ohio/",
+        "label": "Involta expands data center in Independence, Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.independenceohio.org/business_resources/featured_project.php",
+        "label": "Featured Project — Involta Data Center",
+        "publisher": "City of Independence, Ohio",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/involta-is-now-ark-data-centers-302145731.html",
+        "label": "Involta Is Now Ark Data Centers",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "7300 E Pleasant Valley Rd, Independence, Cuyahoga County (Cleveland metro). Rebranded from Involta to Ark Data Centers May 15, 2024 (Carlyle-backed). Fiber-ring-connected to the company's Akron facilities for real-time twinned services, per the City of Independence's own economic development page (independent of operator marketing). A single third-party directory cites 1.5MW capacity, uncorroborated elsewhere — omitted from capacityMw rather than stated as fact. No source supports a Tier rating or 2N+ UPS claim for this specific site (an unrelated \"Cleveland\" line item on the operator's own rollup page does not reconcile with this facility's known footprint) — no Tier/redundancy field set. No AI/HPC-specific marketing found."
+  },
+  {
+    "id": "ark-data-centers-akron-i-summit-county-oh",
+    "name": "Ark Data Centers Akron I (fka Involta)",
+    "operator": "Ark Data Centers (formerly Involta)",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.032,
+      "lon": -81.514,
+      "city": "Akron",
+      "county": "Summit",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1
+    },
+    "sources": [
+      {
+        "url": "https://www.involta.com/data-centers/data-center-locations/ohio/akron/",
+        "label": "Involta / Ark Data Centers — Akron, Ohio",
+        "publisher": "Ark Data Centers",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/ohio/akron/involta-akron/",
+        "label": "Ark Data Centers Akron 1",
+        "publisher": "Data Center Map",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "191 E. Miller Ave, Akron, Summit County. First (\"3rd-generation\" per operator terminology) of two Ark Data Centers buildings at this address — see also Ark Data Centers Akron II, a separate, Tier III-certified building at the same street address. 10,000 sq ft / 300 racks, 1MW utility power with a 1MW N+1 diesel generator, 2N battery UPS. No formal Tier certification found for this building (unlike Akron II). Fiber-ring-connected to the company's Independence, OH facility. The operator's own Ohio rollup page lists a conflicting \"Akron: 20,000 sqft / 5MW\" combined figure that does not reconcile with the per-building detail page used here — flagged as an inconsistency on the operator's own materials, detail-page figures preferred. No AI/HPC-specific marketing found."
+  },
+  {
+    "id": "ark-data-centers-akron-ii-summit-county-oh",
+    "name": "Ark Data Centers Akron II (fka Involta)",
+    "operator": "Ark Data Centers (formerly Involta)",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.032,
+      "lon": -81.514,
+      "city": "Akron",
+      "county": "Summit",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1
+    },
+    "sources": [
+      {
+        "url": "https://www.involta.com/data-centers/data-center-locations/ohio/akron/",
+        "label": "Involta / Ark Data Centers — Akron, Ohio",
+        "publisher": "Ark Data Centers",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/ohio/akron/involta-akron-2/",
+        "label": "Ark Data Centers Akron 2",
+        "publisher": "Data Center Map",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "191 E. Miller Ave, Akron, Summit County — same street address as Ark Data Centers Akron I but a physically separate (\"4th-generation\") building, per the operator's own materials describing \"two purpose-built, concurrently maintainable facilities\" totaling 52,000+ sq ft. 10,000 sq ft / 300 racks, 1MW utility power with a 1MW N+1 diesel generator, 2N battery UPS. Uptime Institute-certified Tier III — the only Tier certification found across any of the Ark/Involta Ohio sites researched. ENERGY STAR certified 2023. Fiber-ring-connected to the company's Independence, OH facility. No AI/HPC-specific marketing found (one customer testimonial referencing AI describes a tenant's healthcare application, not the operator's own infrastructure marketing)."
+  },
+  {
+    "id": "bit-mining-viking-akron-summit-county-oh",
+    "name": "BIT Mining / Viking Data Centers — Akron",
+    "operator": "BIT Mining / Viking Data Centers",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.086,
+      "lon": -81.558,
+      "city": "Akron",
+      "county": "Summit",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 83
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    },
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/one-chinas-biggest-bitcoin-mining-110157142.html",
+        "label": "One of China's biggest bitcoin mining companies now headquartered in Akron near Goodyear",
+        "publisher": "Yahoo News",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.vikingdata.io/about-us",
+        "label": "About Us",
+        "publisher": "Viking Data Centers",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/bit-mining-increases-investment-in-ohio-cryptocurrency-mining-site-301402112.html",
+        "label": "BIT Mining Increases Investment in Ohio Cryptocurrency Mining Site",
+        "publisher": "PR Newswire / BIT Mining",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/bit-mining-ohio",
+        "label": "BIT Mining: Ohio Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "428 Seiberling Street, Akron — a former Goodyear tire / Maxion Wheels manufacturing plant (380,000 sq ft building; 430,556 sq ft / 40,000 sqm per Baxtel). Joint venture with Viking Data Centers, LLC; BIT Mining holds majority equity (51% initially per a 2021 SEC 6-K exhibit, increased via a June 2022 buyout giving BIT Mining exclusive operational access to 82.5MW, recorded here as 83MW). Total site design capacity across the JV is larger (up to 150MW: 85MW original + 65MW addition) but BIT Mining's own operating allocation is the 83MW recorded. Bitcoin/ASIC mining; historically also used for ethereum/dogecoin mining. No AI/HPC marketing found for this site."
+  },
+  {
+    "id": "bitdeer-shalersville-portage-county-oh",
+    "name": "Bitdeer Shalersville Data Center Campus",
+    "operator": "Bitdeer (development partner: Geis Development)",
+    "status": "proposed",
+    "facilityType": "data_center",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.199,
+      "lon": -81.245,
+      "city": "Shalersville Township",
+      "county": "Portage",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 750
+    },
+    "investmentUsd": 300000000,
+    "landAcres": 257,
+    "jobs": {
+      "construction": 400,
+      "permanent": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "Bitdeer, via local developer Geis Development, proposes a ~257-acre, up-to-750MW campus (150MW phase 1, 15 buildings total) at Turnpike Commerce Center.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-04",
+        "note": "Shalersville Township trustees sign a 6-month extension of the township's data-center moratorium (in effect since October 2024), blocking any project approval through early November 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.news5cleveland.com/news/local-news/local-developer-global-tech-firm-plan-major-data-center-project-in-portage-county",
+        "label": "Local developer, global tech firm plan major data center project in Portage County",
+        "publisher": "News 5 Cleveland",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.news5cleveland.com/news/local-news/oh-portage/data-center-discussion-spans-3-hours-as-shalersville-mulls-257-acre-project",
+        "label": "Data center discussion spans 3+ hours as Shalersville mulls 257-acre project",
+        "publisher": "News 5 Cleveland",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/bitdeer-looks-to-develop-750mw-data-center-campus-in-ohio/",
+        "label": "Bitdeer looks to develop 750MW data center campus in Ohio",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://theportager.com/asian-crypto-mining-company-and-geis-partner-to-bring-data-center-to-shalersville",
+        "label": "Asian crypto mining company and Geis partner to bring data center to Shalersville",
+        "publisher": "The Portager",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "community": {
+      "status": "contested",
+      "notes": "Standing-room-only town hall meetings; local opposition coverage from Kent Stater and The Portager. Shalersville Township has had a data-center moratorium in effect since October 2024, most recently extended through early November 2026 (signed April 7, 2026) to allow the township time to draft data-center-specific zoning regulations before any project can be permitted; trustees are separately considering making the moratorium permanent.",
+      "sourceIndex": 1
+    },
+    "notes": "Turnpike Commerce Center, Shalersville Township, Portage County. Not yet approved — blocked by the township's active data-center moratorium (see community field). Distinct from Bitdeer's other tracked Ohio sites (Clarington, Whitetail Creek/Niles, and Massillon). Tax revenue projections ($2.17M annual increase at phase-1 completion) are Bitdeer's own company projections, not independently confirmed. Coordinates are an approximate geocode of Shalersville Township, not a confirmed parcel pin — no source gave exact site coordinates."
+  },
+  {
+    "id": "bitdeer-massillon-stark-county-oh",
+    "name": "Bitdeer Massillon Facility",
+    "operator": "Bitdeer",
+    "status": "under_construction",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.775,
+      "lon": -81.535,
+      "city": "Massillon",
+      "county": "Stark",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 221
+    },
+    "investmentUsd": 100000000,
+    "landAcres": 31,
+    "jobs": {
+      "permanent": 70
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "unknown"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023",
+        "note": "Bitdeer purchases a 31-acre parcel.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-11",
+        "note": "First miners begin operating; a fire the same month damages 2 of the ~24-26 planned buildings (~26MW), with re-energization of those buildings targeted for end of September 2026. Remainder phased toward full 221MW through 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://finance.yahoo.com/markets/crypto/articles/whats-inside-bitdeers-crypto-mining-100138846.html",
+        "label": "What's it like inside Bitdeer's crypto mining operation in Massillon?",
+        "publisher": "Yahoo Finance",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.aol.com/articles/data-centers-already-stark-county-095426000.html",
+        "label": "What data centers are already here in Stark County?",
+        "publisher": "AOL",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/bitdeer-massillon-oh",
+        "label": "BitDeer: Massillon, OH Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://sign.moveon.org/petitions/bitdeer-bitmine-nuisance-petition",
+        "label": "Petition in Opposition to BitDeer Bitmine in Massillon",
+        "publisher": "MoveOn",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "community": {
+      "status": "contested",
+      "notes": "Local opposition petition (\"BitDeer Bitmine in Massillon\" nuisance petition) circulated via MoveOn; a Massillon city council vote reportedly allowed the project to proceed, though the source for that vote could not be independently fetched/verified this session.",
+      "sourceIndex": 3
+    },
+    "notes": "1115 Industrial Ave SW, Massillon, Stark County (an alternate address, 2527-2799 9th St SW, appears in one aggregator listing and may reflect the same multi-street parcel — not independently reconciled). 24-26 buildings (~40x110 ft each), 21,000+ ASIC mining machines, ~$22/hr starting wage, ~$82,000 average salary, no property tax abatement received. Explicitly distinct from Bitdeer's Whitetail Creek facility (1047 Belmont Ave, Niles/Weathersfield Township, Trumbull County — different city, county, and address, ~40 miles away) and from Bitdeer Clarington — Bitdeer's own coverage treats Massillon, Niles, and Clarington as three separate Ohio sites. Pure Bitcoin/ASIC mining with no AI/HPC framing in any source found (unlike Clarington and the proposed Shalersville site) — no aiClassification set. Coordinates are an approximate geocode; exact address should be reconciled against Stark County GIS/auditor parcel records in a future pass."
   }
 ]
