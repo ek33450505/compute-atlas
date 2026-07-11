@@ -19,6 +19,7 @@ import { FacilityTable } from "@/components/table/facility-table";
 import { FacilityMap } from "@/components/map/facility-map-dynamic";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import { MapFilterSubheader } from "@/components/map/map-filter-subheader";
+import { ExportButtons } from "@/components/explorer/export-buttons";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -131,13 +132,16 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
           values={{ status, state, operator, facilityType, minMw }}
           setters={{ setStatus, setState, setOperator, setFacilityType, setMinMw }}
         />
-        <p
-          role="status"
-          aria-live="polite"
-          className="font-mono text-xs uppercase tracking-wider text-muted-foreground"
-        >
-          Showing {filtered.length} of {facilities.length} facilities
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p
+            role="status"
+            aria-live="polite"
+            className="font-mono text-xs uppercase tracking-wider text-muted-foreground"
+          >
+            Showing {filtered.length} of {facilities.length} facilities
+          </p>
+          <ExportButtons facilities={filtered} />
+        </div>
         <section aria-label="Facilities data table">
           <FacilityTable facilities={filtered} />
         </section>
@@ -157,13 +161,16 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
       />
 
       {/* Result count — live region so screen readers announce changes */}
-      <p
-        role="status"
-        aria-live="polite"
-        className="text-sm text-muted-foreground"
-      >
-        Showing {filtered.length} of {facilities.length} facilities
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p
+          role="status"
+          aria-live="polite"
+          className="text-sm text-muted-foreground"
+        >
+          Showing {filtered.length} of {facilities.length} facilities
+        </p>
+        {view === "table" && <ExportButtons facilities={filtered} />}
+      </div>
 
       {/* View toggle */}
       <div
