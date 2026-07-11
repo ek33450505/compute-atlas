@@ -54,7 +54,7 @@ export default function HomePage() {
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
       <div className="mb-10 flex flex-wrap gap-8 border-b border-border pb-10">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {count}
           </span>
@@ -62,7 +62,7 @@ export default function HomePage() {
             Sites tracked
           </span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {states}
           </span>
@@ -70,7 +70,7 @@ export default function HomePage() {
             States covered
           </span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {(operationalMw / 1000).toFixed(1)} GW
           </span>
@@ -78,7 +78,7 @@ export default function HomePage() {
             Operational
           </span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {(plannedMw / 1000).toFixed(0)} GW
           </span>
