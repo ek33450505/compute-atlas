@@ -244,6 +244,32 @@ describe("facilitySchema — crypto_mining branch (invalid cases)", () => {
   });
 });
 
+describe("facilitySchema — location.precision", () => {
+  it("parses a representative_multi_site record with a multiSite block", () => {
+    const result = facilitySchema.safeParse({
+      ...baseCryptoMiningFacility,
+      location: {
+        ...baseCryptoMiningFacility.location,
+        precision: "representative_multi_site" as const,
+        multiSite: { states: ["TX", "ND"] },
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.location.precision).toBe("representative_multi_site");
+      expect(result.data.location.multiSite?.states).toEqual(["TX", "ND"]);
+    }
+  });
+
+  it("defaults location.precision to exact when omitted", () => {
+    const result = facilitySchema.safeParse(baseFacility);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.location.precision).toBe("exact");
+    }
+  });
+});
+
 describe("facilitySchema — invalid cases", () => {
   it("fails when state is not 2 characters", () => {
     const result = facilitySchema.safeParse({

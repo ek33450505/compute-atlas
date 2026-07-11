@@ -15,7 +15,7 @@ function makeFacility(
     facilityType: "data_center",
     aiClassification: "confirmed",
     confidence: "confirmed",
-    location: { lat: 40.0, lon: -90.0, city: "Springfield", state: "IL" },
+    location: { lat: 40.0, lon: -90.0, city: "Springfield", state: "IL", precision: "exact" },
     statusHistory: [],
     sources: [
       {

@@ -5046,7 +5046,7 @@
     "name": "Riot Platforms Corsicana Facility",
     "operator": "Riot Platforms",
     "status": "operational",
-    "facilityType": "data_center",
+    "facilityType": "crypto_mining",
     "aiClassification": "likely",
     "confidence": "reported",
     "location": {
@@ -5109,10 +5109,24 @@
         "publisher": "DL News",
         "retrievedAt": "2026-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.riotplatforms.com/riot-purchases-7-6-eh-s-of-next-generation-miners-from-microbt-manufactured-in-the-united-states/",
+        "label": "Riot Purchases 7.6 EH/s of Next Generation Miners From MicroBT",
+        "publisher": "Riot Platforms",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1167419/000155837025001888/riot-20241231x10k.htm",
+        "label": "Riot Platforms 10-K FY2024",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-07-10",
+        "kind": "filing"
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Phase I (400 MW) operational for Bitcoin mining with immersion cooling. AMD contracted 50 MW for HPC workloads. Riot developing 112 MW Core and Shell infrastructure at Corsicana for future hyperscale AI tenants. Campus acquired in phases to 858 total acres. ERCOT-approved for 1 GW total. Navarro County's October 2024 abatement records cite a considered $640M investment and 140 new jobs; the signed agreement sets a $380M minimum taxable value and 140 FTE by January 1, 2026 (a Riot spokesperson separately cited 180 jobs).",
+    "notes": "Phase I (400 MW) operational for Bitcoin mining with immersion cooling. AMD contracted 50 MW for HPC workloads. Riot developing 112 MW Core and Shell infrastructure at Corsicana for future hyperscale AI tenants. Campus acquired in phases to 858 total acres. ERCOT-approved for 1 GW total. Navarro County's October 2024 abatement records cite a considered $640M investment and 140 new jobs; the signed agreement sets a $380M minimum taxable value and 140 FTE by January 1, 2026 (a Riot spokesperson separately cited 180 jobs). Re-tagged from data_center to crypto_mining (2026-07-10): the operational 400 MW is Bitcoin mining (current majority use); the 600 MW AI/HPC evaluation remains at proposal stage, not built. Riot does not disclose hash rate per-site (only company-wide EH/s spanning Corsicana + Rockdale + Kentucky), so hashRateThPerS is left unknown here rather than misattributing a company total. Miners are MicroBT ASICs designed for immersion cooling. ERCOT demand-response/curtailment participation (Four Coincident Peaks program) is a structural, revenue-generating part of Riot's operating model company-wide (~$21M in Q1 2026 curtailment credits), so power arrangement is tagged \"mixed\" rather than plain grid.",
     "water": {
       "coolingType": "closed_loop",
       "notes": "Immersion cooling for the operational 400 MW Bitcoin-mining phase; cooling for the future AI/HPC phase is not yet confirmed. The facility is projected to consume up to 1.5 million gallons of water per day at peak summer demand under a city-water agreement \u2014 a seasonal peak, not an average daily rate."
@@ -5134,6 +5148,14 @@
       "status": "contested",
       "notes": "Organized local opposition (Concerned Citizens of Navarro County; Change.org petition). County commissioners declined an earlier, larger reinvestment-zone request in March 2024 after resident pushback; a smaller Chapter 312 abatement passed on a 3-2 vote in October 2024. Cited concerns: noise, peak water use, ERCOT grid strain, and limited permanent jobs relative to power draw.",
       "sourceIndex": 3
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "coolingType": "immersion",
+      "powerArrangement": "mixed"
+    },
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
     }
   },
   {
@@ -19727,6 +19749,257 @@
     },
     "environmental": {
       "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "lancium-crusoe-abilene-tx",
+    "name": "Lancium Clean Campus (Crusoe / Stargate Site 1)",
+    "operator": "Crusoe Energy (Lancium Clean Campus)",
+    "status": "operational",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.502213,
+      "lon": -99.788717,
+      "city": "Abilene",
+      "county": "Taylor",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 200,
+      "planned": 1200
+    },
+    "poweredBy": "ERCOT grid; Crusoe has separately contracted 4.5 GW of natural gas supply for its broader multi-site AI buildout",
+    "announcedDate": "2021-12",
+    "energy": {
+      "source": "grid",
+      "notes": "Originally designed as an ERCOT-integrated demand-response/curtailable load site; on-site or dedicated gas generation for this specific campus (vs. Crusoe's broader gas supply deal) is not confirmed."
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2021-12",
+        "note": "Lancium announces \"Project Artemis\": a Bitcoin-mining/grid-demand-response campus with Taylor County and the City of Abilene, projected at up to $2.4B over 20 years, scaling 200 MW to 1 GW.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2024",
+        "note": "Crusoe Energy begins building AI/HPC data-center buildings on the Lancium campus, pivoting the site from its original crypto-mining plan toward multi-tenant AI hosting (publicly branded \"Stargate Site 1\").",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2025-06",
+        "note": "First 2 of 8 planned buildings (~200+ MW) operational, hosting Oracle Cloud Infrastructure GPU capacity for OpenAI's Stargate project.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/taylor-county-and-city-of-abilene-announce-historic-partnership-with-lancium-for-development-of-a-2-4-billion-data-center-campus-301449354.html",
+        "label": "Taylor County and City of Abilene Announce Historic Partnership With Lancium",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/crusoe-begins-construction-on-second-phase-of-abilene-texas-data-center-campus-will-add-six-buildings/",
+        "label": "Crusoe Begins Construction on Second Phase of Abilene, Texas Data Center Campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/hyperscale/article/55276169/crusoe-adds-45-gw-natural-gas-to-fuel-ai-expands-abilene-data-center-to-12-gw",
+        "label": "Crusoe Adds 4.5 GW of Natural Gas to Fuel AI, Expands Abilene Data Center to 1.2 GW",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://ktxs.com/news/local/lancium-crusoe-executives-brief-abilene-leaders-on-major-northside-investment",
+        "label": "Lancium, Crusoe Executives Brief Abilene Leaders on Major Northside Investment",
+        "publisher": "KTXS (Sinclair)",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://bitcoinmagazine.com/business/city-of-abilene-taylor-county-to-build-billion-data-center-host-bitcoin-mining",
+        "label": "City of Abilene, Taylor County to Build Billion-Dollar Data Center to Host Bitcoin Mining",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Originally proposed Dec 2021 as Lancium's \"Project Artemis\" — a Bitcoin-mining and grid-demand-response campus using stranded/curtailed West Texas wind and solar power, with Lancium throttling load during ERCOT peak demand. Crusoe Energy has since built and operates AI/HPC data-center buildings on the site (publicly branded \"Stargate Site 1\"), with Oracle Cloud Infrastructure as the tenant hosting NVIDIA GPU clusters for OpenAI's Stargate project — Oracle sits contractually between Crusoe and OpenAI; no confirmed direct OpenAI-Crusoe lease. Lancium retains land/electrical-infrastructure ownership; Crusoe leases and operates part of an approximately 800-1,000-acre campus. First 2 of 8 planned buildings (~200+ MW) were operational by mid-2025; remaining 6 are under construction, with a full 1.2 GW build-out targeted for completion in 2026-2027 (dates vary by source). Construction-workforce and total AI-era investment figures conflict significantly across sources (reported range: 2,000-9,000 workers; an unverified ~$11.6B raise) and are not repeated here as fact. Coordinates are approximate (geocoded from a listed street address, not parcel-confirmed — the ~800-1,000-acre campus could place any specific building up to ~1-2 miles from this point).",
+    "community": {
+      "status": "supported",
+      "notes": "City leadership has been enthusiastic about jobs and tax-base growth, framing the project locally as the city's largest single investment since Dyess Air Force Base; some nearby residents have raised construction-traffic concerns. No organized opposition campaign found.",
+      "sourceIndex": 3
+    }
+  },
+  {
+    "id": "galaxy-helios-dickens-tx",
+    "name": "Helios (Galaxy Digital / CoreWeave)",
+    "operator": "Galaxy Digital Holdings",
+    "status": "operational",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.7814083,
+      "lon": -100.8790507,
+      "city": "Afton",
+      "county": "Dickens",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 200,
+      "planned": 800
+    },
+    "poweredBy": "ERCOT grid (800 MW approved)",
+    "announcedDate": "2025-03",
+    "energy": {
+      "source": "grid",
+      "notes": "800 MW ERCOT-approved for the site; Phase I delivered 200 MW gross power / 133 MW critical IT load to CoreWeave."
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-05",
+        "note": "Argo Blockchain completes a 180 MW Bitcoin-mining facility (\"Helios\") on 160 acres in Dickens County, TX.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2022-12",
+        "note": "Argo sells Helios to Galaxy Digital for approximately $65M amid the 2022 crypto-market downturn, alongside a two-year hosting agreement.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-03",
+        "note": "Galaxy signs a 15-year lease with CoreWeave to convert Helios to AI/HPC hosting (ERCOT-approved capacity expanded to 800 MW); Bitcoin-mining equipment wind-down begins.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026",
+        "note": "Galaxy delivers Phase I (200 MW gross / 133 MW critical IT load) to CoreWeave; site begins generating lease revenue. Remaining phases (toward 800 MW) still under construction, financed by a $1.4B, 36-month debt facility (plus $350M Galaxy equity) closed August 2025.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.argoblockchain.com/news-room/2022-december-helios-sale-to-galaxy",
+        "label": "Sale of Helios to Galaxy Digital Holdings",
+        "publisher": "Argo Blockchain",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://cryptobriefing.com/galaxy-digital-coreweave-200mw-helios-lease/",
+        "label": "Galaxy Digital Delivers First 200MW Phase to CoreWeave Under 15-Year Lease",
+        "publisher": "CryptoBriefing",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/galaxy-digital-closes-14bn-debt-facility-for-helios-data-center-campus-in-texas/",
+        "label": "Galaxy Digital Closes $1.4bn Debt Facility for Helios Data Center Campus in Texas",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.theblock.co/post/407396/galaxy-delivers-133-mw-of-critical-it-load-to-coreweave-as-helios-bitcoin-mine-turns-ai-hub",
+        "label": "Galaxy Delivers 133 MW of Critical IT Load to CoreWeave as Helios Bitcoin Mine Turns AI Hub",
+        "publisher": "The Block",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Built by Argo Blockchain as a 180 MW Bitcoin-mining facility (2022), sold to Galaxy Digital in Dec 2022 amid the crypto downturn. Galaxy has converted the site to AI/HPC hosting for CoreWeave under a 15-year lease signed March 28, 2025; ERCOT has approved 800 MW for the site (up from the original 180 MW mining build). Bitcoin mining is reported wound down (equipment removal/demolition began Q2 2025) ahead of the CoreWeave conversion — no source found describes concurrent mining and AI operation. The $1.4B figure is a project-financing debt facility (36-month term, secured by Phase I assets), not total investment or deal value; Galaxy separately committed $350M equity — investmentUsd is deliberately omitted rather than picking one of these ambiguous figures. A separate, unreconciled $460M figure appears in one lower-confidence source and is not repeated here as fact. Coordinates are approximate (single-source, not independently cross-verified — geocoding tools could not confirm the street address this pass).",
+    "community": {
+      "status": "unknown",
+      "notes": "No local community-reaction coverage (water/land/noise) surfaced in this research pass — flagged as an under-covered angle, not confirmed as non-contentious."
+    },
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "mara-flared-gas-fleet-tx-nd",
+    "name": "MARA Flared/Stranded-Gas Mining Fleet (TX + ND)",
+    "operator": "MARA Holdings",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.87,
+      "lon": -102.37,
+      "city": "Midland/Odessa area (representative)",
+      "state": "TX",
+      "precision": "representative_multi_site",
+      "multiSite": {
+        "states": ["TX", "ND"],
+        "siteCountNote": "Undisclosed number of modular, wellhead-sited gas-to-power units across Texas and North Dakota; equipment is relocated between wellheads as gas-flaring opportunities shift, so no fixed site count or per-site coordinates are publicly disclosed. The pin above is an illustrative point in the West Texas Permian Basin (where the program began), not a physical facility location."
+      }
+    },
+    "capacityMw": {
+      "operational": 25
+    },
+    "poweredBy": "On-site flared/stranded natural gas at oil & gas wellheads (not grid-connected)",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Captures gas that would otherwise be flared/vented at oil & gas wellheads and combusts it in generators to power mining hardware — framed by MARA as reducing methane venting (methane → CO2 combustion swap), not as a zero-emissions source."
+    },
+    "mining": {
+      "powerArrangement": "flared_gas"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024",
+        "note": "MARA launches a 25 MW flared/stranded-gas mining pilot in Texas.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2025-06",
+        "note": "Program described as \"fully energized\" at 25 MW aggregate, now spanning wellhead sites in both Texas and North Dakota.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ir.mara.com/news-events/press-releases/detail/1394/mara-announces-bitcoin-production-and-mining-operation-updates-for-april-2025",
+        "label": "MARA Announces Bitcoin Production and Mining Operation Updates for April 2025",
+        "publisher": "MARA Holdings (Investor Relations)",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://k33.com/research/archive/articles/bitcoin-mining-using-stranded-natural-gas-is-the-most-cost-effective-way-to",
+        "label": "Bitcoin Mining Using Stranded Natural Gas Is the Most Cost-Effective Way to Reduce Emissions",
+        "publisher": "K33 Research",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Represented here as a single aggregate record rather than N per-site entries: MARA discloses this program only in aggregate (25 MW total across Texas + North Dakota wellheads), with no per-site count, capacity breakdown, or coordinates published — consistent with a genuinely mobile/modular operating model (containerized generators moved between wellheads as flaring economics shift at individual wells), not merely underreported. Most recent confirmed figure is from MARA's June 2025 operational update; no 2026 update was found. This is the first record using the schema's location.precision: \"representative_multi_site\" construct, built for exactly this case — other operators running a similar distributed flared-gas-at-wellhead model include Upstream Data, Giga Energy, and EZ Blockchain (not separately catalogued here). No sourced critical/counter-framing on flared-gas mining (e.g. that it incentivizes continued drilling) was found in this research pass — flagged as a gap, not an absence of the argument in wider discourse.",
+    "community": {
+      "status": "unknown"
+    },
+    "environmental": {
+      "carbonIntensityBasis": "unknown"
     }
   }
 ]

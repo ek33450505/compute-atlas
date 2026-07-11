@@ -1,4 +1,5 @@
 import type { Facility } from "@/lib/schema";
+import { getGridCarbonIntensityGCo2PerKwh } from "@/lib/egrid";
 
 /**
  * Environmental Impact Index — a derived, non-persisted 0-100 score computed
@@ -83,16 +84,27 @@ export function getEnvironmentalImpactIndex(
       subScores.push(scoreRenewablePercent(env.renewablePercent));
       populatedFields++;
     }
-    if (env?.gridCarbonIntensityGCo2PerKwh !== undefined) {
-      subScores.push(scoreCarbonIntensity(env.gridCarbonIntensityGCo2PerKwh));
+    const reportedGridIntensity = env?.gridCarbonIntensityGCo2PerKwh;
+    const isGridTied = facility.energy?.source === undefined || facility.energy.source === "grid";
+    const gridIntensity =
+      reportedGridIntensity ??
+      (isGridTied ? getGridCarbonIntensityGCo2PerKwh(facility.location.state) ?? undefined : undefined);
+    if (gridIntensity !== undefined) {
+      subScores.push(scoreCarbonIntensity(gridIntensity));
       populatedFields++;
     }
   } else {
     expectedFields = CRYPTO_MINING_EXPECTED_FIELDS;
     const env = facility.environmental;
 
-    if (env?.carbonIntensityProxy !== undefined) {
-      subScores.push(scoreCarbonIntensity(env.carbonIntensityProxy));
+    const reportedProxy = env?.carbonIntensityProxy;
+    const arrangement = facility.mining?.powerArrangement;
+    const isGridTied = arrangement === undefined || arrangement === "grid" || arrangement === "mixed";
+    const proxy =
+      reportedProxy ??
+      (isGridTied ? getGridCarbonIntensityGCo2PerKwh(facility.location.state) ?? undefined : undefined);
+    if (proxy !== undefined) {
+      subScores.push(scoreCarbonIntensity(proxy));
       populatedFields++;
     }
   }

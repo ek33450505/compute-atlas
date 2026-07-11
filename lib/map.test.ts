@@ -17,6 +17,7 @@ const facilityFull: Facility = {
     lon: -90.049,
     city: "Memphis",
     state: "TN",
+    precision: "exact",
   },
   capacityMw: { operational: 150, planned: 300 },
   statusHistory: [],
@@ -43,6 +44,7 @@ const facilityNoCapacity: Facility = {
     lat: 40.0,
     lon: -80.0,
     state: "PA",
+    precision: "exact",
   },
   statusHistory: [],
   sources: [

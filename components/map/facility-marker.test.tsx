@@ -13,7 +13,7 @@ const fixture: Facility = {
   facilityType: "data_center",
   aiClassification: "confirmed",
   confidence: "confirmed",
-  location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN" },
+  location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN", precision: "exact" },
   capacityMw: { operational: 100 },
   statusHistory: [],
   sources: [

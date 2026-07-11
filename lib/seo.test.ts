@@ -15,6 +15,7 @@ const baseFacility: Facility = {
     lon: -74.006,
     city: "New York City",
     state: "NY",
+    precision: "exact",
   },
   statusHistory: [],
   sources: [

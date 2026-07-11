@@ -22,7 +22,7 @@ function makeFacility(id: string, lat: number, lon: number): Facility {
     facilityType: "data_center",
     aiClassification: "confirmed",
     confidence: "confirmed",
-    location: { lat, lon, state: "TX" },
+    location: { lat, lon, state: "TX", precision: "exact" },
     statusHistory: [],
     sources: [SOURCE],
     lastUpdated: "2024-01",

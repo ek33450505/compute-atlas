@@ -18,7 +18,7 @@ function makeFacility(
     facilityType: "data_center",
     aiClassification: "confirmed",
     confidence: "confirmed",
-    location: { lat: 35, lon: -90, state, city },
+    location: { lat: 35, lon: -90, state, city, precision: "exact" },
     capacityMw,
     statusHistory: [],
     sources: [

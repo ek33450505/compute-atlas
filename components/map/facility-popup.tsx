@@ -74,6 +74,12 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
 
       {/* Location */}
       <p className="text-xs text-foreground mb-1">{cityState}</p>
+      {location.precision === "representative_multi_site" && (
+        <p className="text-xs italic text-muted-foreground mb-1">
+          Distributed operation — pin is illustrative
+          {facility.location.multiSite && ` (${facility.location.multiSite.states.join(", ")})`}
+        </p>
+      )}
 
       {/* Capacity */}
       {capacityMw && (

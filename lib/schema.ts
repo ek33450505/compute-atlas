@@ -47,6 +47,20 @@ const baseFacilityShape = {
     city: z.string().optional(),
     county: z.string().optional(),
     state: z.string().length(2),
+    // "exact": lat/lon is this facility's real footprint (default — every
+    // pre-existing record without this field is "exact").
+    // "approximate": best-effort geocode (e.g. a street address, not a
+    // parcel-confirmed point).
+    // "representative_multi_site": the facility has NO single fixed
+    // location (e.g. a distributed fleet of mobile/modular sites) — lat/lon
+    // is an illustrative point only; see `multiSite` for the real footprint.
+    precision: z.enum(["exact", "approximate", "representative_multi_site"]).optional().default("exact"),
+    multiSite: z
+      .object({
+        states: z.array(z.string().length(2)).min(1),
+        siteCountNote: z.string().optional(),
+      })
+      .optional(),
   }),
   capacityMw: z
     .object({

@@ -16,6 +16,7 @@ const FACILITY: Facility = {
     lon: -90.0,
     city: "Memphis",
     state: "TN",
+    precision: "exact",
   },
   statusHistory: [],
   sources: [

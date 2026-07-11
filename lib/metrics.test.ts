@@ -22,7 +22,7 @@ function makeDataCenter(
     facilityType: "data_center",
     aiClassification: "confirmed",
     confidence: "confirmed",
-    location: { lat: 35.0, lon: -90.0, state: "TN" },
+    location: { lat: 35.0, lon: -90.0, state: "TN", precision: "exact" },
     statusHistory: [],
     sources: [makeSource()],
     lastUpdated: "2024-01-01",
@@ -40,7 +40,7 @@ function makeCryptoMining(
     status: "operational",
     facilityType: "crypto_mining",
     confidence: "reported",
-    location: { lat: 30.0, lon: -97.0, state: "TX" },
+    location: { lat: 30.0, lon: -97.0, state: "TX", precision: "exact" },
     statusHistory: [],
     sources: [makeSource()],
     lastUpdated: "2024-01-01",
@@ -55,8 +55,10 @@ describe("getEnvironmentalImpactIndex — no data", () => {
     expect(result.dataCompleteness).toBe(0);
   });
 
-  it("returns score: null when a crypto_mining facility has no environmental block", () => {
-    const result = getEnvironmentalImpactIndex(makeCryptoMining());
+  it("returns score: null when a crypto_mining facility has no environmental block and no grid-tied eGRID fallback applies", () => {
+    const result = getEnvironmentalImpactIndex(
+      makeCryptoMining({ mining: { powerArrangement: "flared_gas" } })
+    );
     expect(result.score).toBeNull();
     expect(result.dataCompleteness).toBe(0);
   });
@@ -131,7 +133,27 @@ describe("getEnvironmentalImpactIndex — crypto mining", () => {
   });
 
   it("does not use data-center-only fields (pue) for crypto_mining facilities", () => {
-    const result = getEnvironmentalImpactIndex(makeCryptoMining());
+    const result = getEnvironmentalImpactIndex(
+      makeCryptoMining({ mining: { powerArrangement: "flared_gas" } })
+    );
     expect(result.score).toBeNull();
+  });
+});
+
+describe("getEnvironmentalImpactIndex — eGRID fallback", () => {
+  it("falls back to the TX eGRID lookup for a grid-tied data center with no environmental block", () => {
+    const result = getEnvironmentalImpactIndex(
+      makeDataCenter({ location: { lat: 32.0, lon: -97.0, state: "TX", precision: "exact" } })
+    );
+    expect(result.score).not.toBeNull();
+    expect(result.dataCompleteness).toBeCloseTo(1 / 3);
+  });
+
+  it("does not fall back for a crypto_mining facility on flared gas (off-grid arrangement)", () => {
+    const result = getEnvironmentalImpactIndex(
+      makeCryptoMining({ mining: { powerArrangement: "flared_gas" } })
+    );
+    expect(result.score).toBeNull();
+    expect(result.dataCompleteness).toBe(0);
   });
 });

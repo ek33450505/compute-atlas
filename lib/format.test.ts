@@ -20,7 +20,7 @@ function makeFacility(
     facilityType: "data_center",
     aiClassification: "confirmed",
     confidence: "confirmed",
-    location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN" },
+    location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN", precision: "exact" },
     statusHistory: [],
     sources: [
       {
@@ -104,14 +104,14 @@ describe("formatCapacity", () => {
 describe("formatLocation", () => {
   it("returns City, ST when city is present", () => {
     const f = makeFacility({
-      location: { lat: 35, lon: -90, city: "Memphis", state: "TN" },
+      location: { lat: 35, lon: -90, city: "Memphis", state: "TN", precision: "exact" },
     });
     expect(formatLocation(f)).toBe("Memphis, TN");
   });
 
   it("returns only state when city is absent", () => {
     const f = makeFacility({
-      location: { lat: 35, lon: -90, state: "TN" },
+      location: { lat: 35, lon: -90, state: "TN", precision: "exact" },
     });
     expect(formatLocation(f)).toBe("TN");
   });
