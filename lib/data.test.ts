@@ -13,8 +13,12 @@ import {
   getConfidenceCounts,
   getWaterUsage,
   getCoolingTypeCounts,
+  getFacilityTypeCounts,
+  getCommunityReceptionCounts,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
+import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
+import { COMMUNITY_RECEPTION_ORDER } from "@/lib/community";
 
 describe("getAllFacilities", () => {
   it("returns a non-empty array including known seed ids", () => {
@@ -126,6 +130,20 @@ describe("getStats", () => {
   it("does not expose totalMw (old API is removed)", () => {
     const stats = getStats();
     expect((stats as Record<string, unknown>).totalMw).toBeUndefined();
+  });
+
+  it("underConstructionMw is a non-negative number", () => {
+    const { underConstructionMw } = getStats();
+    expect(typeof underConstructionMw).toBe("number");
+    expect(underConstructionMw).toBeGreaterThanOrEqual(0);
+  });
+
+  it("underConstructionMw equals manual recomputation", () => {
+    const { underConstructionMw } = getStats();
+    const expected = getAllFacilities()
+      .filter((f) => f.status === "under_construction")
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    expect(underConstructionMw).toBe(expected);
   });
 });
 
@@ -335,6 +353,71 @@ describe("getWaterUsage", () => {
     for (const id of countedIds) {
       expect(cancelledIds.has(id)).toBe(false);
     }
+  });
+});
+
+describe("getFacilityTypeCounts", () => {
+  it("has exactly the FACILITY_TYPE_ORDER keys", () => {
+    const counts = getFacilityTypeCounts();
+    expect(Object.keys(counts).sort()).toEqual([...FACILITY_TYPE_ORDER].sort());
+  });
+
+  it("each value is non-negative", () => {
+    const counts = getFacilityTypeCounts();
+    for (const key of FACILITY_TYPE_ORDER) {
+      expect(counts[key]).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("values sum to the total facility count", () => {
+    const counts = getFacilityTypeCounts();
+    const sum = Object.values(counts).reduce((a, b) => a + b, 0);
+    expect(sum).toBe(getAllFacilities().length);
+  });
+
+  it("equals manual recomputation per key", () => {
+    const counts = getFacilityTypeCounts();
+    const facilities = getAllFacilities();
+    for (const key of FACILITY_TYPE_ORDER) {
+      const expected = facilities.filter((f) => f.facilityType === key).length;
+      expect(counts[key]).toBe(expected);
+    }
+  });
+});
+
+describe("getCommunityReceptionCounts", () => {
+  it("has exactly the COMMUNITY_RECEPTION_ORDER keys", () => {
+    const counts = getCommunityReceptionCounts();
+    expect(Object.keys(counts).sort()).toEqual([...COMMUNITY_RECEPTION_ORDER].sort());
+  });
+
+  it("each value is non-negative", () => {
+    const counts = getCommunityReceptionCounts();
+    for (const key of COMMUNITY_RECEPTION_ORDER) {
+      expect(counts[key]).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("sum is at most the total facility count", () => {
+    const counts = getCommunityReceptionCounts();
+    const sum = Object.values(counts).reduce((a, b) => a + b, 0);
+    expect(sum).toBeLessThanOrEqual(getAllFacilities().length);
+  });
+
+  it("equals manual recomputation per key", () => {
+    const counts = getCommunityReceptionCounts();
+    const facilities = getAllFacilities();
+    for (const key of COMMUNITY_RECEPTION_ORDER) {
+      const expected = facilities.filter((f) => f.community?.status === key).length;
+      expect(counts[key]).toBe(expected);
+    }
+  });
+
+  it("facilities without a community.status are not counted in any bucket", () => {
+    const counts = getCommunityReceptionCounts();
+    const sum = Object.values(counts).reduce((a, b) => a + b, 0);
+    const withStatus = getAllFacilities().filter((f) => !!f.community?.status).length;
+    expect(sum).toBe(withStatus);
   });
 });
 

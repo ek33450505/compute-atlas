@@ -11,10 +11,14 @@ import {
   getTopOperators,
   getWaterUsage,
   getCoolingTypeCounts,
+  getFacilityTypeCounts,
+  getCommunityReceptionCounts,
   getAllFacilities,
   type CoolingType,
 } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
+import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
+import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import type { Facility } from "@/lib/schema";
 import { aiClassificationEnum } from "@/lib/schema";
 
@@ -65,8 +69,16 @@ export default function StatsPage() {
   const topOperators = getTopOperators(10);
   const water = getWaterUsage();
   const cooling = getCoolingTypeCounts();
+  const facilityTypeCounts = getFacilityTypeCounts();
+  const communityCounts = getCommunityReceptionCounts();
 
   const total = stats.count;
+  const communityReporting = COMMUNITY_RECEPTION_ORDER.reduce(
+    (sum, key) => sum + communityCounts[key],
+    0
+  );
+  const communityFriction =
+    communityCounts.contested + communityCounts.opposed + communityCounts.litigation;
 
   const dataCenterCount = getAllFacilities().filter(
     (f) => f.facilityType === "data_center"
@@ -141,7 +153,66 @@ export default function StatsPage() {
             Planned pipeline
           </span>
         </div>
+        <div className="flex flex-col gap-1">
+          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+            {(stats.underConstructionMw / 1000).toFixed(0)} GW
+          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            Under construction
+          </span>
+        </div>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § By type                                                           */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="facility-type-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § By type
+        </p>
+        <h2
+          id="facility-type-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          Facility type
+        </h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Most tracked sites are data centers; a smaller set are large-scale
+          crypto mining facilities, which draw on the same grid capacity.
+        </p>
+        <div className="space-y-4">
+          {FACILITY_TYPE_ORDER.map((key) => {
+            const count = facilityTypeCounts[key];
+            const pct = total > 0 ? (count / total) * 100 : 0;
+            return (
+              <div key={key} className="space-y-1.5">
+                <div className="flex items-baseline justify-between gap-2 text-sm">
+                  <span className="text-foreground">
+                    {FACILITY_TYPE_META[key].label}
+                  </span>
+                  <span className="font-mono tabular-nums text-muted-foreground">
+                    {count} &middot; {pct.toFixed(0)}%
+                  </span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    aria-hidden="true"
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${pct.toFixed(2)}%`,
+                      backgroundColor: "var(--primary)",
+                      opacity: 0.7,
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* § Water use                                                         */}
@@ -272,6 +343,80 @@ export default function StatsPage() {
                     style={{
                       width: `${pct.toFixed(2)}%`,
                       backgroundColor: getStatusColor(status),
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § Community reception                                               */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="community-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Community reception
+        </p>
+        <h2
+          id="community-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          Community reception
+        </h2>
+
+        {/* Lead figure */}
+        <div className="flex flex-col gap-1">
+          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+            {communityFriction}
+          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            Sites facing documented community friction
+          </span>
+        </div>
+
+        {/* Context line */}
+        <p className="text-sm text-muted-foreground">
+          Contested, opposed, or in active litigation &middot; out of{" "}
+          {communityReporting} with a sourced community status
+        </p>
+
+        {/* Honest caveat */}
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Reception is a{" "}
+          <strong className="font-medium text-foreground">sourced, documented</strong>{" "}
+          signal, not a survey &mdash; {total - communityReporting} tracked
+          campuses have no documented community status yet and are not
+          counted here.
+        </p>
+
+        {/* Reception breakdown */}
+        <div className="space-y-4">
+          {COMMUNITY_RECEPTION_ORDER.map((key) => {
+            const count = communityCounts[key];
+            const pct = communityReporting > 0 ? (count / communityReporting) * 100 : 0;
+            return (
+              <div key={key} className="space-y-1.5">
+                <div className="flex items-baseline justify-between gap-2 text-sm">
+                  <span className="text-foreground">
+                    {COMMUNITY_RECEPTION_META[key].label}
+                  </span>
+                  <span className="font-mono tabular-nums text-muted-foreground">
+                    {count} &middot; {pct.toFixed(0)}%
+                  </span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    aria-hidden="true"
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${pct.toFixed(2)}%`,
+                      backgroundColor: "var(--primary)",
+                      opacity: 0.7,
                     }}
                   />
                 </div>

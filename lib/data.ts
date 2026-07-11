@@ -1,6 +1,8 @@
 import type { z } from "zod";
 import { facilitiesSchema, type Facility, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { STATUS_ORDER, type Status } from "@/lib/status";
+import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
+import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
 import facilitiesRaw from "@/data/facilities.json";
 
 // Validate at module load time so `next build` fails loudly on bad data.
@@ -59,6 +61,7 @@ export function getStats(): {
   states: number;
   operationalMw: number;
   plannedMw: number;
+  underConstructionMw: number;
 } {
   const count = facilities.length;
   const states = new Set(facilities.map((f) => f.location.state)).size;
@@ -71,7 +74,10 @@ export function getStats(): {
     (sum, f) => sum + (f.capacityMw?.planned ?? 0),
     0
   );
-  return { count, states, operationalMw, plannedMw };
+  const underConstructionMw = facilities
+    .filter((f) => f.status === "under_construction")
+    .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+  return { count, states, operationalMw, plannedMw, underConstructionMw };
 }
 
 // ============================================================
@@ -168,6 +174,39 @@ export function getConfidenceCounts(): Record<Facility["confidence"], number> {
   ) as Record<Facility["confidence"], number>;
   for (const f of facilities) {
     counts[f.confidence]++;
+  }
+  return counts;
+}
+
+/**
+ * Returns a count per facility type for all facilities.
+ * Seeds both keys from `FACILITY_TYPE_ORDER` at 0 before tallying.
+ */
+export function getFacilityTypeCounts(): Record<FacilityType, number> {
+  const counts = Object.fromEntries(
+    FACILITY_TYPE_ORDER.map((k) => [k, 0])
+  ) as Record<FacilityType, number>;
+  for (const f of facilities) {
+    counts[f.facilityType]++;
+  }
+  return counts;
+}
+
+/**
+ * Returns a count per community reception status across facilities that
+ * carry a sourced `community.status` value. Facilities with no
+ * `community.status` at all are not counted in any bucket — "unknown" is
+ * itself an explicit sourced value, distinct from "not reported."
+ * Seeds all 6 keys from `COMMUNITY_RECEPTION_ORDER` at 0 before tallying.
+ */
+export function getCommunityReceptionCounts(): Record<CommunityReception, number> {
+  const counts = Object.fromEntries(
+    COMMUNITY_RECEPTION_ORDER.map((k) => [k, 0])
+  ) as Record<CommunityReception, number>;
+  for (const f of facilities) {
+    if (f.community?.status) {
+      counts[f.community.status]++;
+    }
   }
   return counts;
 }
