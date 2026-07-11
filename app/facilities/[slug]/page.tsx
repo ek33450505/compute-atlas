@@ -5,6 +5,7 @@ import { Info } from "lucide-react";
 
 import { getAllFacilities, getFacilityById } from "@/lib/data";
 import { getStatusMeta } from "@/lib/status";
+import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatCapacity, formatLocation } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
 import { facilityJsonLdString } from "@/lib/seo";
@@ -117,6 +118,10 @@ export default async function FacilityPage({
         </h1>
         <p className="text-base text-muted-foreground">{facility.operator}</p>
         <div className="flex flex-wrap items-center gap-2 pt-1">
+          <Badge variant="outline">
+            {FACILITY_TYPE_META[facility.facilityType]?.label ??
+              facility.facilityType}
+          </Badge>
           <StatusBadge status={facility.status} className="text-base" />
           {facility.aiClassification && (
             <Badge variant="outline">
