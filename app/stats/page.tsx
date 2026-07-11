@@ -350,9 +350,11 @@ export default function StatsPage() {
             { key: "hybrid", label: "Hybrid" },
             { key: "closed_loop", label: "Closed-loop (low water)" },
             { key: "air", label: "Air-cooled (minimal)" },
-            { key: "unknown", label: "Unknown" },
           ];
-          const coolingSum = Object.values(cooling).reduce((a, b) => a + b, 0);
+          const coolingSum = coolingEntries.reduce(
+            (sum, { key }) => sum + cooling[key],
+            0
+          );
           return (
             <div className="space-y-4">
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
