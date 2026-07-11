@@ -21265,5 +21265,201 @@
       "sourceIndex": 3
     },
     "notes": "1115 Industrial Ave SW, Massillon, Stark County (an alternate address, 2527-2799 9th St SW, appears in one aggregator listing and may reflect the same multi-street parcel — not independently reconciled). 24-26 buildings (~40x110 ft each), 21,000+ ASIC mining machines, ~$22/hr starting wage, ~$82,000 average salary, no property tax abatement received. Explicitly distinct from Bitdeer's Whitetail Creek facility (1047 Belmont Ave, Niles/Weathersfield Township, Trumbull County — different city, county, and address, ~40 miles away) and from Bitdeer Clarington — Bitdeer's own coverage treats Massillon, Niles, and Clarington as three separate Ohio sites. Pure Bitcoin/ASIC mining with no AI/HPC framing in any source found (unlike Clarington and the proposed Shalersville site) — no aiClassification set. Coordinates are an approximate geocode; exact address should be reconciled against Stark County GIS/auditor parcel records in a future pass."
+  },
+  {
+    "id": "prologis-stem-park-zanker-road-san-jose-ca",
+    "name": "Prologis STEM Park",
+    "operator": "Prologis",
+    "status": "proposed",
+    "facilityType": "data_center",
+    "aiClassification": "likely",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.423,
+      "lon": -121.943,
+      "city": "San Jose",
+      "county": "Santa Clara",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 396
+    },
+    "landAcres": 159,
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/400mw-prologis-data-center-campus-chosen-as-preferred-project-on-city-owned-land-in-san-jose-california/",
+        "label": "400MW Prologis data center campus chosen as preferred project on city-owned land in San Jose, California",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sanjoseinside.com/news/prologis-inc-wins-bid-for-one-of-the-largest-economic-development-projects-in-south-bay/",
+        "label": "Prologis Inc. Wins Bid for One of the Largest Economic Development Projects in South Bay",
+        "publisher": "San José Inside",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://therealdeal.com/san-francisco/2025/11/10/prologis-favored-for-san-jose-data-center-site/",
+        "label": "Prologis favored for San Jose data center site",
+        "publisher": "The Real Deal",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "159-acre city-owned parcel at Hwy 237 & Zanker Road, North San Jose (bounded by Los Esteros Energy Center, Artesian Slough, Hwy 237, and the Silicon Valley Advanced Water Purification Center). Prologis selected as preferred developer by San Jose City Council (unanimous vote, Nov 18 2025) over Catellus-Deca and Trammell Crow proposals; CEQA review and ground-lease negotiation still pending as of source dates — not yet approved. 'STEM Park' = Sustainable Technology, Engineering and Manufacturing Park: four 99MW data-center buildings (1.68M sq ft total, capacityMw above) plus a separate ~785,000 sq ft / 100MW advanced-manufacturing component (not counted in capacityMw, different use). PG&E has committed initial 250MW via dual feed from the Los Esteros 230kV substation within 30-36 months. ~$25B investment widely reported (DCD et al.) but not confirmed directly by Prologis — omitted from investmentUsd. Projected 6,000+ jobs and $30M/yr city tax revenue are projections tied to a not-yet-approved project, not delivered counts — omitted from jobs numeric. A separate, already-tracked Prologis site (prologis-silver-creek-valley-san-jose-ca) and another new Prologis San Jose site (prologis-rue-ferrari-san-jose-ca, this same batch) are distinct parcels, not duplicates."
+  },
+  {
+    "id": "prologis-rue-ferrari-san-jose-ca",
+    "name": "Prologis 5853 Rue Ferrari",
+    "operator": "Prologis",
+    "status": "permitted",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.2445,
+      "lon": -121.792,
+      "city": "San Jose",
+      "county": "Santa Clara",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 49
+    },
+    "landAcres": 17.4,
+    "sources": [
+      {
+        "url": "https://ceqanet.lci.ca.gov/2022010266/2",
+        "label": "5853 Rue Ferrari Project (CEQAnet record, SCH #2022010266)",
+        "publisher": "California State Clearinghouse (CEQAnet)",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://hoodline.com/2026/07/south-san-jose-warehouse-poised-to-become-49-megawatt-data-beast/",
+        "label": "South San Jose warehouse poised to become 49-megawatt data center",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "Site Development Permit Amendment converting an existing ~300,000 sq ft warehouse (Parcel #678-05-057, City file H21-006/HA21-006-01) into server-ready R&D space, adding backup generators, transformers, and evaporative cooling chillers. Approved Dec 10 2025 via a Mitigated Negative Declaration w/ Addendum (no significant environmental impacts found); Notice of Determination posted Dec 18 2025. No tenant named yet — next steps are leasing, tenant-improvement permits, and utility interconnection before server halls activate. 140 jobs projected (not delivered) — omitted from jobs numeric. Distinct from the already-tracked prologis-silver-creek-valley-san-jose-ca record and prologis-stem-park-zanker-road-san-jose-ca (this same batch) — different parcels."
+  },
+  {
+    "id": "cloverleaf-project-open-sky-piedmont-ok",
+    "name": "Cloverleaf Project Open Sky",
+    "operator": "Cloverleaf Infrastructure",
+    "status": "proposed",
+    "facilityType": "data_center",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.7,
+      "lon": -97.8,
+      "city": "Piedmont",
+      "county": "Canadian",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "landAcres": 630,
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/powered-land-company-cloverleaf-proposing-633-acre-data-center-in-canadian-county-oklahoma/",
+        "label": "Powered land company Cloverleaf proposing 633-acre data center in Canadian County, Oklahoma",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://kfor.com/news/local/piedmont-planning-commission-encourages-city-council-to-deny-data-center-proposal/",
+        "label": "Piedmont planning commission encourages city council to deny data center proposal",
+        "publisher": "KFOR",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://oklahomawatch.org/2026/06/26/a-transmission-line-built-to-fix-grid-congestion-has-become-oklahomas-hottest-data-center-address/",
+        "label": "A Transmission Line Built to Fix Grid Congestion Has Become Oklahoma's Hottest Data Center Address",
+        "publisher": "Oklahoma Watch",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "community": {
+      "status": "contested",
+      "notes": "Piedmont Planning Commission recommended the City Council DENY the 'Project Open Sky' PUD rezoning pending additional information; Council vote rescheduled to late July 2026 — approval not yet granted as of this writing."
+    },
+    "notes": "630-acre proposed data campus near the Mathewson Substation, NW 248th Street, Piedmont (Canadian/Kingfisher county line) — part of a transmission corridor drawing multiple competing proposals; see beltline-piedmont-kingfisher-county-ok (this same batch), a separate, distinct 321-acre Beltline Energy site nearby — do not conflate despite both being in Piedmont. Closed-loop cooling planned. Cloverleaf recently withdrew from two Wisconsin data center projects after local opposition (context, not this project). Reported as 'over $1 billion taxable investment' (DCD) — read as a tax-abatement eligibility threshold rather than a confirmed capex figure, so not populated as investmentUsd."
+  },
+  {
+    "id": "beltline-piedmont-kingfisher-county-ok",
+    "name": "Beltline Energy Piedmont Site",
+    "operator": "Beltline Energy",
+    "status": "proposed",
+    "facilityType": "data_center",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.712,
+      "lon": -97.825,
+      "city": "Piedmont",
+      "county": "Kingfisher",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "landAcres": 321,
+    "sources": [
+      {
+        "url": "http://www.piedmont-ok.gov/323/Data-Center-Transparency-Portal",
+        "label": "Data Center Transparency Portal",
+        "publisher": "City of Piedmont, OK",
+        "retrievedAt": "2026-07-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://okcfox.com/news/local/commission-urges-council-to-deny-cloverleaf-plan-beltline-energy-vote-delayed-for-review",
+        "label": "Commission urges council to deny Cloverleaf plan; Beltline Energy vote delayed for review",
+        "publisher": "OKCFOX",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "321-acre rezoning filed via BLE Holdings LLC / BLE Landholdings LLC, SW/4 of Section 26, Township 15N, Range 6W, Kingfisher County — legal descriptions and Kingfisher County parcel numbers 0000-26-15N-06W-3-000-00, -3-001-00, -3-002-00, -3-003-00 (plus an adjacent 5th parcel, -4-000-00) per the city's own PUD filing. Bounded by E 870 Rd (N), N 2920 Rd (E), Azalea St NW (S), N 2910 Rd (W). City vote delayed for further review as of source date. This is a distinct, separate, competing site from Cloverleaf's 630-acre 'Project Open Sky' proposal also in Piedmont (different parcels, different developer, different acreage) — despite sharing a host city, do not conflate the two (both independently confirmed as separate projects via direct source verification). No primary-sourced capacity or investment figure was found for this specific site — omitted rather than guessed."
+  },
+  {
+    "id": "beltline-oklahoma-city-frisco-road-ok",
+    "name": "Beltline Energy Oklahoma City Campus",
+    "operator": "Beltline Energy",
+    "status": "proposed",
+    "facilityType": "data_center",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.49,
+      "lon": -97.795,
+      "city": "Oklahoma City",
+      "county": "Oklahoma",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "landAcres": 295.5,
+    "sources": [
+      {
+        "url": "https://www.okenergytoday.com/2026/01/data-center-wins-rezoning-approval-from-okc-planning-board/",
+        "label": "Data center wins rezoning approval from OKC planning board",
+        "publisher": "OK Energy Today",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "Two adjoining parcels rezoned via PUD cases likely numbered PUD-2105 (111.5 acres at 3025 N. Frisco Road, near I-40/Frisco Rd) and PUD-2124 (184 acres at 13921 NW 23rd Street, near NW 23rd/Frisco Rd, ~0.5 mi west of Yukon) — the case-number-to-address pairing is probable (inferred by matching geographic descriptors across sources) but not confirmed by a single primary document naming both together. OKC Planning Commission voted 7-0 to recommend approval Jan 21 2026; City Council final vote status is unconfirmed as of this writing (okc.gov council agendas were inaccessible during research) — treat as still-pending, not approved. Explicitly carved out of OKC's citywide data-center moratorium (~April 2026) as an already-pending application, confirming it remains active. Press coverage separately cites a larger '350-acre' and '480-acre' project total that doesn't reconcile with the confirmed 295.5-acre rezoned total (111.5+184) — the gap is plausibly an adjacent ~184.5-acre parcel Yukon Municipal Authority sold to BLE Landholdings LLC for $15.8M in Aug 2025 (near Hwy 66/Frisco Rd), which may be the same tract as the NW 23rd St parcel, but this is not confirmed. A $1B investment / 0.5GW capacity figure is associated with the broader Yukon-area BLE deal in local reporting but was not found tied specifically to this OKC rezoning by a primary source — omitted from capacityMw/investmentUsd pending confirmation rather than asserted."
   }
 ]
