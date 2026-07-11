@@ -22001,5 +22001,134 @@
     ],
     "lastUpdated": "2026-07-11",
     "notes": "Coordinates are an approximate anchor to the Heritage Center Industrial Park / former East Tennessee Technology Park (K-25/K-33 site), west Oak Ridge, Roane County -- no parcel-exact public coordinate was found for the K-33 sub-site this session; treat as approximate pending confirmation against NRC ADAMS environmental-assessment site maps or Oak Ridge EDI parcel maps. Investment and jobs figures were not disclosed in any source reviewed and are omitted rather than estimated."
+  },
+  {
+    "id": "cascade-advanced-energy-facility-wa",
+    "name": "Cascade Advanced Energy Facility",
+    "operator": "Energy Northwest",
+    "status": "proposed",
+    "facilityType": "power_generation",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 46.4706,
+      "lon": -119.3339,
+      "state": "WA",
+      "city": "Richland",
+      "county": "Benton",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 320
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-10-16",
+        "sourceIndex": 2,
+        "note": "Amazon and Energy Northwest announce plans to develop advanced nuclear technology in Washington, funding the feasibility/environmental/safety/permitting/licensing phase for four Xe-100 reactors"
+      },
+      {
+        "status": "proposed",
+        "date": "2025-01-01",
+        "sourceIndex": 3,
+        "note": "Energy Northwest selects Cascade Nuclear Partners (Kiewit Nuclear Solutions, Black & Veatch, Aecon) as design-builder for the now-named Cascade Advanced Energy Facility"
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "X-energy Xe-100 high-temperature gas-cooled small modular reactors, 80 MWe per module, 60-year design life. Initial deployment is 4 modules (320 MW); the site is licensed for up to 12 modules (960 MW total). NRC pre-application phase only -- no construction permit docketed as of this pass. Construction targeted to begin by end of the decade (~2029-2030); operations/first power targeted 2030s (one Energy Northwest source cites mid-2030s). Delivers into the Bonneville Power Administration (BPA) / Pacific Northwest grid -- no single named data center is the offtake destination."
+    },
+    "community": {
+      "status": "unknown",
+      "notes": "No organized community opposition documented in sourcing this pass -- not confirmed absent, simply not found. Coverage describes general regional interest tied to job creation and clean-energy framing in the Tri-Cities/Hanford area, which has an established nuclear workforce (PNNL, Columbia Generating Station).",
+      "sourceIndex": 8
+    },
+    "generation": {
+      "technology": "nuclear_smr",
+      "offtaker": "Amazon",
+      "unitCount": 4,
+      "notes": "Amazon announced funding (2024-10-16) for the feasibility/environmental/safety/permitting/licensing phase of four Xe-100 reactors with Energy Northwest and X-energy, amid AI-driven power demand. Energy Northwest owns, builds, and operates the facility; X-energy is the reactor-technology licensor. Amazon holds a contractual right to purchase power from the first 320 MW phase; public power utilities may purchase up to 50% of the full 960 MW build-out per Energy Northwest's own project page, so Amazon's offtake share of the full build-out is not necessarily 100%. Design-builder Cascade Nuclear Partners (Kiewit Nuclear Solutions / Black & Veatch / Aecon) selected 2025. Amazon separately anchored a ~$500M Series C-1 investment in X-energy (announced 2024-10-16, alongside Amazon's Climate Pledge Fund, Citadel's Ken Griffin, Ares Management affiliates, NGP, and the University of Michigan) supporting X-energy's reactor design/licensing and Phase 1 of its TRISO-X fuel fabrication facility in Oak Ridge, TN -- this is company-level X-energy funding, not Cascade project capex. Project-level construction jobs are projected at ~1,000-2,000 and operational jobs at ~100-200 per Energy Northwest's own project page; these are the operator's projections, not delivered/operational counts, and are recorded here as notes rather than in the jobs field."
+    },
+    "sources": [
+      {
+        "url": "https://www.nrc.gov/reactors/new-reactors/advanced/who-were-working-with/pre-application-activities/energy-northwest",
+        "label": "Cascade Advanced Energy Facility pre-application project page",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.energy-northwest.com/news-releases/amazon-energy-northwest-announce-plans-to-develop-advanced-nuclear-technology-in-washington/",
+        "label": "Amazon & Energy Northwest Announce Plans To Develop Advanced Nuclear Technology in Washington",
+        "publisher": "Energy Northwest",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.energy-northwest.com/news-releases/energy-northwest-selects-design-builder-for-cascade-advanced-energy-facility-in-washington-state/",
+        "label": "Energy Northwest Selects Design Builder for Cascade Advanced Energy Facility",
+        "publisher": "Energy Northwest",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.energy-northwest.com/energy-projects/cascade-advanced-energy-facility/",
+        "label": "Cascade Advanced Energy Facility project page",
+        "publisher": "Energy Northwest",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://x-energy.com/news/energy-northwest-x-energy-joint-development-agreement-xe-100/",
+        "label": "Energy Northwest and X-energy Sign Joint Development Agreement for Xe-100 Advanced Small Modular Reactor Project",
+        "publisher": "X-energy",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://x-energy.com/media/news-releases/amazon-invests-in-x-energy-to-support-advanced-small-modular-nuclear-reactors-and-expand-carbon-free-power",
+        "label": "Amazon Invests in X-energy to Support Advanced Small Modular Nuclear Reactors and Expand Carbon-Free Power",
+        "publisher": "X-energy",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nrc.gov/reactors/new-reactors/advanced/who-were-working-with/pre-application-activities/xe-100",
+        "label": "Xe-100 reactor technology pre-application page",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.nrc.gov/info-finder/reactors/wash2",
+        "label": "Columbia Generating Station reactor info-finder page",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/washington-nuclear-facility-smrs-cascade-amazon-modular/802967/",
+        "label": "Washington nuclear facility will deploy 12 Amazon-funded SMRs",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/nrc-speeds-timeline-for-dowx-energy-reactor-permit-review/751050/",
+        "label": "NRC speeds timeline for Dow/X-energy reactor permit review",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.efsec.wa.gov/facilities/columbia-generating-station",
+        "label": "Columbia Generating Station facility page",
+        "publisher": "Washington Energy Facility Site Evaluation Council",
+        "retrievedAt": "2026-07-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "Coordinates (46.4706, -119.3339) anchor to Energy Northwest's Columbia Generating Station on the DOE Hanford Reservation, Benton County -- the distinct Cascade SMR parcel, described only as 'adjacent to' Columbia Generating Station, has no publicly confirmed exact coordinate; treat as an approximate site anchor, not a parcel-exact point. Project-level capital cost is not disclosed in any source reviewed and is omitted rather than estimated; Amazon's ~$500M investment in X-energy is a company-level reactor-technology investment, not Cascade project capex (see generation.notes). Site is licensed for up to 12 modules (960 MW) total; only the initial 4-module (320 MW) phase is recorded in capacityMw.planned as the confirmed near-term build."
   }
 ]
