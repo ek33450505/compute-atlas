@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { getStates, getStateSummary, getAllFacilities } from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small states. */
 function formatPower(mw: number): string {
@@ -44,13 +45,7 @@ export default function StatesIndexPage() {
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
-      {/* Back link */}
-      <Link
-        href="/map"
-        className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-      >
-        ← Back to the map
-      </Link>
+      <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "States" }]} />
 
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Info } from "lucide-react";
@@ -22,6 +21,7 @@ import { StatusTimeline } from "@/components/facility/status-timeline";
 import { ProvenancePanel } from "@/components/facility/provenance-panel";
 import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-dynamic";
 import { CivicImpactSection, hasCivicImpact } from "@/components/facility/civic-impact";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export function generateStaticParams() {
   return getAllFacilities().map((f) => ({ slug: f.id }));
@@ -84,13 +84,7 @@ export default async function FacilityPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: facilityJsonLdString(facility) }}
       />
-      {/* Back link */}
-      <Link
-        href="/map"
-        className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-      >
-        ← Back to the map
-      </Link>
+      <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: facility.name }]} />
 
       {/* Plate masthead */}
       <header className="space-y-3">

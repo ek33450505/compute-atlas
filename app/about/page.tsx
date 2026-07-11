@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
 import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export const metadata: Metadata = {
   title: "About & method",
@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
+      <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "About" }]} />
       {/* ---- Masthead ---- */}
       <header className="relative">
         <div
@@ -583,16 +584,6 @@ export default function AboutPage() {
              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">Sponsor this project on GitHub</a>.
         </p>
       </section>
-
-      {/* Back navigation */}
-      <div className="pt-4 border-t border-border">
-        <Link
-          href="/map"
-          className="inline-flex items-center text-sm font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
-        >
-          ← Back to the map
-        </Link>
-      </div>
     </div>
   );
 }

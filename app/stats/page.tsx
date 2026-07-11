@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import {
   getStats,
@@ -23,6 +22,7 @@ import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import type { Facility } from "@/lib/schema";
 import { aiClassificationEnum } from "@/lib/schema";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export const metadata: Metadata = {
   title: "Statistics",
@@ -99,6 +99,7 @@ export default function StatsPage() {
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16 space-y-12"
     >
+      <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "Stats" }]} />
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
@@ -704,18 +705,6 @@ export default function StatsPage() {
             ))}
           </ul>
         </section>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Back navigation                                                     */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="pt-4 border-t border-border">
-        <Link
-          href="/map"
-          className="inline-flex items-center text-sm font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
-        >
-          ← Back to the map
-        </Link>
       </div>
     </div>
   );

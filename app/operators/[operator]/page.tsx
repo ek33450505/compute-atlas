@@ -13,6 +13,7 @@ import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatCapacity, formatLocation } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small operators. */
 function formatPower(mw: number): string {
@@ -75,13 +76,7 @@ export default async function OperatorPage({
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
-      {/* Back link */}
-      <Link
-        href="/operators"
-        className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-      >
-        ← All operators
-      </Link>
+      <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Operators", href: "/operators" }, { label: operatorName }]} />
 
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}

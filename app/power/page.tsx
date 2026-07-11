@@ -8,6 +8,7 @@ import {
 } from "@/lib/data";
 import { formatCapacity, formatLocation, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
+import { Breadcrumb } from "@/components/breadcrumb";
 import type { PowerGenerationFacility } from "@/lib/schema";
 
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small totals. */
@@ -92,12 +93,7 @@ export default function PowerPage() {
         data-content-width="4xl"
         className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
       >
-        <Link
-          href="/map"
-          className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          ← Back to the map
-        </Link>
+        <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Power" }]} />
         <header className="space-y-4 pb-2">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
             Dedicated generation
@@ -119,13 +115,7 @@ export default function PowerPage() {
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
-      {/* Back link */}
-      <Link
-        href="/map"
-        className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-      >
-        ← Back to the map
-      </Link>
+      <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Power" }]} />
 
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
