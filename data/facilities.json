@@ -21587,5 +21587,149 @@
     ],
     "lastUpdated": "2026-07-11",
     "notes": "Site anchored to the former Portsmouth Gaseous Diffusion Plant (PORTS) off US-23, verified via Library of Congress HAER documentation and EPA Superfund records for the broader federal reservation; no public parcel-level lat/lon has been disclosed for Oklo's 206-acre tract, so location precision is 'approximate' (regional site-level placeholder, not a parcel-confirmed point). Not to be conflated with the separate, larger DOE/Commerce-announced natural-gas (9.2 GW) + data-center (10 GW) megasite reported at the same broader PORTS property (SB Energy/AEP Ohio, ~$33B, announced Feb 2026) \u2014 that is a distinct project. investmentUsd intentionally omitted: the disclosed $5.15M Dec 2025 transaction covers land acquisition only, not campus capex (see generation.notes)."
+  },
+  {
+    "id": "crane-clean-energy-center-tmi-pa",
+    "name": "Crane Clean Energy Center (Three Mile Island Unit 1)",
+    "operator": "Constellation Energy",
+    "status": "permitted",
+    "facilityType": "power_generation",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.1542,
+      "lon": -76.7250,
+      "state": "PA",
+      "city": "Middletown",
+      "county": "Dauphin",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 835
+    },
+    "announcedDate": "2024-09-20",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-09-20",
+        "sourceIndex": 0,
+        "note": "Constellation announces Crane Clean Energy Center restart + 20-year Microsoft PPA"
+      },
+      {
+        "status": "permitted",
+        "date": "2026-06-08",
+        "sourceIndex": 7,
+        "note": "NRC issues Draft Environmental Assessment and Draft FONSI, finding the restart would have no significant environmental impacts; restoration underway pending final NRC approval (final restart decision anticipated 2027)"
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "Restart of Three Mile Island Unit 1 (shut 2019). Delivers into the PJM grid. Target in-service reported as 2027 (2026 coverage) to 2028 (original 2024 announcement)."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Union/economic-development support alongside organized opposition (Three Mile Island Alert, Sierra Club PA, local residents) over spent-fuel storage, water use, and safety; interventions before NRC/DEP/Susquehanna River Basin Commission.",
+      "sourceIndex": 11
+    },
+    "investmentUsd": 1600000000,
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Microsoft",
+      "notes": "20-year PPA; Microsoft matches its PJM-region data-center consumption (no single named data center). $1B U.S. DOE federal loan backs the restart. Plant is in Londonderry Township, Dauphin County, near Middletown, PA."
+    },
+    "sources": [
+      {
+        "url": "https://www.constellationenergy.com/news/2024/Constellation-to-Launch-Crane-Clean-Energy-Center-Restoring-Jobs-and-Carbon-Free-Power-to-The-Grid.html",
+        "label": "Constellation to Launch Crane Clean Energy Center, Restoring Jobs and Carbon-Free Power to The Grid",
+        "publisher": "Constellation Energy",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nrc.gov/info-finder/reactors/ccec",
+        "label": "Christopher M. Crane Clean Energy Center facility info page",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.nrc.gov/docs/ML1906/ML19067A010.pdf",
+        "label": "Three Mile Island Unit 1 License Renewal Application / site description",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.nrc.gov/docs/ML2509/ML25090A037.pdf",
+        "label": "Crane Clean Energy Center site correspondence showing address (2625 River Road, Middletown, PA 17057)",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.nrc.gov/docs/ML2519/ML25198A239.pdf",
+        "label": "License amendment filing, July 22, 2025",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.nrc.gov/docs/ML2529/ML25293A010.pdf",
+        "label": "Physical security/emergency plan filing, Oct 21, 2025",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/2026/02/24/2026-03626/constellation-energy-generation-llc-christopher-m-crane-clean-energy-center-applications-for",
+        "label": "NRC notice, license amendment applications / No Significant Hazards Consideration, Feb 24, 2026",
+        "publisher": "Federal Register",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/2026/06/08/2026-11377/constellation-energy-generation-llc-christopher-m-crane-clean-energy-center-draft-environmental",
+        "label": "NRC Draft Environmental Assessment / Draft FONSI, June 8, 2026",
+        "publisher": "Federal Register",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1868275/000186827525000023/ceg-20241231.htm",
+        "label": "Constellation Energy Corp SEC Form 10-K FY2024",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.eenews.net/articles/three-mile-island-restart-closes-in-on-nrc-approval/",
+        "label": "Three Mile Island restart closes in on NRC approval",
+        "publisher": "E&E News (POLITICO)",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://penncapital-star.com/energy-environment/nuclear-regulators-hear-concerns-about-plan-to-restart-three-mile-island-reactor/",
+        "label": "Nuclear regulators hear concerns about plan to restart Three Mile Island reactor",
+        "publisher": "Pennsylvania Capital-Star",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://penncapital-star.com/energy-environment/nuclear-regulatory-commission-panel-hears-worries-but-mostly-support-for-tmi-restart/",
+        "label": "Nuclear Regulatory Commission panel hears worries, but mostly support for Three Mile Island restart",
+        "publisher": "Pennsylvania Capital-Star",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/nrc-reviews-three-mile-island-reopening-plans-in-public-meeting/",
+        "label": "NRC reviews Three Mile Island nuclear plant reopening plans in public meeting",
+        "publisher": "DataCenterDynamics",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "Restoration underway pending final NRC approval \u2014 physical restart work (steam generator, main generator, emergency diesel generator, and underground piping inspections; ~500 on-site staff as of Sept 2025) is proceeding, but the final NRC restart license-amendment decision is not expected until 2027. Jobs figure (3,400 direct/indirect) is a third-party Brattle Group economic-impact projection, not an audited actual, and was omitted from the structured jobs field for that reason; investmentUsd of $1.6B is Constellation's own disclosed restart capex estimate."
   }
 ]
