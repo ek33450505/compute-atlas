@@ -62,7 +62,22 @@ const facilityGamma: Facility = {
   lastUpdated: "2025-01-15",
 };
 
-const fixtures = [facilityAlpha, facilityBeta, facilityGamma];
+const facilityDelta: Facility = {
+  id: "delta-facility",
+  name: "Delta Point",
+  operator: "DeltaSystems",
+  status: "permitted",
+  facilityType: "data_center",
+  // no aiClassification
+  confidence: "reported",
+  location: { lat: 41.0, lon: -87.0, city: "Chicago", state: "IL", precision: "exact" },
+  capacityMw: { operational: 75 },
+  statusHistory: [],
+  sources: [makeSource()],
+  lastUpdated: "2024-03-10",
+};
+
+const fixtures = [facilityAlpha, facilityBeta, facilityGamma, facilityDelta];
 
 // ---------------------------------------------------------------------------
 // Header tests
@@ -74,6 +89,8 @@ describe("FacilityTable — headers", () => {
     expect(screen.getByRole("columnheader", { name: /name/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /operator/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /status/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /type/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /ai class/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /location/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /capacity/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /confidence/i })).toBeInTheDocument();
@@ -118,12 +135,23 @@ describe("FacilityTable — row content", () => {
 
   it("shows em dash for facility with no capacity", () => {
     render(<FacilityTable facilities={fixtures} />);
-    expect(screen.getByText("—")).toBeInTheDocument();
+    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
   });
 
   it("renders location as City, State", () => {
     render(<FacilityTable facilities={fixtures} />);
     expect(screen.getByText("Memphis, TN")).toBeInTheDocument();
+  });
+
+  it("renders the facility type label", () => {
+    render(<FacilityTable facilities={fixtures} />);
+    expect(screen.getAllByText("Data center").length).toBeGreaterThan(0);
+  });
+
+  it("renders the AI classification label and falls back to em dash when absent", () => {
+    render(<FacilityTable facilities={fixtures} />);
+    expect(screen.getAllByText("AI-specific").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
   });
 });
 
@@ -145,10 +173,11 @@ describe("FacilityTable — aria-sort", () => {
     expect(sortButton).toHaveAttribute("aria-label", "Sort by Name");
   });
 
-  it("non-sortable headers do not have aria-sort", () => {
+  it("every column header is sortable", () => {
     render(<FacilityTable facilities={fixtures} />);
-    const confidenceHeader = screen.getByRole("columnheader", { name: /confidence/i });
-    expect(confidenceHeader).not.toHaveAttribute("aria-sort");
+    screen.getAllByRole("columnheader").forEach((h) => {
+      expect(h).toHaveAttribute("aria-sort");
+    });
   });
 });
 
@@ -230,10 +259,11 @@ describe("FacilityTable — default sort", () => {
   it("defaults to capacity descending: largest first, no-capacity last", () => {
     render(<FacilityTable facilities={fixtures} />);
     const rows = screen.getAllByRole("row");
-    // rows[0] = header. Beta (1200) > Alpha (150) > Gamma (no capacity).
+    // rows[0] = header. Beta (1200) > Alpha (150) > Delta (75) > Gamma (no capacity).
     expect(within(rows[1]).getByRole("link")).toHaveTextContent("Beta Farm");
     expect(within(rows[2]).getByRole("link")).toHaveTextContent("Alpha Center");
-    expect(within(rows[3]).getByRole("link")).toHaveTextContent("Gamma Hub");
+    expect(within(rows[3]).getByRole("link")).toHaveTextContent("Delta Point");
+    expect(within(rows[4]).getByRole("link")).toHaveTextContent("Gamma Hub");
   });
 
   it("capacity header starts with aria-sort='descending'", () => {

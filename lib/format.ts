@@ -51,6 +51,20 @@ export function formatStatusLabel(s: Status): string {
   return STATUS_META[s].label;
 }
 
+/** Human-readable labels for the aiClassification enum. */
+export const AI_CLASSIFICATION_LABELS: Record<string, string> = {
+  confirmed: "AI-specific",
+  likely: "Likely AI-specific",
+  mixed_use: "Mixed-use",
+};
+
+/** Human-readable labels for the confidence enum. */
+export const CONFIDENCE_LABELS: Record<string, string> = {
+  confirmed: "Confirmed",
+  reported: "Reported",
+  rumored: "Rumored",
+};
+
 /**
  * Formats a USD value using compact notation (e.g. "$3.5B", "$450M", "$2.9M").
  * Uses at most one decimal digit.

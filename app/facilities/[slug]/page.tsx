@@ -6,7 +6,12 @@ import { Info } from "lucide-react";
 import { getAllFacilities, getFacilityById } from "@/lib/data";
 import { getStatusMeta } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
-import { formatCapacity, formatLocation } from "@/lib/format";
+import {
+  formatCapacity,
+  formatLocation,
+  AI_CLASSIFICATION_LABELS,
+  CONFIDENCE_LABELS,
+} from "@/lib/format";
 import { siteConfig } from "@/lib/site";
 import { facilityJsonLdString } from "@/lib/seo";
 import { StatusBadge } from "@/components/status-badge";
@@ -17,20 +22,6 @@ import { StatusTimeline } from "@/components/facility/status-timeline";
 import { ProvenancePanel } from "@/components/facility/provenance-panel";
 import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-dynamic";
 import { CivicImpactSection, hasCivicImpact } from "@/components/facility/civic-impact";
-
-/** Human-readable labels for the aiClassification enum. */
-const AI_CLASSIFICATION_LABELS: Record<string, string> = {
-  confirmed: "AI-specific",
-  likely: "Likely AI-specific",
-  mixed_use: "Mixed-use",
-};
-
-/** Human-readable labels for the confidence enum. */
-const CONFIDENCE_LABELS: Record<string, string> = {
-  confirmed: "Confirmed",
-  reported: "Reported",
-  rumored: "Rumored",
-};
 
 export function generateStaticParams() {
   return getAllFacilities().map((f) => ({ slug: f.id }));

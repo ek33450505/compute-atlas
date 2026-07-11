@@ -27,7 +27,10 @@ import {
   formatCapacity,
   formatLocation,
   getFacilityMaxMw,
+  AI_CLASSIFICATION_LABELS,
+  CONFIDENCE_LABELS,
 } from "@/lib/format";
+import { getFacilityTypeMeta } from "@/lib/facility-type";
 import { cn } from "@/lib/utils";
 import type { Facility } from "@/lib/schema";
 
@@ -72,7 +75,8 @@ const columns: ColumnDef<Facility>[] = [
     cell: ({ row }) => (
       <Link
         href={`/facilities/${row.original.id}`}
-        className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-primary hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+        title={row.original.name}
+        className="block max-w-[240px] truncate font-medium text-foreground underline underline-offset-2 transition-colors hover:text-primary hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
       >
         {row.original.name}
       </Link>
@@ -82,6 +86,11 @@ const columns: ColumnDef<Facility>[] = [
     id: "operator",
     header: "Operator",
     accessorKey: "operator",
+    cell: ({ row }) => (
+      <span className="block max-w-[180px] truncate" title={row.original.operator}>
+        {row.original.operator}
+      </span>
+    ),
   },
   {
     id: "status",
@@ -89,6 +98,21 @@ const columns: ColumnDef<Facility>[] = [
     accessorKey: "status",
     cell: ({ row }) => <StatusBadge status={row.original.status as Status} />,
     sortingFn: statusSortFn,
+  },
+  {
+    id: "facilityType",
+    header: "Type",
+    accessorFn: (f) => getFacilityTypeMeta(f.facilityType).label,
+  },
+  {
+    id: "aiClassification",
+    header: "AI class",
+    accessorFn: (f) => f.aiClassification,
+    cell: ({ row }) => {
+      const v = row.original.aiClassification;
+      return v ? AI_CLASSIFICATION_LABELS[v] ?? v : "—";
+    },
+    sortUndefined: "last",
   },
   {
     id: "location",
@@ -114,13 +138,12 @@ const columns: ColumnDef<Facility>[] = [
     id: "confidence",
     header: "Confidence",
     accessorKey: "confidence",
-    enableSorting: false,
+    cell: ({ row }) => CONFIDENCE_LABELS[row.original.confidence] ?? row.original.confidence,
   },
   {
     id: "lastUpdated",
     header: "Updated",
     accessorKey: "lastUpdated",
-    enableSorting: false,
   },
 ];
 
@@ -210,6 +233,7 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
                   aria-sort={ariaSort}
                   className={cn(
                     "font-mono text-[11px] uppercase tracking-wider text-muted-foreground",
+                    "h-9 px-2 py-1",
                     isRightAligned && "text-right"
                   )}
                 >
@@ -262,7 +286,7 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
                 return (
                   <TableCell
                     key={cell.id}
-                    className={isRightAligned ? "text-right" : undefined}
+                    className={cn("px-2 py-1.5", isRightAligned && "text-right")}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
