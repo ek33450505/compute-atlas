@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getAllFacilities } from "@/lib/data";
+import { getAllFacilities, getFacilityById } from "@/lib/data";
 import { facilitySchema } from "@/lib/schema";
 
 describe("data integrity — facilities.json", () => {
@@ -110,5 +110,30 @@ describe("data integrity — facilities.json", () => {
       .filter((f) => isNaN(Date.parse(f.lastUpdated)))
       .map((f) => `${f.id}: lastUpdated="${f.lastUpdated}"`);
     expect(failing, failing.join(", ")).toHaveLength(0);
+  });
+
+  it("every generation.poweredFacilityIds entry resolves to a distinct compute facility", () => {
+    const failing: string[] = [];
+    for (const f of facilities) {
+      if (f.facilityType !== "power_generation") continue;
+      const ids = f.generation?.poweredFacilityIds ?? [];
+      for (const id of ids) {
+        if (id === f.id) {
+          failing.push(`${f.id}: poweredFacilityIds self-references ${id}`);
+          continue;
+        }
+        const target = getFacilityById(id);
+        if (!target) {
+          failing.push(`${f.id}: poweredFacilityIds references unknown id ${id}`);
+          continue;
+        }
+        if (target.facilityType === "power_generation") {
+          failing.push(
+            `${f.id}: poweredFacilityIds references another power_generation facility ${id}`
+          );
+        }
+      }
+    }
+    expect(failing, failing.join("\n")).toHaveLength(0);
   });
 });

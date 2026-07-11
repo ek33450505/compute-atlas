@@ -535,6 +535,42 @@ export function getGenerationStats(): GenerationStats {
   };
 }
 
+/**
+ * Compute campuses a power_generation facility explicitly powers, resolved from
+ * its sourced `generation.poweredFacilityIds`. Returns [] for non-power_generation
+ * facilities. Dangling ids (no matching facility) are skipped so render code never
+ * crashes — a data-integrity test guards against them existing. Sorted by max
+ * capacity (operational or planned) desc, then name A→Z.
+ */
+export function getPoweredCampuses(facility: Facility): Facility[] {
+  if (facility.facilityType !== "power_generation") return [];
+  const ids = facility.generation?.poweredFacilityIds ?? [];
+  return ids
+    .map((id) => getFacilityById(id))
+    .filter((f): f is Facility => f !== undefined)
+    .sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+}
+
+/**
+ * Reverse lookup: power_generation facilities that explicitly list `facility.id`
+ * in their `generation.poweredFacilityIds`. The "Powered by" direction is derived
+ * here rather than stored on the compute record (single source of truth). Sorted
+ * by max capacity (operational or planned) desc, then name A→Z.
+ */
+export function getPoweredByGenerators(facility: Facility): PowerGenerationFacility[] {
+  return getPowerGenerationFacilities()
+    .filter((g) => (g.generation?.poweredFacilityIds ?? []).includes(facility.id))
+    .sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+}
+
 // ============================================================
 // Community-friction helpers (used by /opposition)
 // ============================================================

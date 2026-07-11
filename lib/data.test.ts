@@ -27,6 +27,8 @@ import {
   getGenerationByOfftaker,
   getGenerationStats,
   getFacilitiesByCommunityStatus,
+  getPoweredCampuses,
+  getPoweredByGenerators,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
@@ -756,5 +758,55 @@ describe("getFacilitiesByCommunityStatus", () => {
       (frictionStatuses as readonly string[]).includes(f.community?.status ?? "")
     ).length;
     expect(sum).toBe(expected);
+  });
+});
+
+describe("getPoweredCampuses", () => {
+  it("resolves the Oklo Aurora -> Meta Prometheus link", () => {
+    const oklo = getFacilityById("oklo-aurora-pike-county-oh");
+    expect(oklo).toBeDefined();
+    const campuses = getPoweredCampuses(oklo!);
+    expect(campuses.map((f) => f.id)).toEqual(["meta-prometheus-new-albany-oh"]);
+  });
+
+  it("resolves the Susquehanna -> AWS Cumulus link", () => {
+    const susquehanna = getFacilityById("talen-susquehanna-aws-pa");
+    expect(susquehanna).toBeDefined();
+    const campuses = getPoweredCampuses(susquehanna!);
+    expect(campuses.map((f) => f.id)).toEqual(["aws-cumulus-salem-township-pa"]);
+  });
+
+  it("returns [] for a power_generation facility with no poweredFacilityIds", () => {
+    const crane = getFacilityById("crane-clean-energy-center-tmi-pa");
+    expect(crane).toBeDefined();
+    expect(getPoweredCampuses(crane!)).toEqual([]);
+  });
+
+  it("returns [] for a non-power_generation facility (wrong branch)", () => {
+    const meta = getFacilityById("meta-prometheus-new-albany-oh");
+    expect(meta).toBeDefined();
+    expect(getPoweredCampuses(meta!)).toEqual([]);
+  });
+});
+
+describe("getPoweredByGenerators", () => {
+  it("resolves Meta Prometheus <- Oklo Aurora", () => {
+    const meta = getFacilityById("meta-prometheus-new-albany-oh");
+    expect(meta).toBeDefined();
+    const generators = getPoweredByGenerators(meta!);
+    expect(generators.map((f) => f.id)).toEqual(["oklo-aurora-pike-county-oh"]);
+  });
+
+  it("resolves AWS Cumulus <- Susquehanna", () => {
+    const aws = getFacilityById("aws-cumulus-salem-township-pa");
+    expect(aws).toBeDefined();
+    const generators = getPoweredByGenerators(aws!);
+    expect(generators.map((f) => f.id)).toEqual(["talen-susquehanna-aws-pa"]);
+  });
+
+  it("returns [] for a facility no plant powers", () => {
+    const facility = getFacilityById("meta-prineville-or");
+    expect(facility).toBeDefined();
+    expect(getPoweredByGenerators(facility!)).toEqual([]);
   });
 });

@@ -198,6 +198,12 @@ const powerGenerationSchema = z
       .optional(),
     // The compute company buying the power — the link back to the buildout.
     offtaker: z.string().optional(),
+    // Facility ids of the specific compute campuses this plant powers — set
+    // ONLY where a single named campus is sourced (grid-region / company-level
+    // PPAs use `offtaker` alone). One-directional: the reciprocal "Powered by"
+    // is derived at render time from these ids, never stored on the compute
+    // record.
+    poweredFacilityIds: z.array(z.string()).optional(),
     unitCount: z.number().int().positive().optional(),
     notes: z.string().optional(),
   })

@@ -21499,6 +21499,7 @@
     "generation": {
       "technology": "nuclear_smr",
       "offtaker": "Meta",
+      "poweredFacilityIds": ["meta-prometheus-new-albany-oh"],
       "notes": "Oklo owns/operates; Meta prepays for power + funds development (not equity). Powers Meta's New Albany 'Prometheus' supercluster (meta-prometheus-new-albany-oh). Site is the former Portsmouth Gaseous Diffusion Plant, 206 acres bought from DOE for ~$5.15M in Dec 2025."
     },
     "community": {
@@ -21776,6 +21777,7 @@
     "generation": {
       "technology": "nuclear",
       "offtaker": "Amazon (AWS)",
+      "poweredFacilityIds": ["aws-cumulus-salem-township-pa"],
       "notes": "AWS bought Talen's co-located 'Cumulus' data center campus (land, power infrastructure, powered shell) for $650 million, announced/closed around March 2024. Talen and AWS have also stated intent to explore new small modular reactors (SMRs) in Talen's PA footprint and plant uprates to add net-new PJM capacity -- exploratory, not a committed project. Talen projects roughly $18 billion in total contract revenue over the life of the expanded 1,920 MW/through-2042 supply agreement (contract value, not capex)."
     },
     "sources": [

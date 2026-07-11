@@ -10,6 +10,12 @@ import { formatCapacity, formatLocation, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import type { PowerGenerationFacility } from "@/lib/schema";
+import {
+  GENERATION_TECHNOLOGY_ORDER,
+  GENERATION_TECHNOLOGY_LABELS,
+  getGenerationTechnologyLabel,
+  type GenerationTechnology,
+} from "@/lib/generation";
 
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small totals. */
 function formatPower(mw: number): string {
@@ -19,38 +25,9 @@ function formatPower(mw: number): string {
   return `${Math.round(mw)} MW`;
 }
 
-/** All 9 generation technology keys (stable, exhaustive set — mirrors schema `generation.technology` enum). */
-const TECHNOLOGY_ORDER = [
-  "nuclear_smr",
-  "nuclear",
-  "natural_gas",
-  "solar",
-  "wind",
-  "hydro",
-  "geothermal",
-  "battery",
-  "other",
-] as const;
-
-type Technology = (typeof TECHNOLOGY_ORDER)[number];
-
-/** Human-readable labels for the generation technology enum. */
-const TECHNOLOGY_LABELS: Record<Technology, string> = {
-  nuclear_smr: "Nuclear · SMR",
-  nuclear: "Nuclear · conventional",
-  natural_gas: "Natural gas",
-  solar: "Solar",
-  wind: "Wind",
-  hydro: "Hydro",
-  geothermal: "Geothermal",
-  battery: "Battery",
-  other: "Other",
-};
-
 /** Returns a label + facility-count row for the technology in the same tech + location line used elsewhere. */
 function technologyLabel(f: PowerGenerationFacility): string {
-  const tech = f.generation?.technology;
-  return tech ? TECHNOLOGY_LABELS[tech] : "Technology unknown";
+  return getGenerationTechnologyLabel(f.generation?.technology);
 }
 
 export const metadata: Metadata = {
@@ -76,14 +53,14 @@ export default function PowerPage() {
       a.name.localeCompare(b.name)
   );
 
-  const technologyCounts = new Map<Technology, number>();
+  const technologyCounts = new Map<GenerationTechnology, number>();
   for (const f of allProjects) {
     const tech = f.generation?.technology;
     if (tech) {
       technologyCounts.set(tech, (technologyCounts.get(tech) ?? 0) + 1);
     }
   }
-  const presentTechnologies = TECHNOLOGY_ORDER.filter(
+  const presentTechnologies = GENERATION_TECHNOLOGY_ORDER.filter(
     (t) => (technologyCounts.get(t) ?? 0) > 0
   );
 
@@ -247,7 +224,7 @@ export default function PowerPage() {
             return (
               <div key={tech} className="space-y-1.5">
                 <div className="flex items-baseline justify-between gap-2 text-sm">
-                  <span className="text-foreground">{TECHNOLOGY_LABELS[tech]}</span>
+                  <span className="text-foreground">{GENERATION_TECHNOLOGY_LABELS[tech]}</span>
                   <span className="font-mono tabular-nums text-muted-foreground">
                     {count} &middot; {pct.toFixed(0)}%
                   </span>
