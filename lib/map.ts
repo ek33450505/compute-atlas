@@ -1,4 +1,5 @@
 import { getStatusMeta } from "@/lib/status";
+import { getFacilityTypeMeta } from "@/lib/facility-type";
 import type { Facility } from "@/lib/schema";
 
 /**
@@ -25,15 +26,16 @@ export const BASEMAP_STYLE_URL = "/basemap/parchment.json";
 
 /**
  * Builds a descriptive accessible label for a facility map marker.
- * Format: "Name, Operator — City, ST — Status — N MW [operational|planned]"
+ * Format: "Name, Operator — City, ST — Type — Status — N MW [operational|planned]"
  * Capacity segment is omitted when capacityMw is not present.
  *
  * @example
  * buildMarkerLabel(colossus)
- * // "Colossus, xAI — Memphis, TN — Operational — 150 MW operational"
+ * // "Colossus, xAI — Memphis, TN — Data center — Operational — 150 MW operational"
  */
 export function buildMarkerLabel(f: Facility): string {
   const meta = getStatusMeta(f.status);
+  const typeLabel = getFacilityTypeMeta(f.facilityType).label;
   const cityState = f.location.city
     ? `${f.location.city}, ${f.location.state}`
     : f.location.state;
@@ -41,6 +43,7 @@ export function buildMarkerLabel(f: Facility): string {
   const parts: string[] = [
     `${f.name}, ${f.operator}`,
     cityState,
+    typeLabel,
     meta.label,
   ];
 

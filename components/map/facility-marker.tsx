@@ -21,13 +21,20 @@ interface FacilityMarkerProps {
  * - Icon is aria-hidden (status is communicated by both shape AND color)
  * - Fixed 28×28 px target meets WCAG 2.2 SC 2.5.8 (≥24×24 px); visible :focus-visible ring
  * - Hover scale animation is suppressed via `motion-safe:` variant
+ * - facilityType is also communicated by shape: circle for data_center,
+ *   rounded-square for crypto_mining — a pure border-radius swap, not a
+ *   rotation, so the child status icon stays upright
  *
- * TODO(M3+): clustering when dataset grows
+ * Only rendered for singleton (unclustered) points — see
+ * components/map/facility-map.tsx for the cluster/singleton branch and
+ * components/map/cluster-marker.tsx for the count-only cluster bubble.
  */
 export const FacilityMarker = forwardRef<HTMLButtonElement, FacilityMarkerProps>(
   ({ facility, isSelected, onSelect }, ref) => {
     const meta = getStatusMeta(facility.status);
     const Icon = meta.icon;
+    const shapeClassName =
+      facility.facilityType === "crypto_mining" ? "rounded-md" : "rounded-full";
 
     return (
       <button
@@ -40,7 +47,8 @@ export const FacilityMarker = forwardRef<HTMLButtonElement, FacilityMarkerProps>
         className={[
           "flex items-center justify-center",
           "w-[28px] h-[28px]",
-          "rounded-full border shadow-sm",
+          shapeClassName,
+          "border shadow-sm",
           "bg-background/90",
           isSelected ? "border-current ring-2 ring-current/30" : "border-current/40",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",

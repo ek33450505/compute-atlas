@@ -18,4 +18,10 @@ describe("MapLegend", () => {
       screen.getByRole("region", { name: /map legend/i })
     ).toBeInTheDocument();
   });
+
+  it("renders both facility-type labels", () => {
+    render(<MapLegend />);
+    expect(screen.getByText("Data center")).toBeInTheDocument();
+    expect(screen.getByText("Crypto mining")).toBeInTheDocument();
+  });
 });

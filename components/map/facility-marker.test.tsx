@@ -68,4 +68,40 @@ describe("FacilityMarker", () => {
     const icon = container.querySelector("[aria-hidden='true']");
     expect(icon).toBeInTheDocument();
   });
+
+  it("renders a circle shape for data_center facilities", () => {
+    render(
+      <FacilityMarker facility={fixture} isSelected={false} onSelect={() => {}} />
+    );
+    expect(screen.getByRole("button")).toHaveClass("rounded-full");
+  });
+
+  it("renders a rounded-square shape for crypto_mining facilities", () => {
+    const cryptoFixture: Facility = {
+      id: "test-crypto-facility",
+      name: "Test Crypto Facility",
+      operator: "Test Operator",
+      status: "operational",
+      facilityType: "crypto_mining",
+      confidence: "confirmed",
+      location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN", precision: "exact" },
+      capacityMw: { operational: 100 },
+      statusHistory: [],
+      sources: [
+        {
+          url: "https://example.com",
+          label: "Example News",
+          retrievedAt: "2024-01-01",
+          kind: "press",
+        },
+      ],
+      lastUpdated: "2024-01-01",
+    };
+    render(
+      <FacilityMarker facility={cryptoFixture} isSelected={false} onSelect={() => {}} />
+    );
+    const button = screen.getByRole("button");
+    expect(button).toHaveClass("rounded-md");
+    expect(button).not.toHaveClass("rounded-full");
+  });
 });

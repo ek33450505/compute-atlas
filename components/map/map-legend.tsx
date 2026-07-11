@@ -1,6 +1,7 @@
 "use client";
 
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
+import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 
 /**
  * Compact legend overlay for the facility map.
@@ -11,7 +12,7 @@ export function MapLegend() {
   return (
     <div
       role="region"
-      aria-label="Map legend — facility build status"
+      aria-label="Map legend — facility status and type"
       className="absolute bottom-8 left-2 z-10 bg-background/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-md pointer-events-none text-foreground"
     >
       <h2 className="text-xs font-semibold mb-2 text-foreground">
@@ -27,6 +28,24 @@ export function MapLegend() {
                 aria-hidden="true"
                 className="size-3.5 shrink-0"
                 style={{ color: getStatusColor(status) }}
+              />
+              <span className="text-xs text-foreground">{meta.label}</span>
+            </li>
+          );
+        })}
+      </ul>
+      <h2 className="text-xs font-semibold mt-3 mb-2 text-foreground">
+        Facility type
+      </h2>
+      <ul role="list" className="space-y-1.5">
+        {FACILITY_TYPE_ORDER.map((type) => {
+          const meta = FACILITY_TYPE_META[type];
+          const shapeClassName = type === "crypto_mining" ? "rounded-md" : "rounded-full";
+          return (
+            <li key={type} className="flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                className={`size-3.5 shrink-0 border border-foreground/60 ${shapeClassName}`}
               />
               <span className="text-xs text-foreground">{meta.label}</span>
             </li>

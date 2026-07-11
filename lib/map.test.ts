@@ -104,6 +104,10 @@ describe("buildMarkerLabel", () => {
     expect(buildMarkerLabel(facilityFull)).toContain("Operational");
   });
 
+  it("includes the human-readable facility-type label", () => {
+    expect(buildMarkerLabel(facilityFull)).toContain("Data center");
+  });
+
   it("includes operational capacity when present", () => {
     const label = buildMarkerLabel(facilityFull);
     expect(label).toContain("150");
