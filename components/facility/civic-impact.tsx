@@ -33,6 +33,39 @@ const communityStatusLabels: Record<string, string> = {
   unknown: "Unknown",
 };
 
+// Distinct enum from `water.coolingType` above (mining rigs use
+// immersion/hydro cooling, not the data-center evaporative/closed-loop set)
+// — do not merge with coolingTypeLabels.
+const miningCoolingTypeLabels: Record<string, string> = {
+  immersion: "Immersion",
+  air: "Air-cooled",
+  hydro: "Hydro",
+  hybrid: "Hybrid",
+  unknown: "Unknown",
+};
+
+const hardwareTypeLabels: Record<string, string> = {
+  asic: "ASIC",
+  gpu: "GPU",
+  mixed: "Mixed",
+  unknown: "Unknown",
+};
+
+const waterStressLabels: Record<string, string> = {
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+  extreme: "Extreme",
+  unknown: "Unknown",
+};
+
+const carbonIntensityBasisLabels: Record<string, string> = {
+  self_reported: "Self-reported",
+  grid_average: "Grid average",
+  estimated: "Estimated",
+  unknown: "Unknown",
+};
+
 // --- Predicate ---
 export function hasCivicImpact(facility: Facility): boolean {
   return !!(
@@ -42,7 +75,9 @@ export function hasCivicImpact(facility: Facility): boolean {
     facility.investmentUsd ||
     facility.landAcres ||
     facility.jobs ||
-    facility.community
+    facility.community ||
+    (facility.facilityType === "crypto_mining" && facility.mining) ||
+    facility.environmental
   );
 }
 
@@ -157,6 +192,106 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
   );
 }
 
+// --- Sub-section: Mining (crypto_mining branch only) ---
+function MiningGroup({ facility }: { facility: Facility }) {
+  if (facility.facilityType !== "crypto_mining") return null;
+  const { mining } = facility;
+  if (!mining) return null;
+
+  const hardwareLabel = mining.hardwareType
+    ? (hardwareTypeLabels[mining.hardwareType] ?? mining.hardwareType)
+    : null;
+  const coolingLabel = mining.coolingType
+    ? (miningCoolingTypeLabels[mining.coolingType] ?? mining.coolingType)
+    : null;
+  const powerArrangementLabel = mining.powerArrangement
+    ? mining.powerArrangement.replace(/_/g, " ")
+    : null;
+
+  if (
+    mining.hashRateThPerS === undefined &&
+    !hardwareLabel &&
+    !coolingLabel &&
+    !powerArrangementLabel
+  ) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Mining</h3>
+      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+        {mining.hashRateThPerS !== undefined && (
+          <FactRow label="Hash rate">{mining.hashRateThPerS.toLocaleString()} TH/s</FactRow>
+        )}
+        {hardwareLabel && <FactRow label="Hardware">{hardwareLabel}</FactRow>}
+        {coolingLabel && <FactRow label="Cooling">{coolingLabel}</FactRow>}
+        {powerArrangementLabel && (
+          <FactRow label="Power arrangement">
+            <span className="capitalize">{powerArrangementLabel}</span>
+          </FactRow>
+        )}
+      </dl>
+    </div>
+  );
+}
+
+// --- Sub-section: Environmental (both branches, different shapes) ---
+function EnvironmentalGroup({ facility }: { facility: Facility }) {
+  if (!facility.environmental) return null;
+
+  if (facility.facilityType === "data_center") {
+    const { pue, pueConfidence, wue, gridCarbonIntensityGCo2PerKwh, renewablePercent, waterStress } =
+      facility.environmental;
+    const pueDisplay =
+      pue !== undefined
+        ? pueConfidence
+          ? `${pue} PUE (${pueConfidence})`
+          : `${pue} PUE`
+        : null;
+    const waterStressLabel = waterStressLabels[waterStress] ?? waterStress;
+
+    return (
+      <div>
+        <h3 className="text-sm font-semibold mb-3">Environmental</h3>
+        <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+          {pueDisplay && <FactRow label="PUE">{pueDisplay}</FactRow>}
+          {wue !== undefined && <FactRow label="WUE">{wue}</FactRow>}
+          {gridCarbonIntensityGCo2PerKwh !== undefined && (
+            <FactRow label="Grid carbon intensity">
+              {gridCarbonIntensityGCo2PerKwh.toLocaleString()} gCO2/kWh
+            </FactRow>
+          )}
+          {renewablePercent !== undefined && (
+            <FactRow label="Renewable">{renewablePercent}%</FactRow>
+          )}
+          <FactRow label="Water stress">{waterStressLabel}</FactRow>
+        </dl>
+      </div>
+    );
+  }
+
+  // crypto_mining branch
+  const { carbonIntensityProxy, carbonIntensityBasis } = facility.environmental;
+  const basisLabel = carbonIntensityBasis
+    ? (carbonIntensityBasisLabels[carbonIntensityBasis] ?? carbonIntensityBasis)
+    : null;
+
+  if (carbonIntensityProxy === undefined && !basisLabel) return null;
+
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Environmental</h3>
+      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+        {carbonIntensityProxy !== undefined && (
+          <FactRow label="Carbon proxy">{carbonIntensityProxy}</FactRow>
+        )}
+        {basisLabel && <FactRow label="Carbon basis">{basisLabel}</FactRow>}
+      </dl>
+    </div>
+  );
+}
+
 // --- Sub-section: Public subsidies ---
 function SubsidiesGroup({ facility }: { facility: Facility }) {
   const { subsidies } = facility;
@@ -239,6 +374,8 @@ export function CivicImpactSection({ facility }: { facility: Facility }) {
       </h2>
       <EconomicsGroup facility={facility} />
       <EnergyWaterGroup facility={facility} />
+      <MiningGroup facility={facility} />
+      <EnvironmentalGroup facility={facility} />
       <SubsidiesGroup facility={facility} />
       <CommunityGroup facility={facility} />
     </section>
