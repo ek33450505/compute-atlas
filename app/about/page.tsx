@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "About & method",
+  title: "About",
   description:
-    "Why Compute Atlas exists, how it is compiled, and the standards behind it — a community-driven, source-cited survey of U.S. grid-scale compute infrastructure.",
+    "Why Compute Atlas exists — a community-driven, source-cited survey of U.S. grid-scale compute infrastructure, open to correction by anyone with a public source.",
 };
 
 export default function AboutPage() {
@@ -21,7 +20,7 @@ export default function AboutPage() {
         />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            About &amp; method · Edition 2026
+            About · Edition 2026
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             Public, but scattered.
@@ -36,10 +35,10 @@ export default function AboutPage() {
         <div className="border-t border-border" />
       </header>
 
-      {/* ---- About & method ---- */}
+      {/* ---- About ---- */}
       <section aria-labelledby="about-method-heading" className="space-y-8">
         <h2 id="about-method-heading" className="sr-only">
-          About &amp; method
+          About
         </h2>
 
         <div className="space-y-3">
@@ -116,216 +115,26 @@ export default function AboutPage() {
             </a>
           </p>
         </div>
-      </section>
 
-      {/* What we track */}
-      <section aria-labelledby="definition-heading" className="space-y-4 border-t border-border pt-10">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § 01 · Definition
-        </p>
-        <h2
-          id="definition-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          What we track
-        </h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Working definition: physical, source-cited facilities that consume
-          grid-scale power for compute — traditional and enterprise data
-          centers, hyperscale/AI-specific compute campuses, and crypto-mining
-          operations. Every record carries a facility type (data center or
-          crypto-mining).
-        </p>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          For data-center records with a discernible AI or machine-learning
-          angle, an additional{" "}
-          <strong className="font-medium text-foreground">
-            AI classification
-          </strong>{" "}
-          reflects how confident we are that AI/ML compute is a primary use.
-          Not every data center has one — general-purpose and enterprise
-          facilities with no AI angle carry no classification at all, which is
-          itself meaningful information, not a gap in the data:
-        </p>
-        <dl className="space-y-3 text-sm">
-          <div>
-            <dt className="font-medium text-foreground">Confirmed</dt>
-            <dd className="text-muted-foreground">
-              The operator or a credible primary source explicitly describes the
-              facility as an AI or GPU cluster (e.g., xAI Colossus).
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Likely</dt>
-            <dd className="text-muted-foreground">
-              The facility exhibits strong indicators (e.g., hyperscale GPU
-              procurement, AI-specific power agreements) but has not been
-              explicitly confirmed as AI-primary.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Mixed use</dt>
-            <dd className="text-muted-foreground">
-              A multi-purpose campus where AI workloads are a known component
-              but not necessarily the primary or exclusive use.
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      {/* Status definitions */}
-      <section aria-labelledby="status-heading" className="space-y-4 border-t border-border pt-10">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § 02 · Status
-        </p>
-        <h2
-          id="status-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Status definitions
-        </h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Each facility carries one of five lifecycle statuses. Tracking status
-          transitions over time is a core feature of Compute Atlas — the full
-          history of known status changes is recorded for every facility.
-        </p>
-        <dl className="space-y-3 text-sm">
-          {STATUS_ORDER.map((s) => {
-            const meta = STATUS_META[s];
-            return (
-              <div key={s}>
-                <dt className="font-medium text-foreground">{meta.label}</dt>
-                <dd className="text-muted-foreground">{meta.description}</dd>
-              </div>
-            );
-          })}
-        </dl>
-      </section>
-
-      {/* Confidence levels */}
-      <section aria-labelledby="confidence-heading" className="space-y-4 border-t border-border pt-10">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § 03 · Confidence
-        </p>
-        <h2
-          id="confidence-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Confidence levels
-        </h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          In addition to AI classification, each record carries a{" "}
-          <strong className="font-medium text-foreground">
-            confidence level
-          </strong>{" "}
-          that reflects the quality and independence of the underlying sources:
-        </p>
-        <dl className="space-y-3 text-sm">
-          <div>
-            <dt className="font-medium text-foreground">Confirmed</dt>
-            <dd className="text-muted-foreground">
-              Verified by multiple independent sources or by an official
-              operator announcement with supporting documentation (e.g., permit
-              filings, utility agreements).
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Reported</dt>
-            <dd className="text-muted-foreground">
-              Covered by at least one credible news outlet or official filing,
-              but not yet corroborated by multiple independent sources.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Rumored</dt>
-            <dd className="text-muted-foreground">
-              Based on a single, unverified source or on indirect indicators
-              (e.g., job postings, land acquisition records). Treat with caution
-              and check the linked sources directly.
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      {/* How data is compiled */}
-      <section aria-labelledby="data-heading" className="space-y-4 border-t border-border pt-10">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § 04 · Sources
-        </p>
-        <h2
-          id="data-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          How the data is compiled
-        </h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          The current dataset is a curated seed drawn from publicly available
-          sources. Every record links to the specific sources used to create or
-          update it. Source types include:
-        </p>
-        <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-          <li>Company announcements and press releases</li>
-          <li>Permit and zoning filings</li>
-          <li>Utility and ISO interconnection queue entries</li>
-          <li>Federal and state subsidy disclosures</li>
-          <li>OpenStreetMap data (for coordinates and facility boundaries)</li>
-        </ul>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          The roadmap includes automated ingestion from interconnection queues
-          and public permit databases, as well as a structured community
-          submission process. If you have a correction or addition, see the
-          Contribute section below.
-        </p>
-      </section>
-
-      {/* Limitations */}
-      <section aria-labelledby="limitations-heading" className="space-y-4 border-t border-border pt-10">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § 05 · Limitations
-        </p>
-        <h2
-          id="limitations-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Limitations
-        </h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          There are real constraints on what this data can reliably represent,
-          and it&rsquo;s better to name them plainly:
-        </p>
-        <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-          <li>
-            There is no national registry of data centers. &ldquo;Data
-            center&rdquo; spans a wide range of facility types with no single
-            legal or regulatory definition.
-          </li>
-          <li>
-            Announcements are often aspirational. Projects are frequently
-            delayed, scaled back, or cancelled after public announcements —
-            tracking cancellations is a feature, not an edge case.
-          </li>
-          <li>
-            Coverage is partial and skews toward large, well-reported
-            facilities. Smaller or less-publicized projects are likely
-            underrepresented.
-          </li>
-          <li>
-            Capacity figures (in megawatts) are often estimates from
-            third-party sources and may mix planned with operational capacity.
-            They should be treated as approximate.
-          </li>
-          <li>
-            Coordinates are best-effort from public sources (OpenStreetMap,
-            permit filings). Some coordinates reflect a nearby town center
-            rather than the facility itself.
-          </li>
-        </ul>
+        <div className="space-y-3">
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            For facility-type definitions, confidence tiers, the
+            community-reception scale, and the full data dictionary, see the{" "}
+            <Link
+              href="/methodology"
+              className="underline underline-offset-2 hover:text-foreground"
+            >
+              Methodology
+            </Link>{" "}
+            page.
+          </p>
+        </div>
       </section>
 
       {/* Attribution and licenses */}
       <section aria-labelledby="attribution-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § 06 · License
+          § 01 · License
         </p>
         <h2
           id="attribution-heading"
@@ -399,7 +208,7 @@ export default function AboutPage() {
       {/* Contribute / corrections */}
       <section aria-labelledby="contribute-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § 07 · Contribute
+          § 02 · Contribute
         </p>
         <h2
           id="contribute-heading"
