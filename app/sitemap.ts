@@ -64,9 +64,9 @@ export function buildStaticRoutes(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
     {
-      url: `${siteConfig.url}/methodology`,
+      url: `${siteConfig.url}/explore`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
+      changeFrequency: "weekly",
       priority: 0.7,
     },
   ];

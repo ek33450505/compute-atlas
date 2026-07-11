@@ -10,7 +10,7 @@ import { stateSlugFromCode } from "@/lib/us-states";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
-  it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, and /methodology", () => {
+  it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, and /explore", () => {
     const routes = buildStaticRoutes();
     const urls = routes.map((r) => r.url);
     expect(urls).toContain(siteConfig.url);
@@ -22,7 +22,7 @@ describe("sitemap", () => {
     expect(urls).toContain(`${siteConfig.url}/opposition`);
     expect(urls).toContain(`${siteConfig.url}/stats`);
     expect(urls).toContain(`${siteConfig.url}/about`);
-    expect(urls).toContain(`${siteConfig.url}/methodology`);
+    expect(urls).toContain(`${siteConfig.url}/explore`);
   });
 
   it("facility routes count equals facilities.length", () => {
