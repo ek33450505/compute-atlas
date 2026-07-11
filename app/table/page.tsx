@@ -7,7 +7,7 @@ import { Explorer } from "@/components/explorer/explorer";
 export const metadata: Metadata = {
   title: "Data table",
   description:
-    "Filterable, sortable table of all tracked AI datacenters in the United States — shares filter state with the map.",
+    "Filterable, sortable table of all tracked data centers in the United States — shares filter state with the map.",
 };
 
 /**
@@ -26,7 +26,7 @@ export default function TablePage() {
           United States · Edition 2026 · Gazetteer
         </p>
         <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          AI datacenter data table
+          Data center data table
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           Every tracked facility, filterable and sortable. Filters are shared

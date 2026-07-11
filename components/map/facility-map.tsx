@@ -29,7 +29,7 @@ interface FacilityMapProps {
 }
 
 /**
- * Interactive map of AI datacenter facilities.
+ * Interactive map of data center facilities.
  *
  * Design decisions:
  * - Accessible DOM markers (<button> elements), NOT canvas cluster layers.
@@ -219,12 +219,12 @@ export function FacilityMap({
   return (
     <div
       role="region"
-      aria-label="Map of AI datacenters in the United States"
+      aria-label="Map of data centers in the United States"
       className={heightClass}
     >
       {/* Visually-hidden guidance for screen reader users */}
       <p className="sr-only">
-        Interactive map showing AI datacenter locations across the United
+        Interactive map showing data center locations across the United
         States. Each location is a focusable button. A data table alternative
         is available at the{" "}
         <a href="/table" className="underline">

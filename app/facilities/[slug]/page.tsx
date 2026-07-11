@@ -49,10 +49,11 @@ export async function generateMetadata({
 
   const statusLabel = getStatusMeta(facility.status).label;
   const location = formatLocation(facility);
+  const typeLabel = facility.facilityType === "crypto_mining" ? "crypto-mining facility" : "data center";
 
   return {
     title: facility.name,
-    description: `${facility.operator} — ${statusLabel} AI datacenter in ${location}. Capacity, status history, and sources on Compute Atlas.`,
+    description: `${facility.operator} — ${statusLabel} ${typeLabel} in ${location}. Capacity, status history, and sources on Compute Atlas.`,
   };
 }
 

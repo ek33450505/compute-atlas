@@ -117,7 +117,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* What counts as an AI datacenter */}
+      {/* What we track */}
       <section aria-labelledby="definition-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           § 01 · Definition
@@ -126,24 +126,25 @@ export default function AboutPage() {
           id="definition-heading"
           className="font-display text-2xl text-foreground"
         >
-          What counts as an &ldquo;AI datacenter&rdquo;
+          What we track
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Working definition: facilities primarily purpose-built or repurposed
-          for large-scale AI and machine-learning training or inference,
-          typically characterized by hyperscale GPU or accelerator clusters
-          rather than general-purpose cloud or enterprise compute.
+          Working definition: physical, source-cited facilities that consume
+          grid-scale power for compute — traditional and enterprise data
+          centers, hyperscale/AI-specific compute campuses, and crypto-mining
+          operations. Every record carries a facility type (data center or
+          crypto-mining).
         </p>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          The category is inherently imprecise — hyperscale cloud campuses
-          increasingly colocate AI workloads alongside other compute, and
-          company announcements often do not distinguish between the two. Every
-          record therefore carries an{" "}
+          For data-center records with a discernible AI or machine-learning
+          angle, an additional{" "}
           <strong className="font-medium text-foreground">
             AI classification
           </strong>{" "}
-          that reflects how confident we are that a facility is primarily AI
-          compute:
+          reflects how confident we are that AI/ML compute is a primary use.
+          Not every data center has one — general-purpose and enterprise
+          facilities with no AI angle carry no classification at all, which is
+          itself meaningful information, not a gap in the data:
         </p>
         <dl className="space-y-3 text-sm">
           <div>
@@ -293,8 +294,9 @@ export default function AboutPage() {
         </p>
         <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
           <li>
-            There is no national registry of AI datacenters. &ldquo;AI
-            datacenter&rdquo; is not a legal or regulatory category.
+            There is no national registry of data centers. &ldquo;Data
+            center&rdquo; spans a wide range of facility types with no single
+            legal or regulatory definition.
           </li>
           <li>
             Announcements are often aspirational. Projects are frequently

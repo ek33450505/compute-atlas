@@ -166,7 +166,7 @@ const cryptoMiningEnvironmentalSchema = z.object({
 export const dataCenterFacilitySchema = z.object({
   ...baseFacilityShape,
   facilityType: z.literal("data_center"),
-  aiClassification: aiClassificationEnum,
+  aiClassification: aiClassificationEnum.optional(),
   environmental: dataCenterEnvironmentalSchema.optional(),
 });
 

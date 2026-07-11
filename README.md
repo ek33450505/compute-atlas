@@ -4,13 +4,13 @@
 [![code: MIT](https://img.shields.io/badge/code-MIT-informational?style=flat)](LICENSE)
 [![data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational?style=flat)](LICENSE-DATA)
 
-An open, source-cited dataset of AI datacenters across the United States — from proposed and permitted to under construction and operational — with a public source behind every record.
+An open, source-cited dataset of data centers across the United States — from proposed and permitted to under construction and operational — with a public source behind every record.
 
 **Live site → [www.compute-atlas.com](https://www.compute-atlas.com)**
 
 ## What it is
 
-There is no national registry of AI datacenters. "AI datacenter" is not a legal category. Compute Atlas fills that gap by curating a provenance-first dataset of large-scale GPU/accelerator facilities, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries a confidence level and links its sources.
+There is no national registry of data centers. "Data center" spans a wide range of facility types — Compute Atlas curates a provenance-first dataset covering traditional and hyperscale compute, AI/ML-specific campuses, and crypto-mining operations, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries a confidence level and links its sources.
 
 The project also tracks the civic footprint of these facilities — energy, water, subsidies, jobs, and community impact — because that information is public but scattered across county records, water-authority applications, and local reporting, and assembling it is genuinely hard. That's the gap the atlas tries to close.
 
@@ -25,7 +25,7 @@ The live facility count is shown in the badge above (read directly from `data/fa
 Compute Atlas is compiled by hand from primary sources, with a deliberate bias against fabrication:
 
 - **A source for every record.** Each facility cites at least one public source with a URL, a label, a source `kind`, and a retrieval date. Nothing is recorded without provenance.
-- **Honest confidence.** Records are marked `confirmed`, `reported`, or `rumored`, and facilities are classified `confirmed`, `likely`, or `mixed_use` as AI datacenters. Uncertainty is surfaced, not hidden.
+- **Honest confidence.** Records are marked `confirmed`, `reported`, or `rumored`, and data-center facilities with a discernible AI angle are additionally classified `confirmed`, `likely`, or `mixed_use`. Uncertainty is surfaced, not hidden.
 - **Numbers only when firm.** Ranges, ceilings, and modeled projections go in a record's notes — never into a numeric field. Multi-year subsidy totals are described in the program label rather than asserted as a single dollar amount. Statutory *eligibility* for an incentive is not recorded as a confirmed award.
 - **Independent verification.** Consequential claims (capacity, investment, subsidies) are checked against the underlying filing or announcement before they enter the dataset.
 - **Additive and correctable.** Coverage grows over time; corrections are welcome and expected. See [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -100,4 +100,4 @@ Compute Atlas is an independent project by **Edward Kubiak**.
 
 Suggested citation:
 
-> AI datacenter data from Compute Atlas by Edward Kubiak, licensed under CC BY 4.0 — https://github.com/ek33450505/compute-atlas
+> Data center data from Compute Atlas by Edward Kubiak, licensed under CC BY 4.0 — https://github.com/ek33450505/compute-atlas

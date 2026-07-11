@@ -7,7 +7,7 @@ import { Explorer } from "@/components/explorer/explorer";
 export const metadata: Metadata = {
   title: "Map",
   description:
-    "Interactive map of AI datacenter facilities across the United States. Filter by status, state, operator, and capacity.",
+    "Interactive map of data center facilities across the United States — traditional, AI-specific, and crypto-mining. Filter by status, state, operator, and capacity.",
 };
 
 /**

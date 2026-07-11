@@ -9,7 +9,7 @@ test("/ returns 200 and shows survey framing heading", async ({ page }) => {
   expect(response?.status()).toBe(200);
   // Hero headline renders on the home page
   await expect(
-    page.getByRole("heading", { name: /A survey of AI datacenter/i })
+    page.getByRole("heading", { name: /America.s data centers, mapped and sourced/i })
   ).toBeVisible();
 });
 
@@ -159,7 +159,7 @@ test("/table shows result count", async ({ page }) => {
   await page.goto("/table");
   // The heading includes the count
   await expect(
-    page.getByRole("heading", { name: /AI datacenter data table/i })
+    page.getByRole("heading", { name: /Data center data table/i })
   ).toBeVisible();
 });
 

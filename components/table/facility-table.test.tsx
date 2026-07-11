@@ -84,7 +84,7 @@ describe("FacilityTable — headers", () => {
     const { container } = render(<FacilityTable facilities={fixtures} />);
     const caption = container.querySelector("caption");
     expect(caption).toBeInTheDocument();
-    expect(caption?.textContent).toMatch(/AI datacenters/i);
+    expect(caption?.textContent).toMatch(/Data centers/i);
   });
 });
 

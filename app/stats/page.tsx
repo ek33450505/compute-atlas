@@ -11,6 +11,7 @@ import {
   getTopOperators,
   getWaterUsage,
   getCoolingTypeCounts,
+  getAllFacilities,
   type CoolingType,
 } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
@@ -66,6 +67,12 @@ export default function StatsPage() {
   const cooling = getCoolingTypeCounts();
 
   const total = stats.count;
+
+  const dataCenterCount = getAllFacilities().filter(
+    (f) => f.facilityType === "data_center"
+  ).length;
+  const unclassifiedCount =
+    dataCenterCount - (aiCounts.confirmed + aiCounts.likely + aiCounts.mixed_use);
 
   return (
     <div
@@ -174,7 +181,7 @@ export default function StatsPage() {
         <p className="text-sm leading-relaxed text-muted-foreground">
           These figures represent a{" "}
           <strong className="font-medium text-foreground">reported floor</strong>,
-          not a dataset total — the vast majority of AI datacenter campuses do not
+          not a dataset total — the vast majority of tracked campuses do not
           publish a daily water figure. Cooling water is the least-transparent civic
           dimension in this dataset. Cooling method is a meaningful proxy for water
           intensity: evaporative systems consume far more water than air-cooled or
@@ -367,6 +374,12 @@ export default function StatsPage() {
                   </div>
                 )
               )}
+              <div className="flex items-baseline justify-between gap-2">
+                <dt className="text-foreground">Not AI-classified</dt>
+                <dd className="font-mono tabular-nums text-muted-foreground">
+                  {unclassifiedCount}
+                </dd>
+              </div>
             </dl>
           </div>
 

@@ -37,7 +37,7 @@ export default function HomePage() {
 
           {/* Headline */}
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl max-w-4xl">
-            America&rsquo;s AI datacenters, mapped and sourced.
+            America&rsquo;s data centers, mapped and sourced.
           </h1>
 
           {/* Subhead */}

@@ -181,7 +181,7 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
     <div className="overflow-hidden rounded-sm border border-border">
       <Table>
       <TableCaption className="sr-only">
-        AI datacenters — sortable table
+        Data centers — sortable table
       </TableCaption>
 
       <TableHeader>
