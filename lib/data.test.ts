@@ -15,6 +15,7 @@ import {
   getCoolingTypeCounts,
   getFacilityTypeCounts,
   getCommunityReceptionCounts,
+  getEnergySourceCounts,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
@@ -453,6 +454,48 @@ describe("getCoolingTypeCounts", () => {
     for (const key of COOLING_KEYS) {
       const expected = facilities.filter(
         (f) => f.water?.coolingType === key
+      ).length;
+      expect(counts[key]).toBe(expected);
+    }
+  });
+});
+
+describe("getEnergySourceCounts", () => {
+  const ENERGY_SOURCE_KEYS = [
+    "grid",
+    "on_site_gas",
+    "nuclear",
+    "solar",
+    "wind",
+    "hydro",
+    "mixed",
+    "other",
+  ] as const;
+
+  it("has exactly the 8 energy source keys", () => {
+    const counts = getEnergySourceCounts();
+    expect(Object.keys(counts).sort()).toEqual([...ENERGY_SOURCE_KEYS].sort());
+  });
+
+  it("each value is non-negative", () => {
+    const counts = getEnergySourceCounts();
+    for (const key of ENERGY_SOURCE_KEYS) {
+      expect(counts[key]).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("sum is at most the total facility count", () => {
+    const counts = getEnergySourceCounts();
+    const sum = Object.values(counts).reduce((a, b) => a + b, 0);
+    expect(sum).toBeLessThanOrEqual(getAllFacilities().length);
+  });
+
+  it("equals manual recomputation per key", () => {
+    const counts = getEnergySourceCounts();
+    const facilities = getAllFacilities().filter((f) => f.energy?.source);
+    for (const key of ENERGY_SOURCE_KEYS) {
+      const expected = facilities.filter(
+        (f) => f.energy?.source === key
       ).length;
       expect(counts[key]).toBe(expected);
     }

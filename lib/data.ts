@@ -275,3 +275,37 @@ export function getCoolingTypeCounts(): Record<CoolingType, number> {
   }
   return counts;
 }
+
+// ============================================================
+// Energy source helpers (used by /stats § Energy section)
+// ============================================================
+
+/** All 8 energy source keys (stable, exhaustive set — mirrors schema `energy.source` enum). */
+const ENERGY_SOURCE_KEYS = [
+  "grid",
+  "on_site_gas",
+  "nuclear",
+  "solar",
+  "wind",
+  "hydro",
+  "mixed",
+  "other",
+] as const;
+
+export type EnergySource = (typeof ENERGY_SOURCE_KEYS)[number];
+
+/**
+ * Returns a count per energy source among facilities that declare
+ * `energy.source`. All 8 keys are always present (seeded at 0).
+ */
+export function getEnergySourceCounts(): Record<EnergySource, number> {
+  const counts = Object.fromEntries(
+    ENERGY_SOURCE_KEYS.map((k) => [k, 0])
+  ) as Record<EnergySource, number>;
+  for (const f of facilities) {
+    if (f.energy?.source) {
+      counts[f.energy.source]++;
+    }
+  }
+  return counts;
+}

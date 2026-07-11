@@ -13,8 +13,10 @@ import {
   getCoolingTypeCounts,
   getFacilityTypeCounts,
   getCommunityReceptionCounts,
+  getEnergySourceCounts,
   getAllFacilities,
   type CoolingType,
+  type EnergySource,
 } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
@@ -45,6 +47,11 @@ const CONFIDENCE_LABELS: Record<Facility["confidence"], string> = {
   rumored: "Rumored",
 };
 
+/** Community reception signal buckets — excludes "unknown" (no reception signal). */
+const COMMUNITY_SIGNAL_ORDER = COMMUNITY_RECEPTION_ORDER.filter(
+  (k) => k !== "unknown"
+);
+
 /** Ordered civic coverage dimensions with display labels. */
 const COVERAGE_DIMENSIONS = [
   { key: "energy" as const, label: "Energy" },
@@ -71,9 +78,10 @@ export default function StatsPage() {
   const cooling = getCoolingTypeCounts();
   const facilityTypeCounts = getFacilityTypeCounts();
   const communityCounts = getCommunityReceptionCounts();
+  const energySourceCounts = getEnergySourceCounts();
 
   const total = stats.count;
-  const communityReporting = COMMUNITY_RECEPTION_ORDER.reduce(
+  const communityReporting = COMMUNITY_SIGNAL_ORDER.reduce(
     (sum, key) => sum + communityCounts[key],
     0
   );
@@ -121,7 +129,7 @@ export default function StatsPage() {
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
       <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {total}
           </span>
@@ -129,7 +137,7 @@ export default function StatsPage() {
             Sites tracked
           </span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {stats.states}
           </span>
@@ -137,7 +145,7 @@ export default function StatsPage() {
             States covered
           </span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {(stats.operationalMw / 1000).toFixed(1)} GW
           </span>
@@ -145,7 +153,7 @@ export default function StatsPage() {
             Operational
           </span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {(stats.plannedMw / 1000).toFixed(0)} GW
           </span>
@@ -153,7 +161,7 @@ export default function StatsPage() {
             Planned pipeline
           </span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
             {(stats.underConstructionMw / 1000).toFixed(0)} GW
           </span>
@@ -212,6 +220,81 @@ export default function StatsPage() {
             );
           })}
         </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § Energy                                                            */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="energy-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Energy
+        </p>
+        <h2
+          id="energy-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          Power source
+        </h2>
+
+        {(() => {
+          const energySourceEntries: { key: EnergySource; label: string }[] = [
+            { key: "grid", label: "Grid" },
+            { key: "mixed", label: "Mixed" },
+            { key: "on_site_gas", label: "On-site gas" },
+            { key: "nuclear", label: "Nuclear" },
+            { key: "solar", label: "Solar" },
+            { key: "hydro", label: "Hydro" },
+            { key: "wind", label: "Wind" },
+            { key: "other", label: "Other" },
+          ];
+          const energySourceReporting = Object.values(energySourceCounts).reduce(
+            (a, b) => a + b,
+            0
+          );
+          return (
+            <>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Power source is disclosed for {energySourceReporting} of{" "}
+                {total} tracked sites. Campus power capacity totals
+                (operational, planned, under construction) are the survey
+                figures at the top of this page.
+              </p>
+              <div className="space-y-4">
+                {energySourceEntries.map(({ key, label }) => {
+                  const count = energySourceCounts[key];
+                  const pct =
+                    energySourceReporting > 0
+                      ? (count / energySourceReporting) * 100
+                      : 0;
+                  return (
+                    <div key={key} className="space-y-1.5">
+                      <div className="flex items-baseline justify-between gap-2 text-sm">
+                        <span className="text-foreground">{label}</span>
+                        <span className="font-mono tabular-nums text-muted-foreground">
+                          {count} &middot; {pct.toFixed(0)}%
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div
+                          aria-hidden="true"
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${pct.toFixed(2)}%`,
+                            backgroundColor: "var(--primary)",
+                            opacity: 0.7,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          );
+        })()}
       </section>
 
       {/* ------------------------------------------------------------------ */}
@@ -390,13 +473,13 @@ export default function StatsPage() {
           Reception is a{" "}
           <strong className="font-medium text-foreground">sourced, documented</strong>{" "}
           signal, not a survey &mdash; {total - communityReporting} tracked
-          campuses have no documented community status yet and are not
+          campuses have no documented community reception on file and are not
           counted here.
         </p>
 
         {/* Reception breakdown */}
         <div className="space-y-4">
-          {COMMUNITY_RECEPTION_ORDER.map((key) => {
+          {COMMUNITY_SIGNAL_ORDER.map((key) => {
             const count = communityCounts[key];
             const pct = communityReporting > 0 ? (count / communityReporting) * 100 : 0;
             return (
