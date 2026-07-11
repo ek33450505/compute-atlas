@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "About & method",
   description:
-    "Why Compute Atlas exists, how it is compiled, and the standards behind it — a community-driven, source-cited survey of U.S. AI-datacenter infrastructure.",
+    "Why Compute Atlas exists, how it is compiled, and the standards behind it — a community-driven, source-cited survey of U.S. grid-scale compute infrastructure.",
 };
 
 export default function AboutPage() {
@@ -27,9 +27,10 @@ export default function AboutPage() {
             Public, but scattered.
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Compute Atlas is an open, source-cited survey of the AI-datacenter
-            buildout across the United States — where it&rsquo;s being built, by
-            whom, and at what cost to energy, water, and the communities nearby.
+            Compute Atlas is an open, source-cited survey of the grid-scale
+            compute buildout across the United States — where it&rsquo;s being
+            built, by whom, and at what cost to energy, water, and the
+            communities nearby.
           </p>
         </div>
         <div className="border-t border-border" />

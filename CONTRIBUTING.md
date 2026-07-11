@@ -1,6 +1,6 @@
 # Contributing to Compute Atlas
 
-Thank you for helping map the U.S. AI-datacenter buildout. Compute Atlas is a community-stewarded, public-interest dataset, and it gets more useful every time someone adds a missing facility or corrects a record.
+Thank you for helping map the U.S. grid-scale compute buildout. Compute Atlas is a community-stewarded, public-interest dataset, and it gets more useful every time someone adds a missing facility or corrects a record.
 
 This guide covers how to contribute data and code, and the standard the dataset is held to.
 

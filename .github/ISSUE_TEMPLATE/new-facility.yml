@@ -1,12 +1,12 @@
 name: New facility
-description: Suggest an AI-datacenter facility that's missing from the atlas
+description: Suggest a grid-scale compute facility that's missing from the atlas
 title: "[New facility]: "
 labels: ["data", "new-facility"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping map the U.S. AI-datacenter buildout. **Every submission needs at least one public source URL** anyone can verify — it is the core rule of this project.
+        Thanks for helping map the U.S. grid-scale compute buildout. **Every submission needs at least one public source URL** anyone can verify — it is the core rule of this project.
   - type: input
     id: name
     attributes:

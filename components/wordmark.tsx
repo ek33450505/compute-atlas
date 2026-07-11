@@ -27,7 +27,7 @@ export function Wordmark({ showTagline = false, className }: WordmarkProps) {
       </span>
       {showTagline && (
         <span className="hidden sm:block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground leading-tight mt-0.5">
-          A survey of U.S. AI-datacenter infrastructure
+          A survey of U.S. grid-scale compute infrastructure
         </span>
       )}
     </span>
