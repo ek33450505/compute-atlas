@@ -16,10 +16,14 @@ import {
   getFacilityTypeCounts,
   getCommunityReceptionCounts,
   getEnergySourceCounts,
+  getFacilitiesByState,
+  getStateSummary,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER } from "@/lib/community";
+import { STATUS_ORDER } from "@/lib/status";
+import { getFacilityMaxMw } from "@/lib/format";
 
 describe("getAllFacilities", () => {
   it("returns a non-empty array including known seed ids", () => {
@@ -498,6 +502,71 @@ describe("getEnergySourceCounts", () => {
         (f) => f.energy?.source === key
       ).length;
       expect(counts[key]).toBe(expected);
+    }
+  });
+});
+
+describe("getFacilitiesByState", () => {
+  it("is case-insensitive and non-empty for a known state", () => {
+    const lower = getFacilitiesByState("ny");
+    const upper = getFacilitiesByState("NY");
+    expect(lower.length).toBe(upper.length);
+    expect(lower.length).toBeGreaterThan(0);
+  });
+
+  it("partitions the full dataset (every facility has exactly one state)", () => {
+    const sum = getStates().reduce(
+      (s, code) => s + getFacilitiesByState(code).length,
+      0
+    );
+    expect(sum).toBe(getAllFacilities().length);
+  });
+
+  it("sorts results by capacity desc", () => {
+    const txFacilities = getFacilitiesByState("TX");
+    expect(txFacilities.length).toBeGreaterThan(1);
+    const maxMws = txFacilities.map((f) => getFacilityMaxMw(f) ?? -1);
+    expect(maxMws[0]).toBeGreaterThanOrEqual(maxMws[maxMws.length - 1]);
+  });
+});
+
+describe("getStateSummary", () => {
+  it("returns null for a state with zero facilities", () => {
+    expect(getStateSummary("ZZ")).toBeNull();
+  });
+
+  it("count matches getFacilitiesByState length", () => {
+    const summary = getStateSummary("NY");
+    expect(summary).not.toBeNull();
+    expect(summary!.count).toBe(getFacilitiesByState("NY").length);
+  });
+
+  it("includes all byType and byStatus keys", () => {
+    const summary = getStateSummary("NY")!;
+    expect(Object.keys(summary.byType).sort()).toEqual(
+      [...FACILITY_TYPE_ORDER].sort()
+    );
+    expect(Object.keys(summary.byStatus).sort()).toEqual(
+      [...STATUS_ORDER].sort()
+    );
+  });
+
+  it("maintains communityFriction <= communityReporting <= count", () => {
+    for (const code of getStates()) {
+      const summary = getStateSummary(code)!;
+      expect(summary.communityFriction).toBeLessThanOrEqual(
+        summary.communityReporting
+      );
+      expect(summary.communityReporting).toBeLessThanOrEqual(summary.count);
+    }
+  });
+
+  it("sorts topOperators by count desc", () => {
+    const summary = getStateSummary("TX")!;
+    for (let i = 1; i < summary.topOperators.length; i++) {
+      expect(summary.topOperators[i - 1].count).toBeGreaterThanOrEqual(
+        summary.topOperators[i].count
+      );
     }
   });
 });

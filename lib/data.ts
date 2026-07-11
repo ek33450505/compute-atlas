@@ -3,6 +3,7 @@ import { facilitiesSchema, type Facility, aiClassificationEnum, confidenceEnum }
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
+import { getFacilityMaxMw } from "@/lib/format";
 import facilitiesRaw from "@/data/facilities.json";
 
 // Validate at module load time so `next build` fails loudly on bad data.
@@ -308,4 +309,115 @@ export function getEnergySourceCounts(): Record<EnergySource, number> {
     }
   }
   return counts;
+}
+
+// ============================================================
+// Per-state helpers (used by state landing pages)
+// ============================================================
+
+/**
+ * Returns all facilities whose primary `location.state` matches `code`
+ * (case-insensitive), sorted by max capacity (operational or planned) desc,
+ * then name A→Z (deterministic tie-break).
+ */
+export function getFacilitiesByState(code: string): Facility[] {
+  const upper = code.toUpperCase();
+  return facilities
+    .filter((f) => f.location.state === upper)
+    .sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+}
+
+/** Aggregate summary of one state's facilities. */
+export interface StateSummary {
+  /** Uppercase 2-letter state code, e.g. "NY". */
+  code: string;
+  count: number;
+  /** Sum of capacityMw.operational across non-cancelled facilities. */
+  operationalMw: number;
+  /** Sum of capacityMw.planned across non-cancelled facilities. */
+  plannedMw: number;
+  /** Sum of capacityMw.planned across facilities under_construction. */
+  underConstructionMw: number;
+  byType: Record<FacilityType, number>;
+  byStatus: Record<Status, number>;
+  /** Count with community.status in {contested, opposed, litigation}. */
+  communityFriction: number;
+  /** Count with any community.status set (sourced, including "unknown"). */
+  communityReporting: number;
+  /** In-state operators, count desc then operator A→Z (deterministic tie-break). */
+  topOperators: { operator: string; count: number }[];
+}
+
+/**
+ * Returns an aggregate summary for one state, or null when the state has
+ * zero facilities. Mirrors `getStats`' capacity math (excludes cancelled for
+ * operational/planned) and `getTopOperators`' tie-break for `topOperators`.
+ */
+export function getStateSummary(code: string): StateSummary | null {
+  const upper = code.toUpperCase();
+  const stateFacilities = facilities.filter((f) => f.location.state === upper);
+  const count = stateFacilities.length;
+  if (count === 0) {
+    return null;
+  }
+
+  const active = stateFacilities.filter((f) => f.status !== "cancelled");
+  const operationalMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.operational ?? 0),
+    0
+  );
+  const plannedMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.planned ?? 0),
+    0
+  );
+  const underConstructionMw = stateFacilities
+    .filter((f) => f.status === "under_construction")
+    .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+
+  const byType = Object.fromEntries(
+    FACILITY_TYPE_ORDER.map((k) => [k, 0])
+  ) as Record<FacilityType, number>;
+  const byStatus = Object.fromEntries(
+    STATUS_ORDER.map((k) => [k, 0])
+  ) as Record<Status, number>;
+  let communityFriction = 0;
+  let communityReporting = 0;
+  const opCounts = new Map<string, number>();
+
+  for (const f of stateFacilities) {
+    byType[f.facilityType]++;
+    byStatus[f.status]++;
+    if (f.community?.status) {
+      communityReporting++;
+      if (
+        f.community.status === "contested" ||
+        f.community.status === "opposed" ||
+        f.community.status === "litigation"
+      ) {
+        communityFriction++;
+      }
+    }
+    opCounts.set(f.operator, (opCounts.get(f.operator) ?? 0) + 1);
+  }
+
+  const topOperators = [...opCounts.entries()]
+    .map(([operator, opCount]) => ({ operator, count: opCount }))
+    .sort((a, b) => b.count - a.count || a.operator.localeCompare(b.operator));
+
+  return {
+    code: upper,
+    count,
+    operationalMw,
+    plannedMw,
+    underConstructionMw,
+    byType,
+    byStatus,
+    communityFriction,
+    communityReporting,
+    topOperators,
+  };
 }
