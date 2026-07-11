@@ -21731,5 +21731,154 @@
     ],
     "lastUpdated": "2026-07-11",
     "notes": "Restoration underway pending final NRC approval \u2014 physical restart work (steam generator, main generator, emergency diesel generator, and underground piping inspections; ~500 on-site staff as of Sept 2025) is proceeding, but the final NRC restart license-amendment decision is not expected until 2027. Jobs figure (3,400 direct/indirect) is a third-party Brattle Group economic-impact projection, not an audited actual, and was omitted from the structured jobs field for that reason; investmentUsd of $1.6B is Constellation's own disclosed restart capex estimate."
+  },
+  {
+    "id": "talen-susquehanna-aws-pa",
+    "name": "Susquehanna Steam Electric Station",
+    "operator": "Talen Energy",
+    "status": "operational",
+    "facilityType": "power_generation",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.08889,
+      "lon": -76.14889,
+      "state": "PA",
+      "city": "Berwick",
+      "county": "Luzerne",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2514
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-11-01",
+        "sourceIndex": 0,
+        "note": "FERC votes 2-1 to reject the Talen-AWS behind-the-meter interconnection service agreement (ISA) amendment that would have raised co-located load from 300 MW to 480 MW"
+      },
+      {
+        "status": "operational",
+        "date": "2025-06-11",
+        "sourceIndex": 7,
+        "note": "Talen and AWS announce an expanded 1,920 MW front-of-meter power supply agreement through 2042, restructured to avoid FERC interconnection approval"
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "Existing 2,514 MW two-unit (BWR) plant, operating since the 1980s. Up to 1,920 MW earmarked for AWS via a front-of-meter retail power supply PPA through 2042 (announced 2025-06-11), ramping from 840-1,200 MW by 2029 to 1,680-1,920 MW by 2032. This front-of-meter structure replaced the original co-located behind-the-meter arrangement after FERC rejected that interconnection service agreement 2-1 on 2024-11-01; transition expected after transmission reconfiguration, targeted spring 2026."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "American Electric Power (AEP) and Exelon formally intervened at FERC against the co-located behind-the-meter ISA amendment, arguing it could shift up to $140 million/year in transmission costs onto PJM ratepayers as a 'free rider' benefit -- a factor in the ISA's rejection. This is a regulatory/ratepayer-cost dispute among utilities, not local community opposition; the front-of-meter restructuring addresses the underlying jurisdictional issue.",
+      "sourceIndex": 9
+    },
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Amazon (AWS)",
+      "notes": "AWS bought Talen's co-located 'Cumulus' data center campus (land, power infrastructure, powered shell) for $650 million, announced/closed around March 2024. Talen and AWS have also stated intent to explore new small modular reactors (SMRs) in Talen's PA footprint and plant uprates to add net-new PJM capacity -- exploratory, not a committed project. Talen projects roughly $18 billion in total contract revenue over the life of the expanded 1,920 MW/through-2042 supply agreement (contract value, not capex)."
+    },
+    "sources": [
+      {
+        "url": "https://ir.talenenergy.com/news-releases/news-release-details/talen-energy-statement-ferc-order-rejecting-susquehanna-isa",
+        "label": "Talen Energy Statement on FERC Order Rejecting Susquehanna ISA",
+        "publisher": "Talen Energy Investor Relations",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://ir.talenenergy.com/news-releases/news-release-details/talen-energy-statement-ferc-order-deferring-its-request",
+        "label": "Talen Energy Statement on FERC Order Deferring its Request for Rehearing of Susquehanna ISA",
+        "publisher": "Talen Energy Investor Relations",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1622536/000162828024044828/a20241103pressreleaseferco.htm",
+        "label": "Talen Energy Corp SEC Form 8-K (FERC order press release exhibit)",
+        "publisher": "U.S. Securities and Exchange Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.nrc.gov/info-finder/reactors/susq1",
+        "label": "Susquehanna Unit 1 reactor info",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.nrc.gov/info-finder/reactors/susq2",
+        "label": "Susquehanna Unit 2 reactor info",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.world-nuclear-news.org/articles/new-supply-agreement-expands-talen-amazon-partnership",
+        "label": "New supply agreement expands Talen-Amazon partnership",
+        "publisher": "World Nuclear News",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.world-nuclear-news.org/Articles/Talen-sells-carbon-free-data-centre-to-Amazon-clou",
+        "label": "Talen sells carbon-free data centre to Amazon cloud company",
+        "publisher": "World Nuclear News",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/talen-amazon-aws-susquehanna-nuclear-data-centert/750440/",
+        "label": "Talen to sell Amazon 1.9 GW from Susquehanna nuclear plant",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/ferc-interconnection-isa-talen-amazon-data-center-susquehanna-exelon/731841/",
+        "label": "FERC rejects interconnection pact for Talen-Amazon data center deal at nuclear plant",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/aep-exelon-pjm-interconnection-amazon-data-center-talen-ferc-isa/719869/",
+        "label": "AEP, Exelon challenge PJM interconnection pact for Amazon data center at Talen nuclear plant",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/business/policy-and-regulation/ferc-rejects-amended-interconnection-agreement-for-amazon-data-center-at-susquehanna-nuclear-plant/",
+        "label": "FERC rejects amended interconnection agreement for Amazon data center at Susquehanna nuclear plant",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/nuclear/aws-acquires-data-center-campus-connected-to-susquehanna-nuclear-station/",
+        "label": "AWS acquires data center campus connected to Susquehanna nuclear station",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wnep.com/article/news/local/luzerne-county/amazon-spending-650-million-for-data-center-in-luzerne-county-talen-energy-susquehanna-steam-electric-station-nuclear-nuke-power-plant-acquisition-buy/523-73264033-187f-47b0-8769-d57c171c7aa6",
+        "label": "Amazon spending $650 million for data center in Luzerne County",
+        "publisher": "WNEP",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Susquehanna_Steam_Electric_Station",
+        "label": "Susquehanna Steam Electric Station",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-07-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "Plant is located in Salem Township, Luzerne County (not Berwick borough proper); Berwick is the nearest named community, used here as the city label. Coordinates are Wikipedia's figure (NRC-sourced per Wikipedia's infobox), not independently re-verified against raw NRC data this session -- location.precision is 'approximate' pending that verification."
   }
 ]
