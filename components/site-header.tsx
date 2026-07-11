@@ -8,6 +8,7 @@ import { MobileNav } from "@/components/mobile-nav";
 const NAV_LINKS = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
+  { label: "States", href: "/states" },
   { label: "Stats", href: "/stats" },
   { label: "About", href: "/about" },
 ] as const;

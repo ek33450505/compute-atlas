@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { getAllFacilities } from "@/lib/data";
+import { getAllFacilities, getStates } from "@/lib/data";
+import { stateSlugFromCode } from "@/lib/us-states";
 import { siteConfig } from "@/lib/site";
 
 /**
@@ -25,6 +26,12 @@ export function buildStaticRoutes(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
+    },
+    {
+      url: `${siteConfig.url}/states`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
       url: `${siteConfig.url}/stats`,
@@ -54,6 +61,19 @@ export function buildFacilityRoutes(): MetadataRoute.Sitemap {
   }));
 }
 
+/**
+ * Builds per-state route entries for the sitemap.
+ * Exported separately so it can be unit-tested without Next.js.
+ */
+export function buildStateRoutes(): MetadataRoute.Sitemap {
+  return getStates().map((code) => ({
+    url: `${siteConfig.url}/states/${stateSlugFromCode(code)}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [...buildStaticRoutes(), ...buildFacilityRoutes()];
+  return [...buildStaticRoutes(), ...buildStateRoutes(), ...buildFacilityRoutes()];
 }
