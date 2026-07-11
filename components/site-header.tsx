@@ -4,12 +4,19 @@ import { Code2 } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { Wordmark } from "@/components/wordmark";
 import { MobileNav } from "@/components/mobile-nav";
+import { ExploreMenu } from "@/components/explore-menu";
 
-const NAV_LINKS = [
+const PRIMARY_LINKS = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
+] as const;
+
+const EXPLORE_LINKS = [
   { label: "States", href: "/states" },
   { label: "Power", href: "/power" },
+] as const;
+
+const TRAILING_LINKS = [
   { label: "Stats", href: "/stats" },
   { label: "About", href: "/about" },
 ] as const;
@@ -29,7 +36,17 @@ export function SiteHeader() {
 
         {/* Primary nav — desktop only; MobileNav handles mobile */}
         <nav aria-label="Primary" className="hidden sm:flex items-center gap-1 ml-2 sm:ml-4">
-          {NAV_LINKS.map(({ label, href }) => (
+          {PRIMARY_LINKS.map(({ label, href }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex h-11 items-center px-1.5 sm:px-3 font-mono text-xs uppercase tracking-normal sm:tracking-wider text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              {label}
+            </Link>
+          ))}
+          <ExploreMenu links={EXPLORE_LINKS} />
+          {TRAILING_LINKS.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
@@ -53,7 +70,7 @@ export function SiteHeader() {
             <Code2 aria-hidden className="size-4" />
           </a>
           {/* Mobile menu — hidden on sm+ */}
-          <MobileNav links={NAV_LINKS} />
+          <MobileNav links={[...PRIMARY_LINKS, ...EXPLORE_LINKS, ...TRAILING_LINKS]} />
         </div>
       </div>
     </header>
