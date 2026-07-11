@@ -29,9 +29,12 @@ export default function TablePage() {
           Data center data table
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          Every tracked facility, filterable and sortable. Filters are shared
-          with the map — the URL carries them between the two views. Each row
-          links to its detail plate.
+          Compute Atlas tracks data centers across the United States —
+          traditional and hyperscale compute, AI-specific facilities, and
+          crypto-mining operations — with a public source behind every
+          record. Every tracked facility is listed below, filterable and
+          sortable. Filters are shared with the map — the URL carries them
+          between the two views. Each row links to its detail plate.
         </p>
         <div className="border-t border-border" />
       </header>
