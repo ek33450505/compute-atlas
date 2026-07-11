@@ -21880,5 +21880,126 @@
     ],
     "lastUpdated": "2026-07-11",
     "notes": "Plant is located in Salem Township, Luzerne County (not Berwick borough proper); Berwick is the nearest named community, used here as the city label. Coordinates are Wikipedia's figure (NRC-sourced per Wikipedia's infobox), not independently re-verified against raw NRC data this session -- location.precision is 'approximate' pending that verification."
+  },
+  {
+    "id": "kairos-hermes-2-oak-ridge-tn",
+    "name": "Kairos Power Hermes 2",
+    "operator": "Kairos Power",
+    "status": "under_construction",
+    "facilityType": "power_generation",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.92,
+      "lon": -84.39,
+      "state": "TN",
+      "city": "Oak Ridge",
+      "county": "Roane",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-11-21",
+        "sourceIndex": 1,
+        "note": "NRC issues Hermes 2 construction permit (first Gen IV power-reactor construction permit; Docket Nos. 50-611 and 50-612)"
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-04-17",
+        "sourceIndex": 5,
+        "note": "Kairos Power breaks ground on Hermes 2 at the Heritage Center/K-33 site"
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "KP-FHR fluoride-salt-cooled Gen IV demonstration reactor -- the first Gen IV power reactor to receive an NRC construction permit. Two 35 MWth test reactor units revised upward to a combined 50 MWe design following the TVA/Google power purchase agreements; delivers power into the TVA grid."
+    },
+    "community": {
+      "status": "supported",
+      "notes": "Groundbreaking (2026-04-17) was attended and celebrated by elected officials including Deputy Secretary of Energy James Danly and Rep. Chuck Fleischmann; no documented local opposition found in sourcing this session. Site reuses the Heritage Center/former East Tennessee Technology Park (K-25/K-33) land via the DOE/Oak Ridge EDI redevelopment program.",
+      "sourceIndex": 9
+    },
+    "generation": {
+      "technology": "nuclear_smr",
+      "offtaker": "Google",
+      "notes": "First deployment under the October 2024 Kairos Power-Google Master Plant Development Agreement (Google fleet-wide target of up to 500 MW across multiple Kairos plants by 2035). Power is delivered via a Tennessee Valley Authority PPA (announced 2025-08-18) -- the first US utility PPA for an advanced Gen IV reactor -- intended to serve Google data centers in Montgomery County, TN and Jackson County, AL (grid-region delivery, no single named campus). Shares the Heritage Center/ETTP campus with the earlier, smaller non-power-producing Hermes 1 demonstration reactor but sits on a distinct K-33 parcel. Target operation by 2030."
+    },
+    "sources": [
+      {
+        "url": "https://www.nrc.gov/reactors/non-power/new-facility-licensing/hermes2-kairos",
+        "label": "Hermes 2 (Kairos Power) docket page",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/2024/11/29/2024-28025/kairos-power-llc-hermes-2-test-reactor-facility-construction-permits",
+        "label": "Kairos Power LLC; Hermes 2 Test Reactor Facility; Construction Permits",
+        "publisher": "Federal Register",
+        "retrievedAt": "2026-07-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/2024/04/26/2024-08964/kairos-power-llc-hermes-2-draft-environmental-assessment-and-draft-finding-of-no-significant-impact",
+        "label": "Hermes 2 Draft Environmental Assessment and Draft FONSI",
+        "publisher": "Federal Register",
+        "retrievedAt": "2026-07-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/2024/09/05/2024-19914/kairos-power-llc-hermes-2-environmental-assessment-finding-of-no-significant-impact-and-exemptions",
+        "label": "Hermes 2 Environmental Assessment, Finding of No Significant Impact, and Exemptions",
+        "publisher": "Federal Register",
+        "retrievedAt": "2026-07-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/2023/11/22/2023-25818/kairos-power-llc-hermes-2",
+        "label": "Kairos Power LLC; Hermes 2 (initial notice)",
+        "publisher": "Federal Register",
+        "retrievedAt": "2026-07-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.kairospower.com/updates/kairos-power-breaks-ground-on-hermes-2-demonstration-plant",
+        "label": "Kairos Power Breaks Ground on Hermes 2 Demonstration Plant",
+        "publisher": "Kairos Power",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kairospower.com/updates/google-and-kairos-power-partner-to-deploy-500-mw-of-clean-electricity-generation",
+        "label": "Google and Kairos Power Partner to Deploy 500 MW of Clean Electricity Generation",
+        "publisher": "Kairos Power",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+        "label": "Google signs advanced nuclear clean energy agreement with Kairos Power",
+        "publisher": "Google",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.world-nuclear-news.org/articles/google-kairos-power-tva-announce-collaboration",
+        "label": "Google, Kairos Power, TVA announce collaboration",
+        "publisher": "World Nuclear News",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ans.org/news/2026-04-21/article-7964/kairos-power-breaks-ground-on-first-powerproducing-reactor-in-oak-ridge/",
+        "label": "Kairos Power breaks ground on first power-producing reactor in Oak Ridge",
+        "publisher": "ANS Nuclear Newswire",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "Coordinates are an approximate anchor to the Heritage Center Industrial Park / former East Tennessee Technology Park (K-25/K-33 site), west Oak Ridge, Roane County -- no parcel-exact public coordinate was found for the K-33 sub-site this session; treat as approximate pending confirmation against NRC ADAMS environmental-assessment site maps or Oak Ridge EDI parcel maps. Investment and jobs figures were not disclosed in any source reviewed and are omitted rather than estimated."
   }
 ]
