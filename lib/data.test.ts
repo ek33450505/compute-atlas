@@ -18,6 +18,10 @@ import {
   getEnergySourceCounts,
   getFacilitiesByState,
   getStateSummary,
+  operatorSlug,
+  getOperatorBySlug,
+  getFacilitiesByOperator,
+  getOperatorSummary,
   getPowerGenerationFacilities,
   normalizeOfftaker,
   getGenerationByOfftaker,
@@ -573,6 +577,84 @@ describe("getStateSummary", () => {
         summary.topOperators[i].count
       );
     }
+  });
+});
+
+describe("operatorSlug", () => {
+  it("slugifies a multi-word operator name", () => {
+    expect(operatorSlug("Amazon Web Services")).toBe("amazon-web-services");
+  });
+
+  it("round-trips through getOperatorBySlug for every tracked operator", () => {
+    for (const name of getOperators()) {
+      expect(getOperatorBySlug(operatorSlug(name))).toBe(name);
+    }
+  });
+});
+
+describe("getOperatorBySlug", () => {
+  it("returns undefined for an unknown slug", () => {
+    expect(getOperatorBySlug("not-a-real-operator")).toBeUndefined();
+  });
+});
+
+describe("getFacilitiesByOperator", () => {
+  it("returns exactly the operator's facilities for a known multi-facility operator", () => {
+    const expected = getAllFacilities().filter((f) => f.operator === "Google");
+    const results = getFacilitiesByOperator("Google");
+    expect(results.length).toBe(expected.length);
+    for (const f of results) {
+      expect(f.operator).toBe("Google");
+    }
+  });
+
+  it("sorts results by capacity desc", () => {
+    const results = getFacilitiesByOperator("Google");
+    expect(results.length).toBeGreaterThan(1);
+    const maxMws = results.map((f) => getFacilityMaxMw(f) ?? -1);
+    for (let i = 1; i < maxMws.length; i++) {
+      expect(maxMws[i - 1]).toBeGreaterThanOrEqual(maxMws[i]);
+    }
+  });
+
+  it("partitions the full dataset (every facility has exactly one operator)", () => {
+    const sum = getOperators().reduce(
+      (s, name) => s + getFacilitiesByOperator(name).length,
+      0
+    );
+    expect(sum).toBe(getAllFacilities().length);
+  });
+});
+
+describe("getOperatorSummary", () => {
+  it("returns null for an unknown operator", () => {
+    expect(getOperatorSummary("__nope__")).toBeNull();
+  });
+
+  it("count matches getFacilitiesByOperator length", () => {
+    for (const name of getOperators()) {
+      const summary = getOperatorSummary(name);
+      expect(summary).not.toBeNull();
+      expect(summary!.count).toBe(getFacilitiesByOperator(name).length);
+    }
+  });
+
+  it("includes all byType and byStatus keys", () => {
+    const summary = getOperatorSummary("Google")!;
+    expect(Object.keys(summary.byType).sort()).toEqual(
+      [...FACILITY_TYPE_ORDER].sort()
+    );
+    expect(Object.keys(summary.byStatus).sort()).toEqual(
+      [...STATUS_ORDER].sort()
+    );
+  });
+
+  it("stateCount matches the distinct state count for the operator's facilities", () => {
+    const summary = getOperatorSummary("Google")!;
+    const expected = new Set(
+      getFacilitiesByOperator("Google").map((f) => f.location.state)
+    ).size;
+    expect(summary.stateCount).toBe(expected);
   });
 });
 

@@ -545,3 +545,98 @@ export function getFacilitiesByCommunityStatus(status: CommunityReception): Faci
     .filter((f) => f.community?.status === status)
     .sort((a, b) => (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name));
 }
+
+// ============================================================
+// Per-operator helpers (used by operator landing pages)
+// ============================================================
+
+/** URL slug for an operator name, e.g. "Amazon Web Services" -> "amazon-web-services". */
+export function operatorSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+/** Precomputed slug -> operator name map, built once at module scope for O(1) reverse lookup. */
+const SLUG_TO_OPERATOR: Record<string, string> = Object.fromEntries(
+  getOperators().map((name) => [operatorSlug(name), name])
+);
+
+/** Returns the operator name for a URL slug (case-insensitive), or undefined if unknown. */
+export function getOperatorBySlug(slug: string): string | undefined {
+  return SLUG_TO_OPERATOR[slug.toLowerCase()];
+}
+
+/**
+ * Returns all facilities operated by `name` (exact match), sorted by max
+ * capacity (operational or planned) desc, then name A→Z (deterministic
+ * tie-break).
+ */
+export function getFacilitiesByOperator(name: string): Facility[] {
+  return facilities
+    .filter((f) => f.operator === name)
+    .sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+}
+
+/** Aggregate summary of one operator's facilities. */
+export interface OperatorSummary {
+  name: string;
+  count: number;
+  /** Sum of capacityMw.operational across non-cancelled facilities. */
+  operationalMw: number;
+  /** Sum of capacityMw.planned across non-cancelled facilities. */
+  plannedMw: number;
+  byType: Record<FacilityType, number>;
+  byStatus: Record<Status, number>;
+  /** Distinct location.state values across the operator's facilities. */
+  stateCount: number;
+}
+
+/**
+ * Returns an aggregate summary for one operator, or null when the operator
+ * has zero facilities. Mirrors `getStateSummary`'s capacity math (excludes
+ * cancelled for operational/planned) and byType/byStatus seeding.
+ */
+export function getOperatorSummary(name: string): OperatorSummary | null {
+  const operatorFacilities = facilities.filter((f) => f.operator === name);
+  const count = operatorFacilities.length;
+  if (count === 0) {
+    return null;
+  }
+
+  const active = operatorFacilities.filter((f) => f.status !== "cancelled");
+  const operationalMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.operational ?? 0),
+    0
+  );
+  const plannedMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.planned ?? 0),
+    0
+  );
+
+  const byType = Object.fromEntries(
+    FACILITY_TYPE_ORDER.map((k) => [k, 0])
+  ) as Record<FacilityType, number>;
+  const byStatus = Object.fromEntries(
+    STATUS_ORDER.map((k) => [k, 0])
+  ) as Record<Status, number>;
+  const states = new Set<string>();
+
+  for (const f of operatorFacilities) {
+    byType[f.facilityType]++;
+    byStatus[f.status]++;
+    states.add(f.location.state);
+  }
+
+  return {
+    name,
+    count,
+    operationalMw,
+    plannedMw,
+    byType,
+    byStatus,
+    stateCount: states.size,
+  };
+}

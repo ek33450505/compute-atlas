@@ -2,9 +2,10 @@ import { describe, it, expect } from "vitest";
 import {
   buildStaticRoutes,
   buildStateRoutes,
+  buildOperatorRoutes,
   buildFacilityRoutes,
 } from "@/app/sitemap";
-import { getAllFacilities, getStates } from "@/lib/data";
+import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { siteConfig } from "@/lib/site";
 
@@ -16,6 +17,7 @@ describe("sitemap", () => {
     expect(urls).toContain(`${siteConfig.url}/map`);
     expect(urls).toContain(`${siteConfig.url}/table`);
     expect(urls).toContain(`${siteConfig.url}/states`);
+    expect(urls).toContain(`${siteConfig.url}/operators`);
     expect(urls).toContain(`${siteConfig.url}/power`);
     expect(urls).toContain(`${siteConfig.url}/opposition`);
     expect(urls).toContain(`${siteConfig.url}/stats`);
@@ -40,14 +42,32 @@ describe("sitemap", () => {
     }
   });
 
-  it("total route count equals the sum of all three builders", () => {
+  it("operator routes count equals getOperators().length, with no undefined slugs", () => {
+    const operatorRoutes = buildOperatorRoutes();
+    const operators = getOperators();
+    expect(operatorRoutes).toHaveLength(operators.length);
+    for (const name of operators) {
+      const expectedUrl = `${siteConfig.url}/operators/${operatorSlug(name)}`;
+      const entry = operatorRoutes.find((r) => r.url === expectedUrl);
+      expect(entry).toBeDefined();
+      expect(entry!.url).not.toContain("undefined");
+    }
+  });
+
+  it("total route count equals the sum of all four builders", () => {
     const staticRoutes = buildStaticRoutes();
     const stateRoutes = buildStateRoutes();
+    const operatorRoutes = buildOperatorRoutes();
     const facilityRoutes = buildFacilityRoutes();
-    const total = staticRoutes.length + stateRoutes.length + facilityRoutes.length;
+    const total =
+      staticRoutes.length +
+      stateRoutes.length +
+      operatorRoutes.length +
+      facilityRoutes.length;
     expect(total).toBe(
       buildStaticRoutes().length +
         buildStateRoutes().length +
+        buildOperatorRoutes().length +
         buildFacilityRoutes().length
     );
   });
@@ -56,6 +76,7 @@ describe("sitemap", () => {
     const allRoutes = [
       ...buildStaticRoutes(),
       ...buildStateRoutes(),
+      ...buildOperatorRoutes(),
       ...buildFacilityRoutes(),
     ];
     for (const route of allRoutes) {

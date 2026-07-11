@@ -16,6 +16,7 @@ const EXPLORE_LINKS = [
   { label: "States", href: "/states" },
   { label: "Power", href: "/power" },
   { label: "Opposition", href: "/opposition" },
+  { label: "Operators", href: "/operators" },
 ] as const;
 
 const TRAILING_LINKS = [

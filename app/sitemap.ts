@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllFacilities, getStates } from "@/lib/data";
+import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { siteConfig } from "@/lib/site";
 
@@ -29,6 +29,12 @@ export function buildStaticRoutes(): MetadataRoute.Sitemap {
     },
     {
       url: `${siteConfig.url}/states`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${siteConfig.url}/operators`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
@@ -86,6 +92,24 @@ export function buildStateRoutes(): MetadataRoute.Sitemap {
   }));
 }
 
+/**
+ * Builds per-operator route entries for the sitemap.
+ * Exported separately so it can be unit-tested without Next.js.
+ */
+export function buildOperatorRoutes(): MetadataRoute.Sitemap {
+  return getOperators().map((name) => ({
+    url: `${siteConfig.url}/operators/${operatorSlug(name)}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [...buildStaticRoutes(), ...buildStateRoutes(), ...buildFacilityRoutes()];
+  return [
+    ...buildStaticRoutes(),
+    ...buildStateRoutes(),
+    ...buildOperatorRoutes(),
+    ...buildFacilityRoutes(),
+  ];
 }
