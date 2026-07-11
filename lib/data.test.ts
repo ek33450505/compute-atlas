@@ -18,6 +18,10 @@ import {
   getEnergySourceCounts,
   getFacilitiesByState,
   getStateSummary,
+  getPowerGenerationFacilities,
+  normalizeOfftaker,
+  getGenerationByOfftaker,
+  getGenerationStats,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
@@ -568,5 +572,72 @@ describe("getStateSummary", () => {
         summary.topOperators[i].count
       );
     }
+  });
+});
+
+describe("getPowerGenerationFacilities", () => {
+  it("returns exactly the power_generation subset of getAllFacilities", () => {
+    const expected = getAllFacilities().filter(
+      (f) => f.facilityType === "power_generation"
+    );
+    expect(getPowerGenerationFacilities().length).toBe(expected.length);
+  });
+
+  it("every result has facilityType power_generation", () => {
+    for (const f of getPowerGenerationFacilities()) {
+      expect(f.facilityType).toBe("power_generation");
+    }
+  });
+});
+
+describe("normalizeOfftaker", () => {
+  it("strips a trailing parenthetical", () => {
+    expect(normalizeOfftaker("Amazon (AWS)")).toBe("Amazon");
+  });
+
+  it("leaves a plain name unchanged", () => {
+    expect(normalizeOfftaker("Meta")).toBe("Meta");
+    expect(normalizeOfftaker("Amazon")).toBe("Amazon");
+  });
+});
+
+describe("getGenerationByOfftaker", () => {
+  it("merges the two Amazon spellings into one group", () => {
+    const groups = getGenerationByOfftaker();
+    const amazon = groups.find((g) => g.offtaker === "Amazon");
+    expect(amazon).toBeDefined();
+    expect(amazon!.facilities.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("has no group label containing a parenthetical", () => {
+    const groups = getGenerationByOfftaker();
+    for (const g of groups) {
+      expect(g.offtaker).not.toContain("(");
+    }
+  });
+
+  it("sorts groups by totalMw desc", () => {
+    const groups = getGenerationByOfftaker();
+    for (let i = 1; i < groups.length; i++) {
+      expect(groups[i - 1].totalMw).toBeGreaterThanOrEqual(groups[i].totalMw);
+    }
+  });
+});
+
+describe("getGenerationStats", () => {
+  it("count matches getPowerGenerationFacilities length", () => {
+    expect(getGenerationStats().count).toBe(
+      getPowerGenerationFacilities().length
+    );
+  });
+
+  it("offtakerCount matches the distinct normalized offtaker count", () => {
+    const distinct = new Set(
+      getPowerGenerationFacilities()
+        .map((f) => f.generation?.offtaker)
+        .filter((o): o is string => !!o)
+        .map(normalizeOfftaker)
+    );
+    expect(getGenerationStats().offtakerCount).toBe(distinct.size);
   });
 });

@@ -9,13 +9,14 @@ import { stateSlugFromCode } from "@/lib/us-states";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
-  it("static routes include /, /map, /table, /states, /stats, and /about", () => {
+  it("static routes include /, /map, /table, /states, /power, /stats, and /about", () => {
     const routes = buildStaticRoutes();
     const urls = routes.map((r) => r.url);
     expect(urls).toContain(siteConfig.url);
     expect(urls).toContain(`${siteConfig.url}/map`);
     expect(urls).toContain(`${siteConfig.url}/table`);
     expect(urls).toContain(`${siteConfig.url}/states`);
+    expect(urls).toContain(`${siteConfig.url}/power`);
     expect(urls).toContain(`${siteConfig.url}/stats`);
     expect(urls).toContain(`${siteConfig.url}/about`);
   });

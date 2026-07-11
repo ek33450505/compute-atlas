@@ -1,5 +1,11 @@
 import type { z } from "zod";
-import { facilitiesSchema, type Facility, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
+import {
+  facilitiesSchema,
+  type Facility,
+  type PowerGenerationFacility,
+  aiClassificationEnum,
+  confidenceEnum,
+} from "@/lib/schema";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
@@ -419,5 +425,112 @@ export function getStateSummary(code: string): StateSummary | null {
     communityFriction,
     communityReporting,
     topOperators,
+  };
+}
+
+// ============================================================
+// Power-generation helpers (used by /power)
+// ============================================================
+
+/** All power_generation facilities (type-guarded so `.generation` narrows). */
+export function getPowerGenerationFacilities(): PowerGenerationFacility[] {
+  return facilities.filter(
+    (f): f is PowerGenerationFacility => f.facilityType === "power_generation"
+  );
+}
+
+/**
+ * Normalizes an offtaker string for grouping: strips a trailing
+ * parenthetical, e.g. "Amazon (AWS)" -> "Amazon". Facilities recording the
+ * same buyer under different spellings collapse into one group.
+ */
+export function normalizeOfftaker(offtaker: string): string {
+  return offtaker.replace(/\s*\([^)]*\)\s*$/, "").trim();
+}
+
+/** One offtaker's power-generation facilities, aggregated for /power § By offtaker. */
+export interface OfftakerGroup {
+  /** Normalized display name, e.g. "Amazon". */
+  offtaker: string;
+  /** Sorted by max capacity (operational or planned) desc, then name A→Z. */
+  facilities: PowerGenerationFacility[];
+  /** Sum of getFacilityMaxMw across the group. */
+  totalMw: number;
+}
+
+/**
+ * Returns power_generation facilities grouped by normalized offtaker,
+ * sorted by totalMw desc then offtaker A→Z (deterministic tie-break).
+ * Facilities with no `generation.offtaker` are excluded — they have no
+ * buyer to group under.
+ */
+export function getGenerationByOfftaker(): OfftakerGroup[] {
+  const groups = new Map<string, PowerGenerationFacility[]>();
+  for (const f of getPowerGenerationFacilities()) {
+    const offtaker = f.generation?.offtaker;
+    if (!offtaker) continue;
+    const key = normalizeOfftaker(offtaker);
+    const existing = groups.get(key);
+    if (existing) {
+      existing.push(f);
+    } else {
+      groups.set(key, [f]);
+    }
+  }
+
+  return [...groups.entries()]
+    .map(([offtaker, groupFacilities]) => {
+      const sorted = [...groupFacilities].sort(
+        (a, b) =>
+          (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+          a.name.localeCompare(b.name)
+      );
+      const totalMw = sorted.reduce(
+        (sum, f) => sum + (getFacilityMaxMw(f) ?? 0),
+        0
+      );
+      return { offtaker, facilities: sorted, totalMw };
+    })
+    .sort((a, b) => b.totalMw - a.totalMw || a.offtaker.localeCompare(b.offtaker));
+}
+
+/** Aggregate stats for the power_generation layer, used by /power's survey-stat row. */
+export interface GenerationStats {
+  /** Number of power_generation projects. */
+  count: number;
+  /** Sum of capacityMw.operational across non-cancelled power_generation projects. */
+  operationalMw: number;
+  /** Sum of capacityMw.planned across non-cancelled power_generation projects. */
+  plannedMw: number;
+  /** Distinct normalized offtakers among projects that disclose one. */
+  offtakerCount: number;
+}
+
+/**
+ * Returns aggregate stats for the power_generation facility layer. Mirrors
+ * getStats' capacity math (excludes cancelled for operational/planned).
+ */
+export function getGenerationStats(): GenerationStats {
+  const generation = getPowerGenerationFacilities();
+  const active = generation.filter((f) => f.status !== "cancelled");
+  const operationalMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.operational ?? 0),
+    0
+  );
+  const plannedMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.planned ?? 0),
+    0
+  );
+  const offtakers = new Set(
+    generation
+      .map((f) => f.generation?.offtaker)
+      .filter((o): o is string => !!o)
+      .map(normalizeOfftaker)
+  );
+  return {
+    count: generation.length,
+    operationalMw,
+    plannedMw,
+    offtakerCount: offtakers.size,
   };
 }
