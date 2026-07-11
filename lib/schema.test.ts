@@ -41,6 +41,22 @@ const baseCryptoMiningFacility = {
   lastUpdated: "2026-07-05",
 };
 
+const basePowerGenerationFacility = {
+  id: "test-power-generation-facility",
+  name: "Test Power Generation Facility",
+  operator: "Test Power Operator",
+  status: "proposed" as const,
+  facilityType: "power_generation" as const,
+  confidence: "reported" as const,
+  location: {
+    lat: 39.0,
+    lon: -83.0,
+    state: "OH",
+  },
+  sources: [baseSource],
+  lastUpdated: "2026-07-05",
+};
+
 describe("facilitySchema — happy path", () => {
   it("parses a valid facility", () => {
     const result = facilitySchema.safeParse(baseFacility);
@@ -239,6 +255,81 @@ describe("facilitySchema — crypto_mining branch (invalid cases)", () => {
       statusHistory: [
         { status: "operational", date: "2024", sourceIndex: 5 },
       ],
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("facilitySchema — power_generation branch (happy path)", () => {
+  it("parses a minimal valid power_generation record", () => {
+    const result = facilitySchema.safeParse(basePowerGenerationFacility);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.facilityType).toBe("power_generation");
+    }
+  });
+
+  it("parses a power_generation record with the generation block populated", () => {
+    const result = facilitySchema.safeParse({
+      ...basePowerGenerationFacility,
+      capacityMw: { planned: 1200 },
+      energy: { source: "nuclear" },
+      generation: {
+        technology: "nuclear_smr",
+        offtaker: "Meta",
+        unitCount: 16,
+        notes: "Build-own-operate; offtaker prepays for power.",
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success && result.data.facilityType === "power_generation") {
+      expect(result.data.generation?.technology).toBe("nuclear_smr");
+      expect(result.data.generation?.offtaker).toBe("Meta");
+    }
+  });
+
+  it("generation is optional — omitting it still parses", () => {
+    const result = facilitySchema.safeParse(basePowerGenerationFacility);
+    expect(result.success).toBe(true);
+    if (result.success && result.data.facilityType === "power_generation") {
+      expect(result.data.generation).toBeUndefined();
+    }
+  });
+});
+
+describe("facilitySchema — power_generation branch (invalid cases)", () => {
+  it("does not carry aiClassification, mining, or environmental fields (lean branch)", () => {
+    const result = facilitySchema.safeParse(basePowerGenerationFacility);
+    expect(result.success).toBe(true);
+    if (result.success && result.data.facilityType === "power_generation") {
+      expect(
+        "aiClassification" in result.data
+      ).toBe(false);
+      expect("mining" in result.data).toBe(false);
+      expect("environmental" in result.data).toBe(false);
+    }
+  });
+
+  it("fails when generation.technology is an invalid enum value", () => {
+    const result = facilitySchema.safeParse({
+      ...basePowerGenerationFacility,
+      generation: { technology: "coal_fired" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when generation.unitCount is not a positive integer", () => {
+    const result = facilitySchema.safeParse({
+      ...basePowerGenerationFacility,
+      generation: { unitCount: -3 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when statusHistory sourceIndex is out of range on the power_generation branch", () => {
+    const result = facilitySchema.safeParse({
+      ...basePowerGenerationFacility,
+      statusHistory: [{ status: "proposed", date: "2026", sourceIndex: 5 }],
     });
     expect(result.success).toBe(false);
   });

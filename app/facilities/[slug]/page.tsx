@@ -114,12 +114,14 @@ export default async function FacilityPage({
               facility.facilityType}
           </Badge>
           <StatusBadge status={facility.status} className="text-base" />
-          {facility.aiClassification && (
-            <Badge variant="outline">
-              {AI_CLASSIFICATION_LABELS[facility.aiClassification] ??
-                facility.aiClassification}
-            </Badge>
-          )}
+          {(facility.facilityType === "data_center" ||
+            facility.facilityType === "crypto_mining") &&
+            facility.aiClassification && (
+              <Badge variant="outline">
+                {AI_CLASSIFICATION_LABELS[facility.aiClassification] ??
+                  facility.aiClassification}
+              </Badge>
+            )}
           <Badge variant="outline">
             {CONFIDENCE_LABELS[facility.confidence] ?? facility.confidence}
           </Badge>

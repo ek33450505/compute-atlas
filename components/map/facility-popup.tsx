@@ -101,7 +101,7 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
             ? `${facility.aiClassification.replace("_", " ")} · ${confidence}`
             : confidence}
         </p>
-      ) : (
+      ) : facility.facilityType === "crypto_mining" ? (
         <div className="text-xs text-foreground mb-2 space-y-0.5">
           {facility.mining?.hashRateThPerS !== undefined && (
             <p className="tabular-nums">
@@ -120,6 +120,8 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
           )}
           <p className="capitalize">{confidence}</p>
         </div>
+      ) : (
+        <p className="text-xs text-foreground mb-2 capitalize">{confidence}</p>
       )}
 
       {/* Footer links */}

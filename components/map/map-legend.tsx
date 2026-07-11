@@ -40,7 +40,12 @@ export function MapLegend() {
       <ul role="list" className="space-y-1.5">
         {FACILITY_TYPE_ORDER.map((type) => {
           const meta = FACILITY_TYPE_META[type];
-          const shapeClassName = type === "crypto_mining" ? "rounded-md" : "rounded-full";
+          const shapeClassName =
+            type === "crypto_mining"
+              ? "rounded-md"
+              : type === "power_generation"
+                ? "rounded-none"
+                : "rounded-full";
           return (
             <li key={type} className="flex items-center gap-2">
               <span

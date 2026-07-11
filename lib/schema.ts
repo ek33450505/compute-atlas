@@ -4,7 +4,7 @@ import { STATUS_ORDER } from "@/lib/status";
 export const statusEnum = z.enum(STATUS_ORDER);
 export const aiClassificationEnum = z.enum(["confirmed", "likely", "mixed_use"]);
 export const confidenceEnum = z.enum(["confirmed", "reported", "rumored"]);
-export const facilityTypeEnum = z.enum(["data_center", "crypto_mining"]);
+export const facilityTypeEnum = z.enum(["data_center", "crypto_mining", "power_generation"]);
 export const sourceKindEnum = z.enum([
   "press",
   "permit",
@@ -178,6 +178,37 @@ export const cryptoMiningFacilitySchema = z.object({
   environmental: cryptoMiningEnvironmentalSchema.optional(),
 });
 
+// Power-generation-specific fields. Kept lean: no aiClassification, no
+// mining, no environmental — capacityMw carries the generation MW and
+// energy.source carries the fuel/technology at the base-shape level.
+const powerGenerationSchema = z
+  .object({
+    technology: z
+      .enum([
+        "nuclear_smr",
+        "nuclear",
+        "natural_gas",
+        "solar",
+        "wind",
+        "hydro",
+        "geothermal",
+        "battery",
+        "other",
+      ])
+      .optional(),
+    // The compute company buying the power — the link back to the buildout.
+    offtaker: z.string().optional(),
+    unitCount: z.number().int().positive().optional(),
+    notes: z.string().optional(),
+  })
+  .optional();
+
+export const powerGenerationFacilitySchema = z.object({
+  ...baseFacilityShape,
+  facilityType: z.literal("power_generation"),
+  generation: powerGenerationSchema,
+});
+
 // Shared cross-branch validation: sourceIndex fields must reference an
 // in-range entry in `sources[]`. Hoisted so both union branches enforce it
 // identically instead of duplicating the superRefine per-branch.
@@ -215,6 +246,7 @@ export const facilitySchema = z
   .discriminatedUnion("facilityType", [
     dataCenterFacilitySchema,
     cryptoMiningFacilitySchema,
+    powerGenerationFacilitySchema,
   ])
   .superRefine(checkSourceIndexBounds);
 
@@ -223,5 +255,6 @@ export const facilitiesSchema = z.array(facilitySchema);
 export type Facility = z.infer<typeof facilitySchema>;
 export type DataCenterFacility = z.infer<typeof dataCenterFacilitySchema>;
 export type CryptoMiningFacility = z.infer<typeof cryptoMiningFacilitySchema>;
+export type PowerGenerationFacility = z.infer<typeof powerGenerationFacilitySchema>;
 export type Source = z.infer<typeof sourceSchema>;
 export type StatusEvent = z.infer<typeof statusEventSchema>;

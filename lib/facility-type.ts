@@ -6,7 +6,7 @@
  * with a shape/visual field once that need is concrete.
  */
 
-export const FACILITY_TYPE_ORDER = ["data_center", "crypto_mining"] as const;
+export const FACILITY_TYPE_ORDER = ["data_center", "crypto_mining", "power_generation"] as const;
 
 export type FacilityType = (typeof FACILITY_TYPE_ORDER)[number];
 
@@ -17,6 +17,7 @@ export interface FacilityTypeMeta {
 export const FACILITY_TYPE_META: Record<FacilityType, FacilityTypeMeta> = {
   data_center: { label: "Data center" },
   crypto_mining: { label: "Crypto mining" },
+  power_generation: { label: "Power generation" },
 };
 
 /**

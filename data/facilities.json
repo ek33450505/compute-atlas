@@ -19835,7 +19835,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Originally proposed Dec 2021 as Lancium's \"Project Artemis\" — a Bitcoin-mining and grid-demand-response campus using stranded/curtailed West Texas wind and solar power, with Lancium throttling load during ERCOT peak demand. Crusoe Energy has since built and operates AI/HPC data-center buildings on the site (publicly branded \"Stargate Site 1\"), with Oracle Cloud Infrastructure as the tenant hosting NVIDIA GPU clusters for OpenAI's Stargate project — Oracle sits contractually between Crusoe and OpenAI; no confirmed direct OpenAI-Crusoe lease. Lancium retains land/electrical-infrastructure ownership; Crusoe leases and operates part of an approximately 800-1,000-acre campus. First 2 of 8 planned buildings (~200+ MW) were operational by mid-2025; remaining 6 are under construction, with a full 1.2 GW build-out targeted for completion in 2026-2027 (dates vary by source). Construction-workforce and total AI-era investment figures conflict significantly across sources (reported range: 2,000-9,000 workers; an unverified ~$11.6B raise) and are not repeated here as fact. Coordinates are approximate (geocoded from a listed street address, not parcel-confirmed — the ~800-1,000-acre campus could place any specific building up to ~1-2 miles from this point).",
+    "notes": "Originally proposed Dec 2021 as Lancium's \"Project Artemis\" \u2014 a Bitcoin-mining and grid-demand-response campus using stranded/curtailed West Texas wind and solar power, with Lancium throttling load during ERCOT peak demand. Crusoe Energy has since built and operates AI/HPC data-center buildings on the site (publicly branded \"Stargate Site 1\"), with Oracle Cloud Infrastructure as the tenant hosting NVIDIA GPU clusters for OpenAI's Stargate project \u2014 Oracle sits contractually between Crusoe and OpenAI; no confirmed direct OpenAI-Crusoe lease. Lancium retains land/electrical-infrastructure ownership; Crusoe leases and operates part of an approximately 800-1,000-acre campus. First 2 of 8 planned buildings (~200+ MW) were operational by mid-2025; remaining 6 are under construction, with a full 1.2 GW build-out targeted for completion in 2026-2027 (dates vary by source). Construction-workforce and total AI-era investment figures conflict significantly across sources (reported range: 2,000-9,000 workers; an unverified ~$11.6B raise) and are not repeated here as fact. Coordinates are approximate (geocoded from a listed street address, not parcel-confirmed \u2014 the ~800-1,000-acre campus could place any specific building up to ~1-2 miles from this point).",
     "community": {
       "status": "supported",
       "notes": "City leadership has been enthusiastic about jobs and tax-base growth, framing the project locally as the city's largest single investment since Dyess Air Force Base; some nearby residents have raised construction-traffic concerns. No organized opposition campaign found.",
@@ -19925,10 +19925,10 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Built by Argo Blockchain as a 180 MW Bitcoin-mining facility (2022), sold to Galaxy Digital in Dec 2022 amid the crypto downturn. Galaxy has converted the site to AI/HPC hosting for CoreWeave under a 15-year lease signed March 28, 2025; ERCOT has approved 800 MW for the site (up from the original 180 MW mining build). Bitcoin mining is reported wound down (equipment removal/demolition began Q2 2025) ahead of the CoreWeave conversion — no source found describes concurrent mining and AI operation. The $1.4B figure is a project-financing debt facility (36-month term, secured by Phase I assets), not total investment or deal value; Galaxy separately committed $350M equity — investmentUsd is deliberately omitted rather than picking one of these ambiguous figures. A separate, unreconciled $460M figure appears in one lower-confidence source and is not repeated here as fact. Coordinates are approximate (single-source, not independently cross-verified — geocoding tools could not confirm the street address this pass).",
+    "notes": "Built by Argo Blockchain as a 180 MW Bitcoin-mining facility (2022), sold to Galaxy Digital in Dec 2022 amid the crypto downturn. Galaxy has converted the site to AI/HPC hosting for CoreWeave under a 15-year lease signed March 28, 2025; ERCOT has approved 800 MW for the site (up from the original 180 MW mining build). Bitcoin mining is reported wound down (equipment removal/demolition began Q2 2025) ahead of the CoreWeave conversion \u2014 no source found describes concurrent mining and AI operation. The $1.4B figure is a project-financing debt facility (36-month term, secured by Phase I assets), not total investment or deal value; Galaxy separately committed $350M equity \u2014 investmentUsd is deliberately omitted rather than picking one of these ambiguous figures. A separate, unreconciled $460M figure appears in one lower-confidence source and is not repeated here as fact. Coordinates are approximate (single-source, not independently cross-verified \u2014 geocoding tools could not confirm the street address this pass).",
     "community": {
       "status": "unknown",
-      "notes": "No local community-reaction coverage (water/land/noise) surfaced in this research pass — flagged as an under-covered angle, not confirmed as non-contentious."
+      "notes": "No local community-reaction coverage (water/land/noise) surfaced in this research pass \u2014 flagged as an under-covered angle, not confirmed as non-contentious."
     },
     "environmental": {
       "carbonIntensityBasis": "grid_average"
@@ -19948,7 +19948,10 @@
       "state": "TX",
       "precision": "representative_multi_site",
       "multiSite": {
-        "states": ["TX", "ND"],
+        "states": [
+          "TX",
+          "ND"
+        ],
         "siteCountNote": "Undisclosed number of modular, wellhead-sited gas-to-power units across Texas and North Dakota; equipment is relocated between wellheads as gas-flaring opportunities shift, so no fixed site count or per-site coordinates are publicly disclosed. The pin above is an illustrative point in the West Texas Permian Basin (where the program began), not a physical facility location."
       }
     },
@@ -19958,7 +19961,7 @@
     "poweredBy": "On-site flared/stranded natural gas at oil & gas wellheads (not grid-connected)",
     "energy": {
       "source": "on_site_gas",
-      "notes": "Captures gas that would otherwise be flared/vented at oil & gas wellheads and combusts it in generators to power mining hardware — framed by MARA as reducing methane venting (methane → CO2 combustion swap), not as a zero-emissions source."
+      "notes": "Captures gas that would otherwise be flared/vented at oil & gas wellheads and combusts it in generators to power mining hardware \u2014 framed by MARA as reducing methane venting (methane \u2192 CO2 combustion swap), not as a zero-emissions source."
     },
     "mining": {
       "powerArrangement": "flared_gas"
@@ -19994,7 +19997,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Represented here as a single aggregate record rather than N per-site entries: MARA discloses this program only in aggregate (25 MW total across Texas + North Dakota wellheads), with no per-site count, capacity breakdown, or coordinates published — consistent with a genuinely mobile/modular operating model (containerized generators moved between wellheads as flaring economics shift at individual wells), not merely underreported. Most recent confirmed figure is from MARA's June 2025 operational update; no 2026 update was found. This is the first record using the schema's location.precision: \"representative_multi_site\" construct, built for exactly this case — other operators running a similar distributed flared-gas-at-wellhead model include Upstream Data, Giga Energy, and EZ Blockchain (not separately catalogued here). No sourced critical/counter-framing on flared-gas mining (e.g. that it incentivizes continued drilling) was found in this research pass — flagged as a gap, not an absence of the argument in wider discourse.",
+    "notes": "Represented here as a single aggregate record rather than N per-site entries: MARA discloses this program only in aggregate (25 MW total across Texas + North Dakota wellheads), with no per-site count, capacity breakdown, or coordinates published \u2014 consistent with a genuinely mobile/modular operating model (containerized generators moved between wellheads as flaring economics shift at individual wells), not merely underreported. Most recent confirmed figure is from MARA's June 2025 operational update; no 2026 update was found. This is the first record using the schema's location.precision: \"representative_multi_site\" construct, built for exactly this case \u2014 other operators running a similar distributed flared-gas-at-wellhead model include Upstream Data, Giga Energy, and EZ Blockchain (not separately catalogued here). No sourced critical/counter-framing on flared-gas mining (e.g. that it incentivizes continued drilling) was found in this research pass \u2014 flagged as a gap, not an absence of the argument in wider discourse.",
     "community": {
       "status": "unknown"
     },
@@ -20050,7 +20053,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Former Alcoa East aluminum smelter, ~1,300 acres, adjacent to the Moses-Saunders Power Dam on the St. Lawrence River — no confirmed street address exists in public sourcing, so coordinates here are Massena, NY's town center, not the facility's actual footprint (approximate, per location.precision). Substation approved for 435 MW; operational draw was last publicly reported at 166 MW as of late 2024 (~38% utilization) — treat as a last-known figure, not current, since ~110 MW of third-party colocation (CleanSpark, Gryphon, Bit Digital) was reported vacating around early 2025 and actual current draw is likely lower. Ownership is in transition: NYDIG holds a strategic stake from an Oct 2024 investment, and Alcoa's CEO confirmed (Apr 17, 2026) advanced negotiations to sell the site outright to NYDIG, expected to close around Q3 2026 pending regulatory approval — operator recorded here as Coinmint since the sale has not closed.",
+    "notes": "Former Alcoa East aluminum smelter, ~1,300 acres, adjacent to the Moses-Saunders Power Dam on the St. Lawrence River \u2014 no confirmed street address exists in public sourcing, so coordinates here are Massena, NY's town center, not the facility's actual footprint (approximate, per location.precision). Substation approved for 435 MW; operational draw was last publicly reported at 166 MW as of late 2024 (~38% utilization) \u2014 treat as a last-known figure, not current, since ~110 MW of third-party colocation (CleanSpark, Gryphon, Bit Digital) was reported vacating around early 2025 and actual current draw is likely lower. Ownership is in transition: NYDIG holds a strategic stake from an Oct 2024 investment, and Alcoa's CEO confirmed (Apr 17, 2026) advanced negotiations to sell the site outright to NYDIG, expected to close around Q3 2026 pending regulatory approval \u2014 operator recorded here as Coinmint since the sale has not closed.",
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
@@ -20124,7 +20127,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Built on the site of the former coal-fired Somerset Generating Station (shut 2019/2020). Address 7725 Lake Rd, Barker, NY — coordinates are a town-level geocode, not a confirmed parcel pin (approximate). TeraWulf holds exclusive access to up to 750 MW of site infrastructure capacity. The AI/HPC pivot here is a SIGNED, revenue-generating deal, not speculative: two 10-year HPC colocation agreements with Fluidstack (buildings CB-3 42MW + CB-4 162MW, later expanded with CB-5 +160MW) worth $3.7B in contracted revenue, backed by a $1.8B Google backstop and Google equity stake (~14% pro forma). Tagged mixed_use since Bitcoin mining (145MW) remains the larger operational segment versus HPC (60MW energized as of Mar 2026), but the AI/HPC business is real and growing, not aspirational. A New York statewide bill (Responsible Data Center Development Act, S10642/A11560) passed both legislative chambers June 4, 2026, imposing a one-year moratorium on new permits for large (≥20MW) data centers; it remained unsigned/pending before Gov. Hochul as of July 2026. Facilities with construction already underway are exempt, so TeraWulf's current build here is likely grandfathered, but any future unbuilt expansion phase requiring new permits could be affected if the bill is signed before construction starts.",
+    "notes": "Built on the site of the former coal-fired Somerset Generating Station (shut 2019/2020). Address 7725 Lake Rd, Barker, NY \u2014 coordinates are a town-level geocode, not a confirmed parcel pin (approximate). TeraWulf holds exclusive access to up to 750 MW of site infrastructure capacity. The AI/HPC pivot here is a SIGNED, revenue-generating deal, not speculative: two 10-year HPC colocation agreements with Fluidstack (buildings CB-3 42MW + CB-4 162MW, later expanded with CB-5 +160MW) worth $3.7B in contracted revenue, backed by a $1.8B Google backstop and Google equity stake (~14% pro forma). Tagged mixed_use since Bitcoin mining (145MW) remains the larger operational segment versus HPC (60MW energized as of Mar 2026), but the AI/HPC business is real and growing, not aspirational. A New York statewide bill (Responsible Data Center Development Act, S10642/A11560) passed both legislative chambers June 4, 2026, imposing a one-year moratorium on new permits for large (\u226520MW) data centers; it remained unsigned/pending before Gov. Hochul as of July 2026. Facilities with construction already underway are exempt, so TeraWulf's current build here is likely grandfathered, but any future unbuilt expansion phase requiring new permits could be affected if the bill is signed before construction starts.",
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
@@ -20150,7 +20153,7 @@
     "poweredBy": "Behind-the-meter natural gas generation at the plant itself (not grid-drawn)",
     "energy": {
       "source": "on_site_gas",
-      "notes": "Converted coal-then-gas power plant on the western shore of Seneca Lake; nameplate capacity is reported as both 106 MW and 107 MW (DEC-permitted) across sources — recorded here as 106 MW nameplate, with the 107 MW DEC-permitted figure noted as a close, contested alternative rather than resolved to one number."
+      "notes": "Converted coal-then-gas power plant on the western shore of Seneca Lake; nameplate capacity is reported as both 106 MW and 107 MW (DEC-permitted) across sources \u2014 recorded here as 106 MW nameplate, with the 107 MW DEC-permitted figure noted as a close, contested alternative rather than resolved to one number."
     },
     "mining": {
       "powerArrangement": "behind_meter"
@@ -20179,14 +20182,14 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "590 Plant Road, Dresden, NY — the flagship New York crypto-mining regulatory case, having driven the state's 2022 moratorium law and a multi-year DEC Title V air-permit fight (DEC denial 2022, upheld in court 2024). Resolved via a DEC settlement agreement dated November 2025: DEC will issue a Title V permit modification, and Greenidge commits to a 44% reduction in permitted GHG emissions (>282,000 tons CO2e/year) and a minimum 25% reduction in actual emissions, with no emissions increase allowed during the renewed permit term. The permit modification still requires a public comment period before DEC issues a final decision, so this should be read as resolved-in-principle, not fully closed. Coordinates are a town-level geocode of the Dresden address, not a confirmed parcel pin.",
+    "notes": "590 Plant Road, Dresden, NY \u2014 the flagship New York crypto-mining regulatory case, having driven the state's 2022 moratorium law and a multi-year DEC Title V air-permit fight (DEC denial 2022, upheld in court 2024). Resolved via a DEC settlement agreement dated November 2025: DEC will issue a Title V permit modification, and Greenidge commits to a 44% reduction in permitted GHG emissions (>282,000 tons CO2e/year) and a minimum 25% reduction in actual emissions, with no emissions increase allowed during the renewed permit term. The permit modification still requires a public comment period before DEC issues a final decision, so this should be read as resolved-in-principle, not fully closed. Coordinates are a town-level geocode of the Dresden address, not a confirmed parcel pin.",
     "environmental": {
       "carbonIntensityBasis": "estimated"
     }
   },
   {
     "id": "digihost-north-tonawanda-ny",
-    "name": "Digihost / Digi Power X — Fortistar North Tonawanda",
+    "name": "Digihost / Digi Power X \u2014 Fortistar North Tonawanda",
     "operator": "Digihost (Digi Power X)",
     "status": "operational",
     "facilityType": "crypto_mining",
@@ -20237,14 +20240,14 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "1070 Erie Ave, North Tonawanda, NY. 60 MW operating with potential for another 60 MW unbuilt. Under an unresolved legal/regulatory cloud: a NY Supreme Court ruling (Nov 2024) required the Public Service Commission to complete a CLCPA climate-impact review of the site's power-plant-sale approval; the NY Appellate Division, Third Dept affirmed that ruling on May 28, 2026 — the required CLCPA review remains incomplete as of this writing, and the facility continues operating pending it. The company (now \"Digi Power X,\" ticker DGXX) has filed for Planning Commission approval to convert the site to an 80,000 sq ft AI/HPC data center, but this is blocked by North Tonawanda's data-center moratorium (imposed July 2024, extended again ~June 2026 after resident pushback) — the AI pivot is a real, filed proposal, not vaporware, but has no live AI hosting revenue at this site. A New York statewide bill (Responsible Data Center Development Act, S10642/A11560) passed both legislative chambers June 4, 2026 and remained unsigned/pending before Gov. Hochul as of July 2026; it would impose a one-year moratorium on new permits for large (≥20MW) data centers. This would be a second, largely redundant obstacle behind North Tonawanda's own binding local moratorium, which already blocks the AI/HPC conversion described above.",
+    "notes": "1070 Erie Ave, North Tonawanda, NY. 60 MW operating with potential for another 60 MW unbuilt. Under an unresolved legal/regulatory cloud: a NY Supreme Court ruling (Nov 2024) required the Public Service Commission to complete a CLCPA climate-impact review of the site's power-plant-sale approval; the NY Appellate Division, Third Dept affirmed that ruling on May 28, 2026 \u2014 the required CLCPA review remains incomplete as of this writing, and the facility continues operating pending it. The company (now \"Digi Power X,\" ticker DGXX) has filed for Planning Commission approval to convert the site to an 80,000 sq ft AI/HPC data center, but this is blocked by North Tonawanda's data-center moratorium (imposed July 2024, extended again ~June 2026 after resident pushback) \u2014 the AI pivot is a real, filed proposal, not vaporware, but has no live AI hosting revenue at this site. A New York statewide bill (Responsible Data Center Development Act, S10642/A11560) passed both legislative chambers June 4, 2026 and remained unsigned/pending before Gov. Hochul as of July 2026; it would impose a one-year moratorium on new permits for large (\u226520MW) data centers. This would be a second, largely redundant obstacle behind North Tonawanda's own binding local moratorium, which already blocks the AI/HPC conversion described above.",
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
   },
   {
     "id": "american-bitcoin-niagara-falls-ny",
-    "name": "American Bitcoin — Niagara Falls (\"Alpha Site\")",
+    "name": "American Bitcoin \u2014 Niagara Falls (\"Alpha Site\")",
     "operator": "American Bitcoin (Hut 8)",
     "status": "operational",
     "facilityType": "crypto_mining",
@@ -20266,7 +20269,7 @@
     "sources": [
       {
         "url": "https://www.hut8.com/our-platform",
-        "label": "Hut 8 — Our Platform",
+        "label": "Hut 8 \u2014 Our Platform",
         "publisher": "Hut 8",
         "retrievedAt": "2026-07-10",
         "kind": "other"
@@ -20294,7 +20297,7 @@
   },
   {
     "id": "digihost-erie-county-ny",
-    "name": "Digihost — Erie County (Buffalo)",
+    "name": "Digihost \u2014 Erie County (Buffalo)",
     "operator": "Digihost",
     "status": "operational",
     "facilityType": "crypto_mining",
@@ -20323,7 +20326,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "1001 E Delavan Ave, Buffalo, NY — former American Axle factory, 60,000+ sq ft, under a 99-year lease. Digihost's original/first facility, operating since 2021; confirmed genuinely distinct from the company's North Tonawanda site (~9 miles away, different municipality, no legal/regulatory issues reported at this site unlike North Tonawanda). Coordinates are an approximate geocode, not an independently confirmed parcel pin.",
+    "notes": "1001 E Delavan Ave, Buffalo, NY \u2014 former American Axle factory, 60,000+ sq ft, under a 99-year lease. Digihost's original/first facility, operating since 2021; confirmed genuinely distinct from the company's North Tonawanda site (~9 miles away, different municipality, no legal/regulatory issues reported at this site unlike North Tonawanda). Coordinates are an approximate geocode, not an independently confirmed parcel pin.",
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
@@ -20373,7 +20376,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "5319 Enterprise Dr, Lockport, NY. Built by Yahoo in 2010 (opened at 155,000 sq ft, expanded since); campus totals 409,200 sq ft / 43 acres SHARED with the separate H5 Buffalo II building (~0.25 mi away — see that record). H5 Data Centers acquired both Lockport buildings from Yahoo in a sale-leaseback deal that closed Dec 30, 2024 ($49M reported); Yahoo signed a 5-year leaseback and remains a tenant on-site (140 staff retained, 15 transferred to H5). Now multi-tenant Tier III colocation, though no tenants beyond Yahoo are independently confirmed. Critical power was 16 MW as of 2014; current total post-expansion not independently disclosed, so capacityMw is deliberately omitted rather than guessed. Coordinates are a campus-level geocode (ConnectBase), not a per-building parcel pin.",
+    "notes": "5319 Enterprise Dr, Lockport, NY. Built by Yahoo in 2010 (opened at 155,000 sq ft, expanded since); campus totals 409,200 sq ft / 43 acres SHARED with the separate H5 Buffalo II building (~0.25 mi away \u2014 see that record). H5 Data Centers acquired both Lockport buildings from Yahoo in a sale-leaseback deal that closed Dec 30, 2024 ($49M reported); Yahoo signed a 5-year leaseback and remains a tenant on-site (140 staff retained, 15 transferred to H5). Now multi-tenant Tier III colocation, though no tenants beyond Yahoo are independently confirmed. Critical power was 16 MW as of 2014; current total post-expansion not independently disclosed, so capacityMw is deliberately omitted rather than guessed. Coordinates are a campus-level geocode (ConnectBase), not a per-building parcel pin.",
     "community": {
       "status": "unknown"
     }
@@ -20411,7 +20414,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "5365 Crown Dr, Lockport, NY — confirmed as a genuinely separate building (~0.25 mi from H5 Buffalo I / 5319 Enterprise Dr, not a duplicate listing), part of the same Lockport campus. Built 2015 as part of a $170M expansion announced 2013 (the campus's second facility). Acquired by H5 alongside Buffalo I in the same Dec 2024 Yahoo sale-leaseback deal. Specific square footage and power capacity for this building alone are paywalled on data-center directories and not independently confirmed — deliberately omitted rather than estimated from the shared 409,200 sq ft campus total (which spans both buildings). Coordinates are a nearby-offset approximation of the campus location, not an independently confirmed parcel pin for this specific building.",
+    "notes": "5365 Crown Dr, Lockport, NY \u2014 confirmed as a genuinely separate building (~0.25 mi from H5 Buffalo I / 5319 Enterprise Dr, not a duplicate listing), part of the same Lockport campus. Built 2015 as part of a $170M expansion announced 2013 (the campus's second facility). Acquired by H5 alongside Buffalo I in the same Dec 2024 Yahoo sale-leaseback deal. Specific square footage and power capacity for this building alone are paywalled on data-center directories and not independently confirmed \u2014 deliberately omitted rather than estimated from the shared 409,200 sq ft campus total (which spans both buildings). Coordinates are a nearby-offset approximation of the campus location, not an independently confirmed parcel pin for this specific building.",
     "community": {
       "status": "unknown"
     }
@@ -20460,7 +20463,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "155 Corporate Drive, Orangeburg, NY (Town of Orangetown, Rockland County). 131,805 sq ft total, two data halls totaling 39,058 sq ft with 42\" raised floor and 26' clear height, 4.0 MW power system, 1,200-ton cooling capacity — all per an authoritative SEC EDGAR CMBS filing (2014). Construction cost was $123.2M ($935/sq ft) per that same filing, with Bloomberg contributing $39.0M toward construction; recorded here as investmentUsd rather than the frequently-cited $710M figure, which represents total lease payments over a 15-year term (expiring March 2029), not construction capital — those are not comparable numbers and conflating them would overstate the capital investment. Dedicated single-tenant enterprise facility built to Bloomberg's spec for its financial data/analytics terminals (not shared colocation), built/topped-off 2013-2014. No expansions since 2014 were found in this research pass, but absence of news is not proof of none. Coordinates are a town-level geocode, not a confirmed parcel pin.",
+    "notes": "155 Corporate Drive, Orangeburg, NY (Town of Orangetown, Rockland County). 131,805 sq ft total, two data halls totaling 39,058 sq ft with 42\" raised floor and 26' clear height, 4.0 MW power system, 1,200-ton cooling capacity \u2014 all per an authoritative SEC EDGAR CMBS filing (2014). Construction cost was $123.2M ($935/sq ft) per that same filing, with Bloomberg contributing $39.0M toward construction; recorded here as investmentUsd rather than the frequently-cited $710M figure, which represents total lease payments over a 15-year term (expiring March 2029), not construction capital \u2014 those are not comparable numbers and conflating them would overstate the capital investment. Dedicated single-tenant enterprise facility built to Bloomberg's spec for its financial data/analytics terminals (not shared colocation), built/topped-off 2013-2014. No expansions since 2014 were found in this research pass, but absence of news is not proof of none. Coordinates are a town-level geocode, not a confirmed parcel pin.",
     "community": {
       "status": "unknown"
     }
@@ -20498,7 +20501,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Landmarked 1930 Art Deco former Western Union building in TriBeCa, Manhattan — the East Coast's most important carrier hotel / interconnection point, hosting 100+ telecom and data-center tenants. Represented as ONE consolidated facility record rather than one per tenant, since the physical building is the meaningful unit. Total building size is 1,149,619 sq ft, 24 stories + basement, per an authoritative SEC EDGAR CMBS filing (2023) — this is whole-building square footage, not data-center-specific space. No whole-building data-center power (MW) figure is disclosed by any verifiable primary source; a 50MW figure appears on aggregator sites but traces to an unverified 2014 reference and is not repeated here as fact. The one solidly-verified tenant figure: Hudson Interxchange (HIX) occupies ~173,000 sq ft with a 15MW Con Edison feed (+2MW expansion announced), confirmed via Data Center Dynamics (2024-08-21). Figures for Digital Realty and DataBank's space in this building could not be independently confirmed from primary sources in this research pass (conflicting numbers across aggregator sites) and are deliberately omitted rather than guessed — capacityMw is left unset for the same reason (no reliable whole-building total exists). Coordinates are a building-level geocode from a map aggregator, not independently verified against a primary GIS source.",
+    "notes": "Landmarked 1930 Art Deco former Western Union building in TriBeCa, Manhattan \u2014 the East Coast's most important carrier hotel / interconnection point, hosting 100+ telecom and data-center tenants. Represented as ONE consolidated facility record rather than one per tenant, since the physical building is the meaningful unit. Total building size is 1,149,619 sq ft, 24 stories + basement, per an authoritative SEC EDGAR CMBS filing (2023) \u2014 this is whole-building square footage, not data-center-specific space. No whole-building data-center power (MW) figure is disclosed by any verifiable primary source; a 50MW figure appears on aggregator sites but traces to an unverified 2014 reference and is not repeated here as fact. The one solidly-verified tenant figure: Hudson Interxchange (HIX) occupies ~173,000 sq ft with a 15MW Con Edison feed (+2MW expansion announced), confirmed via Data Center Dynamics (2024-08-21). Figures for Digital Realty and DataBank's space in this building could not be independently confirmed from primary sources in this research pass (conflicting numbers across aggregator sites) and are deliberately omitted rather than guessed \u2014 capacityMw is left unset for the same reason (no reliable whole-building total exists). Coordinates are a building-level geocode from a map aggregator, not independently verified against a primary GIS source.",
     "community": {
       "status": "unknown"
     }
@@ -20522,21 +20525,21 @@
     "sources": [
       {
         "url": "https://www.digitalrealty.com/data-centers/americas/new-york/jfk13",
-        "label": "Digital Realty JFK13 — New York",
+        "label": "Digital Realty JFK13 \u2014 New York",
         "publisher": "Digital Realty",
         "retrievedAt": "2026-07-10",
         "kind": "other"
       },
       {
         "url": "https://www.coresite.com/data-center/ny1-new-york-ny",
-        "label": "CoreSite NY1 — New York",
+        "label": "CoreSite NY1 \u2014 New York",
         "publisher": "CoreSite",
         "retrievedAt": "2026-07-10",
         "kind": "other"
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Former AT&T Long Distance Building, built 1932, converted to a carrier hotel by Rudin Management after their 1999 acquisition. Represented as ONE consolidated facility record rather than one per tenant. Digital Realty (branded \"JFK13\") occupies 132,500 sq ft per Digital Realty's own facility page — no power (MW) figure is disclosed by Digital Realty itself for this site; a widely-repeated 9.0 MW figure traces only to third-party aggregator listings, not a Digital Realty or building-primary source, and is not repeated here as fact. CoreSite (branded \"NY1\") occupies 48,000+ sq ft per CoreSite's own facility page, also with no MW figure disclosed. No whole-building data-center square footage or power total is disclosed anywhere; capacityMw is deliberately left unset rather than synthesized by summing incomplete tenant figures. Coordinates are a building-centroid geocode (Wikidata, sourced from building records) — plausible but not independently cross-checked against a primary GIS source.",
+    "notes": "Former AT&T Long Distance Building, built 1932, converted to a carrier hotel by Rudin Management after their 1999 acquisition. Represented as ONE consolidated facility record rather than one per tenant. Digital Realty (branded \"JFK13\") occupies 132,500 sq ft per Digital Realty's own facility page \u2014 no power (MW) figure is disclosed by Digital Realty itself for this site; a widely-repeated 9.0 MW figure traces only to third-party aggregator listings, not a Digital Realty or building-primary source, and is not repeated here as fact. CoreSite (branded \"NY1\") occupies 48,000+ sq ft per CoreSite's own facility page, also with no MW figure disclosed. No whole-building data-center square footage or power total is disclosed anywhere; capacityMw is deliberately left unset rather than synthesized by summing incomplete tenant figures. Coordinates are a building-centroid geocode (Wikidata, sourced from building records) \u2014 plausible but not independently cross-checked against a primary GIS source.",
     "community": {
       "status": "unknown"
     }
@@ -20573,7 +20576,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "Two adjacent buildings on a shared campus with Westchester County Medical Center and New York Medical College: 11 Skyline Drive (46,000+ sqft total, 28,000+ sqft raised floor, backup generation two 2MW + three 1MW) and 17 Skyline Drive (172,000+ sqft total, 28,000+ sqft raised floor, backup generation two 2,000kW). No whole-campus IT-load MW figure is publicly disclosed — generator specs are backup capacity, not confirmed critical load, so capacityMw is omitted. SOC 1/2 Type II, HITRUST, GLBA, HIPAA, PCI-DSS, NIST SP 800-53, ISO 27001, ITAR-registered. No AI/HPC marketing found. Coordinates are an approximate geocode of the Skyline Drive campus, not a confirmed parcel pin."
+    "notes": "Two adjacent buildings on a shared campus with Westchester County Medical Center and New York Medical College: 11 Skyline Drive (46,000+ sqft total, 28,000+ sqft raised floor, backup generation two 2MW + three 1MW) and 17 Skyline Drive (172,000+ sqft total, 28,000+ sqft raised floor, backup generation two 2,000kW). No whole-campus IT-load MW figure is publicly disclosed \u2014 generator specs are backup capacity, not confirmed critical load, so capacityMw is omitted. SOC 1/2 Type II, HITRUST, GLBA, HIPAA, PCI-DSS, NIST SP 800-53, ISO 27001, ITAR-registered. No AI/HPC marketing found. Coordinates are an approximate geocode of the Skyline Drive campus, not a confirmed parcel pin."
   },
   {
     "id": "digital-realty-jfk10-manhattan-ny",
@@ -20623,7 +20626,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "111 Eighth Avenue (the historic 1932 Union Inland Terminal #1 / \"Google Building\"), Chelsea, Manhattan — Google owns the building; Digital Realty operates JFK10 as a colocation tenant. 111,000 sq ft (Digital Realty's own figure). A third-party estimate of ~18MW capacity is not confirmed by the operator and is omitted. Major carrier hotel with DE-CIX New York and MegaIX New York peering. Coordinates are an approximate geocode of the building, not a confirmed parcel pin."
+    "notes": "111 Eighth Avenue (the historic 1932 Union Inland Terminal #1 / \"Google Building\"), Chelsea, Manhattan \u2014 Google owns the building; Digital Realty operates JFK10 as a colocation tenant. 111,000 sq ft (Digital Realty's own figure). A third-party estimate of ~18MW capacity is not confirmed by the operator and is omitted. Major carrier hotel with DE-CIX New York and MegaIX New York peering. Coordinates are an approximate geocode of the building, not a confirmed parcel pin."
   },
   {
     "id": "cyrusone-new-albany-col1-licking-county-oh",
@@ -20667,7 +20670,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "12181 Jug St, Johnstown — in the Licking County section of the New Albany International Business Park. 274,518 sq ft, two-story building. Ohio Tax Credit Authority approved a 10-year, 75% data center sales tax exemption valued at $5.4M (approved ~April 2024). No IT-load MW figure is publicly disclosed for this site — an earlier 60MW figure found in some secondary sources actually belongs to a different operator's nearby New Albany campus (STACK Infrastructure NAL01) and is not attributable to CyrusOne COL-1; capacityMw is omitted rather than guessed. No AI/HPC-specific marketing found — treated as generic hyperscale colo."
+    "notes": "12181 Jug St, Johnstown \u2014 in the Licking County section of the New Albany International Business Park. 274,518 sq ft, two-story building. Ohio Tax Credit Authority approved a 10-year, 75% data center sales tax exemption valued at $5.4M (approved ~April 2024). No IT-load MW figure is publicly disclosed for this site \u2014 an earlier 60MW figure found in some secondary sources actually belongs to a different operator's nearby New Albany campus (STACK Infrastructure NAL01) and is not attributable to CyrusOne COL-1; capacityMw is omitted rather than guessed. No AI/HPC-specific marketing found \u2014 treated as generic hyperscale colo."
   },
   {
     "id": "qts-new-albany-1-franklin-county-oh",
@@ -20712,7 +20715,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "675 Beech Road SW, New Albany — in the Franklin County section of the New Albany Business Park, a distinct submarket from CyrusOne's and Vantage's Licking County sites nearby. First of two adjacent QTS buildings (see also QTS New Albany 2); 885,600 sq ft. Combined QTS New Albany 1+2 investment ~$1.5B, enabled by a New Albany City Council Community Reinvestment Area tax agreement. 144MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found — QTS materials describe generic hyperscale/enterprise colo (\"QTS Freedom Design\")."
+    "notes": "675 Beech Road SW, New Albany \u2014 in the Franklin County section of the New Albany Business Park, a distinct submarket from CyrusOne's and Vantage's Licking County sites nearby. First of two adjacent QTS buildings (see also QTS New Albany 2); 885,600 sq ft. Combined QTS New Albany 1+2 investment ~$1.5B, enabled by a New Albany City Council Community Reinvestment Area tax agreement. 144MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found \u2014 QTS materials describe generic hyperscale/enterprise colo (\"QTS Freedom Design\")."
   },
   {
     "id": "qts-new-albany-2-franklin-county-oh",
@@ -20750,7 +20753,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "785 Beech Road SW, New Albany — second of two adjacent QTS buildings on the same Franklin County campus as QTS New Albany 1 (combined 93 acres, ~1.5M sq ft, ~$1.5B investment, 222MW planned total). 612,600 sq ft. 78MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found."
+    "notes": "785 Beech Road SW, New Albany \u2014 second of two adjacent QTS buildings on the same Franklin County campus as QTS New Albany 1 (combined 93 acres, ~1.5M sq ft, ~$1.5B investment, 222MW planned total). 612,600 sq ft. 78MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found."
   },
   {
     "id": "vantage-oh1-new-albany-licking-county-oh",
@@ -20798,7 +20801,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "3325 Horizon Court, Johnstown — Licking County section of the New Albany International Business Park. Vantage's first Midwest campus and seventh North American market. 3 buildings, 1.5M+ sq ft total, 192MW total planned IT capacity (not yet fully operational). LEED Silver target, part of Vantage's 2030 net-zero operational carbon commitment. Vantage's own press release states OH1 \"will provide secure and reliable infrastructure for cloud technologies and artificial intelligence\" — real operator-stated AI-adjacent marketing (paired with \"cloud,\" not an exclusive/GPU-specific claim), so tagged aiClassification: likely rather than confirmed."
+    "notes": "3325 Horizon Court, Johnstown \u2014 Licking County section of the New Albany International Business Park. Vantage's first Midwest campus and seventh North American market. 3 buildings, 1.5M+ sq ft total, 192MW total planned IT capacity (not yet fully operational). LEED Silver target, part of Vantage's 2030 net-zero operational carbon commitment. Vantage's own press release states OH1 \"will provide secure and reliable infrastructure for cloud technologies and artificial intelligence\" \u2014 real operator-stated AI-adjacent marketing (paired with \"cloud,\" not an exclusive/GPU-specific claim), so tagged aiClassification: likely rather than confirmed."
   },
   {
     "id": "google-new-albany-oh",
@@ -20827,7 +20830,7 @@
     "sources": [
       {
         "url": "https://datacenters.google/locations/ohio/",
-        "label": "Google Data Centers — Ohio",
+        "label": "Google Data Centers \u2014 Ohio",
         "publisher": "Google",
         "retrievedAt": "2026-07-10",
         "kind": "other"
@@ -20855,7 +20858,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "1101 Beech Rd SW, New Albany — operated via Google's Ohio subsidiary Montauk Innovations LLC. 275,000 sq ft initial building on a ~440-447 acre campus. $600M confirmed initial capital investment; 100% real-property tax abatement (15yr) and 100% sales-tax exemption (~$43.5M value, 15yr) granted. Distinct from Google's Lima \"Project BOSC\" facility (different county) and Google's Lancaster campus (tracked separately). No IT-load MW figure publicly disclosed. In June 2025, the same Montauk Innovations entity acquired an adjacent 85-acre parcel at 2565 Harrison Road NW (~4 miles north) for $63M; Google has NOT confirmed this parcel will become a data center (\"we want to ensure we have the option to further grow, should our business demand it\" per a spokesperson) — tracked as a note here rather than a standalone facility pending confirmation. No AI/HPC-specific marketing found — Google's own materials describe this and its other Ohio campuses generically as cloud/digital infrastructure."
+    "notes": "1101 Beech Rd SW, New Albany \u2014 operated via Google's Ohio subsidiary Montauk Innovations LLC. 275,000 sq ft initial building on a ~440-447 acre campus. $600M confirmed initial capital investment; 100% real-property tax abatement (15yr) and 100% sales-tax exemption (~$43.5M value, 15yr) granted. Distinct from Google's Lima \"Project BOSC\" facility (different county) and Google's Lancaster campus (tracked separately). No IT-load MW figure publicly disclosed. In June 2025, the same Montauk Innovations entity acquired an adjacent 85-acre parcel at 2565 Harrison Road NW (~4 miles north) for $63M; Google has NOT confirmed this parcel will become a data center (\"we want to ensure we have the option to further grow, should our business demand it\" per a spokesperson) \u2014 tracked as a note here rather than a standalone facility pending confirmation. No AI/HPC-specific marketing found \u2014 Google's own materials describe this and its other Ohio campuses generically as cloud/digital infrastructure."
   },
   {
     "id": "google-lancaster-oh",
@@ -20896,7 +20899,7 @@
     "sources": [
       {
         "url": "https://datacenters.google/locations/ohio/",
-        "label": "Google Data Centers — Ohio",
+        "label": "Google Data Centers \u2014 Ohio",
         "publisher": "Google",
         "retrievedAt": "2026-07-10",
         "kind": "other"
@@ -20924,7 +20927,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "105 Whiley Rd, Lancaster — distinct from Google's New Albany and Lima \"Project BOSC\" Ohio facilities. No site-specific investment figure is disclosed; Google has only published cumulative bundled totals across its New Albany+Lancaster+Columbus Ohio campuses ($1.7B Aug 2023, +$2.3B June 2024, ~$4.4B+ cumulative since 2019). No IT-load MW figure publicly disclosed. One 2024 article notes future buildings will \"support Google's artificial intelligence innovation,\" but this is generic AI-as-one-of-many-workloads boilerplate rather than facility-specific AI/HPC/GPU marketing — no aiClassification set. Coordinates are an approximate geocode."
+    "notes": "105 Whiley Rd, Lancaster \u2014 distinct from Google's New Albany and Lima \"Project BOSC\" Ohio facilities. No site-specific investment figure is disclosed; Google has only published cumulative bundled totals across its New Albany+Lancaster+Columbus Ohio campuses ($1.7B Aug 2023, +$2.3B June 2024, ~$4.4B+ cumulative since 2019). No IT-load MW figure publicly disclosed. One 2024 article notes future buildings will \"support Google's artificial intelligence innovation,\" but this is generic AI-as-one-of-many-workloads boilerplate rather than facility-specific AI/HPC/GPU marketing \u2014 no aiClassification set. Coordinates are an approximate geocode."
   },
   {
     "id": "ark-data-centers-independence-cuyahoga-county-oh",
@@ -20965,7 +20968,7 @@
       },
       {
         "url": "https://www.independenceohio.org/business_resources/featured_project.php",
-        "label": "Featured Project — Involta Data Center",
+        "label": "Featured Project \u2014 Involta Data Center",
         "publisher": "City of Independence, Ohio",
         "retrievedAt": "2026-07-10",
         "kind": "other"
@@ -20979,7 +20982,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "7300 E Pleasant Valley Rd, Independence, Cuyahoga County (Cleveland metro). Rebranded from Involta to Ark Data Centers May 15, 2024 (Carlyle-backed). Fiber-ring-connected to the company's Akron facilities for real-time twinned services, per the City of Independence's own economic development page (independent of operator marketing). A single third-party directory cites 1.5MW capacity, uncorroborated elsewhere — omitted from capacityMw rather than stated as fact. No source supports a Tier rating or 2N+ UPS claim for this specific site (an unrelated \"Cleveland\" line item on the operator's own rollup page does not reconcile with this facility's known footprint) — no Tier/redundancy field set. No AI/HPC-specific marketing found."
+    "notes": "7300 E Pleasant Valley Rd, Independence, Cuyahoga County (Cleveland metro). Rebranded from Involta to Ark Data Centers May 15, 2024 (Carlyle-backed). Fiber-ring-connected to the company's Akron facilities for real-time twinned services, per the City of Independence's own economic development page (independent of operator marketing). A single third-party directory cites 1.5MW capacity, uncorroborated elsewhere \u2014 omitted from capacityMw rather than stated as fact. No source supports a Tier rating or 2N+ UPS claim for this specific site (an unrelated \"Cleveland\" line item on the operator's own rollup page does not reconcile with this facility's known footprint) \u2014 no Tier/redundancy field set. No AI/HPC-specific marketing found."
   },
   {
     "id": "ark-data-centers-akron-i-summit-county-oh",
@@ -21002,7 +21005,7 @@
     "sources": [
       {
         "url": "https://www.involta.com/data-centers/data-center-locations/ohio/akron/",
-        "label": "Involta / Ark Data Centers — Akron, Ohio",
+        "label": "Involta / Ark Data Centers \u2014 Akron, Ohio",
         "publisher": "Ark Data Centers",
         "retrievedAt": "2026-07-10",
         "kind": "other"
@@ -21016,7 +21019,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "191 E. Miller Ave, Akron, Summit County. First (\"3rd-generation\" per operator terminology) of two Ark Data Centers buildings at this address — see also Ark Data Centers Akron II, a separate, Tier III-certified building at the same street address. 10,000 sq ft / 300 racks, 1MW utility power with a 1MW N+1 diesel generator, 2N battery UPS. No formal Tier certification found for this building (unlike Akron II). Fiber-ring-connected to the company's Independence, OH facility. The operator's own Ohio rollup page lists a conflicting \"Akron: 20,000 sqft / 5MW\" combined figure that does not reconcile with the per-building detail page used here — flagged as an inconsistency on the operator's own materials, detail-page figures preferred. No AI/HPC-specific marketing found."
+    "notes": "191 E. Miller Ave, Akron, Summit County. First (\"3rd-generation\" per operator terminology) of two Ark Data Centers buildings at this address \u2014 see also Ark Data Centers Akron II, a separate, Tier III-certified building at the same street address. 10,000 sq ft / 300 racks, 1MW utility power with a 1MW N+1 diesel generator, 2N battery UPS. No formal Tier certification found for this building (unlike Akron II). Fiber-ring-connected to the company's Independence, OH facility. The operator's own Ohio rollup page lists a conflicting \"Akron: 20,000 sqft / 5MW\" combined figure that does not reconcile with the per-building detail page used here \u2014 flagged as an inconsistency on the operator's own materials, detail-page figures preferred. No AI/HPC-specific marketing found."
   },
   {
     "id": "ark-data-centers-akron-ii-summit-county-oh",
@@ -21039,7 +21042,7 @@
     "sources": [
       {
         "url": "https://www.involta.com/data-centers/data-center-locations/ohio/akron/",
-        "label": "Involta / Ark Data Centers — Akron, Ohio",
+        "label": "Involta / Ark Data Centers \u2014 Akron, Ohio",
         "publisher": "Ark Data Centers",
         "retrievedAt": "2026-07-10",
         "kind": "other"
@@ -21053,11 +21056,11 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "191 E. Miller Ave, Akron, Summit County — same street address as Ark Data Centers Akron I but a physically separate (\"4th-generation\") building, per the operator's own materials describing \"two purpose-built, concurrently maintainable facilities\" totaling 52,000+ sq ft. 10,000 sq ft / 300 racks, 1MW utility power with a 1MW N+1 diesel generator, 2N battery UPS. Uptime Institute-certified Tier III — the only Tier certification found across any of the Ark/Involta Ohio sites researched. ENERGY STAR certified 2023. Fiber-ring-connected to the company's Independence, OH facility. No AI/HPC-specific marketing found (one customer testimonial referencing AI describes a tenant's healthcare application, not the operator's own infrastructure marketing)."
+    "notes": "191 E. Miller Ave, Akron, Summit County \u2014 same street address as Ark Data Centers Akron I but a physically separate (\"4th-generation\") building, per the operator's own materials describing \"two purpose-built, concurrently maintainable facilities\" totaling 52,000+ sq ft. 10,000 sq ft / 300 racks, 1MW utility power with a 1MW N+1 diesel generator, 2N battery UPS. Uptime Institute-certified Tier III \u2014 the only Tier certification found across any of the Ark/Involta Ohio sites researched. ENERGY STAR certified 2023. Fiber-ring-connected to the company's Independence, OH facility. No AI/HPC-specific marketing found (one customer testimonial referencing AI describes a tenant's healthcare application, not the operator's own infrastructure marketing)."
   },
   {
     "id": "bit-mining-viking-akron-summit-county-oh",
-    "name": "BIT Mining / Viking Data Centers — Akron",
+    "name": "BIT Mining / Viking Data Centers \u2014 Akron",
     "operator": "BIT Mining / Viking Data Centers",
     "status": "operational",
     "facilityType": "crypto_mining",
@@ -21108,7 +21111,7 @@
       }
     ],
     "lastUpdated": "2026-07-10",
-    "notes": "428 Seiberling Street, Akron — a former Goodyear tire / Maxion Wheels manufacturing plant (380,000 sq ft building; 430,556 sq ft / 40,000 sqm per Baxtel). Joint venture with Viking Data Centers, LLC; BIT Mining holds majority equity (51% initially per a 2021 SEC 6-K exhibit, increased via a June 2022 buyout giving BIT Mining exclusive operational access to 82.5MW, recorded here as 83MW). Total site design capacity across the JV is larger (up to 150MW: 85MW original + 65MW addition) but BIT Mining's own operating allocation is the 83MW recorded. Bitcoin/ASIC mining; historically also used for ethereum/dogecoin mining. No AI/HPC marketing found for this site."
+    "notes": "428 Seiberling Street, Akron \u2014 a former Goodyear tire / Maxion Wheels manufacturing plant (380,000 sq ft building; 430,556 sq ft / 40,000 sqm per Baxtel). Joint venture with Viking Data Centers, LLC; BIT Mining holds majority equity (51% initially per a 2021 SEC 6-K exhibit, increased via a June 2022 buyout giving BIT Mining exclusive operational access to 82.5MW, recorded here as 83MW). Total site design capacity across the JV is larger (up to 150MW: 85MW original + 65MW addition) but BIT Mining's own operating allocation is the 83MW recorded. Bitcoin/ASIC mining; historically also used for ethereum/dogecoin mining. No AI/HPC marketing found for this site."
   },
   {
     "id": "bitdeer-shalersville-portage-county-oh",
@@ -21185,7 +21188,7 @@
       "notes": "Standing-room-only town hall meetings; local opposition coverage from Kent Stater and The Portager. Shalersville Township has had a data-center moratorium in effect since October 2024, most recently extended through early November 2026 (signed April 7, 2026) to allow the township time to draft data-center-specific zoning regulations before any project can be permitted; trustees are separately considering making the moratorium permanent.",
       "sourceIndex": 1
     },
-    "notes": "Turnpike Commerce Center, Shalersville Township, Portage County. Not yet approved — blocked by the township's active data-center moratorium (see community field). Distinct from Bitdeer's other tracked Ohio sites (Clarington, Whitetail Creek/Niles, and Massillon). Tax revenue projections ($2.17M annual increase at phase-1 completion) are Bitdeer's own company projections, not independently confirmed. Coordinates are an approximate geocode of Shalersville Township, not a confirmed parcel pin — no source gave exact site coordinates."
+    "notes": "Turnpike Commerce Center, Shalersville Township, Portage County. Not yet approved \u2014 blocked by the township's active data-center moratorium (see community field). Distinct from Bitdeer's other tracked Ohio sites (Clarington, Whitetail Creek/Niles, and Massillon). Tax revenue projections ($2.17M annual increase at phase-1 completion) are Bitdeer's own company projections, not independently confirmed. Coordinates are an approximate geocode of Shalersville Township, not a confirmed parcel pin \u2014 no source gave exact site coordinates."
   },
   {
     "id": "bitdeer-massillon-stark-county-oh",
@@ -21264,7 +21267,7 @@
       "notes": "Local opposition petition (\"BitDeer Bitmine in Massillon\" nuisance petition) circulated via MoveOn; a Massillon city council vote reportedly allowed the project to proceed, though the source for that vote could not be independently fetched/verified this session.",
       "sourceIndex": 3
     },
-    "notes": "1115 Industrial Ave SW, Massillon, Stark County (an alternate address, 2527-2799 9th St SW, appears in one aggregator listing and may reflect the same multi-street parcel — not independently reconciled). 24-26 buildings (~40x110 ft each), 21,000+ ASIC mining machines, ~$22/hr starting wage, ~$82,000 average salary, no property tax abatement received. Explicitly distinct from Bitdeer's Whitetail Creek facility (1047 Belmont Ave, Niles/Weathersfield Township, Trumbull County — different city, county, and address, ~40 miles away) and from Bitdeer Clarington — Bitdeer's own coverage treats Massillon, Niles, and Clarington as three separate Ohio sites. Pure Bitcoin/ASIC mining with no AI/HPC framing in any source found (unlike Clarington and the proposed Shalersville site) — no aiClassification set. Coordinates are an approximate geocode; exact address should be reconciled against Stark County GIS/auditor parcel records in a future pass."
+    "notes": "1115 Industrial Ave SW, Massillon, Stark County (an alternate address, 2527-2799 9th St SW, appears in one aggregator listing and may reflect the same multi-street parcel \u2014 not independently reconciled). 24-26 buildings (~40x110 ft each), 21,000+ ASIC mining machines, ~$22/hr starting wage, ~$82,000 average salary, no property tax abatement received. Explicitly distinct from Bitdeer's Whitetail Creek facility (1047 Belmont Ave, Niles/Weathersfield Township, Trumbull County \u2014 different city, county, and address, ~40 miles away) and from Bitdeer Clarington \u2014 Bitdeer's own coverage treats Massillon, Niles, and Clarington as three separate Ohio sites. Pure Bitcoin/ASIC mining with no AI/HPC framing in any source found (unlike Clarington and the proposed Shalersville site) \u2014 no aiClassification set. Coordinates are an approximate geocode; exact address should be reconciled against Stark County GIS/auditor parcel records in a future pass."
   },
   {
     "id": "prologis-stem-park-zanker-road-san-jose-ca",
@@ -21297,7 +21300,7 @@
       {
         "url": "https://www.sanjoseinside.com/news/prologis-inc-wins-bid-for-one-of-the-largest-economic-development-projects-in-south-bay/",
         "label": "Prologis Inc. Wins Bid for One of the Largest Economic Development Projects in South Bay",
-        "publisher": "San José Inside",
+        "publisher": "San Jos\u00e9 Inside",
         "retrievedAt": "2026-07-11",
         "kind": "press"
       },
@@ -21310,7 +21313,7 @@
       }
     ],
     "lastUpdated": "2026-07-11",
-    "notes": "159-acre city-owned parcel at Hwy 237 & Zanker Road, North San Jose (bounded by Los Esteros Energy Center, Artesian Slough, Hwy 237, and the Silicon Valley Advanced Water Purification Center). Prologis selected as preferred developer by San Jose City Council (unanimous vote, Nov 18 2025) over Catellus-Deca and Trammell Crow proposals; CEQA review and ground-lease negotiation still pending as of source dates — not yet approved. 'STEM Park' = Sustainable Technology, Engineering and Manufacturing Park: four 99MW data-center buildings (1.68M sq ft total, capacityMw above) plus a separate ~785,000 sq ft / 100MW advanced-manufacturing component (not counted in capacityMw, different use). PG&E has committed initial 250MW via dual feed from the Los Esteros 230kV substation within 30-36 months. ~$25B investment widely reported (DCD et al.) but not confirmed directly by Prologis — omitted from investmentUsd. Projected 6,000+ jobs and $30M/yr city tax revenue are projections tied to a not-yet-approved project, not delivered counts — omitted from jobs numeric. A separate, already-tracked Prologis site (prologis-silver-creek-valley-san-jose-ca) and another new Prologis San Jose site (prologis-rue-ferrari-san-jose-ca, this same batch) are distinct parcels, not duplicates."
+    "notes": "159-acre city-owned parcel at Hwy 237 & Zanker Road, North San Jose (bounded by Los Esteros Energy Center, Artesian Slough, Hwy 237, and the Silicon Valley Advanced Water Purification Center). Prologis selected as preferred developer by San Jose City Council (unanimous vote, Nov 18 2025) over Catellus-Deca and Trammell Crow proposals; CEQA review and ground-lease negotiation still pending as of source dates \u2014 not yet approved. 'STEM Park' = Sustainable Technology, Engineering and Manufacturing Park: four 99MW data-center buildings (1.68M sq ft total, capacityMw above) plus a separate ~785,000 sq ft / 100MW advanced-manufacturing component (not counted in capacityMw, different use). PG&E has committed initial 250MW via dual feed from the Los Esteros 230kV substation within 30-36 months. ~$25B investment widely reported (DCD et al.) but not confirmed directly by Prologis \u2014 omitted from investmentUsd. Projected 6,000+ jobs and $30M/yr city tax revenue are projections tied to a not-yet-approved project, not delivered counts \u2014 omitted from jobs numeric. A separate, already-tracked Prologis site (prologis-silver-creek-valley-san-jose-ca) and another new Prologis San Jose site (prologis-rue-ferrari-san-jose-ca, this same batch) are distinct parcels, not duplicates."
   },
   {
     "id": "prologis-rue-ferrari-san-jose-ca",
@@ -21348,7 +21351,7 @@
       }
     ],
     "lastUpdated": "2026-07-11",
-    "notes": "Site Development Permit Amendment converting an existing ~300,000 sq ft warehouse (Parcel #678-05-057, City file H21-006/HA21-006-01) into server-ready R&D space, adding backup generators, transformers, and evaporative cooling chillers. Approved Dec 10 2025 via a Mitigated Negative Declaration w/ Addendum (no significant environmental impacts found); Notice of Determination posted Dec 18 2025. No tenant named yet — next steps are leasing, tenant-improvement permits, and utility interconnection before server halls activate. 140 jobs projected (not delivered) — omitted from jobs numeric. Distinct from the already-tracked prologis-silver-creek-valley-san-jose-ca record and prologis-stem-park-zanker-road-san-jose-ca (this same batch) — different parcels."
+    "notes": "Site Development Permit Amendment converting an existing ~300,000 sq ft warehouse (Parcel #678-05-057, City file H21-006/HA21-006-01) into server-ready R&D space, adding backup generators, transformers, and evaporative cooling chillers. Approved Dec 10 2025 via a Mitigated Negative Declaration w/ Addendum (no significant environmental impacts found); Notice of Determination posted Dec 18 2025. No tenant named yet \u2014 next steps are leasing, tenant-improvement permits, and utility interconnection before server halls activate. 140 jobs projected (not delivered) \u2014 omitted from jobs numeric. Distinct from the already-tracked prologis-silver-creek-valley-san-jose-ca record and prologis-stem-park-zanker-road-san-jose-ca (this same batch) \u2014 different parcels."
   },
   {
     "id": "cloverleaf-project-open-sky-piedmont-ok",
@@ -21395,9 +21398,9 @@
     "lastUpdated": "2026-07-11",
     "community": {
       "status": "contested",
-      "notes": "Piedmont Planning Commission recommended the City Council DENY the 'Project Open Sky' PUD rezoning pending additional information; Council vote rescheduled to late July 2026 — approval not yet granted as of this writing."
+      "notes": "Piedmont Planning Commission recommended the City Council DENY the 'Project Open Sky' PUD rezoning pending additional information; Council vote rescheduled to late July 2026 \u2014 approval not yet granted as of this writing."
     },
-    "notes": "630-acre proposed data campus near the Mathewson Substation, NW 248th Street, Piedmont (Canadian/Kingfisher county line) — part of a transmission corridor drawing multiple competing proposals; see beltline-piedmont-kingfisher-county-ok (this same batch), a separate, distinct 321-acre Beltline Energy site nearby — do not conflate despite both being in Piedmont. Closed-loop cooling planned. Cloverleaf recently withdrew from two Wisconsin data center projects after local opposition (context, not this project). Reported as 'over $1 billion taxable investment' (DCD) — read as a tax-abatement eligibility threshold rather than a confirmed capex figure, so not populated as investmentUsd."
+    "notes": "630-acre proposed data campus near the Mathewson Substation, NW 248th Street, Piedmont (Canadian/Kingfisher county line) \u2014 part of a transmission corridor drawing multiple competing proposals; see beltline-piedmont-kingfisher-county-ok (this same batch), a separate, distinct 321-acre Beltline Energy site nearby \u2014 do not conflate despite both being in Piedmont. Closed-loop cooling planned. Cloverleaf recently withdrew from two Wisconsin data center projects after local opposition (context, not this project). Reported as 'over $1 billion taxable investment' (DCD) \u2014 read as a tax-abatement eligibility threshold rather than a confirmed capex figure, so not populated as investmentUsd."
   },
   {
     "id": "beltline-piedmont-kingfisher-county-ok",
@@ -21432,7 +21435,7 @@
       }
     ],
     "lastUpdated": "2026-07-11",
-    "notes": "321-acre rezoning filed via BLE Holdings LLC / BLE Landholdings LLC, SW/4 of Section 26, Township 15N, Range 6W, Kingfisher County — legal descriptions and Kingfisher County parcel numbers 0000-26-15N-06W-3-000-00, -3-001-00, -3-002-00, -3-003-00 (plus an adjacent 5th parcel, -4-000-00) per the city's own PUD filing. Bounded by E 870 Rd (N), N 2920 Rd (E), Azalea St NW (S), N 2910 Rd (W). City vote delayed for further review as of source date. This is a distinct, separate, competing site from Cloverleaf's 630-acre 'Project Open Sky' proposal also in Piedmont (different parcels, different developer, different acreage) — despite sharing a host city, do not conflate the two (both independently confirmed as separate projects via direct source verification). No primary-sourced capacity or investment figure was found for this specific site — omitted rather than guessed."
+    "notes": "321-acre rezoning filed via BLE Holdings LLC / BLE Landholdings LLC, SW/4 of Section 26, Township 15N, Range 6W, Kingfisher County \u2014 legal descriptions and Kingfisher County parcel numbers 0000-26-15N-06W-3-000-00, -3-001-00, -3-002-00, -3-003-00 (plus an adjacent 5th parcel, -4-000-00) per the city's own PUD filing. Bounded by E 870 Rd (N), N 2920 Rd (E), Azalea St NW (S), N 2910 Rd (W). City vote delayed for further review as of source date. This is a distinct, separate, competing site from Cloverleaf's 630-acre 'Project Open Sky' proposal also in Piedmont (different parcels, different developer, different acreage) \u2014 despite sharing a host city, do not conflate the two (both independently confirmed as separate projects via direct source verification). No primary-sourced capacity or investment figure was found for this specific site \u2014 omitted rather than guessed."
   },
   {
     "id": "beltline-oklahoma-city-frisco-road-ok",
@@ -21460,6 +21463,129 @@
       }
     ],
     "lastUpdated": "2026-07-11",
-    "notes": "Two adjoining parcels rezoned via PUD cases likely numbered PUD-2105 (111.5 acres at 3025 N. Frisco Road, near I-40/Frisco Rd) and PUD-2124 (184 acres at 13921 NW 23rd Street, near NW 23rd/Frisco Rd, ~0.5 mi west of Yukon) — the case-number-to-address pairing is probable (inferred by matching geographic descriptors across sources) but not confirmed by a single primary document naming both together. OKC Planning Commission voted 7-0 to recommend approval Jan 21 2026; City Council final vote status is unconfirmed as of this writing (okc.gov council agendas were inaccessible during research) — treat as still-pending, not approved. Explicitly carved out of OKC's citywide data-center moratorium (~April 2026) as an already-pending application, confirming it remains active. Press coverage separately cites a larger '350-acre' and '480-acre' project total that doesn't reconcile with the confirmed 295.5-acre rezoned total (111.5+184) — the gap is plausibly an adjacent ~184.5-acre parcel Yukon Municipal Authority sold to BLE Landholdings LLC for $15.8M in Aug 2025 (near Hwy 66/Frisco Rd), which may be the same tract as the NW 23rd St parcel, but this is not confirmed. A $1B investment / 0.5GW capacity figure is associated with the broader Yukon-area BLE deal in local reporting but was not found tied specifically to this OKC rezoning by a primary source — omitted from capacityMw/investmentUsd pending confirmation rather than asserted."
+    "notes": "Two adjoining parcels rezoned via PUD cases likely numbered PUD-2105 (111.5 acres at 3025 N. Frisco Road, near I-40/Frisco Rd) and PUD-2124 (184 acres at 13921 NW 23rd Street, near NW 23rd/Frisco Rd, ~0.5 mi west of Yukon) \u2014 the case-number-to-address pairing is probable (inferred by matching geographic descriptors across sources) but not confirmed by a single primary document naming both together. OKC Planning Commission voted 7-0 to recommend approval Jan 21 2026; City Council final vote status is unconfirmed as of this writing (okc.gov council agendas were inaccessible during research) \u2014 treat as still-pending, not approved. Explicitly carved out of OKC's citywide data-center moratorium (~April 2026) as an already-pending application, confirming it remains active. Press coverage separately cites a larger '350-acre' and '480-acre' project total that doesn't reconcile with the confirmed 295.5-acre rezoned total (111.5+184) \u2014 the gap is plausibly an adjacent ~184.5-acre parcel Yukon Municipal Authority sold to BLE Landholdings LLC for $15.8M in Aug 2025 (near Hwy 66/Frisco Rd), which may be the same tract as the NW 23rd St parcel, but this is not confirmed. A $1B investment / 0.5GW capacity figure is associated with the broader Yukon-area BLE deal in local reporting but was not found tied specifically to this OKC rezoning by a primary source \u2014 omitted from capacityMw/investmentUsd pending confirmation rather than asserted."
+  },
+  {
+    "id": "oklo-aurora-pike-county-oh",
+    "name": "Oklo Aurora Powerhouse",
+    "operator": "Oklo",
+    "status": "proposed",
+    "facilityType": "power_generation",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.018,
+      "lon": -82.996,
+      "state": "OH",
+      "city": "Piketon",
+      "county": "Pike",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "announcedDate": "2026-01-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-09",
+        "sourceIndex": 0,
+        "note": "Oklo/Meta announce 1.2GW nuclear agreement for Southern Ohio"
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "Dedicated nuclear generation; per-unit MWe unresolved across sources (15 MWe first two units per PowerMagazine vs ~75 MWe implied by Oklo's 16-unit 1.2GW reference scenario). Timeline: site work begins 2026, first power as early as 2030, full 1.2GW buildout by 2034."
+    },
+    "generation": {
+      "technology": "nuclear_smr",
+      "offtaker": "Meta",
+      "notes": "Oklo owns/operates; Meta prepays for power + funds development (not equity). Powers Meta's New Albany 'Prometheus' supercluster (meta-prometheus-new-albany-oh). Site is the former Portsmouth Gaseous Diffusion Plant, 206 acres bought from DOE for ~$5.15M in Dec 2025."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Documented opposition tied to the site's uranium-enrichment contamination legacy and unproven reactor technology; redevelopment-agency (SODI) support and construction-jobs framing.",
+      "sourceIndex": 9
+    },
+    "sources": [
+      {
+        "url": "https://oklo.com/newsroom/news-details/2026/Oklo-Meta-Announce-Agreement-in-Support-of-1-2-GW-Nuclear-Energy-Development-in-Southern-Ohio/default.aspx",
+        "label": "Oklo, Meta Announce Agreement in Support of 1.2 GW Nuclear Energy Development in Southern Ohio",
+        "publisher": "Oklo Inc.",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.businesswire.com/news/home/20260109127781/en/Oklo-Meta-Announce-Agreement-in-Support-of-1.2-GW-Nuclear-Energy-Development-in-Southern-Ohio",
+        "label": "Oklo, Meta Announce Agreement in Support of 1.2 GW Nuclear Energy Development in Southern Ohio",
+        "publisher": "BusinessWire",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://oklo.com/energy/Ohio/default.aspx",
+        "label": "Oklo Ohio project page",
+        "publisher": "Oklo Inc.",
+        "retrievedAt": "2026-07-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.nbc4i.com/news/local-news/new-albany/meta-will-use-nuclear-power-for-its-new-albany-a-i-data-center/",
+        "label": "Meta will use nuclear power for its New Albany A.I. data center",
+        "publisher": "NBC4 WCMH-TV",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/oklos-next-two-nuclear-power-plants-planned-for-southern-ohio/",
+        "label": "Oklo's Next Two Nuclear Power Plants Planned for Southern Ohio",
+        "publisher": "PowerMagazine",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ans.org/news/2026-01-13/article-7672/metas-new-nuclear-deals-with-oklo-and-terrapower-the-details/",
+        "label": "Meta's new nuclear deals with Oklo and TerraPower: The details",
+        "publisher": "American Nuclear Society / Nuclear Newswire",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://local12.com/news/nation-world/meta-signs-deal-part-of-multibillion-dollar-deal-nuclear-power-site-ohio-pike-county-data-center-oklo",
+        "label": "Meta signs deal, part of multibillion-dollar deal, nuclear power site Ohio Pike County data center Oklo",
+        "publisher": "Local12/WKRC (citing Cincinnati Business Courier)",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nrc.gov/reading-rm/doc-collections/news/2022/22-002.pdf",
+        "label": "NRC Denies Oklo Combined License Application (Idaho INL, 2022 \u2014 background context only, not Ohio-specific)",
+        "publisher": "U.S. Nuclear Regulatory Commission",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001849056/000162828026034095/oklo-20260331.htm",
+        "label": "Oklo Inc. SEC Form 10-Q (FY2026)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-07-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://sciotovalleyguardian.com/2026/01/09/oklo-meta-plan-massive-nuclear-power-campus-in-piketon/",
+        "label": "Oklo, Meta plan massive nuclear power campus in Piketon",
+        "publisher": "Scioto Valley Guardian",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://sciotovalleyguardian.com/2026/03/20/piketon-set-to-become-ground-zero-for-new-energy-megasite/",
+        "label": "Piketon set to become ground zero for new energy megasite",
+        "publisher": "Scioto Valley Guardian",
+        "retrievedAt": "2026-07-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-11",
+    "notes": "Site anchored to the former Portsmouth Gaseous Diffusion Plant (PORTS) off US-23, verified via Library of Congress HAER documentation and EPA Superfund records for the broader federal reservation; no public parcel-level lat/lon has been disclosed for Oklo's 206-acre tract, so location precision is 'approximate' (regional site-level placeholder, not a parcel-confirmed point). Not to be conflated with the separate, larger DOE/Commerce-announced natural-gas (9.2 GW) + data-center (10 GW) megasite reported at the same broader PORTS property (SB Energy/AEP Ohio, ~$33B, announced Feb 2026) \u2014 that is a distinct project. investmentUsd intentionally omitted: the disclosed $5.15M Dec 2025 transaction covers land acquisition only, not campus capex (see generation.notes)."
   }
 ]

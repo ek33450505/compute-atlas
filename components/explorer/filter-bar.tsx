@@ -14,6 +14,7 @@ import type { Facility } from "@/lib/schema";
 const FACILITY_TYPE_LABELS: Record<Facility["facilityType"], string> = {
   data_center: "Data center",
   crypto_mining: "Crypto mining",
+  power_generation: "Power generation",
 };
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

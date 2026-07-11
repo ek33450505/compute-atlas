@@ -107,9 +107,16 @@ const columns: ColumnDef<Facility>[] = [
   {
     id: "aiClassification",
     header: "AI class",
-    accessorFn: (f) => f.aiClassification,
+    accessorFn: (f) =>
+      f.facilityType === "data_center" || f.facilityType === "crypto_mining"
+        ? f.aiClassification
+        : undefined,
     cell: ({ row }) => {
-      const v = row.original.aiClassification;
+      const f = row.original;
+      const v =
+        f.facilityType === "data_center" || f.facilityType === "crypto_mining"
+          ? f.aiClassification
+          : undefined;
       return v ? AI_CLASSIFICATION_LABELS[v] ?? v : "—";
     },
     sortUndefined: "last",

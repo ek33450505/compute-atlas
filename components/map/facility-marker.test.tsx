@@ -104,4 +104,34 @@ describe("FacilityMarker", () => {
     expect(button).toHaveClass("rounded-md");
     expect(button).not.toHaveClass("rounded-full");
   });
+
+  it("renders a sharp square shape for power_generation facilities", () => {
+    const powerGenFixture: Facility = {
+      id: "test-power-gen-facility",
+      name: "Test Power Generation Facility",
+      operator: "Test Operator",
+      status: "operational",
+      facilityType: "power_generation",
+      confidence: "confirmed",
+      location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN", precision: "exact" },
+      capacityMw: { operational: 100 },
+      statusHistory: [],
+      sources: [
+        {
+          url: "https://example.com",
+          label: "Example News",
+          retrievedAt: "2024-01-01",
+          kind: "press",
+        },
+      ],
+      lastUpdated: "2024-01-01",
+    };
+    render(
+      <FacilityMarker facility={powerGenFixture} isSelected={false} onSelect={() => {}} />
+    );
+    const button = screen.getByRole("button");
+    expect(button).toHaveClass("rounded-none");
+    expect(button).not.toHaveClass("rounded-full");
+    expect(button).not.toHaveClass("rounded-md");
+  });
 });

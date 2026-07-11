@@ -77,7 +77,7 @@ export function hasCivicImpact(facility: Facility): boolean {
     facility.jobs ||
     facility.community ||
     (facility.facilityType === "crypto_mining" && facility.mining) ||
-    facility.environmental
+    (facility.facilityType !== "power_generation" && facility.environmental)
   );
 }
 
@@ -238,7 +238,9 @@ function MiningGroup({ facility }: { facility: Facility }) {
 
 // --- Sub-section: Environmental (both branches, different shapes) ---
 function EnvironmentalGroup({ facility }: { facility: Facility }) {
-  if (!facility.environmental) return null;
+  if (facility.facilityType === "power_generation" || !facility.environmental) {
+    return null;
+  }
 
   if (facility.facilityType === "data_center") {
     const { pue, pueConfidence, wue, gridCarbonIntensityGCo2PerKwh, renewablePercent, waterStress } =

@@ -19,9 +19,10 @@ describe("MapLegend", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders both facility-type labels", () => {
+  it("renders all facility-type labels", () => {
     render(<MapLegend />);
     expect(screen.getByText("Data center")).toBeInTheDocument();
     expect(screen.getByText("Crypto mining")).toBeInTheDocument();
+    expect(screen.getByText("Power generation")).toBeInTheDocument();
   });
 });

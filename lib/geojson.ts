@@ -29,7 +29,10 @@ export function facilitiesToGeoJSON(
         name: f.name,
         operator: f.operator,
         status: f.status,
-        aiClassification: f.aiClassification,
+        aiClassification:
+          f.facilityType === "data_center" || f.facilityType === "crypto_mining"
+            ? f.aiClassification
+            : undefined,
         confidence: f.confidence,
         state: f.location.state,
         capacityPlanned: f.capacityMw?.planned,

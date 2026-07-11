@@ -93,7 +93,7 @@ export function getEnvironmentalImpactIndex(
       subScores.push(scoreCarbonIntensity(gridIntensity));
       populatedFields++;
     }
-  } else {
+  } else if (facility.facilityType === "crypto_mining") {
     expectedFields = CRYPTO_MINING_EXPECTED_FIELDS;
     const env = facility.environmental;
 
@@ -108,6 +108,8 @@ export function getEnvironmentalImpactIndex(
       populatedFields++;
     }
   }
+  // power_generation: no environmental schema branch — index is intentionally
+  // not computed (expectedFields stays 0, score resolves to null below).
 
   const dataCompleteness =
     expectedFields > 0 ? populatedFields / expectedFields : 0;

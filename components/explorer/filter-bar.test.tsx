@@ -81,10 +81,25 @@ const facilityD: Facility = {
   lastUpdated: "2023-12-01",
 };
 
-const fixtures: Facility[] = [facilityA, facilityB, facilityC, facilityD];
+const facilityE: Facility = {
+  id: "fac-e",
+  name: "Epsilon Power Plant",
+  operator: "EpsilonPower",
+  status: "operational",
+  facilityType: "power_generation",
+  confidence: "confirmed",
+  location: { lat: 32.0, lon: -93.0, city: "Shreveport", state: "LA", precision: "exact" },
+  capacityMw: { operational: 200 },
+  statusHistory: [],
+  sources: [makeSource()],
+  lastUpdated: "2025-01-20",
+};
+
+const fixtures: Facility[] = [facilityA, facilityB, facilityC, facilityD, facilityE];
 // Derived options from fixtures:
-// States (sorted): NJ, TN, TX, VA
-// Operators (sorted): AlphaCorp, BetaInc, GammaTech
+// States (sorted): LA, NJ, TN, TX, VA
+// Operators (sorted): AlphaCorp, BetaInc, EpsilonPower, GammaTech
+// Facility types: data_center, power_generation
 
 // ---------------------------------------------------------------------------
 // Types mirroring FilterBar internals
@@ -252,6 +267,40 @@ describe("FilterBar — Operator facet", () => {
     await user.click(checkbox);
 
     expect(mocks.setOperator).toHaveBeenCalledWith([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Facility type facet popover
+// ---------------------------------------------------------------------------
+
+describe("FilterBar — Facility type facet", () => {
+  it("opening the Type popover and checking a box calls setFacilityType with the added value", async () => {
+    const user = userEvent.setup();
+    const { mocks } = renderFilterBar();
+
+    const trigger = screen.getByRole("button", { name: "Type" });
+    await user.click(trigger);
+
+    expect(screen.getByLabelText("Type filter options")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("checkbox", { name: "Power generation" }));
+
+    expect(mocks.setFacilityType).toHaveBeenCalledWith(["power_generation"]);
+  });
+
+  it("unchecking a selected facility type calls setFacilityType with the value removed", async () => {
+    const user = userEvent.setup();
+    const { mocks } = renderFilterBar({ facilityType: ["power_generation"] });
+
+    const trigger = screen.getByRole("button", { name: "Type (1 selected)" });
+    await user.click(trigger);
+
+    const checkbox = screen.getByRole("checkbox", { name: "Power generation" });
+    expect(checkbox).toBeChecked();
+    await user.click(checkbox);
+
+    expect(mocks.setFacilityType).toHaveBeenCalledWith([]);
   });
 });
 

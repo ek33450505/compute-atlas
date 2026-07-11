@@ -22,8 +22,9 @@ interface FacilityMarkerProps {
  * - Fixed 28×28 px target meets WCAG 2.2 SC 2.5.8 (≥24×24 px); visible :focus-visible ring
  * - Hover scale animation is suppressed via `motion-safe:` variant
  * - facilityType is also communicated by shape: circle for data_center,
- *   rounded-square for crypto_mining — a pure border-radius swap, not a
- *   rotation, so the child status icon stays upright
+ *   rounded-square for crypto_mining, sharp square for power_generation —
+ *   a pure border-radius swap, not a rotation, so the child status icon
+ *   stays upright
  *
  * Only rendered for singleton (unclustered) points — see
  * components/map/facility-map.tsx for the cluster/singleton branch and
@@ -34,7 +35,11 @@ export const FacilityMarker = forwardRef<HTMLButtonElement, FacilityMarkerProps>
     const meta = getStatusMeta(facility.status);
     const Icon = meta.icon;
     const shapeClassName =
-      facility.facilityType === "crypto_mining" ? "rounded-md" : "rounded-full";
+      facility.facilityType === "crypto_mining"
+        ? "rounded-md"
+        : facility.facilityType === "power_generation"
+          ? "rounded-none"
+          : "rounded-full";
 
     return (
       <button
