@@ -122,7 +122,7 @@ export default function AboutPage() {
             community-reception scale, and the full data dictionary, see the{" "}
             <Link
               href="/methodology"
-              className="underline underline-offset-2 hover:text-foreground"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
             >
               Methodology
             </Link>{" "}
