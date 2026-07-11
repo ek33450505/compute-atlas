@@ -20001,5 +20001,530 @@
     "environmental": {
       "carbonIntensityBasis": "unknown"
     }
+  },
+  {
+    "id": "coinmint-massena-ny",
+    "name": "Coinmint (Massena East / former Alcoa Smelter)",
+    "operator": "Coinmint",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.9298,
+      "lon": -74.8909,
+      "city": "Massena",
+      "county": "St. Lawrence",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 166,
+      "planned": 435
+    },
+    "poweredBy": "NYPA hydropower via the Moses-Saunders Power Dam",
+    "landAcres": 1300,
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "sources": [
+      {
+        "url": "https://theminermag.com/news/2024-11-21/miner-weekly-coinmint-nydig-bitcoin",
+        "label": "Miner Weekly: Coinmint, NYDIG, and Bitcoin",
+        "publisher": "TheMinerMag",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://news.bitcoin.com/report-nydig-close-to-buying-alcoas-massena-new-york-smelter-site-for-bitcoin-mining-operations/",
+        "label": "Report: NYDIG Close to Buying Alcoa's Massena, New York Smelter Site",
+        "publisher": "Bitcoin.com News",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.coindesk.com/business/2026/04/18/from-smelters-to-servers-alcoa-to-cash-in-on-crypto-s-thirst-for-energy",
+        "label": "From Smelters to Servers: Alcoa to Cash In on Crypto's Thirst for Energy",
+        "publisher": "CoinDesk",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Former Alcoa East aluminum smelter, ~1,300 acres, adjacent to the Moses-Saunders Power Dam on the St. Lawrence River — no confirmed street address exists in public sourcing, so coordinates here are Massena, NY's town center, not the facility's actual footprint (approximate, per location.precision). Substation approved for 435 MW; operational draw was last publicly reported at 166 MW as of late 2024 (~38% utilization) — treat as a last-known figure, not current, since ~110 MW of third-party colocation (CleanSpark, Gryphon, Bit Digital) was reported vacating around early 2025 and actual current draw is likely lower. Ownership is in transition: NYDIG holds a strategic stake from an Oct 2024 investment, and Alcoa's CEO confirmed (Apr 17, 2026) advanced negotiations to sell the site outright to NYDIG, expected to close around Q3 2026 pending regulatory approval — operator recorded here as Coinmint since the sale has not closed.",
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "terawulf-lake-mariner-ny",
+    "name": "TeraWulf Lake Mariner",
+    "operator": "TeraWulf",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "aiClassification": "mixed_use",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.35,
+      "lon": -78.56,
+      "city": "Barker",
+      "county": "Niagara",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 205,
+      "planned": 750
+    },
+    "poweredBy": "NYPA hydropower allocation, grid-connected (former Somerset coal plant site)",
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025",
+        "note": "145 MW energized for owned Bitcoin mining across 3 buildings on the former Somerset coal-plant site.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-03",
+        "note": "60 critical-IT MW energized for HPC/AI leasing under signed 10-year colocation agreements with Fluidstack (200+ MW contracted, $3.7B revenue over initial terms, backed by a $1.8B Google backstop and ~8% Google equity stake).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://investors.terawulf.com/sec-filings/all-sec-filings/content/0001083301-26-000092/wulf-20260331.htm",
+        "label": "TeraWulf 10-Q, Q1 2026",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-07-10",
+        "kind": "filing"
+      },
+      {
+        "url": "https://investors.terawulf.com/news-events/press-releases/detail/140/terawulf-reports-first-quarter-2026-results",
+        "label": "TeraWulf Reports First Quarter 2026 Results",
+        "publisher": "TeraWulf",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://investors.terawulf.com/news-events/press-releases/detail/114/terawulf-announces-fluidstack-expansion-with-160-mw-cb-5",
+        "label": "TeraWulf Announces Fluidstack Expansion With 160 MW (CB-5)",
+        "publisher": "TeraWulf",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Built on the site of the former coal-fired Somerset Generating Station (shut 2019/2020). Address 7725 Lake Rd, Barker, NY — coordinates are a town-level geocode, not a confirmed parcel pin (approximate). TeraWulf holds exclusive access to up to 750 MW of site infrastructure capacity. The AI/HPC pivot here is a SIGNED, revenue-generating deal, not speculative: two 10-year HPC colocation agreements with Fluidstack (buildings CB-3 42MW + CB-4 162MW, later expanded with CB-5 +160MW) worth $3.7B in contracted revenue, backed by a $1.8B Google backstop and Google equity stake (~14% pro forma). Tagged mixed_use since Bitcoin mining (145MW) remains the larger operational segment versus HPC (60MW energized as of Mar 2026), but the AI/HPC business is real and growing, not aspirational.",
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "greenidge-generation-dresden-ny",
+    "name": "Greenidge Generation",
+    "operator": "Greenidge Generation",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.6809,
+      "lon": -76.9505,
+      "city": "Dresden",
+      "county": "Yates",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 106
+    },
+    "poweredBy": "Behind-the-meter natural gas generation at the plant itself (not grid-drawn)",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Converted coal-then-gas power plant on the western shore of Seneca Lake; nameplate capacity is reported as both 106 MW and 107 MW (DEC-permitted) across sources — recorded here as 106 MW nameplate, with the 107 MW DEC-permitted figure noted as a close, contested alternative rather than resolved to one number."
+    },
+    "mining": {
+      "powerArrangement": "behind_meter"
+    },
+    "sources": [
+      {
+        "url": "https://dec.ny.gov/news/press-releases/2025/11/dec-statement-regarding-the-greenidge-agreement",
+        "label": "DEC Statement Regarding the Greenidge Agreement",
+        "publisher": "NY Dept. of Environmental Conservation",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://rochesterbeacon.com/2025/11/11/dec-signs-agreement-with-greenidge-ends-legal-battle/",
+        "label": "DEC Signs Agreement With Greenidge, Ends Legal Battle",
+        "publisher": "Rochester Beacon",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://earthjustice.org/press/2024/another-decision-upholds-denial-of-cryptominer-greenidge-generations-air-permit-dec-case-closed",
+        "label": "Another Decision Upholds Denial of Cryptominer Greenidge Generation's Air Permit",
+        "publisher": "Earthjustice",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "590 Plant Road, Dresden, NY — the flagship New York crypto-mining regulatory case, having driven the state's 2022 moratorium law and a multi-year DEC Title V air-permit fight (DEC denial 2022, upheld in court 2024). Resolved via a DEC settlement agreement dated November 2025: DEC will issue a Title V permit modification, and Greenidge commits to a 44% reduction in permitted GHG emissions (>282,000 tons CO2e/year) and a minimum 25% reduction in actual emissions, with no emissions increase allowed during the renewed permit term. The permit modification still requires a public comment period before DEC issues a final decision, so this should be read as resolved-in-principle, not fully closed. Coordinates are a town-level geocode of the Dresden address, not a confirmed parcel pin.",
+    "environmental": {
+      "carbonIntensityBasis": "estimated"
+    }
+  },
+  {
+    "id": "digihost-north-tonawanda-ny",
+    "name": "Digihost / Digi Power X — Fortistar North Tonawanda",
+    "operator": "Digihost (Digi Power X)",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.0481,
+      "lon": -78.8531,
+      "city": "North Tonawanda",
+      "county": "Niagara",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 60,
+      "planned": 120
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "sources": [
+      {
+        "url": "https://earthjustice.org/press/2026/appeals-court-delivers-blow-to-north-tonawanda-crypto-operation-reinforces-new-yorks-climate-law",
+        "label": "Appeals Court Delivers Blow to North Tonawanda Crypto Operation, Reinforces New York's Climate Law",
+        "publisher": "Earthjustice",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://buffalonews.com/news/local/digihost-north-tonawanda-plant-judge-ruling-new-york/article_3451bb94-a2d2-11ef-873b-27c39f255943.html",
+        "label": "Digihost North Tonawanda Plant Judge Ruling",
+        "publisher": "Buffalo News",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/citys-data-center-moratorium-in-new-york-impacts-digi-power-xs-hopes-to-convert-cryptomine-to-ai-data-center/",
+        "label": "City's Data Center Moratorium in New York Impacts Digi Power X's Hopes to Convert Cryptomine to AI Data Center",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "1070 Erie Ave, North Tonawanda, NY. 60 MW operating with potential for another 60 MW unbuilt. Under an unresolved legal/regulatory cloud: a NY Supreme Court ruling (Nov 2024) required the Public Service Commission to complete a CLCPA climate-impact review of the site's power-plant-sale approval; the NY Appellate Division, Third Dept affirmed that ruling on May 28, 2026 — the required CLCPA review remains incomplete as of this writing, and the facility continues operating pending it. The company (now \"Digi Power X,\" ticker DGXX) has filed for Planning Commission approval to convert the site to an 80,000 sq ft AI/HPC data center, but this is blocked by North Tonawanda's data-center moratorium (imposed July 2024, extended again ~June 2026 after resident pushback) — the AI pivot is a real, filed proposal, not vaporware, but has no live AI hosting revenue at this site.",
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "american-bitcoin-niagara-falls-ny",
+    "name": "American Bitcoin — Niagara Falls (\"Alpha Site\")",
+    "operator": "American Bitcoin (Hut 8)",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.0879,
+      "lon": -79.0129,
+      "city": "Niagara Falls",
+      "county": "Niagara",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 50
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "sources": [
+      {
+        "url": "https://www.hut8.com/our-platform",
+        "label": "Hut 8 — Our Platform",
+        "publisher": "Hut 8",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.coindesk.com/business/2023/02/07/bitcoin-miners-hut-8-us-bitcoin-corp-announce-merger",
+        "label": "Bitcoin Miners Hut 8, US Bitcoin Corp Announce Merger",
+        "publisher": "CoinDesk",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.coindesk.com/policy/2023/04/05/us-bitcoin-corp-expected-to-settle-with-city-to-resume-mining-in-niagara-falls",
+        "label": "US Bitcoin Corp Expected to Settle With City to Resume Mining in Niagara Falls",
+        "publisher": "CoinDesk",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "2450 Buffalo Avenue, Niagara Falls, NY. Formerly operated as \"US Data Mining Group\"/\"US Bitcoin Corp\" (informally \"Alpha Site\"); that entity merged into Hut 8 in 2024, and the site is now operated under American Bitcoin, Hut 8's mining subsidiary/spinoff, hosting Ionic Digital miners under a managed-services arrangement tied to the Celsius bankruptcy. Operator recorded here reflects the current post-merger entity, not the stale pre-2024 name. Coordinates are an approximate industrial-corridor geocode of the street address, not an independently confirmed parcel pin.",
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "digihost-erie-county-ny",
+    "name": "Digihost — Erie County (Buffalo)",
+    "operator": "Digihost",
+    "status": "operational",
+    "facilityType": "crypto_mining",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.9201,
+      "lon": -78.8194,
+      "city": "Buffalo",
+      "county": "Erie",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 42
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Digihost_American_Axle_Erie_County_facility",
+        "label": "Digihost American Axle Erie County Facility",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "1001 E Delavan Ave, Buffalo, NY — former American Axle factory, 60,000+ sq ft, under a 99-year lease. Digihost's original/first facility, operating since 2021; confirmed genuinely distinct from the company's North Tonawanda site (~9 miles away, different municipality, no legal/regulatory issues reported at this site unlike North Tonawanda). Coordinates are an approximate geocode, not an independently confirmed parcel pin.",
+    "environmental": {
+      "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "h5-buffalo-i-lockport-ny",
+    "name": "H5 Data Centers Buffalo I (formerly Yahoo Lockport)",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.167553,
+      "lon": -78.751731,
+      "city": "Lockport",
+      "county": "Niagara",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "landAcres": 43,
+    "poweredBy": "Grid-connected; chillerless outside-air cooling design minimizes power draw",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Yahoo's famous \"Chicken Coop\" design: chillerless, cooled by outside air ~99% of the year with direct evaporative cooling as backup in summer heat, achieving a PUE of 1.08. Not independently reconfirmed as unchanged since the 2025 H5 acquisition."
+    },
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/h5-acquires-new-york-data-centers-from-yahoo-in-sale-leaseback-deal/",
+        "label": "H5 Acquires New York Data Centers From Yahoo in Sale-Leaseback Deal",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.btpm.org/local/2025-01-22/yahoo-lockport-data-center-sold-for-49-million",
+        "label": "Yahoo Lockport Data Center Sold for $49 Million",
+        "publisher": "Buffalo Toronto Public Media",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/analysis/yahoos-compute-coop-is-not-for-chickens/",
+        "label": "Yahoo's Compute Coop Is Not for Chickens",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "5319 Enterprise Dr, Lockport, NY. Built by Yahoo in 2010 (opened at 155,000 sq ft, expanded since); campus totals 409,200 sq ft / 43 acres SHARED with the separate H5 Buffalo II building (~0.25 mi away — see that record). H5 Data Centers acquired both Lockport buildings from Yahoo in a sale-leaseback deal that closed Dec 30, 2024 ($49M reported); Yahoo signed a 5-year leaseback and remains a tenant on-site (140 staff retained, 15 transferred to H5). Now multi-tenant Tier III colocation, though no tenants beyond Yahoo are independently confirmed. Critical power was 16 MW as of 2014; current total post-expansion not independently disclosed, so capacityMw is deliberately omitted rather than guessed. Coordinates are a campus-level geocode (ConnectBase), not a per-building parcel pin.",
+    "community": {
+      "status": "unknown"
+    }
+  },
+  {
+    "id": "h5-buffalo-ii-lockport-ny",
+    "name": "H5 Data Centers Buffalo II",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.1671,
+      "lon": -78.7502,
+      "city": "Lockport",
+      "county": "Niagara",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "poweredBy": "Grid-connected",
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/h5-buffalo-ii",
+        "label": "H5 Buffalo II",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/h5-acquires-new-york-data-centers-from-yahoo-in-sale-leaseback-deal/",
+        "label": "H5 Acquires New York Data Centers From Yahoo in Sale-Leaseback Deal",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "5365 Crown Dr, Lockport, NY — confirmed as a genuinely separate building (~0.25 mi from H5 Buffalo I / 5319 Enterprise Dr, not a duplicate listing), part of the same Lockport campus. Built 2015 as part of a $170M expansion announced 2013 (the campus's second facility). Acquired by H5 alongside Buffalo I in the same Dec 2024 Yahoo sale-leaseback deal. Specific square footage and power capacity for this building alone are paywalled on data-center directories and not independently confirmed — deliberately omitted rather than estimated from the shared 409,200 sq ft campus total (which spans both buildings). Coordinates are a nearby-offset approximation of the campus location, not an independently confirmed parcel pin for this specific building.",
+    "community": {
+      "status": "unknown"
+    }
+  },
+  {
+    "id": "bloomberg-orangeburg-ny",
+    "name": "Bloomberg LP Data Center",
+    "operator": "Bloomberg LP",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.0215,
+      "lon": -73.954,
+      "city": "Orangeburg",
+      "county": "Rockland",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 4
+    },
+    "investmentUsd": 123200000,
+    "poweredBy": "Grid-connected",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001603578/000153949714000486/n306_premktx1.htm",
+        "label": "WFRBS Commercial Mortgage Trust 2014-C20 FWP (Bloomberg Orangeburg facility disclosure)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-07-10",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/investing/bloomberg-plans-710-million-data-center-in-n-y-suburb",
+        "label": "Bloomberg Plans $710 Million Data Center in N.Y. Suburb",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://rocklandtimes.com/2013/06/27/bloomberg-tops-off-new-datacenter/",
+        "label": "Bloomberg Tops Off New Datacenter",
+        "publisher": "Rockland County Times",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "155 Corporate Drive, Orangeburg, NY (Town of Orangetown, Rockland County). 131,805 sq ft total, two data halls totaling 39,058 sq ft with 42\" raised floor and 26' clear height, 4.0 MW power system, 1,200-ton cooling capacity — all per an authoritative SEC EDGAR CMBS filing (2014). Construction cost was $123.2M ($935/sq ft) per that same filing, with Bloomberg contributing $39.0M toward construction; recorded here as investmentUsd rather than the frequently-cited $710M figure, which represents total lease payments over a 15-year term (expiring March 2029), not construction capital — those are not comparable numbers and conflating them would overstate the capital investment. Dedicated single-tenant enterprise facility built to Bloomberg's spec for its financial data/analytics terminals (not shared colocation), built/topped-off 2013-2014. No expansions since 2014 were found in this research pass, but absence of news is not proof of none. Coordinates are a town-level geocode, not a confirmed parcel pin.",
+    "community": {
+      "status": "unknown"
+    }
+  },
+  {
+    "id": "60-hudson-street-ny",
+    "name": "60 Hudson Street",
+    "operator": "Multi-tenant carrier hotel (Hudson Interxchange, Digital Realty, DataBank, Equinix, and 100+ telecom tenants)",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.7176,
+      "lon": -74.0085,
+      "city": "New York",
+      "county": "New York",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "poweredBy": "Con Edison grid",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1994342/000153949723001716/n3791_x3-ts.htm",
+        "label": "BBCMS Mortgage Trust 2023-C22 FWP (60 Hudson Street building disclosure)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-07-10",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/hudson-ix-to-add-2mw-of-capacity-at-60-hudson-in-nyc/",
+        "label": "Hudson IX to Add 2MW of Capacity at 60 Hudson in NYC",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Landmarked 1930 Art Deco former Western Union building in TriBeCa, Manhattan — the East Coast's most important carrier hotel / interconnection point, hosting 100+ telecom and data-center tenants. Represented as ONE consolidated facility record rather than one per tenant, since the physical building is the meaningful unit. Total building size is 1,149,619 sq ft, 24 stories + basement, per an authoritative SEC EDGAR CMBS filing (2023) — this is whole-building square footage, not data-center-specific space. No whole-building data-center power (MW) figure is disclosed by any verifiable primary source; a 50MW figure appears on aggregator sites but traces to an unverified 2014 reference and is not repeated here as fact. The one solidly-verified tenant figure: Hudson Interxchange (HIX) occupies ~173,000 sq ft with a 15MW Con Edison feed (+2MW expansion announced), confirmed via Data Center Dynamics (2024-08-21). Figures for Digital Realty and DataBank's space in this building could not be independently confirmed from primary sources in this research pass (conflicting numbers across aggregator sites) and are deliberately omitted rather than guessed — capacityMw is left unset for the same reason (no reliable whole-building total exists). Coordinates are a building-level geocode from a map aggregator, not independently verified against a primary GIS source.",
+    "community": {
+      "status": "unknown"
+    }
+  },
+  {
+    "id": "32-avenue-of-the-americas-ny",
+    "name": "32 Avenue of the Americas",
+    "operator": "Multi-tenant carrier hotel (Digital Realty, CoreSite, and other carrier/telecom tenants)",
+    "status": "operational",
+    "facilityType": "data_center",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.7201,
+      "lon": -74.0046,
+      "city": "New York",
+      "county": "New York",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "poweredBy": "Con Edison grid",
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/new-york/jfk13",
+        "label": "Digital Realty JFK13 — New York",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.coresite.com/data-center/ny1-new-york-ny",
+        "label": "CoreSite NY1 — New York",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-07-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-10",
+    "notes": "Former AT&T Long Distance Building, built 1932, converted to a carrier hotel by Rudin Management after their 1999 acquisition. Represented as ONE consolidated facility record rather than one per tenant. Digital Realty (branded \"JFK13\") occupies 132,500 sq ft per Digital Realty's own facility page — no power (MW) figure is disclosed by Digital Realty itself for this site; a widely-repeated 9.0 MW figure traces only to third-party aggregator listings, not a Digital Realty or building-primary source, and is not repeated here as fact. CoreSite (branded \"NY1\") occupies 48,000+ sq ft per CoreSite's own facility page, also with no MW figure disclosed. No whole-building data-center square footage or power total is disclosed anywhere; capacityMw is deliberately left unset rather than synthesized by summing incomplete tenant figures. Coordinates are a building-centroid geocode (Wikidata, sourced from building records) — plausible but not independently cross-checked against a primary GIS source.",
+    "community": {
+      "status": "unknown"
+    }
   }
 ]
