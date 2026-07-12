@@ -15,7 +15,7 @@ describe("MapLegend", () => {
   it("has an accessible region name", () => {
     render(<MapLegend />);
     expect(
-      screen.getByRole("region", { name: /map legend/i })
+      screen.getByRole("region", { name: /key to symbols/i })
     ).toBeInTheDocument();
   });
 
