@@ -29,7 +29,7 @@ export default function AboutPage() {
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             Public, but scattered.
           </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          <p className="drop-cap max-w-2xl text-base leading-relaxed text-muted-foreground">
             Compute Atlas is an open, source-cited survey of the grid-scale
             compute buildout across the United States — where it&rsquo;s being
             built, by whom, and at what cost to energy, water, and the

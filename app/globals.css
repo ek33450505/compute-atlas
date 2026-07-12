@@ -238,6 +238,21 @@
     font-family: var(--font-display), Georgia, serif;
     font-optical-sizing: auto;
   }
+  /* versal drop-cap — Fraunces initial letter opening an editorial lead
+     paragraph, like an atlas frontispiece. Reusable across editorial leads,
+     not scoped to a single page. ::first-letter doesn't fragment the word
+     for assistive tech (it still reads normally), so no ARIA is needed. */
+  .drop-cap::first-letter {
+    font-family: var(--font-display), Georgia, serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    float: left;
+    font-size: 3.1em;
+    line-height: 0.72;
+    padding-right: 0.09em;
+    margin-top: 0.02em;
+    color: var(--primary); /* sage versal — 6.67:1 on parchment, AA-clear */
+  }
 }
 
 /* ── MapLibre chrome — parchment/ink theme (Phase 1c) ──────────────────────────
