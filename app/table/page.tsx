@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { getAllFacilities } from "@/lib/data";
 import { Explorer } from "@/components/explorer/explorer";
+import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
 export const metadata: Metadata = {
   title: "Data table",
@@ -21,21 +22,24 @@ export default function TablePage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-      <header className="mb-8 space-y-3">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          United States · Edition 2026 · Gazetteer
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Data center data table
-        </h1>
-        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          Compute Atlas tracks data centers across the United States —
-          traditional and hyperscale compute, AI-specific facilities, and
-          crypto-mining operations — with a public source behind every
-          record. Every tracked facility is listed below, filterable and
-          sortable. Filters are shared with the map — the URL carries them
-          between the two views. Each row links to its detail plate.
-        </p>
+      <header className="relative mb-8">
+        <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
+        <div className="relative space-y-3">
+          <p className="font-mono text-xs uppercase tracking-widest text-primary">
+            United States · Edition 2026 · Gazetteer
+          </p>
+          <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
+            Data center data table
+          </h1>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            Compute Atlas tracks data centers across the United States —
+            traditional and hyperscale compute, AI-specific facilities, and
+            crypto-mining operations — with a public source behind every
+            record. Every tracked facility is listed below, filterable and
+            sortable. Filters are shared with the map — the URL carries them
+            between the two views. Each row links to its detail plate.
+          </p>
+        </div>
         <div className="border-t border-border" />
       </header>
 

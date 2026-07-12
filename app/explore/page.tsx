@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { getStates, getOperators } from "@/lib/data";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
 export const metadata: Metadata = {
   title: "Explore",
@@ -60,17 +61,20 @@ export default function ExplorePage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          The atlas, by lens
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Explore
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          The same dataset, sliced four ways — by geography, by power source,
-          by community reception, and by who&rsquo;s building it.
-        </p>
+      <header className="relative">
+        <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
+        <div className="relative space-y-4 pb-2">
+          <p className="font-mono text-xs uppercase tracking-widest text-primary">
+            The atlas, by lens
+          </p>
+          <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
+            Explore
+          </h1>
+          <p className="max-w-2xl text-base text-muted-foreground">
+            The same dataset, sliced four ways — by geography, by power source,
+            by community reception, and by who&rsquo;s building it.
+          </p>
+        </div>
         <div className="border-t border-border" />
       </header>
 

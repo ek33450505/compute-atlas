@@ -25,7 +25,7 @@ export default function HomePage() {
       {/* ------------------------------------------------------------------ */}
       <div className="relative mb-10">
         {/* Hairline graticule background layer — self-surveyed draw-in on load */}
-        <GraticuleSurvey className="pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
+        <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
 
         <div className="relative space-y-4 pb-10">
           {/* Overline */}

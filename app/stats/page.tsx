@@ -23,6 +23,7 @@ import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/commu
 import type { Facility } from "@/lib/schema";
 import { aiClassificationEnum } from "@/lib/schema";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
 export const metadata: Metadata = {
   title: "Statistics",
@@ -104,10 +105,7 @@ export default function StatsPage() {
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
       <header className="relative">
-        <div
-          aria-hidden="true"
-          className="graticule pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]"
-        />
+        <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
             Coverage &amp; completeness · Edition 2026

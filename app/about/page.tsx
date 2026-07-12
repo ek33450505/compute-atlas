@@ -5,6 +5,7 @@ import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
 export const metadata: Metadata = {
   title: "About & method",
@@ -18,10 +19,7 @@ export default function AboutPage() {
       <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "About" }]} />
       {/* ---- Masthead ---- */}
       <header className="relative">
-        <div
-          aria-hidden="true"
-          className="graticule pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]"
-        />
+        <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
             About &amp; method · Edition 2026
