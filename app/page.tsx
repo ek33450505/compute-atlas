@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site";
 import { getStats, getNotableFacilities } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
+import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
 export const metadata: Metadata = {
   description: siteConfig.description,
@@ -23,11 +24,8 @@ export default function HomePage() {
       {/* Hero                                                                */}
       {/* ------------------------------------------------------------------ */}
       <div className="relative mb-10">
-        {/* Hairline graticule background layer */}
-        <div
-          aria-hidden="true"
-          className="graticule pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]"
-        />
+        {/* Hairline graticule background layer — self-surveyed draw-in on load */}
+        <GraticuleSurvey className="pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
 
         <div className="relative space-y-4 pb-10">
           {/* Overline */}

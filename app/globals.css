@@ -126,6 +126,58 @@
       repeating-linear-gradient(to right, color-mix(in oklab, var(--border) 45%, transparent) 0 1px, transparent 1px 44px),
       repeating-linear-gradient(to bottom, color-mix(in oklab, var(--border) 45%, transparent) 0 1px, transparent 1px 44px);
   }
+  /* self-surveyed graticule — same hairline grid as .graticule, but the hero
+     draws it in on load: verticals wipe left-to-right, then horizontals wipe
+     top-to-bottom, as if a surveyor were plotting the grid. Settles into the
+     identical static grid .graticule renders. The hero passes `absolute
+     inset-0` via className, which both positions the element and makes it
+     the containing block for the axis children — this class is a no-op
+     positioning-wise, kept only as a hook. */
+  .graticule-survey {
+  }
+  .grat-axis-x {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(to right, color-mix(in oklab, var(--border) 45%, transparent) 0 1px, transparent 1px 44px);
+    /* default (no animation applied): fully revealed — matches settled state */
+  }
+  .grat-axis-y {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(to bottom, color-mix(in oklab, var(--border) 45%, transparent) 0 1px, transparent 1px 44px);
+    /* default (no animation applied): fully revealed — matches settled state */
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .grat-axis-x {
+      animation: survey-wipe-x 500ms ease-out backwards;
+    }
+    .grat-axis-y {
+      animation: survey-wipe-y 500ms ease-out 250ms backwards;
+    }
+  }
+  /* clip-path (not mask-image) drives the wipe: animating mask-image gradient
+     stops does not interpolate in Chromium (stays blank, then snaps to full),
+     while clip-path insets interpolate smoothly. */
+  @keyframes survey-wipe-x {
+    from {
+      -webkit-clip-path: inset(0 100% 0 0);
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      -webkit-clip-path: inset(0 0 0 0);
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes survey-wipe-y {
+    from {
+      -webkit-clip-path: inset(0 0 100% 0);
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      -webkit-clip-path: inset(0 0 0 0);
+      clip-path: inset(0 0 0 0);
+    }
+  }
   /* map neatline: hairline frame + inset rule, like a chart border */
   .neatline {
     border: 1px solid var(--border);
