@@ -20,6 +20,7 @@ import {
   SATELLITE_MAX_ZOOM,
 } from "@/lib/map";
 import { clusterFacilities, type Cluster } from "@/lib/cluster";
+import { buildGraticuleGeoJSON, formatLatLon } from "@/lib/graticule";
 import { FacilityMarker } from "@/components/map/facility-marker";
 import { ClusterMarker } from "@/components/map/cluster-marker";
 import { FacilityPopup } from "@/components/map/facility-popup";
@@ -67,6 +68,9 @@ export function FacilityMap({
   const [bearing, setBearing] = useState<number>(0);
   const [is3D, setIs3D] = useState<boolean>(false);
   const [isSatellite, setIsSatellite] = useState<boolean>(false);
+  const [cursor, setCursor] = useState<{ lat: number; lon: number } | null>(
+    null
+  );
 
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
@@ -77,6 +81,9 @@ export function FacilityMap({
     () => clusterFacilities(facilities, zoom),
     [facilities, zoom]
   );
+
+  // Static graticule GeoJSON — built once, independent of facilities/zoom.
+  const graticuleData = useMemo(() => buildGraticuleGeoJSON(), []);
 
   // Lazy initializer is safe here: this component only renders client-side
   // via the ssr:false dynamic wrapper, so window is always defined at init.
@@ -262,6 +269,10 @@ export function FacilityMap({
             setBearing(e.viewState.bearing);
             setIs3D(e.viewState.pitch > 5);
           }}
+          onMouseMove={(e) =>
+            setCursor({ lat: e.lngLat.lat, lon: e.lngLat.lng })
+          }
+          onMouseOut={() => setCursor(null)}
         >
           {/* Zoom controls — compass arrow hidden (replaced by custom CompassRose below) */}
           <NavigationControl
@@ -289,6 +300,36 @@ export function FacilityMap({
               type="raster"
               layout={{ visibility: isSatellite ? "visible" : "none" }}
               paint={{ "raster-fade-duration": 0 }}
+            />
+          </Source>
+
+          {/* Survey graticule — a lat/long grid that curves under the globe
+              projection, part of the "atlas being surveyed" conceit. Hidden
+              over satellite imagery (contrast problem there) and faded out
+              by z7 so it never clutters facility-level zoom. */}
+          <Source id="graticule" type="geojson" data={graticuleData}>
+            <Layer
+              id="graticule-layer"
+              type="line"
+              layout={{
+                "line-join": "round",
+                visibility: isSatellite ? "none" : "visible",
+              }}
+              paint={{
+                "line-color": "#B9A67F",
+                "line-width": 0.6,
+                "line-opacity": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  2,
+                  0.55,
+                  5,
+                  0.4,
+                  7,
+                  0,
+                ],
+              }}
             />
           </Source>
 
@@ -372,6 +413,19 @@ export function FacilityMap({
 
         {/* Bottom-left: map legend (unchanged position) */}
         <MapLegend />
+
+        {/* Bottom-center: surveyor-style pointer coordinate readout, part of
+            the "atlas being surveyed" conceit. Hover-only instrument — not
+            meaningful to keyboard/SR users (they can't hover); the sr-only
+            guidance above and the /table alternative cover them instead. */}
+        {cursor && (
+          <p
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-10 rounded-sm px-2 py-0.5 font-mono text-[10px] leading-tight tabular-nums text-muted-foreground bg-background/85 backdrop-blur-sm"
+          >
+            {formatLatLon(cursor.lat, cursor.lon)}
+          </p>
+        )}
 
         {/*
          * Bottom-right: basemap attribution as a small semi-opaque overlay, stacked
