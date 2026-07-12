@@ -18,6 +18,7 @@ import {
   SATELLITE_TILE_URL,
   SATELLITE_ATTRIBUTION,
   SATELLITE_MAX_ZOOM,
+  computeFacilitiesBounds,
 } from "@/lib/map";
 import { clusterFacilities, type Cluster } from "@/lib/cluster";
 import { buildGraticuleGeoJSON, formatLatLon } from "@/lib/graticule";
@@ -36,6 +37,12 @@ interface FacilityMapProps {
   facilities: Facility[];
   /** Tailwind height classes for the map container. Defaults to "h-[70vh] min-h-[420px]". */
   heightClass?: string;
+  /**
+   * When true, run a survey-pass to fit the initial facility set on first load —
+   * used when arriving with an active filter (e.g. deep-linked from the table).
+   * Default false: a fresh unfiltered visit lands on the default US view.
+   */
+  surveyOnMount?: boolean;
 }
 
 /**
@@ -60,6 +67,7 @@ interface FacilityMapProps {
 export function FacilityMap({
   facilities,
   heightClass = "h-[70vh] min-h-[420px]",
+  surveyOnMount = false,
 }: FacilityMapProps) {
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(
     null
@@ -126,23 +134,18 @@ export function FacilityMap({
       const map = mapRef.current;
       if (!map) return;
 
-      const lons = cluster.members.map((f) => f.location.lon);
-      const lats = cluster.members.map((f) => f.location.lat);
-      const minLon = Math.min(...lons);
-      const maxLon = Math.max(...lons);
-      const minLat = Math.min(...lats);
-      const maxLat = Math.max(...lats);
+      const b = computeFacilitiesBounds(cluster.members);
+      if (!b) return;
 
       // Degenerate bbox: all members are essentially co-located — just zoom in.
-      const isCoinPoint = maxLon - minLon < 0.001 && maxLat - minLat < 0.001;
-      if (isCoinPoint) {
+      if (b.isCoincident) {
         map.easeTo({
           center: [cluster.lon, cluster.lat],
           zoom: Math.min(zoom + 3, 12),
           duration: reducedMotion ? 0 : 600,
         });
       } else {
-        map.fitBounds([[minLon, minLat], [maxLon, maxLat]], {
+        map.fitBounds(b.bounds, {
           padding: 80,
           maxZoom: 12,
           duration: reducedMotion ? 0 : 600,
@@ -151,6 +154,27 @@ export function FacilityMap({
     },
     [zoom, reducedMotion]
   );
+
+  /**
+   * Frames the current `facilities` prop as a deliberate "survey pass" — a slower,
+   * more sweeping ease than the 600 ms marker-selection or cluster-zoom motions, part
+   * of the "atlas being surveyed" conceit. Fired when the filtered facility set changes
+   * (see the effect below) and optionally on mount when `surveyOnMount` is set.
+   */
+  const surveyToFacilities = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const b = computeFacilitiesBounds(facilities);
+    if (!b) return; // empty filtered set — leave the camera where it is
+
+    const duration = reducedMotion ? 0 : 1400; // slower, deliberate "survey pass"
+    if (b.isCoincident) {
+      map.easeTo({ center: b.center, zoom: 9, duration });
+    } else {
+      map.fitBounds(b.bounds, { padding: 96, maxZoom: 9, duration });
+    }
+  }, [facilities, reducedMotion]);
 
   /** Resets map bearing and pitch to north-up. */
   const handleResetNorth = useCallback(() => {
@@ -198,6 +222,11 @@ export function FacilityMap({
   // future additions via a MutationObserver.
   const moRef = useRef<MutationObserver | null>(null);
 
+  // Tracks whether the map has finished loading — fitBounds/easeTo before load
+  // throws or no-ops, so the mount-time survey-pass and the filter-change effect
+  // both gate on this.
+  const mapReadyRef = useRef(false);
+
   const handleMapLoad = useCallback(() => {
     const mapEl = mapRef.current?.getContainer();
     if (!mapEl) return;
@@ -228,10 +257,30 @@ export function FacilityMap({
       attributeFilter: ["role"],
     });
     moRef.current = mo;
-  }, []);
+
+    // Deep-linked arrival with an active filter: run the survey-pass once the
+    // map is ready, rather than starting on the default US view then jumping.
+    if (surveyOnMount) {
+      surveyToFacilities();
+    }
+    mapReadyRef.current = true;
+  }, [surveyOnMount, surveyToFacilities]);
 
   // Disconnect observer on unmount
   useEffect(() => () => moRef.current?.disconnect(), []);
+
+  // Survey-pass on filter changes (facilities identity change), skipping the
+  // initial mount — that's handled by handleMapLoad above (once, gated on
+  // surveyOnMount) so a fresh mount never double-fires the camera move.
+  const didMountRef = useRef(false);
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    if (!mapReadyRef.current) return;
+    surveyToFacilities();
+  }, [facilities, surveyToFacilities]);
 
   return (
     <div

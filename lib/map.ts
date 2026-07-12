@@ -72,3 +72,39 @@ export function buildMarkerLabel(f: Facility): string {
 
   return parts.join(" — ");
 }
+
+/** Geographic bounding box computed from a set of facilities, for camera framing. */
+export interface FacilitiesBounds {
+  bounds: [[number, number], [number, number]]; // [[minLon,minLat],[maxLon,maxLat]]
+  center: [number, number]; // [lon, lat]
+  isCoincident: boolean;
+}
+
+/**
+ * Computes the geographic bounding box of a set of facilities for camera framing.
+ * Returns null for an empty set. `isCoincident` is true when all facilities are
+ * essentially co-located (bbox smaller than ~0.001°), so callers can center+zoom
+ * instead of fitting a degenerate box.
+ */
+export function computeFacilitiesBounds(
+  facilities: Facility[]
+): FacilitiesBounds | null {
+  if (facilities.length === 0) return null;
+
+  const lons = facilities.map((f) => f.location.lon);
+  const lats = facilities.map((f) => f.location.lat);
+  const minLon = Math.min(...lons);
+  const maxLon = Math.max(...lons);
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const isCoincident = maxLon - minLon < 0.001 && maxLat - minLat < 0.001;
+
+  return {
+    bounds: [
+      [minLon, minLat],
+      [maxLon, maxLat],
+    ],
+    center: [(minLon + maxLon) / 2, (minLat + maxLat) / 2],
+    isCoincident,
+  };
+}

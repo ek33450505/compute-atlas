@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { INITIAL_VIEW_STATE, buildMarkerLabel } from "@/lib/map";
+import {
+  INITIAL_VIEW_STATE,
+  buildMarkerLabel,
+  computeFacilitiesBounds,
+} from "@/lib/map";
 import type { Facility } from "@/lib/schema";
 
 // --- Fixtures ---
@@ -65,6 +69,15 @@ const facilityPlannedOnly: Facility = {
   status: "under_construction",
   capacityMw: { planned: 500 },
 };
+
+/** Minimal facility fixture at a given [lon, lat] — only location matters for bounds tests. */
+function at(lon: number, lat: number, id = `test-${lon},${lat}`): Facility {
+  return {
+    ...facilityNoCapacity,
+    id,
+    location: { ...facilityNoCapacity.location, lon, lat },
+  };
+}
 
 // --- Tests ---
 
@@ -140,5 +153,42 @@ describe("buildMarkerLabel", () => {
   it("uses — as separator between parts", () => {
     const label = buildMarkerLabel(facilityFull);
     expect(label).toMatch(/—/);
+  });
+});
+
+describe("computeFacilitiesBounds", () => {
+  it("returns null for an empty array", () => {
+    expect(computeFacilitiesBounds([])).toBeNull();
+  });
+
+  it("treats a single facility as coincident, centered on itself", () => {
+    const result = computeFacilitiesBounds([at(-90, 35)]);
+    expect(result).not.toBeNull();
+    expect(result!.isCoincident).toBe(true);
+    expect(result!.center).toEqual([-90, 35]);
+    expect(result!.bounds).toEqual([
+      [-90, 35],
+      [-90, 35],
+    ]);
+  });
+
+  it("computes bounds and center for two spread-out facilities", () => {
+    const result = computeFacilitiesBounds([at(-100, 30), at(-80, 45)]);
+    expect(result).not.toBeNull();
+    expect(result!.isCoincident).toBe(false);
+    expect(result!.bounds).toEqual([
+      [-100, 30],
+      [-80, 45],
+    ]);
+    expect(result!.center).toEqual([-90, 37.5]);
+  });
+
+  it("treats two facilities within 0.0005° of each other as coincident", () => {
+    const result = computeFacilitiesBounds([
+      at(-90, 35),
+      at(-90.0005, 35.0005),
+    ]);
+    expect(result).not.toBeNull();
+    expect(result!.isCoincident).toBe(true);
   });
 });

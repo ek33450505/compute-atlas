@@ -32,8 +32,20 @@ interface FacilityMapProps {
   facilities: Facility[];
   /** Tailwind height classes forwarded to FacilityMap. */
   heightClass?: string;
+  /** Forwarded to FacilityMap — runs a survey-pass to fit facilities on first load. */
+  surveyOnMount?: boolean;
 }
 
-export function FacilityMap({ facilities, heightClass }: FacilityMapProps) {
-  return <FacilityMapInner facilities={facilities} heightClass={heightClass} />;
+export function FacilityMap({
+  facilities,
+  heightClass,
+  surveyOnMount,
+}: FacilityMapProps) {
+  return (
+    <FacilityMapInner
+      facilities={facilities}
+      heightClass={heightClass}
+      surveyOnMount={surveyOnMount}
+    />
+  );
 }

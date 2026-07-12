@@ -102,7 +102,11 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
         {/* min-h-0 prevents the flex child from overflowing its parent */}
         <div className="relative flex-1 min-h-0">
           <section aria-label="Interactive datacenter map" className="h-full">
-            <FacilityMap facilities={filtered} heightClass="h-full min-h-[320px]" />
+            <FacilityMap
+              facilities={filtered}
+              heightClass="h-full min-h-[320px]"
+              surveyOnMount={filtered.length !== facilities.length}
+            />
           </section>
         </div>
       </div>
