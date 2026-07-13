@@ -27,6 +27,7 @@ import {
   createFacilityAction,
   updateFacilityAction,
 } from "@/app/admin/facilities/facility-form-actions";
+import { FacilitySourcesSection } from "@/app/admin/facilities/facility-sources-section";
 
 // ---------------------------------------------------------------------------
 // Form state — mirrors `facilitySchema` (lib/schema.ts) field-for-field.
@@ -724,22 +725,22 @@ function CapacitySection({
 
 // ---------------------------------------------------------------------------
 // Extension-point placeholders (real components wired in by later sub-units:
-// 2b-2 sources, 2b-3 statusHistory/subsidies, 2b-4 energy/water/jobs/
-// community/type-conditional). Rendering nothing keeps the live UI free of
-// "coming soon" placeholders between sub-unit commits, while giving each
-// later sub-unit an obvious, named spot to plug a real `<FacilityXSection
-// state={state} setState={setState} />` component into.
+// 2b-3 statusHistory/subsidies, 2b-4 energy/water/jobs/community/type-
+// conditional). Rendering nothing keeps the live UI free of "coming soon"
+// placeholders between sub-unit commits, while giving each later sub-unit an
+// obvious, named spot to plug a real `<FacilityXSection state={state}
+// setState={setState} />` component into.
+//
+// 2b-2's sources[] editor is the real `FacilitySourcesSection` imported
+// above from `facility-sources-section.tsx` — it takes `sources`/`onChange`
+// rather than the full `state`/`setState`, since it only ever touches the
+// `sources` slice.
 // ---------------------------------------------------------------------------
 
 type FacilitySectionProps = {
   state: FacilityFormState;
   setState: Dispatch<SetStateAction<FacilityFormState>>;
 };
-
-function FacilitySourcesSection(props: FacilitySectionProps) {
-  void props;
-  return null; // wired in by 2b-2
-}
 
 function FacilityStatusHistorySection(props: FacilitySectionProps) {
   void props;
@@ -817,7 +818,10 @@ export function FacilityForm({ initialState, mode }: FacilityFormProps) {
       <LocationSection state={state} setState={setState} errors={errors} />
       <CapacitySection state={state} setState={setState} errors={errors} />
 
-      <FacilitySourcesSection state={state} setState={setState} />
+      <FacilitySourcesSection
+        sources={state.sources}
+        onChange={(next) => setState((prev) => ({ ...prev, sources: next }))}
+      />
       <FacilityStatusHistorySection state={state} setState={setState} />
       <FacilitySubsidiesSection state={state} setState={setState} />
       <FacilityEnergyWaterSection state={state} setState={setState} />
