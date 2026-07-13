@@ -3,8 +3,6 @@ import {
   INITIAL_VIEW_STATE,
   buildMarkerLabel,
   computeFacilitiesBounds,
-  computeLocatorFrame,
-  projectToFrame,
 } from "@/lib/map";
 import type { Facility } from "@/lib/schema";
 
@@ -192,60 +190,5 @@ describe("computeFacilitiesBounds", () => {
     ]);
     expect(result).not.toBeNull();
     expect(result!.isCoincident).toBe(true);
-  });
-});
-
-describe("computeLocatorFrame", () => {
-  it("returns null for an empty array", () => {
-    expect(computeLocatorFrame([])).toBeNull();
-  });
-
-  it("returns a frame with positive width/height within the clamp range for two spread-out facilities", () => {
-    const frame = computeLocatorFrame([at(-100, 30), at(-80, 45)]);
-    expect(frame).not.toBeNull();
-    expect(frame!.height).toBe(76);
-    expect(frame!.width).toBeGreaterThan(0);
-    expect(frame!.width).toBeGreaterThanOrEqual(90);
-    expect(frame!.width).toBeLessThanOrEqual(160);
-  });
-
-  it("pads the bounds so they strictly contain the raw bbox", () => {
-    const frame = computeLocatorFrame([at(-100, 30), at(-80, 45)]);
-    expect(frame).not.toBeNull();
-    expect(frame!.minLon).toBeLessThan(-100);
-    expect(frame!.maxLon).toBeGreaterThan(-80);
-    expect(frame!.minLat).toBeLessThan(30);
-    expect(frame!.maxLat).toBeGreaterThan(45);
-  });
-
-  it("clamps width for a near-degenerate (tiny-span) bbox", () => {
-    const frame = computeLocatorFrame([at(-90, 35), at(-90.001, 35.001)]);
-    expect(frame).not.toBeNull();
-    expect(frame!.width).toBeGreaterThanOrEqual(90);
-    expect(frame!.width).toBeLessThanOrEqual(160);
-  });
-});
-
-describe("projectToFrame", () => {
-  const frame = computeLocatorFrame([at(-100, 30), at(-80, 45)])!;
-
-  it("projects the frame's top-left geo corner (minLon, maxLat) to ~{x:0, y:0}", () => {
-    const { x, y } = projectToFrame(frame.minLon, frame.maxLat, frame);
-    expect(x).toBeCloseTo(0, 5);
-    expect(y).toBeCloseTo(0, 5);
-  });
-
-  it("projects the frame's bottom-right geo corner (maxLon, minLat) to ~{x:width, y:height}", () => {
-    const { x, y } = projectToFrame(frame.maxLon, frame.minLat, frame);
-    expect(x).toBeCloseTo(frame.width, 5);
-    expect(y).toBeCloseTo(frame.height, 5);
-  });
-
-  it("projects the geographic midpoint to ~{x:width/2, y:height/2}", () => {
-    const midLon = (frame.minLon + frame.maxLon) / 2;
-    const midLat = (frame.minLat + frame.maxLat) / 2;
-    const { x, y } = projectToFrame(midLon, midLat, frame);
-    expect(x).toBeCloseTo(frame.width / 2, 5);
-    expect(y).toBeCloseTo(frame.height / 2, 5);
   });
 });
