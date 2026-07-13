@@ -16,6 +16,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
+    "db:export": "tsx --env-file=.env.local scripts/export.ts",
     "submissions": "tsx --env-file=.env.local scripts/submissions.ts"
   },
   "dependencies": {
