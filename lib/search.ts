@@ -1,0 +1,161 @@
+import Fuse from "fuse.js";
+import { getAllFacilities, getOperators, operatorSlug } from "@/lib/data";
+import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
+
+/** The kind of thing a search result points to. */
+export type SearchEntryType = "page" | "facility" | "operator" | "state";
+
+/** One indexed, searchable/navigable entry in the command palette. */
+export interface SearchEntry {
+  type: SearchEntryType;
+  label: string;
+  sublabel?: string;
+  href: string;
+  keywords: string;
+}
+
+/** One ranked group of results, in display order. */
+export interface SearchResultGroup {
+  type: SearchEntryType;
+  label: string;
+  items: SearchEntry[];
+}
+
+export const SEARCH_GROUP_LABELS: Record<SearchEntryType, string> = {
+  page: "Pages",
+  facility: "Facilities",
+  operator: "Operators",
+  state: "States",
+};
+
+/** Group render order for the ranked (non-empty-query) results view. */
+const GROUP_ORDER: SearchEntryType[] = ["page", "facility", "operator", "state"];
+
+/** Default per-group result caps for a ranked search. */
+const DEFAULT_LIMITS: Record<SearchEntryType, number> = {
+  page: 6,
+  facility: 7,
+  operator: 5,
+  state: 5,
+};
+
+function pluralize(n: number, singular: string, plural: string): string {
+  return n === 1 ? singular : plural;
+}
+
+/**
+ * Builds the data-backed search index: one entry per facility, operator, and
+ * state. Does NOT include "page" entries — those are UI config supplied by
+ * the command palette component, not data.
+ */
+export function buildSearchIndex(): SearchEntry[] {
+  const facilities = getAllFacilities();
+  const entries: SearchEntry[] = [];
+
+  // Facilities — one entry each.
+  for (const f of facilities) {
+    const stateName = stateNameFromCode(f.location.state) ?? f.location.state;
+    const sublabel = [f.location.city, stateName].filter(Boolean).join(", ");
+    const keywords = [
+      f.name,
+      f.operator,
+      f.location.city,
+      f.location.county,
+      stateName,
+      f.location.state,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    entries.push({
+      type: "facility",
+      label: f.name,
+      sublabel: sublabel || undefined,
+      href: `/facilities/${f.id}`,
+      keywords,
+    });
+  }
+
+  // Operators — count facilities per operator in one pass.
+  const operatorCounts = new Map<string, number>();
+  for (const f of facilities) {
+    operatorCounts.set(f.operator, (operatorCounts.get(f.operator) ?? 0) + 1);
+  }
+  for (const name of getOperators()) {
+    const n = operatorCounts.get(name) ?? 0;
+    entries.push({
+      type: "operator",
+      label: name,
+      sublabel: `${n} ${pluralize(n, "facility", "facilities")}`,
+      href: `/operators/${operatorSlug(name)}`,
+      keywords: name.toLowerCase(),
+    });
+  }
+
+  // States — derive unique codes from facilities, skip any without a slug.
+  const stateCounts = new Map<string, number>();
+  for (const f of facilities) {
+    const code = f.location.state;
+    stateCounts.set(code, (stateCounts.get(code) ?? 0) + 1);
+  }
+  for (const [code, n] of stateCounts) {
+    const slug = stateSlugFromCode(code);
+    const stateName = stateNameFromCode(code);
+    if (!slug || !stateName) continue;
+    entries.push({
+      type: "state",
+      label: stateName,
+      sublabel: `${n} ${pluralize(n, "facility", "facilities")}`,
+      href: `/states/${slug}`,
+      keywords: `${stateName} ${code}`.toLowerCase(),
+    });
+  }
+
+  return entries;
+}
+
+/**
+ * Ranks and groups `entries` against `query`. Pure — builds its own Fuse
+ * instance from the passed entries, so it's fully testable without DOM.
+ *
+ * Empty/whitespace query returns only the "page" group (quick-nav state).
+ * Non-empty query fuzzy-ranks across ALL entries, then regroups by type in
+ * GROUP_ORDER, preserving Fuse rank within each group and capping by `limits`.
+ */
+export function searchCommands(
+  entries: SearchEntry[],
+  query: string,
+  limits?: Partial<Record<SearchEntryType, number>>
+): SearchResultGroup[] {
+  const trimmed = query.trim();
+
+  if (!trimmed) {
+    const pages = entries.filter((e) => e.type === "page");
+    if (pages.length === 0) return [];
+    return [{ type: "page", label: SEARCH_GROUP_LABELS.page, items: pages }];
+  }
+
+  const effectiveLimits = { ...DEFAULT_LIMITS, ...limits };
+
+  const fuse = new Fuse(entries, {
+    keys: [
+      { name: "label", weight: 0.7 },
+      { name: "keywords", weight: 0.3 },
+    ],
+    threshold: 0.35,
+    ignoreLocation: true,
+    includeScore: true,
+  });
+
+  const hits = fuse.search(trimmed).map((r) => r.item);
+
+  const groups: SearchResultGroup[] = [];
+  for (const type of GROUP_ORDER) {
+    const cap = effectiveLimits[type];
+    const items = hits.filter((e) => e.type === type).slice(0, cap);
+    if (items.length > 0) {
+      groups.push({ type, label: SEARCH_GROUP_LABELS[type], items });
+    }
+  }
+  return groups;
+}

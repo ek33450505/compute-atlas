@@ -2,8 +2,10 @@ import Link from "next/link";
 import { Code2 } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
+import { buildSearchIndex } from "@/lib/search";
 import { Wordmark } from "@/components/wordmark";
 import { MobileNav } from "@/components/mobile-nav";
+import { CommandPalette } from "@/components/search/command-palette";
 
 const NAV_LINKS = [
   { label: "Map", href: "/map" },
@@ -14,6 +16,8 @@ const NAV_LINKS = [
 ] as const;
 
 export function SiteHeader() {
+  const searchIndex = buildSearchIndex();
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 sm:gap-4 px-3 sm:px-6">
@@ -41,6 +45,7 @@ export function SiteHeader() {
 
         {/* Right-side controls */}
         <div className="ml-auto flex items-center gap-1">
+          <CommandPalette index={searchIndex} navLinks={NAV_LINKS} />
           {/* GitHub icon — desktop only */}
           <a
             href={siteConfig.repoUrl}
