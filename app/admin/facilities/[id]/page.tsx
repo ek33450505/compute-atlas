@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { loadFacilities } from "@/lib/data";
-import { FacilityForm, facilityToFormState } from "@/app/admin/facilities/facility-form";
+import { FacilityForm } from "@/app/admin/facilities/facility-form";
+import { facilityToFormState } from "@/app/admin/facilities/facility-form-state";
 
 interface EditFacilityPageProps {
   params: Promise<{ id: string }>;

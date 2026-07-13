@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
 import { loadFacilities } from "@/lib/data";
-import { FacilityForm, emptyFacilityFormState } from "@/app/admin/facilities/facility-form";
+import { FacilityForm } from "@/app/admin/facilities/facility-form";
+import { emptyFacilityFormState } from "@/app/admin/facilities/facility-form-state";
 
 export const metadata: Metadata = {
   title: "Admin — New facility",
