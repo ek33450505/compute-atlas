@@ -508,8 +508,10 @@ function CoreFieldsSection({
             onChange={(e) => setState((prev) => ({ ...prev, notes: e.target.value }))}
             rows={3}
             className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            aria-invalid={errors["notes"] ? true : undefined}
+            aria-describedby={errors["notes"] ? "notes-error" : undefined}
           />
-          <FieldError message={errors["notes"]} />
+          {errors["notes"] ? <div id="notes-error"><FieldError message={errors["notes"]} /></div> : null}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -628,8 +630,12 @@ function LocationSection({
         </div>
 
         <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
-          <label className="flex items-center gap-2 text-sm font-medium">
+          <label
+            htmlFor="location.multiSite.enabled"
+            className="flex items-center gap-2 text-sm font-medium"
+          >
             <input
+              id="location.multiSite.enabled"
               type="checkbox"
               checked={location.multiSite.enabled}
               onChange={(e) =>
