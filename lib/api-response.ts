@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 
 /**
- * Permissive CORS headers for the public read API — no auth, no cookies,
- * safe to open to any origin since every route here is read-only.
+ * Permissive CORS headers for the facilities API. Reads are public; writes
+ * (POST/PATCH/DELETE) authenticate via an `Authorization: Bearer` header,
+ * never cookies — so `*` origin stays safe: browsers don't auto-attach bearer
+ * tokens cross-origin, and `*` forbids credentialed requests, leaving no
+ * CSRF / ambient-credential path.
  */
 export const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 } as const;
 
 /** JSON response helper that always carries the shared CORS headers. */

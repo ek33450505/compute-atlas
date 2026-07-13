@@ -3,6 +3,8 @@ import { filterFacilities, type FacilityFilters } from "@/lib/filters";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { facilityTypeEnum, type Facility } from "@/lib/schema";
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { requireAdmin } from "@/lib/api-auth";
+import { createFacility } from "@/lib/facility-write";
 
 /** Splits comma-separated/repeated query values into a flat, trimmed, non-empty list. */
 function collectParam(searchParams: URLSearchParams, key: string): string[] {
@@ -42,6 +44,25 @@ export async function GET(request: Request): Promise<Response> {
 
   const facilities = filterFacilities(await getAllFacilities(), filters);
   return jsonResponse({ count: facilities.length, facilities });
+}
+
+/** Admin-only: creates a new facility. Requires `Authorization: Bearer <API_ADMIN_TOKEN>`. */
+export async function POST(request: Request): Promise<Response> {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const result = await createFacility(body);
+  if (!result.ok) {
+    return jsonResponse({ error: result.error, issues: result.issues }, { status: result.status });
+  }
+  return jsonResponse(result.facility, { status: 201 });
 }
 
 export function OPTIONS(): Response {

@@ -1,8 +1,16 @@
-import { describe, it, expect } from "vitest";
-import { GET } from "./route";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { GET, POST } from "./route";
 
 function req(query: string): Request {
   return new Request(`http://localhost/api/facilities${query}`);
+}
+
+function postReq(body: unknown, headers?: HeadersInit): Request {
+  return new Request("http://localhost/api/facilities", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
 }
 
 describe("GET /api/facilities", () => {
@@ -69,5 +77,37 @@ describe("GET /api/facilities", () => {
     const body = await res.json();
     expect(body.count).toBeGreaterThan(0);
     expect(body.count).toBeLessThan(310);
+  });
+});
+
+describe("POST /api/facilities", () => {
+  const ORIGINAL = process.env.API_ADMIN_TOKEN;
+
+  beforeEach(() => {
+    delete process.env.API_ADMIN_TOKEN;
+  });
+
+  afterEach(() => {
+    if (ORIGINAL === undefined) {
+      delete process.env.API_ADMIN_TOKEN;
+    } else {
+      process.env.API_ADMIN_TOKEN = ORIGINAL;
+    }
+  });
+
+  it("rejects a request with no admin token", async () => {
+    const res = await POST(postReq({}));
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects an invalid body before ever touching the DB", async () => {
+    // Validation runs before the DB dup-check, so an invalid body 400s
+    // without requiring DATABASE_URL to be set — if this test threw
+    // "DATABASE_URL is not set", the handler's ordering would be wrong.
+    process.env.API_ADMIN_TOKEN = "secret-token";
+    const res = await POST(postReq({}, { Authorization: "Bearer secret-token" }));
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe("Invalid facility");
   });
 });
