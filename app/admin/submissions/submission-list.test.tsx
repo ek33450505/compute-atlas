@@ -146,10 +146,10 @@ describe("SubmissionList — row rendering", () => {
 
     expect(screen.queryByTestId("submission-detail")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "View details" }));
+    await user.click(screen.getByRole("button", { name: "View details for Test Facility" }));
     expect(screen.getByTestId("submission-detail")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Hide details" }));
+    await user.click(screen.getByRole("button", { name: "Hide details for Test Facility" }));
     expect(screen.queryByTestId("submission-detail")).not.toBeInTheDocument();
   });
 });

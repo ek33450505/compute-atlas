@@ -116,7 +116,12 @@ function SubmissionRowCard({ submission }: { submission: SubmissionRow }) {
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => setExpanded((v) => !v)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label={expanded ? `Hide details for ${facilityLabel}` : `View details for ${facilityLabel}`}
+            onClick={() => setExpanded((v) => !v)}
+          >
             {expanded ? "Hide details" : "View details"}
           </Button>
           {isReviewable ? (
