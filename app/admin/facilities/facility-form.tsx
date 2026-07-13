@@ -28,6 +28,8 @@ import {
   updateFacilityAction,
 } from "@/app/admin/facilities/facility-form-actions";
 import { FacilitySourcesSection } from "@/app/admin/facilities/facility-sources-section";
+import { FacilityStatusHistorySection } from "@/app/admin/facilities/facility-status-history-section";
+import { FacilitySubsidiesSection } from "@/app/admin/facilities/facility-subsidies-section";
 
 // ---------------------------------------------------------------------------
 // Form state — mirrors `facilitySchema` (lib/schema.ts) field-for-field.
@@ -724,33 +726,25 @@ function CapacitySection({
 }
 
 // ---------------------------------------------------------------------------
-// Extension-point placeholders (real components wired in by later sub-units:
-// 2b-3 statusHistory/subsidies, 2b-4 energy/water/jobs/community/type-
-// conditional). Rendering nothing keeps the live UI free of "coming soon"
-// placeholders between sub-unit commits, while giving each later sub-unit an
-// obvious, named spot to plug a real `<FacilityXSection state={state}
-// setState={setState} />` component into.
+// Extension-point placeholders (real components wired in by the remaining
+// sub-unit: 2b-4 energy/water/jobs/community/type-conditional). Rendering
+// nothing keeps the live UI free of "coming soon" placeholders between
+// sub-unit commits, while giving that sub-unit an obvious, named spot to
+// plug a real `<FacilityXSection state={state} setState={setState} />`
+// component into.
 //
-// 2b-2's sources[] editor is the real `FacilitySourcesSection` imported
-// above from `facility-sources-section.tsx` — it takes `sources`/`onChange`
-// rather than the full `state`/`setState`, since it only ever touches the
-// `sources` slice.
+// 2b-2's sources[] editor is the real `FacilitySourcesSection`, and 2b-3's
+// statusHistory[]/subsidies[] editors are the real `FacilityStatusHistory
+// Section`/`FacilitySubsidiesSection`, all imported above — each takes only
+// the slice(s) of state it actually touches (plus `sources` for the two
+// 2b-3 editors' sourceIndex pickers), rather than the full `state`/
+// `setState`.
 // ---------------------------------------------------------------------------
 
 type FacilitySectionProps = {
   state: FacilityFormState;
   setState: Dispatch<SetStateAction<FacilityFormState>>;
 };
-
-function FacilityStatusHistorySection(props: FacilitySectionProps) {
-  void props;
-  return null; // wired in by 2b-3
-}
-
-function FacilitySubsidiesSection(props: FacilitySectionProps) {
-  void props;
-  return null; // wired in by 2b-3
-}
 
 function FacilityEnergyWaterSection(props: FacilitySectionProps) {
   void props;
@@ -822,8 +816,16 @@ export function FacilityForm({ initialState, mode }: FacilityFormProps) {
         sources={state.sources}
         onChange={(next) => setState((prev) => ({ ...prev, sources: next }))}
       />
-      <FacilityStatusHistorySection state={state} setState={setState} />
-      <FacilitySubsidiesSection state={state} setState={setState} />
+      <FacilityStatusHistorySection
+        statusHistory={state.statusHistory}
+        sources={state.sources}
+        onChange={(next) => setState((prev) => ({ ...prev, statusHistory: next }))}
+      />
+      <FacilitySubsidiesSection
+        subsidies={state.subsidies}
+        sources={state.sources}
+        onChange={(next) => setState((prev) => ({ ...prev, subsidies: next }))}
+      />
       <FacilityEnergyWaterSection state={state} setState={setState} />
       <FacilityJobsCommunitySection state={state} setState={setState} />
       <FacilityTypeConditionalFields state={state} setState={setState} />
