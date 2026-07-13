@@ -64,6 +64,12 @@ export function buildStaticRoutes(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
     {
+      url: `${siteConfig.url}/api`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
       url: `${siteConfig.url}/explore`,
       lastModified: new Date(),
       changeFrequency: "weekly",

@@ -68,6 +68,14 @@ export function SiteFooter() {
                   Data &amp; methodology
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/api"
+                  className="inline-flex min-h-11 items-center rounded-sm underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  API
+                </Link>
+              </li>
               <li className="leading-relaxed">
                 Map data &copy;{" "}
                 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer noopener"
