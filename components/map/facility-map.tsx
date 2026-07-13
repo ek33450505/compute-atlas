@@ -11,6 +11,7 @@ import Map, {
   type MapRef,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import type { Map as MapLibreMap } from "maplibre-gl";
 
 import {
   BASEMAP_STYLE_URL,
@@ -26,6 +27,7 @@ import { FacilityMarker } from "@/components/map/facility-marker";
 import { ClusterMarker } from "@/components/map/cluster-marker";
 import { FacilityPopup } from "@/components/map/facility-popup";
 import { MapLegend } from "@/components/map/map-legend";
+import { LocatorInset } from "@/components/map/locator-inset";
 import { CompassRose } from "@/components/map/compass-rose";
 import { LocationSearch } from "@/components/map/location-search";
 import { ViewToggle3D } from "@/components/map/view-toggle-3d";
@@ -79,6 +81,7 @@ export function FacilityMap({
   const [cursor, setCursor] = useState<{ lat: number; lon: number } | null>(
     null
   );
+  const [mapInstance, setMapInstance] = useState<MapLibreMap | null>(null);
 
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
@@ -238,6 +241,8 @@ export function FacilityMap({
     } catch {
       // Globe projection unsupported (older maplibre) — fall back to mercator silently.
     }
+
+    setMapInstance(mapRef.current?.getMap() ?? null);
 
     const strip = () => {
       mapEl
@@ -462,6 +467,10 @@ export function FacilityMap({
 
         {/* Bottom-left: map legend (unchanged position) */}
         <MapLegend />
+
+        {/* Top-left, below LocationSearch: engraved locator inset — full US
+            facility footprint as ink dots with a live viewport rectangle. */}
+        <LocatorInset facilities={facilities} map={mapInstance} />
 
         {/* Bottom-center: surveyor-style pointer coordinate readout, part of
             the "atlas being surveyed" conceit. Hover-only instrument — not
