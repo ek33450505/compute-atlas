@@ -11,9 +11,19 @@ export default function AdminLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between border-b border-border px-6 py-3">
-        <Link href="/admin/submissions" className="text-sm font-semibold">
-          Compute Atlas Admin
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link href="/admin/submissions" className="text-sm font-semibold">
+            Compute Atlas Admin
+          </Link>
+          <nav className="flex items-center gap-4">
+            <Link
+              href="/admin/submissions"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Submissions
+            </Link>
+          </nav>
+        </div>
         <form action={logout}>
           <Button type="submit" variant="outline" size="sm">
             Log out
