@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { login, type LoginState } from "./actions";
@@ -17,7 +17,33 @@ import { Label } from "@/components/ui/label";
 
 const initialState: LoginState = {};
 
+function LoginFormFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Admin sign in</CardTitle>
+          <CardDescription>
+            Enter the admin token to access the review dashboard.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[140px]" aria-hidden="true" />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<LoginFormFallback />}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? "";
   const [state, formAction, isPending] = useActionState(login, initialState);
