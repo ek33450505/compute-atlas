@@ -15,8 +15,8 @@ const NAV_LINKS = [
   { label: "About", href: "/about" },
 ] as const;
 
-export function SiteHeader() {
-  const searchIndex = buildSearchIndex();
+export async function SiteHeader() {
+  const searchIndex = await buildSearchIndex();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">

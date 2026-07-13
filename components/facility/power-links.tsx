@@ -12,20 +12,23 @@ const LINK_CLASSNAME =
   "text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
 
 // --- Predicate ---
-export function hasPowerLinks(facility: Facility): boolean {
+export async function hasPowerLinks(facility: Facility): Promise<boolean> {
   if (facility.facilityType === "power_generation") {
     return (
-      getPoweredCampuses(facility).length > 0 ||
+      (await getPoweredCampuses(facility)).length > 0 ||
       !!facility.generation?.offtaker ||
       !!facility.generation?.notes
     );
   }
-  return getPoweredByGenerators(facility).length > 0;
+  return (await getPoweredByGenerators(facility)).length > 0;
 }
 
 // --- Branch A: power_generation facility ("Powers") ---
-function PowersGroup({ facility }: { facility: Facility & { facilityType: "power_generation" } }) {
-  const campuses = getPoweredCampuses(facility);
+// Plain async function (not invoked as a JSX element — see PowerLinksSection)
+// so its resolved output can be composed directly into an already-resolved
+// tree, rather than left as a nested async component for the caller to await.
+async function PowersGroup({ facility }: { facility: Facility & { facilityType: "power_generation" } }) {
+  const campuses = await getPoweredCampuses(facility);
 
   return (
     <>
@@ -71,8 +74,8 @@ function PowersGroup({ facility }: { facility: Facility & { facilityType: "power
 }
 
 // --- Branch B: data_center / crypto_mining facility ("Power supply") ---
-function PoweredByGroup({ facility }: { facility: Facility }) {
-  const generators = getPoweredByGenerators(facility);
+async function PoweredByGroup({ facility }: { facility: Facility }) {
+  const generators = await getPoweredByGenerators(facility);
 
   return (
     <ul className="space-y-3">
@@ -100,11 +103,22 @@ function PoweredByGroup({ facility }: { facility: Facility }) {
 }
 
 // --- Main export ---
-export function PowerLinksSection({ facility }: { facility: Facility }) {
-  if (!hasPowerLinks(facility)) return null;
+//
+// PowersGroup/PoweredByGroup are resolved by calling them as plain async
+// functions here (not invoked as JSX elements, e.g. `<PowersGroup .../>`)
+// so the branch's JSX is fully resolved before this component returns.
+// The Next.js RSC runtime *can* await a nested async component embedded
+// directly in JSX, but React's client renderer (used by Testing Library /
+// Vitest under jsdom, and by any client-side re-render) cannot — resolving
+// here keeps the returned tree renderable by both.
+export async function PowerLinksSection({ facility }: { facility: Facility }) {
+  if (!(await hasPowerLinks(facility))) return null;
 
   const headingId = `power-links-${facility.id}`;
   const isGenerator = facility.facilityType === "power_generation";
+  const group = isGenerator
+    ? await PowersGroup({ facility })
+    : await PoweredByGroup({ facility });
 
   return (
     <section aria-labelledby={headingId} className="space-y-4">
@@ -119,11 +133,7 @@ export function PowerLinksSection({ facility }: { facility: Facility }) {
         )}
         {isGenerator ? "Powers" : "Power supply"}
       </h2>
-      {isGenerator ? (
-        <PowersGroup facility={facility} />
-      ) : (
-        <PoweredByGroup facility={facility} />
-      )}
+      {group}
     </section>
   );
 }

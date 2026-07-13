@@ -1,22 +1,27 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { getAllFacilities, getOperators } from "@/lib/data";
 import {
   buildSearchIndex,
   searchCommands,
   type SearchEntry,
 } from "@/lib/search";
+import type { Facility } from "@/lib/schema";
 
 describe("buildSearchIndex", () => {
-  const index = buildSearchIndex();
+  let index: SearchEntry[];
 
-  it("includes exactly one entry per facility", () => {
-    const facilityEntries = index.filter((e) => e.type === "facility");
-    expect(facilityEntries.length).toBe(getAllFacilities().length);
+  beforeAll(async () => {
+    index = await buildSearchIndex();
   });
 
-  it("includes exactly one entry per operator", () => {
+  it("includes exactly one entry per facility", async () => {
+    const facilityEntries = index.filter((e) => e.type === "facility");
+    expect(facilityEntries.length).toBe((await getAllFacilities()).length);
+  });
+
+  it("includes exactly one entry per operator", async () => {
     const operatorEntries = index.filter((e) => e.type === "operator");
-    expect(operatorEntries.length).toBe(getOperators().length);
+    expect(operatorEntries.length).toBe((await getOperators()).length);
   });
 
   it("every entry has a non-empty label and an href starting with /", () => {
@@ -48,8 +53,8 @@ describe("searchCommands — empty query (quick nav)", () => {
     expect(groups[0].items).toEqual(pageEntries);
   });
 
-  it("returns [] for a data-only index (no page entries)", () => {
-    const dataOnly = buildSearchIndex();
+  it("returns [] for a data-only index (no page entries)", async () => {
+    const dataOnly = await buildSearchIndex();
     const groups = searchCommands(dataOnly, "");
     expect(groups).toEqual([]);
   });
@@ -62,8 +67,13 @@ describe("searchCommands — empty query (quick nav)", () => {
 });
 
 describe("searchCommands — ranked search", () => {
-  const index = buildSearchIndex();
-  const knownFacility = getAllFacilities()[0];
+  let index: SearchEntry[];
+  let knownFacility: Facility;
+
+  beforeAll(async () => {
+    index = await buildSearchIndex();
+    knownFacility = (await getAllFacilities())[0];
+  });
 
   it("a facility-name substring surfaces a group whose items include that facility", () => {
     const groups = searchCommands(index, knownFacility.name);

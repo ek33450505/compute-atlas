@@ -26,12 +26,14 @@ export const metadata: Metadata = {
  * /power and /stats visual language (masthead, survey-stat row, § progress-bar
  * sections, block-Link rows).
  */
-export default function OppositionPage() {
-  const counts = getCommunityReceptionCounts();
-  const groups = FRICTION_ORDER.map((status) => ({
-    status,
-    facilities: getFacilitiesByCommunityStatus(status),
-  }));
+export default async function OppositionPage() {
+  const counts = await getCommunityReceptionCounts();
+  const groups = await Promise.all(
+    FRICTION_ORDER.map(async (status) => ({
+      status,
+      facilities: await getFacilitiesByCommunityStatus(status),
+    }))
+  );
   const total = FRICTION_ORDER.reduce((sum, status) => sum + counts[status], 0);
   const statesWithFriction = new Set(
     groups.flatMap((g) => g.facilities.map((f) => f.location.state))

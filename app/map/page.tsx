@@ -20,8 +20,8 @@ export const metadata: Metadata = {
  *
  * Server component: facilities loaded at request time, passed to Explorer.
  */
-export default function MapPage() {
-  const facilities = getAllFacilities();
+export default async function MapPage() {
+  const facilities = await getAllFacilities();
 
   return (
     <Suspense>

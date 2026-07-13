@@ -25,20 +25,23 @@ export const metadata: Metadata = {
  * Links to /states/[state] for each state with at least one tracked
  * facility, sorted by facility count desc (tie-break: name A→Z).
  */
-export default function StatesIndexPage() {
-  const rows = getStates()
-    .map((code) => ({
-      code,
-      name: stateNameFromCode(code)!,
-      slug: stateSlugFromCode(code)!,
-      summary: getStateSummary(code)!,
-    }))
-    .sort(
-      (a, b) =>
-        b.summary.count - a.summary.count || a.name.localeCompare(b.name)
-    );
+export default async function StatesIndexPage() {
+  const codes = await getStates();
+  const rows = (
+    await Promise.all(
+      codes.map(async (code) => ({
+        code,
+        name: stateNameFromCode(code)!,
+        slug: stateSlugFromCode(code)!,
+        summary: (await getStateSummary(code))!,
+      }))
+    )
+  ).sort(
+    (a, b) =>
+      b.summary.count - a.summary.count || a.name.localeCompare(b.name)
+  );
 
-  const totalFacilities = getAllFacilities().length;
+  const totalFacilities = (await getAllFacilities()).length;
 
   return (
     <div

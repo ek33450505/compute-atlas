@@ -1,9 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CommandPalette } from "./command-palette";
 import { getAllFacilities } from "@/lib/data";
 import { buildSearchIndex } from "@/lib/search";
+import type { SearchEntry } from "@/lib/search";
+import type { Facility } from "@/lib/schema";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -29,7 +31,13 @@ const NAV_LINKS = [
   { label: "Table", href: "/table" },
 ] as const;
 
-const knownFacility = getAllFacilities()[0];
+let knownFacility: Facility;
+let searchIndex: SearchEntry[];
+
+beforeAll(async () => {
+  knownFacility = (await getAllFacilities())[0];
+  searchIndex = await buildSearchIndex();
+});
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -37,7 +45,7 @@ const knownFacility = getAllFacilities()[0];
 
 describe("CommandPalette — trigger", () => {
   it("renders a trigger button with an accessible search name", () => {
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
     expect(
       screen.getByRole("button", { name: /search/i })
     ).toBeInTheDocument();
@@ -47,7 +55,7 @@ describe("CommandPalette — trigger", () => {
 describe("CommandPalette — open + search", () => {
   it("clicking the trigger opens the dialog and shows the search combobox", async () => {
     const user = userEvent.setup();
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     await user.click(screen.getByRole("button", { name: /search/i }));
 
@@ -56,7 +64,7 @@ describe("CommandPalette — open + search", () => {
 
   it("typing a known facility name surfaces an option linking to it, and Enter navigates", async () => {
     const user = userEvent.setup();
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     await user.click(screen.getByRole("button", { name: /search/i }));
     const combobox = await screen.findByRole("combobox");
@@ -75,7 +83,7 @@ describe("CommandPalette — open + search", () => {
 
   it("clicking a result option navigates to its href", async () => {
     const user = userEvent.setup();
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     await user.click(screen.getByRole("button", { name: /search/i }));
     const combobox = await screen.findByRole("combobox");
@@ -92,7 +100,7 @@ describe("CommandPalette — open + search", () => {
 
 describe("CommandPalette — global shortcut", () => {
   it("Ctrl+K opens the palette", async () => {
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     fireEvent.keyDown(window, { key: "k", ctrlKey: true });
 
@@ -100,7 +108,7 @@ describe("CommandPalette — global shortcut", () => {
   });
 
   it("Cmd+K (metaKey) opens the palette", async () => {
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     fireEvent.keyDown(window, { key: "k", metaKey: true });
 
@@ -111,7 +119,7 @@ describe("CommandPalette — global shortcut", () => {
 describe("CommandPalette — empty-query quick nav", () => {
   it("shows only the Pages group before typing, no data results", async () => {
     const user = userEvent.setup();
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     await user.click(screen.getByRole("button", { name: /search/i }));
     await screen.findByRole("combobox");
@@ -128,7 +136,7 @@ describe("CommandPalette — empty-query quick nav", () => {
 describe("CommandPalette — keyboard navigation", () => {
   it("ArrowDown advances aria-activedescendant, Enter navigates to the active option", async () => {
     const user = userEvent.setup();
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     await user.click(screen.getByRole("button", { name: /search/i }));
     const combobox = await screen.findByRole("combobox");
@@ -166,7 +174,7 @@ describe("CommandPalette — keyboard navigation", () => {
 describe("CommandPalette — no results", () => {
   it("shows the no-matches message for a nonsense query", async () => {
     const user = userEvent.setup();
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     await user.click(screen.getByRole("button", { name: /search/i }));
     const combobox = await screen.findByRole("combobox");
@@ -182,7 +190,7 @@ describe("CommandPalette — no results", () => {
 describe("CommandPalette — Escape closes", () => {
   it("pressing Escape closes the dialog", async () => {
     const user = userEvent.setup();
-    render(<CommandPalette index={buildSearchIndex()} navLinks={NAV_LINKS} />);
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
 
     await user.click(screen.getByRole("button", { name: /search/i }));
     await screen.findByRole("combobox");

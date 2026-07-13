@@ -39,7 +39,7 @@ describe("us-states", () => {
     expect(stateCodeFromSlug("atlantis")).toBeUndefined();
   });
 
-  it("resolves every state code present in the dataset to a name", () => {
-    expect(getStates().every((c) => stateNameFromCode(c) !== undefined)).toBe(true);
+  it("resolves every state code present in the dataset to a name", async () => {
+    expect((await getStates()).every((c) => stateNameFromCode(c) !== undefined)).toBe(true);
   });
 });

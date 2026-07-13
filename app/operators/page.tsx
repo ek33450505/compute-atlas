@@ -28,28 +28,31 @@ export const metadata: Metadata = {
  * disclosed capacity are split into a collapsed <details> toggle below the
  * main grid rather than diluting it.
  */
-export default function OperatorsIndexPage() {
-  const rows = getOperators()
-    .map((name) => {
-      const summary = getOperatorSummary(name)!;
-      return {
-        name,
-        slug: operatorSlug(name),
-        summary,
-        total: summary.operationalMw + summary.plannedMw,
-      };
-    })
-    .sort(
-      (a, b) =>
-        b.total - a.total ||
-        b.summary.count - a.summary.count ||
-        a.name.localeCompare(b.name)
-    );
+export default async function OperatorsIndexPage() {
+  const operatorNames = await getOperators();
+  const rows = (
+    await Promise.all(
+      operatorNames.map(async (name) => {
+        const summary = (await getOperatorSummary(name))!;
+        return {
+          name,
+          slug: operatorSlug(name),
+          summary,
+          total: summary.operationalMw + summary.plannedMw,
+        };
+      })
+    )
+  ).sort(
+    (a, b) =>
+      b.total - a.total ||
+      b.summary.count - a.summary.count ||
+      a.name.localeCompare(b.name)
+  );
 
   const disclosed = rows.filter((r) => r.total > 0);
   const undisclosed = rows.filter((r) => r.total === 0);
 
-  const totalFacilities = getAllFacilities().length;
+  const totalFacilities = (await getAllFacilities()).length;
 
   return (
     <div

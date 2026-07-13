@@ -14,9 +14,9 @@ export const metadata: Metadata = {
  * Landing page — editorial frontispiece.
  * Server component: no client state needed.
  */
-export default function HomePage() {
-  const { count, states, operationalMw, plannedMw } = getStats();
-  const notable = getNotableFacilities(6);
+export default async function HomePage() {
+  const { count, states, operationalMw, plannedMw } = await getStats();
+  const notable = await getNotableFacilities(6);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">

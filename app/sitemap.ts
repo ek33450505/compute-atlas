@@ -76,8 +76,9 @@ export function buildStaticRoutes(): MetadataRoute.Sitemap {
  * Builds facility route entries for the sitemap.
  * Exported separately so it can be unit-tested without Next.js.
  */
-export function buildFacilityRoutes(): MetadataRoute.Sitemap {
-  return getAllFacilities().map((f) => ({
+export async function buildFacilityRoutes(): Promise<MetadataRoute.Sitemap> {
+  const facilities = await getAllFacilities();
+  return facilities.map((f) => ({
     url: `${siteConfig.url}/facilities/${f.id}`,
     lastModified: new Date(f.lastUpdated),
     changeFrequency: "weekly" as const,
@@ -89,8 +90,9 @@ export function buildFacilityRoutes(): MetadataRoute.Sitemap {
  * Builds per-state route entries for the sitemap.
  * Exported separately so it can be unit-tested without Next.js.
  */
-export function buildStateRoutes(): MetadataRoute.Sitemap {
-  return getStates().map((code) => ({
+export async function buildStateRoutes(): Promise<MetadataRoute.Sitemap> {
+  const codes = await getStates();
+  return codes.map((code) => ({
     url: `${siteConfig.url}/states/${stateSlugFromCode(code)}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
@@ -102,8 +104,9 @@ export function buildStateRoutes(): MetadataRoute.Sitemap {
  * Builds per-operator route entries for the sitemap.
  * Exported separately so it can be unit-tested without Next.js.
  */
-export function buildOperatorRoutes(): MetadataRoute.Sitemap {
-  return getOperators().map((name) => ({
+export async function buildOperatorRoutes(): Promise<MetadataRoute.Sitemap> {
+  const names = await getOperators();
+  return names.map((name) => ({
     url: `${siteConfig.url}/operators/${operatorSlug(name)}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
@@ -111,11 +114,16 @@ export function buildOperatorRoutes(): MetadataRoute.Sitemap {
   }));
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [stateRoutes, operatorRoutes, facilityRoutes] = await Promise.all([
+    buildStateRoutes(),
+    buildOperatorRoutes(),
+    buildFacilityRoutes(),
+  ]);
   return [
     ...buildStaticRoutes(),
-    ...buildStateRoutes(),
-    ...buildOperatorRoutes(),
-    ...buildFacilityRoutes(),
+    ...stateRoutes,
+    ...operatorRoutes,
+    ...facilityRoutes,
   ];
 }

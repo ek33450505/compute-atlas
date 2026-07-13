@@ -44,10 +44,10 @@ export const metadata: Metadata = {
  * offtaker (the buyer) and by technology. Mirrors the /states and /stats
  * visual language (masthead, survey-stat row, § progress-bar sections).
  */
-export default function PowerPage() {
-  const stats = getGenerationStats();
-  const offtakerGroups = getGenerationByOfftaker();
-  const allProjects = [...getPowerGenerationFacilities()].sort(
+export default async function PowerPage() {
+  const stats = await getGenerationStats();
+  const offtakerGroups = await getGenerationByOfftaker();
+  const allProjects = [...(await getPowerGenerationFacilities())].sort(
     (a, b) =>
       (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
       a.name.localeCompare(b.name)

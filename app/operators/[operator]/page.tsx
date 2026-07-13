@@ -23,8 +23,9 @@ function formatPower(mw: number): string {
   return `${Math.round(mw)} MW`;
 }
 
-export function generateStaticParams() {
-  return getOperators().map((name) => ({ operator: operatorSlug(name) }));
+export async function generateStaticParams() {
+  const names = await getOperators();
+  return names.map((name) => ({ operator: operatorSlug(name) }));
 }
 
 export async function generateMetadata({
@@ -33,8 +34,8 @@ export async function generateMetadata({
   params: Promise<{ operator: string }>;
 }): Promise<Metadata> {
   const { operator: slug } = await params;
-  const operatorName = getOperatorBySlug(slug);
-  const summary = operatorName ? getOperatorSummary(operatorName) : null;
+  const operatorName = await getOperatorBySlug(slug);
+  const summary = operatorName ? await getOperatorSummary(operatorName) : null;
 
   if (!operatorName || !summary) {
     return { title: "Operator not found" };
@@ -59,17 +60,17 @@ export default async function OperatorPage({
   params: Promise<{ operator: string }>;
 }) {
   const { operator: slug } = await params;
-  const operatorName = getOperatorBySlug(slug);
+  const operatorName = await getOperatorBySlug(slug);
   if (!operatorName) {
     notFound();
   }
 
-  const summary = getOperatorSummary(operatorName);
+  const summary = await getOperatorSummary(operatorName);
   if (!summary) {
     notFound();
   }
 
-  const facilities = getFacilitiesByOperator(operatorName);
+  const facilities = await getFacilitiesByOperator(operatorName);
 
   return (
     <div

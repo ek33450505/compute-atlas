@@ -151,10 +151,10 @@ describe("clusterFacilities", () => {
   // MIN-SEPARATION INVARIANT: every pair of cluster anchors is ≥ radiusPx apart
   // for the real dataset at the initial zoom. This is the same guarantee the old
   // MARKER_OFFSETS system aimed to provide — now enforced by construction.
-  it("MIN-SEPARATION INVARIANT: all cluster anchors are ≥ 44px apart at initial zoom", () => {
+  it("MIN-SEPARATION INVARIANT: all cluster anchors are ≥ 44px apart at initial zoom", async () => {
     const zoom = INITIAL_VIEW_STATE.zoom;
     const radiusPx = 44;
-    const clusters = clusterFacilities(getAllFacilities(), zoom, radiusPx);
+    const clusters = clusterFacilities(await getAllFacilities(), zoom, radiusPx);
 
     for (let i = 0; i < clusters.length; i++) {
       for (let j = i + 1; j < clusters.length; j++) {

@@ -26,8 +26,9 @@ function formatPower(mw: number): string {
   return `${Math.round(mw)} MW`;
 }
 
-export function generateStaticParams() {
-  return getStates().map((code) => ({ state: stateSlugFromCode(code)! }));
+export async function generateStaticParams() {
+  const codes = await getStates();
+  return codes.map((code) => ({ state: stateSlugFromCode(code)! }));
 }
 
 export async function generateMetadata({
@@ -37,7 +38,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { state: slug } = await params;
   const code = stateCodeFromSlug(slug);
-  const summary = code ? getStateSummary(code) : null;
+  const summary = code ? await getStateSummary(code) : null;
 
   if (!code || !summary) {
     return { title: "State not found" };
@@ -70,12 +71,12 @@ export default async function StatePage({
     notFound();
   }
 
-  const summary = getStateSummary(code);
+  const summary = await getStateSummary(code);
   if (!summary) {
     notFound();
   }
 
-  const facilities = getFacilitiesByState(code);
+  const facilities = await getFacilitiesByState(code);
   const stateName = stateNameFromCode(code)!;
 
   const TOP_OPERATORS_DISPLAY = 15;

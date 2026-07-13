@@ -9,14 +9,14 @@ import { stateCodeFromSlug } from "@/lib/us-states";
  * pure data, no renders.
  */
 describe("generateStaticParams (states)", () => {
-  it("returns one param per tracked state", () => {
-    const params = generateStaticParams();
-    const states = getStates();
+  it("returns one param per tracked state", async () => {
+    const params = await generateStaticParams();
+    const states = await getStates();
     expect(params).toHaveLength(states.length);
   });
 
-  it("each param has a non-empty string state slug", () => {
-    const params = generateStaticParams();
+  it("each param has a non-empty string state slug", async () => {
+    const params = await generateStaticParams();
     for (const p of params) {
       expect(p).toHaveProperty("state");
       expect(typeof p.state).toBe("string");
@@ -24,9 +24,9 @@ describe("generateStaticParams (states)", () => {
     }
   });
 
-  it("each slug reverses via stateCodeFromSlug to a code in getStates()", () => {
-    const params = generateStaticParams();
-    const states = getStates();
+  it("each slug reverses via stateCodeFromSlug to a code in getStates()", async () => {
+    const params = await generateStaticParams();
+    const states = await getStates();
     for (const p of params) {
       const code = stateCodeFromSlug(p.state);
       expect(code).toBeDefined();
@@ -34,8 +34,8 @@ describe("generateStaticParams (states)", () => {
     }
   });
 
-  it("no slug is the literal string 'undefined'", () => {
-    const params = generateStaticParams();
+  it("no slug is the literal string 'undefined'", async () => {
+    const params = await generateStaticParams();
     for (const p of params) {
       expect(p.state).not.toBe("undefined");
     }

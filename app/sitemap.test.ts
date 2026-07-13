@@ -25,15 +25,15 @@ describe("sitemap", () => {
     expect(urls).toContain(`${siteConfig.url}/explore`);
   });
 
-  it("facility routes count equals facilities.length", () => {
-    const facilityRoutes = buildFacilityRoutes();
-    const facilities = getAllFacilities();
+  it("facility routes count equals facilities.length", async () => {
+    const facilityRoutes = await buildFacilityRoutes();
+    const facilities = await getAllFacilities();
     expect(facilityRoutes).toHaveLength(facilities.length);
   });
 
-  it("state routes count equals getStates().length, with no undefined slugs", () => {
-    const stateRoutes = buildStateRoutes();
-    const states = getStates();
+  it("state routes count equals getStates().length, with no undefined slugs", async () => {
+    const stateRoutes = await buildStateRoutes();
+    const states = await getStates();
     expect(stateRoutes).toHaveLength(states.length);
     for (const code of states) {
       const expectedUrl = `${siteConfig.url}/states/${stateSlugFromCode(code)}`;
@@ -43,9 +43,9 @@ describe("sitemap", () => {
     }
   });
 
-  it("operator routes count equals getOperators().length, with no undefined slugs", () => {
-    const operatorRoutes = buildOperatorRoutes();
-    const operators = getOperators();
+  it("operator routes count equals getOperators().length, with no undefined slugs", async () => {
+    const operatorRoutes = await buildOperatorRoutes();
+    const operators = await getOperators();
     expect(operatorRoutes).toHaveLength(operators.length);
     for (const name of operators) {
       const expectedUrl = `${siteConfig.url}/operators/${operatorSlug(name)}`;
@@ -55,11 +55,11 @@ describe("sitemap", () => {
     }
   });
 
-  it("total route count equals the sum of all four builders", () => {
+  it("total route count equals the sum of all four builders", async () => {
     const staticRoutes = buildStaticRoutes();
-    const stateRoutes = buildStateRoutes();
-    const operatorRoutes = buildOperatorRoutes();
-    const facilityRoutes = buildFacilityRoutes();
+    const stateRoutes = await buildStateRoutes();
+    const operatorRoutes = await buildOperatorRoutes();
+    const facilityRoutes = await buildFacilityRoutes();
     const total =
       staticRoutes.length +
       stateRoutes.length +
@@ -67,18 +67,18 @@ describe("sitemap", () => {
       facilityRoutes.length;
     expect(total).toBe(
       buildStaticRoutes().length +
-        buildStateRoutes().length +
-        buildOperatorRoutes().length +
-        buildFacilityRoutes().length
+        (await buildStateRoutes()).length +
+        (await buildOperatorRoutes()).length +
+        (await buildFacilityRoutes()).length
     );
   });
 
-  it("all URLs are absolute and under siteConfig.url", () => {
+  it("all URLs are absolute and under siteConfig.url", async () => {
     const allRoutes = [
       ...buildStaticRoutes(),
-      ...buildStateRoutes(),
-      ...buildOperatorRoutes(),
-      ...buildFacilityRoutes(),
+      ...(await buildStateRoutes()),
+      ...(await buildOperatorRoutes()),
+      ...(await buildFacilityRoutes()),
     ];
     for (const route of allRoutes) {
       expect(route.url).toMatch(/^https?:\/\//);
@@ -86,9 +86,9 @@ describe("sitemap", () => {
     }
   });
 
-  it("facility routes use /facilities/:id pattern under siteConfig.url", () => {
-    const facilityRoutes = buildFacilityRoutes();
-    const facilities = getAllFacilities();
+  it("facility routes use /facilities/:id pattern under siteConfig.url", async () => {
+    const facilityRoutes = await buildFacilityRoutes();
+    const facilities = await getAllFacilities();
     for (const f of facilities) {
       const entry = facilityRoutes.find((r) =>
         r.url.endsWith(`/facilities/${f.id}`)

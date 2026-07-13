@@ -17,8 +17,8 @@ export const metadata: Metadata = {
  * state; the header stays server-rendered, the Explorer subtree hydrates
  * client-side (Suspense boundary required for useSearchParams / nuqs).
  */
-export default function TablePage() {
-  const facilities = getAllFacilities();
+export default async function TablePage() {
+  const facilities = await getAllFacilities();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">

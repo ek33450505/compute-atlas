@@ -24,8 +24,9 @@ import { CivicImpactSection, hasCivicImpact } from "@/components/facility/civic-
 import { PowerLinksSection, hasPowerLinks } from "@/components/facility/power-links";
 import { Breadcrumb } from "@/components/breadcrumb";
 
-export function generateStaticParams() {
-  return getAllFacilities().map((f) => ({ slug: f.id }));
+export async function generateStaticParams() {
+  const facilities = await getAllFacilities();
+  return facilities.map((f) => ({ slug: f.id }));
 }
 
 export async function generateMetadata({
@@ -34,7 +35,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const facility = getFacilityById(slug);
+  const facility = await getFacilityById(slug);
 
   if (!facility) {
     return { title: "Facility not found" };
@@ -63,7 +64,7 @@ export default async function FacilityPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const facility = getFacilityById(slug);
+  const facility = await getFacilityById(slug);
 
   if (!facility) {
     notFound();
@@ -217,7 +218,7 @@ export default async function FacilityPage({
         </dl>
       </section>
 
-      {hasPowerLinks(facility) && (
+      {(await hasPowerLinks(facility)) && (
         <>
           <Separator />
           <PowerLinksSection facility={facility} />

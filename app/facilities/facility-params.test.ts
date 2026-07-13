@@ -7,14 +7,14 @@ import { getAllFacilities } from "@/lib/data";
  * per facility — no renders, no WebGL, pure data.
  */
 describe("generateStaticParams", () => {
-  it("returns one slug per facility", () => {
-    const params = generateStaticParams();
-    const facilities = getAllFacilities();
+  it("returns one slug per facility", async () => {
+    const params = await generateStaticParams();
+    const facilities = await getAllFacilities();
     expect(params).toHaveLength(facilities.length);
   });
 
-  it("each param has a slug field", () => {
-    const params = generateStaticParams();
+  it("each param has a slug field", async () => {
+    const params = await generateStaticParams();
     for (const p of params) {
       expect(p).toHaveProperty("slug");
       expect(typeof p.slug).toBe("string");
@@ -22,9 +22,9 @@ describe("generateStaticParams", () => {
     }
   });
 
-  it("slug values match facility ids", () => {
-    const params = generateStaticParams();
-    const facilities = getAllFacilities();
+  it("slug values match facility ids", async () => {
+    const params = await generateStaticParams();
+    const facilities = await getAllFacilities();
     const slugs = params.map((p) => p.slug).sort();
     const ids = facilities.map((f) => f.id).sort();
     expect(slugs).toEqual(ids);

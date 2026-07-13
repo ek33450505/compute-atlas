@@ -42,9 +42,9 @@ const LENSES = [
  * /explore — landing page for the atlas's data-lens pages. Static server
  * component. Replaces the former header dropdown with a dedicated page.
  */
-export default function ExplorePage() {
-  const stateCount = getStates().length;
-  const operatorCount = getOperators().length;
+export default async function ExplorePage() {
+  const stateCount = (await getStates()).length;
+  const operatorCount = (await getOperators()).length;
 
   const stats: Partial<Record<(typeof LENSES)[number]["label"], string>> = {
     States: `${stateCount} states`,

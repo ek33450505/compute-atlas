@@ -48,8 +48,8 @@ function pluralize(n: number, singular: string, plural: string): string {
  * state. Does NOT include "page" entries — those are UI config supplied by
  * the command palette component, not data.
  */
-export function buildSearchIndex(): SearchEntry[] {
-  const facilities = getAllFacilities();
+export async function buildSearchIndex(): Promise<SearchEntry[]> {
+  const facilities = await getAllFacilities();
   const entries: SearchEntry[] = [];
 
   // Facilities — one entry each.
@@ -81,7 +81,7 @@ export function buildSearchIndex(): SearchEntry[] {
   for (const f of facilities) {
     operatorCounts.set(f.operator, (operatorCounts.get(f.operator) ?? 0) + 1);
   }
-  for (const name of getOperators()) {
+  for (const name of await getOperators()) {
     const n = operatorCounts.get(name) ?? 0;
     entries.push({
       type: "operator",

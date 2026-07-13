@@ -1,9 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { getAllFacilities, getFacilityById } from "@/lib/data";
 import { facilitySchema } from "@/lib/schema";
+import type { Facility } from "@/lib/schema";
 
 describe("data integrity — facilities.json", () => {
-  const facilities = getAllFacilities();
+  let facilities: Facility[];
+
+  beforeAll(async () => {
+    facilities = await getAllFacilities();
+  });
 
   it("every record parses against facilitySchema", () => {
     const failing: string[] = [];
@@ -112,7 +117,7 @@ describe("data integrity — facilities.json", () => {
     expect(failing, failing.join(", ")).toHaveLength(0);
   });
 
-  it("every generation.poweredFacilityIds entry resolves to a distinct compute facility", () => {
+  it("every generation.poweredFacilityIds entry resolves to a distinct compute facility", async () => {
     const failing: string[] = [];
     for (const f of facilities) {
       if (f.facilityType !== "power_generation") continue;
@@ -122,7 +127,7 @@ describe("data integrity — facilities.json", () => {
           failing.push(`${f.id}: poweredFacilityIds self-references ${id}`);
           continue;
         }
-        const target = getFacilityById(id);
+        const target = await getFacilityById(id);
         if (!target) {
           failing.push(`${f.id}: poweredFacilityIds references unknown id ${id}`);
           continue;

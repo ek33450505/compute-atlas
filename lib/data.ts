@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { unstable_cache } from "next/cache";
 import {
   facilitiesSchema,
   type Facility,
@@ -11,40 +12,75 @@ import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
 import { getFacilityMaxMw } from "@/lib/format";
 import facilitiesRaw from "@/data/facilities.json";
+import { getDb, hasDatabaseUrl } from "@/lib/db/client";
+import { facilitiesTable } from "@/lib/db/schema";
+import { rowToFacility } from "@/lib/db/serialize";
 
-// Validate at module load time so `next build` fails loudly on bad data.
-const parseResult = facilitiesSchema.safeParse(facilitiesRaw);
-if (!parseResult.success) {
-  throw new Error(
-    "Invalid facilities data:\n" +
-      parseResult.error.issues
-        .map((issue) => `  ${issue.path.join(".")}: ${issue.message}`)
-        .join("\n")
-  );
+/** Parses and validates the bundled JSON fallback. Throws loudly on bad data. */
+function loadFromJson(): Facility[] {
+  const parsed = facilitiesSchema.safeParse(facilitiesRaw);
+  if (!parsed.success) {
+    throw new Error(
+      "Invalid facilities data:\n" +
+        parsed.error.issues
+          .map((issue) => `  ${issue.path.join(".")}: ${issue.message}`)
+          .join("\n")
+    );
+  }
+  return parsed.data;
 }
 
-export const facilities: Facility[] = parseResult.data;
-
-export function getAllFacilities(): Facility[] {
-  return facilities;
+/**
+ * Loads the full facility set from Neon when `DATABASE_URL` is configured,
+ * falling back to the bundled JSON otherwise. DB-sourced docs are trusted
+ * as-is (validated at write time via `docToRow`/the Facility schema) — no
+ * re-parse on read. Both paths sort by `id` so the DB and fallback produce
+ * byte-identical ordering.
+ */
+async function loadFacilitiesUncached(): Promise<Facility[]> {
+  const list = hasDatabaseUrl()
+    ? (await getDb().select().from(facilitiesTable)).map(rowToFacility)
+    : loadFromJson();
+  return [...list].sort((a, b) => a.id.localeCompare(b.id));
 }
 
-export function getFacilityById(id: string): Facility | undefined {
+/**
+ * Cached, deterministically-ordered facility loader tagged `"facilities"`
+ * so a future `revalidateTag("facilities")` (Phase 3) can bust it.
+ *
+ * `unstable_cache` requires the Next.js request-scoped cache context, which
+ * is absent under vitest — detect that environment and degrade to the
+ * uncached loader directly so the 536-test suite (which runs with no
+ * DATABASE_URL, exercising the JSON fallback) stays green.
+ */
+export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
+  ? loadFacilitiesUncached
+  : unstable_cache(loadFacilitiesUncached, ["facilities"], { tags: ["facilities"] });
+
+export async function getAllFacilities(): Promise<Facility[]> {
+  return loadFacilities();
+}
+
+export async function getFacilityById(id: string): Promise<Facility | undefined> {
+  const facilities = await loadFacilities();
   return facilities.find((f) => f.id === id);
 }
 
 /** Returns unique 2-letter state codes, sorted A→Z. */
-export function getStates(): string[] {
+export async function getStates(): Promise<string[]> {
+  const facilities = await loadFacilities();
   return [...new Set(facilities.map((f) => f.location.state))].sort();
 }
 
 /** Returns unique operator names, sorted A→Z. */
-export function getOperators(): string[] {
+export async function getOperators(): Promise<string[]> {
+  const facilities = await loadFacilities();
   return [...new Set(facilities.map((f) => f.operator))].sort();
 }
 
 /** Returns a count per status for all facilities (all 5 statuses always present). */
-export function getStatusCounts(): Record<Status, number> {
+export async function getStatusCounts(): Promise<Record<Status, number>> {
+  const facilities = await loadFacilities();
   const counts = Object.fromEntries(
     STATUS_ORDER.map((s) => [s, 0])
   ) as Record<Status, number>;
@@ -63,13 +99,14 @@ export function getStatusCounts(): Record<Status, number> {
  * inflated by withdrawn announcements. They are intentionally independent
  * (running vs announced) rather than a combined max/total.
  */
-export function getStats(): {
+export async function getStats(): Promise<{
   count: number;
   states: number;
   operationalMw: number;
   plannedMw: number;
   underConstructionMw: number;
-} {
+}> {
+  const facilities = await loadFacilities();
   const count = facilities.length;
   const states = new Set(facilities.map((f) => f.location.state)).size;
   const active = facilities.filter((f) => f.status !== "cancelled");
@@ -106,7 +143,8 @@ export interface CivicCoverage {
 }
 
 /** Returns the count of facilities with at least one sourced value per civic dimension. */
-export function getCivicCoverage(): CivicCoverage {
+export async function getCivicCoverage(): Promise<CivicCoverage> {
+  const facilities = await loadFacilities();
   let energy = 0, water = 0, subsidies = 0, investment = 0, jobs = 0, community = 0;
   for (const f of facilities) {
     if (!!f.energy && !!(f.energy.source || f.energy.utility || f.energy.onSiteGenerationMw != null || f.energy.notes)) energy++;
@@ -123,7 +161,8 @@ export function getCivicCoverage(): CivicCoverage {
  * Returns the top-N states by facility count, sorted by count desc then state A→Z
  * (deterministic tie-break).
  */
-export function getTopStates(n = 10): { state: string; count: number }[] {
+export async function getTopStates(n = 10): Promise<{ state: string; count: number }[]> {
+  const facilities = await loadFacilities();
   const stateCounts = new Map<string, number>();
   for (const f of facilities) {
     stateCounts.set(f.location.state, (stateCounts.get(f.location.state) ?? 0) + 1);
@@ -138,7 +177,8 @@ export function getTopStates(n = 10): { state: string; count: number }[] {
  * Returns the top-N operators by facility count, sorted by count desc then operator A→Z
  * (deterministic tie-break).
  */
-export function getTopOperators(n = 10): { operator: string; count: number }[] {
+export async function getTopOperators(n = 10): Promise<{ operator: string; count: number }[]> {
+  const facilities = await loadFacilities();
   const opCounts = new Map<string, number>();
   for (const f of facilities) {
     opCounts.set(f.operator, (opCounts.get(f.operator) ?? 0) + 1);
@@ -156,10 +196,11 @@ export function getTopOperators(n = 10): { operator: string; count: number }[] {
  * are excluded from the tally.
  * Seeds all keys from `aiClassificationEnum.options` at 0 before tallying.
  */
-export function getAiClassificationCounts(): Record<
+export async function getAiClassificationCounts(): Promise<Record<
   z.infer<typeof aiClassificationEnum>,
   number
-> {
+>> {
+  const facilities = await loadFacilities();
   const counts = Object.fromEntries(
     aiClassificationEnum.options.map((k) => [k, 0])
   ) as Record<z.infer<typeof aiClassificationEnum>, number>;
@@ -175,7 +216,8 @@ export function getAiClassificationCounts(): Record<
  * Returns a count per confidence level for all facilities.
  * Seeds all keys from `confidenceEnum.options` at 0 before tallying.
  */
-export function getConfidenceCounts(): Record<Facility["confidence"], number> {
+export async function getConfidenceCounts(): Promise<Record<Facility["confidence"], number>> {
+  const facilities = await loadFacilities();
   const counts = Object.fromEntries(
     confidenceEnum.options.map((k) => [k, 0])
   ) as Record<Facility["confidence"], number>;
@@ -189,7 +231,8 @@ export function getConfidenceCounts(): Record<Facility["confidence"], number> {
  * Returns a count per facility type for all facilities.
  * Seeds both keys from `FACILITY_TYPE_ORDER` at 0 before tallying.
  */
-export function getFacilityTypeCounts(): Record<FacilityType, number> {
+export async function getFacilityTypeCounts(): Promise<Record<FacilityType, number>> {
+  const facilities = await loadFacilities();
   const counts = Object.fromEntries(
     FACILITY_TYPE_ORDER.map((k) => [k, 0])
   ) as Record<FacilityType, number>;
@@ -206,7 +249,8 @@ export function getFacilityTypeCounts(): Record<FacilityType, number> {
  * itself an explicit sourced value, distinct from "not reported."
  * Seeds all 6 keys from `COMMUNITY_RECEPTION_ORDER` at 0 before tallying.
  */
-export function getCommunityReceptionCounts(): Record<CommunityReception, number> {
+export async function getCommunityReceptionCounts(): Promise<Record<CommunityReception, number>> {
+  const facilities = await loadFacilities();
   const counts = Object.fromEntries(
     COMMUNITY_RECEPTION_ORDER.map((k) => [k, 0])
   ) as Record<CommunityReception, number>;
@@ -219,7 +263,8 @@ export function getCommunityReceptionCounts(): Record<CommunityReception, number
 }
 
 /** Returns the top-N facilities sorted by highest capacity (operational or planned). */
-export function getNotableFacilities(n = 6): Facility[] {
+export async function getNotableFacilities(n = 6): Promise<Facility[]> {
+  const facilities = await loadFacilities();
   return [...facilities]
     .sort(
       (a, b) =>
@@ -245,7 +290,8 @@ export interface WaterUsage {
  * facilities that disclose a positive `water.reportedMgd` figure.
  * This is a reported floor — most facilities do not publish a daily water figure.
  */
-export function getWaterUsage(): WaterUsage {
+export async function getWaterUsage(): Promise<WaterUsage> {
+  const facilities = await loadFacilities();
   const reporting = facilities.filter(
     (f) =>
       f.status !== "cancelled" &&
@@ -271,7 +317,8 @@ export type CoolingType = (typeof COOLING_TYPE_KEYS)[number];
  * Returns a count per cooling type among non-cancelled facilities that declare
  * `water.coolingType`. All 5 keys are always present (seeded at 0).
  */
-export function getCoolingTypeCounts(): Record<CoolingType, number> {
+export async function getCoolingTypeCounts(): Promise<Record<CoolingType, number>> {
+  const facilities = await loadFacilities();
   const counts = Object.fromEntries(
     COOLING_TYPE_KEYS.map((k) => [k, 0])
   ) as Record<CoolingType, number>;
@@ -305,7 +352,8 @@ export type EnergySource = (typeof ENERGY_SOURCE_KEYS)[number];
  * Returns a count per energy source among facilities that declare
  * `energy.source`. All 8 keys are always present (seeded at 0).
  */
-export function getEnergySourceCounts(): Record<EnergySource, number> {
+export async function getEnergySourceCounts(): Promise<Record<EnergySource, number>> {
+  const facilities = await loadFacilities();
   const counts = Object.fromEntries(
     ENERGY_SOURCE_KEYS.map((k) => [k, 0])
   ) as Record<EnergySource, number>;
@@ -326,7 +374,8 @@ export function getEnergySourceCounts(): Record<EnergySource, number> {
  * (case-insensitive), sorted by max capacity (operational or planned) desc,
  * then name A→Z (deterministic tie-break).
  */
-export function getFacilitiesByState(code: string): Facility[] {
+export async function getFacilitiesByState(code: string): Promise<Facility[]> {
+  const facilities = await loadFacilities();
   const upper = code.toUpperCase();
   return facilities
     .filter((f) => f.location.state === upper)
@@ -363,7 +412,8 @@ export interface StateSummary {
  * zero facilities. Mirrors `getStats`' capacity math (excludes cancelled for
  * operational/planned) and `getTopOperators`' tie-break for `topOperators`.
  */
-export function getStateSummary(code: string): StateSummary | null {
+export async function getStateSummary(code: string): Promise<StateSummary | null> {
+  const facilities = await loadFacilities();
   const upper = code.toUpperCase();
   const stateFacilities = facilities.filter((f) => f.location.state === upper);
   const count = stateFacilities.length;
@@ -433,7 +483,8 @@ export function getStateSummary(code: string): StateSummary | null {
 // ============================================================
 
 /** All power_generation facilities (type-guarded so `.generation` narrows). */
-export function getPowerGenerationFacilities(): PowerGenerationFacility[] {
+export async function getPowerGenerationFacilities(): Promise<PowerGenerationFacility[]> {
+  const facilities = await loadFacilities();
   return facilities.filter(
     (f): f is PowerGenerationFacility => f.facilityType === "power_generation"
   );
@@ -464,9 +515,9 @@ export interface OfftakerGroup {
  * Facilities with no `generation.offtaker` are excluded — they have no
  * buyer to group under.
  */
-export function getGenerationByOfftaker(): OfftakerGroup[] {
+export async function getGenerationByOfftaker(): Promise<OfftakerGroup[]> {
   const groups = new Map<string, PowerGenerationFacility[]>();
-  for (const f of getPowerGenerationFacilities()) {
+  for (const f of await getPowerGenerationFacilities()) {
     const offtaker = f.generation?.offtaker;
     if (!offtaker) continue;
     const key = normalizeOfftaker(offtaker);
@@ -510,8 +561,8 @@ export interface GenerationStats {
  * Returns aggregate stats for the power_generation facility layer. Mirrors
  * getStats' capacity math (excludes cancelled for operational/planned).
  */
-export function getGenerationStats(): GenerationStats {
-  const generation = getPowerGenerationFacilities();
+export async function getGenerationStats(): Promise<GenerationStats> {
+  const generation = await getPowerGenerationFacilities();
   const active = generation.filter((f) => f.status !== "cancelled");
   const operationalMw = active.reduce(
     (sum, f) => sum + (f.capacityMw?.operational ?? 0),
@@ -542,11 +593,11 @@ export function getGenerationStats(): GenerationStats {
  * crashes — a data-integrity test guards against them existing. Sorted by max
  * capacity (operational or planned) desc, then name A→Z.
  */
-export function getPoweredCampuses(facility: Facility): Facility[] {
+export async function getPoweredCampuses(facility: Facility): Promise<Facility[]> {
   if (facility.facilityType !== "power_generation") return [];
   const ids = facility.generation?.poweredFacilityIds ?? [];
-  return ids
-    .map((id) => getFacilityById(id))
+  const resolved = await Promise.all(ids.map((id) => getFacilityById(id)));
+  return resolved
     .filter((f): f is Facility => f !== undefined)
     .sort(
       (a, b) =>
@@ -561,8 +612,9 @@ export function getPoweredCampuses(facility: Facility): Facility[] {
  * here rather than stored on the compute record (single source of truth). Sorted
  * by max capacity (operational or planned) desc, then name A→Z.
  */
-export function getPoweredByGenerators(facility: Facility): PowerGenerationFacility[] {
-  return getPowerGenerationFacilities()
+export async function getPoweredByGenerators(facility: Facility): Promise<PowerGenerationFacility[]> {
+  const generation = await getPowerGenerationFacilities();
+  return generation
     .filter((g) => (g.generation?.poweredFacilityIds ?? []).includes(facility.id))
     .sort(
       (a, b) =>
@@ -576,7 +628,8 @@ export function getPoweredByGenerators(facility: Facility): PowerGenerationFacil
 // ============================================================
 
 /** Facilities whose community.status matches `status`, sorted by max capacity desc then name A→Z. */
-export function getFacilitiesByCommunityStatus(status: CommunityReception): Facility[] {
+export async function getFacilitiesByCommunityStatus(status: CommunityReception): Promise<Facility[]> {
+  const facilities = await loadFacilities();
   return facilities
     .filter((f) => f.community?.status === status)
     .sort((a, b) => (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name));
@@ -591,14 +644,19 @@ export function operatorSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
-/** Precomputed slug -> operator name map, built once at module scope for O(1) reverse lookup. */
-const SLUG_TO_OPERATOR: Record<string, string> = Object.fromEntries(
-  getOperators().map((name) => [operatorSlug(name), name])
-);
-
-/** Returns the operator name for a URL slug (case-insensitive), or undefined if unknown. */
-export function getOperatorBySlug(slug: string): string | undefined {
-  return SLUG_TO_OPERATOR[slug.toLowerCase()];
+/**
+ * Returns the operator name for a URL slug (case-insensitive), or undefined if
+ * unknown. The slug -> name map is built lazily from the async facility list
+ * (it can no longer be precomputed at module scope now that the source is
+ * async) — recomputed per call rather than cached, since `getOperators()`
+ * already sits behind `loadFacilities`'s own cache.
+ */
+export async function getOperatorBySlug(slug: string): Promise<string | undefined> {
+  const operators = await getOperators();
+  const slugToOperator: Record<string, string> = Object.fromEntries(
+    operators.map((name) => [operatorSlug(name), name])
+  );
+  return slugToOperator[slug.toLowerCase()];
 }
 
 /**
@@ -606,7 +664,8 @@ export function getOperatorBySlug(slug: string): string | undefined {
  * capacity (operational or planned) desc, then name A→Z (deterministic
  * tie-break).
  */
-export function getFacilitiesByOperator(name: string): Facility[] {
+export async function getFacilitiesByOperator(name: string): Promise<Facility[]> {
+  const facilities = await loadFacilities();
   return facilities
     .filter((f) => f.operator === name)
     .sort(
@@ -635,7 +694,8 @@ export interface OperatorSummary {
  * has zero facilities. Mirrors `getStateSummary`'s capacity math (excludes
  * cancelled for operational/planned) and byType/byStatus seeding.
  */
-export function getOperatorSummary(name: string): OperatorSummary | null {
+export async function getOperatorSummary(name: string): Promise<OperatorSummary | null> {
+  const facilities = await loadFacilities();
   const operatorFacilities = facilities.filter((f) => f.operator === name);
   const count = operatorFacilities.length;
   if (count === 0) {

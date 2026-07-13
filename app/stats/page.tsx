@@ -67,19 +67,36 @@ const COVERAGE_DIMENSIONS = [
  * /stats — aggregate statistics page.
  * Server component: all data is static at build time.
  */
-export default function StatsPage() {
-  const stats = getStats();
-  const statusCounts = getStatusCounts();
-  const coverage = getCivicCoverage();
-  const aiCounts = getAiClassificationCounts();
-  const confidenceCounts = getConfidenceCounts();
-  const topStates = getTopStates(10);
-  const topOperators = getTopOperators(10);
-  const water = getWaterUsage();
-  const cooling = getCoolingTypeCounts();
-  const facilityTypeCounts = getFacilityTypeCounts();
-  const communityCounts = getCommunityReceptionCounts();
-  const energySourceCounts = getEnergySourceCounts();
+export default async function StatsPage() {
+  const [
+    stats,
+    statusCounts,
+    coverage,
+    aiCounts,
+    confidenceCounts,
+    topStates,
+    topOperators,
+    water,
+    cooling,
+    facilityTypeCounts,
+    communityCounts,
+    energySourceCounts,
+    allFacilities,
+  ] = await Promise.all([
+    getStats(),
+    getStatusCounts(),
+    getCivicCoverage(),
+    getAiClassificationCounts(),
+    getConfidenceCounts(),
+    getTopStates(10),
+    getTopOperators(10),
+    getWaterUsage(),
+    getCoolingTypeCounts(),
+    getFacilityTypeCounts(),
+    getCommunityReceptionCounts(),
+    getEnergySourceCounts(),
+    getAllFacilities(),
+  ]);
 
   const total = stats.count;
   const communityReporting = COMMUNITY_SIGNAL_ORDER.reduce(
@@ -89,7 +106,7 @@ export default function StatsPage() {
   const communityFriction =
     communityCounts.contested + communityCounts.opposed + communityCounts.litigation;
 
-  const dataCenterCount = getAllFacilities().filter(
+  const dataCenterCount = allFacilities.filter(
     (f) => f.facilityType === "data_center"
   ).length;
   const unclassifiedCount =

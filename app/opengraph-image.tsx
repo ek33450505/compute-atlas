@@ -27,9 +27,9 @@ export const contentType = "image/png";
 
 // Fraunces-72pt-SemiBold.ttf is vendored in public/fonts/ — loaded via readFileSync below.
 
-export default function OGImage() {
+export default async function OGImage() {
   const fraunces = readFileSync(join(process.cwd(), "public/fonts/Fraunces-72pt-SemiBold.ttf"));
-  const { count, states, operationalMw } = getStats();
+  const { count, states, operationalMw } = await getStats();
   const statLine = `${count} SITES · ${states} STATES · ${(operationalMw / 1000).toFixed(1)} GW OPERATIONAL`;
 
   return new ImageResponse(
