@@ -1,0 +1,717 @@
+"use client";
+
+import { useState, useTransition, type Dispatch, type SetStateAction } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { confidenceEnum, type Facility } from "@/lib/schema";
+import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
+import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META, type FacilityType } from "@/lib/facility-type";
+import {
+  createFacilityAction,
+  updateFacilityAction,
+} from "@/app/admin/facilities/facility-form-actions";
+import { FacilitySourcesSection } from "@/app/admin/facilities/facility-sources-section";
+import { FacilityStatusHistorySection } from "@/app/admin/facilities/facility-status-history-section";
+import { FacilitySubsidiesSection } from "@/app/admin/facilities/facility-subsidies-section";
+import { FacilityEnergyWaterSection } from "@/app/admin/facilities/facility-energy-water-section";
+import { FacilityJobsCommunitySection } from "@/app/admin/facilities/facility-jobs-community-section";
+import {
+  FacilityTypeConditionalFields,
+  type FacilityOption,
+} from "@/app/admin/facilities/facility-type-conditional-fields";
+import {
+  emptyFacilityFormState,
+  facilityToFormState,
+  emptyTypeConditionalState,
+  type FacilityFormState,
+} from "@/app/admin/facilities/facility-form-state";
+
+// ---------------------------------------------------------------------------
+// Form state — the shape, and the pure `emptyFacilityFormState` /
+// `facilityToFormState` builders, live in `facility-form-state.ts` (a plain
+// module with NO "use client" directive) so server components
+// (`new/page.tsx`, `[id]/page.tsx`) can call them directly to build the
+// `initialState` prop below without crossing a client-file boundary. This
+// file has "use client" (line 1) — every export from a "use client" file
+// becomes a client-only reference from the server's perspective, even a pure
+// function with no hooks, so these builders CANNOT live here. Re-exported
+// below purely for convenience so existing imports from this file (e.g. the
+// test suite) keep working without a second import line.
+// ---------------------------------------------------------------------------
+
+export { emptyFacilityFormState, facilityToFormState, type FacilityFormState };
+
+/**
+ * Builds the `unknown` payload sent to `createFacility`/`updateFacility`.
+ * Numeric string fields parse to `number | undefined` (empty string ->
+ * undefined, never `NaN` or `0`). Nested objects (`location`, `capacityMw`,
+ * `energy`, `water`, `jobs`, `community`) are ALWAYS submitted as complete
+ * objects (never a partial/omitted-key patch) — required because
+ * `updateFacility` does a shallow top-level merge; a partial nested object
+ * would look "present" to the merge and silently blank sibling fields.
+ */
+export function buildFacilityPayload(state: FacilityFormState): Record<string, unknown> {
+  const num = (v: string): number | undefined => (v.trim() === "" ? undefined : Number(v));
+
+  const location: Record<string, unknown> = {
+    lat: num(state.location.lat) ?? 0,
+    lon: num(state.location.lon) ?? 0,
+    state: state.location.state.toUpperCase(),
+    precision: state.location.precision,
+  };
+  if (state.location.city.trim()) location.city = state.location.city.trim();
+  if (state.location.county.trim()) location.county = state.location.county.trim();
+  if (state.location.multiSite.enabled) {
+    location.multiSite = {
+      states: state.location.multiSite.states
+        .split(",")
+        .map((s) => s.trim().toUpperCase())
+        .filter(Boolean),
+      ...(state.location.multiSite.siteCountNote.trim()
+        ? { siteCountNote: state.location.multiSite.siteCountNote.trim() }
+        : {}),
+    };
+  }
+
+  const capacityMw: Record<string, unknown> = {};
+  const planned = num(state.capacityMw.planned);
+  const operational = num(state.capacityMw.operational);
+  if (planned !== undefined) capacityMw.planned = planned;
+  if (operational !== undefined) capacityMw.operational = operational;
+
+  const payload: Record<string, unknown> = {
+    id: state.id,
+    name: state.name,
+    operator: state.operator,
+    status: state.status,
+    confidence: state.confidence,
+    facilityType: state.facilityType,
+    location,
+    capacityMw,
+    statusHistory: state.statusHistory,
+    sources: state.sources,
+    energy: state.energy,
+    water: state.water,
+    subsidies: state.subsidies,
+    jobs: state.jobs,
+    community: state.community,
+    lastUpdated: state.lastUpdated,
+  };
+  if (state.poweredBy.trim()) payload.poweredBy = state.poweredBy.trim();
+  if (state.announcedDate.trim()) payload.announcedDate = state.announcedDate.trim();
+  if (state.notes.trim()) payload.notes = state.notes.trim();
+  const investmentUsd = num(state.investmentUsd);
+  if (investmentUsd !== undefined) payload.investmentUsd = investmentUsd;
+  const landAcres = num(state.landAcres);
+  if (landAcres !== undefined) payload.landAcres = landAcres;
+
+  if (state.facilityType === "data_center") {
+    if (state.aiClassification) payload.aiClassification = state.aiClassification;
+    payload.environmental = state.dataCenterEnvironmental;
+  } else if (state.facilityType === "crypto_mining") {
+    if (state.aiClassification) payload.aiClassification = state.aiClassification;
+    payload.mining = state.mining;
+    payload.environmental = state.cryptoMiningEnvironmental;
+  } else {
+    payload.generation = state.generation;
+  }
+
+  return payload;
+}
+
+// ---------------------------------------------------------------------------
+// Field-level error surfacing (from a Zod `issues` array on a 400 response)
+// ---------------------------------------------------------------------------
+
+type FieldIssues = Record<string, string>;
+
+function issuesToFieldMap(issues: unknown): FieldIssues {
+  const map: FieldIssues = {};
+  if (!Array.isArray(issues)) return map;
+  for (const issue of issues) {
+    if (
+      issue &&
+      typeof issue === "object" &&
+      "path" in issue &&
+      "message" in issue &&
+      Array.isArray((issue as { path: unknown }).path)
+    ) {
+      const path = (issue as { path: (string | number)[] }).path.join(".");
+      map[path] = String((issue as { message: unknown }).message);
+    }
+  }
+  return map;
+}
+
+// ---------------------------------------------------------------------------
+// Reusable small field wrappers
+// ---------------------------------------------------------------------------
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="text-sm text-destructive">
+      {message}
+    </p>
+  );
+}
+
+function TextField({
+  id,
+  label,
+  value,
+  onChange,
+  error,
+  required,
+  type = "text",
+  autoComplete,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  required?: boolean;
+  type?: string;
+  autoComplete?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        name={id}
+        type={type}
+        value={value}
+        autoComplete={autoComplete}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
+      />
+      {error ? <div id={`${id}-error`}><FieldError message={error} /></div> : null}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section: scalars (name/operator/status/confidence/facilityType)
+// ---------------------------------------------------------------------------
+
+function CoreFieldsSection({
+  state,
+  setState,
+  isEdit,
+  errors,
+}: {
+  state: FacilityFormState;
+  setState: Dispatch<SetStateAction<FacilityFormState>>;
+  isEdit: boolean;
+  errors: FieldIssues;
+}) {
+  function handleFacilityTypeChange(next: FacilityType) {
+    setState((prev) => {
+      if (prev.facilityType === next) return prev;
+      // Switching type on CREATE resets the type-conditional slices so no
+      // stale field from a prior selection leaks into the new type's
+      // payload. On EDIT we still reset the INACTIVE slices (they were
+      // already inert for the previous type) but never touch the fields
+      // this sub-unit renders — the type switch alone must not blank
+      // already-populated scalar/location/capacityMw data.
+      return { ...prev, facilityType: next, ...emptyTypeConditionalState() };
+    });
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Core details</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {!isEdit ? (
+          <TextField
+            id="id"
+            label="Facility ID (kebab-slug, immutable)"
+            value={state.id}
+            onChange={(v) => setState((prev) => ({ ...prev, id: v }))}
+            error={errors["id"]}
+            required
+          />
+        ) : null}
+
+        <TextField
+          id="name"
+          label="Name"
+          value={state.name}
+          onChange={(v) => setState((prev) => ({ ...prev, name: v }))}
+          error={errors["name"]}
+          required
+        />
+        <TextField
+          id="operator"
+          label="Operator"
+          value={state.operator}
+          onChange={(v) => setState((prev) => ({ ...prev, operator: v }))}
+          error={errors["operator"]}
+          required
+        />
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="facilityType">Facility type</Label>
+            <Select
+              value={state.facilityType}
+              onValueChange={(v) => handleFacilityTypeChange(v as FacilityType)}
+            >
+              <SelectTrigger id="facilityType" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {FACILITY_TYPE_ORDER.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {FACILITY_TYPE_META[t].label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="status">Status</Label>
+            <Select
+              value={state.status}
+              onValueChange={(v) => setState((prev) => ({ ...prev, status: v as Status }))}
+            >
+              <SelectTrigger id="status" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {STATUS_ORDER.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {STATUS_META[s].label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="confidence">Confidence</Label>
+            <Select
+              value={state.confidence}
+              onValueChange={(v) =>
+                setState((prev) => ({ ...prev, confidence: v as Facility["confidence"] }))
+              }
+            >
+              <SelectTrigger id="confidence" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {confidenceEnum.options.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c.charAt(0).toUpperCase() + c.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <TextField
+          id="poweredBy"
+          label="Powered by (optional)"
+          value={state.poweredBy}
+          onChange={(v) => setState((prev) => ({ ...prev, poweredBy: v }))}
+          error={errors["poweredBy"]}
+        />
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <TextField
+            id="announcedDate"
+            label="Announced date (optional)"
+            value={state.announcedDate}
+            onChange={(v) => setState((prev) => ({ ...prev, announcedDate: v }))}
+            error={errors["announcedDate"]}
+          />
+          <TextField
+            id="lastUpdated"
+            label="Last updated"
+            value={state.lastUpdated}
+            onChange={(v) => setState((prev) => ({ ...prev, lastUpdated: v }))}
+            error={errors["lastUpdated"]}
+            required
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="notes">Notes (optional)</Label>
+          <textarea
+            id="notes"
+            name="notes"
+            value={state.notes}
+            onChange={(e) => setState((prev) => ({ ...prev, notes: e.target.value }))}
+            rows={3}
+            className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            aria-invalid={errors["notes"] ? true : undefined}
+            aria-describedby={errors["notes"] ? "notes-error" : undefined}
+          />
+          {errors["notes"] ? <div id="notes-error"><FieldError message={errors["notes"]} /></div> : null}
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <TextField
+            id="investmentUsd"
+            label="Investment (USD, optional)"
+            type="number"
+            value={state.investmentUsd}
+            onChange={(v) => setState((prev) => ({ ...prev, investmentUsd: v }))}
+            error={errors["investmentUsd"]}
+          />
+          <TextField
+            id="landAcres"
+            label="Land (acres, optional)"
+            type="number"
+            value={state.landAcres}
+            onChange={(v) => setState((prev) => ({ ...prev, landAcres: v }))}
+            error={errors["landAcres"]}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section: location (grouped fieldset — always submitted whole)
+// ---------------------------------------------------------------------------
+
+function LocationSection({
+  state,
+  setState,
+  errors,
+}: {
+  state: FacilityFormState;
+  setState: Dispatch<SetStateAction<FacilityFormState>>;
+  errors: FieldIssues;
+}) {
+  const location = state.location;
+
+  function updateLocation(patch: Partial<FacilityFormState["location"]>) {
+    setState((prev) => ({ ...prev, location: { ...prev.location, ...patch } }));
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Location</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <TextField
+            id="location.lat"
+            label="Latitude"
+            type="number"
+            value={location.lat}
+            onChange={(v) => updateLocation({ lat: v })}
+            error={errors["location.lat"]}
+            required
+          />
+          <TextField
+            id="location.lon"
+            label="Longitude"
+            type="number"
+            value={location.lon}
+            onChange={(v) => updateLocation({ lon: v })}
+            error={errors["location.lon"]}
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <TextField
+            id="location.city"
+            label="City (optional)"
+            value={location.city}
+            onChange={(v) => updateLocation({ city: v })}
+            error={errors["location.city"]}
+          />
+          <TextField
+            id="location.county"
+            label="County (optional)"
+            value={location.county}
+            onChange={(v) => updateLocation({ county: v })}
+            error={errors["location.county"]}
+          />
+          <TextField
+            id="location.state"
+            label="State (2-letter)"
+            value={location.state}
+            onChange={(v) => updateLocation({ state: v.toUpperCase().slice(0, 2) })}
+            error={errors["location.state"]}
+            required
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5 sm:max-w-xs">
+          <Label htmlFor="location.precision">Precision</Label>
+          <Select
+            value={location.precision}
+            onValueChange={(v) =>
+              updateLocation({ precision: v as FacilityFormState["location"]["precision"] })
+            }
+          >
+            <SelectTrigger id="location.precision" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="exact">Exact</SelectItem>
+              <SelectItem value="approximate">Approximate</SelectItem>
+              <SelectItem value="representative_multi_site">
+                Representative (multi-site)
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
+          <label
+            htmlFor="location.multiSite.enabled"
+            className="flex items-center gap-2 text-sm font-medium"
+          >
+            <input
+              id="location.multiSite.enabled"
+              type="checkbox"
+              checked={location.multiSite.enabled}
+              onChange={(e) =>
+                updateLocation({
+                  multiSite: { ...location.multiSite, enabled: e.target.checked },
+                })
+              }
+            />
+            This facility spans multiple sites
+          </label>
+          {location.multiSite.enabled ? (
+            <div className="flex flex-col gap-3">
+              <TextField
+                id="location.multiSite.states"
+                label="States (comma-separated 2-letter codes)"
+                value={location.multiSite.states}
+                onChange={(v) =>
+                  updateLocation({ multiSite: { ...location.multiSite, states: v } })
+                }
+                error={errors["location.multiSite.states"]}
+                required
+              />
+              <TextField
+                id="location.multiSite.siteCountNote"
+                label="Site count note (optional)"
+                value={location.multiSite.siteCountNote}
+                onChange={(v) =>
+                  updateLocation({ multiSite: { ...location.multiSite, siteCountNote: v } })
+                }
+                error={errors["location.multiSite.siteCountNote"]}
+              />
+            </div>
+          ) : null}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section: capacityMw
+// ---------------------------------------------------------------------------
+
+function CapacitySection({
+  state,
+  setState,
+  errors,
+}: {
+  state: FacilityFormState;
+  setState: Dispatch<SetStateAction<FacilityFormState>>;
+  errors: FieldIssues;
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Capacity</CardTitle>
+      </CardHeader>
+      <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <TextField
+          id="capacityMw.planned"
+          label="Planned (MW, optional)"
+          type="number"
+          value={state.capacityMw.planned}
+          onChange={(v) =>
+            setState((prev) => ({ ...prev, capacityMw: { ...prev.capacityMw, planned: v } }))
+          }
+          error={errors["capacityMw.planned"]}
+        />
+        <TextField
+          id="capacityMw.operational"
+          label="Operational (MW, optional)"
+          type="number"
+          value={state.capacityMw.operational}
+          onChange={(v) =>
+            setState((prev) => ({
+              ...prev,
+              capacityMw: { ...prev.capacityMw, operational: v },
+            }))
+          }
+          error={errors["capacityMw.operational"]}
+        />
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+export interface FacilityFormProps {
+  initialState: FacilityFormState;
+  mode: "create" | "edit";
+  /** Existing facilities (id + name only), used by the power_generation
+   *  branch's `poweredFacilityIds` combobox. Passed from the server-component
+   *  page entries (`new/page.tsx`, `[id]/page.tsx`), which already call
+   *  `loadFacilities()` — no separate client-side fetch. Empty array when
+   *  not yet supplied is safe (the combobox simply offers nothing to add). */
+  availableFacilities?: FacilityOption[];
+}
+
+export function FacilityForm({
+  initialState,
+  mode,
+  availableFacilities = [],
+}: FacilityFormProps) {
+  const router = useRouter();
+  const [state, setState] = useState<FacilityFormState>(initialState);
+  const [errors, setErrors] = useState<FieldIssues>({});
+  const [formError, setFormError] = useState<string | undefined>(undefined);
+  const [isPending, startTransition] = useTransition();
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setFormError(undefined);
+    setErrors({});
+
+    const payload = buildFacilityPayload(state);
+
+    startTransition(async () => {
+      const result =
+        mode === "create"
+          ? await createFacilityAction(payload)
+          : await updateFacilityAction(state.id, payload);
+
+      if (result.ok) {
+        toast.success(`${mode === "create" ? "Created" : "Updated"} "${result.facility.name}".`);
+        router.push("/admin/facilities");
+        return;
+      }
+
+      setErrors(issuesToFieldMap(result.issues));
+      setFormError(result.error);
+    });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <CoreFieldsSection
+        state={state}
+        setState={setState}
+        isEdit={mode === "edit"}
+        errors={errors}
+      />
+      <LocationSection state={state} setState={setState} errors={errors} />
+      <CapacitySection state={state} setState={setState} errors={errors} />
+
+      <FacilitySourcesSection
+        sources={state.sources}
+        onChange={(next) => setState((prev) => ({ ...prev, sources: next }))}
+      />
+      <FacilityStatusHistorySection
+        statusHistory={state.statusHistory}
+        sources={state.sources}
+        onChange={(next) => setState((prev) => ({ ...prev, statusHistory: next }))}
+      />
+      <FacilitySubsidiesSection
+        subsidies={state.subsidies}
+        sources={state.sources}
+        onChange={(next) => setState((prev) => ({ ...prev, subsidies: next }))}
+      />
+      <FacilityEnergyWaterSection
+        energy={state.energy}
+        water={state.water}
+        onChangeEnergy={(next) => setState((prev) => ({ ...prev, energy: next }))}
+        onChangeWater={(next) => setState((prev) => ({ ...prev, water: next }))}
+      />
+      <FacilityJobsCommunitySection
+        jobs={state.jobs}
+        community={state.community}
+        sources={state.sources}
+        onChangeJobs={(next) => setState((prev) => ({ ...prev, jobs: next }))}
+        onChangeCommunity={(next) => setState((prev) => ({ ...prev, community: next }))}
+      />
+      <FacilityTypeConditionalFields
+        facilityType={state.facilityType}
+        aiClassification={state.aiClassification}
+        onChangeAiClassification={(next) =>
+          setState((prev) => ({ ...prev, aiClassification: next }))
+        }
+        dataCenterEnvironmental={state.dataCenterEnvironmental}
+        onChangeDataCenterEnvironmental={(next) =>
+          setState((prev) => ({ ...prev, dataCenterEnvironmental: next }))
+        }
+        mining={state.mining}
+        onChangeMining={(next) => setState((prev) => ({ ...prev, mining: next }))}
+        cryptoMiningEnvironmental={state.cryptoMiningEnvironmental}
+        onChangeCryptoMiningEnvironmental={(next) =>
+          setState((prev) => ({ ...prev, cryptoMiningEnvironmental: next }))
+        }
+        generation={state.generation}
+        onChangeGeneration={(next) => setState((prev) => ({ ...prev, generation: next }))}
+        availableFacilities={availableFacilities}
+        currentFacilityId={mode === "edit" ? state.id : undefined}
+      />
+
+      {formError ? (
+        <p role="alert" className="text-sm text-destructive">
+          {formError}
+        </p>
+      ) : null}
+
+      <div className="flex justify-end gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.push("/admin/facilities")}
+          disabled={isPending}
+        >
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Saving…" : mode === "create" ? "Create facility" : "Save changes"}
+        </Button>
+      </div>
+    </form>
+  );
+}
