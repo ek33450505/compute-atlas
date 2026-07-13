@@ -22,6 +22,12 @@ export default function AdminLayout({
             >
               Submissions
             </Link>
+            <Link
+              href="/admin/facilities"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Facilities
+            </Link>
           </nav>
         </div>
         <form action={logout}>
