@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { loadFacilities } from "@/lib/data";
 import { FacilityForm, emptyFacilityFormState } from "@/app/admin/facilities/facility-form";
 
 export const metadata: Metadata = {
@@ -9,9 +10,15 @@ export const metadata: Metadata = {
 /**
  * /admin/facilities/new — create-form entry. Renders `FacilityForm` in
  * "create" mode with a fresh, empty state (see `emptyFacilityFormState`).
- * No data to load — this is a plain client-rendered form shell.
+ * Loads the existing facility list (id/name only) to populate the
+ * power_generation branch's `poweredFacilityIds` combobox — the create form
+ * needs the same reference list as the edit form even though it has no
+ * facility of its own yet.
  */
-export default function NewFacilityPage() {
+export default async function NewFacilityPage() {
+  const facilities = await loadFacilities();
+  const availableFacilities = facilities.map((f) => ({ id: f.id, name: f.name }));
+
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
@@ -22,7 +29,11 @@ export default function NewFacilityPage() {
         </p>
       </header>
 
-      <FacilityForm mode="create" initialState={emptyFacilityFormState()} />
+      <FacilityForm
+        mode="create"
+        initialState={emptyFacilityFormState()}
+        availableFacilities={availableFacilities}
+      />
     </div>
   );
 }

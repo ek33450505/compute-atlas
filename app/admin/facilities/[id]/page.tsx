@@ -21,7 +21,11 @@ export async function generateMetadata({
  * exposes to every other admin/public page — no separate single-facility
  * fetch primitive exists, and this list is already cached) and converts it
  * to the form's state shape via `facilityToFormState`. 404s if no facility
- * with this id exists.
+ * with this id exists. The full facility list is also projected to
+ * id/name pairs and passed through as `availableFacilities` for the
+ * power_generation branch's `poweredFacilityIds` combobox; the form itself
+ * excludes the facility being edited from that list (a facility cannot
+ * power itself).
  */
 export default async function EditFacilityPage({ params }: EditFacilityPageProps) {
   const { id } = await params;
@@ -32,6 +36,8 @@ export default async function EditFacilityPage({ params }: EditFacilityPageProps
     notFound();
   }
 
+  const availableFacilities = facilities.map((f) => ({ id: f.id, name: f.name }));
+
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
@@ -39,7 +45,11 @@ export default async function EditFacilityPage({ params }: EditFacilityPageProps
         <p className="text-sm text-muted-foreground">{facility.name}</p>
       </header>
 
-      <FacilityForm mode="edit" initialState={facilityToFormState(facility)} />
+      <FacilityForm
+        mode="edit"
+        initialState={facilityToFormState(facility)}
+        availableFacilities={availableFacilities}
+      />
     </div>
   );
 }

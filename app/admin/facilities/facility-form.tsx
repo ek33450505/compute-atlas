@@ -30,6 +30,12 @@ import {
 import { FacilitySourcesSection } from "@/app/admin/facilities/facility-sources-section";
 import { FacilityStatusHistorySection } from "@/app/admin/facilities/facility-status-history-section";
 import { FacilitySubsidiesSection } from "@/app/admin/facilities/facility-subsidies-section";
+import { FacilityEnergyWaterSection } from "@/app/admin/facilities/facility-energy-water-section";
+import { FacilityJobsCommunitySection } from "@/app/admin/facilities/facility-jobs-community-section";
+import {
+  FacilityTypeConditionalFields,
+  type FacilityOption,
+} from "@/app/admin/facilities/facility-type-conditional-fields";
 
 // ---------------------------------------------------------------------------
 // Form state — mirrors `facilitySchema` (lib/schema.ts) field-for-field.
@@ -726,51 +732,25 @@ function CapacitySection({
 }
 
 // ---------------------------------------------------------------------------
-// Extension-point placeholders (real components wired in by the remaining
-// sub-unit: 2b-4 energy/water/jobs/community/type-conditional). Rendering
-// nothing keeps the live UI free of "coming soon" placeholders between
-// sub-unit commits, while giving that sub-unit an obvious, named spot to
-// plug a real `<FacilityXSection state={state} setState={setState} />`
-// component into.
-//
-// 2b-2's sources[] editor is the real `FacilitySourcesSection`, and 2b-3's
-// statusHistory[]/subsidies[] editors are the real `FacilityStatusHistory
-// Section`/`FacilitySubsidiesSection`, all imported above — each takes only
-// the slice(s) of state it actually touches (plus `sources` for the two
-// 2b-3 editors' sourceIndex pickers), rather than the full `state`/
-// `setState`.
-// ---------------------------------------------------------------------------
-
-type FacilitySectionProps = {
-  state: FacilityFormState;
-  setState: Dispatch<SetStateAction<FacilityFormState>>;
-};
-
-function FacilityEnergyWaterSection(props: FacilitySectionProps) {
-  void props;
-  return null; // wired in by 2b-4
-}
-
-function FacilityJobsCommunitySection(props: FacilitySectionProps) {
-  void props;
-  return null; // wired in by 2b-4
-}
-
-function FacilityTypeConditionalFields(props: FacilitySectionProps) {
-  void props;
-  return null; // wired in by 2b-4
-}
-
-// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export interface FacilityFormProps {
   initialState: FacilityFormState;
   mode: "create" | "edit";
+  /** Existing facilities (id + name only), used by the power_generation
+   *  branch's `poweredFacilityIds` combobox. Passed from the server-component
+   *  page entries (`new/page.tsx`, `[id]/page.tsx`), which already call
+   *  `loadFacilities()` — no separate client-side fetch. Empty array when
+   *  not yet supplied is safe (the combobox simply offers nothing to add). */
+  availableFacilities?: FacilityOption[];
 }
 
-export function FacilityForm({ initialState, mode }: FacilityFormProps) {
+export function FacilityForm({
+  initialState,
+  mode,
+  availableFacilities = [],
+}: FacilityFormProps) {
   const router = useRouter();
   const [state, setState] = useState<FacilityFormState>(initialState);
   const [errors, setErrors] = useState<FieldIssues>({});
@@ -826,9 +806,40 @@ export function FacilityForm({ initialState, mode }: FacilityFormProps) {
         sources={state.sources}
         onChange={(next) => setState((prev) => ({ ...prev, subsidies: next }))}
       />
-      <FacilityEnergyWaterSection state={state} setState={setState} />
-      <FacilityJobsCommunitySection state={state} setState={setState} />
-      <FacilityTypeConditionalFields state={state} setState={setState} />
+      <FacilityEnergyWaterSection
+        energy={state.energy}
+        water={state.water}
+        onChangeEnergy={(next) => setState((prev) => ({ ...prev, energy: next }))}
+        onChangeWater={(next) => setState((prev) => ({ ...prev, water: next }))}
+      />
+      <FacilityJobsCommunitySection
+        jobs={state.jobs}
+        community={state.community}
+        sources={state.sources}
+        onChangeJobs={(next) => setState((prev) => ({ ...prev, jobs: next }))}
+        onChangeCommunity={(next) => setState((prev) => ({ ...prev, community: next }))}
+      />
+      <FacilityTypeConditionalFields
+        facilityType={state.facilityType}
+        aiClassification={state.aiClassification}
+        onChangeAiClassification={(next) =>
+          setState((prev) => ({ ...prev, aiClassification: next }))
+        }
+        dataCenterEnvironmental={state.dataCenterEnvironmental}
+        onChangeDataCenterEnvironmental={(next) =>
+          setState((prev) => ({ ...prev, dataCenterEnvironmental: next }))
+        }
+        mining={state.mining}
+        onChangeMining={(next) => setState((prev) => ({ ...prev, mining: next }))}
+        cryptoMiningEnvironmental={state.cryptoMiningEnvironmental}
+        onChangeCryptoMiningEnvironmental={(next) =>
+          setState((prev) => ({ ...prev, cryptoMiningEnvironmental: next }))
+        }
+        generation={state.generation}
+        onChangeGeneration={(next) => setState((prev) => ({ ...prev, generation: next }))}
+        availableFacilities={availableFacilities}
+        currentFacilityId={mode === "edit" ? state.id : undefined}
+      />
 
       {formError ? (
         <p role="alert" className="text-sm text-destructive">
