@@ -1,0 +1,31 @@
+You are researching net-new AI data center, crypto-mining, or dedicated power-generation
+facilities in {{STATE}} for the Compute Atlas dataset (a source-cited public tracker).
+
+Scope for this session:
+- Only facilities in {{STATE}} not already well-known/obviously duplicated in public trackers.
+- Only facilityType one of: data_center, crypto_mining, power_generation.
+- Every fact must be traceable to a real, checkable source (press release, permit filing,
+  ISO interconnection queue, OSM, subsidy/incentive filing, or other public filing).
+- Do not fabricate coordinates, capacity, operator names, or dates. If a field is unknown,
+  omit it rather than guessing.
+
+For each facility you find:
+1. Research it using real web sources. Cite every source you use with a URL.
+2. Build a JSON object matching the Facility schema in lib/schema.ts — see the
+   discriminated union on `facilityType` (data_center | crypto_mining | power_generation),
+   the shared base fields (id, name, operator, status, confidence, location, sources, ...),
+   and the type-specific fields for whichever facilityType applies.
+3. `id` must be a lowercase kebab-slug unique to this facility (e.g. "operator-name-city-state").
+4. `sources` must be a non-empty array of `{ url, label, retrievedAt, kind }` objects — the
+   staging queue rejects any candidate without at least one cited source.
+5. Attach a `provenance` object alongside the facility payload:
+   `{ sources: string[] (the same URLs), confidence, discoveredBy: "discovery-pipeline",
+      note: "brief summary of why this is a credible new candidate" }`.
+
+Output requirements — read carefully:
+- Output ONLY a single JSON array to stdout. Each element is either a bare Facility doc,
+  or `{ "facility": <Facility doc>, "provenance": {...} }`.
+- No prose, no markdown fences, no commentary before or after the JSON.
+- Do NOT edit any files in this repository. Do NOT run git commands. Do NOT commit anything.
+- This is a single, bounded research session — do not spawn sub-agents or multi-step workflows.
+- If you find zero credible new candidates, output an empty array: []

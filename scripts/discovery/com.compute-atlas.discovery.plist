@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.compute-atlas.discovery</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__REPO_PATH__/scripts/discovery/run.sh</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>__REPO_PATH__</string>
+
+  <!--
+    Weekly: Sunday at 03:00 local time. launchd fires this even if the Mac
+    was asleep at the scheduled time (runs at next wake), so treat this as
+    "roughly weekly" rather than exact.
+
+    NOTE: DISCOVERY_ENABLED is intentionally NOT set here — the fail-closed
+    kill switch in run.sh defaults to disabled. Enable deliberately, e.g. by
+    adding an EnvironmentVariables entry below, or by running run.sh manually
+    with DISCOVERY_ENABLED=true.
+  -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key>
+    <integer>0</integer>
+    <key>Hour</key>
+    <integer>3</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>__REPO_PATH__/discovery-logs/launchd.out</string>
+  <key>StandardErrorPath</key>
+  <string>__REPO_PATH__/discovery-logs/launchd.err</string>
+
+  <key>RunAtLoad</key>
+  <false/>
+</dict>
+</plist>
