@@ -1,7 +1,23 @@
-import { index, jsonb, pgTable, text, doublePrecision, timestamp, uuid } from "drizzle-orm/pg-core";
+import { customType, index, jsonb, pgTable, text, doublePrecision, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import type { Facility } from "@/lib/schema";
 import type { DiffEntry } from "@/lib/doc-diff";
+
+/**
+ * `pg-core` has no first-class `tsvector` column type, so this is a minimal
+ * custom type solely for query-builder awareness of `facilities.search_vector`
+ * (e.g. so `sql` template queries referencing `facilitiesTable.searchVector`
+ * resolve to the right column name). It does NOT define how the column's
+ * value is computed — that's the hand-written `GENERATED ALWAYS AS (...)
+ * STORED` expression in drizzle/0003_facilities_search_vector.sql, which
+ * `drizzle-kit generate` cannot model. This type is read-oriented; nothing in
+ * this codebase writes to `search_vector` directly (Postgres computes it).
+ */
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return "tsvector";
+  },
+});
 
 export const facilitiesTable = pgTable(
   "facilities",
@@ -21,6 +37,10 @@ export const facilitiesTable = pgTable(
     announcedDate: text("announced_date"),
     lastUpdated: text("last_updated").notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    // Generated column — see drizzle/0003_facilities_search_vector.sql and the
+    // `tsvector` custom type comment above. Never set/updated by application
+    // code (Postgres computes it from name/operator/doc->>'notes' on write).
+    searchVector: tsvector("search_vector"),
   },
   (table) => [
     index("facilities_state_idx").on(table.state),
