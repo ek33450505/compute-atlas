@@ -1,6 +1,7 @@
 import { getFacilityById } from "@/lib/data";
 import type { SubmissionRow } from "@/lib/db/schema";
-import { Badge } from "@/components/ui/badge";
+import { computeDocDiff } from "@/lib/doc-diff";
+import { DocDiffView, stringifyValue } from "@/components/admin/doc-diff";
 
 /** Fields to skip when rendering a create-kind summary — noisy/internal. */
 const CREATE_SUMMARY_KEYS = [
@@ -13,14 +14,6 @@ const CREATE_SUMMARY_KEYS = [
   "capacityMw",
   "sources",
 ] as const;
-
-function stringifyValue(value: unknown): string {
-  if (value === undefined) return "—";
-  if (value === null) return "null";
-  if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  return JSON.stringify(value, null, 2);
-}
 
 /**
  * Renders a shallow, top-level field-by-field summary of a create-kind
@@ -54,6 +47,13 @@ function CreateSummary({ payload }: { payload: Record<string, unknown> }) {
  * doc and an update-kind submission's patch. `updateFacility`'s own merge
  * (`{...existingRow.doc, ...patch, id}`) is shallow top-level, so a shallow
  * diff view is the correct fidelity here — do not deep-diff nested objects.
+ *
+ * Delegates to the shared `computeDocDiff` (`lib/doc-diff.ts`, also used by
+ * the `facility_history` write path) and the shared `DocDiffView` render
+ * component (`components/admin/doc-diff.tsx`). `computeDocDiff(current,
+ * {...current, ...patch})` reproduces this component's prior inline
+ * behavior exactly: spreading `patch` over `current` then diffing against
+ * `current` only ever flags `patch`'s own changed keys.
  */
 function UpdateDiff({
   current,
@@ -62,41 +62,9 @@ function UpdateDiff({
   current: Record<string, unknown> | undefined;
   patch: Record<string, unknown>;
 }) {
-  const changedKeys = Object.keys(patch).filter((key) => {
-    const before = current?.[key];
-    const after = patch[key];
-    return JSON.stringify(before) !== JSON.stringify(after);
-  });
-
-  if (changedKeys.length === 0) {
-    return <p className="text-sm text-muted-foreground">No field-level changes detected.</p>;
-  }
-
-  return (
-    <div className="flex flex-col gap-3">
-      {changedKeys.map((key) => (
-        <div key={key} className="rounded-md border border-border p-3">
-          <p className="mb-1.5 text-xs font-medium text-muted-foreground">{key}</p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <div>
-              <Badge variant="outline" className="mb-1">
-                Before
-              </Badge>
-              <p className="text-sm break-words whitespace-pre-wrap text-muted-foreground">
-                {stringifyValue(current?.[key])}
-              </p>
-            </div>
-            <div>
-              <Badge variant="secondary" className="mb-1">
-                After
-              </Badge>
-              <p className="text-sm break-words whitespace-pre-wrap">{stringifyValue(patch[key])}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  const currentDoc = current ?? null;
+  const entries = computeDocDiff(currentDoc, { ...currentDoc, ...patch });
+  return <DocDiffView entries={entries} />;
 }
 
 export async function SubmissionDetail({ submission }: { submission: SubmissionRow }) {

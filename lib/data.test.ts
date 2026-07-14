@@ -29,6 +29,7 @@ import {
   getFacilitiesByCommunityStatus,
   getPoweredCampuses,
   getPoweredByGenerators,
+  getRecentActivity,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
@@ -674,6 +675,16 @@ describe("getPowerGenerationFacilities", () => {
     for (const f of await getPowerGenerationFacilities()) {
       expect(f.facilityType).toBe("power_generation");
     }
+  });
+});
+
+describe("getRecentActivity", () => {
+  // This suite runs with no DATABASE_URL configured (matches the rest of
+  // this file), so it exercises the no-DB degrade path. The DB-backed
+  // merge/sort/label logic is covered separately in getRecentActivity.db.test.ts
+  // with getDb/hasDatabaseUrl mocked.
+  it("returns an empty array when DATABASE_URL is unset", async () => {
+    expect(await getRecentActivity()).toEqual([]);
   });
 });
 

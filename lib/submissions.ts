@@ -96,10 +96,13 @@ export async function approveSubmission(
     return { ok: false, status: 409, error: `Submission already ${row.status}` };
   }
 
+  // `source: id` attributes the resulting facility_history row to this
+  // submission rather than the "admin-direct" default, so promoted-submission
+  // history correctly shows where the change came from.
   const writeResult: WriteResult =
     row.kind === "create"
-      ? await createFacility(row.payload)
-      : await updateFacility(row.targetFacilityId!, row.payload);
+      ? await createFacility(row.payload, id)
+      : await updateFacility(row.targetFacilityId!, row.payload, id);
 
   if (!writeResult.ok) {
     return writeResult;
