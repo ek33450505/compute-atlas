@@ -8,7 +8,7 @@ import { GraticuleSurvey } from "@/components/home/graticule-survey";
 export const metadata: Metadata = {
   title: "Explore",
   description:
-    "Browse the atlas by lens — states, power generation, community opposition, and operators.",
+    "Browse the atlas by lens — states, power generation, community opposition, operators, and the public API.",
 };
 
 const LENSES = [
@@ -35,6 +35,12 @@ const LENSES = [
     href: "/operators",
     description:
       "Every company running tracked capacity, ranked by build-out.",
+  },
+  {
+    label: "API",
+    href: "/api",
+    description:
+      "The public JSON API behind the dataset — read, write, and submission endpoints, fully documented.",
   },
 ] as const;
 
@@ -71,8 +77,9 @@ export default async function ExplorePage() {
             Explore
           </h1>
           <p className="max-w-2xl text-base text-muted-foreground">
-            The same dataset, sliced four ways — by geography, by power source,
-            by community reception, and by who&rsquo;s building it.
+            The same dataset, sliced five ways — by geography, by power
+            source, by community reception, by who&rsquo;s building it, and
+            through the API directly.
           </p>
         </div>
         <div className="border-t border-border" />
