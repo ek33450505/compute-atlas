@@ -62,9 +62,9 @@ else
   log "invoking claude for state=$STATE (requires an authenticated subscription session)"
   PROMPT="$(sed "s/{{STATE}}/$STATE/g" "$REPO_ROOT/scripts/discovery/discovery-prompt.txt")"
   if command -v timeout >/dev/null 2>&1; then
-    timeout 600 claude -p "$PROMPT" --output-format text > "$OUTFILE"
+    timeout 600 claude -p "$PROMPT" --output-format text < /dev/null > "$OUTFILE"
   else
-    claude -p "$PROMPT" --output-format text > "$OUTFILE"
+    claude -p "$PROMPT" --output-format text < /dev/null > "$OUTFILE"
   fi
 fi
 
