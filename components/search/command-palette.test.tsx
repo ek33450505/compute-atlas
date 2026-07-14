@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll } from "vitest";
+import { describe, it, expect, vi, beforeAll, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CommandPalette } from "./command-palette";
@@ -198,5 +198,72 @@ describe("CommandPalette — Escape closes", () => {
     await user.keyboard("{Escape}");
 
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+});
+
+describe("CommandPalette — live DB search", () => {
+  const DB_ONLY_FACILITY: Facility = {
+    id: "notes-only-match",
+    name: "Zzyzx Data Campus",
+    operator: "Zzyzx Holdings",
+    status: "operational",
+    confidence: "confirmed",
+    facilityType: "data_center",
+    location: { lat: 39.0, lon: -77.0, state: "VA", city: "Ashburn" },
+  } as Facility;
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("merges DB results in, matched only via mocked full-text search", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({
+        ok: true,
+        json: async () => ({ facilities: [DB_ONLY_FACILITY] }),
+      }))
+    );
+
+    const user = userEvent.setup();
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
+
+    await user.click(screen.getByRole("button", { name: /search/i }));
+    const combobox = await screen.findByRole("combobox");
+
+    await user.type(combobox, "backup generator notes");
+
+    expect(
+      await screen.findByRole("option", { name: /zzyzx data campus/i })
+    ).toBeInTheDocument();
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/search?q=backup"),
+      expect.anything()
+    );
+  });
+
+  it("degrades to Fuse-only results when the fetch fails", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("network error");
+      })
+    );
+
+    const user = userEvent.setup();
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
+
+    await user.click(screen.getByRole("button", { name: /search/i }));
+    const combobox = await screen.findByRole("combobox");
+
+    await user.type(combobox, knownFacility.name);
+
+    expect(
+      await screen.findByRole("option", {
+        name: new RegExp(knownFacility.name, "i"),
+      })
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/no matches for/i)).not.toBeInTheDocument();
   });
 });

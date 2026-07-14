@@ -1,6 +1,7 @@
 import Fuse from "fuse.js";
 import { getAllFacilities, getOperators, operatorSlug } from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
+import type { Facility } from "@/lib/schema";
 
 /** The kind of thing a search result points to. */
 export type SearchEntryType = "page" | "facility" | "operator" | "state";
@@ -43,6 +44,32 @@ function pluralize(n: number, singular: string, plural: string): string {
   return n === 1 ? singular : plural;
 }
 
+/** Builds one facility SearchEntry. Shared by buildSearchIndex (the Fuse
+ * index) and the live DB-search merge path so both produce identical entry
+ * shapes. Pure — depends only on stateNameFromCode. */
+export function facilityToSearchEntry(f: Facility): SearchEntry {
+  const stateName = stateNameFromCode(f.location.state) ?? f.location.state;
+  const sublabel = [f.location.city, stateName].filter(Boolean).join(", ");
+  const keywords = [
+    f.name,
+    f.operator,
+    f.location.city,
+    f.location.county,
+    stateName,
+    f.location.state,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return {
+    type: "facility",
+    label: f.name,
+    sublabel: sublabel || undefined,
+    href: `/facilities/${f.id}`,
+    keywords,
+  };
+}
+
 /**
  * Builds the data-backed search index: one entry per facility, operator, and
  * state. Does NOT include "page" entries — those are UI config supplied by
@@ -54,26 +81,7 @@ export async function buildSearchIndex(): Promise<SearchEntry[]> {
 
   // Facilities — one entry each.
   for (const f of facilities) {
-    const stateName = stateNameFromCode(f.location.state) ?? f.location.state;
-    const sublabel = [f.location.city, stateName].filter(Boolean).join(", ");
-    const keywords = [
-      f.name,
-      f.operator,
-      f.location.city,
-      f.location.county,
-      stateName,
-      f.location.state,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    entries.push({
-      type: "facility",
-      label: f.name,
-      sublabel: sublabel || undefined,
-      href: `/facilities/${f.id}`,
-      keywords,
-    });
+    entries.push(facilityToSearchEntry(f));
   }
 
   // Operators — count facilities per operator in one pass.
@@ -158,4 +166,43 @@ export function searchCommands(
     }
   }
   return groups;
+}
+
+/**
+ * Folds DB full-text facility results (already ranked by ts_rank, so kept in
+ * their given order) into the Fuse-ranked `groups`: appended AFTER the Fuse
+ * facility hits, deduped by href, capped at `cap`. If the Fuse groups had no
+ * facility group but DB results exist, a facility group is inserted in
+ * GROUP_ORDER position. No-op (returns `groups` as-is) when `dbEntries` is
+ * empty. Pure — no fetching. Other groups (page/operator/state) pass through
+ * untouched, preserving GROUP_ORDER.
+ */
+export function mergeFacilityResults(
+  groups: SearchResultGroup[],
+  dbEntries: SearchEntry[],
+  cap = 10
+): SearchResultGroup[] {
+  if (dbEntries.length === 0) return groups;
+  const byType = new Map(groups.map((g) => [g.type, g] as const));
+  const existing = byType.get("facility")?.items ?? [];
+  const seen = new Set(existing.map((e) => e.href));
+  const mergedItems = [...existing];
+  for (const e of dbEntries) {
+    if (mergedItems.length >= cap) break;
+    if (seen.has(e.href)) continue;
+    seen.add(e.href);
+    mergedItems.push(e);
+  }
+  const result: SearchResultGroup[] = [];
+  for (const type of GROUP_ORDER) {
+    if (type === "facility") {
+      if (mergedItems.length > 0) {
+        result.push({ type: "facility", label: SEARCH_GROUP_LABELS.facility, items: mergedItems });
+      }
+    } else {
+      const g = byType.get(type);
+      if (g && g.items.length > 0) result.push(g);
+    }
+  }
+  return result;
 }
