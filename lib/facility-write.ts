@@ -3,8 +3,9 @@ import { revalidatePath, revalidateTag } from "next/cache";
 
 import { facilitySchema, type Facility } from "@/lib/schema";
 import { getDb } from "@/lib/db/client";
-import { facilitiesTable } from "@/lib/db/schema";
+import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
 import { docToRow } from "@/lib/db/serialize";
+import { computeDocDiff, type DiffEntry } from "@/lib/doc-diff";
 
 export type WriteResult =
   | { ok: true; facility: Facility }
@@ -25,11 +26,40 @@ function revalidateFacilities(): void {
 }
 
 /**
+ * Inserts one `facility_history` audit row. Deliberately log-and-continue on
+ * failure rather than propagating/rolling back the facility mutation — the
+ * facility write is the source of truth Ed cares about most; losing one
+ * history row is recoverable, whereas failing a facility save because the
+ * audit table hiccuped would be a worse outcome. (Judgment call per Phase 5a
+ * of the admin-ui-part2 plan.)
+ */
+async function recordFacilityHistory(
+  facilityId: string,
+  changeType: "create" | "update" | "delete",
+  diff: DiffEntry[],
+  source: string
+): Promise<void> {
+  try {
+    const db = getDb();
+    await db.insert(facilityHistoryTable).values({ facilityId, changeType, diff, source });
+  } catch (err) {
+    console.error(`facility_history insert failed for ${facilityId} (${changeType}):`, err);
+  }
+}
+
+/**
  * Validates and inserts a new facility. Rejects with 400 on schema failure,
  * 409 if a row with the same id already exists (checked directly against the
  * DB, not the cached read path — the cache can be stale by definition).
+ *
+ * `source` attributes the resulting audit-log row: `"admin-direct"` for a
+ * direct admin write, or a submission id when the write came from an
+ * approved submission (see `lib/submissions.ts`'s `approveSubmission`).
  */
-export async function createFacility(input: unknown): Promise<WriteResult> {
+export async function createFacility(
+  input: unknown,
+  source: string = "admin-direct"
+): Promise<WriteResult> {
   const parsed = facilitySchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };
@@ -46,6 +76,7 @@ export async function createFacility(input: unknown): Promise<WriteResult> {
   }
 
   await db.insert(facilitiesTable).values(docToRow(doc));
+  await recordFacilityHistory(doc.id, "create", computeDocDiff(null, doc), source);
   revalidateFacilities();
   return { ok: true, facility: doc };
 }
@@ -58,8 +89,14 @@ export async function createFacility(input: unknown): Promise<WriteResult> {
  * PATCH replaces top-level fields wholesale (no deep merge): to change a
  * nested field like `location.city`, send the full `location` object. YAGNI —
  * a deep-merge patch format isn't needed yet.
+ *
+ * `source` attributes the resulting audit-log row (see `createFacility`).
  */
-export async function updateFacility(id: string, patch: unknown): Promise<WriteResult> {
+export async function updateFacility(
+  id: string,
+  patch: unknown,
+  source: string = "admin-direct"
+): Promise<WriteResult> {
   const db = getDb();
   const existingRows = await db
     .select()
@@ -81,12 +118,20 @@ export async function updateFacility(id: string, patch: unknown): Promise<WriteR
     .update(facilitiesTable)
     .set({ ...docToRow(doc), updatedAt: new Date() })
     .where(eq(facilitiesTable.id, id));
+  await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
   revalidateFacilities();
   return { ok: true, facility: doc };
 }
 
-/** Deletes a facility by id. 404s (rather than no-op 200) if it doesn't exist. */
-export async function deleteFacility(id: string): Promise<WriteResult> {
+/**
+ * Deletes a facility by id. 404s (rather than no-op 200) if it doesn't exist.
+ *
+ * `source` attributes the resulting audit-log row (see `createFacility`).
+ */
+export async function deleteFacility(
+  id: string,
+  source: string = "admin-direct"
+): Promise<WriteResult> {
   const db = getDb();
   const existingRows = await db
     .select()
@@ -98,6 +143,7 @@ export async function deleteFacility(id: string): Promise<WriteResult> {
   }
 
   await db.delete(facilitiesTable).where(eq(facilitiesTable.id, id));
+  await recordFacilityHistory(id, "delete", computeDocDiff(existingRow.doc, null), source);
   revalidateFacilities();
   return { ok: true, facility: existingRow.doc };
 }

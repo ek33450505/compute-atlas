@@ -1,6 +1,7 @@
 import { index, jsonb, pgTable, text, doublePrecision, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import type { Facility } from "@/lib/schema";
+import type { DiffEntry } from "@/lib/doc-diff";
 
 export const facilitiesTable = pgTable(
   "facilities",
@@ -55,3 +56,33 @@ export const submissionsTable = pgTable(
 );
 
 export type SubmissionRow = typeof submissionsTable.$inferSelect;
+
+/**
+ * Audit trail for facility mutations. Stores a COMPUTED diff (`DiffEntry[]`,
+ * see `lib/doc-diff.ts`) rather than two full before/after doc columns — the
+ * diff is computed once at write time by the `lib/facility-write.ts`
+ * primitives and persisted as-is; nothing re-diffs on read.
+ *
+ * `facilityId` intentionally carries no hard FK constraint, mirroring the
+ * repo's loose-coupling style around the `doc`-jsonb id lifecycle (a facility
+ * row can be deleted while its history remains as a record of what existed).
+ */
+export const facilityHistoryTable = pgTable(
+  "facility_history",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    facilityId: text("facility_id").notNull(),
+    changedAt: timestamp("changed_at", { withTimezone: true }).defaultNow().notNull(),
+    changeType: text("change_type").notNull(), // create | update | delete
+    diff: jsonb("diff").$type<DiffEntry[]>().notNull(),
+    source: text("source").notNull(), // "admin-direct" or a submission id
+  },
+  (table) => [
+    index("facility_history_facility_id_changed_at_idx").on(
+      table.facilityId,
+      table.changedAt.desc()
+    ),
+  ]
+);
+
+export type FacilityHistoryRow = typeof facilityHistoryTable.$inferSelect;
