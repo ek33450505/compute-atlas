@@ -44,6 +44,14 @@ if [[ -n "$CURRENT_STATE" ]]; then
 fi
 
 STATE="${STATES[$CURRENT_INDEX]}"
+
+# --- existing-facilities projection (fail-open: empty string on any error) --
+if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
+  EXISTING_FACILITIES=""
+else
+  EXISTING_FACILITIES="$(npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state="$STATE" 2>>"$LOG_DIR/existing-facilities.err" || echo "")"
+fi
+
 NEXT_INDEX=$(( (CURRENT_INDEX + 1) % ${#STATES[@]} ))
 echo "${STATES[$NEXT_INDEX]}" > "$CURSOR_FILE"
 
@@ -60,7 +68,20 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
   fi
 else
   log "invoking claude for state=$STATE (requires an authenticated subscription session)"
-  PROMPT="$(sed "s/{{STATE}}/$STATE/g" "$REPO_ROOT/scripts/discovery/discovery-prompt.txt")"
+  # {{EXISTING_FACILITIES}} may contain unescaped facility name/operator/URL
+  # field content (slashes, ampersands, newlines, even shell metacharacters).
+  # It MUST be inserted as a literal block that is never shell-evaluated or
+  # re-interpreted — a plain sed s/{{X}}/$VAR/ substitution is unsafe here.
+  # Use sed's `r` (read-file) command instead: replace the placeholder LINE
+  # with the verbatim contents of a temp file.
+  EXISTING_FACILITIES_FILE="$(mktemp)"
+  printf '%s' "$EXISTING_FACILITIES" > "$EXISTING_FACILITIES_FILE"
+  PROMPT="$(sed "s/{{STATE}}/$STATE/g" "$REPO_ROOT/scripts/discovery/discovery-prompt.txt" \
+    | sed "/{{EXISTING_FACILITIES}}/{
+r $EXISTING_FACILITIES_FILE
+d
+}")"
+  rm -f "$EXISTING_FACILITIES_FILE"
   if command -v timeout >/dev/null 2>&1; then
     timeout 600 claude -p "$PROMPT" --output-format text < /dev/null > "$OUTFILE"
   else
@@ -75,5 +96,9 @@ npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" 
   --max="${MAX_CANDIDATES:-5}" \
   --state="$STATE" \
   ${API_BASE_URL:+--base-url="$API_BASE_URL"}
+
+# --- source-liveness check (read-only — runs every run, including dry-run) --
+log "checking source liveness"
+npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_DIR/check-sources.err" || true
 
 log "discovery run $RUN_ID complete"
