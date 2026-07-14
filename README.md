@@ -1,5 +1,7 @@
 # Compute Atlas
 
+[![Compute Atlas — an interactive, source-cited map of U.S. grid-scale compute infrastructure](docs/media/map.png)](https://www.compute-atlas.com)
+
 [![facilities](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fek33450505%2Fcompute-atlas%2Fmain%2Fdata%2Ffacilities.json&query=%24.length&label=facilities&color=3F5B43&style=flat)](data/facilities.json)
 [![code: MIT](https://img.shields.io/badge/code-MIT-informational?style=flat)](LICENSE)
 [![data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational?style=flat)](LICENSE-DATA)
