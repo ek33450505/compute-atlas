@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { loadFacilities } from "@/lib/data";
 import { FacilityForm } from "@/app/admin/facilities/facility-form";
 import { facilityToFormState } from "@/app/admin/facilities/facility-form-state";
+import { HistoryPanel } from "@/app/admin/facilities/[id]/history-panel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface EditFacilityPageProps {
   params: Promise<{ id: string }>;
@@ -46,11 +48,22 @@ export default async function EditFacilityPage({ params }: EditFacilityPageProps
         <p className="text-sm text-muted-foreground">{facility.name}</p>
       </header>
 
-      <FacilityForm
-        mode="edit"
-        initialState={facilityToFormState(facility)}
-        availableFacilities={availableFacilities}
-      />
+      <Tabs defaultValue="edit">
+        <TabsList>
+          <TabsTrigger value="edit">Edit</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
+        </TabsList>
+        <TabsContent value="edit">
+          <FacilityForm
+            mode="edit"
+            initialState={facilityToFormState(facility)}
+            availableFacilities={availableFacilities}
+          />
+        </TabsContent>
+        <TabsContent value="history">
+          <HistoryPanel facilityId={facility.id} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
