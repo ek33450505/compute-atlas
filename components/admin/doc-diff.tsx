@@ -30,24 +30,28 @@ export function DocDiffView({ entries }: { entries: DiffEntry[] }) {
       {entries.map((entry) => (
         <div key={entry.key} className="rounded-md border border-border p-3">
           <p className="mb-1.5 text-xs font-medium text-muted-foreground">{entry.key}</p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <div>
-              <Badge variant="outline" className="mb-1">
-                Before
-              </Badge>
-              <p className="text-sm break-words whitespace-pre-wrap text-muted-foreground">
+              <dt>
+                <Badge variant="outline" className="mb-1">
+                  Before
+                </Badge>
+              </dt>
+              <dd className="text-sm break-words whitespace-pre-wrap text-muted-foreground">
                 {stringifyValue(entry.before)}
-              </p>
+              </dd>
             </div>
             <div>
-              <Badge variant="secondary" className="mb-1">
-                After
-              </Badge>
-              <p className="text-sm break-words whitespace-pre-wrap">
+              <dt>
+                <Badge variant="secondary" className="mb-1">
+                  After
+                </Badge>
+              </dt>
+              <dd className="text-sm break-words whitespace-pre-wrap">
                 {stringifyValue(entry.after)}
-              </p>
+              </dd>
             </div>
-          </div>
+          </dl>
         </div>
       ))}
     </div>

@@ -21,16 +21,18 @@ function HistoryEntry({ entry }: { entry: FacilityHistoryRow }) {
   const label = CHANGE_TYPE_LABEL[entry.changeType] ?? entry.changeType;
 
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-border p-4">
+    <article className="flex flex-col gap-2 rounded-md border border-border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">{label}</span>
           <span className="text-xs text-muted-foreground">via {entry.source}</span>
         </div>
-        <span className="text-xs text-muted-foreground">{formatChangedAt(entry.changedAt)}</span>
+        <time dateTime={entry.changedAt.toISOString()} className="text-xs text-muted-foreground">
+          {formatChangedAt(entry.changedAt)}
+        </time>
       </div>
       <DocDiffView entries={entry.diff} />
-    </div>
+    </article>
   );
 }
 
