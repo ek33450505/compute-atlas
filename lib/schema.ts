@@ -16,7 +16,20 @@ export const sourceKindEnum = z.enum([
 ]);
 
 export const sourceSchema = z.object({
-  url: z.string().url(),
+  url: z
+    .string()
+    .url()
+    .refine(
+      (value) => {
+        try {
+          const { protocol } = new URL(value);
+          return protocol === "http:" || protocol === "https:";
+        } catch {
+          return false;
+        }
+      },
+      { message: "url must use the http or https protocol" },
+    ),
   label: z.string().min(1),
   publisher: z.string().optional(),
   retrievedAt: z.string().min(4),
