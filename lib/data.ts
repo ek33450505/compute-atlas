@@ -12,8 +12,9 @@ import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
 import { getFacilityMaxMw } from "@/lib/format";
 import facilitiesRaw from "@/data/facilities.json";
+import { desc, eq } from "drizzle-orm";
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
-import { facilitiesTable } from "@/lib/db/schema";
+import { facilitiesTable, submissionsTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 
 /** Parses and validates the bundled JSON fallback. Throws loudly on bad data. */
@@ -735,4 +736,86 @@ export async function getOperatorSummary(name: string): Promise<OperatorSummary 
     byStatus,
     stateCount: states.size,
   };
+}
+
+// ============================================================
+// Activity feed (used by /activity and the homepage teaser)
+// ============================================================
+
+/** A single reverse-chronological activity entry — either an updated facility or an approved contribution. */
+export interface ActivityEntry {
+  kind: "facility_updated" | "submission_approved";
+  facilityId: string;
+  facilityName: string;
+  /** Short, non-diff label, e.g. "status updated" or "new facility added". */
+  label: string;
+  timestamp: Date;
+}
+
+/**
+ * Returns recently-updated facilities and recently-approved submissions,
+ * merged into a single reverse-chronological feed (most recent first).
+ *
+ * DB-only: the JSON fallback bundle has no `updatedAt`/`reviewedAt` history
+ * to sort on, so this returns `[]` when `DATABASE_URL` is unset rather than
+ * throwing — the public /activity page and homepage teaser both degrade to
+ * an empty section instead of crashing.
+ */
+export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
+  if (!hasDatabaseUrl()) {
+    return [];
+  }
+
+  const db = getDb();
+
+  // Fetch 2x the final limit from each source before merging. Each source is
+  // ordered independently, so an equal per-source LIMIT can drop genuinely
+  // recent entries: e.g. requesting 50 with 30 stale facility updates ahead
+  // of 20 fresh submissions in wall-clock time still fetches only the top 50
+  // of each, and the post-merge sort can discard newer facility rows that
+  // never made it past their own source's cutoff. Over-fetching guarantees
+  // the merge always has enough candidates from both sources to find the
+  // true top-N once sorted together.
+  const [updatedFacilities, approvedSubmissions] = await Promise.all([
+    db
+      .select()
+      .from(facilitiesTable)
+      .orderBy(desc(facilitiesTable.updatedAt))
+      .limit(2 * limit),
+    db
+      .select()
+      .from(submissionsTable)
+      .where(eq(submissionsTable.status, "approved"))
+      .orderBy(desc(submissionsTable.reviewedAt))
+      .limit(2 * limit),
+  ]);
+
+  const facilityEntries: ActivityEntry[] = updatedFacilities.map((row) => ({
+    kind: "facility_updated",
+    facilityId: row.id,
+    facilityName: row.name,
+    label: "facility updated",
+    timestamp: row.updatedAt,
+  }));
+
+  const submissionEntries: ActivityEntry[] = approvedSubmissions
+    .filter((row) => row.reviewedAt !== null)
+    .map((row) => {
+      const payload = row.payload as Record<string, unknown>;
+      const facilityId = row.targetFacilityId ?? String(payload.id ?? "");
+      const facilityName =
+        typeof payload.name === "string" ? payload.name : facilityId || "Unknown facility";
+      return {
+        kind: "submission_approved",
+        facilityId,
+        facilityName,
+        label: row.kind === "create" ? "new facility added" : "contribution approved",
+        // Non-null assertion is safe: filtered above.
+        timestamp: row.reviewedAt!,
+      };
+    });
+
+  return [...facilityEntries, ...submissionEntries]
+    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+    .slice(0, limit);
 }

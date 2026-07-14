@@ -2,9 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { siteConfig } from "@/lib/site";
-import { getStats, getNotableFacilities } from "@/lib/data";
+import { getStats, getNotableFacilities, getRecentActivity } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
+import { ActivityList } from "@/app/activity/activity-list";
+
+const ACTIVITY_TEASER_LIMIT = 5;
 
 export const metadata: Metadata = {
   description: siteConfig.description,
@@ -17,6 +20,7 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const { count, states, operationalMw, plannedMw } = await getStats();
   const notable = await getNotableFacilities(6);
+  const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
@@ -168,6 +172,26 @@ export default async function HomePage() {
           })}
         </div>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Recent activity teaser                                              */}
+      {/* ------------------------------------------------------------------ */}
+      {recentActivity.length > 0 && (
+        <div className="mt-12 border-t border-border pt-10">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <h2 className="font-display text-2xl text-foreground">
+              Recent activity
+            </h2>
+            <Link
+              href="/activity"
+              className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              View all →
+            </Link>
+          </div>
+          <ActivityList entries={recentActivity} />
+        </div>
+      )}
     </div>
   );
 }
