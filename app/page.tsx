@@ -2,7 +2,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { siteConfig } from "@/lib/site";
-import { getStats, getNotableFacilities, getRecentActivity } from "@/lib/data";
+import { datasetJsonLdString } from "@/lib/seo";
+import {
+  getStats,
+  getNotableFacilities,
+  getRecentActivity,
+  getAllFacilities,
+} from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { ActivityList } from "@/app/activity/activity-list";
@@ -22,8 +28,23 @@ export default async function HomePage() {
   const notable = await getNotableFacilities(6);
   const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
 
+  // Max lastUpdated across the dataset, as an ISO string, for the Dataset
+  // JSON-LD's dateModified. Falls back to omitting the field if the dataset
+  // is empty or every lastUpdated value fails to parse.
+  const allFacilities = await getAllFacilities();
+  const maxLastUpdatedMs = allFacilities.reduce((max, f) => {
+    const ms = new Date(f.lastUpdated).getTime();
+    return Number.isNaN(ms) ? max : Math.max(max, ms);
+  }, 0);
+  const dateModified =
+    maxLastUpdatedMs > 0 ? new Date(maxLastUpdatedMs).toISOString() : undefined;
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: datasetJsonLdString({ dateModified }) }}
+      />
       {/* ------------------------------------------------------------------ */}
       {/* Hero                                                                */}
       {/* ------------------------------------------------------------------ */}

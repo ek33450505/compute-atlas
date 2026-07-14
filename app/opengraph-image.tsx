@@ -142,7 +142,7 @@ export default async function OGImage() {
                 color: MUTED_INK,
               }}
             >
-              computeatlas.org
+              {siteConfig.url.replace(/^https?:\/\//, "")}
             </div>
           </div>
         </div>
