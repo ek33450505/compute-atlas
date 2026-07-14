@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { runSubmit, normalizeCandidates, type RunSubmitOptions } from "./submit-candidates";
+import { runSubmit, normalizeCandidates, parseCandidatesJson, type RunSubmitOptions } from "./submit-candidates";
 import type { Facility } from "../../lib/schema";
 
 const EXISTING_FACILITY: Facility = {
@@ -222,5 +222,34 @@ describe("runSubmit", () => {
     expect(summary.errors).toBe(1);
     expect(summary.submitted).toBe(1);
     expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("parseCandidatesJson", () => {
+  it("parses a plain JSON array unchanged", () => {
+    const result = parseCandidatesJson('[{"id":"a"},{"id":"b"}]');
+    expect(result).toEqual([{ id: "a" }, { id: "b" }]);
+  });
+
+  it("recovers a candidates array behind a prose preamble", () => {
+    const result = parseCandidatesJson(
+      'I\'ve verified six facilities. Here is the JSON:\n\n[{"id":"a"}]'
+    );
+    expect(result).toEqual([{ id: "a" }]);
+  });
+
+  it("recovers a candidates array with preamble and trailing prose", () => {
+    const result = parseCandidatesJson(
+      'Sure, here you go:\n\n[{"id":"a"},{"id":"b"}]\n\nLet me know if you need anything else.'
+    );
+    expect(result).toEqual([{ id: "a" }, { id: "b" }]);
+  });
+
+  it("throws on a bare JSON object with no array", () => {
+    expect(() => parseCandidatesJson('{"id":"a"}')).toThrow();
+  });
+
+  it("throws on unparseable garbage", () => {
+    expect(() => parseCandidatesJson("not json at all")).toThrow();
   });
 });

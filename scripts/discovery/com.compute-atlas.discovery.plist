@@ -15,19 +15,32 @@
   <string>__REPO_PATH__</string>
 
   <!--
-    Weekly: Sunday at 03:00 local time. launchd fires this even if the Mac
-    was asleep at the scheduled time (runs at next wake), so treat this as
-    "roughly weekly" rather than exact.
+    launchd runs with a bare PATH, so the binaries run.sh calls (claude, node,
+    npx — Homebrew installs them in /opt/homebrew/bin) must be on PATH here or
+    the job fails to find them. Adjust the prefix if your install differs.
 
-    NOTE: DISCOVERY_ENABLED is intentionally NOT set here — the fail-closed
-    kill switch in run.sh defaults to disabled. Enable deliberately, e.g. by
-    adding an EnvironmentVariables entry below, or by running run.sh manually
-    with DISCOVERY_ENABLED=true.
+    DISCOVERY_ENABLED is intentionally NOT set — run.sh's fail-closed kill
+    switch keeps the job a no-op until you enable it. To actually run, uncomment
+    DISCOVERY_ENABLED below and set API_BASE_URL to your deployment. The admin
+    token is never set here: the submit step reads it from .env.local via
+    `tsx --env-file`, keeping the secret out of this file.
+  -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <!-- <key>DISCOVERY_ENABLED</key><string>true</string> -->
+    <!-- <key>API_BASE_URL</key><string>https://www.compute-atlas.com</string> -->
+  </dict>
+
+  <!--
+    Daily at 03:00 local time. One state per run; the 15-state rotation cursor
+    means full coverage cycles roughly every two weeks. launchd fires at next
+    wake if the Mac was asleep at 03:00, so treat this as "roughly daily". For a
+    lighter cadence, add <key>Weekday</key><integer>0</integer> to run Sundays only.
   -->
   <key>StartCalendarInterval</key>
   <dict>
-    <key>Weekday</key>
-    <integer>0</integer>
     <key>Hour</key>
     <integer>3</integer>
     <key>Minute</key>

@@ -8,7 +8,7 @@ approved/rejected by a human via the Phase 4 CLI.
 ## Architecture
 
 ```
-run.sh (launchd, weekly)
+run.sh (launchd, daily)
   1. kill switch check (fail-closed)
   2. pick next state from a rotation cursor
   3. claude -p <discovery-prompt.txt with {{STATE}}>  → JSON array on stdout
@@ -68,18 +68,40 @@ npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts \
 ## Installing the launchd job
 
 ```bash
-cp scripts/discovery/com.compute-atlas.discovery.plist ~/Library/LaunchAgents/
-# Replace __REPO_PATH__ with the absolute path to this repo in the copy.
-sed -i '' "s|__REPO_PATH__|$(pwd)|g" ~/Library/LaunchAgents/com.compute-atlas.discovery.plist
-launchctl load ~/Library/LaunchAgents/com.compute-atlas.discovery.plist
+# Fill the template's __REPO_PATH__ placeholders and install a copy.
+sed "s|__REPO_PATH__|$(pwd)|g" \
+  scripts/discovery/com.compute-atlas.discovery.plist \
+  > ~/Library/LaunchAgents/com.compute-atlas.discovery.plist
+
+# Enable it: uncomment DISCOVERY_ENABLED + API_BASE_URL in the installed copy's
+# EnvironmentVariables dict (the committed template ships them commented so the
+# job is fail-closed by default).
+
+# Load into the GUI domain (so `claude -p` can reach your subscription auth).
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.compute-atlas.discovery.plist
+launchctl print gui/$(id -u)/com.compute-atlas.discovery   # verify: state, runs, path
 ```
 
-The job runs weekly (Sunday 03:00 local) but stays a no-op until you
-explicitly enable it (see kill switch above — e.g. add an
-`EnvironmentVariables` dict with `DISCOVERY_ENABLED` set to `true` to the
-plist, or manage the switch out of band).
+The job runs daily at 03:00 local, one state per run (the cursor rotates
+through 15 states — roughly a full cycle every two weeks). It stays a no-op
+until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default — see the
+kill switch above).
 
-To disable without unloading the job: `touch discovery-logs/DISABLED`.
+**PATH gotcha:** launchd runs with a bare `PATH`, so the plist's
+`EnvironmentVariables` must list wherever `claude`/`node`/`npx` live
+(`/opt/homebrew/bin` on a Homebrew install). Without it the job cannot find
+them and fails in `discovery-logs/launchd.err`.
+
+**Auth caveat:** `claude -p` needs an authenticated Claude Code subscription
+session. It works in an interactive shell; whether it authenticates from the
+background launchd context is worth confirming on the first scheduled run —
+check `discovery-logs/launchd.err` after it fires.
+
+To reload after editing the plist:
+`launchctl bootout gui/$(id -u)/com.compute-atlas.discovery && launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.compute-atlas.discovery.plist`
+
+To disable without unloading: `touch discovery-logs/DISABLED`.
+To remove entirely: `launchctl bootout gui/$(id -u)/com.compute-atlas.discovery`.
 
 ## Reviewing candidates
 

@@ -217,6 +217,28 @@ export async function runSubmit(
 
 // --- CLI -----------------------------------------------------------------
 
+/**
+ * Parses the candidates JSON. `claude -p` sometimes prepends a prose preamble
+ * (e.g. "I've verified six facilities...\n\n[ ... ]") despite the prompt
+ * forbidding it, which breaks a naive JSON.parse. Fast path: the whole file is
+ * a JSON array. Fallback: slice from the first `[` to the last `]` and parse.
+ */
+export function parseCandidatesJson(fileContents: string): unknown[] {
+  try {
+    const parsed: unknown = JSON.parse(fileContents);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {
+    // fall through to the preamble-tolerant slice
+  }
+  const start = fileContents.indexOf("[");
+  const end = fileContents.lastIndexOf("]");
+  if (start !== -1 && end > start) {
+    const parsed: unknown = JSON.parse(fileContents.slice(start, end + 1));
+    if (Array.isArray(parsed)) return parsed;
+  }
+  throw new Error("input did not contain a JSON array of candidates");
+}
+
 interface CliArgs {
   inputPath: string;
   runId: string;
@@ -297,7 +319,7 @@ async function main(): Promise<void> {
   let raw: unknown[];
   try {
     const fileContents = readFileSync(args.inputPath, "utf-8");
-    raw = JSON.parse(fileContents);
+    raw = parseCandidatesJson(fileContents);
   } catch (err) {
     console.error(`Could not read/parse ${args.inputPath}: ${(err as Error).message}`);
     process.exit(1);
