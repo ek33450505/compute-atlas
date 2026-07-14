@@ -49,7 +49,10 @@ STATE="${STATES[$CURRENT_INDEX]}"
 if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
   EXISTING_FACILITIES=""
 else
-  EXISTING_FACILITIES="$(npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state="$STATE" 2>>"$LOG_DIR/existing-facilities.err" || echo "")"
+  if ! EXISTING_FACILITIES="$(npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state="$STATE" 2>>"$LOG_DIR/existing-facilities.err")"; then
+    log "WARN: existing-facilities fetch failed for $STATE — proceeding with empty projection (see existing-facilities.err)"
+    EXISTING_FACILITIES=""
+  fi
 fi
 
 NEXT_INDEX=$(( (CURRENT_INDEX + 1) % ${#STATES[@]} ))
