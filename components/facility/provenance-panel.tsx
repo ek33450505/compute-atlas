@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { safeExternalHref } from "@/lib/url";
 import type { Facility } from "@/lib/schema";
 
 interface ProvenancePanelProps {
@@ -49,7 +50,7 @@ export function ProvenancePanel({ facility }: ProvenancePanelProps) {
           <li key={i} className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <a
-                href={source.url}
+                href={safeExternalHref(source.url)}
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label={`${source.label} (opens in new tab)`}

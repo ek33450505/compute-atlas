@@ -3,6 +3,7 @@ import type { Facility } from "@/lib/schema";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 import { formatUsdCompact } from "@/lib/format";
+import { safeExternalHref } from "@/lib/url";
 
 // --- Enum label maps ---
 const energySourceLabels: Record<string, string> = {
@@ -96,7 +97,7 @@ function SourceLink({
   if (!source) return null;
   return (
     <a
-      href={source.url}
+      href={safeExternalHref(source.url)}
       target="_blank"
       rel="noreferrer noopener"
       aria-label={`${source.label} (opens in new tab)`}
