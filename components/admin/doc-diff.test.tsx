@@ -15,13 +15,15 @@ describe("DocDiffView", () => {
       { key: "status", before: "planned", after: "operational" },
     ];
 
-    render(<DocDiffView entries={entries} />);
+    const { container } = render(<DocDiffView entries={entries} />);
 
     expect(screen.getByText("status")).toBeInTheDocument();
     expect(screen.getByText("Before")).toBeInTheDocument();
     expect(screen.getByText("After")).toBeInTheDocument();
     expect(screen.getByText("planned")).toBeInTheDocument();
     expect(screen.getByText("operational")).toBeInTheDocument();
+    expect(container.querySelector("dl")).toBeInTheDocument();
+    expect(container.querySelectorAll("dt")).toHaveLength(2);
   });
 
   it("renders one card per entry for multiple changed keys", () => {

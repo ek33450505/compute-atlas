@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -18,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SubmissionDetail } from "@/app/admin/submissions/submission-detail";
 import { approveSubmissionAction, rejectSubmissionAction } from "@/app/admin/submissions/actions";
 
 const STATUS_TABS = ["pending", "approved", "rejected"] as const;
@@ -53,7 +53,13 @@ function getProvenance(row: SubmissionRow): ProvenanceShape {
   };
 }
 
-function SubmissionRowCard({ submission }: { submission: SubmissionRow }) {
+function SubmissionRowCard({
+  submission,
+  detail,
+}: {
+  submission: SubmissionRow;
+  detail: ReactNode;
+}) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
@@ -143,7 +149,7 @@ function SubmissionRowCard({ submission }: { submission: SubmissionRow }) {
       </div>
       {expanded ? (
         <div className="border-t border-border p-4">
-          <SubmissionDetail submission={submission} />
+          {detail}
         </div>
       ) : null}
 
@@ -187,9 +193,11 @@ function SubmissionRowCard({ submission }: { submission: SubmissionRow }) {
 export function SubmissionList({
   submissions,
   activeStatus,
+  details,
 }: {
   submissions: SubmissionRow[];
   activeStatus: StatusTab;
+  details: Record<string, ReactNode>;
 }) {
   const router = useRouter();
 
@@ -217,7 +225,11 @@ export function SubmissionList({
             ) : (
               <div className="flex flex-col gap-3">
                 {submissions.map((submission) => (
-                  <SubmissionRowCard key={submission.id} submission={submission} />
+                  <SubmissionRowCard
+                    key={submission.id}
+                    submission={submission}
+                    detail={details[submission.id]}
+                  />
                 ))}
               </div>
             )

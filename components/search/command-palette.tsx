@@ -8,9 +8,12 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   searchCommands,
+  facilityToSearchEntry,
+  mergeFacilityResults,
   SEARCH_GROUP_LABELS,
   type SearchEntry,
 } from "@/lib/search";
+import type { Facility } from "@/lib/schema";
 
 interface CommandPaletteProps {
   index: SearchEntry[];
@@ -29,6 +32,8 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMac, setIsMac] = useState(false);
   const [prevQuery, setPrevQuery] = useState(query);
+  const [dbEntries, setDbEntries] = useState<SearchEntry[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const activeItemRef = useRef<HTMLLIElement>(null);
 
@@ -52,6 +57,45 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Debounced live DB full-text search. Augments the instant client-side Fuse
+  // results with facilities matched by their notes/description content (which
+  // the name-only Fuse index can't see). Race-safe: each run aborts the prior
+  // in-flight request, so only the latest query's results are applied. Degrades
+  // silently to Fuse-only when the DB is unavailable or the fetch fails.
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      setDbEntries([]);
+      setIsSearching(false);
+      return;
+    }
+    const controller = new AbortController();
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`, {
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          setDbEntries([]);
+          return;
+        }
+        const data: { facilities?: Facility[] } = await res.json();
+        setDbEntries((data.facilities ?? []).map(facilityToSearchEntry));
+      } catch (err) {
+        // Ignore aborts (superseded by a newer keystroke); on any other failure
+        // degrade to Fuse-only results.
+        if ((err as Error).name !== "AbortError") setDbEntries([]);
+      } finally {
+        if (!controller.signal.aborted) setIsSearching(false);
+      }
+    }, 200);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
+
   const allEntries = useMemo<SearchEntry[]>(() => {
     const pages: SearchEntry[] = [
       { type: "page", label: "Home", href: "/", keywords: "home" },
@@ -65,7 +109,8 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
     return [...pages, ...index];
   }, [index, navLinks]);
 
-  const groups = useMemo(() => searchCommands(allEntries, query), [allEntries, query]);
+  const fuseGroups = useMemo(() => searchCommands(allEntries, query), [allEntries, query]);
+  const groups = useMemo(() => mergeFacilityResults(fuseGroups, dbEntries), [fuseGroups, dbEntries]);
   const flat = useMemo(() => groups.flatMap((g) => g.items), [groups]);
 
   // Reset the active option whenever the query (and thus results) changes.
@@ -107,8 +152,9 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
   );
 
   const activeId = flat[activeIndex] ? `cmdk-opt-${activeIndex}` : undefined;
-  const resultCountMessage =
-    query.trim() && flat.length === 0
+  const resultCountMessage = isSearching
+    ? "Searching…"
+    : query.trim() && flat.length === 0
       ? "No results"
       : `${flat.length} ${flat.length === 1 ? "result" : "results"}`;
 
@@ -216,7 +262,7 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
                 );
               })}
 
-              {query.trim() && groups.length === 0 && (
+              {query.trim() && groups.length === 0 && !isSearching && (
                 <li className="px-3 py-6 text-center font-mono text-sm text-muted-foreground">
                   No matches for &ldquo;{query}&rdquo;.
                 </li>

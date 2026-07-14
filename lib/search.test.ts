@@ -3,7 +3,10 @@ import { getAllFacilities, getOperators } from "@/lib/data";
 import {
   buildSearchIndex,
   searchCommands,
+  facilityToSearchEntry,
+  mergeFacilityResults,
   type SearchEntry,
+  type SearchResultGroup,
 } from "@/lib/search";
 import type { Facility } from "@/lib/schema";
 
@@ -104,5 +107,123 @@ describe("searchCommands — ranked search", () => {
     for (const group of groups) {
       expect(group.items.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("facilityToSearchEntry", () => {
+  function makeFacility(overrides: Partial<Facility["location"]> = {}): Facility {
+    return {
+      id: "acme-campus",
+      name: "Acme Campus",
+      operator: "Acme Corp",
+      status: "operational",
+      confidence: "confirmed",
+      facilityType: "data_center",
+      location: {
+        lat: 39.0,
+        lon: -77.0,
+        state: "VA",
+        county: "Loudoun",
+        ...overrides,
+      },
+    } as Facility;
+  }
+
+  it("builds a facility entry with a city, StateName sublabel", () => {
+    const facility = makeFacility({ city: "Ashburn" });
+    const entry = facilityToSearchEntry(facility);
+
+    expect(entry).toMatchObject({
+      type: "facility",
+      label: "Acme Campus",
+      href: "/facilities/acme-campus",
+      sublabel: "Ashburn, Virginia",
+    });
+    expect(entry.keywords).toContain("acme corp");
+    expect(entry.keywords).toContain("loudoun");
+    expect(entry.keywords).toBe(entry.keywords.toLowerCase());
+  });
+
+  it("falls back to just the state name when there's no city", () => {
+    const facility = makeFacility({});
+    const entry = facilityToSearchEntry(facility);
+
+    expect(entry.sublabel).toBe("Virginia");
+  });
+});
+
+describe("mergeFacilityResults", () => {
+  const pageGroup: SearchResultGroup = {
+    type: "page",
+    label: "Pages",
+    items: [{ type: "page", label: "Home", href: "/", keywords: "home" }],
+  };
+  const facilityGroup: SearchResultGroup = {
+    type: "facility",
+    label: "Facilities",
+    items: [
+      { type: "facility", label: "Existing A", href: "/facilities/existing-a", keywords: "" },
+    ],
+  };
+  const operatorGroup: SearchResultGroup = {
+    type: "operator",
+    label: "Operators",
+    items: [{ type: "operator", label: "Acme Corp", href: "/operators/acme-corp", keywords: "" }],
+  };
+  const stateGroup: SearchResultGroup = {
+    type: "state",
+    label: "States",
+    items: [{ type: "state", label: "Virginia", href: "/states/virginia", keywords: "" }],
+  };
+
+  function dbEntry(href: string, label = href): SearchEntry {
+    return { type: "facility", label, href, keywords: "" };
+  }
+
+  it("returns groups unchanged when dbEntries is empty", () => {
+    const groups = [pageGroup, facilityGroup];
+    expect(mergeFacilityResults(groups, [])).toBe(groups);
+  });
+
+  it("dedups by href — a DB entry matching an existing facility href is not duplicated", () => {
+    const merged = mergeFacilityResults(
+      [facilityGroup],
+      [dbEntry("/facilities/existing-a", "Existing A (DB)")]
+    );
+    const facilities = merged.find((g) => g.type === "facility")!;
+    expect(facilities.items.length).toBe(1);
+    expect(facilities.items[0].label).toBe("Existing A");
+  });
+
+  it("appends unique DB entries after existing facility items", () => {
+    const merged = mergeFacilityResults([facilityGroup], [dbEntry("/facilities/new-b", "New B")]);
+    const facilities = merged.find((g) => g.type === "facility")!;
+    expect(facilities.items.map((i) => i.href)).toEqual([
+      "/facilities/existing-a",
+      "/facilities/new-b",
+    ]);
+  });
+
+  it("respects the cap", () => {
+    const dbEntries = [dbEntry("/facilities/b"), dbEntry("/facilities/c"), dbEntry("/facilities/d")];
+    const merged = mergeFacilityResults([facilityGroup], dbEntries, 2);
+    const facilities = merged.find((g) => g.type === "facility")!;
+    expect(facilities.items.length).toBe(2);
+  });
+
+  it("inserts a facility group in GROUP_ORDER position when Fuse had none but DB entries exist", () => {
+    const merged = mergeFacilityResults([pageGroup, operatorGroup, stateGroup], [dbEntry("/facilities/new-b", "New B")]);
+    expect(merged.map((g) => g.type)).toEqual(["page", "facility", "operator", "state"]);
+  });
+
+  it("leaves page/operator/state groups and their order untouched", () => {
+    const merged = mergeFacilityResults(
+      [pageGroup, facilityGroup, operatorGroup, stateGroup],
+      [dbEntry("/facilities/new-b", "New B")]
+    );
+    expect(merged.find((g) => g.type === "page")).toBe(pageGroup);
+    expect(merged.find((g) => g.type === "operator")).toBe(operatorGroup);
+    expect(merged.find((g) => g.type === "state")).toBe(stateGroup);
+    expect(merged.map((g) => g.type)).toEqual(["page", "facility", "operator", "state"]);
   });
 });

@@ -53,13 +53,14 @@ describe("HistoryPanel", () => {
   it("renders each history entry with its change type, source, and diff", async () => {
     setHistoryRows([makeHistoryRow()]);
 
-    render(await HistoryPanel({ facilityId: "facility-a" }));
+    const { container } = render(await HistoryPanel({ facilityId: "facility-a" }));
 
     expect(screen.getByText("Updated")).toBeInTheDocument();
     expect(screen.getByText(/admin-direct/)).toBeInTheDocument();
     expect(screen.getByText("status")).toBeInTheDocument();
     expect(screen.getByText("planned")).toBeInTheDocument();
     expect(screen.getByText("operational")).toBeInTheDocument();
+    expect(container.querySelector("time")).toHaveAttribute("dateTime");
   });
 
   it("renders create and delete change types with readable labels", async () => {
