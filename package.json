@@ -17,7 +17,9 @@
     "db:push": "drizzle-kit push",
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
     "db:export": "tsx --env-file=.env.local scripts/export.ts",
-    "submissions": "tsx --env-file=.env.local scripts/submissions.ts"
+    "submissions": "tsx --env-file=.env.local scripts/submissions.ts",
+    "check-sources": "tsx --env-file=.env.local scripts/discovery/check-sources.ts",
+    "existing-facilities": "tsx --env-file=.env.local scripts/discovery/existing-facilities.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
