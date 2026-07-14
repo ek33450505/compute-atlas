@@ -23,14 +23,14 @@ vi.mock("next/link", () => ({
 
 const entries: ActivityEntry[] = [
   {
-    kind: "facility_updated",
+    kind: "update",
     facilityId: "facility-a",
     facilityName: "Facility A",
     label: "facility updated",
     timestamp: new Date("2026-07-12T00:00:00Z"),
   },
   {
-    kind: "submission_approved",
+    kind: "create",
     facilityId: "facility-c",
     facilityName: "Facility C",
     label: "new facility added",
@@ -67,10 +67,10 @@ describe("ActivityList", () => {
   it("does not render a link when facilityId is empty", () => {
     const withoutId: ActivityEntry[] = [
       {
-        kind: "submission_approved",
+        kind: "create",
         facilityId: "",
         facilityName: "Unknown facility",
-        label: "contribution approved",
+        label: "new facility added",
         timestamp: new Date("2026-07-10T00:00:00Z"),
       },
     ];

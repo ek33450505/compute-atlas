@@ -12,9 +12,9 @@ import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
 import { getFacilityMaxMw } from "@/lib/format";
 import facilitiesRaw from "@/data/facilities.json";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
-import { facilitiesTable, submissionsTable } from "@/lib/db/schema";
+import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 
 /** Parses and validates the bundled JSON fallback. Throws loudly on bad data. */
@@ -742,24 +742,34 @@ export async function getOperatorSummary(name: string): Promise<OperatorSummary 
 // Activity feed (used by /activity and the homepage teaser)
 // ============================================================
 
-/** A single reverse-chronological activity entry — either an updated facility or an approved contribution. */
+/** A single reverse-chronological activity entry — a facility create or update. */
 export interface ActivityEntry {
-  kind: "facility_updated" | "submission_approved";
+  kind: "create" | "update";
   facilityId: string;
   facilityName: string;
-  /** Short, non-diff label, e.g. "status updated" or "new facility added". */
+  /** Short, non-diff label, e.g. "new facility added" or "facility updated". */
   label: string;
   timestamp: Date;
 }
 
 /**
- * Returns recently-updated facilities and recently-approved submissions,
- * merged into a single reverse-chronological feed (most recent first).
+ * Returns a reverse-chronological feed of facility creates/updates, driven
+ * entirely off `facility_history` — the single source of truth for change
+ * events. Every create/update/delete, whether an admin-direct write or a
+ * submission approval, goes through `lib/facility-write.ts` and writes
+ * exactly one history row (see `createFacility`/`updateFacility` and
+ * `approveSubmission` in lib/submissions.ts). Reading from history instead of
+ * merging `facilitiesTable` (by `updatedAt`) with `submissionsTable` (by
+ * `reviewedAt`) eliminates a double-entry bug: both of those sources could
+ * capture the *same* create, showing it once as "new facility added" and
+ * again as "facility updated" — and a direct admin create was mislabeled
+ * "facility updated" entirely since `facilitiesTable.updatedAt` is set on
+ * insert too.
  *
- * DB-only: the JSON fallback bundle has no `updatedAt`/`reviewedAt` history
- * to sort on, so this returns `[]` when `DATABASE_URL` is unset rather than
- * throwing — the public /activity page and homepage teaser both degrade to
- * an empty section instead of crashing.
+ * DB-only: the JSON fallback bundle has no history to sort on, so this
+ * returns `[]` when `DATABASE_URL` is unset rather than throwing — the
+ * public /activity page and homepage teaser both degrade to an empty section
+ * instead of crashing.
  */
 export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
   if (!hasDatabaseUrl()) {
@@ -768,54 +778,28 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
 
   const db = getDb();
 
-  // Fetch 2x the final limit from each source before merging. Each source is
-  // ordered independently, so an equal per-source LIMIT can drop genuinely
-  // recent entries: e.g. requesting 50 with 30 stale facility updates ahead
-  // of 20 fresh submissions in wall-clock time still fetches only the top 50
-  // of each, and the post-merge sort can discard newer facility rows that
-  // never made it past their own source's cutoff. Over-fetching guarantees
-  // the merge always has enough candidates from both sources to find the
-  // true top-N once sorted together.
-  const [updatedFacilities, approvedSubmissions] = await Promise.all([
-    db
-      .select()
-      .from(facilitiesTable)
-      .orderBy(desc(facilitiesTable.updatedAt))
-      .limit(2 * limit),
-    db
-      .select()
-      .from(submissionsTable)
-      .where(eq(submissionsTable.status, "approved"))
-      .orderBy(desc(submissionsTable.reviewedAt))
-      .limit(2 * limit),
-  ]);
+  // Single query, single source. The inner join naturally drops history rows
+  // for facilities that have since been deleted (no dead links in the feed),
+  // and the `where` keeps only create/update rows (delete events aren't
+  // rendered in this feed).
+  const rows = await db
+    .select({
+      facilityId: facilityHistoryTable.facilityId,
+      facilityName: facilitiesTable.name,
+      changeType: facilityHistoryTable.changeType,
+      changedAt: facilityHistoryTable.changedAt,
+    })
+    .from(facilityHistoryTable)
+    .innerJoin(facilitiesTable, eq(facilityHistoryTable.facilityId, facilitiesTable.id))
+    .where(inArray(facilityHistoryTable.changeType, ["create", "update"]))
+    .orderBy(desc(facilityHistoryTable.changedAt))
+    .limit(limit);
 
-  const facilityEntries: ActivityEntry[] = updatedFacilities.map((row) => ({
-    kind: "facility_updated",
-    facilityId: row.id,
-    facilityName: row.name,
-    label: "facility updated",
-    timestamp: row.updatedAt,
+  return rows.map((row) => ({
+    kind: row.changeType === "create" ? "create" : "update",
+    facilityId: row.facilityId,
+    facilityName: row.facilityName,
+    label: row.changeType === "create" ? "new facility added" : "facility updated",
+    timestamp: row.changedAt,
   }));
-
-  const submissionEntries: ActivityEntry[] = approvedSubmissions
-    .filter((row) => row.reviewedAt !== null)
-    .map((row) => {
-      const payload = row.payload as Record<string, unknown>;
-      const facilityId = row.targetFacilityId ?? String(payload.id ?? "");
-      const facilityName =
-        typeof payload.name === "string" ? payload.name : facilityId || "Unknown facility";
-      return {
-        kind: "submission_approved",
-        facilityId,
-        facilityName,
-        label: row.kind === "create" ? "new facility added" : "contribution approved",
-        // Non-null assertion is safe: filtered above.
-        timestamp: row.reviewedAt!,
-      };
-    });
-
-  return [...facilityEntries, ...submissionEntries]
-    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-    .slice(0, limit);
 }
