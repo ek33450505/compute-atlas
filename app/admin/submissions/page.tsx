@@ -1,6 +1,9 @@
+import type { ReactNode } from "react";
+
 import { listSubmissions } from "@/lib/submissions";
 import { REVIEW_STATUSES } from "@/lib/submissions";
 import { SubmissionList } from "@/app/admin/submissions/submission-list";
+import { SubmissionDetail } from "@/app/admin/submissions/submission-detail";
 
 const DEFAULT_STATUS: (typeof REVIEW_STATUSES)[number] = "pending";
 
@@ -20,6 +23,15 @@ export default async function AdminSubmissionsPage({
   const status = normalizeStatus(rawStatus);
   const submissions = await listSubmissions(status);
 
+  // SubmissionDetail is an async Server Component. submission-list.tsx is a
+  // "use client" file and cannot import-and-invoke it directly, so each row's
+  // detail is pre-rendered here (a server component) and passed down as a
+  // resolved node, keyed by submission id.
+  const submissionDetails: Record<string, ReactNode> = {};
+  for (const submission of submissions) {
+    submissionDetails[submission.id] = <SubmissionDetail submission={submission} />;
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -28,7 +40,11 @@ export default async function AdminSubmissionsPage({
           Review discovered and submitted facility candidates before they go live.
         </p>
       </div>
-      <SubmissionList submissions={submissions} activeStatus={status} />
+      <SubmissionList
+        submissions={submissions}
+        activeStatus={status}
+        details={submissionDetails}
+      />
     </div>
   );
 }

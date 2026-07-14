@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import type { ReactNode } from "react";
 import type { SubmissionRow } from "@/lib/db/schema";
 
 // vi.mock calls are hoisted above imports by Vitest. A plain top-level
@@ -41,15 +42,6 @@ vi.mock("./actions", () => ({
   rejectSubmissionAction: mockRejectSubmissionAction,
 }));
 
-// submission-detail.tsx is an async server component that fetches live
-// facility data via lib/data.ts — irrelevant to list/tab/dialog behavior
-// under test here, so stub it out to keep this file focused.
-vi.mock("./submission-detail", () => ({
-  SubmissionDetail: ({ submission }: { submission: SubmissionRow }) => (
-    <div data-testid="submission-detail">{submission.id}</div>
-  ),
-}));
-
 import { SubmissionList } from "./submission-list";
 
 function makeSubmission(overrides: Partial<SubmissionRow> = {}): SubmissionRow {
@@ -71,6 +63,23 @@ function makeSubmission(overrides: Partial<SubmissionRow> = {}): SubmissionRow {
   } as SubmissionRow;
 }
 
+// SubmissionDetail is an async server component (fetches live facility data
+// via lib/data.ts) and can no longer be imported by this client-component
+// test file — submission-list.tsx itself no longer imports it either. Build
+// a stand-in per-row detail node instead, matching the shape page.tsx passes
+// in production (a Record<string, ReactNode> keyed by submission id).
+function renderList(
+  submissions: SubmissionRow[],
+  activeStatus: "pending" | "approved" | "rejected"
+) {
+  const details: Record<string, ReactNode> = Object.fromEntries(
+    submissions.map((s) => [s.id, <div data-testid="submission-detail">{s.id}</div>])
+  );
+  return render(
+    <SubmissionList submissions={submissions} activeStatus={activeStatus} details={details} />
+  );
+}
+
 describe("SubmissionList — tabs and empty state", () => {
   beforeEach(() => {
     mockPush.mockClear();
@@ -78,20 +87,20 @@ describe("SubmissionList — tabs and empty state", () => {
   });
 
   it("renders all three status tabs", () => {
-    render(<SubmissionList submissions={[]} activeStatus="pending" />);
+    renderList([], "pending");
     expect(screen.getByRole("tab", { name: "Pending" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Approved" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Rejected" })).toBeInTheDocument();
   });
 
   it("shows an empty-state message when there are no submissions for the active tab", () => {
-    render(<SubmissionList submissions={[]} activeStatus="pending" />);
+    renderList([], "pending");
     expect(screen.getByText("No pending submissions.")).toBeInTheDocument();
   });
 
   it("navigates via router.push when a different tab is selected", async () => {
     const user = userEvent.setup();
-    render(<SubmissionList submissions={[]} activeStatus="pending" />);
+    renderList([], "pending");
 
     await user.click(screen.getByRole("tab", { name: "Approved" }));
 
@@ -102,7 +111,7 @@ describe("SubmissionList — tabs and empty state", () => {
 describe("SubmissionList — row rendering", () => {
   it("renders a create-kind row with kind badge, name, provenance summary", () => {
     const submission = makeSubmission();
-    render(<SubmissionList submissions={[submission]} activeStatus="pending" />);
+    renderList([submission], "pending");
 
     expect(screen.getByText("New facility")).toBeInTheDocument();
     expect(screen.getByText("Test Facility")).toBeInTheDocument();
@@ -116,7 +125,7 @@ describe("SubmissionList — row rendering", () => {
       targetFacilityId: "existing-facility",
       payload: { status: "operational" },
     });
-    render(<SubmissionList submissions={[submission]} activeStatus="pending" />);
+    renderList([submission], "pending");
 
     expect(screen.getByText("Update")).toBeInTheDocument();
     expect(screen.getByText("(existing-facility)")).toBeInTheDocument();
@@ -124,7 +133,7 @@ describe("SubmissionList — row rendering", () => {
 
   it("handles a submission with an unexpected/malformed provenance shape without crashing", () => {
     const submission = makeSubmission({ provenance: {} as unknown as SubmissionRow["provenance"] });
-    render(<SubmissionList submissions={[submission]} activeStatus="pending" />);
+    renderList([submission], "pending");
 
     // Falls back to "unknown" discoveredBy and 0 sources rather than throwing.
     expect(screen.getByText(/unknown/)).toBeInTheDocument();
@@ -133,7 +142,7 @@ describe("SubmissionList — row rendering", () => {
 
   it("does not render Approve/Reject actions for a non-pending (approved) submission", () => {
     const submission = makeSubmission({ status: "approved" });
-    render(<SubmissionList submissions={[submission]} activeStatus="approved" />);
+    renderList([submission], "approved");
 
     expect(screen.queryByRole("button", { name: "Approve" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Reject" })).not.toBeInTheDocument();
@@ -142,7 +151,7 @@ describe("SubmissionList — row rendering", () => {
   it("toggles the detail view via the expand affordance", async () => {
     const user = userEvent.setup();
     const submission = makeSubmission();
-    render(<SubmissionList submissions={[submission]} activeStatus="pending" />);
+    renderList([submission], "pending");
 
     expect(screen.queryByTestId("submission-detail")).not.toBeInTheDocument();
 
@@ -165,7 +174,7 @@ describe("SubmissionList — approve action", () => {
   it("calls approveSubmissionAction and shows a success toast + refreshes on success", async () => {
     mockApproveSubmissionAction.mockResolvedValue({ ok: true });
     const user = userEvent.setup();
-    render(<SubmissionList submissions={[makeSubmission()]} activeStatus="pending" />);
+    renderList([makeSubmission()], "pending");
 
     await user.click(screen.getByRole("button", { name: "Approve" }));
 
@@ -181,7 +190,7 @@ describe("SubmissionList — approve action", () => {
       error: "Submission already approved",
     });
     const user = userEvent.setup();
-    render(<SubmissionList submissions={[makeSubmission()]} activeStatus="pending" />);
+    renderList([makeSubmission()], "pending");
 
     await user.click(screen.getByRole("button", { name: "Approve" }));
 
@@ -202,7 +211,7 @@ describe("SubmissionList — reject dialog", () => {
 
   it("opens the reject dialog and disables confirm until a non-empty reason is entered", async () => {
     const user = userEvent.setup();
-    render(<SubmissionList submissions={[makeSubmission()]} activeStatus="pending" />);
+    renderList([makeSubmission()], "pending");
 
     await user.click(screen.getByRole("button", { name: "Reject" }));
 
@@ -219,7 +228,7 @@ describe("SubmissionList — reject dialog", () => {
   it("calls rejectSubmissionAction with the trimmed reason and shows a success toast on confirm", async () => {
     mockRejectSubmissionAction.mockResolvedValue({ ok: true });
     const user = userEvent.setup();
-    render(<SubmissionList submissions={[makeSubmission()]} activeStatus="pending" />);
+    renderList([makeSubmission()], "pending");
 
     await user.click(screen.getByRole("button", { name: "Reject" }));
     await user.type(screen.getByLabelText("Reason"), "  duplicate entry  ");
