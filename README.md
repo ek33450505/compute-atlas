@@ -98,6 +98,12 @@ Key fields per facility:
 
 Contributions and corrections are welcome — every submission needs a public source URL. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for how to propose a new facility or a correction, and the standard the data is held to. Participation is governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
+New here? A few ways in:
+
+- 🗺️ **Add a facility** you know about — no code required. Start with the [good first issues](https://github.com/ek33450505/compute-atlas/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) or the [New Facility form](https://github.com/ek33450505/compute-atlas/issues/new/choose).
+- 💬 **Ask a question or share an idea** in [Discussions](https://github.com/ek33450505/compute-atlas/discussions).
+- 🔒 **Found a security issue?** Please report it privately — see [SECURITY.md](SECURITY.md).
+
 ## Tech stack
 
 - **Next.js 16** (App Router, static site generation) with **React 19**
@@ -105,7 +111,7 @@ Contributions and corrections are welcome — every submission needs a public so
 - **TypeScript** + **Zod** for runtime-validated data and JSON Schema export
 - **MapLibre GL** + **react-map-gl** for the interactive map
 - **Tailwind CSS v4** + **shadcn/ui** components
-- **Vitest** + **React Testing Library** for unit tests (583 tests)
+- **Vitest** + **React Testing Library** for a comprehensive unit-test suite
 - **Playwright** for end-to-end tests
 
 ## Local development

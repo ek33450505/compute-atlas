@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
+import { safeExternalHref } from "@/lib/url";
 import type { StatusEvent, Source } from "@/lib/schema";
 
 interface StatusTimelineProps {
@@ -58,7 +59,7 @@ export function StatusTimeline({ history, sources }: StatusTimelineProps) {
 
               {source && (
                 <a
-                  href={source.url}
+                  href={safeExternalHref(source.url)}
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label={`${source.label} (opens in new tab)`}

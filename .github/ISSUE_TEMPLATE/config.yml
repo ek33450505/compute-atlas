@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Ask a question / general discussion
+    url: https://github.com/ek33450505/compute-atlas/discussions
+    about: Questions, ideas, and general conversation live in Discussions — not the issue tracker.
   - name: Sponsor Compute Atlas
     url: https://github.com/sponsors/ek33450505
     about: Support the project's ongoing data and development work.
