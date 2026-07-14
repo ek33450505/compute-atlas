@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { facilitySchema } from "@/lib/schema";
+import { facilitySchema, sourceSchema } from "@/lib/schema";
 
 const baseSource = {
   url: "https://en.wikipedia.org/wiki/Test",
@@ -400,6 +400,39 @@ describe("facilitySchema — invalid cases", () => {
       statusHistory: [
         { status: "operational", date: "2024", sourceIndex: 5 },
       ],
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("sourceSchema — url protocol restriction", () => {
+  const valid = {
+    label: "Test Source",
+    retrievedAt: "2026-07-05",
+    kind: "press" as const,
+  };
+
+  it("accepts an https url", () => {
+    expect(sourceSchema.safeParse({ ...valid, url: "https://example.com/x" }).success).toBe(true);
+  });
+
+  it("accepts an http url", () => {
+    expect(sourceSchema.safeParse({ ...valid, url: "http://example.com/x" }).success).toBe(true);
+  });
+
+  it("rejects a javascript: uri", () => {
+    expect(sourceSchema.safeParse({ ...valid, url: "javascript:alert(1)" }).success).toBe(false);
+  });
+
+  it("rejects a data: uri", () => {
+    expect(sourceSchema.safeParse({ ...valid, url: "data:text/html,<script>alert(1)</script>" }).success).toBe(false);
+  });
+
+  it("rejects a javascript: uri at the facility level (sources[0].url)", () => {
+    // reuse the existing baseFacility fixture defined above in this file
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      sources: [{ ...baseSource, url: "javascript:alert(1)" }],
     });
     expect(result.success).toBe(false);
   });
