@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { buildFacilityJsonLd, facilityJsonLdString } from "@/lib/seo";
+import {
+  buildFacilityJsonLd,
+  facilityJsonLdString,
+  buildDatasetJsonLd,
+  datasetJsonLdString,
+} from "@/lib/seo";
 import type { Facility } from "@/lib/schema";
 
 const baseFacility: Facility = {
@@ -106,5 +111,47 @@ describe("facilityJsonLdString", () => {
     expect(parsed["@context"]).toBe("https://schema.org");
     expect(parsed["@type"]).toBe("Place");
     expect(parsed.geo.latitude).toBe(40.7128);
+  });
+});
+
+describe("buildDatasetJsonLd", () => {
+  it("returns a valid Dataset shape", () => {
+    const ld = buildDatasetJsonLd();
+    expect(ld["@context"]).toBe("https://schema.org");
+    expect(ld["@type"]).toBe("Dataset");
+  });
+
+  it("points distribution[0].contentUrl at the facilities API route", () => {
+    const ld = buildDatasetJsonLd();
+    expect(ld.distribution[0].contentUrl).toMatch(/\/api\/facilities$/);
+  });
+
+  it("sets license to the CC-BY-4.0 URL", () => {
+    const ld = buildDatasetJsonLd();
+    expect(ld.license).toBe("https://creativecommons.org/licenses/by/4.0/");
+  });
+
+  it("includes dateModified when provided", () => {
+    const ld = buildDatasetJsonLd({ dateModified: "2026-07-01T00:00:00.000Z" });
+    expect(ld.dateModified).toBe("2026-07-01T00:00:00.000Z");
+  });
+
+  it("omits dateModified when not provided", () => {
+    const ld = buildDatasetJsonLd();
+    expect(ld.dateModified).toBeUndefined();
+  });
+});
+
+describe("datasetJsonLdString", () => {
+  it("returns a string with no raw < characters", () => {
+    const str = datasetJsonLdString();
+    expect(str).not.toContain("<");
+  });
+
+  it("produces valid JSON that round-trips to a Dataset shape", () => {
+    const str = datasetJsonLdString();
+    const parsed = JSON.parse(str);
+    expect(parsed["@type"]).toBe("Dataset");
+    expect(parsed.distribution[0].contentUrl).toMatch(/\/api\/facilities$/);
   });
 });
