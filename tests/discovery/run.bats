@@ -148,6 +148,15 @@ teardown() {
 	[ "$check_line" -gt "$submit_line" ]
 }
 
+@test "check-sources failure emits a visible WARN and still completes the run" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"WARN: source-liveness check failed"* ]]
+	[[ "$output" == *"discovery run"*"complete"* ]]
+}
+
 @test "live path invokes claude with the batch-contract system prompt" {
 	export DISCOVERY_ENABLED=true
 	# NOT dry-run: exercise the real claude-invocation branch (claude is shimmed,

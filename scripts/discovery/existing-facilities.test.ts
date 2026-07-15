@@ -123,4 +123,46 @@ describe("projectExisting", () => {
     expect(lines[0]).toContain("tx-a");
     expect(lines[1]).toContain("tx-b");
   });
+
+  it("neutralizes an embedded '|' and embedded newline so the row stays exactly one line", () => {
+    const facility = makeFacility({
+      id: "tx-injected",
+      name: "Foo | Bar",
+      operator: "Acme\nEvil Corp",
+    });
+    const other = makeFacility({ id: "tx-normal", name: "Normal Co" });
+    const result = projectExisting([facility, other], "TX");
+    const lines = result.trim().split("\n");
+
+    // Exactly 2 rows total — the injected `|`/newline must not have produced
+    // extra lines or extra columns.
+    expect(lines).toHaveLength(2);
+
+    const injectedLine = lines.find((line) => line.includes("tx-injected"));
+    expect(injectedLine).toBeDefined();
+    // The row still has exactly 6 fields (5 internal " | " delimiters) —
+    // the injected pipe was neutralized, not left as a 7th column.
+    expect(injectedLine!.split(" | ")).toHaveLength(6);
+    expect(injectedLine).toContain("Foo / Bar");
+    expect(injectedLine).toContain("Acme Evil Corp");
+
+    const normalLine = lines.find((line) => line.includes("tx-normal"));
+    expect(normalLine).toBe(
+      "tx-normal | Normal Co | Acme Corp | proposed | 2026-01-01 | https://example.com/acme-announcement"
+    );
+  });
+
+  it("leaves a normal facility's fields unchanged", () => {
+    const facility = makeFacility();
+    const result = projectExisting([facility], "TX");
+    expect(result).toBe(
+      "acme-dc-1 | Acme Data Center 1 | Acme Corp | proposed | 2026-01-01 | https://example.com/acme-announcement"
+    );
+  });
+
+  it("still returns an empty string for the no-match case with sanitization applied", () => {
+    const facility = makeFacility({ name: "Foo | Bar" });
+    const result = projectExisting([facility], "OH");
+    expect(result).toBe("");
+  });
 });
