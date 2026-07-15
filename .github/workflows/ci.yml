@@ -1,0 +1,47 @@
+# CI — the pull-request gate for compute-atlas.
+#
+# Runs typecheck + eslint + vitest (jsdom; the suite is self-contained and needs
+# NO DATABASE_URL / API_ADMIN_TOKEN — the API/auth tests manage their own env)
+# and the discovery BATS suite. The Vercel preview build still covers the
+# production `next build` separately, so this workflow deliberately omits it
+# (and the Playwright e2e suite, which needs browsers + a live server + external
+# basemap tiles).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Least privilege: CI only needs to read the checked-out code.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: typecheck · lint · test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
+  discovery-shell:
+    name: discovery BATS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+      - run: bats tests/discovery/run.bats

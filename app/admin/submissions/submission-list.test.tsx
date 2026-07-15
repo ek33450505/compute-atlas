@@ -73,7 +73,7 @@ function renderList(
   activeStatus: "pending" | "approved" | "rejected"
 ) {
   const details: Record<string, ReactNode> = Object.fromEntries(
-    submissions.map((s) => [s.id, <div data-testid="submission-detail">{s.id}</div>])
+    submissions.map((s) => [s.id, <div key={s.id} data-testid="submission-detail">{s.id}</div>])
   );
   return render(
     <SubmissionList submissions={submissions} activeStatus={activeStatus} details={details} />

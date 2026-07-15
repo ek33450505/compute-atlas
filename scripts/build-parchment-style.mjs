@@ -356,7 +356,7 @@ async function main() {
     } else {
       throw new Error('validateStyleMin not found in style-spec');
     }
-  } catch (specErr) {
+  } catch {
     // Fallback to structural check
     validationErrors = structuralValidate(style);
     validationPassed = validationErrors.length === 0;

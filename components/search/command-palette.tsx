@@ -20,6 +20,10 @@ interface CommandPaletteProps {
   navLinks: readonly { readonly label: string; readonly href: string }[];
 }
 
+// Stable empty-array reference for the empty-query case so the useMemo that
+// depends on shownDbEntries doesn't see a new array identity every render.
+const EMPTY_SEARCH_ENTRIES: SearchEntry[] = [];
+
 /**
  * Site-wide ⌘K / Ctrl+K command palette. Renders both the header trigger
  * button and the modal itself, sharing open/query state. Does content search
@@ -62,18 +66,19 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
   // the name-only Fuse index can't see). Race-safe: each run aborts the prior
   // in-flight request, so only the latest query's results are applied. Degrades
   // silently to Fuse-only when the DB is unavailable or the fetch fails.
+  const trimmedQuery = query.trim();
+
   useEffect(() => {
-    const trimmed = query.trim();
-    if (!trimmed) {
-      setDbEntries([]);
-      setIsSearching(false);
+    if (!trimmedQuery) {
+      // Nothing to search — no setState here; dbEntries/isSearching are
+      // derived to their empty/idle state below via trimmedQuery instead.
       return;
     }
     const controller = new AbortController();
-    setIsSearching(true);
     const timer = setTimeout(async () => {
+      setIsSearching(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`, {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmedQuery)}`, {
           signal: controller.signal,
         });
         if (!res.ok) {
@@ -94,7 +99,19 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query]);
+  }, [trimmedQuery]);
+
+  // Derived, not stored: an empty query always shows no DB entries and never
+  // shows the searching indicator, regardless of stale state left over from
+  // a prior non-empty query (avoids the synchronous-setState-in-effect reset).
+  // Memoized (not just `trimmedQuery ? dbEntries : []`) so the empty case
+  // returns a stable reference — a fresh [] on every render would defeat the
+  // useMemo below that depends on shownDbEntries.
+  const shownDbEntries = useMemo(
+    () => (trimmedQuery ? dbEntries : EMPTY_SEARCH_ENTRIES),
+    [trimmedQuery, dbEntries]
+  );
+  const showSearching = Boolean(trimmedQuery) && isSearching;
 
   const allEntries = useMemo<SearchEntry[]>(() => {
     const pages: SearchEntry[] = [
@@ -110,7 +127,10 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
   }, [index, navLinks]);
 
   const fuseGroups = useMemo(() => searchCommands(allEntries, query), [allEntries, query]);
-  const groups = useMemo(() => mergeFacilityResults(fuseGroups, dbEntries), [fuseGroups, dbEntries]);
+  const groups = useMemo(
+    () => mergeFacilityResults(fuseGroups, shownDbEntries),
+    [fuseGroups, shownDbEntries]
+  );
   const flat = useMemo(() => groups.flatMap((g) => g.items), [groups]);
 
   // Reset the active option whenever the query (and thus results) changes.
@@ -152,9 +172,9 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
   );
 
   const activeId = flat[activeIndex] ? `cmdk-opt-${activeIndex}` : undefined;
-  const resultCountMessage = isSearching
+  const resultCountMessage = showSearching
     ? "Searching…"
-    : query.trim() && flat.length === 0
+    : trimmedQuery && flat.length === 0
       ? "No results"
       : `${flat.length} ${flat.length === 1 ? "result" : "results"}`;
 
@@ -262,7 +282,7 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
                 );
               })}
 
-              {query.trim() && groups.length === 0 && !isSearching && (
+              {trimmedQuery && groups.length === 0 && !showSearching && (
                 <li className="px-3 py-6 text-center font-mono text-sm text-muted-foreground">
                   No matches for &ldquo;{query}&rdquo;.
                 </li>
