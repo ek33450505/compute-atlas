@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -13,6 +14,17 @@ function makeSource(overrides: Partial<Source> = {}): Source {
     kind: "press",
     ...overrides,
   };
+}
+
+/**
+ * Stateful wrapper: `FacilitySourcesSection` is fully controlled, so
+ * focus-restoration tests (which depend on a real re-render after a row
+ * unmounts) need a component that actually owns state and re-renders on
+ * `onChange`, unlike the `vi.fn()` spy used by the other tests in this file.
+ */
+function StatefulSourcesSection({ initial }: { initial: Source[] }) {
+  const [sources, setSources] = useState(initial);
+  return <FacilitySourcesSection sources={sources} onChange={setSources} />;
 }
 
 describe("FacilitySourcesSection", () => {
@@ -136,5 +148,36 @@ describe("FacilitySourcesSection", () => {
     );
 
     expect(screen.queryByText(/enter a valid url/i)).not.toBeInTheDocument();
+  });
+
+  describe("focus restoration after Remove (§1f)", () => {
+    it("moves focus to the Remove button of the row that took the removed row's place", async () => {
+      const user = userEvent.setup();
+      const initial = [
+        makeSource({ label: "Row 1" }),
+        makeSource({ label: "Row 2" }),
+        makeSource({ label: "Row 3" }),
+      ];
+      render(<StatefulSourcesSection initial={initial} />);
+
+      await user.click(screen.getByRole("button", { name: /remove source 2/i }));
+
+      // Row 3 shifted into index 1 and is now "Source 2".
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: /remove source 2/i })
+      );
+    });
+
+    it("moves focus to the last row's Remove button when the last row is removed", async () => {
+      const user = userEvent.setup();
+      const initial = [makeSource({ label: "Row 1" }), makeSource({ label: "Row 2" })];
+      render(<StatefulSourcesSection initial={initial} />);
+
+      await user.click(screen.getByRole("button", { name: /remove source 2/i }));
+
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: /remove source 1/i })
+      );
+    });
   });
 });

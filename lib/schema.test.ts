@@ -405,6 +405,85 @@ describe("facilitySchema — invalid cases", () => {
   });
 });
 
+describe("facilitySchema — mining.hashRateThPerS non-negative", () => {
+  it("rejects a negative hashRateThPerS", () => {
+    const result = facilitySchema.safeParse({
+      ...baseCryptoMiningFacility,
+      mining: { hashRateThPerS: -5 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts a hashRateThPerS of 0", () => {
+    const result = facilitySchema.safeParse({
+      ...baseCryptoMiningFacility,
+      mining: { hashRateThPerS: 0 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a positive hashRateThPerS", () => {
+    const result = facilitySchema.safeParse({
+      ...baseCryptoMiningFacility,
+      mining: { hashRateThPerS: 500 },
+    });
+    expect(result.success).toBe(true);
+    if (result.success && result.data.facilityType === "crypto_mining") {
+      expect(result.data.mining?.hashRateThPerS).toBe(500);
+    }
+  });
+});
+
+describe("facilitySchema — subsidies[].year format", () => {
+  it("accepts a single 4-digit year", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      subsidies: [{ program: "TIF", year: "2024" }],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a slash-separated list of 4-digit years", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      subsidies: [{ program: "TIF", year: "2005/2013/2015" }],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a 2-digit year", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      subsidies: [{ program: "TIF", year: "24" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a non-numeric year", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      subsidies: [{ program: "TIF", year: "twenty" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a hyphenated year range", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      subsidies: [{ program: "TIF", year: "2024-2025" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects an empty string year", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      subsidies: [{ program: "TIF", year: "" }],
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
 describe("sourceSchema — url protocol restriction", () => {
   const valid = {
     label: "Test Source",

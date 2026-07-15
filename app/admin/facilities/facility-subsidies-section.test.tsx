@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -23,6 +24,17 @@ function makeSubsidy(overrides: Partial<SubsidyEntry> = {}): SubsidyEntry {
     year: "2026",
     ...overrides,
   };
+}
+
+/**
+ * Stateful wrapper: `FacilitySubsidiesSection` is fully controlled, so
+ * focus-restoration tests (which depend on a real re-render after a row
+ * unmounts) need a component that actually owns state and re-renders on
+ * `onChange`, unlike the `vi.fn()` spy used by the other tests in this file.
+ */
+function StatefulSubsidiesSection({ initial }: { initial: SubsidyEntry[] }) {
+  const [subsidies, setSubsidies] = useState(initial);
+  return <FacilitySubsidiesSection subsidies={subsidies} sources={[]} onChange={setSubsidies} />;
 }
 
 describe("FacilitySubsidiesSection", () => {
@@ -181,5 +193,47 @@ describe("FacilitySubsidiesSection", () => {
     await user.click(pickMeOption);
 
     expect(onChange).toHaveBeenCalledWith([{ ...subsidies[0], sourceIndex: 0 }]);
+  });
+
+  describe("focus restoration after Remove (§1f)", () => {
+    it("moves focus to the Remove button of the row that took the removed row's place", async () => {
+      const user = userEvent.setup();
+      const initial = [
+        makeSubsidy({ program: "Row 1" }),
+        makeSubsidy({ program: "Row 2" }),
+        makeSubsidy({ program: "Row 3" }),
+      ];
+      render(<StatefulSubsidiesSection initial={initial} />);
+
+      await user.click(screen.getByRole("button", { name: /remove subsidy 2/i }));
+
+      // Row 3 shifted into index 1 and is now "Subsidy 2" — its Remove
+      // button is the one that should receive focus, not <body>.
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: /remove subsidy 2/i })
+      );
+    });
+
+    it("moves focus to the last row's Remove button when the last row is removed", async () => {
+      const user = userEvent.setup();
+      const initial = [makeSubsidy({ program: "Row 1" }), makeSubsidy({ program: "Row 2" })];
+      render(<StatefulSubsidiesSection initial={initial} />);
+
+      await user.click(screen.getByRole("button", { name: /remove subsidy 2/i }));
+
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: /remove subsidy 1/i })
+      );
+    });
+
+    it("moves focus to the Add button when the only remaining row is removed", async () => {
+      const user = userEvent.setup();
+      render(<StatefulSubsidiesSection initial={[makeSubsidy()]} />);
+
+      await user.click(screen.getByRole("button", { name: /remove subsidy 1/i }));
+
+      expect(screen.getByText(/no subsidies recorded/i)).toBeInTheDocument();
+      expect(document.activeElement).toBe(screen.getByRole("button", { name: /add subsidy/i }));
+    });
   });
 });

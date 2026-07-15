@@ -113,7 +113,10 @@ const baseFacilityShape = {
         program: z.string().optional(),
         amountUsd: z.number().nonnegative().optional(),
         jurisdiction: z.string().optional(),
-        year: z.string().optional(),
+        year: z
+          .string()
+          .regex(/^\d{4}(\/\d{4})*$/, "year must be a 4-digit year, or slash-separated 4-digit years (e.g. 2013/2015)")
+          .optional(),
         sourceIndex: z.number().int().nonnegative().optional(),
       })
     )
@@ -152,7 +155,7 @@ const dataCenterEnvironmentalSchema = z.object({
 
 // Crypto-mining-specific operational fields.
 const miningSchema = z.object({
-  hashRateThPerS: z.number().optional(),
+  hashRateThPerS: z.number().nonnegative().optional(),
   hardwareType: z.enum(["asic", "gpu", "mixed", "unknown"]).optional(),
   coolingType: z.enum(["immersion", "air", "hydro", "hybrid", "unknown"]).optional(),
   powerArrangement: z

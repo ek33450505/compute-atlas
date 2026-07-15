@@ -19,6 +19,7 @@ import {
 import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
 import type { Source, Facility } from "@/lib/schema";
 import { FacilitySourceIndexPicker } from "@/app/admin/facilities/facility-source-index-picker";
+import { useFocusAfterRemove } from "@/lib/use-focus-after-remove";
 
 // ---------------------------------------------------------------------------
 // statusHistory[] array editor (Phase 2b-3).
@@ -54,6 +55,8 @@ export function FacilityStatusHistorySection({
   sources,
   onChange,
 }: FacilityStatusHistorySectionProps) {
+  const { registerRemoveButton, registerAddButton, focusAfterRemove } = useFocusAfterRemove();
+
   function updateRow(index: number, patch: Partial<StatusHistoryEntry>) {
     onChange(statusHistory.map((row, i) => (i === index ? { ...row, ...patch } : row)));
   }
@@ -63,7 +66,9 @@ export function FacilityStatusHistorySection({
   }
 
   function removeRow(index: number) {
-    onChange(statusHistory.filter((_, i) => i !== index));
+    const next = statusHistory.filter((_, i) => i !== index);
+    onChange(next);
+    focusAfterRemove(index, next.length);
   }
 
   function moveRow(index: number, direction: -1 | 1) {
@@ -100,11 +105,12 @@ export function FacilityStatusHistorySection({
             onRemove={() => removeRow(index)}
             onMoveUp={() => moveRow(index, -1)}
             onMoveDown={() => moveRow(index, 1)}
+            removeButtonRef={registerRemoveButton(index)}
           />
         ))}
 
         <div>
-          <Button type="button" variant="outline" onClick={addRow}>
+          <Button type="button" variant="outline" onClick={addRow} ref={registerAddButton}>
             Add status history entry
           </Button>
         </div>
@@ -127,6 +133,7 @@ function StatusHistoryRow({
   onRemove,
   onMoveUp,
   onMoveDown,
+  removeButtonRef,
 }: {
   index: number;
   entry: StatusHistoryEntry;
@@ -137,6 +144,7 @@ function StatusHistoryRow({
   onRemove: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  removeButtonRef: (el: HTMLButtonElement | null) => void;
 }) {
   const statusId = `statusHistory.${index}.status`;
   const dateId = `statusHistory.${index}.date`;
@@ -226,6 +234,7 @@ function StatusHistoryRow({
           variant="outline"
           onClick={onRemove}
           aria-label={`Remove status history entry ${index + 1}`}
+          ref={removeButtonRef}
         >
           Remove
         </Button>

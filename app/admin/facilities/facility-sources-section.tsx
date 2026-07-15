@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { sourceKindEnum, type Source } from "@/lib/schema";
+import { useFocusAfterRemove } from "@/lib/use-focus-after-remove";
 
 // ---------------------------------------------------------------------------
 // sources[] array editor (Phase 2b-2).
@@ -64,6 +65,8 @@ export interface FacilitySourcesSectionProps {
 }
 
 export function FacilitySourcesSection({ sources, onChange }: FacilitySourcesSectionProps) {
+  const { registerRemoveButton, registerAddButton, focusAfterRemove } = useFocusAfterRemove();
+
   function updateRow(index: number, patch: Partial<Source>) {
     onChange(sources.map((s, i) => (i === index ? { ...s, ...patch } : s)));
   }
@@ -74,7 +77,9 @@ export function FacilitySourcesSection({ sources, onChange }: FacilitySourcesSec
 
   function removeRow(index: number) {
     if (sources.length <= 1) return; // min-1 floor enforced in the UI too
-    onChange(sources.filter((_, i) => i !== index));
+    const next = sources.filter((_, i) => i !== index);
+    onChange(next);
+    focusAfterRemove(index, next.length);
   }
 
   function moveRow(index: number, direction: -1 | 1) {
@@ -118,11 +123,12 @@ export function FacilitySourcesSection({ sources, onChange }: FacilitySourcesSec
             onRemove={() => removeRow(index)}
             onMoveUp={() => moveRow(index, -1)}
             onMoveDown={() => moveRow(index, 1)}
+            removeButtonRef={registerRemoveButton(index)}
           />
         ))}
 
         <div>
-          <Button type="button" variant="outline" onClick={addRow}>
+          <Button type="button" variant="outline" onClick={addRow} ref={registerAddButton}>
             Add source
           </Button>
         </div>
@@ -145,6 +151,7 @@ function SourceRow({
   onRemove,
   onMoveUp,
   onMoveDown,
+  removeButtonRef,
 }: {
   index: number;
   source: Source;
@@ -155,6 +162,7 @@ function SourceRow({
   onRemove: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  removeButtonRef: (el: HTMLButtonElement | null) => void;
 }) {
   const urlId = `sources.${index}.url`;
   const labelId = `sources.${index}.label`;
@@ -279,6 +287,7 @@ function SourceRow({
               : `Remove source ${index + 1}`
           }
           title={isOnly ? "At least one source is required" : undefined}
+          ref={removeButtonRef}
         >
           Remove
         </Button>
