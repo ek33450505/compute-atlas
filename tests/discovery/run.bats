@@ -35,10 +35,21 @@ EOF
 	# calls the helpers would otherwise make (existing-facilities.ts hits the
 	# DB, check-sources.ts issues ~1000+ live HTTP requests). ------------------
 	NPX_CALL_LOG="$TEST_TMP/npx-calls.log"
-	cat >"$BIN_DIR/npx" <<'EOF'
+	REAL_NPX="$(command -v npx)"
+	cat >"$BIN_DIR/npx" <<EOF
 #!/usr/bin/env bash
-echo "npx $*" >>"$NPX_CALL_LOG"
-case "$*" in
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*)
+	# The retry gate's candidates_file_has_array() validation call — MUST be
+	# checked before the *submit-candidates.ts* case below, because this
+	# call's inline script imports from "./scripts/discovery/submit-candidates.ts",
+	# which would otherwise match that case first. Delegate to the REAL
+	# npx/tsx so parseCandidatesJson's actual accept/reject logic runs (pure
+	# import + local file read, zero network, safe to run for real). Every
+	# other npx call below stays stubbed.
+	exec "$REAL_NPX" "\$@"
+	;;
 *existing-facilities.ts*)
 	echo "" # empty projection, matches run.sh's fail-open shape
 	exit 0
@@ -166,4 +177,70 @@ teardown() {
 	[ "$status" -eq 0 ]
 	[ -s "$CLAUDE_CALL_LOG" ]
 	grep -q -- "--append-system-prompt" "$CLAUDE_CALL_LOG"
+}
+
+@test "retry recovers when first claude call emits prose with no JSON array" {
+	export DISCOVERY_ENABLED=true
+	# Reproduces the 2026-07-15 AZ failure mode: first call emits a prose
+	# session-summary with no array at all, second call emits a valid array.
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+n=\$((n + 1))
+echo "\$n" >"$CLAUDE_COUNTER_FILE"
+if [ "\$n" -eq 1 ]; then
+	echo "Session summary: I have reviewed the sources and logged a journal entry."
+else
+	echo '[{"name":"Recovered Facility","facilityType":"data_center"}]'
+fi
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 2 ]
+	[[ "$output" == *"WARN: claude output for"*"had no parseable JSON array — retrying once"* ]]
+
+	outfile="$(find "$LOG_DIR" -name 'candidates-*.json' -print -quit)"
+	[ -n "$outfile" ]
+	grep -q "Recovered Facility" "$outfile"
+}
+
+@test "valid array on first claude call does not trigger a retry" {
+	export DISCOVERY_ENABLED=true
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+n=\$((n + 1))
+echo "\$n" >"$CLAUDE_COUNTER_FILE"
+echo '[{"name":"First Try Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 1 ]
+	[[ "$output" != *"retrying once"* ]]
+}
+
+@test "dry-run never retries even though it writes an empty array" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	# dry-run must never invoke the real claude binary at all, retry or not
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" != *"retrying once"* ]]
 }

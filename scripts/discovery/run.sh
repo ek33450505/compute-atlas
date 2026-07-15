@@ -104,11 +104,44 @@ d
     TIMEOUT_BIN="gtimeout"
   fi
 
-  if [[ -n "$TIMEOUT_BIN" ]]; then
-    "$TIMEOUT_BIN" 600 claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
-  else
-    log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
-    claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
+  invoke_claude() {
+    if [[ -n "$TIMEOUT_BIN" ]]; then
+      "$TIMEOUT_BIN" 600 claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
+    else
+      log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
+      claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
+    fi
+  }
+
+  # candidates_file_has_array: mirrors parseCandidatesJson's accept/reject
+  # semantics exactly (raw array, or a preamble-tolerant [ .. ] slice) so a
+  # legitimately empty `[]` result is never mistaken for a parse failure.
+  candidates_file_has_array() {
+    npx tsx -e '
+import { parseCandidatesJson } from "./scripts/discovery/submit-candidates.ts";
+import { readFileSync } from "node:fs";
+try {
+  const a = parseCandidatesJson(readFileSync(process.argv[1], "utf8"));
+  process.exit(Array.isArray(a) ? 0 : 1);
+} catch {
+  process.exit(1);
+}
+' "$1" >/dev/null 2>&1
+  }
+
+  invoke_claude
+  # Bounded single retry: on 2026-07-15 the AZ run inherited the maintainer's
+  # ~/.claude persona and ended its turn with a prose summary + journal write
+  # instead of the JSON array — no array at all, not just malformed JSON. The
+  # BATCH_CONTRACT above mitigates this but does not eliminate it, so retry
+  # exactly once on a genuine no-array result, then proceed either way — the
+  # submit step below logs and no-ops on a still-empty/unparseable OUTFILE.
+  if ! candidates_file_has_array "$OUTFILE"; then
+    log "WARN: claude output for $RUN_ID had no parseable JSON array — retrying once"
+    invoke_claude
+    if ! candidates_file_has_array "$OUTFILE"; then
+      log "WARN: retry for $RUN_ID still had no parseable JSON array — proceeding to submit anyway"
+    fi
   fi
 fi
 
