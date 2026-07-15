@@ -13,6 +13,7 @@ const provenanceSchema = z.object({
   runId: z.string().optional(),
   discoveredAt: z.string().optional(),
   note: z.string().optional(),
+  submitterIpHash: z.string().optional(),
 });
 
 /**
