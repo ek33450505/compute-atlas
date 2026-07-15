@@ -122,6 +122,8 @@ npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" 
 
 # --- source-liveness check (read-only — runs every run, including dry-run) --
 log "checking source liveness"
-npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_DIR/check-sources.err" || true
+if ! npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_DIR/check-sources.err"; then
+  log "WARN: source-liveness check failed — continuing (see check-sources.err)"
+fi
 
 log "discovery run $RUN_ID complete"
