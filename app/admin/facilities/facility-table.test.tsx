@@ -106,6 +106,30 @@ describe("FacilityAdminTable — rendering", () => {
     const header = sortButton.closest("th");
     expect(header).toHaveAttribute("aria-sort");
   });
+
+  it("wires a bounded, scrollable container with an accessible label", () => {
+    render(<FacilityAdminTable facilities={[makeFacility()]} />);
+
+    // jsdom cannot render sticky-position behavior, so this asserts the
+    // structural wiring (classes + a11y attributes) rather than pixel
+    // behavior — the actual sticky rendering is verified in a real browser.
+    const scrollContainer = screen.getByLabelText(
+      "Facilities table, scrollable"
+    );
+    expect(scrollContainer).toHaveClass("max-h-[calc(100vh-16rem)]");
+    expect(scrollContainer).toHaveClass("overflow-y-auto");
+    expect(scrollContainer).toHaveAttribute("tabIndex", "0");
+  });
+
+  it("marks the table header as sticky so it stays visible while the body scrolls", () => {
+    render(<FacilityAdminTable facilities={[makeFacility()]} />);
+
+    const columnHeader = screen.getByRole("columnheader", { name: "Name" });
+    const headerRowGroup = columnHeader.closest("thead");
+    expect(headerRowGroup).toHaveClass("sticky");
+    expect(headerRowGroup).toHaveClass("top-0");
+    expect(headerRowGroup).toHaveClass("bg-background");
+  });
 });
 
 describe("FacilityAdminTable — delete flow", () => {

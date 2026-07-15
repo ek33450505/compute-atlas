@@ -271,12 +271,18 @@ export function FacilityAdminTable({ facilities }: FacilityAdminTableProps) {
       </div>
 
       <div className="overflow-hidden rounded-sm border border-border">
-        <Table>
+        <Table
+          containerClassName="max-h-[calc(100vh-16rem)] overflow-y-auto"
+          containerProps={{
+            tabIndex: 0,
+            "aria-label": "Facilities table, scrollable",
+          }}
+        >
           <TableCaption className="sr-only">
             Facilities — sortable admin table with edit and delete actions
           </TableCaption>
 
-          <TableHeader>
+          <TableHeader className="sticky top-0 z-10 bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -304,7 +310,7 @@ export function FacilityAdminTable({ facilities }: FacilityAdminTableProps) {
                       aria-sort={ariaSort}
                       className={cn(
                         "font-mono text-[11px] uppercase tracking-wider text-muted-foreground",
-                        "h-9 px-2 py-1",
+                        "h-9 px-2 py-1 bg-background",
                         isRightAligned && "text-right"
                       )}
                     >
