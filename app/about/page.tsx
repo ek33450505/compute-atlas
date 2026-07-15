@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
 import { STATUS_META, STATUS_ORDER } from "@/lib/status";
@@ -563,18 +564,29 @@ export default function AboutPage() {
         <p className="text-sm leading-relaxed text-muted-foreground">
           Community contribution is how this atlas stays accurate and grows.
           If you have a correction, a missing facility, or an updated source,
-          open an issue on GitHub — every submitted change needs one thing: a
+          use the in-app form — every submitted change needs one thing: a
           public source URL anyone can verify.
         </p>
-        <a
-          href={`${siteConfig.repoUrl}/issues/new/choose`}
-          target="_blank"
-          rel="noreferrer noopener"
-          aria-label="Open an issue on GitHub to suggest a correction or new facility (opens in new tab)"
+        <Link
+          href="/contribute"
+          aria-label="Suggest a facility or correction using the in-app form"
           className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          Open an issue on GitHub →
-        </a>
+          Suggest a facility →
+        </Link>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Prefer GitHub?{" "}
+          <a
+            href={`${siteConfig.repoUrl}/issues/new/choose`}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Open an issue on GitHub to suggest a correction or new facility (opens in new tab)"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            or open an issue on GitHub
+          </a>
+          .
+        </p>
         <p className="text-sm leading-relaxed text-muted-foreground">
           Prefer to support the work directly?{" "}
           <a href={siteConfig.sponsorUrl} target="_blank" rel="noreferrer noopener"

@@ -11,7 +11,6 @@ import {
   AI_CLASSIFICATION_LABELS,
   CONFIDENCE_LABELS,
 } from "@/lib/format";
-import { siteConfig } from "@/lib/site";
 import { facilityJsonLdString } from "@/lib/seo";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +22,7 @@ import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-
 import { CivicImpactSection, hasCivicImpact } from "@/components/facility/civic-impact";
 import { PowerLinksSection, hasPowerLinks } from "@/components/facility/power-links";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 
 export async function generateStaticParams() {
   const facilities = await getAllFacilities();
@@ -75,10 +75,6 @@ export default async function FacilityPage({
     facility.status === "proposed" || facility.status === "permitted";
   const isRumored = facility.confidence === "rumored";
   const showBanner = isProvisional || isRumored;
-
-  const correctionUrl = `${siteConfig.repoUrl}/issues/new?title=${encodeURIComponent(
-    "Data correction: " + facility.name
-  )}`;
 
   return (
     <div data-content-width="4xl" className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10">
@@ -262,22 +258,8 @@ export default async function FacilityPage({
 
       <Separator />
 
-      {/* Correction link */}
-      <div className="space-y-1">
-        <p className="text-sm text-muted-foreground">
-          Compute Atlas is meant to be corrected. If you have better data on
-          this facility, please open an issue.
-        </p>
-        <a
-          href={correctionUrl}
-          target="_blank"
-          rel="noreferrer noopener"
-          aria-label="Suggest a correction for this facility (opens GitHub in a new tab)"
-          className="inline-flex items-center gap-1 font-mono text-sm uppercase tracking-wider text-primary underline-offset-4 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          Suggest a correction →
-        </a>
-      </div>
+      {/* Correction */}
+      <SuggestCorrection facilityId={facility.id} facilityName={facility.name} />
     </div>
   );
 }
