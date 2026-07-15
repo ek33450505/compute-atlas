@@ -85,10 +85,30 @@ r $EXISTING_FACILITIES_FILE
 d
 }")"
   rm -f "$EXISTING_FACILITIES_FILE"
+  # Batch-mode contract, appended at the SYSTEM level so it outranks any
+  # user-global ~/.claude persona (e.g. a journal rule or chatty-summary habit)
+  # this headless session would otherwise inherit. On 2026-07-15 the AZ run
+  # inherited that persona, ended its turn with a prose summary + journal write
+  # instead of the JSON array, and the submit step then parsed zero candidates.
+  # ASCII-only on purpose: launchd runs with a bare/C locale.
+  BATCH_CONTRACT="You are a non-interactive batch data extractor. Your ENTIRE response MUST be exactly one raw JSON array and nothing else: no prose, no markdown fences, no preamble, no session summary, and you must NOT write any journal entry or edit any files. The final character you output must be ]."
+
+  # macOS ships neither `timeout` nor `gtimeout`, so the old `command -v timeout`
+  # check always fell through to the uncapped branch here — a run that stalled
+  # (e.g. claude suspended across a sleep) then had no wall-clock cap at all.
+  # Prefer whichever timeout binary exists; if none, run uncapped but say so.
+  TIMEOUT_BIN=""
   if command -v timeout >/dev/null 2>&1; then
-    timeout 600 claude -p "$PROMPT" --output-format text < /dev/null > "$OUTFILE"
+    TIMEOUT_BIN="timeout"
+  elif command -v gtimeout >/dev/null 2>&1; then
+    TIMEOUT_BIN="gtimeout"
+  fi
+
+  if [[ -n "$TIMEOUT_BIN" ]]; then
+    "$TIMEOUT_BIN" 600 claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
   else
-    claude -p "$PROMPT" --output-format text < /dev/null > "$OUTFILE"
+    log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
+    claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
   fi
 fi
 

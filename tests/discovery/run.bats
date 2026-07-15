@@ -147,3 +147,14 @@ teardown() {
 	[ -n "$check_line" ]
 	[ "$check_line" -gt "$submit_line" ]
 }
+
+@test "live path invokes claude with the batch-contract system prompt" {
+	export DISCOVERY_ENABLED=true
+	# NOT dry-run: exercise the real claude-invocation branch (claude is shimmed,
+	# so no network/subscription call happens). Guards against a regression that
+	# drops --append-system-prompt and lets the inherited persona emit prose.
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ -s "$CLAUDE_CALL_LOG" ]
+	grep -q -- "--append-system-prompt" "$CLAUDE_CALL_LOG"
+}

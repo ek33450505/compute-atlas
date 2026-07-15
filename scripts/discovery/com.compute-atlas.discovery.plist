@@ -34,15 +34,17 @@
   </dict>
 
   <!--
-    Daily at 03:00 local time. One state per run; the 15-state rotation cursor
-    means full coverage cycles roughly every two weeks. launchd fires at next
-    wake if the Mac was asleep at 03:00, so treat this as "roughly daily". For a
-    lighter cadence, add <key>Weekday</key><integer>0</integer> to run Sundays only.
+    Daily at 13:00 local time. One state per run; the 15-state rotation cursor
+    means full coverage cycles roughly every two weeks. Runs midday, when the
+    Mac is normally awake and lid-open: an overnight (03:00) slot was skipped
+    whenever the machine was asleep, since launchd defers a missed calendar
+    interval to the next wake. For a lighter cadence, add
+    <key>Weekday</key><integer>0</integer> to run Sundays only.
   -->
   <key>StartCalendarInterval</key>
   <dict>
     <key>Hour</key>
-    <integer>3</integer>
+    <integer>13</integer>
     <key>Minute</key>
     <integer>0</integer>
   </dict>
