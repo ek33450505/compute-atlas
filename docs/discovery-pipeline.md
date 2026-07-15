@@ -26,6 +26,12 @@ run.sh (launchd, daily)
 - `scripts/discovery/run.sh` — the scheduled harness. Owns the kill switch,
   the state-rotation cursor, the existing-facilities fetch, the single
   `claude -p` research call, and coordination with source-liveness checks.
+  The research call is pinned to JSON-only output with a system-level batch
+  contract (`--append-system-prompt`), so the headless session can't fall back
+  to a prose session-summary that the submit step would then fail to parse. It
+  also runs under a `timeout`/`gtimeout` wall-clock cap when one is available
+  (macOS ships neither by default — in that case it runs uncapped and logs a
+  WARN).
 - `scripts/discovery/discovery-prompt.txt` — the bounded, single-session
   research prompt template. Contains two responsibilities: (1) discover
   net-new facilities, (2) re-check existing facilities for status changes.
@@ -174,20 +180,29 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.compute-atlas.discov
 launchctl print gui/$(id -u)/com.compute-atlas.discovery   # verify: state, runs, path
 ```
 
-The job runs daily at 03:00 local, one state per run (the cursor rotates
+The job runs daily at 13:00 local, one state per run (the cursor rotates
 through 15 states — roughly a full cycle every two weeks). It stays a no-op
 until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default — see the
 kill switch above).
+
+Midday (rather than overnight) is deliberate: macOS `launchd` defers a missed
+`StartCalendarInterval` to the next wake, so an early-morning slot is simply
+skipped whenever the Mac is asleep. 13:00 assumes the machine is normally awake
+and lid-open then — if your usage differs, pick an hour when the Mac is reliably
+on, or move the job off the laptop entirely (e.g. a cron/CI runner with an API
+key instead of the subscription).
 
 **PATH gotcha:** launchd runs with a bare `PATH`, so the plist's
 `EnvironmentVariables` must list wherever `claude`/`node`/`npx` live
 (`/opt/homebrew/bin` on a Homebrew install). Without it the job cannot find
 them and fails in `discovery-logs/launchd.err`.
 
-**Auth caveat:** `claude -p` needs an authenticated Claude Code subscription
-session. It works in an interactive shell; whether it authenticates from the
-background launchd context is worth confirming on the first scheduled run —
-check `discovery-logs/launchd.err` after it fires.
+**Auth note:** `claude -p` needs an authenticated Claude Code subscription
+session. Verified (2026-07-15): it authenticates fine from the background
+launchd context — a scheduled run reaches your subscription without an
+interactive shell. If it ever regresses, `discovery-logs/launchd.err` is where
+it surfaces; the fallbacks are a login-session launcher or the manual
+invocation above.
 
 To reload after editing the plist:
 `launchctl bootout gui/$(id -u)/com.compute-atlas.discovery && launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.compute-atlas.discovery.plist`
