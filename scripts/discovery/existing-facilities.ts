@@ -38,9 +38,32 @@ function firstSourceUrl(facility: Facility): string {
 }
 
 /**
+ * Neutralizes characters that collide with the projection's own structural
+ * delimiters (` | ` between fields, `\n` between rows) before a field is
+ * joined into a line. A facility `name`/`operator`/url containing a literal
+ * `|` or embedded CR/LF/tab would otherwise break the line-oriented format
+ * or inject extra columns/lines into the discovery prompt that consumes this
+ * block. Not a shell/injection defense (that's handled upstream) — purely
+ * about the projection's own structural integrity.
+ *
+ * - `|` -> `/` (visually similar, can't be mistaken for the delimiter)
+ * - CR/LF/tab -> single space
+ * - runs of whitespace collapsed to one space, then trimmed
+ */
+function sanitizeField(value: string): string {
+  return value
+    .replaceAll("|", "/")
+    .replace(/[\r\n\t]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
  * Filters `facilities` by `location.state` and renders one compact
  * pipe-delimited line per match. Returns an empty string when there are no
- * matches (never throws on an empty/zero-facility state).
+ * matches (never throws on an empty/zero-facility state). Every field is run
+ * through `sanitizeField` so the ` | ` delimiter and `\n` row separator stay
+ * the only structural pipes/newlines in the output.
  */
 export function projectExisting(facilities: Facility[], state: string): string {
   return facilities
@@ -53,7 +76,9 @@ export function projectExisting(facilities: Facility[], state: string): string {
         facility.status,
         latestStatusDate(facility),
         firstSourceUrl(facility),
-      ].join(" | ")
+      ]
+        .map(sanitizeField)
+        .join(" | ")
     )
     .join("\n");
 }

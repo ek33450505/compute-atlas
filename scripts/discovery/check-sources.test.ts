@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 
-import { checkSources, type SourceCheckDeps } from "./check-sources";
+import { checkSources, isBlockedHost, type SourceCheckDeps } from "./check-sources";
 import type { Facility } from "../../lib/schema";
 
 function makeFacility(overrides: Partial<Facility> = {}, urls: string[] = ["https://example.com/a"]): Facility {
@@ -168,5 +168,80 @@ describe("checkSources", () => {
     const deps = baseDeps({ fetchImpl });
     await checkSources([makeFacility()], deps);
     expect(bodyAccessed).toBe(false);
+  });
+
+  describe("SSRF guard (blocked hosts)", () => {
+    const blockedUrls = [
+      "http://169.254.169.254/latest/meta-data/",
+      "http://127.0.0.1/",
+      "http://10.1.2.3/",
+      "http://192.168.0.1/",
+      "http://[::1]/",
+      "http://localhost:8080/",
+    ];
+
+    it.each(blockedUrls)("classifies %s as blocked and never calls fetch", async (url) => {
+      const fetchImpl = vi.fn<typeof fetch>(async () => ({ ok: true, status: 200 }) as Response);
+      const facility = makeFacility({ id: "f-blocked" }, [url]);
+      const deps = baseDeps({ fetchImpl });
+      const results = await checkSources([facility], deps);
+
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(results).toHaveLength(1);
+      expect(results[0].classification).toBe("blocked");
+      expect(results[0].httpStatus).toBeNull();
+      expect(results[0].url).toBe(url);
+    });
+
+    it("still probes a normal public URL (fetch is called, classified normally)", async () => {
+      const fetchImpl = vi.fn<typeof fetch>(async () => ({ ok: true, status: 200 }) as Response);
+      const facility = makeFacility({ id: "f-normal" }, ["https://example.com/x"]);
+      const deps = baseDeps({ fetchImpl });
+      const results = await checkSources([facility], deps);
+
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(results[0].classification).toBe("ok");
+      expect(results[0].httpStatus).toBe(200);
+    });
+
+    it("blocks a mix of blocked and public URLs independently, calling fetch only for the public one", async () => {
+      const calledUrls: string[] = [];
+      const fetchImpl = vi.fn<typeof fetch>(async (input) => {
+        calledUrls.push(typeof input === "string" ? input : input.toString());
+        return { ok: true, status: 200 } as Response;
+      });
+      const facility = makeFacility({ id: "f-mixed" }, [
+        "http://169.254.169.254/latest/meta-data/",
+        "https://example.com/legit",
+      ]);
+      const deps = baseDeps({ fetchImpl });
+      const results = await checkSources([facility], deps);
+
+      expect(calledUrls).toEqual(["https://example.com/legit"]);
+      const blocked = results.find((r) => r.url.includes("169.254"));
+      const ok = results.find((r) => r.url.includes("example.com"));
+      expect(blocked?.classification).toBe("blocked");
+      expect(ok?.classification).toBe("ok");
+    });
+
+    it("isBlockedHost blocks the IPv4-mapped IPv6 cloud-metadata address in hex-hextet form", () => {
+      // Node's WHATWG URL parser canonicalizes ::ffff:169.254.169.254 to
+      // this hex-hextet form (::ffff:a9fe:a9fe) — this is the form
+      // isBlockedHost actually sees in the real code path, not the
+      // dotted-quad form.
+      expect(isBlockedHost("::ffff:a9fe:a9fe")).toBe(true);
+    });
+
+    it("blocks a source URL whose IPv4-mapped IPv6 literal is the cloud-metadata IP, end-to-end through new URL() canonicalization", async () => {
+      const fetchImpl = vi.fn<typeof fetch>(async () => ({ ok: true, status: 200 }) as Response);
+      const facility = makeFacility({ id: "f-mapped-metadata" }, ["http://[::ffff:169.254.169.254]/x"]);
+      const deps = baseDeps({ fetchImpl });
+      const results = await checkSources([facility], deps);
+
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(results).toHaveLength(1);
+      expect(results[0].classification).toBe("blocked");
+      expect(results[0].httpStatus).toBeNull();
+    });
   });
 });
