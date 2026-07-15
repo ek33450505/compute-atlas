@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import type { FilterValues, FilterSetters } from "@/components/explorer/filter-bar";
@@ -38,6 +38,20 @@ function countActiveFilters(values: FilterValues): number {
 
 const BODY_ID = "map-filter-subheader-body";
 
+function subscribeWideViewport(onChange: () => void) {
+  const mql = window.matchMedia("(min-width: 640px)");
+  mql.addEventListener("change", onChange);
+  return () => mql.removeEventListener("change", onChange);
+}
+
+function getWideViewportSnapshot() {
+  return window.matchMedia("(min-width: 640px)").matches;
+}
+
+function getWideViewportServerSnapshot() {
+  return true;
+}
+
 /**
  * Collapsible filter sub-header for the /map immersive view.
  *
@@ -62,13 +76,19 @@ export function MapFilterSubheader({
   filteredCount,
   totalCount,
 }: MapFilterSubheaderProps) {
-  // Stable SSR-safe default: always start expanded so server and first client
-  // render agree (avoids hydration mismatch). A mount effect then sets the
-  // real viewport-appropriate state once the client has access to matchMedia.
-  const [isOpen, setIsOpen] = useState(true);
-  useEffect(() => {
-    setIsOpen(window.matchMedia("(min-width: 640px)").matches);
-  }, []);
+  // Stable SSR-safe default: server (and first client render) reports expanded
+  // so server and first client render agree (avoids hydration mismatch).
+  // useSyncExternalStore then reads the real viewport-appropriate state once
+  // the client has access to matchMedia, and stays subscribed to further
+  // viewport changes (e.g. window resize across the 640px boundary).
+  const prefersExpanded = useSyncExternalStore(
+    subscribeWideViewport,
+    getWideViewportSnapshot,
+    getWideViewportServerSnapshot
+  );
+  // Manual toggle overrides the viewport-derived default until unmount.
+  const [override, setOverride] = useState<boolean | null>(null);
+  const isOpen = override ?? prefersExpanded;
 
   // Build the "View as table" href from the current filter values so filters
   // carry to /table via the URL. Derived from `values` (not useSearchParams)
@@ -139,7 +159,7 @@ export function MapFilterSubheader({
         {/* Collapse / expand toggle — ≥44 px touch target */}
         <button
           type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={() => setOverride((o) => !(o ?? prefersExpanded))}
           aria-expanded={isOpen}
           aria-controls={BODY_ID}
           aria-label={isOpen ? "Collapse filter controls" : "Expand filter controls"}

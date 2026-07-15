@@ -9,7 +9,7 @@ import {
   type CreateContributeInput,
   type CorrectionContributeInput,
 } from "@/lib/contribute";
-import { facilitySchema, type Facility, type DataCenterFacility } from "@/lib/schema";
+import { facilitySchema, type DataCenterFacility } from "@/lib/schema";
 
 const TODAY = "2026-07-14";
 
@@ -74,13 +74,13 @@ describe("slugify", () => {
 
 describe("buildCreatePayload", () => {
   it("pins confidence to rumored and precision to approximate", () => {
-    const payload = buildCreatePayload(baseCreateInput(), TODAY) as Record<string, any>;
+    const payload = buildCreatePayload(baseCreateInput(), TODAY) as unknown as DataCenterFacility;
     expect(payload.confidence).toBe("rumored");
     expect(payload.location.precision).toBe("approximate");
   });
 
   it("uppercases the state", () => {
-    const payload = buildCreatePayload(baseCreateInput({ state: "va" }), TODAY) as Record<string, any>;
+    const payload = buildCreatePayload(baseCreateInput({ state: "va" }), TODAY) as unknown as DataCenterFacility;
     expect(payload.location.state).toBe("VA");
   });
 
@@ -88,30 +88,30 @@ describe("buildCreatePayload", () => {
     const payload = buildCreatePayload(
       baseCreateInput({ sourceLabel: "My Source" }),
       TODAY
-    ) as Record<string, any>;
+    ) as unknown as DataCenterFacility;
     expect(payload.sources).toHaveLength(1);
     expect(payload.sources[0].label).toBe("My Source");
     expect(payload.sources[0].retrievedAt).toBe(TODAY);
   });
 
   it("defaults the source label when none is given", () => {
-    const payload = buildCreatePayload(baseCreateInput(), TODAY) as Record<string, any>;
+    const payload = buildCreatePayload(baseCreateInput(), TODAY) as unknown as DataCenterFacility;
     expect(payload.sources[0].label).toBe("User-submitted source");
   });
 
   it("sets lastUpdated to today", () => {
-    const payload = buildCreatePayload(baseCreateInput(), TODAY) as Record<string, any>;
+    const payload = buildCreatePayload(baseCreateInput(), TODAY) as unknown as DataCenterFacility;
     expect(payload.lastUpdated).toBe(TODAY);
   });
 
   it("includes capacityMw only when given", () => {
-    const withoutCapacity = buildCreatePayload(baseCreateInput(), TODAY) as Record<string, any>;
+    const withoutCapacity = buildCreatePayload(baseCreateInput(), TODAY) as unknown as DataCenterFacility;
     expect(withoutCapacity.capacityMw).toBeUndefined();
 
     const withCapacity = buildCreatePayload(
       baseCreateInput({ capacityOperationalMw: 20, capacityPlannedMw: 40 }),
       TODAY
-    ) as Record<string, any>;
+    ) as unknown as DataCenterFacility;
     expect(withCapacity.capacityMw).toEqual({ planned: 40, operational: 20 });
   });
 
@@ -127,7 +127,7 @@ describe("buildCreatePayload", () => {
       confidence: "confirmed", // not in createSchema — must be ignored
       id: "attacker-chosen-id", // not in createSchema — must be ignored
     };
-    const payload = buildCreatePayload(rawWithExtras as CreateContributeInput, TODAY) as Record<string, any>;
+    const payload = buildCreatePayload(rawWithExtras as CreateContributeInput, TODAY) as unknown as DataCenterFacility;
     expect(payload.status).toBe("operational");
     expect(payload.confidence).toBe("rumored"); // server-pinned, not attacker value
     expect(payload.id).not.toBe("attacker-chosen-id"); // server-derived via slugify
