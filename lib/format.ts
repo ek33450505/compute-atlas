@@ -75,5 +75,10 @@ export function formatUsdCompact(n: number): string {
     currency: "USD",
     notation: "compact",
     maximumFractionDigits: 1,
+    // Without this, ICU's compact-notation trailing-zero handling varies by
+    // Node/ICU version — e.g. "$450M" locally vs "$450.0M" on Node 22 in CI.
+    // stripIfInteger normalizes this: the fraction is dropped only when the
+    // compact value is a whole number, so "$3.5B"/"$2.9M" are unaffected.
+    trailingZeroDisplay: "stripIfInteger",
   }).format(n);
 }
