@@ -3,6 +3,13 @@ import { z } from "zod";
 import { createSubmission } from "@/lib/submissions";
 import { facilitySchema, type Facility } from "@/lib/schema";
 import { getFacilityById } from "@/lib/data";
+import {
+  CORRECTABLE_KEYS,
+  CORRECTABLE_FIELD_META,
+  type CorrectableKey,
+} from "@/lib/contribute-fields";
+
+export { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
 
 // Mirrors lib/schema.ts sourceSchema's http/https refine — rejects
 // javascript:/data: URLs at submit time, not just at facility-write time.
@@ -39,19 +46,6 @@ const createSchema = z.object({
   sourceLabel: z.string().max(200).optional(),
   note: z.string().max(2000).optional(),
 });
-
-// Allowlist of fields a public correction may target. Kept as a literal
-// tuple (not derived from CORRECTABLE_FIELDS below) so the Zod enum here
-// has no circular dependency on the registry, which is defined further down.
-export const CORRECTABLE_KEYS = [
-  "name",
-  "operator",
-  "poweredBy",
-  "status",
-  "state",
-  "capacityOperationalMw",
-  "capacityPlannedMw",
-] as const;
 
 const correctionSchema = z.object({
   kind: z.literal("correction"),
@@ -125,73 +119,39 @@ export function buildCreatePayload(
   return payload;
 }
 
-const STATUS_VALUES = [
-  "operational",
-  "under_construction",
-  "permitted",
-  "proposed",
-  "cancelled",
-] as const;
-
 interface CorrectableFieldDef {
-  key: (typeof CORRECTABLE_KEYS)[number];
+  key: CorrectableKey;
   label: string;
   valueKind: "text" | "number" | "enum" | "state";
   enumValues?: readonly string[];
   apply: (existing: Facility, value: string | number) => Record<string, unknown>;
 }
 
-export const CORRECTABLE_FIELDS: CorrectableFieldDef[] = [
-  {
-    key: "name",
-    label: "Facility name",
-    valueKind: "text",
-    apply: (_existing, value) => ({ name: String(value) }),
-  },
-  {
-    key: "operator",
-    label: "Operator",
-    valueKind: "text",
-    apply: (_existing, value) => ({ operator: String(value) }),
-  },
-  {
-    key: "poweredBy",
-    label: "Powered by",
-    valueKind: "text",
-    apply: (_existing, value) => ({ poweredBy: String(value) }),
-  },
-  {
-    key: "status",
-    label: "Status",
-    valueKind: "enum",
-    enumValues: STATUS_VALUES,
-    apply: (_existing, value) => ({ status: value }),
-  },
-  {
-    key: "state",
-    label: "State",
-    valueKind: "state",
-    apply: (existing, value) => ({
-      location: { ...existing.location, state: String(value).toUpperCase() },
-    }),
-  },
-  {
-    key: "capacityOperationalMw",
-    label: "Operational capacity (MW)",
-    valueKind: "number",
-    apply: (existing, value) => ({
-      capacityMw: { ...existing.capacityMw, operational: Number(value) },
-    }),
-  },
-  {
-    key: "capacityPlannedMw",
-    label: "Planned capacity (MW)",
-    valueKind: "number",
-    apply: (existing, value) => ({
-      capacityMw: { ...existing.capacityMw, planned: Number(value) },
-    }),
-  },
-];
+const APPLY_FNS: Record<
+  CorrectableKey,
+  (existing: Facility, value: string | number) => Record<string, unknown>
+> = {
+  name: (_existing, value) => ({ name: String(value) }),
+  operator: (_existing, value) => ({ operator: String(value) }),
+  poweredBy: (_existing, value) => ({ poweredBy: String(value) }),
+  status: (_existing, value) => ({ status: value }),
+  state: (existing, value) => ({
+    location: { ...existing.location, state: String(value).toUpperCase() },
+  }),
+  capacityOperationalMw: (existing, value) => ({
+    capacityMw: { ...existing.capacityMw, operational: Number(value) },
+  }),
+  capacityPlannedMw: (existing, value) => ({
+    capacityMw: { ...existing.capacityMw, planned: Number(value) },
+  }),
+};
+
+export const CORRECTABLE_FIELDS: CorrectableFieldDef[] = CORRECTABLE_FIELD_META.map(
+  (meta) => ({
+    ...meta,
+    apply: APPLY_FNS[meta.key],
+  })
+);
 
 function validateFieldValue(
   def: CorrectableFieldDef,
