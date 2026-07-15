@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Source, Facility } from "@/lib/schema";
 import { FacilitySourceIndexPicker } from "@/app/admin/facilities/facility-source-index-picker";
+import { useFocusAfterRemove } from "@/lib/use-focus-after-remove";
 
 // ---------------------------------------------------------------------------
 // subsidies[] array editor (Phase 2b-3).
@@ -48,6 +49,8 @@ export function FacilitySubsidiesSection({
   sources,
   onChange,
 }: FacilitySubsidiesSectionProps) {
+  const { registerRemoveButton, registerAddButton, focusAfterRemove } = useFocusAfterRemove();
+
   function updateRow(index: number, patch: Partial<SubsidyEntry>) {
     onChange(subsidies.map((row, i) => (i === index ? { ...row, ...patch } : row)));
   }
@@ -57,7 +60,9 @@ export function FacilitySubsidiesSection({
   }
 
   function removeRow(index: number) {
-    onChange(subsidies.filter((_, i) => i !== index));
+    const next = subsidies.filter((_, i) => i !== index);
+    onChange(next);
+    focusAfterRemove(index, next.length);
   }
 
   function moveRow(index: number, direction: -1 | 1) {
@@ -93,11 +98,12 @@ export function FacilitySubsidiesSection({
             onRemove={() => removeRow(index)}
             onMoveUp={() => moveRow(index, -1)}
             onMoveDown={() => moveRow(index, 1)}
+            removeButtonRef={registerRemoveButton(index)}
           />
         ))}
 
         <div>
-          <Button type="button" variant="outline" onClick={addRow}>
+          <Button type="button" variant="outline" onClick={addRow} ref={registerAddButton}>
             Add subsidy
           </Button>
         </div>
@@ -120,6 +126,7 @@ function SubsidyRow({
   onRemove,
   onMoveUp,
   onMoveDown,
+  removeButtonRef,
 }: {
   index: number;
   entry: SubsidyEntry;
@@ -130,6 +137,7 @@ function SubsidyRow({
   onRemove: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  removeButtonRef: (el: HTMLButtonElement | null) => void;
 }) {
   const programId = `subsidies.${index}.program`;
   const amountUsdId = `subsidies.${index}.amountUsd`;
@@ -224,6 +232,7 @@ function SubsidyRow({
           variant="outline"
           onClick={onRemove}
           aria-label={`Remove subsidy ${index + 1}`}
+          ref={removeButtonRef}
         >
           Remove
         </Button>

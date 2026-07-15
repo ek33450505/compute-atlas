@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -23,6 +24,23 @@ function makeEntry(overrides: Partial<StatusHistoryEntry> = {}): StatusHistoryEn
     date: "2026-01-01",
     ...overrides,
   };
+}
+
+/**
+ * Stateful wrapper: `FacilityStatusHistorySection` is fully controlled, so
+ * focus-restoration tests (which depend on a real re-render after a row
+ * unmounts) need a component that actually owns state and re-renders on
+ * `onChange`, unlike the `vi.fn()` spy used by the other tests in this file.
+ */
+function StatefulStatusHistorySection({ initial }: { initial: StatusHistoryEntry[] }) {
+  const [statusHistory, setStatusHistory] = useState(initial);
+  return (
+    <FacilityStatusHistorySection
+      statusHistory={statusHistory}
+      sources={[]}
+      onChange={setStatusHistory}
+    />
+  );
 }
 
 describe("FacilityStatusHistorySection", () => {
@@ -186,5 +204,36 @@ describe("FacilityStatusHistorySection", () => {
     await user.click(pickMeOption);
 
     expect(onChange).toHaveBeenCalledWith([{ ...statusHistory[0], sourceIndex: 0 }]);
+  });
+
+  describe("focus restoration after Remove (§1f)", () => {
+    it("moves focus to the Remove button of the row that took the removed row's place", async () => {
+      const user = userEvent.setup();
+      const initial = [
+        makeEntry({ note: "Row 1" }),
+        makeEntry({ note: "Row 2" }),
+        makeEntry({ note: "Row 3" }),
+      ];
+      render(<StatefulStatusHistorySection initial={initial} />);
+
+      await user.click(screen.getByRole("button", { name: /remove status history entry 2/i }));
+
+      // Row 3 shifted into index 1 and is now "entry 2".
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: /remove status history entry 2/i })
+      );
+    });
+
+    it("moves focus to the Add button when the only remaining row is removed", async () => {
+      const user = userEvent.setup();
+      render(<StatefulStatusHistorySection initial={[makeEntry()]} />);
+
+      await user.click(screen.getByRole("button", { name: /remove status history entry 1/i }));
+
+      expect(screen.getByText(/no status history entries/i)).toBeInTheDocument();
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: /add status history entry/i })
+      );
+    });
   });
 });
