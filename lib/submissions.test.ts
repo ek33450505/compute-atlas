@@ -35,6 +35,25 @@ describe("submissionInputSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts a valid status_update submission with a targetFacilityId", () => {
+    const result = submissionInputSchema.safeParse({
+      kind: "status_update",
+      targetFacilityId: "some-facility-id",
+      payload: { status: "operational", date: "2026-07-16", sources: [] },
+      provenance,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a status_update submission missing targetFacilityId", () => {
+    const result = submissionInputSchema.safeParse({
+      kind: "status_update",
+      payload: { status: "operational", date: "2026-07-16", sources: [] },
+      provenance,
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("rejects a submission with an empty sources array", () => {
     const result = submissionInputSchema.safeParse({
       kind: "create",

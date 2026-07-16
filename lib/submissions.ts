@@ -3,7 +3,7 @@ import { eq, desc } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { submissionsTable, type SubmissionRow } from "@/lib/db/schema";
-import { createFacility, updateFacility, type WriteResult } from "@/lib/facility-write";
+import { createFacility, updateFacility, writeStatusUpdate, type WriteResult } from "@/lib/facility-write";
 import type { Facility } from "@/lib/schema";
 
 const provenanceSchema = z.object({
@@ -23,13 +23,13 @@ const provenanceSchema = z.object({
  */
 export const submissionInputSchema = z
   .object({
-    kind: z.enum(["create", "update"]),
+    kind: z.enum(["create", "update", "status_update"]),
     targetFacilityId: z.string().optional(),
-    payload: z.record(z.string(), z.unknown()), // full doc for create, partial patch for update
+    payload: z.record(z.string(), z.unknown()), // full doc for create, partial patch/intent for update/status_update
     provenance: provenanceSchema,
   })
-  .refine((s) => s.kind !== "update" || !!s.targetFacilityId, {
-    message: "targetFacilityId is required when kind is 'update'",
+  .refine((s) => (s.kind !== "update" && s.kind !== "status_update") || !!s.targetFacilityId, {
+    message: "targetFacilityId is required for update and status_update submissions",
     path: ["targetFacilityId"],
   });
 
@@ -103,7 +103,9 @@ export async function approveSubmission(
   const writeResult: WriteResult =
     row.kind === "create"
       ? await createFacility(row.payload, id)
-      : await updateFacility(row.targetFacilityId!, row.payload, id);
+      : row.kind === "status_update"
+        ? await writeStatusUpdate(row.targetFacilityId!, row.payload, id)
+        : await updateFacility(row.targetFacilityId!, row.payload, id);
 
   if (!writeResult.ok) {
     return writeResult;

@@ -6,6 +6,7 @@ import { getDb } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
 import { docToRow } from "@/lib/db/serialize";
 import { computeDocDiff, type DiffEntry } from "@/lib/doc-diff";
+import { statusUpdateIntentSchema, applyStatusUpdate } from "@/lib/status-update";
 
 export type WriteResult =
   | { ok: true; facility: Facility }
@@ -109,6 +110,51 @@ export async function updateFacility(
 
   const merged = { ...existingRow.doc, ...(patch as object), id };
   const parsed = facilitySchema.safeParse(merged);
+  if (!parsed.success) {
+    return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };
+  }
+  const doc = parsed.data;
+
+  await db
+    .update(facilitiesTable)
+    .set({ ...docToRow(doc), updatedAt: new Date() })
+    .where(eq(facilitiesTable.id, id));
+  await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
+  revalidateFacilities();
+  return { ok: true, facility: doc };
+}
+
+/**
+ * Applies a status-transition intent to an existing facility via the
+ * append-only applyStatusUpdate (lib/status-update.ts) — the safe alternative
+ * to updateFacility's shallow merge for discovery status refreshes. Because it
+ * only appends to `sources`, existing sourceIndex references (community,
+ * subsidies, jobs, prior statusHistory) stay in range, so the merged doc can't
+ * become internally inconsistent the way a sources-replacing update patch can.
+ * Re-validates the result against facilitySchema as defense-in-depth.
+ */
+export async function writeStatusUpdate(
+  id: string,
+  intent: unknown,
+  source: string = "admin-direct"
+): Promise<WriteResult> {
+  const parsedIntent = statusUpdateIntentSchema.safeParse(intent);
+  if (!parsedIntent.success) {
+    return { ok: false, status: 400, error: "Invalid status update", issues: parsedIntent.error.issues };
+  }
+
+  const db = getDb();
+  const existingRows = await db
+    .select()
+    .from(facilitiesTable)
+    .where(eq(facilitiesTable.id, id));
+  const existingRow = existingRows[0];
+  if (!existingRow) {
+    return { ok: false, status: 404, error: "Facility not found" };
+  }
+
+  const applied = applyStatusUpdate(existingRow.doc, parsedIntent.data);
+  const parsed = facilitySchema.safeParse(applied);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };
   }
