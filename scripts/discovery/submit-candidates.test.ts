@@ -264,7 +264,8 @@ describe("runSubmit — status_update intents", () => {
     expect(body.targetFacilityId).toBe("existing-facility-tx");
     // payload is the parsed StatusUpdateIntent (statusUpdateIntentSchema) — it
     // does not include targetFacilityId, which lives at the envelope level.
-    const { targetFacilityId: _omit, ...expectedIntent } = makeStatusUpdate();
+    const { targetFacilityId: omittedTargetId, ...expectedIntent } = makeStatusUpdate();
+    expect(omittedTargetId).toBe("existing-facility-tx"); // targetFacilityId lives at the envelope level, not inside payload
     expect(body.payload).toEqual(expectedIntent);
     expect(body.provenance.sources).toEqual(["https://example.com/groundbreaking"]);
     expect(body.provenance.discoveredBy).toBe("test");
