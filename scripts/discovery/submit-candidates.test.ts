@@ -76,10 +76,14 @@ describe("normalizeCandidates", () => {
     const wrapped = { facility: makeCandidate({ id: "wrapped-tx" }), provenance: { sources: ["https://x"] } };
 
     const [a, b] = normalizeCandidates([bare, wrapped]);
-    expect(a.doc).toEqual(bare);
-    expect(a.provenance).toEqual({});
-    expect((b.doc as { id: string }).id).toBe("wrapped-tx");
-    expect(b.provenance.sources).toEqual(["https://x"]);
+    expect(a.type).toBe("facility");
+    expect(b.type).toBe("facility");
+    if (a.type === "facility" && b.type === "facility") {
+      expect(a.doc).toEqual(bare);
+      expect(a.provenance).toEqual({});
+      expect((b.doc as { id: string }).id).toBe("wrapped-tx");
+      expect(b.provenance.sources).toEqual(["https://x"]);
+    }
   });
 });
 
@@ -222,6 +226,171 @@ describe("runSubmit", () => {
     expect(summary.errors).toBe(1);
     expect(summary.submitted).toBe(1);
     expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("runSubmit — status_update intents", () => {
+  function makeStatusUpdate(overrides: Record<string, unknown> = {}) {
+    return {
+      targetFacilityId: "existing-facility-tx",
+      status: "under_construction",
+      date: "2026-07-16",
+      note: "groundbreaking confirmed",
+      sources: [
+        { url: "https://example.com/groundbreaking", label: "Groundbreaking report", retrievedAt: "2026-07-16", kind: "press" },
+      ],
+      ...overrides,
+    };
+  }
+
+  it("submits a valid status_update as kind=status_update with the intent as payload", async () => {
+    const fetchImpl = makeFetch([{ ok: true, status: 200 }]);
+    const candidate = {
+      statusUpdate: makeStatusUpdate(),
+      provenance: { sources: ["https://example.com/groundbreaking"], discoveredBy: "test" },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(1);
+    expect(summary.submittedIds).toEqual(["existing-facility-tx"]);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    expect(body.kind).toBe("status_update");
+    expect(body.targetFacilityId).toBe("existing-facility-tx");
+    // payload is the parsed StatusUpdateIntent (statusUpdateIntentSchema) — it
+    // does not include targetFacilityId, which lives at the envelope level.
+    const { targetFacilityId: omittedTargetId, ...expectedIntent } = makeStatusUpdate();
+    expect(omittedTargetId).toBe("existing-facility-tx"); // targetFacilityId lives at the envelope level, not inside payload
+    expect(body.payload).toEqual(expectedIntent);
+    expect(body.provenance.sources).toEqual(["https://example.com/groundbreaking"]);
+    expect(body.provenance.discoveredBy).toBe("test");
+  });
+
+  it("skips a status_update whose targetFacilityId is not an existing facility", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      statusUpdate: makeStatusUpdate({ targetFacilityId: "no-such-facility" }),
+      provenance: { sources: ["https://example.com/x"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.skippedInvalid).toBe(1);
+    expect(summary.submitted).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("skips a status_update with empty sources as a malformed intent", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      statusUpdate: makeStatusUpdate({ sources: [] }),
+      provenance: { sources: ["https://example.com/x"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.skippedInvalid).toBe(1);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("skips a status_update with an invalid status value as a malformed intent", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      statusUpdate: makeStatusUpdate({ status: "not-a-real-status" }),
+      provenance: { sources: ["https://example.com/x"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.skippedInvalid).toBe(1);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("routes a mixed array of a new facility, a status_update, and an existing-id full update correctly", async () => {
+    const fetchImpl = makeFetch([{ ok: true }, { ok: true }, { ok: true }]);
+    const candidates = [
+      { facility: makeCandidate({ id: "mixed-new-tx" }), provenance: { sources: ["https://x/new"] } },
+      { statusUpdate: makeStatusUpdate(), provenance: { sources: ["https://x/status"] } },
+      {
+        facility: makeCandidate({ id: "existing-facility-tx", name: "Existing Facility Corrected" }),
+        provenance: { sources: ["https://x/correction"] },
+      },
+    ];
+
+    const summary = await runSubmit(candidates, baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(3);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+
+    const kinds = fetchImpl.mock.calls.map(([, init]) => JSON.parse(init!.body as string).kind);
+    expect(kinds).toEqual(["create", "status_update", "update"]);
+  });
+
+  it("caps submissions at --max across mixed facility and status_update types", async () => {
+    const fetchImpl = makeFetch([{ ok: true }, { ok: true }]);
+    const candidates = [
+      { facility: makeCandidate({ id: "cap-mixed-1" }), provenance: { sources: ["https://x/1"] } },
+      { statusUpdate: makeStatusUpdate(), provenance: { sources: ["https://x/2"] } },
+      { facility: makeCandidate({ id: "cap-mixed-3" }), provenance: { sources: ["https://x/3"] } },
+    ];
+
+    const summary = await runSubmit(candidates, baseOpts({ max: 2 }), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(2);
+    expect(summary.skippedOverCap).toBe(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it("dry-run logs the status_update line and does not POST", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = { statusUpdate: makeStatusUpdate(), provenance: { sources: ["https://example.com/x"] } };
+
+    const summary = await runSubmit([candidate], baseOpts({ dryRun: true }), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(1);
+    expect(summary.submittedIds).toEqual(["existing-facility-tx"]);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+});
+
+describe("normalizeCandidates — status_update classification", () => {
+  it("classifies a { statusUpdate, provenance } entry distinctly from facility entries", () => {
+    const statusUpdateEntry = {
+      statusUpdate: { targetFacilityId: "existing-facility-tx", status: "operational", date: "2026-07-16", sources: [] },
+      provenance: { sources: ["https://x"] },
+    };
+    const bareFacility = makeCandidate();
+
+    const [a, b] = normalizeCandidates([statusUpdateEntry, bareFacility]);
+
+    expect(a.type).toBe("status_update");
+    if (a.type === "status_update") {
+      expect(a.targetFacilityId).toBe("existing-facility-tx");
+    }
+    expect(b.type).toBe("facility");
   });
 });
 

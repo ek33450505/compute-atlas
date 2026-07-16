@@ -116,3 +116,82 @@ describe("SubmissionDetail — kind=update", () => {
     expect(screen.getByText("operational")).toBeInTheDocument();
   });
 });
+
+describe("SubmissionDetail — kind=status_update", () => {
+  beforeEach(() => {
+    mockGetFacilityById.mockClear();
+  });
+
+  it("renders the status transition, effective date, note, and appended source(s) — never a replacing diff", async () => {
+    const liveFacility = {
+      id: "whitefiber-atlanta",
+      name: "Whitefiber Atlanta",
+      status: "under_construction",
+      sources: [{ url: "https://example.com/original", label: "Original filing" }],
+    } as unknown as Facility;
+    mockGetFacilityById.mockResolvedValue(liveFacility);
+
+    const submission = makeSubmission({
+      kind: "status_update",
+      targetFacilityId: "whitefiber-atlanta",
+      payload: {
+        status: "operational",
+        date: "2026-07-01",
+        note: "Confirmed via site visit",
+        sources: [
+          {
+            url: "https://example.com/news",
+            label: "Local news report",
+            retrievedAt: "2026-07-01",
+            kind: "press",
+          },
+        ],
+      },
+    });
+
+    render(await SubmissionDetail({ submission }));
+
+    expect(mockGetFacilityById).toHaveBeenCalledWith("whitefiber-atlanta");
+    // The transition is readable in text, not encoded only in the arrow glyph.
+    expect(screen.getByText(/Under construction/i)).toBeInTheDocument();
+    expect(screen.getByText(/Operational/i)).toBeInTheDocument();
+    expect(screen.getByText("2026-07-01")).toBeInTheDocument();
+    expect(screen.getByText("Confirmed via site visit")).toBeInTheDocument();
+    expect(screen.getByText("Local news report")).toBeInTheDocument();
+    expect(screen.getByText(/https:\/\/example\.com\/news/)).toBeInTheDocument();
+    // Framed as appended, not a replacing before/after diff.
+    expect(screen.getByText(/appended/i)).toBeInTheDocument();
+    expect(screen.queryByText("No field-level changes detected.")).not.toBeInTheDocument();
+  });
+
+  it("falls back to the raw status value when it is not a recognized Status enum member", async () => {
+    mockGetFacilityById.mockResolvedValue({
+      id: "fac-2",
+      status: "totally-unrecognized-status",
+    } as unknown as Facility);
+
+    const submission = makeSubmission({
+      kind: "status_update",
+      targetFacilityId: "fac-2",
+      payload: { status: "operational", date: "2026-07-01", sources: [] },
+    });
+
+    render(await SubmissionDetail({ submission }));
+
+    expect(screen.getByText(/totally-unrecognized-status/)).toBeInTheDocument();
+  });
+
+  it("falls back to a raw payload summary when the target facility no longer exists", async () => {
+    mockGetFacilityById.mockResolvedValue(undefined);
+
+    const submission = makeSubmission({
+      kind: "status_update",
+      targetFacilityId: "deleted-facility",
+      payload: { status: "operational", date: "2026-07-01", sources: [] },
+    });
+
+    render(await SubmissionDetail({ submission }));
+
+    expect(screen.getByText(/no longer exists/)).toBeInTheDocument();
+  });
+});

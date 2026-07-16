@@ -119,7 +119,10 @@ describe("SubmissionList — row rendering", () => {
     expect(screen.getByText(/2 sources/)).toBeInTheDocument();
   });
 
-  it("renders an update-kind row with the Update badge and target facility id", () => {
+  it("renders an update-kind row with the Update badge; a nameless payload falls back to the targetFacilityId as the label", () => {
+    // This patch has no `name` field (a realistic update payload — status-only
+    // patches are common), so the row falls back to the targetFacilityId as
+    // its primary label rather than the generic "(untitled candidate)".
     const submission = makeSubmission({
       kind: "update",
       targetFacilityId: "existing-facility",
@@ -128,7 +131,44 @@ describe("SubmissionList — row rendering", () => {
     renderList([submission], "pending");
 
     expect(screen.getByText("Update")).toBeInTheDocument();
+    expect(screen.getByText("existing-facility")).toBeInTheDocument();
+    expect(screen.queryByText("(untitled candidate)")).not.toBeInTheDocument();
+  });
+
+  it("renders an update-kind row's targetFacilityId as a separate suffix when the payload DOES have a usable name", () => {
+    const submission = makeSubmission({
+      kind: "update",
+      targetFacilityId: "existing-facility",
+      payload: { name: "Existing Facility", status: "operational" },
+    });
+    renderList([submission], "pending");
+
+    expect(screen.getByText("Existing Facility")).toBeInTheDocument();
     expect(screen.getByText("(existing-facility)")).toBeInTheDocument();
+  });
+
+  it("renders a status_update-kind row with the Status update badge", () => {
+    const submission = makeSubmission({
+      kind: "status_update",
+      targetFacilityId: "whitefiber-atlanta",
+      payload: { status: "operational", date: "2026-07-01", sources: [] },
+    });
+    renderList([submission], "pending");
+
+    expect(screen.getByText("Status update")).toBeInTheDocument();
+  });
+
+  it("falls back to the targetFacilityId as the primary label when the payload has no name, and does not also render the duplicate (id) suffix", () => {
+    const submission = makeSubmission({
+      kind: "status_update",
+      targetFacilityId: "whitefiber-atlanta",
+      payload: { status: "operational", date: "2026-07-01", sources: [] },
+    });
+    renderList([submission], "pending");
+
+    expect(screen.getByText("whitefiber-atlanta")).toBeInTheDocument();
+    expect(screen.queryByText("(untitled candidate)")).not.toBeInTheDocument();
+    expect(screen.queryByText("(whitefiber-atlanta)")).not.toBeInTheDocument();
   });
 
   it("handles a submission with an unexpected/malformed provenance shape without crashing", () => {
@@ -183,7 +223,7 @@ describe("SubmissionList — approve action", () => {
     expect(mockRefresh).toHaveBeenCalled();
   });
 
-  it("shows an error toast and does not refresh when approve fails", async () => {
+  it("shows an error toast and does not refresh when approve fails with no issues", async () => {
     mockApproveSubmissionAction.mockResolvedValue({
       ok: false,
       status: 409,
@@ -198,6 +238,51 @@ describe("SubmissionList — approve action", () => {
       expect(mockToastError).toHaveBeenCalledWith("Submission already approved")
     );
     expect(mockRefresh).not.toHaveBeenCalled();
+  });
+
+  it("surfaces the first Zod issue's path and message when approve fails schema validation", async () => {
+    mockApproveSubmissionAction.mockResolvedValue({
+      ok: false,
+      status: 400,
+      error: "Invalid facility",
+      issues: [
+        {
+          path: ["community", "sourceIndex"],
+          message: "sourceIndex 3 is out of range (sources has 3 item(s))",
+        },
+      ],
+    });
+    const user = userEvent.setup();
+    renderList([makeSubmission()], "pending");
+
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    await waitFor(() =>
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Invalid facility — community.sourceIndex: sourceIndex 3 is out of range (sources has 3 item(s))"
+      )
+    );
+    expect(mockRefresh).not.toHaveBeenCalled();
+  });
+
+  it("appends a (+N more) suffix when multiple issues are present", async () => {
+    mockApproveSubmissionAction.mockResolvedValue({
+      ok: false,
+      status: 400,
+      error: "Invalid facility",
+      issues: [
+        { path: ["name"], message: "Required" },
+        { path: ["status"], message: "Invalid enum value" },
+      ],
+    });
+    const user = userEvent.setup();
+    renderList([makeSubmission()], "pending");
+
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    await waitFor(() =>
+      expect(mockToastError).toHaveBeenCalledWith("Invalid facility — name: Required (+1 more)")
+    );
   });
 });
 
