@@ -1,6 +1,8 @@
 import { getFacilityById } from "@/lib/data";
 import type { SubmissionRow } from "@/lib/db/schema";
 import { computeDocDiff } from "@/lib/doc-diff";
+import { formatStatusLabel } from "@/lib/format";
+import { STATUS_ORDER, type Status } from "@/lib/status";
 import { DocDiffView, stringifyValue } from "@/components/admin/doc-diff";
 
 /** Fields to skip when rendering a create-kind summary — noisy/internal. */
@@ -67,6 +69,103 @@ function UpdateDiff({
   return <DocDiffView entries={entries} />;
 }
 
+/**
+ * Renders an unrecognized/unvalidated status value as its human-readable
+ * label when it's a known `Status`, otherwise falls back to the raw string.
+ * A status_update submission's payload is only envelope-validated
+ * (`submissionInputSchema`) before approval — `statusUpdateIntentSchema`
+ * validation happens server-side at approve time — so the `status` value
+ * shown here could in principle be anything.
+ */
+function formatLooseStatus(value: unknown): string {
+  if (typeof value !== "string") return stringifyValue(value);
+  return (STATUS_ORDER as readonly string[]).includes(value)
+    ? formatStatusLabel(value as Status)
+    : value;
+}
+
+interface StatusUpdateSource {
+  label?: unknown;
+  url?: unknown;
+}
+
+/**
+ * Renders a status_update submission's transition intent against the live
+ * facility. Unlike `update`, a status_update payload is NOT a doc patch —
+ * it's a transition instruction (`{ status, date, note?, sources }`)
+ * applied append-only by `writeStatusUpdate`/`applyStatusUpdate`
+ * (lib/status-update.ts, lib/facility-write.ts): the listed source(s) are
+ * APPENDED to the facility's existing `sources`, never replacing them, and
+ * a new `statusHistory` entry is appended. A shallow `UpdateDiff` would
+ * mis-render this (it would show `sources` being replaced by the intent's
+ * one source), so this gets a dedicated view instead.
+ *
+ * `intent` stays `Record<string, unknown>` (matching `UpdateDiff`'s
+ * loosely-typed `patch` param) since it's only envelope-validated before
+ * approval — read every field defensively.
+ */
+function StatusUpdateSummary({
+  current,
+  intent,
+}: {
+  current: Record<string, unknown>;
+  intent: Record<string, unknown>;
+}) {
+  const fromStatus = formatLooseStatus(current.status);
+  const toStatus = formatLooseStatus(intent.status);
+  const date = typeof intent.date === "string" ? intent.date : undefined;
+  const note = typeof intent.note === "string" ? intent.note : undefined;
+  const sources = Array.isArray(intent.sources) ? intent.sources : [];
+
+  return (
+    <dl className="flex flex-col gap-3">
+      <div className="flex flex-col gap-0.5">
+        <dt className="text-xs font-medium text-muted-foreground">Status</dt>
+        <dd className="text-sm">
+          {fromStatus} <span aria-hidden="true">→</span>
+          <span className="sr-only"> changing to </span> {toStatus}
+        </dd>
+      </div>
+      {date ? (
+        <div className="flex flex-col gap-0.5">
+          <dt className="text-xs font-medium text-muted-foreground">Effective date</dt>
+          <dd className="text-sm">{date}</dd>
+        </div>
+      ) : null}
+      {note ? (
+        <div className="flex flex-col gap-0.5">
+          <dt className="text-xs font-medium text-muted-foreground">Note</dt>
+          <dd className="text-sm break-words whitespace-pre-wrap">{note}</dd>
+        </div>
+      ) : null}
+      <div className="flex flex-col gap-1">
+        <dt className="text-xs font-medium text-muted-foreground">
+          New source{sources.length === 1 ? "" : "s"} (appended — existing sources are kept)
+        </dt>
+        <dd>
+          {sources.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No sources on this submission.</p>
+          ) : (
+            <ul className="flex flex-col gap-1.5">
+              {sources.map((source, i) => {
+                const s = source as StatusUpdateSource;
+                const label = typeof s.label === "string" && s.label.length > 0 ? s.label : "Source";
+                const url = typeof s.url === "string" ? s.url : undefined;
+                return (
+                  <li key={i} className="text-sm">
+                    <span className="font-medium">{label}</span>
+                    {url ? <span className="text-muted-foreground"> — {url}</span> : null}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </dd>
+      </div>
+    </dl>
+  );
+}
+
 export async function SubmissionDetail({ submission }: { submission: SubmissionRow }) {
   const payload = submission.payload as Record<string, unknown>;
 
@@ -74,9 +173,9 @@ export async function SubmissionDetail({ submission }: { submission: SubmissionR
     return <CreateSummary payload={payload} />;
   }
 
-  // kind === "update" — fetch the live facility for the diff. targetFacilityId
-  // is required for update-kind rows by submissionInputSchema, but the field
-  // is nullable in the DB type, so guard defensively.
+  // kind === "update" | "status_update" — both require the live facility.
+  // targetFacilityId is required for both by submissionInputSchema, but the
+  // field is nullable in the DB type, so guard defensively.
   const targetFacility = submission.targetFacilityId
     ? await getFacilityById(submission.targetFacilityId)
     : undefined;
@@ -93,7 +192,11 @@ export async function SubmissionDetail({ submission }: { submission: SubmissionR
     );
   }
 
-  return (
-    <UpdateDiff current={targetFacility as unknown as Record<string, unknown>} patch={payload} />
-  );
+  const currentDoc = targetFacility as unknown as Record<string, unknown>;
+
+  if (submission.kind === "status_update") {
+    return <StatusUpdateSummary current={currentDoc} intent={payload} />;
+  }
+
+  return <UpdateDiff current={currentDoc} patch={payload} />;
 }
