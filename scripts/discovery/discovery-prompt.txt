@@ -37,37 +37,41 @@ line per facility: `id | name | operator | status | <latest status date> | <prim
 For each listed facility, check whether real-world sources show a genuine status change since
 its listed status/date (e.g. announced/proposed -> under_construction -> operational, or a
 cancellation). This is a status-refresh pass only — do not attempt to update or verify
-capacity, type, location, operator, or any other field; leave everything except status/history/
-sources/lastUpdated exactly as implied by the existing record.
+capacity, type, location, operator, or any other field.
 
 Rules for this responsibility:
 - Only emit an entry for a facility if you find a NEW, real, citable source that corroborates
   an actual status change. Never infer, guess, or fabricate a change. If you cannot find a
   genuine sourced change for a facility, do NOT emit an entry for it — omit it entirely from
   the output. Do not "refresh" a facility just because it appeared in the list.
-- When you do emit an update, emit the COMPLETE facility document, never a partial patch:
-  - Same `id` as the listed facility (do not invent a new id for an existing facility).
-  - `status` updated to the new, source-backed status.
-  - `statusHistory`: APPEND a new entry for this change (new status + today's date + the
-    new source's index) — do NOT replace, remove, or reorder any existing statusHistory
-    entries. The existing history before this change must still be present in your output.
-  - `lastUpdated` bumped to today's date.
-  - `sources`: APPEND the new corroborating source to the existing sources array — do NOT
-    remove or overwrite prior sources. If you cannot reconstruct the exact prior sources from
-    the compact projection, include at minimum the projection's primary source URL plus your
-    new source, so the array stays non-empty and traceable.
-  - Every other field (name, operator, location, capacity, type, confidence, etc.) must be
-    carried through unchanged from what the existing record implies — this is a status-only
-    refresh, not a full-fact refresh.
-- Attach a `provenance` object for updates the same way as new facilities: `{ sources, confidence,
-  discoveredBy: "discovery-pipeline", note: "brief summary of the sourced status change" }`.
+- When you do find a genuine status change, DO NOT reconstruct the full facility document —
+  the compact projection above does not give you enough of the record to rebuild it faithfully
+  (you cannot see the full `sources` array, location, capacity, or prior `statusHistory`), and
+  guessing at those fields silently corrupts the record. Instead, emit a compact status-
+  transition intent:
+  `{ "statusUpdate": { "targetFacilityId": "<the exact id from the projection line>",
+  "status": "<new source-backed status>", "date": "<today, YYYY-MM-DD>",
+  "note": "<brief why>", "sources": [ <the NEW corroborating source object(s):
+  {url,label,publisher,retrievedAt,kind}> ] }, "provenance": { "sources": [<same urls>],
+  "confidence": "...", "discoveredBy": "discovery-pipeline", "note": "brief summary of the
+  sourced status change" } }`
+  - `targetFacilityId` MUST equal the id from the projection line exactly — do not invent a
+    new id for an existing facility.
+  - `sources` in the intent is ONLY the new corroborating source(s) you found this session —
+    never restate or guess at the facility's prior sources. The server appends your new
+    source(s) and a new `statusHistory` entry automatically and preserves everything else
+    (name, operator, location, prior sources, prior history) unchanged. You must not restate
+    fields you cannot see, and you must not emit a full facility document for this
+    responsibility.
 
 === Output requirements — read carefully ===
 
-- Output ONLY a single JSON array to stdout, mixing both new-facility docs and updated-facility
-  docs together. Each element is either a bare Facility doc, or
-  `{ "facility": <Facility doc>, "provenance": {...} }` — use the same wrapper for both new and
-  updated entries.
+- Output ONLY a single JSON array to stdout, mixing new-facility docs and status-change
+  intents together. Each element is one of:
+  - a bare Facility doc (new facility), or
+  - `{ "facility": <Facility doc>, "provenance": {...} }` (new facility, wrapped), or
+  - `{ "statusUpdate": {...}, "provenance": {...} }` (a genuine status change on an existing
+    facility — see Responsibility 2 above).
 - No prose, no markdown fences, no commentary before or after the JSON.
 - Do NOT edit any files in this repository. Do NOT run git commands. Do NOT commit anything.
 - This is a single, bounded research session — do not spawn sub-agents or multi-step workflows.
