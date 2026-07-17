@@ -32,6 +32,8 @@ Compute Atlas is compiled by hand from primary sources, with a deliberate bias a
 - **Independent verification.** Consequential claims (capacity, investment, subsidies) are checked against the underlying filing or announcement before they enter the dataset.
 - **Additive and correctable.** Coverage grows over time; corrections are welcome and expected. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+For the full methodology — the discovery channels (county planning portals, SEC filings, ISO/RTO queues), the sourcing and verification standard, and how to read a record's sources — see [docs/methodology.md](docs/methodology.md).
+
 ## API
 
 Compute Atlas exposes a public JSON API for programmatic access to the dataset. Full API documentation is available at `/api` on the live site.
