@@ -3,6 +3,8 @@ import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/d
 import { stateSlugFromCode } from "@/lib/us-states";
 import { siteConfig } from "@/lib/site";
 
+export const revalidate = 3600;
+
 /**
  * Builds the list of static route entries for the sitemap.
  * Exported separately so it can be unit-tested without Next.js.

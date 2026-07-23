@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { getAllFacilities, getOperators, operatorSlug } from "@/lib/data";
+import { loadFacilitiesForSearch, operatorSlug } from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 
@@ -76,7 +76,7 @@ export function facilityToSearchEntry(f: Facility): SearchEntry {
  * the command palette component, not data.
  */
 export async function buildSearchIndex(): Promise<SearchEntry[]> {
-  const facilities = await getAllFacilities();
+  const facilities = await loadFacilitiesForSearch();
   const entries: SearchEntry[] = [];
 
   // Facilities — one entry each.
@@ -84,12 +84,15 @@ export async function buildSearchIndex(): Promise<SearchEntry[]> {
     entries.push(facilityToSearchEntry(f));
   }
 
-  // Operators — count facilities per operator in one pass.
+  // Operators — count facilities per operator in one pass, and derive the
+  // unique operator name list from the same `facilities` read (avoids a
+  // second loadFacilities-family read that would re-pin the ISR floor).
   const operatorCounts = new Map<string, number>();
   for (const f of facilities) {
     operatorCounts.set(f.operator, (operatorCounts.get(f.operator) ?? 0) + 1);
   }
-  for (const name of await getOperators()) {
+  const operatorNames = [...new Set(facilities.map((f) => f.operator))].sort();
+  for (const name of operatorNames) {
     const n = operatorCounts.get(name) ?? 0;
     entries.push({
       type: "operator",

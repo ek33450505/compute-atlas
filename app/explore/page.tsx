@@ -5,6 +5,8 @@ import { getStates, getOperators } from "@/lib/data";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Explore",
   description:

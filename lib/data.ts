@@ -46,8 +46,19 @@ async function loadFacilitiesUncached(): Promise<Facility[]> {
 }
 
 /**
- * Cached, deterministically-ordered facility loader tagged `"facilities"`
- * so a future `revalidateTag("facilities")` (Phase 3) can bust it.
+ * Cached, deterministically-ordered facility loader tagged `"facilities"`,
+ * refreshed at most hourly. This is the **aggregate-only** reader now — it
+ * backs the ~15 aggregate pages (home, map, table, stats, explore lenses,
+ * operators/states index, sitemap, OG image) that legitimately need the
+ * whole dataset. Scoped pages (facility detail, one state, one operator)
+ * must use the per-scope cached readers below instead, so they don't
+ * re-acquire the `"facilities"` tag or this timer.
+ *
+ * `revalidate: 3600` bounds staleness to ~1h — approved tolerance for
+ * aggregate rollups (Ed, 2026-07-22 ISR-write-blowout fix). Combined with
+ * dropping the on-write `revalidateTag("facilities")` nuke (see
+ * `lib/facility-write.ts`), aggregate pages now refresh on this cheap timer
+ * instead of on every write.
  *
  * `unstable_cache` requires the Next.js request-scoped cache context, which
  * is absent under vitest — detect that environment and degrade to the
@@ -56,7 +67,137 @@ async function loadFacilitiesUncached(): Promise<Facility[]> {
  */
 export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
   ? loadFacilitiesUncached
-  : unstable_cache(loadFacilitiesUncached, ["facilities"], { tags: ["facilities"] });
+  : unstable_cache(loadFacilitiesUncached, ["facilities"], {
+      tags: ["facilities"],
+      revalidate: 3600,
+    });
+
+/**
+ * 24h-revalidate view of the facility list for the GLOBAL ⌘K search index ONLY.
+ * <SiteHeader> renders it in the root layout on every route, so this read's
+ * revalidate becomes the site-wide ISR floor — deliberately long (86400s) so it
+ * does NOT pin every page to a 1h cycle. Aggregate pages read loadFacilities
+ * (1h) directly and float above this floor; detail/state pages read scoped
+ * tag-only caches and floor here at 24h. Same "facilities" tag (inert — nothing
+ * calls revalidateTag("facilities") anymore).
+ */
+export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VITEST
+  ? loadFacilitiesUncached
+  : unstable_cache(loadFacilitiesUncached, ["facilities-search"], {
+      tags: ["facilities"],
+      revalidate: 86400,
+    });
+
+// ============================================================
+// Scoped cached readers (per-facility / per-state / power-generation)
+// ============================================================
+//
+// These back the pages that must NOT depend on the global `"facilities"`
+// tag or its 1h timer: facility detail, state landing, and (indirectly, via
+// loadPowerGenerationCached) the power-links cross-reference on detail
+// pages. Each is tag-only (no `revalidate` option) so the page stays fully
+// static and rewrites only when `lib/facility-write.ts` busts its specific
+// tag on write. Each reads the DB/JSON directly rather than routing through
+// `loadFacilities()`, so it never re-acquires the global tag. Every reader
+// mirrors the `process.env.VITEST` bypass so the test suite (no
+// DATABASE_URL) stays green.
+
+/** Uncached direct-row fetch backing `getFacilityByIdCached`. */
+async function fetchFacilityByIdUncached(id: string): Promise<Facility | undefined> {
+  if (hasDatabaseUrl()) {
+    const rows = await getDb().select().from(facilitiesTable).where(eq(facilitiesTable.id, id));
+    return rows[0] ? rowToFacility(rows[0]) : undefined;
+  }
+  return loadFromJson().find((f) => f.id === id);
+}
+
+/**
+ * Per-facility scoped reader for the facility detail page. Tagged
+ * `facility:${id}` — busted only by a write to that specific facility (see
+ * `revalidateForFacility` in `lib/facility-write.ts`), never by the global
+ * `"facilities"` tag or a timer.
+ */
+export const getFacilityByIdCached = (id: string): Promise<Facility | undefined> =>
+  process.env.VITEST
+    ? fetchFacilityByIdUncached(id)
+    : unstable_cache(fetchFacilityByIdUncached, ["facility", id], {
+        tags: [`facility:${id}`],
+      })(id);
+
+/** Uncached direct-filtered fetch backing `getFacilitiesByStateCached`. */
+async function fetchFacilitiesByStateUncached(code: string): Promise<Facility[]> {
+  const upper = code.toUpperCase();
+  const list = hasDatabaseUrl()
+    ? (await getDb().select().from(facilitiesTable)).map(rowToFacility)
+    : loadFromJson();
+  return list
+    .filter((f) => f.location.state === upper)
+    .sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+}
+
+/**
+ * Per-state scoped reader for the state landing page. Tagged
+ * `state:${CODE}` (uppercase) — busted only by a write touching that state,
+ * never by the global tag or timer. Same filter/sort as `getFacilitiesByState`.
+ */
+export const getFacilitiesByStateCached = (code: string): Promise<Facility[]> => {
+  const upper = code.toUpperCase();
+  return process.env.VITEST
+    ? fetchFacilitiesByStateUncached(upper)
+    : unstable_cache(fetchFacilitiesByStateUncached, ["facilities-by-state", upper], {
+        tags: [`state:${upper}`],
+      })(upper);
+};
+
+/** Uncached direct-filtered summary backing `getStateSummaryCached`. */
+async function fetchStateSummaryUncached(code: string): Promise<StateSummary | null> {
+  const upper = code.toUpperCase();
+  const stateFacilities = await fetchFacilitiesByStateUncached(upper);
+  return computeStateSummary(upper, stateFacilities);
+}
+
+/**
+ * Per-state scoped summary reader for the state landing page. Tagged
+ * `state:${CODE}` — same tag as `getFacilitiesByStateCached` so one write
+ * busts both. Same math as `getStateSummary`.
+ */
+export const getStateSummaryCached = (code: string): Promise<StateSummary | null> => {
+  const upper = code.toUpperCase();
+  return process.env.VITEST
+    ? fetchStateSummaryUncached(upper)
+    : unstable_cache(fetchStateSummaryUncached, ["state-summary", upper], {
+        tags: [`state:${upper}`],
+      })(upper);
+};
+
+/** Uncached full power_generation-facility load backing `loadPowerGenerationCached`. */
+async function loadPowerGenerationUncached(): Promise<PowerGenerationFacility[]> {
+  const list = hasDatabaseUrl()
+    ? (await getDb().select().from(facilitiesTable)).map(rowToFacility)
+    : loadFromJson();
+  return list.filter(
+    (f): f is PowerGenerationFacility => f.facilityType === "power_generation"
+  );
+}
+
+/**
+ * Tag-only cached power_generation-facility loader, decoupled from the
+ * global `"facilities"` tag/timer so the facility detail page's "Powered
+ * by" / "Powers" cross-reference (see `getPoweredCampuses` /
+ * `getPoweredByGenerators` below) doesn't reintroduce a dependency on the
+ * 1h-global cache. Tagged `power-generation` — busted whenever a write
+ * touches a power_generation facility (either side of a link).
+ */
+export const loadPowerGenerationCached: () => Promise<PowerGenerationFacility[]> =
+  process.env.VITEST
+    ? loadPowerGenerationUncached
+    : unstable_cache(loadPowerGenerationUncached, ["power-generation"], {
+        tags: ["power-generation"],
+      });
 
 export async function getAllFacilities(): Promise<Facility[]> {
   return loadFacilities();
@@ -409,14 +550,14 @@ export interface StateSummary {
 }
 
 /**
- * Returns an aggregate summary for one state, or null when the state has
- * zero facilities. Mirrors `getStats`' capacity math (excludes cancelled for
- * operational/planned) and `getTopOperators`' tie-break for `topOperators`.
+ * Shared aggregation core for `getStateSummary` and `getStateSummaryCached`
+ * — both receive an already-filtered `stateFacilities` list (from
+ * `loadFacilities()` global or the scoped direct DB/JSON read
+ * respectively) and just need the same rollup math applied. Mirrors
+ * `getStats`' capacity math (excludes cancelled for operational/planned)
+ * and `getTopOperators`' tie-break for `topOperators`.
  */
-export async function getStateSummary(code: string): Promise<StateSummary | null> {
-  const facilities = await loadFacilities();
-  const upper = code.toUpperCase();
-  const stateFacilities = facilities.filter((f) => f.location.state === upper);
+function computeStateSummary(upper: string, stateFacilities: Facility[]): StateSummary | null {
   const count = stateFacilities.length;
   if (count === 0) {
     return null;
@@ -477,6 +618,20 @@ export async function getStateSummary(code: string): Promise<StateSummary | null
     communityReporting,
     topOperators,
   };
+}
+
+/**
+ * Returns an aggregate summary for one state, or null when the state has
+ * zero facilities. Reads the global `loadFacilities()` cache — used by
+ * admin/other callers that already hold the full set. The state landing
+ * page should use `getStateSummaryCached` instead (scoped tag, no global
+ * dependency).
+ */
+export async function getStateSummary(code: string): Promise<StateSummary | null> {
+  const facilities = await loadFacilities();
+  const upper = code.toUpperCase();
+  const stateFacilities = facilities.filter((f) => f.location.state === upper);
+  return computeStateSummary(upper, stateFacilities);
 }
 
 // ============================================================
@@ -593,11 +748,16 @@ export async function getGenerationStats(): Promise<GenerationStats> {
  * facilities. Dangling ids (no matching facility) are skipped so render code never
  * crashes — a data-integrity test guards against them existing. Sorted by max
  * capacity (operational or planned) desc, then name A→Z.
+ *
+ * Resolves each id via `getFacilityByIdCached` (per-id scoped tag), not the
+ * global `getFacilityById`/`loadFacilities()` — called from the facility
+ * detail page's power-links section, which must not carry the global
+ * `"facilities"` tag or its 1h timer (see `loadFacilities` doc comment).
  */
 export async function getPoweredCampuses(facility: Facility): Promise<Facility[]> {
   if (facility.facilityType !== "power_generation") return [];
   const ids = facility.generation?.poweredFacilityIds ?? [];
-  const resolved = await Promise.all(ids.map((id) => getFacilityById(id)));
+  const resolved = await Promise.all(ids.map((id) => getFacilityByIdCached(id)));
   return resolved
     .filter((f): f is Facility => f !== undefined)
     .sort(
@@ -612,9 +772,14 @@ export async function getPoweredCampuses(facility: Facility): Promise<Facility[]
  * in their `generation.poweredFacilityIds`. The "Powered by" direction is derived
  * here rather than stored on the compute record (single source of truth). Sorted
  * by max capacity (operational or planned) desc, then name A→Z.
+ *
+ * Reads `loadPowerGenerationCached()` (tag `power-generation`), not
+ * `getPowerGenerationFacilities()`/`loadFacilities()` — same reasoning as
+ * `getPoweredCampuses` above: this backs the facility detail page's
+ * cross-reference and must stay decoupled from the global tag/timer.
  */
 export async function getPoweredByGenerators(facility: Facility): Promise<PowerGenerationFacility[]> {
-  const generation = await getPowerGenerationFacilities();
+  const generation = await loadPowerGenerationCached();
   return generation
     .filter((g) => (g.generation?.poweredFacilityIds ?? []).includes(facility.id))
     .sort(

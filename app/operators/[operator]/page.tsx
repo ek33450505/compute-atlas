@@ -15,6 +15,8 @@ import { formatCapacity, formatLocation } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 
+export const revalidate = 3600;
+
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small operators. */
 function formatPower(mw: number): string {
   if (mw >= 1000) {

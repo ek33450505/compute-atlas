@@ -7,6 +7,8 @@ import { formatLocation } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 
+export const revalidate = 3600;
+
 /** Most-severe-first display order for the friction statuses shown on this page. */
 const FRICTION_ORDER = ["litigation", "opposed", "contested"] as const satisfies readonly CommunityReception[];
 

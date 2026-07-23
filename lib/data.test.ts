@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   getAllFacilities,
   getFacilityById,
+  getFacilityByIdCached,
   getStates,
   getOperators,
   getStatusCounts,
@@ -17,12 +18,15 @@ import {
   getCommunityReceptionCounts,
   getEnergySourceCounts,
   getFacilitiesByState,
+  getFacilitiesByStateCached,
   getStateSummary,
+  getStateSummaryCached,
   operatorSlug,
   getOperatorBySlug,
   getFacilitiesByOperator,
   getOperatorSummary,
   getPowerGenerationFacilities,
+  loadPowerGenerationCached,
   normalizeOfftaker,
   getGenerationByOfftaker,
   getGenerationStats,
@@ -64,6 +68,23 @@ describe("getFacilityById", () => {
 
   it("returns undefined for an unknown id", async () => {
     expect(await getFacilityById("not-a-real-facility")).toBeUndefined();
+  });
+});
+
+describe("getFacilityByIdCached", () => {
+  // Runs under VITEST, so this exercises the scoped reader's JSON-fallback
+  // path (fetchFacilityByIdUncached) — the tag-only unstable_cache wrapper
+  // is bypassed the same way loadFacilities is (see lib/data.ts doc comment).
+  it("returns the correct facility for a known id, matching getFacilityById", async () => {
+    const facility = await getFacilityByIdCached("meta-prineville-or");
+    expect(facility).toBeDefined();
+    expect(facility?.id).toBe("meta-prineville-or");
+    expect(facility?.operator).toBe("Meta");
+    expect(facility).toEqual(await getFacilityById("meta-prineville-or"));
+  });
+
+  it("returns undefined for an unknown id", async () => {
+    expect(await getFacilityByIdCached("not-a-real-facility")).toBeUndefined();
   });
 });
 
@@ -584,6 +605,30 @@ describe("getStateSummary", () => {
   });
 });
 
+describe("getFacilitiesByStateCached", () => {
+  it("matches getFacilitiesByState for a known state (case-insensitive)", async () => {
+    const cached = await getFacilitiesByStateCached("ny");
+    const uncached = await getFacilitiesByState("NY");
+    expect(cached.map((f) => f.id)).toEqual(uncached.map((f) => f.id));
+  });
+
+  it("returns [] for a state with zero facilities", async () => {
+    expect(await getFacilitiesByStateCached("ZZ")).toEqual([]);
+  });
+});
+
+describe("getStateSummaryCached", () => {
+  it("matches getStateSummary for a known state", async () => {
+    const cached = await getStateSummaryCached("NY");
+    const uncached = await getStateSummary("NY");
+    expect(cached).toEqual(uncached);
+  });
+
+  it("returns null for a state with zero facilities", async () => {
+    expect(await getStateSummaryCached("ZZ")).toBeNull();
+  });
+});
+
 describe("operatorSlug", () => {
   it("slugifies a multi-word operator name", () => {
     expect(operatorSlug("Amazon Web Services")).toBe("amazon-web-services");
@@ -675,6 +720,14 @@ describe("getPowerGenerationFacilities", () => {
     for (const f of await getPowerGenerationFacilities()) {
       expect(f.facilityType).toBe("power_generation");
     }
+  });
+});
+
+describe("loadPowerGenerationCached", () => {
+  it("matches getPowerGenerationFacilities (same ids, order-independent)", async () => {
+    const cached = await loadPowerGenerationCached();
+    const uncached = await getPowerGenerationFacilities();
+    expect(cached.map((f) => f.id).sort()).toEqual(uncached.map((f) => f.id).sort());
   });
 });
 

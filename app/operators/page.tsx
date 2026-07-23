@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { getOperators, getOperatorSummary, getAllFacilities, operatorSlug } from "@/lib/data";
 import { Breadcrumb } from "@/components/breadcrumb";
 
+export const revalidate = 3600;
+
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small operators. */
 function formatPower(mw: number): string {
   if (mw >= 1000) {

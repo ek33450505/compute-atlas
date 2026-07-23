@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { getRecentActivity } from "@/lib/data";
 import { ActivityList } from "@/app/activity/activity-list";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Recent activity",
   description:
