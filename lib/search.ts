@@ -55,6 +55,7 @@ export function facilityToSearchEntry(f: Facility): SearchEntry {
     f.operator,
     f.location.city,
     f.location.county,
+    f.location.street,
     stateName,
     f.location.state,
   ]

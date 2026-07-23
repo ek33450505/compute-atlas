@@ -361,6 +361,33 @@ describe("facilitySchema — location.precision", () => {
   });
 });
 
+describe("facilitySchema — location.street / location.postalCode", () => {
+  it("parses a facility whose location includes street and postalCode", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      location: {
+        ...baseFacility.location,
+        street: "3801 Britton Road",
+        postalCode: "76063",
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.location.street).toBe("3801 Britton Road");
+      expect(result.data.location.postalCode).toBe("76063");
+    }
+  });
+
+  it("still validates when street and postalCode are omitted", () => {
+    const result = facilitySchema.safeParse(baseFacility);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.location.street).toBeUndefined();
+      expect(result.data.location.postalCode).toBeUndefined();
+    }
+  });
+});
+
 describe("facilitySchema — invalid cases", () => {
   it("fails when state is not 2 characters", () => {
     const result = facilitySchema.safeParse({

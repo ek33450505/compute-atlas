@@ -59,6 +59,8 @@ const baseFacilityShape = {
     lon: z.number().min(-180).max(180),
     city: z.string().optional(),
     county: z.string().optional(),
+    street: z.string().min(1).optional(),
+    postalCode: z.string().min(1).optional(),
     state: z.string().length(2),
     // "exact": lat/lon is this facility's real footprint (default — every
     // pre-existing record without this field is "exact").

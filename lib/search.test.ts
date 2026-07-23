@@ -150,6 +150,13 @@ describe("facilityToSearchEntry", () => {
 
     expect(entry.sublabel).toBe("Virginia");
   });
+
+  it("includes the street in keywords when present", () => {
+    const facility = makeFacility({ street: "44490 Waxpool Rd" });
+    const entry = facilityToSearchEntry(facility);
+
+    expect(entry.keywords).toContain("waxpool");
+  });
 });
 
 describe("mergeFacilityResults", () => {
