@@ -11,6 +11,8 @@ export interface FacilityJsonLd {
     addressCountry: "US";
     addressRegion: string;
     addressLocality?: string;
+    streetAddress?: string;
+    postalCode?: string;
   };
   geo: {
     "@type": "GeoCoordinates";
@@ -31,6 +33,12 @@ export function buildFacilityJsonLd(facility: Facility): FacilityJsonLd {
   };
   if (facility.location.city) {
     address.addressLocality = facility.location.city;
+  }
+  if (facility.location.street) {
+    address.streetAddress = facility.location.street;
+  }
+  if (facility.location.postalCode) {
+    address.postalCode = facility.location.postalCode;
   }
 
   return {

@@ -68,6 +68,26 @@ describe("buildFacilityJsonLd", () => {
     expect(ld.address.addressLocality).toBeUndefined();
   });
 
+  it("sets streetAddress and postalCode when present", () => {
+    const withStreet: Facility = {
+      ...baseFacility,
+      location: {
+        ...baseFacility.location,
+        street: "3801 Britton Road",
+        postalCode: "76063",
+      },
+    };
+    const ld = buildFacilityJsonLd(withStreet);
+    expect(ld.address.streetAddress).toBe("3801 Britton Road");
+    expect(ld.address.postalCode).toBe("76063");
+  });
+
+  it("omits streetAddress and postalCode when absent", () => {
+    const ld = buildFacilityJsonLd(baseFacility);
+    expect(ld.address.streetAddress).toBeUndefined();
+    expect(ld.address.postalCode).toBeUndefined();
+  });
+
   it("sets addressCountry to US", () => {
     const ld = buildFacilityJsonLd(baseFacility);
     expect(ld.address.addressCountry).toBe("US");

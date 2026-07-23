@@ -171,10 +171,12 @@ export default async function FacilityPage({
               Location
             </dt>
             <dd className="mt-1 text-sm">
+              {facility.location.street ? (
+                <span className="block">{facility.location.street}</span>
+              ) : null}
               {location}
-              {facility.location.county
-                ? `, ${facility.location.county} County`
-                : ""}
+              {facility.location.postalCode ? ` ${facility.location.postalCode}` : ""}
+              {facility.location.county ? ` · ${facility.location.county} County` : ""}
             </dd>
           </div>
 
