@@ -5,6 +5,8 @@ import { getStates, getStateSummary, getAllFacilities } from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 
+export const revalidate = 3600;
+
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small states. */
 function formatPower(mw: number): string {
   if (mw >= 1000) {

@@ -4,6 +4,8 @@ import { join } from "node:path";
 import { siteConfig } from "@/lib/site";
 import { getStats } from "@/lib/data";
 
+export const revalidate = 3600;
+
 // Atlas palette — CSS vars are not available in ImageResponse; hardcoded from app/globals.css :root
 const PARCHMENT = "#F5F1E6";
 const INK = "#2B2721";

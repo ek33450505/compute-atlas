@@ -25,6 +25,8 @@ import { aiClassificationEnum } from "@/lib/schema";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Statistics",
   description:

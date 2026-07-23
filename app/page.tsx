@@ -13,6 +13,8 @@ import { StatusBadge } from "@/components/status-badge";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { ActivityList } from "@/app/activity/activity-list";
 
+export const revalidate = 3600;
+
 const ACTIVITY_TEASER_LIMIT = 5;
 
 export const metadata: Metadata = {

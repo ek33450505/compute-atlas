@@ -5,6 +5,8 @@ import { getAllFacilities } from "@/lib/data";
 import { Explorer } from "@/components/explorer/explorer";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Data table",
   description:

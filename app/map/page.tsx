@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { getAllFacilities } from "@/lib/data";
 import { Explorer } from "@/components/explorer/explorer";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Map",
   description:

@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 import { facilitySchema, type Facility } from "@/lib/schema";
 import { getDb } from "@/lib/db/client";
@@ -13,17 +13,41 @@ export type WriteResult =
   | { ok: false; status: number; error: string; issues?: unknown };
 
 /**
- * Busts the `unstable_cache` tag `loadFacilities` reads under (primary
- * invalidation) and regenerates statically-rendered pages (/map, /table,
- * /facilities/[slug], ...) so a write is reflected with no redeploy.
+ * Busts only the scoped `unstable_cache` tags that could have changed for
+ * this write, instead of the old global `"facilities"` nuke — shrinking a
+ * write's blast radius from the whole ~700-page surface to ~2-3 scoped
+ * pages. The global `"facilities"` tag is deliberately NOT busted here
+ * anymore: aggregate pages (home, map, table, stats, ...) now refresh on
+ * their own cheap `revalidate: 3600` timer (see `loadFacilities` in
+ * `lib/data.ts`) — approved ~1h freshness tolerance (Ed, 2026-07-22
+ * ISR-write-blowout fix). `revalidatePath("/", "layout")` is also dropped:
+ * it was redundant with (and broader than) the tag nuke it accompanied.
+ *
+ * - Always busts `facility:${doc.id}` (the detail page) and
+ *   `state:${doc.location.state}` (the new/current state's landing page).
+ * - If `prevDoc` is given and its state differs from `doc`'s, also busts
+ *   the *old* state's tag — otherwise a facility that moved states would
+ *   leave a stale entry on its old state's landing page.
+ * - If either `doc` or `prevDoc` is a `power_generation` facility, also
+ *   busts `power-generation` — the shared tag backing the facility detail
+ *   page's "Powered by"/"Powers" cross-reference (`loadPowerGenerationCached`
+ *   in `lib/data.ts`), on either side of a `poweredFacilityIds` link.
  *
  * Next 16's `revalidateTag` takes a mandatory cache-life `profile` — "max"
  * fully expires the tag immediately (no stale window), which is what a write
  * needs (contrast with a timed profile like "hours" that permits staleness).
  */
-function revalidateFacilities(): void {
-  revalidateTag("facilities", "max");
-  revalidatePath("/", "layout");
+function revalidateForFacility(doc: Facility, prevDoc?: Facility): void {
+  revalidateTag(`facility:${doc.id}`, "max");
+  revalidateTag(`state:${doc.location.state.toUpperCase()}`, "max");
+
+  if (prevDoc && prevDoc.location.state !== doc.location.state) {
+    revalidateTag(`state:${prevDoc.location.state.toUpperCase()}`, "max");
+  }
+
+  if (doc.facilityType === "power_generation" || prevDoc?.facilityType === "power_generation") {
+    revalidateTag("power-generation", "max");
+  }
 }
 
 /**
@@ -78,7 +102,7 @@ export async function createFacility(
 
   await db.insert(facilitiesTable).values(docToRow(doc));
   await recordFacilityHistory(doc.id, "create", computeDocDiff(null, doc), source);
-  revalidateFacilities();
+  revalidateForFacility(doc);
   return { ok: true, facility: doc };
 }
 
@@ -120,7 +144,7 @@ export async function updateFacility(
     .set({ ...docToRow(doc), updatedAt: new Date() })
     .where(eq(facilitiesTable.id, id));
   await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
-  revalidateFacilities();
+  revalidateForFacility(doc, existingRow.doc);
   return { ok: true, facility: doc };
 }
 
@@ -165,7 +189,7 @@ export async function writeStatusUpdate(
     .set({ ...docToRow(doc), updatedAt: new Date() })
     .where(eq(facilitiesTable.id, id));
   await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
-  revalidateFacilities();
+  revalidateForFacility(doc, existingRow.doc);
   return { ok: true, facility: doc };
 }
 
@@ -190,6 +214,8 @@ export async function deleteFacility(
 
   await db.delete(facilitiesTable).where(eq(facilitiesTable.id, id));
   await recordFacilityHistory(id, "delete", computeDocDiff(existingRow.doc, null), source);
-  revalidateFacilities();
+  // Only the deleted doc exists (no prevDoc) — still correctly busts
+  // facility:${id}, state:${state}, and power-generation (if applicable).
+  revalidateForFacility(existingRow.doc);
   return { ok: true, facility: existingRow.doc };
 }

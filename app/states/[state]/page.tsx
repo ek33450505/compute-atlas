@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 
 import {
   getStates,
-  getFacilitiesByState,
-  getStateSummary,
+  getFacilitiesByStateCached,
+  getStateSummaryCached,
 } from "@/lib/data";
 import {
   stateNameFromCode,
@@ -17,6 +17,8 @@ import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatCapacity, formatLocation } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+
+export const revalidate = false;
 
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small states. */
 function formatPower(mw: number): string {
@@ -38,7 +40,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { state: slug } = await params;
   const code = stateCodeFromSlug(slug);
-  const summary = code ? await getStateSummary(code) : null;
+  const summary = code ? await getStateSummaryCached(code) : null;
 
   if (!code || !summary) {
     return { title: "State not found" };
@@ -71,12 +73,12 @@ export default async function StatePage({
     notFound();
   }
 
-  const summary = await getStateSummary(code);
+  const summary = await getStateSummaryCached(code);
   if (!summary) {
     notFound();
   }
 
-  const facilities = await getFacilitiesByState(code);
+  const facilities = await getFacilitiesByStateCached(code);
   const stateName = stateNameFromCode(code)!;
 
   const TOP_OPERATORS_DISPLAY = 15;

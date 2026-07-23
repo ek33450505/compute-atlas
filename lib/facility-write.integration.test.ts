@@ -9,13 +9,14 @@ vi.mock("next/cache", () => ({
 }));
 vi.mock("@/lib/db/client");
 
+import { revalidateTag } from "next/cache";
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
 import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
-import type { DataCenterFacility, Source } from "@/lib/schema";
+import type { DataCenterFacility, PowerGenerationFacility, Source } from "@/lib/schema";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
-import { writeStatusUpdate } from "@/lib/facility-write";
+import { createFacility, deleteFacility, updateFacility, writeStatusUpdate } from "@/lib/facility-write";
 
 function makeSource(label: string): Source {
   return {
@@ -141,5 +142,69 @@ describe("writeStatusUpdate", () => {
     // community.sourceIndex still resolves within the (now-grown) sources array.
     expect(result.facility.community?.sourceIndex).toBe(3);
     expect(result.facility.sources[3]).toEqual(seedDoc.sources[3]);
+  });
+});
+
+describe("revalidateForFacility (scoped tag invalidation, not the old global nuke)", () => {
+  it("createFacility busts facility:<id> and state:<STATE>, never the old global 'facilities' tag", async () => {
+    const doc = makeSeedDoc();
+    const result = await createFacility(doc);
+    expect(result.ok).toBe(true);
+
+    const calledTags = vi.mocked(revalidateTag).mock.calls.map((c) => c[0]);
+    expect(calledTags).toContain(`facility:${doc.id}`);
+    expect(calledTags).toContain(`state:${doc.location.state}`);
+    expect(calledTags).not.toContain("facilities");
+  });
+
+  it("updateFacility busts the state tag for both old and new state when the state changes", async () => {
+    const seedDoc = makeSeedDoc(); // location.state: "GA"
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await updateFacility(seedDoc.id, {
+      location: { ...seedDoc.location, state: "SC" },
+    });
+    expect(result.ok).toBe(true);
+
+    const calledTags = vi.mocked(revalidateTag).mock.calls.map((c) => c[0]);
+    expect(calledTags).toContain(`facility:${seedDoc.id}`);
+    expect(calledTags).toContain("state:SC");
+    expect(calledTags).toContain("state:GA");
+    expect(calledTags).not.toContain("facilities");
+  });
+
+  it("deleteFacility busts facility:<id> and state:<STATE> using the deleted doc", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await deleteFacility(seedDoc.id);
+    expect(result.ok).toBe(true);
+
+    const calledTags = vi.mocked(revalidateTag).mock.calls.map((c) => c[0]);
+    expect(calledTags).toContain(`facility:${seedDoc.id}`);
+    expect(calledTags).toContain(`state:${seedDoc.location.state}`);
+    expect(calledTags).not.toContain("facilities");
+  });
+
+  it("createFacility busts the power-generation tag when the new doc is a power_generation facility", async () => {
+    const doc: PowerGenerationFacility = {
+      id: "power-gen-tag-test-plant",
+      name: "Tag Test Plant",
+      operator: "Test Utility",
+      facilityType: "power_generation",
+      status: "operational",
+      confidence: "confirmed",
+      location: { lat: 34.0, lon: -83.0, state: "GA", precision: "exact" },
+      statusHistory: [],
+      sources: [makeSource("s0")],
+      lastUpdated: "2026-01-01",
+    };
+
+    const result = await createFacility(doc);
+    expect(result.ok).toBe(true);
+
+    const calledTags = vi.mocked(revalidateTag).mock.calls.map((c) => c[0]);
+    expect(calledTags).toContain("power-generation");
+    expect(calledTags).not.toContain("facilities");
   });
 });

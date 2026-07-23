@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Info } from "lucide-react";
 
-import { getAllFacilities, getFacilityById } from "@/lib/data";
+import { getAllFacilities, getFacilityByIdCached } from "@/lib/data";
 import { getStatusMeta } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import {
@@ -24,6 +24,8 @@ import { PowerLinksSection, hasPowerLinks } from "@/components/facility/power-li
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 
+export const revalidate = false;
+
 export async function generateStaticParams() {
   const facilities = await getAllFacilities();
   return facilities.map((f) => ({ slug: f.id }));
@@ -35,7 +37,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const facility = await getFacilityById(slug);
+  const facility = await getFacilityByIdCached(slug);
 
   if (!facility) {
     return { title: "Facility not found" };
@@ -64,7 +66,7 @@ export default async function FacilityPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const facility = await getFacilityById(slug);
+  const facility = await getFacilityByIdCached(slug);
 
   if (!facility) {
     notFound();

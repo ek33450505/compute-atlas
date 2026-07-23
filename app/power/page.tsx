@@ -17,6 +17,8 @@ import {
   type GenerationTechnology,
 } from "@/lib/generation";
 
+export const revalidate = 3600;
+
 /** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small totals. */
 function formatPower(mw: number): string {
   if (mw >= 1000) {
