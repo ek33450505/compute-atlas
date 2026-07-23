@@ -1,7 +1,8 @@
 /**
  * Maps 2-letter US state codes to full names and URL-friendly slugs.
  * Facilities store `location.state` as an uppercase 2-letter code (e.g. "NY").
- * Includes all 50 states (no District of Columbia).
+ * Includes all 50 states plus the District of Columbia (DC) — a valid facility
+ * jurisdiction in the dataset (e.g. CoreSite DC1).
  */
 
 /** State code (uppercase) -> full state name. */
@@ -13,6 +14,7 @@ export const US_STATE_NAMES: Record<string, string> = {
   CA: "California",
   CO: "Colorado",
   CT: "Connecticut",
+  DC: "District of Columbia",
   DE: "Delaware",
   FL: "Florida",
   GA: "Georgia",

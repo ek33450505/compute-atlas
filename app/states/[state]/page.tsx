@@ -30,7 +30,10 @@ function formatPower(mw: number): string {
 
 export async function generateStaticParams() {
   const codes = await getStates();
-  return codes.map((code) => ({ state: stateSlugFromCode(code)! }));
+  return codes
+    .map((code) => stateSlugFromCode(code))
+    .filter((slug): slug is string => slug !== undefined)
+    .map((slug) => ({ state: slug }));
 }
 
 export async function generateMetadata({

@@ -8,8 +8,8 @@ import {
 import { getStates } from "@/lib/data";
 
 describe("us-states", () => {
-  it("has exactly 50 entries", () => {
-    expect(Object.keys(US_STATE_NAMES)).toHaveLength(50);
+  it("has exactly 51 entries (50 states + DC)", () => {
+    expect(Object.keys(US_STATE_NAMES)).toHaveLength(51);
   });
 
   it("round-trips every code through slug and back", () => {
