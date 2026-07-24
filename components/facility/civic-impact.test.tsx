@@ -109,14 +109,33 @@ describe("CivicImpactSection — Energy & water", () => {
     expect(screen.getByText("Closed-loop")).toBeInTheDocument();
   });
 
-  it("appends utility name to energy source when utility is set", () => {
+  it("renders both Energy source and Utility rows when source and utility are both set", () => {
     const facility = makeFacility({
       energy: { source: "grid", utility: "AES Indiana" },
     });
     render(<CivicImpactSection facility={facility} />);
-    expect(
-      screen.getByText("Grid · Utility: AES Indiana")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Grid")).toBeInTheDocument();
+    expect(screen.getByText("AES Indiana")).toBeInTheDocument();
+  });
+
+  it("renders the Utility row when utility is set without a source", () => {
+    const facility = makeFacility({
+      energy: { utility: "AES Indiana" },
+    });
+    render(<CivicImpactSection facility={facility} />);
+    expect(screen.getByText("Utility")).toBeInTheDocument();
+    expect(screen.getByText("AES Indiana")).toBeInTheDocument();
+    expect(screen.queryByText("Energy source")).not.toBeInTheDocument();
+  });
+
+  it("renders only the Energy source row when source is set without a utility", () => {
+    const facility = makeFacility({
+      energy: { source: "solar" },
+    });
+    render(<CivicImpactSection facility={facility} />);
+    expect(screen.getByText("Energy source")).toBeInTheDocument();
+    expect(screen.getByText("Solar")).toBeInTheDocument();
+    expect(screen.queryByText("Utility")).not.toBeInTheDocument();
   });
 
   it("renders energy notes and water notes as muted paragraphs", () => {

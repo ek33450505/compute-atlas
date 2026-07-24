@@ -158,11 +158,6 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
   const energySourceLabel = energy?.source
     ? (energySourceLabels[energy.source] ?? energy.source)
     : null;
-  const energyDisplay = energySourceLabel
-    ? energy?.utility
-      ? `${energySourceLabel} · Utility: ${energy.utility}`
-      : energySourceLabel
-    : null;
 
   const coolingLabel = water?.coolingType
     ? (coolingTypeLabels[water.coolingType] ?? water.coolingType)
@@ -172,7 +167,8 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
     <div>
       <h3 className="text-sm font-semibold mb-3">Energy &amp; water</h3>
       <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-        {energyDisplay && <FactRow label="Energy source">{energyDisplay}</FactRow>}
+        {energySourceLabel && <FactRow label="Energy source">{energySourceLabel}</FactRow>}
+        {energy?.utility && <FactRow label="Utility">{energy.utility}</FactRow>}
         {energy?.onSiteGenerationMw !== undefined && (
           <FactRow label="On-site generation">
             {energy.onSiteGenerationMw.toLocaleString()} MW
