@@ -20,6 +20,7 @@ import { FacilityMap } from "@/components/map/facility-map-dynamic";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import { MapFilterSubheader } from "@/components/map/map-filter-subheader";
 import { ExportButtons } from "@/components/explorer/export-buttons";
+import { ShareLinkButton } from "@/components/explorer/share-link-button";
 import { StatePanel } from "@/components/feedback/state-panel";
 import { Button } from "@/components/ui/button";
 
@@ -170,7 +171,10 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
           >
             Showing {filtered.length} of {facilities.length} facilities
           </p>
-          <ExportButtons facilities={filtered} />
+          <div className="flex items-center gap-2">
+            <ExportButtons facilities={filtered} />
+            <ShareLinkButton />
+          </div>
         </div>
         <section aria-label="Facilities data table">
           <FacilityTable facilities={filtered} />
@@ -199,7 +203,12 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
         >
           Showing {filtered.length} of {facilities.length} facilities
         </p>
-        {view === "table" && <ExportButtons facilities={filtered} />}
+        {view === "table" && (
+          <div className="flex items-center gap-2">
+            <ExportButtons facilities={filtered} />
+            <ShareLinkButton />
+          </div>
+        )}
       </div>
 
       {/* View toggle */}

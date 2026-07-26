@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site";
 
 export function SiteFooter() {
   return (
-    <footer className="relative border-t border-border">
+    <footer className="print:hidden relative border-t border-border">
       {/* Faint graticule wash — atlas margin texture */}
       <div
         aria-hidden="true"

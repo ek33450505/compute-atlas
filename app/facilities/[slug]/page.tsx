@@ -247,8 +247,8 @@ export default async function FacilityPage({
 
       <Separator />
 
-      {/* Mini map */}
-      <section aria-labelledby="map-heading">
+      {/* Mini map — interactive-only, not useful on a printed page */}
+      <section aria-labelledby="map-heading" className="print:hidden">
         <h2 id="map-heading" className="font-display text-xl text-foreground mb-4">
           Location
         </h2>
@@ -262,8 +262,10 @@ export default async function FacilityPage({
 
       <Separator />
 
-      {/* Correction */}
-      <SuggestCorrection facilityId={facility.id} facilityName={facility.name} />
+      {/* Correction — interactive CTA, not useful on a printed page */}
+      <div className="print:hidden">
+        <SuggestCorrection facilityId={facility.id} facilityName={facility.name} />
+      </div>
     </div>
   );
 }
