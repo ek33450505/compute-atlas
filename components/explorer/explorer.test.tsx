@@ -210,3 +210,33 @@ describe("Explorer — clear all", () => {
     ).not.toBeInTheDocument();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Map view — empty state
+//
+// Only the "map filters exclude everything" branch is covered here: it never
+// mounts <FacilityMap>, so it's safe in jsdom (see the WebGL note above).
+// Verifying that clearing filters brings the map back would require the real
+// FacilityMap (MapLibre/WebGL) to mount, which jsdom can't render — skipped
+// rather than mocking that entanglement away.
+// ---------------------------------------------------------------------------
+
+describe("Explorer — map empty state", () => {
+  it("shows a StatePanel instead of the map when filters exclude everything", () => {
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map", status: "permitted" }}>
+        <Explorer facilities={fixtures} />
+      </NuqsTestingAdapter>
+    );
+
+    expect(
+      screen.getByText("No facilities match these filters")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Clear all filters" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "Interactive datacenter map" })
+    ).not.toBeInTheDocument();
+  });
+});

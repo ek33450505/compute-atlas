@@ -20,6 +20,8 @@ import { FacilityMap } from "@/components/map/facility-map-dynamic";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import { MapFilterSubheader } from "@/components/map/map-filter-subheader";
 import { ExportButtons } from "@/components/explorer/export-buttons";
+import { StatePanel } from "@/components/feedback/state-panel";
+import { Button } from "@/components/ui/button";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -84,6 +86,14 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
     [facilities, status, state, operator, facilityType, minMw]
   );
 
+  const clearAll = () => {
+    setStatus([]);
+    setState([]);
+    setOperator([]);
+    setFacilityType([]);
+    setMinMw(0);
+  };
+
   // -------------------------------------------------------------------------
   // Map-only mode — immersive full-bleed layout (Phase 1c)
   // Filter sub-header sits in normal document flow ABOVE the map; the map
@@ -99,16 +109,32 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
           filteredCount={filtered.length}
           totalCount={facilities.length}
         />
-        {/* min-h-0 prevents the flex child from overflowing its parent */}
-        <div className="relative flex-1 min-h-0">
-          <section aria-label="Interactive datacenter map" className="h-full">
-            <FacilityMap
-              facilities={filtered}
-              heightClass="h-full min-h-[320px]"
-              surveyOnMount={filtered.length !== facilities.length}
+        {filtered.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center">
+            <StatePanel
+              titleAs="p"
+              eyebrow="No results"
+              title="No facilities match these filters"
+              description="Try widening or clearing the filters to see facilities on the map."
+              actions={
+                <Button variant="outline" onClick={clearAll}>
+                  Clear all filters
+                </Button>
+              }
             />
-          </section>
-        </div>
+          </div>
+        ) : (
+          // min-h-0 prevents the flex child from overflowing its parent
+          <div className="relative flex-1 min-h-0">
+            <section aria-label="Interactive datacenter map" className="h-full">
+              <FacilityMap
+                facilities={filtered}
+                heightClass="h-full min-h-[320px]"
+                surveyOnMount={filtered.length !== facilities.length}
+              />
+            </section>
+          </div>
+        )}
       </div>
     );
   }
@@ -203,6 +229,20 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
       {/* Active view */}
       {view === "table" ? (
         <FacilityTable facilities={filtered} />
+      ) : filtered.length === 0 ? (
+        <div className="flex h-[70vh] min-h-[420px] items-center justify-center">
+          <StatePanel
+            titleAs="p"
+            eyebrow="No results"
+            title="No facilities match these filters"
+            description="Try widening or clearing the filters to see facilities on the map."
+            actions={
+              <Button variant="outline" onClick={clearAll}>
+                Clear all filters
+              </Button>
+            }
+          />
+        </div>
       ) : (
         <section aria-label="Interactive datacenter map">
           <FacilityMap facilities={filtered} />
