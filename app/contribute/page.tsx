@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Breadcrumb } from "@/components/breadcrumb";
 import { ContributeFacilityForm } from "@/components/contribute/contribute-facility-form";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contribute a facility",
@@ -40,6 +41,38 @@ export default function ContributePage() {
       </header>
 
       <ContributeFacilityForm />
+
+      {/* Support the atlas */}
+      <section
+        aria-labelledby="support-heading"
+        className="space-y-4 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Support
+        </p>
+        <h2 id="support-heading" className="font-display text-2xl text-foreground">
+          Support the atlas
+        </h2>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Compute Atlas is free, open, and ad-free. It runs on a small monthly
+          infrastructure budget &mdash; a database and hosting &mdash; that I
+          cover myself. If it&rsquo;s useful to you, sponsorship helps keep it
+          independent and growing. Either way, every figure stays traceable to a
+          public source:{" "}
+          <strong className="font-medium text-foreground">
+            sponsorship never changes what the record says.
+          </strong>
+        </p>
+        <a
+          href={siteConfig.sponsorUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
+          className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          Sponsor on GitHub <span aria-hidden="true">↗</span>
+        </a>
+      </section>
     </div>
   );
 }
