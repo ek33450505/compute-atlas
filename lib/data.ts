@@ -233,6 +233,24 @@ export async function getStatusCounts(): Promise<Record<Status, number>> {
 }
 
 /**
+ * Returns all facilities with the given status, sorted by max capacity
+ * (operational or planned) desc, then name A→Z (deterministic tie-break).
+ * Backs the /status/[status] landing pages. Reads the shared
+ * `loadFacilities()` cache — no new uncached per-request DB read (see that
+ * function's doc comment on the s51 ISR-write-blowout lesson).
+ */
+export async function getFacilitiesByStatus(status: Status): Promise<Facility[]> {
+  const facilities = await loadFacilities();
+  return facilities
+    .filter((f) => f.status === status)
+    .sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+}
+
+/**
  * Returns aggregate stats for the whole dataset.
  *
  * `operationalMw` — sum of `capacityMw.operational` across non-cancelled facilities.

@@ -1,0 +1,82 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+
+import { getStatusCounts } from "@/lib/data";
+import { STATUS_ORDER, STATUS_META } from "@/lib/status";
+import { Breadcrumb } from "@/components/breadcrumb";
+
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: "US data centers by status",
+  description:
+    "Browse tracked US data centers by lifecycle status — proposed, permitted, under construction, operational, or cancelled — each with a live, source-cited count.",
+  alternates: { canonical: "/status" },
+};
+
+/**
+ * /status — index hub linking to the 5 per-status SEO landing pages
+ * (app/status/[status]/page.tsx). Mirrors /explore's lens-grid layout.
+ * Static server component; counts are live via getStatusCounts.
+ */
+export default async function StatusIndexPage() {
+  const counts = await getStatusCounts();
+
+  return (
+    <div
+      data-content-width="4xl"
+      className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
+    >
+      <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "By status" }]} />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Masthead                                                            */}
+      {/* ------------------------------------------------------------------ */}
+      <header className="space-y-4 pb-2">
+        <p className="font-mono text-xs uppercase tracking-widest text-primary">
+          Lifecycle status
+        </p>
+        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
+          By status
+        </h1>
+        <p className="max-w-2xl text-base text-muted-foreground">
+          Every tracked site sits in one of five lifecycle stages, from
+          announced to operational — or cancelled. Each stage links to the
+          full, source-cited list.
+        </p>
+        <div className="border-t border-border" />
+      </header>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Status grid                                                         */}
+      {/* ------------------------------------------------------------------ */}
+      <section aria-labelledby="status-list-heading" className="space-y-4">
+        <h2 id="status-list-heading" className="sr-only">
+          Browse by status
+        </h2>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {STATUS_ORDER.map((status) => (
+            <li key={status}>
+              <Link
+                href={`/status/${status}`}
+                className="flex min-h-11 flex-col gap-1.5 rounded-sm border border-border px-4 py-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <span className="flex items-baseline justify-between gap-2">
+                  <span className="font-display text-lg text-foreground">
+                    {STATUS_META[status].label}
+                  </span>
+                  <span className="font-mono text-xs text-muted-foreground shrink-0">
+                    {counts[status]} sites
+                  </span>
+                </span>
+                <span className="text-sm leading-relaxed text-muted-foreground">
+                  {STATUS_META[status].description}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
+}
