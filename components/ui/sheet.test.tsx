@@ -191,4 +191,24 @@ describe("Sheet", () => {
     expect(header).toHaveClass("header-class");
     expect(footer).toHaveClass("footer-class");
   });
+
+  it("gates the overlay and content transitions behind motion-reduce", () => {
+    // Class-contract proxy only: jsdom can't evaluate the
+    // `prefers-reduced-motion` media query itself, so this only proves the
+    // utility class is present — the actual cascade/exit-timing is
+    // browser-verified separately (the s60 lesson: a passing class
+    // assertion can coexist with a defeated media query).
+    render(
+      <Sheet defaultOpen>
+        <SheetContent>
+          <SheetTitle>t</SheetTitle>
+        </SheetContent>
+      </Sheet>
+    );
+
+    const content = screen.getByRole("dialog");
+    const overlay = document.body.querySelector('[data-slot="sheet-overlay"]');
+    expect(content).toHaveClass("motion-reduce:transition-none");
+    expect(overlay).toHaveClass("motion-reduce:transition-none");
+  });
 });

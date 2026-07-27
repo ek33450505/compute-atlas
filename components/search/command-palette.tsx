@@ -195,10 +195,10 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
 
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>
-          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/10 transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0 supports-backdrop-filter:backdrop-blur-xs" />
+          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/10 transition-opacity duration-150 motion-reduce:transition-none data-ending-style:opacity-0 data-starting-style:opacity-0 supports-backdrop-filter:backdrop-blur-xs" />
           <Dialog.Popup
             initialFocus={inputRef}
-            className="fixed left-1/2 top-[14vh] z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 overflow-hidden rounded-sm border border-border bg-popover text-popover-foreground shadow-lg transition duration-150 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0"
+            className="fixed left-1/2 top-[14vh] z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 overflow-hidden rounded-sm border border-border bg-popover text-popover-foreground shadow-lg transition duration-150 ease-in-out motion-reduce:transition-none data-ending-style:opacity-0 data-starting-style:opacity-0"
           >
             <Dialog.Title className="sr-only">Search Compute Atlas</Dialog.Title>
             <Dialog.Description className="sr-only">

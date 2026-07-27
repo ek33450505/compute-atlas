@@ -267,3 +267,24 @@ describe("CommandPalette — live DB search", () => {
     expect(screen.queryByText(/no matches for/i)).not.toBeInTheDocument();
   });
 });
+
+describe("CommandPalette — reduced motion", () => {
+  it("gates the popup and backdrop transitions behind motion-reduce", async () => {
+    // Class-contract proxy only: jsdom can't evaluate the
+    // `prefers-reduced-motion` media query itself — the cascade/exit-timing
+    // is browser-verified separately (the s60 lesson: a passing class
+    // assertion can coexist with a defeated media query). The backdrop has
+    // no data-slot to query by, so it's located via its `fixed inset-0 z-50`
+    // utility classes, which are unique to it (the popup lacks `inset-0`).
+    const user = userEvent.setup();
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
+
+    await user.click(screen.getByRole("button", { name: /search/i }));
+    await screen.findByRole("combobox");
+
+    const popup = screen.getByRole("dialog");
+    const backdrop = document.body.querySelector(".fixed.inset-0.z-50");
+    expect(popup).toHaveClass("motion-reduce:transition-none");
+    expect(backdrop).toHaveClass("motion-reduce:transition-none");
+  });
+});
