@@ -4,7 +4,10 @@ import {
   facilityJsonLdString,
   buildDatasetJsonLd,
   datasetJsonLdString,
+  buildBreadcrumbJsonLd,
+  breadcrumbJsonLdString,
 } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
 
 const baseFacility: Facility = {
@@ -173,5 +176,72 @@ describe("datasetJsonLdString", () => {
     const parsed = JSON.parse(str);
     expect(parsed["@type"]).toBe("Dataset");
     expect(parsed.distribution[0].contentUrl).toMatch(/\/api\/facilities$/);
+  });
+});
+
+describe("buildBreadcrumbJsonLd", () => {
+  const TRAIL = [
+    { name: "Map", url: "/map" },
+    { name: "New York", url: "/states/new-york" },
+    { name: "Test Datacenter" },
+  ];
+
+  it("returns a valid BreadcrumbList shape", () => {
+    const ld = buildBreadcrumbJsonLd(TRAIL);
+    expect(ld["@context"]).toBe("https://schema.org");
+    expect(ld["@type"]).toBe("BreadcrumbList");
+    expect(ld.itemListElement).toHaveLength(3);
+  });
+
+  it("assigns 1-based positions in trail order", () => {
+    const ld = buildBreadcrumbJsonLd(TRAIL);
+    expect(ld.itemListElement.map((i) => i.position)).toEqual([1, 2, 3]);
+    expect(ld.itemListElement.map((i) => i.name)).toEqual([
+      "Map",
+      "New York",
+      "Test Datacenter",
+    ]);
+  });
+
+  it("resolves a crumb's url to an absolute URL under siteConfig.url", () => {
+    const ld = buildBreadcrumbJsonLd(TRAIL);
+    expect(ld.itemListElement[0].item).toBe(`${siteConfig.url}/map`);
+    expect(ld.itemListElement[1].item).toBe(`${siteConfig.url}/states/new-york`);
+  });
+
+  it("omits item for a url-less (current-page) crumb", () => {
+    const ld = buildBreadcrumbJsonLd(TRAIL);
+    expect(ld.itemListElement[2]).not.toHaveProperty("item");
+  });
+});
+
+describe("breadcrumbJsonLdString", () => {
+  it("returns a string with no raw < characters for a normal trail", () => {
+    const str = breadcrumbJsonLdString([
+      { name: "Map", url: "/map" },
+      { name: "Test Datacenter" },
+    ]);
+    expect(str).not.toContain("<");
+  });
+
+  it("escapes < as \\u003c and removes </script> when a crumb name contains script-injection payload", () => {
+    const str = breadcrumbJsonLdString([
+      { name: "Map", url: "/map" },
+      { name: "</script><x>" },
+    ]);
+    expect(str).toContain("\\u003c");
+    expect(str).not.toContain("</script>");
+  });
+
+  it("produces valid JSON that round-trips to a BreadcrumbList shape", () => {
+    const str = breadcrumbJsonLdString([
+      { name: "Map", url: "/map" },
+      { name: "Test Datacenter" },
+    ]);
+    const parsed = JSON.parse(str);
+    expect(parsed["@type"]).toBe("BreadcrumbList");
+    expect(parsed.itemListElement[0].position).toBe(1);
+    expect(parsed.itemListElement[0].item).toBe(`${siteConfig.url}/map`);
+    expect(parsed.itemListElement[1]).not.toHaveProperty("item");
   });
 });

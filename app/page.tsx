@@ -18,6 +18,7 @@ export const revalidate = 3600;
 const ACTIVITY_TEASER_LIMIT = 5;
 
 export const metadata: Metadata = {
+  title: "US data center map & database",
   description: siteConfig.description,
 };
 
