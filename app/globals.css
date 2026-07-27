@@ -63,7 +63,7 @@
    *   under-construction #8F4108  6.34:1  ✓
    *   permitted          #036A4A  5.88:1  ✓
    *   proposed           #8A2661  7.35:1  ✓
-   *   cancelled          #565C64  5.98:1  ✓
+   *   cancelled          #39414A  9.17:1  ✓  (intentionally darker than peers: luminance-separates the neutral from proposed/magenta for red-green vision)
    *
    * muted-foreground #5C5344 on #F5F1E6:  6.70:1  ✓
    * primary #3F5B43 on #F5F1E6:           6.67:1  ✓
@@ -72,7 +72,7 @@
   --status-under-construction: #8F4108;
   --status-permitted: #036A4A;
   --status-proposed: #8A2661;
-  --status-cancelled: #565C64;
+  --status-cancelled: #39414A;
   --background: #F5F1E6;
   --foreground: #2B2721;
   --card: #FBF8EF;
