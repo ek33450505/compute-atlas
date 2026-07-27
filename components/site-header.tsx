@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: "Table", href: "/table" },
   { label: "Stats", href: "/stats" },
   { label: "Explore", href: "/explore" },
+  { label: "Activity", href: "/activity" },
   { label: "About", href: "/about" },
 ] as const;
 
@@ -19,7 +20,7 @@ export async function SiteHeader() {
   const searchIndex = await buildSearchIndex();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
+    <header className="print:hidden sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 sm:gap-4 px-3 sm:px-6">
         {/* Wordmark */}
         <Link

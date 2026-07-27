@@ -29,7 +29,7 @@ export function ProvenancePanel({ facility }: ProvenancePanelProps) {
   const headingId = `provenance-heading-${facility.id}`;
 
   return (
-    <section aria-labelledby={headingId} className="space-y-4">
+    <section aria-labelledby={headingId} data-print-sources className="space-y-4">
       <h2 id={headingId} className="text-base font-semibold">
         Sources &amp; data provenance
       </h2>

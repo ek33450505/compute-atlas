@@ -25,6 +25,22 @@ const httpUrlSchema = z.string().max(2000).url().refine(
   { message: "url must use the http or https protocol" }
 );
 
+/**
+ * Normalizes an optional, public contributor handle for display. Rejects
+ * anything email-like, strips to a conservative handle charset, hard-caps
+ * length, and returns undefined for empty/invalid input so callers omit the
+ * field entirely (anonymous stays the default).
+ */
+export function sanitizeAttribution(raw?: string): string | undefined {
+  if (!raw) return undefined;
+  let s = raw.trim().replace(/^@+/, "");      // drop any leading @
+  if (s.includes("@")) return undefined;       // reject emails / anything address-like
+  s = s.replace(/[^A-Za-z0-9 _.\-]/g, "");     // conservative allowlist: alnum, space, _ . -
+  s = s.replace(/\s+/g, " ").trim();           // collapse internal whitespace
+  s = s.slice(0, 40);                           // hard cap 40
+  return s.length > 0 ? s : undefined;
+}
+
 const createSchema = z.object({
   kind: z.literal("create"),
   website: z.string().max(200).optional(),
@@ -45,6 +61,7 @@ const createSchema = z.object({
   sourceUrl: httpUrlSchema,
   sourceLabel: z.string().max(200).optional(),
   note: z.string().max(2000).optional(),
+  attribution: z.string().max(80).optional(),
 });
 
 const correctionSchema = z.object({
@@ -55,6 +72,7 @@ const correctionSchema = z.object({
   value: z.union([z.string().max(2000), z.number()]),
   sourceUrl: httpUrlSchema,
   note: z.string().max(2000).optional(),
+  attribution: z.string().max(80).optional(),
 });
 
 export const contributeInputSchema = z.discriminatedUnion("kind", [
@@ -229,6 +247,7 @@ export async function submitContribution(
     return { ok: false, status: 400, error: "Invalid submission", issues: parsed.error.issues };
   }
   const data = parsed.data;
+  const attribution = sanitizeAttribution(data.attribution);
 
   if (isHoneypotTripped(data)) {
     return { ok: true };
@@ -249,6 +268,7 @@ export async function submitContribution(
         confidence: "rumored",
         note: data.note,
         submitterIpHash: ipHash,
+        ...(attribution ? { attribution } : {}),
       },
     });
     if (!result.ok) return result;
@@ -277,6 +297,7 @@ export async function submitContribution(
       discoveredBy: "public-correction",
       note: data.note,
       submitterIpHash: ipHash,
+      ...(attribution ? { attribution } : {}),
     },
   });
   if (!result.ok) return result;

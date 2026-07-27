@@ -12,9 +12,9 @@ import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
 import { getFacilityMaxMw } from "@/lib/format";
 import facilitiesRaw from "@/data/facilities.json";
-import { desc, eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
-import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
+import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 
 /** Parses and validates the bundled JSON fallback. Throws loudly on bad data. */
@@ -915,6 +915,8 @@ export interface ActivityEntry {
   /** Short, non-diff label, e.g. "new facility added" or "facility updated". */
   label: string;
   timestamp: Date;
+  /** Optional public contributor handle, when the change came from an attributed public submission. */
+  attribution?: string;
 }
 
 /**
@@ -934,7 +936,9 @@ export interface ActivityEntry {
  * DB-only: the JSON fallback bundle has no history to sort on, so this
  * returns `[]` when `DATABASE_URL` is unset rather than throwing — the
  * public /activity page and homepage teaser both degrade to an empty section
- * instead of crashing.
+ * instead of crashing. The query itself is also wrapped in a try/catch: a
+ * live DB failure (unreachable, or over quota) degrades to `[]` the same
+ * way, rather than throwing into those callers' bare `await` call sites.
  */
 export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
   if (!hasDatabaseUrl()) {
@@ -943,28 +947,43 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
 
   const db = getDb();
 
-  // Single query, single source. The inner join naturally drops history rows
-  // for facilities that have since been deleted (no dead links in the feed),
-  // and the `where` keeps only create/update rows (delete events aren't
-  // rendered in this feed).
-  const rows = await db
-    .select({
-      facilityId: facilityHistoryTable.facilityId,
-      facilityName: facilitiesTable.name,
-      changeType: facilityHistoryTable.changeType,
-      changedAt: facilityHistoryTable.changedAt,
-    })
-    .from(facilityHistoryTable)
-    .innerJoin(facilitiesTable, eq(facilityHistoryTable.facilityId, facilitiesTable.id))
-    .where(inArray(facilityHistoryTable.changeType, ["create", "update"]))
-    .orderBy(desc(facilityHistoryTable.changedAt))
-    .limit(limit);
+  try {
+    // Single query, single source. The inner join naturally drops history rows
+    // for facilities that have since been deleted (no dead links in the feed),
+    // and the `where` keeps only create/update rows (delete events aren't
+    // rendered in this feed).
+    const rows = await db
+      .select({
+        facilityId: facilityHistoryTable.facilityId,
+        facilityName: facilitiesTable.name,
+        changeType: facilityHistoryTable.changeType,
+        changedAt: facilityHistoryTable.changedAt,
+        attribution: sql<string | null>`${submissionsTable.provenance} ->> 'attribution'`,
+      })
+      .from(facilityHistoryTable)
+      .innerJoin(facilitiesTable, eq(facilityHistoryTable.facilityId, facilitiesTable.id))
+      // Cast submissions.id (uuid) to text rather than casting source::uuid —
+      // the latter would throw on "admin-direct" rows, which aren't valid
+      // uuids and should simply not match. submissions.id is a unique PK, so
+      // this LEFT JOIN can't fan out and never changes which rows return.
+      .leftJoin(submissionsTable, sql`${submissionsTable.id}::text = ${facilityHistoryTable.source}`)
+      .where(inArray(facilityHistoryTable.changeType, ["create", "update"]))
+      .orderBy(desc(facilityHistoryTable.changedAt))
+      .limit(limit);
 
-  return rows.map((row) => ({
-    kind: row.changeType === "create" ? "create" : "update",
-    facilityId: row.facilityId,
-    facilityName: row.facilityName,
-    label: row.changeType === "create" ? "new facility added" : "facility updated",
-    timestamp: row.changedAt,
-  }));
+    return rows.map((row) => ({
+      kind: row.changeType === "create" ? "create" : "update",
+      facilityId: row.facilityId,
+      facilityName: row.facilityName,
+      label: row.changeType === "create" ? "new facility added" : "facility updated",
+      timestamp: row.changedAt,
+      ...(row.attribution ? { attribution: row.attribution } : {}),
+    }));
+  } catch (err) {
+    // A live query failure (DB unreachable or over-quota) degrades to an empty
+    // feed rather than throwing into the homepage teaser / /activity page —
+    // both render their existing empty state instead of the error boundary.
+    console.warn("getRecentActivity: activity feed unavailable, degrading to empty", err);
+    return [];
+  }
 }

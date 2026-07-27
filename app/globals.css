@@ -63,7 +63,7 @@
    *   under-construction #8F4108  6.34:1  ✓
    *   permitted          #036A4A  5.88:1  ✓
    *   proposed           #8A2661  7.35:1  ✓
-   *   cancelled          #565C64  5.98:1  ✓
+   *   cancelled          #39414A  9.17:1  ✓  (intentionally darker than peers: luminance-separates the neutral from proposed/magenta for red-green vision)
    *
    * muted-foreground #5C5344 on #F5F1E6:  6.70:1  ✓
    * primary #3F5B43 on #F5F1E6:           6.67:1  ✓
@@ -72,7 +72,7 @@
   --status-under-construction: #8F4108;
   --status-permitted: #036A4A;
   --status-proposed: #8A2661;
-  --status-cancelled: #565C64;
+  --status-cancelled: #39414A;
   --background: #F5F1E6;
   --foreground: #2B2721;
   --card: #FBF8EF;
@@ -343,3 +343,46 @@
    Tailwind max-w-7xl utility on the footer inner container. */
 body:has([data-content-width="3xl"]) [data-footer-inner] { max-width: 48rem; }
 body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
+
+/* ── Print styles — clean, ink-efficient facility page printouts ─────────────
+   Screen theme is a warm parchment bg + ink fg; print forces plain white/black
+   to save ink and maximize contrast, strips chrome and decorative fills, and
+   discourages awkward page breaks inside small blocks. Kept UNLAYERED (like
+   the MapLibre theming above) so it beats the @layer base body colors
+   regardless of source order. Interactive-only sections (map, correction CTA)
+   are hidden at the call site via the `print:hidden` Tailwind variant instead
+   of here. */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .graticule {
+    background-image: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+  }
+
+  /* Keep small blocks from splitting across a page break. */
+  [data-slot="card"],
+  li,
+  tr,
+  figure {
+    break-inside: avoid;
+  }
+
+  /* Expand cited source links inline so a printed citation carries the URL,
+     not just link text — scoped to the sources panel via its
+     data-print-sources hook (components/facility/provenance-panel.tsx). */
+  [data-print-sources] a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    word-break: break-all;
+    color: #000;
+  }
+}

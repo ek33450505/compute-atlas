@@ -20,7 +20,7 @@ const STATUS_COLORS = [
   "#8F4108", // under-construction
   "#036A4A", // permitted
   "#8A2661", // proposed
-  "#565C64", // cancelled
+  "#39414A", // cancelled
 ];
 
 export const alt = `${siteConfig.name} — ${siteConfig.tagline}`;

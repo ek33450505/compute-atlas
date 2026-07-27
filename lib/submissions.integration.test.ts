@@ -15,7 +15,7 @@ import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/d
 import type { DataCenterFacility, Source } from "@/lib/schema";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
-import { approveSubmission } from "@/lib/submissions";
+import { approveSubmission, createSubmission } from "@/lib/submissions";
 
 function makeSource(label: string): Source {
   return {
@@ -133,5 +133,41 @@ describe("approveSubmission (kind: status_update)", () => {
       .from(submissionsTable)
       .where(eq(submissionsTable.id, id));
     expect(submissionRows[0].status).toBe("pending");
+  });
+});
+
+// Persistence-boundary hardening: provenanceSchema.attribution must enforce
+// the same charset allowlist as sanitizeAttribution() (lib/contribute.ts),
+// so the admin-token POST /api/submissions path and the discovery pipeline
+// can't bypass it by writing an unsanitized handle directly.
+describe("createSubmission (provenance.attribution charset boundary)", () => {
+  it("rejects an envelope whose provenance.attribution contains a disallowed character", async () => {
+    const result = await createSubmission({
+      kind: "create",
+      payload: { name: "Example Facility" },
+      provenance: {
+        sources: ["https://example.com/x"],
+        discoveredBy: "test",
+        attribution: "a<b",
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(400);
+  });
+
+  it("accepts a clean provenance.attribution containing a space", async () => {
+    const result = await createSubmission({
+      kind: "create",
+      payload: { name: "Example Facility" },
+      provenance: {
+        sources: ["https://example.com/x"],
+        discoveredBy: "test",
+        attribution: "grid watcher",
+      },
+    });
+
+    expect(result.ok).toBe(true);
   });
 });

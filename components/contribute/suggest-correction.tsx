@@ -41,6 +41,7 @@ export interface CorrectionFormState {
   field: CorrectableKey;
   value: string;
   sourceUrl: string;
+  attribution: string;
   note: string;
   /** Honeypot — real submitters never see or fill this. */
   website: string;
@@ -62,6 +63,7 @@ export function buildCorrectionPayload(
     sourceUrl: state.sourceUrl.trim(),
   };
 
+  if (state.attribution.trim()) payload.attribution = state.attribution.trim();
   if (state.note.trim()) payload.note = state.note.trim();
 
   return payload;
@@ -120,6 +122,7 @@ const EMPTY_STATE: CorrectionFormState = {
   field: CORRECTABLE_FIELD_META[0].key,
   value: "",
   sourceUrl: "",
+  attribution: "",
   note: "",
   website: "",
 };
@@ -351,6 +354,22 @@ export function SuggestCorrection({
                 />
                 <p id="correction-source-hint" className="text-xs text-muted-foreground">
                   A public link that backs up this change.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="correction-attribution">Your name or handle (optional)</Label>
+                <Input
+                  id="correction-attribution"
+                  name="correction-attribution"
+                  type="text"
+                  value={state.attribution}
+                  onChange={(e) => setState((prev) => ({ ...prev, attribution: e.target.value }))}
+                  maxLength={40}
+                  aria-describedby="correction-attribution-hint"
+                />
+                <p id="correction-attribution-hint" className="text-xs text-muted-foreground">
+                  Credited on the public activity feed. Leave blank to stay anonymous — no email addresses.
                 </p>
               </div>
 

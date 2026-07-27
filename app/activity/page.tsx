@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Rss } from "lucide-react";
 
 import { getRecentActivity } from "@/lib/data";
 import { ActivityList } from "@/app/activity/activity-list";
@@ -33,6 +34,15 @@ export default async function ActivityPage() {
         <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
           The latest facility updates and approved community contributions,
           most recent first.
+        </p>
+        <p className="pt-1">
+          <a
+            href="/activity/feed.xml"
+            className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-primary underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            <Rss aria-hidden="true" className="h-3.5 w-3.5" />
+            Subscribe via RSS
+          </a>
         </p>
       </div>
 
