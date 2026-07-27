@@ -551,6 +551,41 @@ export default function AboutPage() {
         </ul>
       </section>
 
+      {/* From the maintainer */}
+      <section aria-labelledby="maintainer-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § From the maintainer
+        </p>
+        <h2 id="maintainer-heading" className="font-display text-2xl text-foreground">
+          From the maintainer
+        </h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          I build open-source tools &mdash; some for AI-assisted engineering,
+          some for making public-interest data verifiable. Compute Atlas is the
+          latter: an open atlas of the AI-datacenter buildout across the United
+          States &mdash; where these facilities are going up, by whom, and at
+          what cost to the grid, the water, and the communities nearby. The
+          record is public but scattered across permit filings, tax-abatement
+          agreements, water applications, and interconnection queues; I gather it
+          into one source-cited map that anyone can correct or extend.
+        </p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Every figure traces back to a public source &mdash; I don&rsquo;t
+          fabricate or infer beyond what a reader can check. The through-line is
+          the same across everything I build: tools that are verifiable,
+          community-stewarded, and honest about their limits.
+        </p>
+        <a
+          href={siteConfig.sponsorUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
+          className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          Sponsor on GitHub <span aria-hidden="true">↗</span>
+        </a>
+      </section>
+
       {/* Contribute / corrections */}
       <section aria-labelledby="contribute-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -587,12 +622,6 @@ export default function AboutPage() {
             or open an issue on GitHub
           </a>
           .
-        </p>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Prefer to support the work directly?{" "}
-          <a href={siteConfig.sponsorUrl} target="_blank" rel="noreferrer noopener"
-             aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
-             className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">Sponsor this project on GitHub</a>.
         </p>
       </section>
     </div>
