@@ -31,8 +31,9 @@ npm run submissions -- reject <id> "note"
 npm run check-sources                        # source-liveness report (read-only)
 ```
 
-There is **no CI yet** — the Vercel preview build on each PR is the only gate.
-Run `npm run typecheck && npm test` locally before opening a PR.
+**CI:** GitHub Actions runs typecheck, lint, and the vitest suite (plus the
+discovery BATS shell tests) on each PR; the Vercel preview build is an additional
+gate. Still run `npm run typecheck && npm test` locally before opening a PR.
 
 ## Architecture
 
@@ -48,11 +49,18 @@ Run `npm run typecheck && npm test` locally before opening a PR.
   basemaps. `data/facilities.json` is the seed/export artifact, not the live source.
 - **UI:** Tailwind v4, Base UI + shadcn primitives, a parchment/ink "atlas" design
   system in `app/globals.css :root`.
-- **SEO:** `lib/seo.ts` builds JSON-LD (`Dataset` on the homepage, `Place` on
-  facility pages); `app/sitemap.ts` + `app/robots.ts`.
+- **SEO:** `lib/seo.ts` builds JSON-LD (`Dataset` on the homepage; `Place` +
+  `BreadcrumbList` on facility pages; site-wide `Organization`/`WebSite` graph;
+  `ItemList` on directory/collection pages); per-route `alternates.canonical`;
+  `app/sitemap.ts` + `app/robots.ts` (`/admin` + `/api` disallowed).
+- **Collection pages:** `components/collection/collection-page.tsx` is the shared
+  primitive for facility-list landing pages (masthead + stat row + card grid +
+  BreadcrumbList/ItemList JSON-LD), with `show-more-list.tsx` for progressive
+  reveal of long lists. Used by the by-status and by-metro lenses.
 - **Key routes:** `app/page.tsx` (home) · `app/map` · `app/table` · `app/explore/*`
-  + lens pages (`states`/`operators`/`power`/`opposition`, incl. `[state]`/`[operator]`
-  hubs) · `app/facilities/[slug]` · `app/contribute` · `app/admin/*` · `app/api/*`.
+  + lens pages (`states`/`operators`/`power`/`opposition`/`status`/`metros`, incl.
+  `[state]`/`[operator]`/`[status]`/`[metro]` hubs) · `app/facilities/[slug]` ·
+  `app/contribute` · `app/activity` · `app/admin/*` · `app/api/*`.
 
 ## Core invariant: writes are staged and human-gated
 
