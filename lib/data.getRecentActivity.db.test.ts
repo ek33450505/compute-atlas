@@ -48,6 +48,7 @@ let shouldFail = false;
 function makeMockDb() {
   const chain = {
     innerJoin: () => chain,
+    leftJoin: () => chain,
     where: () => chain,
     orderBy: () => chain,
     limit: (n: number) =>

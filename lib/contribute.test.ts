@@ -6,6 +6,7 @@ import {
   buildCreatePayload,
   buildCorrectionPatch,
   contributeInputSchema,
+  sanitizeAttribution,
   type CreateContributeInput,
   type CorrectionContributeInput,
 } from "@/lib/contribute";
@@ -240,5 +241,46 @@ describe("contributeInputSchema length caps", () => {
     };
     const result = contributeInputSchema.safeParse(input);
     expect(result.success).toBe(false);
+  });
+});
+
+describe("sanitizeAttribution", () => {
+  it("returns undefined for undefined input", () => {
+    expect(sanitizeAttribution(undefined)).toBeUndefined();
+  });
+
+  it("returns undefined for empty or whitespace-only input", () => {
+    expect(sanitizeAttribution("")).toBeUndefined();
+    expect(sanitizeAttribution("   ")).toBeUndefined();
+  });
+
+  it("strips a leading @", () => {
+    expect(sanitizeAttribution("@grid")).toBe("grid");
+  });
+
+  it("rejects anything email-like (contains @)", () => {
+    expect(sanitizeAttribution("a@b.com")).toBeUndefined();
+    expect(sanitizeAttribution("user@example")).toBeUndefined();
+  });
+
+  it("strips disallowed characters to a conservative allowlist", () => {
+    // '<', '>', '/' are stripped; only alnum/space/_/./- survive.
+    expect(sanitizeAttribution("<b>x</b>")).toBe("bxb");
+    expect(sanitizeAttribution("grid$watcher!")).toBe("gridwatcher");
+  });
+
+  it("collapses internal whitespace to a single space", () => {
+    expect(sanitizeAttribution("grid   watcher")).toBe("grid watcher");
+  });
+
+  it("hard-caps to 40 characters", () => {
+    const long = "a".repeat(50);
+    const result = sanitizeAttribution(long);
+    expect(result).toHaveLength(40);
+    expect(result).toBe("a".repeat(40));
+  });
+
+  it("passes a clean handle through unchanged", () => {
+    expect(sanitizeAttribution("grid_watcher-42")).toBe("grid_watcher-42");
   });
 });

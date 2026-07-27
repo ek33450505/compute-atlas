@@ -12,9 +12,9 @@ import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
 import { getFacilityMaxMw } from "@/lib/format";
 import facilitiesRaw from "@/data/facilities.json";
-import { desc, eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
-import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
+import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 
 /** Parses and validates the bundled JSON fallback. Throws loudly on bad data. */
@@ -915,6 +915,8 @@ export interface ActivityEntry {
   /** Short, non-diff label, e.g. "new facility added" or "facility updated". */
   label: string;
   timestamp: Date;
+  /** Optional public contributor handle, when the change came from an attributed public submission. */
+  attribution?: string;
 }
 
 /**
@@ -956,9 +958,15 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
         facilityName: facilitiesTable.name,
         changeType: facilityHistoryTable.changeType,
         changedAt: facilityHistoryTable.changedAt,
+        attribution: sql<string | null>`${submissionsTable.provenance} ->> 'attribution'`,
       })
       .from(facilityHistoryTable)
       .innerJoin(facilitiesTable, eq(facilityHistoryTable.facilityId, facilitiesTable.id))
+      // Cast submissions.id (uuid) to text rather than casting source::uuid —
+      // the latter would throw on "admin-direct" rows, which aren't valid
+      // uuids and should simply not match. submissions.id is a unique PK, so
+      // this LEFT JOIN can't fan out and never changes which rows return.
+      .leftJoin(submissionsTable, sql`${submissionsTable.id}::text = ${facilityHistoryTable.source}`)
       .where(inArray(facilityHistoryTable.changeType, ["create", "update"]))
       .orderBy(desc(facilityHistoryTable.changedAt))
       .limit(limit);
@@ -969,6 +977,7 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
       facilityName: row.facilityName,
       label: row.changeType === "create" ? "new facility added" : "facility updated",
       timestamp: row.changedAt,
+      ...(row.attribution ? { attribution: row.attribution } : {}),
     }));
   } catch (err) {
     // A live query failure (DB unreachable or over-quota) degrades to an empty

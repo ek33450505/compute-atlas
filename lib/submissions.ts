@@ -14,6 +14,15 @@ const provenanceSchema = z.object({
   discoveredAt: z.string().optional(),
   note: z.string().optional(),
   submitterIpHash: z.string().optional(),
+  // Enforce the display-handle charset at the persistence boundary too, not
+  // just at the public sanitizeAttribution() call site — so the admin-token
+  // POST /api/submissions path and the discovery pipeline can't write an
+  // unsanitized handle. Mirrors the allowlist in lib/contribute.ts.
+  attribution: z
+    .string()
+    .max(40)
+    .regex(/^[A-Za-z0-9 _.-]+$/, "attribution may contain only letters, numbers, spaces, and . _ -")
+    .optional(),
 });
 
 /**
