@@ -36,6 +36,13 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
   },
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        { url: "/activity/feed.xml", title: `${siteConfig.name} — Recent activity` },
+      ],
+    },
+  },
 };
 
 export default function RootLayout({
