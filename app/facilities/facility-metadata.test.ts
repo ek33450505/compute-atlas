@@ -24,11 +24,16 @@ vi.mock("next/link", () => ({
 import { generateMetadata } from "./[slug]/page";
 
 describe("generateMetadata", () => {
-  it("returns the facility name as title for a known slug", async () => {
+  it("includes the facility name, type, and location in the title", async () => {
     const metadata = await generateMetadata({
       params: Promise.resolve({ slug: "meta-prineville-or" }),
     });
-    expect(metadata.title).toBe("Meta Prineville Data Center Campus");
+    // toContain (not toBe) tolerates the operator-dedup branch — "Meta" is a
+    // substring of the facility name, so the operator may be omitted — and
+    // minor punctuation differences in the title template.
+    expect(metadata.title).toContain("Meta Prineville Data Center Campus");
+    expect(metadata.title).toContain("Prineville, OR");
+    expect(metadata.title).toMatch(/data center/i);
   });
 
   it("returns a non-empty fallback title for an unknown slug and does not crash", async () => {

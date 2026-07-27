@@ -11,7 +11,9 @@ import {
   AI_CLASSIFICATION_LABELS,
   CONFIDENCE_LABELS,
 } from "@/lib/format";
+import { stateNameFromCode } from "@/lib/us-states";
 import { facilityJsonLdString } from "@/lib/seo";
+import type { Facility } from "@/lib/schema";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +33,17 @@ export async function generateStaticParams() {
   return facilities.map((f) => ({ slug: f.id }));
 }
 
+/**
+ * Lowercase, prose-friendly facility-type labels for SEO title/description
+ * copy — distinct from the Title-Case `FACILITY_TYPE_META` used for the page
+ * badge.
+ */
+const TITLE_TYPE_LABEL: Record<Facility["facilityType"], string> = {
+  data_center: "data center",
+  crypto_mining: "crypto-mining facility",
+  power_generation: "power-generation facility",
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -45,12 +58,34 @@ export async function generateMetadata({
 
   const statusLabel = getStatusMeta(facility.status).label;
   const location = formatLocation(facility);
-  const typeLabel = facility.facilityType === "crypto_mining" ? "crypto-mining facility" : "data center";
+  const typeLabel = TITLE_TYPE_LABEL[facility.facilityType] ?? "facility";
 
-  return {
-    title: facility.name,
-    description: `${facility.operator} — ${statusLabel} ${typeLabel} in ${location}. Capacity, status history, and sources on Compute Atlas.`,
-  };
+  // Title location: prefer "City, ST"; fall back to the full state name
+  // (not the bare 2-letter code) when city is unknown — a bare code reads
+  // poorly as the tail of a title ("... in TX").
+  const { city, state } = facility.location;
+  const titleLocation = city ? `${city}, ${state}` : stateNameFromCode(state) ?? state;
+
+  // Omit the operator when it's already embedded in the facility name (or
+  // vice versa) — e.g. name "Google Council Bluffs", operator "Google" —
+  // to avoid "Google Council Bluffs — Google data center in ...".
+  const nameLower = facility.name.toLowerCase();
+  const operatorLower = facility.operator.toLowerCase();
+  const operatorInName =
+    nameLower.includes(operatorLower) || operatorLower.includes(nameLower);
+
+  const title = operatorInName
+    ? `${facility.name} — ${typeLabel} in ${titleLocation}`
+    : `${facility.name} — ${facility.operator} ${typeLabel} in ${titleLocation}`;
+
+  const capacity = formatCapacity(facility);
+  const hasCapacity = Boolean(capacity) && capacity !== "—";
+  const description =
+    `${statusLabel} ${typeLabel} in ${location}, operated by ${facility.operator}.` +
+    (hasCapacity ? ` ${capacity}.` : "") +
+    ` Source-cited status history and references on Compute Atlas.`;
+
+  return { title, description };
 }
 
 /**
