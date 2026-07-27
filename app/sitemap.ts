@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
+import { METROS } from "@/lib/metros";
 import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
 
@@ -182,18 +183,47 @@ export async function buildStatusRoutes(): Promise<MetadataRoute.Sitemap> {
   ];
 }
 
+/**
+ * Builds the /metros index + 27 per-metro route entries for the sitemap.
+ * Structurally mirrors buildStatusRoutes: `lastModified` uses the whole
+ * dataset's max `lastUpdated` for every entry (index + all metros), kept
+ * identical to its status-lens sibling rather than computing a per-metro
+ * max. Exported separately so it can be unit-tested without Next.js.
+ */
+export async function buildMetroRoutes(): Promise<MetadataRoute.Sitemap> {
+  const facilities = await getAllFacilities();
+  const lastModified = maxLastUpdated(facilities);
+  return [
+    {
+      url: `${siteConfig.url}/metros`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...METROS.map((m) => ({
+      url: `${siteConfig.url}/metros/${m.slug}`,
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
+  ];
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [stateRoutes, operatorRoutes, facilityRoutes, statusRoutes] = await Promise.all([
-    buildStateRoutes(),
-    buildOperatorRoutes(),
-    buildFacilityRoutes(),
-    buildStatusRoutes(),
-  ]);
+  const [stateRoutes, operatorRoutes, facilityRoutes, statusRoutes, metroRoutes] =
+    await Promise.all([
+      buildStateRoutes(),
+      buildOperatorRoutes(),
+      buildFacilityRoutes(),
+      buildStatusRoutes(),
+      buildMetroRoutes(),
+    ]);
   return [
     ...buildStaticRoutes(),
     ...stateRoutes,
     ...operatorRoutes,
     ...facilityRoutes,
     ...statusRoutes,
+    ...metroRoutes,
   ];
 }

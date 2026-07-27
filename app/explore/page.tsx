@@ -28,6 +28,12 @@ const LENSES = [
       "Every tracked site by lifecycle stage — proposed, permitted, under construction, operational, or cancelled.",
   },
   {
+    label: "By metro",
+    href: "/metros",
+    description:
+      "Curated metro areas driving the buildout — county clusters, each with a live, source-cited facility count.",
+  },
+  {
     label: "Power",
     href: "/power",
     description:
