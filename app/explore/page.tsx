@@ -8,7 +8,7 @@ import { GraticuleSurvey } from "@/components/home/graticule-survey";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Explore",
+  title: "Explore US data centers",
   description:
     "Browse the atlas by lens — states, power generation, community opposition, operators, and the public API.",
 };

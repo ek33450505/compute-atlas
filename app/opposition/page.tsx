@@ -13,7 +13,7 @@ export const revalidate = 3600;
 const FRICTION_ORDER = ["litigation", "opposed", "contested"] as const satisfies readonly CommunityReception[];
 
 export const metadata: Metadata = {
-  title: "Opposition",
+  title: "Data center opposition & community response",
   description:
     "The U.S. compute sites facing documented community friction — litigation, moratoria, referendums, and formal opposition, each with a public source. Part of Compute Atlas.",
 };

@@ -16,7 +16,7 @@ function formatPower(mw: number): string {
 }
 
 export const metadata: Metadata = {
-  title: "States",
+  title: "Data centers by state",
   description:
     "Browse the U.S. grid-scale compute buildout state by state — facility counts, capacity, and build status, each record source-cited.",
 };
