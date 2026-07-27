@@ -33,6 +33,9 @@ export function buildActivityFeedXml(entries: ActivityEntry[]): string {
       ? `${base}/facilities/${entry.facilityId}`
       : `${base}${ACTIVITY_PATH}`;
     const title = `${entry.facilityName} — ${entry.label}`;
+    const description = entry.attribution
+      ? `${title} · contributed by ${entry.attribution}`
+      : title;
     // Stable per-event id: same event → same guid across rebuilds, so aggregators don't re-notify.
     const guid = `${entry.facilityId}:${entry.kind}:${entry.timestamp.toISOString()}`;
     const pubDate = entry.timestamp.toUTCString(); // RFC-822 / RFC-1123
@@ -43,7 +46,7 @@ export function buildActivityFeedXml(entries: ActivityEntry[]): string {
       `      <link>${escapeXml(link)}</link>`,
       `      <guid isPermaLink="false">${escapeXml(guid)}</guid>`,
       `      <pubDate>${pubDate}</pubDate>`,
-      `      <description>${escapeXml(title)}</description>`,
+      `      <description>${escapeXml(description)}</description>`,
       "    </item>",
     ].join("\n");
   });

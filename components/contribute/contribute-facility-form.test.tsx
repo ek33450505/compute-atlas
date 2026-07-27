@@ -112,3 +112,45 @@ describe("ContributeFacilityForm — submit outcomes", () => {
     ).toBeInTheDocument();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Contributor attribution
+// ---------------------------------------------------------------------------
+
+function getPostedBody(): Record<string, unknown> {
+  const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+  const [, init] = mockFetch.mock.calls[0];
+  return JSON.parse(init.body as string);
+}
+
+describe("ContributeFacilityForm — attribution", () => {
+  it("renders an optional attribution field", () => {
+    render(<ContributeFacilityForm />);
+    expect(screen.getByLabelText(/name or handle/i)).toBeInTheDocument();
+  });
+
+  it("includes a trimmed attribution in the submitted payload when provided", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+
+    render(<ContributeFacilityForm />);
+    await fillRequiredFields(user);
+    await user.type(screen.getByLabelText(/name or handle/i), "  jdoe  ");
+    await user.click(screen.getByRole("button", { name: /submit facility/i }));
+
+    await screen.findByText(/in the review queue/i);
+    expect(getPostedBody().attribution).toBe("jdoe");
+  });
+
+  it("omits attribution from the payload when left blank", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+
+    render(<ContributeFacilityForm />);
+    await fillRequiredFields(user);
+    await user.click(screen.getByRole("button", { name: /submit facility/i }));
+
+    await screen.findByText(/in the review queue/i);
+    expect(getPostedBody()).not.toHaveProperty("attribution");
+  });
+});

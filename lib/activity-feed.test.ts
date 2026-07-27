@@ -82,6 +82,33 @@ describe("buildActivityFeedXml", () => {
       `<lastBuildDate>${newest.timestamp.toUTCString()}</lastBuildDate>`
     );
   });
+
+  it("includes contributor attribution in the description when present", () => {
+    const entry = makeEntry({ attribution: "jdoe" });
+    const xml = buildActivityFeedXml([entry]);
+
+    expect(xml).toContain(
+      "<description>Test Facility — new facility added · contributed by jdoe</description>"
+    );
+  });
+
+  it("omits the attribution suffix from the description when absent", () => {
+    const entry = makeEntry();
+    const xml = buildActivityFeedXml([entry]);
+
+    expect(xml).toContain(
+      "<description>Test Facility — new facility added</description>"
+    );
+    expect(xml).not.toContain("contributed by");
+  });
+
+  it("escapes XML-unsafe characters in the attribution handle", () => {
+    const entry = makeEntry({ attribution: `A & B <script>` });
+    const xml = buildActivityFeedXml([entry]);
+
+    expect(xml).toContain("contributed by A &amp; B &lt;script&gt;");
+    expect(xml).not.toContain("<script>");
+  });
 });
 
 describe("escapeXml", () => {

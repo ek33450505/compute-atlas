@@ -78,4 +78,24 @@ describe("ActivityList", () => {
     expect(screen.getByText("Unknown facility")).toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
+
+  it("renders the contributor attribution when present", () => {
+    const withAttribution: ActivityEntry[] = [
+      {
+        kind: "create",
+        facilityId: "facility-d",
+        facilityName: "Facility D",
+        label: "new facility added",
+        timestamp: new Date("2026-07-13T00:00:00Z"),
+        attribution: "jdoe",
+      },
+    ];
+    render(<ActivityList entries={withAttribution} />);
+    expect(screen.getByText("contributed by jdoe")).toBeInTheDocument();
+  });
+
+  it("does not render attribution text when the entry has none", () => {
+    render(<ActivityList entries={entries} />);
+    expect(screen.queryByText(/contributed by/i)).not.toBeInTheDocument();
+  });
 });

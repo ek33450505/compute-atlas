@@ -22,6 +22,7 @@ describe("buildCorrectionPayload", () => {
     field: "operator",
     value: "New Operator LLC",
     sourceUrl: "https://example.com/press-release",
+    attribution: "",
     note: "",
     website: "",
   };
@@ -65,6 +66,14 @@ describe("buildCorrectionPayload", () => {
     expect(payload.note).toBe("saw this in the local paper");
   });
 
+  it("includes a trimmed attribution when provided", () => {
+    const payload = buildCorrectionPayload("facility-123", {
+      ...base,
+      attribution: "  jdoe  ",
+    });
+    expect(payload.attribution).toBe("jdoe");
+  });
+
   it("carries the honeypot value through untouched", () => {
     const payload = buildCorrectionPayload("facility-123", {
       ...base,
@@ -100,6 +109,7 @@ describe("SuggestCorrection — structure", () => {
     expect(screen.getByText("Test DC")).toBeInTheDocument();
     expect(screen.getByLabelText(/what.s wrong/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/source url/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/name or handle/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /submit correction/i })
     ).toBeInTheDocument();
@@ -170,5 +180,21 @@ describe("SuggestCorrection — submit outcomes", () => {
     await user.click(screen.getByRole("button", { name: /submit correction/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/something went wrong/i);
+  });
+
+  it("includes a typed attribution in the submitted correction payload", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openAndFillSourceUrl(user);
+    await user.type(screen.getByLabelText(/name or handle/i), "jdoe");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+
+    const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+    const [, init] = mockFetch.mock.calls[0];
+    const body = JSON.parse(init.body as string);
+    expect(body.attribution).toBe("jdoe");
   });
 });

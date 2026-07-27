@@ -45,6 +45,11 @@ export function ActivityList({ entries }: ActivityListProps) {
             <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               {entry.label}
             </span>
+            {entry.attribution ? (
+              <span className="font-mono text-xs text-muted-foreground">
+                contributed by {entry.attribution}
+              </span>
+            ) : null}
           </div>
           <time
             dateTime={entry.timestamp.toISOString()}

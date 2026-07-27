@@ -34,6 +34,7 @@ interface ContributeFormState {
   capacityPlannedMw: string;
   sourceUrl: string;
   sourceLabel: string;
+  attribution: string;
   note: string;
   /** Honeypot — real submitters never see or fill this. */
   website: string;
@@ -52,6 +53,7 @@ const EMPTY_STATE: ContributeFormState = {
   capacityPlannedMw: "",
   sourceUrl: "",
   sourceLabel: "",
+  attribution: "",
   note: "",
   website: "",
 };
@@ -89,6 +91,7 @@ export function buildContributePayload(state: ContributeFormState): Record<strin
   const capacityPlannedMw = num(state.capacityPlannedMw);
   if (capacityPlannedMw !== undefined) payload.capacityPlannedMw = capacityPlannedMw;
   if (state.sourceLabel.trim()) payload.sourceLabel = state.sourceLabel.trim();
+  if (state.attribution.trim()) payload.attribution = state.attribution.trim();
   if (state.note.trim()) payload.note = state.note.trim();
 
   return payload;
@@ -147,6 +150,7 @@ function TextField({
   step,
   min,
   hint,
+  maxLength,
 }: {
   id: string;
   label: string;
@@ -158,6 +162,7 @@ function TextField({
   step?: string;
   min?: string;
   hint?: string;
+  maxLength?: number;
 }) {
   const errorId = `${id}-error`;
   const hintId = `${id}-hint`;
@@ -174,6 +179,7 @@ function TextField({
         type={type}
         step={step}
         min={min}
+        maxLength={maxLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
@@ -443,6 +449,15 @@ function SourceSection({
           value={state.sourceLabel}
           onChange={(v) => setState((prev) => ({ ...prev, sourceLabel: v }))}
           error={errors["sourceLabel"]}
+        />
+        <TextField
+          id="attribution"
+          label="Your name or handle (optional)"
+          value={state.attribution}
+          onChange={(v) => setState((prev) => ({ ...prev, attribution: v }))}
+          error={errors["attribution"]}
+          maxLength={40}
+          hint="Credited on the public activity feed. Leave blank to stay anonymous — no email addresses."
         />
       </CardContent>
     </Card>
