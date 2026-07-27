@@ -5,10 +5,12 @@ import {
   buildOperatorRoutes,
   buildFacilityRoutes,
   buildStatusRoutes,
+  buildMetroRoutes,
 } from "@/app/sitemap";
 import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
+import { METROS } from "@/lib/metros";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
@@ -69,6 +71,18 @@ describe("sitemap", () => {
     }
     // 1 index + 5 per-status entries, no duplicates.
     expect(statusRoutes).toHaveLength(STATUS_ORDER.length + 1);
+  });
+
+  it("metro routes include /metros and all 27 /metros/:slug routes, including northern-virginia", async () => {
+    const metroRoutes = await buildMetroRoutes();
+    const urls = metroRoutes.map((r) => r.url);
+    expect(urls).toContain(`${siteConfig.url}/metros`);
+    expect(urls).toContain(`${siteConfig.url}/metros/northern-virginia`);
+    for (const m of METROS) {
+      expect(urls).toContain(`${siteConfig.url}/metros/${m.slug}`);
+    }
+    // 1 index + 27 per-metro entries, no duplicates.
+    expect(metroRoutes).toHaveLength(METROS.length + 1);
   });
 
   it("state hub lastModified is derived from the state's facilities, not 'new Date()' now", async () => {
