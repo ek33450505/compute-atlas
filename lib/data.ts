@@ -11,6 +11,7 @@ import { STATUS_ORDER, type Status } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
 import { getFacilityMaxMw } from "@/lib/format";
+import { getMetroBySlug, metroCountyKey } from "@/lib/metros";
 import facilitiesRaw from "@/data/facilities.json";
 import { desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
@@ -816,6 +817,33 @@ export async function getFacilitiesByCommunityStatus(status: CommunityReception)
   const facilities = await loadFacilities();
   return facilities
     .filter((f) => f.community?.status === status)
+    .sort((a, b) => (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name));
+}
+
+// ============================================================
+// Per-metro helpers (used by /metros pages)
+// ============================================================
+
+/**
+ * Facilities located in a curated metro's counties, sorted by max capacity
+ * (operational or planned) desc, then name A→Z. Matches on (state, county)
+ * via `metroCountyKey` on both sides — county alone is not unique across
+ * states (e.g. "Washington" county exists in OR, UT, and elsewhere) — and
+ * normalizes away the live data's mixed `"X County"` / bare `"X"` county
+ * strings (see `lib/metros.ts` doc comment). Facilities with no county on
+ * record never match. Reads the shared `loadFacilities()` cache — no new
+ * uncached per-request DB read (see that function's doc comment on the s51
+ * ISR-write-blowout lesson). Unknown slug returns `[]`.
+ */
+export async function getFacilitiesByMetro(slug: string): Promise<Facility[]> {
+  const metro = getMetroBySlug(slug);
+  if (!metro) return [];
+  const keys = new Set(metro.counties.map(([state, county]) => metroCountyKey(state, county)));
+  const facilities = await loadFacilities();
+  return facilities
+    .filter(
+      (f) => f.location.county != null && keys.has(metroCountyKey(f.location.state, f.location.county))
+    )
     .sort((a, b) => (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name));
 }
 
