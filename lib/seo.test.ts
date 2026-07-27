@@ -6,6 +6,11 @@ import {
   datasetJsonLdString,
   buildBreadcrumbJsonLd,
   breadcrumbJsonLdString,
+  buildOrganizationJsonLd,
+  buildWebSiteJsonLd,
+  siteJsonLdString,
+  buildItemListJsonLd,
+  itemListJsonLdString,
 } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
@@ -243,5 +248,135 @@ describe("breadcrumbJsonLdString", () => {
     expect(parsed.itemListElement[0].position).toBe(1);
     expect(parsed.itemListElement[0].item).toBe(`${siteConfig.url}/map`);
     expect(parsed.itemListElement[1]).not.toHaveProperty("item");
+  });
+});
+
+describe("buildOrganizationJsonLd", () => {
+  it("returns a valid Organization shape from siteConfig", () => {
+    const ld = buildOrganizationJsonLd();
+    expect(ld["@context"]).toBe("https://schema.org");
+    expect(ld["@type"]).toBe("Organization");
+    expect(ld.name).toBe(siteConfig.name);
+    expect(ld.url).toBe(siteConfig.url);
+  });
+
+  it("sets sameAs to the repo URL", () => {
+    const ld = buildOrganizationJsonLd();
+    expect(ld.sameAs).toEqual([siteConfig.repoUrl]);
+  });
+
+  it("omits logo (no asset exists yet)", () => {
+    const ld = buildOrganizationJsonLd();
+    expect(ld.logo).toBeUndefined();
+  });
+});
+
+describe("buildWebSiteJsonLd", () => {
+  it("returns a valid WebSite shape from siteConfig", () => {
+    const ld = buildWebSiteJsonLd();
+    expect(ld["@context"]).toBe("https://schema.org");
+    expect(ld["@type"]).toBe("WebSite");
+    expect(ld.name).toBe(siteConfig.name);
+    expect(ld.url).toBe(siteConfig.url);
+    expect(ld.description).toBe(siteConfig.description);
+  });
+
+  it("does not include a potentialAction/SearchAction", () => {
+    const ld = buildWebSiteJsonLd();
+    expect(ld).not.toHaveProperty("potentialAction");
+  });
+
+  it("sets publisher to an Organization referencing the site", () => {
+    const ld = buildWebSiteJsonLd();
+    expect(ld.publisher).toEqual({
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.url,
+    });
+  });
+});
+
+describe("siteJsonLdString", () => {
+  it("returns a string with no raw < characters", () => {
+    const str = siteJsonLdString();
+    expect(str).not.toContain("<");
+  });
+
+  it("produces valid JSON with a top-level @graph containing Organization and WebSite", () => {
+    const str = siteJsonLdString();
+    const parsed = JSON.parse(str);
+    expect(parsed["@context"]).toBe("https://schema.org");
+    expect(Array.isArray(parsed["@graph"])).toBe(true);
+    expect(parsed["@graph"]).toHaveLength(2);
+    expect(parsed["@graph"].map((node: { "@type": string }) => node["@type"])).toEqual([
+      "Organization",
+      "WebSite",
+    ]);
+  });
+});
+
+describe("buildItemListJsonLd", () => {
+  const ITEMS = [
+    { name: "California", url: "https://www.compute-atlas.com/states/california" },
+    { name: "Texas", url: "https://www.compute-atlas.com/states/texas" },
+  ];
+
+  it("returns a valid ItemList shape", () => {
+    const ld = buildItemListJsonLd(ITEMS);
+    expect(ld["@context"]).toBe("https://schema.org");
+    expect(ld["@type"]).toBe("ItemList");
+    expect(ld.itemListElement).toHaveLength(2);
+  });
+
+  it("assigns 1-based positions in array order", () => {
+    const ld = buildItemListJsonLd(ITEMS);
+    expect(ld.itemListElement.map((i) => i.position)).toEqual([1, 2]);
+  });
+
+  it("preserves name and url from each item", () => {
+    const ld = buildItemListJsonLd(ITEMS);
+    expect(ld.itemListElement[0]).toMatchObject({
+      "@type": "ListItem",
+      position: 1,
+      name: "California",
+      url: "https://www.compute-atlas.com/states/california",
+    });
+  });
+
+  it("handles an empty array", () => {
+    const ld = buildItemListJsonLd([]);
+    expect(ld.itemListElement).toEqual([]);
+  });
+});
+
+describe("itemListJsonLdString", () => {
+  it("returns a string with no raw < characters for a normal list", () => {
+    const str = itemListJsonLdString([
+      { name: "California", url: "https://www.compute-atlas.com/states/california" },
+    ]);
+    expect(str).not.toContain("<");
+  });
+
+  it("escapes < as \\u003c and removes </script> when a name contains script-injection payload", () => {
+    const str = itemListJsonLdString([
+      { name: "</script><x>", url: "https://www.compute-atlas.com/states/x" },
+    ]);
+    expect(str).toContain("\\u003c");
+    expect(str).not.toContain("</script>");
+  });
+
+  it("produces valid JSON that round-trips to an ItemList shape", () => {
+    const str = itemListJsonLdString([
+      { name: "California", url: "https://www.compute-atlas.com/states/california" },
+    ]);
+    const parsed = JSON.parse(str);
+    expect(parsed["@type"]).toBe("ItemList");
+    expect(parsed.itemListElement[0].position).toBe(1);
+  });
+
+  it("produces valid JSON for an empty array", () => {
+    const str = itemListJsonLdString([]);
+    const parsed = JSON.parse(str);
+    expect(parsed.itemListElement).toEqual([]);
   });
 });

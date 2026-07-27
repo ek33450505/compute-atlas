@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { siteConfig } from "@/lib/site";
+import { siteJsonLdString } from "@/lib/seo";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -57,6 +58,10 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: siteJsonLdString() }}
+        />
         <NuqsAdapter>
           <TooltipProvider>
             {/* Skip to main content — first focusable element */}
