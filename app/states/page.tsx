@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { getStates, getStateSummary, getAllFacilities } from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { itemListJsonLdString } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -50,6 +52,17 @@ export default async function StatesIndexPage() {
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: itemListJsonLdString(
+            rows.map(({ name, slug }) => ({
+              name,
+              url: `${siteConfig.url}/states/${slug}`,
+            }))
+          ),
+        }}
+      />
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "States" }]} />
 
       {/* ------------------------------------------------------------------ */}

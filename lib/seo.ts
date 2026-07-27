@@ -205,3 +205,117 @@ export function breadcrumbJsonLdString(
 ): string {
   return JSON.stringify(buildBreadcrumbJsonLd(crumbs)).replace(/</g, "\\u003c");
 }
+
+export interface OrganizationJsonLd {
+  "@context": "https://schema.org";
+  "@type": "Organization";
+  name: string;
+  url: string;
+  logo?: string;
+  sameAs?: string[];
+}
+
+/**
+ * Builds a schema.org Organization JSON-LD object describing Compute Atlas
+ * itself — aids Google's Knowledge Graph / entity understanding of the site.
+ * No logo asset exists yet, so `logo` is omitted rather than guessed.
+ * Pure function — unit-testable without any DOM or Next.js dependencies.
+ */
+export function buildOrganizationJsonLd(): OrganizationJsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    sameAs: [siteConfig.repoUrl],
+  };
+}
+
+export interface WebSiteJsonLd {
+  "@context": "https://schema.org";
+  "@type": "WebSite";
+  name: string;
+  url: string;
+  description: string;
+  publisher?: {
+    "@type": "Organization";
+    name: string;
+    url: string;
+  };
+}
+
+/**
+ * Builds a schema.org WebSite JSON-LD object. Deliberately omits a
+ * SearchAction/sitelinks-searchbox — the site has no `?q=` GET search
+ * endpoint, and a fake one would misrepresent search capability to Google.
+ * Pure function — unit-testable without any DOM or Next.js dependencies.
+ */
+export function buildWebSiteJsonLd(): WebSiteJsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: siteConfig.description,
+    publisher: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
+  };
+}
+
+/**
+ * Serializes the site-wide Organization + WebSite JSON-LD as a single
+ * `@graph` document, so one script tag carries both nodes. Injected in the
+ * root layout (every page) — separate from the homepage's Dataset node,
+ * which describes the data, not the site.
+ * Same `<` escaping as facilityJsonLdString — see that function's comment.
+ */
+export function siteJsonLdString(): string {
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": [buildOrganizationJsonLd(), buildWebSiteJsonLd()],
+  };
+  return JSON.stringify(graph).replace(/</g, "\\u003c");
+}
+
+export interface ItemListJsonLd {
+  "@context": "https://schema.org";
+  "@type": "ItemList";
+  itemListElement: {
+    "@type": "ListItem";
+    position: number;
+    name: string;
+    url: string;
+  }[];
+}
+
+/**
+ * Builds a schema.org ItemList JSON-LD object for a directory/hub page
+ * (e.g. /states, /operators). `position` is 1-based (`i + 1`). Contract:
+ * callers pass already-absolute `url`s (typically `${siteConfig.url}/...`);
+ * this builder only assigns positions, it does not resolve relative paths.
+ * Pure function — unit-testable without any DOM or Next.js dependencies.
+ */
+export function buildItemListJsonLd(
+  items: { name: string; url: string }[]
+): ItemListJsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      url: item.url,
+    })),
+  };
+}
+
+/**
+ * Serializes an ItemList's JSON-LD to a string safe for
+ * dangerouslySetInnerHTML. Same `<` escaping as facilityJsonLdString — see
+ * that function's comment.
+ */
+export function itemListJsonLdString(
+  items: { name: string; url: string }[]
+): string {
+  return JSON.stringify(buildItemListJsonLd(items)).replace(/</g, "\\u003c");
+}

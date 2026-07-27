@@ -2,8 +2,22 @@ import type { MetadataRoute } from "next";
 import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { siteConfig } from "@/lib/site";
+import type { Facility } from "@/lib/schema";
 
 export const revalidate = 3600;
+
+/**
+ * Most recent `lastUpdated` among the given facilities, as a `Date` — used
+ * as a hub's `lastModified` so it reflects real data freshness instead of
+ * "now" on every rebuild. Falls back to the current time only if the group
+ * is empty (shouldn't happen: callers derive groups from the same facility
+ * list they filter).
+ */
+function maxLastUpdated(facilities: Facility[]): Date {
+  if (facilities.length === 0) return new Date();
+  const timestamps = facilities.map((f) => new Date(f.lastUpdated).getTime());
+  return new Date(Math.max(...timestamps));
+}
 
 /**
  * Builds the list of static route entries for the sitemap.
@@ -77,6 +91,18 @@ export function buildStaticRoutes(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.7,
     },
+    {
+      url: `${siteConfig.url}/activity`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.7,
+    },
+    {
+      url: `${siteConfig.url}/contribute`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
   ];
 }
 
@@ -99,13 +125,16 @@ export async function buildFacilityRoutes(): Promise<MetadataRoute.Sitemap> {
  * Exported separately so it can be unit-tested without Next.js.
  */
 export async function buildStateRoutes(): Promise<MetadataRoute.Sitemap> {
-  const codes = await getStates();
-  return codes.map((code) => ({
-    url: `${siteConfig.url}/states/${stateSlugFromCode(code)}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
+  const [codes, facilities] = await Promise.all([getStates(), getAllFacilities()]);
+  return codes.map((code) => {
+    const stateFacilities = facilities.filter((f) => f.location.state === code);
+    return {
+      url: `${siteConfig.url}/states/${stateSlugFromCode(code)}`,
+      lastModified: maxLastUpdated(stateFacilities),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    };
+  });
 }
 
 /**
@@ -113,13 +142,16 @@ export async function buildStateRoutes(): Promise<MetadataRoute.Sitemap> {
  * Exported separately so it can be unit-tested without Next.js.
  */
 export async function buildOperatorRoutes(): Promise<MetadataRoute.Sitemap> {
-  const names = await getOperators();
-  return names.map((name) => ({
-    url: `${siteConfig.url}/operators/${operatorSlug(name)}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
-  }));
+  const [names, facilities] = await Promise.all([getOperators(), getAllFacilities()]);
+  return names.map((name) => {
+    const operatorFacilities = facilities.filter((f) => f.operator === name);
+    return {
+      url: `${siteConfig.url}/operators/${operatorSlug(name)}`,
+      lastModified: maxLastUpdated(operatorFacilities),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    };
+  });
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
