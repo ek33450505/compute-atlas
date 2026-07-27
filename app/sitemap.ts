@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
+import { STATUS_ORDER } from "@/lib/status";
 import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
 
@@ -154,16 +155,45 @@ export async function buildOperatorRoutes(): Promise<MetadataRoute.Sitemap> {
   });
 }
 
+/**
+ * Builds the /status index + 5 per-status route entries for the sitemap.
+ * `lastModified` uses the whole dataset's max `lastUpdated` (not a
+ * per-status max like buildStateRoutes/buildOperatorRoutes) — each status
+ * page's grid can include any facility whose status last changed, so the
+ * page as a whole is only as fresh as the dataset's most recent update.
+ * Exported separately so it can be unit-tested without Next.js.
+ */
+export async function buildStatusRoutes(): Promise<MetadataRoute.Sitemap> {
+  const facilities = await getAllFacilities();
+  const lastModified = maxLastUpdated(facilities);
+  return [
+    {
+      url: `${siteConfig.url}/status`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...STATUS_ORDER.map((status) => ({
+      url: `${siteConfig.url}/status/${status}`,
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
+  ];
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [stateRoutes, operatorRoutes, facilityRoutes] = await Promise.all([
+  const [stateRoutes, operatorRoutes, facilityRoutes, statusRoutes] = await Promise.all([
     buildStateRoutes(),
     buildOperatorRoutes(),
     buildFacilityRoutes(),
+    buildStatusRoutes(),
   ]);
   return [
     ...buildStaticRoutes(),
     ...stateRoutes,
     ...operatorRoutes,
     ...facilityRoutes,
+    ...statusRoutes,
   ];
 }

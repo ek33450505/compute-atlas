@@ -22,6 +22,12 @@ const LENSES = [
       "Every tracked state, with capacity, build status, and community friction.",
   },
   {
+    label: "By status",
+    href: "/status",
+    description:
+      "Every tracked site by lifecycle stage — proposed, permitted, under construction, operational, or cancelled.",
+  },
+  {
     label: "Power",
     href: "/power",
     description:

@@ -4,9 +4,11 @@ import {
   buildStateRoutes,
   buildOperatorRoutes,
   buildFacilityRoutes,
+  buildStatusRoutes,
 } from "@/app/sitemap";
 import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
+import { STATUS_ORDER } from "@/lib/status";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
@@ -57,6 +59,18 @@ describe("sitemap", () => {
     }
   });
 
+  it("status routes include /status and all 5 /status/:value routes", async () => {
+    const statusRoutes = await buildStatusRoutes();
+    const urls = statusRoutes.map((r) => r.url);
+    expect(urls).toContain(`${siteConfig.url}/status`);
+    expect(urls).toContain(`${siteConfig.url}/status/proposed`);
+    for (const status of STATUS_ORDER) {
+      expect(urls).toContain(`${siteConfig.url}/status/${status}`);
+    }
+    // 1 index + 5 per-status entries, no duplicates.
+    expect(statusRoutes).toHaveLength(STATUS_ORDER.length + 1);
+  });
+
   it("state hub lastModified is derived from the state's facilities, not 'new Date()' now", async () => {
     const testStart = Date.now();
     const stateRoutes = await buildStateRoutes();
@@ -99,21 +113,24 @@ describe("sitemap", () => {
     }
   });
 
-  it("total route count equals the sum of all four builders", async () => {
+  it("total route count equals the sum of all five builders", async () => {
     const staticRoutes = buildStaticRoutes();
     const stateRoutes = await buildStateRoutes();
     const operatorRoutes = await buildOperatorRoutes();
     const facilityRoutes = await buildFacilityRoutes();
+    const statusRoutes = await buildStatusRoutes();
     const total =
       staticRoutes.length +
       stateRoutes.length +
       operatorRoutes.length +
-      facilityRoutes.length;
+      facilityRoutes.length +
+      statusRoutes.length;
     expect(total).toBe(
       buildStaticRoutes().length +
         (await buildStateRoutes()).length +
         (await buildOperatorRoutes()).length +
-        (await buildFacilityRoutes()).length
+        (await buildFacilityRoutes()).length +
+        (await buildStatusRoutes()).length
     );
   });
 
@@ -123,6 +140,7 @@ describe("sitemap", () => {
       ...(await buildStateRoutes()),
       ...(await buildOperatorRoutes()),
       ...(await buildFacilityRoutes()),
+      ...(await buildStatusRoutes()),
     ];
     for (const route of allRoutes) {
       expect(route.url).toMatch(/^https?:\/\//);
