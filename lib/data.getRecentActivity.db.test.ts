@@ -37,6 +37,12 @@ const historyRows = [
   },
 ];
 
+// Flipped by the query-failure test below to make the mocked `.limit()`
+// reject, exercising getRecentActivity's try/catch degrade path. Reset in a
+// `finally` so a failure never leaks into the other tests in this file
+// (Vitest runs a single file's tests sequentially by default).
+let shouldFail = false;
+
 // Minimal drizzle-query-builder stand-in for the chain:
 // `.select({...}).from(...).innerJoin(...).where(...).orderBy(...).limit(n)`.
 function makeMockDb() {
@@ -44,7 +50,10 @@ function makeMockDb() {
     innerJoin: () => chain,
     where: () => chain,
     orderBy: () => chain,
-    limit: (n: number) => Promise.resolve(historyRows.slice(0, n)),
+    limit: (n: number) =>
+      shouldFail
+        ? Promise.reject(new Error("mock query failure"))
+        : Promise.resolve(historyRows.slice(0, n)),
   };
   return {
     select: () => ({
@@ -100,5 +109,18 @@ describe("getRecentActivity (DB path)", () => {
     expect(
       entriesForFacilityA.some((e) => e.label === "facility updated")
     ).toBe(false);
+  });
+});
+
+describe("getRecentActivity (DB path) — query failure", () => {
+  // hasDatabaseUrl() is mocked true above, so this reaches the query (not
+  // the early-return degrade path already covered in lib/data.test.ts).
+  it("resolves to [] when the live query rejects, rather than throwing", async () => {
+    shouldFail = true;
+    try {
+      await expect(getRecentActivity(10)).resolves.toEqual([]);
+    } finally {
+      shouldFail = false;
+    }
   });
 });
