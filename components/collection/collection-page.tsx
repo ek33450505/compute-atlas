@@ -7,6 +7,7 @@ import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb, type Crumb } from "@/components/breadcrumb";
+import { ShowMoreList } from "@/components/collection/show-more-list";
 
 export interface CollectionStat {
   label: string;
@@ -143,11 +144,15 @@ export function CollectionPage({
       {facilities.length === 0 ? (
         <p className="text-base text-muted-foreground">{emptyMessage}</p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ShowMoreList
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          initialCount={48}
+          itemLabel="facilities"
+        >
           {facilities.map((f) => (
             <CollectionFacilityCard key={f.id} facility={f} />
           ))}
-        </div>
+        </ShowMoreList>
       )}
     </div>
   );
