@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Data table",
   description:
     "Filterable, sortable table of all tracked data centers in the United States — shares filter state with the map.",
+  alternates: { canonical: "/table" },
 };
 
 /**

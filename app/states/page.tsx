@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "Data centers by state",
   description:
     "Browse the U.S. grid-scale compute buildout state by state — facility counts, capacity, and build status, each record source-cited.",
+  alternates: { canonical: "/states" },
 };
 
 /**

@@ -87,7 +87,7 @@ export async function generateMetadata({
     (hasCapacity ? ` ${capacity}.` : "") +
     ` Source-cited status history and references on Compute Atlas.`;
 
-  return { title, description };
+  return { title, description, alternates: { canonical: `/facilities/${slug}` } };
 }
 
 /**

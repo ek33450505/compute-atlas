@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Map",
   description:
     "Interactive map of data center facilities across the United States — traditional, AI-specific, and crypto-mining. Filter by status, state, operator, and capacity.",
+  alternates: { canonical: "/map" },
 };
 
 /**

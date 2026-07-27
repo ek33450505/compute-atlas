@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   title: "Data centers by operator",
   description:
     "Browse the U.S. compute buildout by operator — every company running tracked data-center, crypto-mining, or power-generation capacity, each record source-cited.",
+  alternates: { canonical: "/operators" },
 };
 
 /**

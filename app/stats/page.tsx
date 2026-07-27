@@ -31,6 +31,7 @@ export const metadata: Metadata = {
   title: "Statistics",
   description:
     "Coverage and completeness of the Compute Atlas dataset — facilities tracked, lifecycle status, civic-data coverage, and evidence quality across the U.S. grid-scale compute buildout.",
+  alternates: { canonical: "/stats" },
 };
 
 /** Display labels for AI classification enum keys. */

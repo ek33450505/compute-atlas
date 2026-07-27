@@ -36,6 +36,7 @@ export const metadata: Metadata = {
   title: "Data center power generation",
   description:
     "Dedicated power generation feeding the U.S. compute buildout — the nuclear and SMR projects hyperscalers are financing or contracting, grouped by offtaker and technology. Source-cited.",
+  alternates: { canonical: "/power" },
 };
 
 /**
