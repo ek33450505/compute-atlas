@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Contribute a facility",
   description:
     "Suggest a data center, crypto-mining, or power-generation facility for Compute Atlas. Anonymous, source-cited, and reviewed before publishing.",
+  alternates: { canonical: "/contribute" },
 };
 
 /**

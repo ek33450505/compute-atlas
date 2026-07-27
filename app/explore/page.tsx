@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Explore US data centers",
   description:
     "Browse the atlas by lens — states, power generation, community opposition, operators, and the public API.",
+  alternates: { canonical: "/explore" },
 };
 
 const LENSES = [

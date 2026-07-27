@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "Data center opposition & community response",
   description:
     "The U.S. compute sites facing documented community friction — litigation, moratoria, referendums, and formal opposition, each with a public source. Part of Compute Atlas.",
+  alternates: { canonical: "/opposition" },
 };
 
 /**

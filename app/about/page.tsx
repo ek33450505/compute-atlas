@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "About & method",
   description:
     "Why Compute Atlas exists and how it's compiled — the sourcing standard, facility types, confidence tiers, community-reception scale, and the honest-zero convention behind every record.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

@@ -46,4 +46,18 @@ describe("generateMetadata", () => {
     // Must not accidentally return a real facility name
     expect(metadata.title).not.toBe("Meta Prineville Data Center Campus");
   });
+
+  it("sets alternates.canonical to the root-relative /facilities/<slug> path for a known facility", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "meta-prineville-or" }),
+    });
+    expect(metadata.alternates?.canonical).toBe("/facilities/meta-prineville-or");
+  });
+
+  it("does not set a canonical for an unknown slug (the page 404s, so there is nothing to canonicalize)", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "this-slug-does-not-exist" }),
+    });
+    expect(metadata.alternates).toBeUndefined();
+  });
 });

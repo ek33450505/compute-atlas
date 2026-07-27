@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Recent activity",
   description:
     "Recently-updated facilities and recently-approved contributions to Compute Atlas.",
+  alternates: { canonical: "/activity" },
 };
 
 const ACTIVITY_LIMIT = 50;

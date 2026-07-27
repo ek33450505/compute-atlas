@@ -54,6 +54,7 @@ export async function generateMetadata({
   return {
     title: `Data centers in ${stateName}`,
     description: `${summary.count} data centers and compute facilities tracked in ${stateName} — capacity, build status, operators, and community reception, each with a public source.`,
+    alternates: { canonical: `/states/${slug}` },
   };
 }
 
