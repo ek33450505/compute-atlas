@@ -27,6 +27,7 @@ import { PowerLinksSection, hasPowerLinks } from "@/components/facility/power-li
 import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
+import { WatchButton } from "@/components/subscribe/watch-button";
 
 export const revalidate = false;
 
@@ -330,6 +331,15 @@ export default async function FacilityPage({
       {/* Correction — interactive CTA, not useful on a printed page */}
       <div className="print:hidden">
         <SuggestCorrection facilityId={facility.id} facilityName={facility.name} />
+      </div>
+
+      {/* Watch — interactive CTA, not useful on a printed page */}
+      <div className="print:hidden">
+        <WatchButton
+          targetType="facility"
+          targetId={facility.id}
+          label="Watch this facility"
+        />
       </div>
     </div>
   );

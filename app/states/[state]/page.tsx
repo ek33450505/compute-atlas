@@ -17,6 +17,7 @@ import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatCapacity, formatLocation } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { WatchButton } from "@/components/subscribe/watch-button";
 
 export const revalidate = false;
 
@@ -109,6 +110,7 @@ export default async function StatePage({
         <p className="text-base text-muted-foreground">
           {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
         </p>
+        <WatchButton targetType="state" targetId={code} label={`Watch ${stateName}`} />
         <div className="border-t border-border" />
       </header>
 
