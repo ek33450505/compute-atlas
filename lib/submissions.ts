@@ -4,6 +4,7 @@ import { eq, desc } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { submissionsTable, type SubmissionRow } from "@/lib/db/schema";
 import { createFacility, updateFacility, writeStatusUpdate, type WriteResult } from "@/lib/facility-write";
+import { notifySubscribersOfChange } from "@/lib/notify";
 import type { Facility } from "@/lib/schema";
 
 const provenanceSchema = z.object({
@@ -125,6 +126,21 @@ export async function approveSubmission(
     .set({ status: "approved", reviewedAt: new Date(), reviewNote: reviewNote ?? null })
     .where(eq(submissionsTable.id, id))
     .returning();
+
+  // Best-effort — notifySubscribersOfChange never throws, but this extra
+  // try/catch is belt-and-suspenders: a notification failure must never turn
+  // a successful approval into an error response.
+  try {
+    const changeLabel =
+      row.kind === "create"
+        ? "added to the atlas"
+        : row.kind === "status_update"
+          ? "status updated"
+          : "record updated";
+    await notifySubscribersOfChange(writeResult.facility, changeLabel);
+  } catch (err) {
+    console.error("subscriber notification failed", err);
+  }
 
   return { ok: true, submission: updated, facility: writeResult.facility };
 }
