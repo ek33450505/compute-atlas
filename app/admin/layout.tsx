@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { logout } from "@/app/admin/login/actions";
 import { Button } from "@/components/ui/button";
+
+// Defense-in-depth: the admin area is cookie-gated, but it must never be
+// indexed even if a link to it leaks.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function AdminLayout({
   children,
