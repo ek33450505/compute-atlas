@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
-import { and, gt, sql } from "drizzle-orm";
+import { and, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
-import { submissionsTable } from "@/lib/db/schema";
+import { submissionsTable, subscriptionsTable } from "@/lib/db/schema";
 
 export const RATE_LIMIT_MAX = 5;
 export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -36,6 +36,20 @@ export async function checkRateLimit(ipHash: string): Promise<{ ok: boolean }> {
       and(
         gt(submissionsTable.createdAt, windowStart),
         sql`${submissionsTable.provenance}->>'submitterIpHash' = ${ipHash}`
+      )
+    );
+  return rateLimitDecision(Number(rows[0]?.c ?? 0));
+}
+
+export async function checkSubscribeRateLimit(ipHash: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(subscriptionsTable)
+    .where(
+      and(
+        gt(subscriptionsTable.createdAt, windowStart),
+        eq(subscriptionsTable.submitterIpHash, ipHash)
       )
     );
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
