@@ -99,4 +99,22 @@ describe("Tooltip", () => {
     );
     expect(screen.getByText("Hover me")).toBeInTheDocument();
   });
+
+  // jsdom can't evaluate the prefers-reduced-motion media query, so this asserts
+  // the class contract: the enter/exit animation must be paired with the
+  // motion-reduce: variant that disables it (s59 reduced-motion gating). The `!`
+  // important modifier is required because `data-open:animate-in`/
+  // `data-closed:animate-out` out-specify a plain utility (attribute selector);
+  // verified in-browser that only the important form wins the cascade and gates
+  // the animation.
+  it("gates the open/close animation behind motion-reduce", () => {
+    render(
+      <Tooltip defaultOpen>
+        <TooltipTrigger>Hover me</TooltipTrigger>
+        <TooltipContent>Helpful info</TooltipContent>
+      </Tooltip>
+    );
+    const popup = document.body.querySelector('[data-slot="tooltip-content"]');
+    expect(popup).toHaveClass("motion-reduce:animate-none!");
+  });
 });

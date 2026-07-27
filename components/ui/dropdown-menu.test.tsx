@@ -161,4 +161,22 @@ describe("DropdownMenu", () => {
       screen.getByRole("menuitem", { name: "Inset item" })
     ).toHaveAttribute("data-inset", "true");
   });
+
+  // jsdom can't evaluate the prefers-reduced-motion media query, so this asserts
+  // the class contract: the enter/exit animation must be paired with the
+  // motion-reduce: variant that disables it (s59 reduced-motion gating). The `!`
+  // important modifier is required because `data-open:animate-in`/
+  // `data-closed:animate-out` out-specify a plain utility (attribute selector);
+  // verified in-browser that only the important form wins the cascade and gates
+  // the animation.
+  // Sub-content coverage is skipped here: BasicMenu has no submenu fixture.
+  it("gates the open/close animation behind motion-reduce", async () => {
+    render(<BasicMenu defaultOpen />);
+    await screen.findByRole("menu");
+
+    const content = document.querySelector(
+      '[data-slot="dropdown-menu-content"]'
+    );
+    expect(content).toHaveClass("motion-reduce:animate-none!");
+  });
 });

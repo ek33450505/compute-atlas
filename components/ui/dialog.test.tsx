@@ -162,4 +162,28 @@ describe("Dialog", () => {
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
+
+  // jsdom can't evaluate the prefers-reduced-motion media query, so this asserts
+  // the class contract: the enter/exit animation must be paired with the
+  // motion-reduce: variant that disables it (s59 reduced-motion gating). The `!`
+  // important modifier is required because `data-open:animate-in`/
+  // `data-closed:animate-out` out-specify a plain utility (attribute selector);
+  // verified in-browser that only the important form wins the cascade and gates
+  // the animation.
+  it("gates the content and overlay animations behind motion-reduce", async () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent>
+          <DialogTitle>Delete facility</DialogTitle>
+        </DialogContent>
+      </Dialog>
+    );
+    await screen.findByRole("dialog");
+    expect(
+      document.querySelector('[data-slot="dialog-content"]')
+    ).toHaveClass("motion-reduce:animate-none!");
+    expect(
+      document.querySelector('[data-slot="dialog-overlay"]')
+    ).toHaveClass("motion-reduce:animate-none!");
+  });
 });
