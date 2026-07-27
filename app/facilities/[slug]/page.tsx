@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Info } from "lucide-react";
 
-import { getAllFacilities, getFacilityByIdCached } from "@/lib/data";
+import { getAllFacilities, getFacilityByIdCached, operatorSlug } from "@/lib/data";
 import { getStatusMeta } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import {
@@ -11,8 +12,8 @@ import {
   AI_CLASSIFICATION_LABELS,
   CONFIDENCE_LABELS,
 } from "@/lib/format";
-import { stateNameFromCode } from "@/lib/us-states";
-import { facilityJsonLdString } from "@/lib/seo";
+import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
+import { facilityJsonLdString, breadcrumbJsonLdString } from "@/lib/seo";
 import type { Facility } from "@/lib/schema";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ import { ProvenancePanel } from "@/components/facility/provenance-panel";
 import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-dynamic";
 import { CivicImpactSection, hasCivicImpact } from "@/components/facility/civic-impact";
 import { PowerLinksSection, hasPowerLinks } from "@/components/facility/power-links";
+import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 
@@ -113,13 +115,29 @@ export default async function FacilityPage({
   const isRumored = facility.confidence === "rumored";
   const showBanner = isProvisional || isRumored;
 
+  const stateName = stateNameFromCode(facility.location.state) ?? facility.location.state;
+  const stateSlug = stateSlugFromCode(facility.location.state);
+  const crumbs = [
+    { label: "Map", href: "/map" },
+    ...(stateSlug ? [{ label: stateName, href: `/states/${stateSlug}` }] : []),
+    { label: facility.name },
+  ];
+
   return (
     <div data-content-width="4xl" className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: facilityJsonLdString(facility) }}
       />
-      <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: facility.name }]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: breadcrumbJsonLdString(
+            crumbs.map((c) => ({ name: c.label, url: c.href }))
+          ),
+        }}
+      />
+      <Breadcrumb items={crumbs} />
 
       {/* Plate masthead */}
       <header className="space-y-3">
@@ -136,7 +154,14 @@ export default async function FacilityPage({
         <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
           {facility.name}
         </h1>
-        <p className="text-base text-muted-foreground">{facility.operator}</p>
+        <p className="text-base text-muted-foreground">
+          <Link
+            href={`/operators/${operatorSlug(facility.operator)}`}
+            className="underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            {facility.operator}
+          </Link>
+        </p>
         <div className="flex flex-wrap items-center gap-2 pt-1">
           <Badge variant="outline">
             {FACILITY_TYPE_META[facility.facilityType]?.label ??
@@ -294,6 +319,11 @@ export default async function FacilityPage({
 
       {/* Provenance */}
       <ProvenancePanel facility={facility} />
+
+      {/* Related facilities — same operator / same state. Renders its own
+          leading Separator + heading when it has content, and nothing at
+          all when both groups are empty. */}
+      <RelatedFacilities facility={facility} />
 
       <Separator />
 

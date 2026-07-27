@@ -160,3 +160,48 @@ export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): Datase
 export function datasetJsonLdString(opts: { dateModified?: string } = {}): string {
   return JSON.stringify(buildDatasetJsonLd(opts)).replace(/</g, "\\u003c");
 }
+
+export interface BreadcrumbJsonLd {
+  "@context": "https://schema.org";
+  "@type": "BreadcrumbList";
+  itemListElement: {
+    "@type": "ListItem";
+    position: number;
+    name: string;
+    item?: string;
+  }[];
+}
+
+/**
+ * Builds a schema.org BreadcrumbList JSON-LD object from a crumb trail.
+ * `position` is 1-based (`i + 1`). `url`, when present, is a site-relative
+ * path resolved to an absolute URL under `siteConfig.url`; a crumb with no
+ * `url` (conventionally the current page — the last crumb) omits `item`
+ * per schema.org's BreadcrumbList guidance for the current page.
+ * Pure function — unit-testable without any DOM or Next.js dependencies.
+ */
+export function buildBreadcrumbJsonLd(
+  crumbs: { name: string; url?: string }[]
+): BreadcrumbJsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((crumb, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: crumb.name,
+      ...(crumb.url ? { item: `${siteConfig.url}${crumb.url}` } : {}),
+    })),
+  };
+}
+
+/**
+ * Serializes a breadcrumb trail's JSON-LD to a string safe for
+ * dangerouslySetInnerHTML. Same `<` escaping as facilityJsonLdString — see
+ * that function's comment.
+ */
+export function breadcrumbJsonLdString(
+  crumbs: { name: string; url?: string }[]
+): string {
+  return JSON.stringify(buildBreadcrumbJsonLd(crumbs)).replace(/</g, "\\u003c");
+}
