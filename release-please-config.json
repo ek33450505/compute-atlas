@@ -3,7 +3,8 @@
     ".": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
-      "last-release-sha": "ac140b8d5af8e112948b612011db5ed22910b3bb"
+      "last-release-sha": "ac140b8d5af8e112948b612011db5ed22910b3bb",
+      "include-component-in-tag": false
     }
   }
 }
