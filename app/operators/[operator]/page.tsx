@@ -75,6 +75,30 @@ export default async function OperatorPage({
 
   const facilities = await getFacilitiesByOperator(operatorName);
 
+  // --- Templated overview prose (SEO Task 2.1) -----------------------------
+  // Every figure below is read directly off `summary`/`facilities`; nothing
+  // here is fetched, invented, or estimated. Each branch just phrases a zero
+  // count gracefully instead of printing an awkward "0 MW" boast.
+  const hasOperationalMw = summary.operationalMw > 0;
+  const hasPlannedMw = summary.plannedMw > 0;
+  let capacitySentence: string;
+  if (hasOperationalMw && hasPlannedMw) {
+    capacitySentence = `Operational capacity totals ${formatPower(summary.operationalMw)}, with another ${formatPower(summary.plannedMw)} planned or under construction.`;
+  } else if (hasOperationalMw) {
+    capacitySentence = `Operational capacity totals ${formatPower(summary.operationalMw)}; nothing further is currently planned or under construction.`;
+  } else if (hasPlannedMw) {
+    capacitySentence = `None are operational yet — ${formatPower(summary.plannedMw)} is planned or under construction.`;
+  } else {
+    capacitySentence = "None have reported operational capacity or an active build phase yet.";
+  }
+  const overviewSentence = `Compute Atlas tracks ${summary.count} facilit${summary.count === 1 ? "y" : "ies"} operated by ${operatorName} across ${summary.stateCount} state${summary.stateCount === 1 ? "" : "s"}. ${capacitySentence}`;
+
+  const topFacilityNames = facilities.slice(0, 3).map((f) => f.name);
+  const facilitySentence =
+    topFacilityNames.length > 0
+      ? `The largest tracked site${topFacilityNames.length === 1 ? "" : "s"}, by capacity, ${topFacilityNames.length === 1 ? "is" : "are"} ${new Intl.ListFormat("en-US", { style: "long", type: "conjunction" }).format(topFacilityNames)}.`
+      : null;
+
   return (
     <div
       data-content-width="4xl"
@@ -90,13 +114,27 @@ export default async function OperatorPage({
           Operator profile
         </p>
         <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          {operatorName}
+          {operatorName} data centers
         </h1>
         <p className="text-base text-muted-foreground">
           {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
         </p>
         <div className="border-t border-border" />
       </header>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="max-w-2xl space-y-4">
+        <p className="text-base leading-relaxed text-muted-foreground">
+          {overviewSentence}
+        </p>
+        {facilitySentence && (
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {facilitySentence}
+          </p>
+        )}
+      </div>
 
       {/* ------------------------------------------------------------------ */}
       {/* Survey stats row                                                    */}

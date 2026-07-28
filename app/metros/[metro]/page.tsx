@@ -24,6 +24,23 @@ function sumPlannedMw(facilities: Facility[]): number {
   return facilities.reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
 }
 
+/**
+ * The most frequently occurring operators among a metro's facilities, most
+ * frequent first — a lightweight "who's building here" signal for the intro
+ * prose. Facilities without an operator set are excluded.
+ */
+function topOperatorsFor(facilities: Facility[], limit = 3): string[] {
+  const counts = new Map<string, number>();
+  for (const f of facilities) {
+    if (!f.operator) continue;
+    counts.set(f.operator, (counts.get(f.operator) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([name]) => name);
+}
+
 /** Joins strings in natural English: "A", "A and B", "A, B, and C". */
 function humanJoin(items: string[]): string {
   if (items.length === 0) return "";
@@ -91,16 +108,47 @@ export default async function MetroPage({
   const countyList = countyListFor(metro);
   const operationalMw = sumOperationalMw(facilities);
   const plannedMw = sumPlannedMw(facilities);
+  const topOperators = topOperatorsFor(facilities);
+  const isMultiState = metro.states.length > 1;
+
+  // Second paragraph: an operational-vs-planned capacity read, phrased
+  // conditionally so an empty or all-zero-capacity metro never claims figures
+  // it doesn't have (facilities.length === 0 is covered by emptyMessage).
+  const capacityLine =
+    facilities.length === 0
+      ? null
+      : operationalMw > 0 && plannedMw > 0
+        ? `${formatPower(operationalMw)} of capacity is operational today in ${metro.name}, with ${formatPower(plannedMw)} more planned or under construction.`
+        : operationalMw > 0
+          ? `${formatPower(operationalMw)} of capacity is operational today in ${metro.name}.`
+          : plannedMw > 0
+            ? `${formatPower(plannedMw)} of capacity is planned or under construction in ${metro.name}, with none operational yet.`
+            : null;
+
+  // Third paragraph: which operators show up most often here — omitted
+  // entirely when no facility in the metro has an operator on file.
+  const operatorLine =
+    topOperators.length === 0
+      ? null
+      : topOperators.length === 1
+        ? `${topOperators[0]} is the most active operator on file in ${metro.name}.`
+        : `${humanJoin(topOperators)} are among the most active operators on file in ${metro.name}.`;
 
   return (
     <CollectionPage
       title={`Data centers in ${metro.name}`}
       intro={
-        <p>
-          Compute Atlas tracks {facilities.length} data center
-          {facilities.length === 1 ? "" : "s"} across {metro.name} —{" "}
-          {countyList} — each traced to a public source.
-        </p>
+        <>
+          <p>
+            Compute Atlas tracks {facilities.length} data center
+            {facilities.length === 1 ? "" : "s"} across {metro.name} —{" "}
+            {countyList}
+            {isMultiState ? `, spanning ${metro.states.length} states` : ""}{" "}
+            — each traced to a public source.
+          </p>
+          {capacityLine && <p>{capacityLine}</p>}
+          {operatorLine && <p>{operatorLine}</p>}
+        </>
       }
       crumbs={[
         { label: "Explore", href: "/explore" },
