@@ -3,8 +3,9 @@ import { eq } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { subscriptionsTable } from "@/lib/db/schema";
-import { generateToken, sendConfirmEmail } from "@/lib/email";
+import { generateToken } from "@/lib/email";
 import { getFacilityById } from "@/lib/data";
+import { checkEmailSendCap } from "@/lib/rate-limit";
 import { stateNameFromCode } from "@/lib/us-states";
 
 export const subscribeInputSchema = z
@@ -22,7 +23,7 @@ export const subscribeInputSchema = z
 export type SubscribeInput = z.infer<typeof subscribeInputSchema>;
 
 export type SubscribeResult =
-  | { ok: true }
+  | { ok: true; confirm?: { email: string; targetLabel: string; confirmToken: string } }
   | { ok: false; status: number; error: string; issues?: unknown };
 
 function isHoneypotTripped(input: { website?: string }): boolean {
@@ -51,9 +52,14 @@ function isUniqueViolation(err: unknown): boolean {
 /**
  * Validates and stages a double-opt-in subscription. Always returns a
  * generic `{ok:true}` for every "no new confirm email sent" path (honeypot,
- * already actively subscribed) so the response never leaks whether a given
- * email/target combination already exists — only genuine input-format or
- * unknown-target errors return a non-generic result.
+ * already actively subscribed, over the per-email send cap) so the response
+ * never leaks whether a given email/target combination already exists — only
+ * genuine input-format or unknown-target errors return a non-generic result.
+ * On a genuine new subscription, returns `{ok:true, confirm}` instead of
+ * sending the email itself — the caller (the route) schedules the actual
+ * send AFTER the response goes out, so response latency can't distinguish
+ * the new-subscription path from the generic-success paths (Fix 1, s65
+ * security review).
  */
 export async function subscribeToTarget(
   rawInput: unknown,
@@ -93,6 +99,15 @@ export async function subscribeToTarget(
     targetLabel = "all Compute Atlas updates";
   }
 
+  // Per-address send cap (Fix 2, s65 security review): the IP rate limit
+  // alone doesn't stop a distributed attacker from email-bombing one victim
+  // by varying targetId/IP. This check runs on BOTH the eventual-new and
+  // eventual-duplicate paths below (both reach this point before the
+  // insert), so it stays timing-symmetric with the rest of the function.
+  if (!(await checkEmailSendCap(email)).ok) {
+    return { ok: true }; // over the per-address send cap — generic success, no row, no email
+  }
+
   const db = getDb();
   try {
     const [row] = await db
@@ -108,25 +123,34 @@ export async function subscribeToTarget(
       })
       .returning({ confirmToken: subscriptionsTable.confirmToken });
 
-    // KNOWN LIMITATION (MVP, reviewed s65): the send result is intentionally
-    // not acted on. If this first confirm email fails (e.g. Resend down), the
-    // pending row persists and a retry hits the active-subscription unique index
-    // (23505) → generic success with no resend, so that (email,target) can't be
-    // confirmed until the row clears. Accepted for MVP (rare + bounded). Future
-    // fix: roll back the row on a genuine send error (distinguishing it from the
-    // env-gated no-key no-op), or expire stale pending rows + allow resend.
-    await sendConfirmEmail({ email, targetLabel, confirmToken: row.confirmToken });
+    // The confirm email is NOT sent here. The route sends it AFTER this
+    // function returns (via next/server's `after()`), so that response
+    // latency is identical whether this is a new subscription or one of the
+    // generic-success no-send paths above/below (Fix 1, s65 security
+    // review) — awaiting the send inline made the duplicate path (immediate
+    // return) measurably faster than the new-subscription path (waits on
+    // the network), leaking whether the (email,target) pair already existed.
+    //
+    // KNOWN LIMITATION (MVP, reviewed s65): the send result is still not
+    // acted on by anything here. If this first confirm email fails (e.g.
+    // Resend down), the pending row persists and a retry hits the
+    // active-subscription unique index (23505) → generic success with no
+    // resend, so that (email,target) can't be confirmed until the row
+    // clears. Accepted for MVP (rare + bounded). Future fix: roll back the
+    // row on a genuine send error (distinguishing it from the env-gated
+    // no-key no-op), or expire stale pending rows + allow resend.
+    return { ok: true, confirm: { email, targetLabel, confirmToken: row.confirmToken } };
   } catch (err) {
     if (!isUniqueViolation(err)) {
       throw err;
     }
     // subscriptions_active_target_idx (partial unique index, lib/db/schema.ts)
     // rejected the insert: an active (pending|confirmed) subscription already
-    // exists for this email+target. Don't send another confirm email — fall
-    // through to the same generic success response.
+    // exists for this email+target. No confirm signal — the route won't
+    // schedule a send — so this returns the same generic success as every
+    // other "no send" path.
+    return { ok: true };
   }
-
-  return { ok: true };
 }
 
 export async function confirmSubscription(

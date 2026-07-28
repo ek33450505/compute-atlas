@@ -59,12 +59,15 @@ export async function sendConfirmEmail(input: {
   try {
     const result = await resend.emails.send({ from: fromAddress(), to: input.email, subject, text, html });
     if (result.error) {
-      console.error("sendConfirmEmail failed", result.error);
+      // Log only the error type, not the raw Resend error object — it can
+      // echo the recipient address back on a validation failure (s65
+      // security review, Fix 3).
+      console.error("sendConfirmEmail failed:", result.error?.name ?? "unknown");
       return { sent: false };
     }
     return { sent: true };
   } catch (error) {
-    console.error("sendConfirmEmail failed", error);
+    console.error("sendConfirmEmail failed:", error instanceof Error ? error.name : "unknown");
     return { sent: false };
   }
 }
@@ -102,12 +105,15 @@ export async function sendChangeNotification(input: {
       },
     });
     if (result.error) {
-      console.error("sendChangeNotification failed", result.error);
+      // Log only the error type, not the raw Resend error object — it can
+      // echo the recipient address back on a validation failure (s65
+      // security review, Fix 3).
+      console.error("sendChangeNotification failed:", result.error?.name ?? "unknown");
       return { sent: false };
     }
     return { sent: true };
   } catch (error) {
-    console.error("sendChangeNotification failed", error);
+    console.error("sendChangeNotification failed:", error instanceof Error ? error.name : "unknown");
     return { sent: false };
   }
 }

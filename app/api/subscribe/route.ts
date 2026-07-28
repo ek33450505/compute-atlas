@@ -1,4 +1,7 @@
+import { after } from "next/server";
+
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { sendConfirmEmail } from "@/lib/email";
 import { checkSubscribeRateLimit, extractClientIp, hashIp } from "@/lib/rate-limit";
 import { subscribeToTarget } from "@/lib/subscribe";
 
@@ -24,6 +27,17 @@ export async function POST(request: Request) {
 
   if (!result.ok) {
     return jsonResponse({ error: result.error, issues: result.issues }, { status: result.status });
+  }
+
+  // Scheduled to run AFTER the response is sent (Fix 1, s65 security
+  // review): sending inline here made response latency leak whether the
+  // (email,target) pair was new (confirm set, send waits on the network) vs
+  // a duplicate/honeypot/over-cap generic success (confirm unset, returns
+  // immediately). See subscribeToTarget in lib/subscribe.ts for the full
+  // rationale.
+  const confirm = result.confirm;
+  if (confirm) {
+    after(() => sendConfirmEmail(confirm));
   }
 
   return jsonResponse({ ok: true }, { status: 201 });
