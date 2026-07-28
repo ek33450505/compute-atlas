@@ -34,9 +34,23 @@ Compute Atlas is compiled by hand from primary sources, with a deliberate bias a
 
 For the full methodology — the discovery channels (county planning portals, SEC filings, ISO/RTO queues), the sourcing and verification standard, and how to read a record's sources — see [docs/methodology.md](docs/methodology.md).
 
+### The intake pipeline
+
+```mermaid
+graph LR
+    A["Public sources<br/>(permits, SEC, utilities)"] --> P["Pending<br/>submission"]
+    B["Discovery pipeline<br/>(scheduled research)"] --> P
+    C["/contribute form<br/>(public intake)"] --> P
+    P --> G["Human review<br/>approve/reject"]
+    G --> |approved| L["Live facility<br/>Neon Postgres"]
+    L --> D["Site · API · JSON export"]
+```
+
+Nothing becomes a live facility without human approval—the core invariant of the project.
+
 ## API
 
-Compute Atlas exposes a public JSON API for programmatic access to the dataset. Full API documentation is available at `/api` on the live site.
+Compute Atlas exposes a public JSON API for programmatic access to the dataset. Full API documentation is available at [`/api`](https://www.compute-atlas.com/api) on the live site.
 
 **Public read endpoints** (CORS-open, no auth required):
 
@@ -44,6 +58,8 @@ Compute Atlas exposes a public JSON API for programmatic access to the dataset. 
 - `GET /api/facilities/{id}` — Fetch a single facility by ID.
 - `GET /api/stats` — Aggregate dataset figures: total facility count, number of states, and operational / planned / under-construction capacity (MW).
 - `GET /api/schema` — JSON Schema export of the facility data model (derived from Zod schema).
+
+**Rate limiting and caching:** Public endpoints are rate-limited to 60 requests per minute per IP; requests over the limit receive a `429` response with a `Retry-After` header. Responses are CDN-cached and carry `Cache-Control` headers; repeat reads are edge-served. All responses include attribution headers: `X-License: CC-BY-4.0`, `Link: <https://creativecommons.org/licenses/by/4.0/>; rel="license"`, and `X-API-Version: 1`.
 
 **Admin-only write endpoints** (require `Authorization: Bearer <API_ADMIN_TOKEN>` header):
 
@@ -64,6 +80,10 @@ Compute Atlas data is backed by **Neon Postgres** (via **Drizzle ORM**). The aut
 - **DB → File:** `npm run db:export` generates a fresh `data/facilities.json` snapshot from the live database (used before each release).
 
 This one-directional flow prevents divergence between the source of truth (DB) and the published export.
+
+## Releases and versioning
+
+Compute Atlas follows [Semantic Versioning](https://semver.org). Releases are published via [GitHub Releases](https://github.com/ek33450505/compute-atlas/releases) and automated with release-please; see [CHANGELOG.md](CHANGELOG.md) for changes. Each release exports a versioned snapshot: `data/facilities.json` carries an `asOf` timestamp so consumers can track data currency.
 
 **Database scripts** (all require `DATABASE_URL` in `.env.local`):
 
@@ -102,15 +122,11 @@ Key fields per facility:
 
 Contributions and corrections are welcome — every submission needs a public source URL. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for how to propose a new facility or a correction, and the standard the data is held to. Participation is governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-New here? A few ways in:
-
-- 🗺️ **Add a facility** you know about — no code required. Start with the [good first issues](https://github.com/ek33450505/compute-atlas/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) or the [New Facility form](https://github.com/ek33450505/compute-atlas/issues/new/choose).
-- 💬 **Ask a question or share an idea** in [Discussions](https://github.com/ek33450505/compute-atlas/discussions).
-- 🔒 **Found a security issue?** Please report it privately — see [SECURITY.md](SECURITY.md).
+**New to the project?** Start with the [good first issues](https://github.com/ek33450505/compute-atlas/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) or the [New Facility form](https://github.com/ek33450505/compute-atlas/issues/new/choose) to add a facility you know about — no code required. Questions or ideas? Post in [Discussions](https://github.com/ek33450505/compute-atlas/discussions). Security concerns should be reported privately; see [SECURITY.md](SECURITY.md).
 
 ## Tech stack
 
-- **Next.js 16** (App Router, static site generation) with **React 19**
+- **Next.js 16** (App Router, React Server Components, incremental static regeneration) with **React 19**
 - **Neon Postgres** + **Drizzle ORM** for the data layer
 - **TypeScript** + **Zod** for runtime-validated data and JSON Schema export
 - **MapLibre GL** + **react-map-gl** for the interactive map

@@ -10,13 +10,13 @@ This guide covers how to contribute data and code, and the standard the dataset 
 
 ## Ways to contribute
 
-### 1. Suggest a new facility
+### 1. Suggest a new facility or submit a correction
 
-Use the **[New facility issue form](https://github.com/ek33450505/compute-atlas/issues/new/choose)**. You'll be asked for the facility name, operator, location, status, and — required — at least one public source URL. You don't need every field; partial records with a good source are welcome and get deepened over time.
+Use the **[/contribute form](https://www.compute-atlas.com/contribute)** on the live site. No code required — add a facility, submit a correction, or share additional information. All submissions are reviewed against their sources before they enter the dataset.
 
-### 2. Submit a correction
+### 2. GitHub issues for discussion or bugs
 
-Use the **[Correction issue form](https://github.com/ek33450505/compute-atlas/issues/new/choose)**. Identify the facility (name or slug, e.g. `xai-colossus-memphis-tn`), the value that's wrong, and the corrected value **with a source URL**.
+Found a bug? Have an idea? Use [GitHub Discussions](https://github.com/ek33450505/compute-atlas/discussions) or open an [issue](https://github.com/ek33450505/compute-atlas/issues).
 
 ### 3. Contribute code or a data pull request
 
@@ -38,8 +38,6 @@ Records are held to a deliberate bias against fabrication. When adding or editin
 ## What happens after you submit
 
 Compute Atlas follows an **open output, curated intake** model: the data and code are fully open, but every submission is reviewed against its sources before it enters the dataset. This keeps the atlas trustworthy. Please don't be discouraged if a record is held for verification or adjusted for confidence — that review *is* the value of the project.
-
-> Contributions are currently intaken through GitHub issue forms. A dedicated in-app submission form feeding a private moderation queue is planned; when it ships, these forms will be repointed to it. Until then, the issue forms are the way in.
 
 ## Code of Conduct
 
