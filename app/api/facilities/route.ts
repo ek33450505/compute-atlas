@@ -2,9 +2,11 @@ import { getAllFacilities } from "@/lib/data";
 import { filterFacilities, type FacilityFilters } from "@/lib/filters";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { facilityTypeEnum, type Facility } from "@/lib/schema";
-import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { jsonResponse, cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
 import { requireAdmin } from "@/lib/api-auth";
 import { createFacility } from "@/lib/facility-write";
+import { extractClientIp } from "@/lib/rate-limit";
+import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 
 /** Splits comma-separated/repeated query values into a flat, trimmed, non-empty list. */
 function collectParam(searchParams: URLSearchParams, key: string): string[] {
@@ -21,6 +23,9 @@ function collectParam(searchParams: URLSearchParams, key: string): string[] {
  * malformed client input degrades to "no constraint" instead of an error.
  */
 export async function GET(request: Request): Promise<Response> {
+  const gate = checkApiRateLimit(extractClientIp(request));
+  if (!gate.ok) return tooManyRequests(gate.retryAfter);
+
   const { searchParams } = new URL(request.url);
 
   const statuses = collectParam(searchParams, "status").filter((s): s is Status =>
@@ -43,7 +48,7 @@ export async function GET(request: Request): Promise<Response> {
   };
 
   const facilities = filterFacilities(await getAllFacilities(), filters);
-  return jsonResponse({ count: facilities.length, facilities });
+  return cacheableJson({ count: facilities.length, facilities }, READ_CACHE.list);
 }
 
 /** Admin-only: creates a new facility. Requires `Authorization: Bearer <API_ADMIN_TOKEN>`. */

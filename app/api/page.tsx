@@ -180,6 +180,77 @@ export default function ApiPage() {
         </p>
       </section>
 
+      {/* ---- Limits, caching & attribution ---- */}
+      <section aria-labelledby="limits-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Limits, caching & attribution
+        </p>
+        <h2 id="limits-heading" className="font-display text-2xl text-foreground">
+          What every read response carries
+        </h2>
+        <dl className="space-y-3 text-sm">
+          <div>
+            <dt className="font-medium text-foreground">Rate limits</dt>
+            <dd className="text-muted-foreground">
+              Read endpoints allow up to 60 requests per minute per IP. Over
+              the limit, a request returns{" "}
+              <code className={CODE}>429 Too Many Requests</code> with a{" "}
+              <code className={CODE}>Retry-After</code> header — a
+              best-effort limit, not a hard global cap. Cache responses
+              rather than polling.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-medium text-foreground">Caching</dt>
+            <dd className="text-muted-foreground">
+              Every read response carries a{" "}
+              <code className={CODE}>Cache-Control</code> header (
+              <code className={CODE}>public, s-maxage, stale-while-revalidate</code>
+              ) so shared caches and CDNs can serve it without hitting the
+              origin. Typical freshness: the facility list and stats ~1
+              hour, the JSON Schema ~24 hours, search ~10 minutes. By
+              design, a read can be up to an hour stale — the tradeoff
+              favors cache efficiency over instant freshness.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-medium text-foreground">Attribution</dt>
+            <dd className="text-muted-foreground">
+              Responses carry{" "}
+              <code className={CODE}>X-License: CC-BY-4.0</code> and a{" "}
+              <code className={CODE}>
+                Link: &lt;…&gt;; rel=&quot;license&quot;
+              </code>{" "}
+              header. The data is free to use under{" "}
+              <a
+                href="https://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
+                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              >
+                CC-BY-4.0
+              </a>{" "}
+              with attribution to Compute Atlas required.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-medium text-foreground">Versioning</dt>
+            <dd className="text-muted-foreground">
+              Responses carry <code className={CODE}>X-API-Version: 1</code>;
+              the version bumps only on a breaking response-shape change.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-medium text-foreground">Search queries</dt>
+            <dd className="text-muted-foreground">
+              The <code className={CODE}>q</code> search parameter is capped
+              at 200 characters.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
       {/* ---- curl examples ---- */}
       <section aria-labelledby="examples-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
