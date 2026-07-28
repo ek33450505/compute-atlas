@@ -1,19 +1,24 @@
 import { getFacilityById } from "@/lib/data";
-import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { jsonResponse, cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
 import { requireAdmin } from "@/lib/api-auth";
 import { updateFacility, deleteFacility } from "@/lib/facility-write";
+import { extractClientIp } from "@/lib/rate-limit";
+import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 
 /** Public single-facility lookup by id. */
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
+  const gate = checkApiRateLimit(extractClientIp(request));
+  if (!gate.ok) return tooManyRequests(gate.retryAfter);
+
   const { id } = await params;
   const facility = await getFacilityById(id);
   if (!facility) {
     return jsonResponse({ error: "Facility not found", id }, { status: 404 });
   }
-  return jsonResponse(facility);
+  return cacheableJson(facility, READ_CACHE.facility);
 }
 
 /** Admin-only: patches a facility. Top-level shallow merge — see `updateFacility`. */

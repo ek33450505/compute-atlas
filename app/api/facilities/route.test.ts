@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { GET, POST } from "./route";
+import { __resetApiRateLimit, API_RATE_LIMIT_MAX } from "@/lib/api-rate-limit";
 
 function req(query: string): Request {
   return new Request(`http://localhost/api/facilities${query}`);
@@ -12,6 +13,13 @@ function postReq(body: unknown, headers?: HeadersInit): Request {
     body: JSON.stringify(body),
   });
 }
+
+// Every test request below hits the same "unknown" IP bucket (no
+// x-forwarded-for header) — reset per-test so accumulated hits from one
+// test's assertions never bleed into the next.
+beforeEach(() => {
+  __resetApiRateLimit();
+});
 
 describe("GET /api/facilities", () => {
   it("returns the full dataset with no filters", async () => {
@@ -77,6 +85,24 @@ describe("GET /api/facilities", () => {
     const body = await res.json();
     expect(body.count).toBeGreaterThan(0);
     expect(body.count).toBeLessThan(310);
+  });
+
+  it("carries a public Cache-Control header", async () => {
+    const res = await GET(req(""));
+    const cacheControl = res.headers.get("Cache-Control");
+    expect(cacheControl).toContain("public");
+    expect(cacheControl).toContain("s-maxage=");
+    expect(cacheControl).toContain("stale-while-revalidate=");
+  });
+
+  it("returns 429 once the per-instance rate limit is exceeded", async () => {
+    for (let i = 0; i < API_RATE_LIMIT_MAX; i++) {
+      const ok = await GET(req(""));
+      expect(ok.status).toBe(200);
+    }
+    const blocked = await GET(req(""));
+    expect(blocked.status).toBe(429);
+    expect(blocked.headers.get("Retry-After")).toBeTruthy();
   });
 });
 

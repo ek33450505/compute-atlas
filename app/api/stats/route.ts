@@ -1,9 +1,13 @@
 import { getStats } from "@/lib/data";
-import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
+import { extractClientIp } from "@/lib/rate-limit";
+import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 
 /** Public aggregate dataset stats. */
-export async function GET(): Promise<Response> {
-  return jsonResponse(await getStats());
+export async function GET(request: Request): Promise<Response> {
+  const gate = checkApiRateLimit(extractClientIp(request));
+  if (!gate.ok) return tooManyRequests(gate.retryAfter);
+  return cacheableJson(await getStats(), READ_CACHE.stats);
 }
 
 export function OPTIONS(): Response {
