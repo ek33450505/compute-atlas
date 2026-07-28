@@ -57,8 +57,11 @@ export default async function OppositionPage() {
           Community friction
         </p>
         <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Where the buildout meets resistance
+          Data center opposition across the United States
         </h1>
+        <p className="max-w-2xl text-base text-muted-foreground">
+          Where the buildout meets resistance.
+        </p>
         <p className="max-w-2xl text-base text-muted-foreground">
           Tracked sites with documented local friction — lawsuits, moratoria,
           referendums, and formal opposition. This is not a claim about the
@@ -74,6 +77,29 @@ export default async function OppositionPage() {
         </p>
       ) : (
         <>
+          {/* ------------------------------------------------------------------ */}
+          {/* Overview (dataset-derived)                                          */}
+          {/* ------------------------------------------------------------------ */}
+          <div className="max-w-2xl space-y-4 text-base text-muted-foreground">
+            <p>
+              Compute Atlas has sourced {total} facilities with a documented friction
+              status: {counts.litigation} {counts.litigation === 1 ? "is" : "are"} in
+              active litigation, {counts.opposed}{" "}
+              {counts.opposed === 1 ? "faces" : "face"} formal opposition, and{" "}
+              {counts.contested} {counts.contested === 1 ? "is" : "are"} contested. Each
+              status traces to a cited local source — a court filing, a news report, a
+              public meeting record — rather than an editorial read of how a community
+              feels.
+            </p>
+            <p>
+              Those sites span {statesWithFriction}{" "}
+              {statesWithFriction === 1 ? "state" : "states"} across the country. A
+              facility with no friction status on file has not necessarily been
+              welcomed locally — it may simply be a project nobody has yet documented
+              a public objection to.
+            </p>
+          </div>
+
           {/* ------------------------------------------------------------------ */}
           {/* Survey stats row                                                    */}
           {/* ------------------------------------------------------------------ */}

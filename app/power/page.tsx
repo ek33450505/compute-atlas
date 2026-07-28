@@ -79,8 +79,11 @@ export default async function PowerPage() {
             Dedicated generation
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-            Powering the buildout
+            Behind-the-meter power generation for AI data centers
           </h1>
+          <p className="max-w-2xl text-base text-muted-foreground">
+            Powering the buildout.
+          </p>
           <p className="text-base text-muted-foreground">
             No dedicated-generation projects are tracked yet.
           </p>
@@ -105,8 +108,11 @@ export default async function PowerPage() {
           Dedicated generation
         </p>
         <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Powering the buildout
+          Behind-the-meter power generation for AI data centers
         </h1>
+        <p className="max-w-2xl text-base text-muted-foreground">
+          Powering the buildout.
+        </p>
         <p className="max-w-2xl text-base text-muted-foreground">
           Purpose-built generation — mostly nuclear and advanced SMRs — that
           hyperscalers are financing or contracting to feed AI and compute
@@ -151,6 +157,30 @@ export default async function PowerPage() {
             Offtakers
           </span>
         </div>
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Overview prose                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="max-w-2xl space-y-4">
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Compute Atlas tracks {stats.count} dedicated-generation projects —
+          plants and reactors financed or contracted specifically to power a
+          data center&apos;s compute load, rather than drawn from the general
+          grid. {formatPower(stats.operationalMw)} of that capacity is
+          already operational, with {formatPower(stats.plannedMw)} more in
+          the pipeline.
+        </p>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          {stats.offtakerCount} distinct offtakers — the hyperscalers and
+          operators contracted to buy the output — appear in the dataset
+          below, each tied to specific projects and capacity.
+        </p>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          The list groups projects by offtaker first, then by generation
+          technology; every entry links through to its full facility record
+          and cited sources.
+        </p>
       </div>
 
       {/* ------------------------------------------------------------------ */}

@@ -136,10 +136,28 @@ export default async function StatusPage({
   const statusLabel = STATUS_META[status].label;
   const capacityMw = sumCapacityForStatus(facilities, status);
 
+  // Dataset-derived fact line: distinct state count mirrors getStats()'s
+  // `new Set(...).size` math. facilities.length is reused rather than a
+  // separate getStatusCounts() call — getFacilitiesByStatus already gives
+  // the exact per-status count. Omitted entirely when the status is empty
+  // (the CollectionPage emptyMessage below covers that case instead).
+  const stateCount = new Set(facilities.map((f) => f.location.state)).size;
+  const factLine =
+    facilities.length > 0
+      ? `${facilities.length} ${statusLabel.toLowerCase()} facilit${
+          facilities.length === 1 ? "y" : "ies"
+        }, spanning ${stateCount} state${stateCount === 1 ? "" : "s"}.`
+      : null;
+
   return (
     <CollectionPage
       title={meta.title}
-      intro={<p>{meta.intro}</p>}
+      intro={
+        <>
+          <p>{meta.intro}</p>
+          {factLine && <p>{factLine}</p>}
+        </>
+      }
       crumbs={[
         { label: "Explore", href: "/explore" },
         { label: "By status", href: "/status" },
