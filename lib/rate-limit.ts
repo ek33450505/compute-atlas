@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
-import { and, gt, sql } from "drizzle-orm";
+import { and, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
-import { submissionsTable } from "@/lib/db/schema";
+import { submissionsTable, subscriptionsTable } from "@/lib/db/schema";
 
 export const RATE_LIMIT_MAX = 5;
 export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -39,4 +39,37 @@ export async function checkRateLimit(ipHash: string): Promise<{ ok: boolean }> {
       )
     );
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
+}
+
+export async function checkSubscribeRateLimit(ipHash: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(subscriptionsTable)
+    .where(
+      and(
+        gt(subscriptionsTable.createdAt, windowStart),
+        eq(subscriptionsTable.submitterIpHash, ipHash)
+      )
+    );
+  return rateLimitDecision(Number(rows[0]?.c ?? 0));
+}
+
+export const EMAIL_SEND_CAP_MAX = 5; // confirm emails per address per window
+
+/**
+ * Per-recipient cap on confirm-email sends, independent of the per-IP rate
+ * limit above. The IP limit doesn't stop a distributed attacker from
+ * email-bombing one victim by varying targetId (and IP) across requests —
+ * this bounds sends to a single address regardless of source (s65 security
+ * review, Fix 2). `email` is expected pre-normalized (lowercased/trimmed) by
+ * the caller.
+ */
+export async function checkEmailSendCap(email: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(subscriptionsTable)
+    .where(and(gt(subscriptionsTable.createdAt, windowStart), eq(subscriptionsTable.email, email)));
+  return { ok: Number(rows[0]?.c ?? 0) < EMAIL_SEND_CAP_MAX };
 }

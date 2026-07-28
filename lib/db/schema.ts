@@ -1,4 +1,14 @@
-import { customType, index, jsonb, pgTable, text, doublePrecision, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  customType,
+  index,
+  jsonb,
+  pgTable,
+  text,
+  doublePrecision,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import type { Facility } from "@/lib/schema";
 import type { DiffEntry } from "@/lib/doc-diff";
@@ -106,3 +116,34 @@ export const facilityHistoryTable = pgTable(
 );
 
 export type FacilityHistoryRow = typeof facilityHistoryTable.$inferSelect;
+
+export const subscriptionsTable = pgTable(
+  "subscriptions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    email: text("email").notNull(), // stored lowercased + trimmed
+    targetType: text("target_type").notNull(), // facility | state | all
+    targetId: text("target_id"), // facility id (slug) | 2-letter state code | null for 'all'
+    status: text("status").notNull().default("pending"), // pending | confirmed | unsubscribed
+    confirmToken: text("confirm_token").notNull(), // raw 256-bit base64url, single-use (double-opt-in)
+    unsubscribeToken: text("unsubscribe_token").notNull(), // raw 256-bit base64url, embedded in every email
+    submitterIpHash: text("submitter_ip_hash"), // for subscribe rate-limiting
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+    unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("subscriptions_status_idx").on(table.status),
+    index("subscriptions_target_idx").on(table.targetType, table.targetId),
+    uniqueIndex("subscriptions_confirm_token_idx").on(table.confirmToken),
+    uniqueIndex("subscriptions_unsub_token_idx").on(table.unsubscribeToken),
+    index("subscriptions_ip_idx").on(table.submitterIpHash),
+    // Plus a hand-managed PARTIAL UNIQUE index `subscriptions_active_target_idx`
+    // in drizzle/0004 (one active sub per email+target; excludes unsubscribed) —
+    // not modeled here because Drizzle can't cleanly express the COALESCE/partial
+    // predicate, same as the facilities tsvector GIN index. App-code dedup relies
+    // on it for a race-free "already subscribed" path.
+  ]
+);
+
+export type SubscriptionRow = typeof subscriptionsTable.$inferSelect;

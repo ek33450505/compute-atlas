@@ -3,6 +3,7 @@ import { Rss } from "lucide-react";
 
 import { getRecentActivity } from "@/lib/data";
 import { ActivityList } from "@/app/activity/activity-list";
+import { WatchButton } from "@/components/subscribe/watch-button";
 
 export const revalidate = 3600;
 
@@ -45,6 +46,9 @@ export default async function ActivityPage() {
             Subscribe via RSS
           </a>
         </p>
+        <div className="pt-2">
+          <WatchButton targetType="all" label="Watch all updates" />
+        </div>
       </div>
 
       <ActivityList entries={entries} />
