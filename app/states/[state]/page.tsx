@@ -90,6 +90,35 @@ export default async function StatePage({
   const displayedOperators = summary.topOperators.slice(0, TOP_OPERATORS_DISPLAY);
   const extraOperators = summary.topOperators.length - displayedOperators.length;
 
+  // --- Templated overview prose (SEO Task 1.1) ----------------------------
+  // Every figure below is read directly off `summary`; nothing here is
+  // fetched, invented, or estimated. Each branch just phrases a zero count
+  // gracefully instead of printing an awkward "0 MW" / "0 sites" line.
+  const hasOperationalMw = summary.operationalMw > 0;
+  const hasUnderConstructionMw = summary.underConstructionMw > 0;
+  let capacitySentence: string;
+  if (hasOperationalMw && hasUnderConstructionMw) {
+    capacitySentence = `Operational capacity totals ${formatPower(summary.operationalMw)}, with another ${formatPower(summary.underConstructionMw)} under construction.`;
+  } else if (hasOperationalMw) {
+    capacitySentence = `Operational capacity totals ${formatPower(summary.operationalMw)}; no additional capacity is currently under construction.`;
+  } else if (hasUnderConstructionMw) {
+    capacitySentence = `None are operational yet — ${formatPower(summary.underConstructionMw)} is under construction.`;
+  } else {
+    capacitySentence = "None have reported operational capacity or an active construction phase yet.";
+  }
+  const overviewSentence = `Compute Atlas tracks ${summary.count} data center${summary.count === 1 ? "" : "s"} in ${stateName}. ${capacitySentence}`;
+
+  const frictionSentence =
+    summary.communityFriction > 0
+      ? `${summary.communityFriction} site${summary.communityFriction === 1 ? "" : "s"} in ${stateName} face${summary.communityFriction === 1 ? "s" : ""} documented community friction — contested, opposed, or in active litigation — out of ${summary.communityReporting} with a sourced community status.`
+      : `No tracked site in ${stateName} carries a documented community-friction status yet.`;
+
+  const topOperatorNames = summary.topOperators.slice(0, 3).map((o) => o.operator);
+  const operatorSentence =
+    topOperatorNames.length > 0
+      ? `The leading operator${topOperatorNames.length === 1 ? "" : "s"} in ${stateName}, by facility count, ${topOperatorNames.length === 1 ? "is" : "are"} ${new Intl.ListFormat("en-US", { style: "long", type: "conjunction" }).format(topOperatorNames)}.`
+      : null;
+
   return (
     <div
       data-content-width="4xl"
@@ -105,14 +134,31 @@ export default async function StatePage({
           State profile
         </p>
         <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          {stateName}
+          Data centers in {stateName}
         </h1>
         <p className="text-base text-muted-foreground">
-          {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
+          {stateName} &middot; {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
         </p>
         <WatchButton targetType="state" targetId={code} label={`Watch ${stateName}`} />
         <div className="border-t border-border" />
       </header>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="max-w-2xl space-y-4">
+        <p className="text-base leading-relaxed text-muted-foreground">
+          {overviewSentence}
+        </p>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          {frictionSentence}
+        </p>
+        {operatorSentence && (
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {operatorSentence}
+          </p>
+        )}
+      </div>
 
       {/* ------------------------------------------------------------------ */}
       {/* Survey stats row                                                    */}
