@@ -5,6 +5,14 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/ek33450505/compute-atlas/compare/v1.1.0...v1.2.0) (2026-07-28)
+
+
+### Features
+
+* **seo:** keyword H1 + templated prose on operators & metros hubs ([#50](https://github.com/ek33450505/compute-atlas/issues/50)) ([ee6c68a](https://github.com/ek33450505/compute-atlas/commit/ee6c68adc68dc2f8665fc1515fe38640a6ca2147))
+* **seo:** keyword H1s + templated prose on states/opposition/power/status hubs ([#48](https://github.com/ek33450505/compute-atlas/issues/48)) ([db623bb](https://github.com/ek33450505/compute-atlas/commit/db623bbf6952a79c5df29a1ac1d159b77472dbfe))
+
 ## [Unreleased]
 
 ## [1.1.0] - 2026-07-28
