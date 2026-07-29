@@ -64,6 +64,12 @@ const LENSES = [
       "Every company running tracked capacity, ranked by build-out.",
   },
   {
+    label: "Rankings",
+    href: "/rankings",
+    description:
+      "The biggest tracked projects, largest operators, and states with the most capacity — ranked by tracked megawatts.",
+  },
+  {
     label: "API",
     href: "/api",
     description:
