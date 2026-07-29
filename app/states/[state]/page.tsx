@@ -6,6 +6,7 @@ import {
   getStates,
   getFacilitiesByStateCached,
   getStateSummaryCached,
+  getNotableOppositionCases,
 } from "@/lib/data";
 import {
   stateNameFromCode,
@@ -85,6 +86,15 @@ export default async function StatePage({
 
   const facilities = await getFacilitiesByStateCached(code);
   const stateName = stateNameFromCode(code)!;
+
+  // Cross-link callout (SEO Task 3.3): only fetched when this state has
+  // documented friction, since a zero-friction state renders no callout.
+  const stateOppositionCase =
+    summary.communityFriction > 0
+      ? (await getNotableOppositionCases()).find(
+          (f) => f.location.state === code
+        )
+      : undefined;
 
   const TOP_OPERATORS_DISPLAY = 15;
   const displayedOperators = summary.topOperators.slice(0, TOP_OPERATORS_DISPLAY);
@@ -330,6 +340,33 @@ export default async function StatePage({
           <p className="text-sm leading-relaxed text-muted-foreground">
             No documented community reception is on file yet for the tracked
             sites in {stateName}.
+          </p>
+        )}
+
+        {summary.communityFriction > 0 && (
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            See the{" "}
+            <Link
+              href="/opposition"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              opposition tracker
+            </Link>{" "}
+            for national context
+            {stateOppositionCase ? (
+              <>
+                , including{" "}
+                <Link
+                  href={`/facilities/${stateOppositionCase.id}`}
+                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                >
+                  {stateOppositionCase.name}
+                </Link>
+                , a notable case in {stateName}.
+              </>
+            ) : (
+              "."
+            )}
           </p>
         )}
       </section>

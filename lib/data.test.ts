@@ -31,6 +31,7 @@ import {
   getGenerationByOfftaker,
   getGenerationStats,
   getFacilitiesByCommunityStatus,
+  getNotableOppositionCases,
   getPoweredCampuses,
   getPoweredByGenerators,
   getRecentActivity,
@@ -824,6 +825,46 @@ describe("getFacilitiesByCommunityStatus", () => {
       (frictionStatuses as readonly string[]).includes(f.community?.status ?? "")
     ).length;
     expect(sum).toBe(expected);
+  });
+});
+
+describe("getNotableOppositionCases", () => {
+  it("returns only friction-status facilities with sourced community.notes", async () => {
+    const frictionStatuses = ["contested", "opposed", "litigation"];
+    const results = await getNotableOppositionCases();
+    for (const f of results) {
+      expect(frictionStatuses).toContain(f.community?.status);
+      expect(f.community?.notes).toBeTruthy();
+    }
+  });
+
+  it("sorts by max capacity desc then name A→Z", async () => {
+    const results = await getNotableOppositionCases(100);
+    for (let i = 1; i < results.length; i++) {
+      const prevMw = getFacilityMaxMw(results[i - 1]) ?? -1;
+      const curMw = getFacilityMaxMw(results[i]) ?? -1;
+      expect(prevMw).toBeGreaterThanOrEqual(curMw);
+      if (prevMw === curMw) {
+        expect(
+          results[i - 1].name.localeCompare(results[i].name)
+        ).toBeLessThanOrEqual(0);
+      }
+    }
+  });
+
+  it("respects the n parameter and defaults to 6", async () => {
+    const expectedCount = (await getAllFacilities()).filter(
+      (f) =>
+        !!f.community?.status &&
+        ["contested", "opposed", "litigation"].includes(f.community.status) &&
+        !!f.community?.notes
+    ).length;
+
+    const defaultResults = await getNotableOppositionCases();
+    expect(defaultResults.length).toBe(Math.min(6, expectedCount));
+
+    const limited = await getNotableOppositionCases(2);
+    expect(limited.length).toBe(Math.min(2, expectedCount));
   });
 });
 
