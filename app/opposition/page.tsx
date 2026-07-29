@@ -1,7 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { getFacilitiesByCommunityStatus, getCommunityReceptionCounts } from "@/lib/data";
+import {
+  getFacilitiesByCommunityStatus,
+  getCommunityReceptionCounts,
+  getNotableOppositionCases,
+} from "@/lib/data";
 import { COMMUNITY_RECEPTION_META, type CommunityReception } from "@/lib/community";
 import { formatLocation } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
@@ -31,6 +35,7 @@ export const metadata: Metadata = {
  */
 export default async function OppositionPage() {
   const counts = await getCommunityReceptionCounts();
+  const notableCases = await getNotableOppositionCases();
   const groups = await Promise.all(
     FRICTION_ORDER.map(async (status) => ({
       status,
@@ -99,6 +104,54 @@ export default async function OppositionPage() {
               a public objection to.
             </p>
           </div>
+
+          {/* ------------------------------------------------------------------ */}
+          {/* § Notable 2026 cases                                                */}
+          {/* ------------------------------------------------------------------ */}
+          {notableCases.length > 0 && (
+            <section
+              aria-labelledby="notable-cases-heading"
+              className="space-y-6 border-t border-border pt-10"
+            >
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                § Notable 2026 cases
+              </p>
+              <h2 id="notable-cases-heading" className="font-display text-2xl text-foreground">
+                Notable 2026 cases
+              </h2>
+              <p className="max-w-2xl text-base text-muted-foreground">
+                Opposition to data centers has become a national trend in 2026:
+                Good Jobs First counted 833 active community opposition groups
+                nationwide, up from 396 the year before — a wave that, per
+                Tom&rsquo;s Hardware, has delayed an estimated $130 billion in
+                projects. That figure is an external, national estimate, not a
+                Compute Atlas count. The cases below are individual sites from
+                Compute Atlas&rsquo;s own sourced dataset.
+              </p>
+              <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {notableCases.map((f) => (
+                  <li key={f.id}>
+                    <Link
+                      href={`/facilities/${f.id}`}
+                      className="neatline group flex h-full flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      <span className="font-display text-base leading-snug text-foreground group-hover:text-primary transition-colors motion-reduce:transition-none">
+                        {f.name}
+                      </span>
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {formatLocation(f)}
+                      </span>
+                      {f.community?.notes && (
+                        <p className="text-xs text-muted-foreground line-clamp-3">
+                          {f.community.notes}
+                        </p>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* ------------------------------------------------------------------ */}
           {/* Survey stats row                                                    */}

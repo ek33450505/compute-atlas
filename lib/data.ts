@@ -820,6 +820,28 @@ export async function getFacilitiesByCommunityStatus(status: CommunityReception)
     .sort((a, b) => (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name));
 }
 
+/**
+ * Returns up to `n` "notable" opposition cases: facilities whose
+ * `community.status` is one of the friction statuses (contested, opposed,
+ * litigation) AND that carry sourced `community.notes` — i.e. a citable
+ * narrative, not just a bucketed status. Sorted by max capacity desc then
+ * name A→Z (same tie-break as `getFacilitiesByCommunityStatus`). Used by
+ * the /opposition hub to spotlight cases with an actual documented story.
+ */
+export async function getNotableOppositionCases(n = 6): Promise<Facility[]> {
+  const facilities = await loadFacilities();
+  const frictionStatuses: CommunityReception[] = ["contested", "opposed", "litigation"];
+  return facilities
+    .filter(
+      (f) =>
+        !!f.community?.status &&
+        frictionStatuses.includes(f.community.status) &&
+        !!f.community?.notes
+    )
+    .sort((a, b) => (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name))
+    .slice(0, n);
+}
+
 // ============================================================
 // Per-metro helpers (used by /metros pages)
 // ============================================================
