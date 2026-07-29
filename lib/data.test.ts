@@ -769,11 +769,19 @@ describe("operatorSlug", () => {
     expect(operatorSlug("Amazon Web Services")).toBe("amazon-web-services");
   });
 
-  it("round-trips through getOperatorBySlug for every tracked operator", async () => {
-    for (const name of await getOperators()) {
-      expect(await getOperatorBySlug(operatorSlug(name))).toBe(name);
-    }
-  });
+  // Exhaustive over every tracked operator (264 and growing with the dataset)
+  // — each call re-scans the full facility list, so this test is legitimately
+  // CPU-bound and slow. Explicit timeout gives CI (~10x slower than local)
+  // headroom.
+  it(
+    "round-trips through getOperatorBySlug for every tracked operator",
+    async () => {
+      for (const name of await getOperators()) {
+        expect(await getOperatorBySlug(operatorSlug(name))).toBe(name);
+      }
+    },
+    20000
+  );
 });
 
 describe("getOperatorBySlug", () => {
@@ -801,14 +809,20 @@ describe("getFacilitiesByOperator", () => {
     }
   });
 
-  it("partitions the full dataset (every facility has exactly one operator)", async () => {
-    const operators = await getOperators();
-    let sum = 0;
-    for (const name of operators) {
-      sum += (await getFacilitiesByOperator(name)).length;
-    }
-    expect(sum).toBe((await getAllFacilities()).length);
-  });
+  // Exhaustive over every tracked operator — see comment on the operatorSlug
+  // round-trip test above re: CPU-bound cost and the explicit timeout.
+  it(
+    "partitions the full dataset (every facility has exactly one operator)",
+    async () => {
+      const operators = await getOperators();
+      let sum = 0;
+      for (const name of operators) {
+        sum += (await getFacilitiesByOperator(name)).length;
+      }
+      expect(sum).toBe((await getAllFacilities()).length);
+    },
+    20000
+  );
 });
 
 describe("getOperatorSummary", () => {
@@ -816,13 +830,21 @@ describe("getOperatorSummary", () => {
     expect(await getOperatorSummary("__nope__")).toBeNull();
   });
 
-  it("count matches getFacilitiesByOperator length", async () => {
-    for (const name of await getOperators()) {
-      const summary = await getOperatorSummary(name);
-      expect(summary).not.toBeNull();
-      expect(summary!.count).toBe((await getFacilitiesByOperator(name)).length);
-    }
-  });
+  // Exhaustive over every tracked operator, and the heaviest of the four —
+  // each getOperatorSummary call re-scans the full facility list twice (once
+  // via itself, once via the paired getFacilitiesByOperator). See comment on
+  // the operatorSlug round-trip test re: CPU-bound cost and explicit timeout.
+  it(
+    "count matches getFacilitiesByOperator length",
+    async () => {
+      for (const name of await getOperators()) {
+        const summary = await getOperatorSummary(name);
+        expect(summary).not.toBeNull();
+        expect(summary!.count).toBe((await getFacilitiesByOperator(name)).length);
+      }
+    },
+    30000
+  );
 
   it("includes all byType and byStatus keys", async () => {
     const summary = (await getOperatorSummary("Google"))!;

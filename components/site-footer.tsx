@@ -50,11 +50,6 @@ export function SiteFooter() {
                  className="inline-flex min-h-11 items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
                 Recent activity <span aria-hidden="true">→</span>
               </Link>
-              <a href={siteConfig.discussionsUrl} target="_blank" rel="noreferrer noopener"
-                 aria-label="Community discussions on GitHub (opens in new tab)"
-                 className="inline-flex min-h-11 items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
-                Discussions <span aria-hidden="true">↗</span>
-              </a>
               <a href={siteConfig.sponsorUrl} target="_blank" rel="noreferrer noopener"
                  aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
                  className="inline-flex min-h-11 items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
