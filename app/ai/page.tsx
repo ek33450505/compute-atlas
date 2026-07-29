@@ -6,25 +6,19 @@ import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
+import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 import { aiClassificationEnum } from "@/lib/schema";
 
 export const revalidate = 3600;
 
 type AiClassification = (typeof aiClassificationEnum.options)[number];
 
-/** Display labels for AI classification enum keys — mirrors app/stats/page.tsx. */
-const AI_CLASSIFICATION_LABELS: Record<AiClassification, string> = {
-  confirmed: "Confirmed",
-  likely: "Likely",
-  mixed_use: "Mixed use",
-};
-
 const AI_CLASSIFICATION_ORDER = aiClassificationEnum.options;
 
 /** Joins non-zero classification counts into a compact inline summary, e.g. "3 confirmed · 1 likely". */
 function formatStateCounts(counts: Record<AiClassification, number>): string {
   return AI_CLASSIFICATION_ORDER.filter((k) => counts[k] > 0)
-    .map((k) => `${counts[k]} ${AI_CLASSIFICATION_LABELS[k].toLowerCase()}`)
+    .map((k) => `${counts[k]} ${AI_CLASSIFICATION_CONFIDENCE_LABELS[k].toLowerCase()}`)
     .join(" · ");
 }
 
