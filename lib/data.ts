@@ -495,6 +495,138 @@ export async function getNotableFacilities(n = 6): Promise<Facility[]> {
 }
 
 // ============================================================
+// Capacity-ranking helpers (used by the /rankings hub)
+// ============================================================
+
+/**
+ * Hard guard against the dataset's UT/WY multi-GW unverified megaprojects
+ * (3-10 GW single-facility claims per ROADMAP) inflating the capacity
+ * rankings below. True when a facility's planned capacity exceeds 2,000 MW
+ * AND its confidence is not `"confirmed"` — 2,000 MW sits safely below the
+ * smallest cited outlier while comfortably above any real single confirmed
+ * campus. Gated at the single-facility level, never on an aggregate total:
+ * a legitimate state or operator with many small confirmed/reported
+ * facilities that sum past 2 GW is never penalized by this guard — only the
+ * actual outlier record is excluded from the ranking helpers below.
+ */
+function isUnverifiedMegaproject(f: Facility): boolean {
+  return (f.capacityMw?.planned ?? 0) > 2000 && f.confidence !== "confirmed";
+}
+
+/**
+ * Returns up to `n` facilities ranked by planned capacity
+ * (`capacityMw.planned`) descending, tie-broken by name A→Z. Excludes
+ * cancelled facilities and `isUnverifiedMegaproject` outliers before
+ * ranking. Mirrors `getFacilitiesByWaterUsage`'s filter→sort→slice shape
+ * (Session 7, Task 7.1) applied to `capacityMw.planned` instead.
+ */
+export async function getFacilitiesRankedByPlannedMw(n = 20): Promise<Facility[]> {
+  const facilities = await loadFacilities();
+  return facilities
+    .filter(
+      (f) =>
+        f.status !== "cancelled" &&
+        !isUnverifiedMegaproject(f) &&
+        typeof f.capacityMw?.planned === "number" &&
+        f.capacityMw.planned > 0
+    )
+    .sort(
+      (a, b) =>
+        b.capacityMw!.planned! - a.capacityMw!.planned! || a.name.localeCompare(b.name)
+    )
+    .slice(0, n);
+}
+
+/** One operator's aggregate capacity ranking, used by the /rankings hub. */
+export interface OperatorCapacityRanking {
+  operator: string;
+  /** Sum of capacityMw.operational across the operator's non-cancelled, non-outlier facilities. */
+  operationalMw: number;
+  /** Sum of capacityMw.planned across the operator's non-cancelled, non-outlier facilities. */
+  plannedMw: number;
+  /** Count of the operator's non-outlier facilities (any status) — mirrors getTopOperators' unfiltered count. */
+  count: number;
+}
+
+/**
+ * Returns the top-N operators by combined capacity (operationalMw +
+ * plannedMw) desc, then operator A→Z (deterministic tie-break). Groups
+ * `isUnverifiedMegaproject`-filtered facilities by operator, mirroring the
+ * `opCounts` Map pattern in `getTopOperators`/`computeStateSummary` (same
+ * file); sums `capacityMw.operational`/`capacityMw.planned` across
+ * non-cancelled facilities per operator, mirroring `getStats`' capacity math.
+ */
+export async function getTopOperatorsByCapacity(n = 10): Promise<OperatorCapacityRanking[]> {
+  const facilities = await loadFacilities();
+  const byOperator = new Map<
+    string,
+    { operationalMw: number; plannedMw: number; count: number }
+  >();
+  for (const f of facilities) {
+    if (isUnverifiedMegaproject(f)) continue;
+    const entry = byOperator.get(f.operator) ?? { operationalMw: 0, plannedMw: 0, count: 0 };
+    entry.count++;
+    if (f.status !== "cancelled") {
+      entry.operationalMw += f.capacityMw?.operational ?? 0;
+      entry.plannedMw += f.capacityMw?.planned ?? 0;
+    }
+    byOperator.set(f.operator, entry);
+  }
+  return [...byOperator.entries()]
+    .map(([operator, agg]) => ({ operator, ...agg }))
+    .sort(
+      (a, b) =>
+        b.operationalMw + b.plannedMw - (a.operationalMw + a.plannedMw) ||
+        a.operator.localeCompare(b.operator)
+    )
+    .slice(0, n);
+}
+
+/** One state's aggregate capacity ranking, used by the /rankings hub. */
+export interface StateCapacityRanking {
+  state: string;
+  /** Sum of capacityMw.operational across the state's non-cancelled, non-outlier facilities. */
+  operationalMw: number;
+  /** Sum of capacityMw.planned across the state's non-cancelled, non-outlier facilities. */
+  plannedMw: number;
+  /** Count of the state's non-outlier facilities (any status) — mirrors getTopOperators' unfiltered count. */
+  count: number;
+}
+
+/**
+ * Returns the top-N states by combined capacity (operationalMw + plannedMw)
+ * desc, then state A→Z (deterministic tie-break). Identical shape to
+ * `getTopOperatorsByCapacity`, grouped by `location.state` instead of
+ * `operator` — same outlier exclusion, same non-cancelled capacity math.
+ */
+export async function getTopStatesByCapacity(n = 10): Promise<StateCapacityRanking[]> {
+  const facilities = await loadFacilities();
+  const byState = new Map<
+    string,
+    { operationalMw: number; plannedMw: number; count: number }
+  >();
+  for (const f of facilities) {
+    if (isUnverifiedMegaproject(f)) continue;
+    const state = f.location.state;
+    const entry = byState.get(state) ?? { operationalMw: 0, plannedMw: 0, count: 0 };
+    entry.count++;
+    if (f.status !== "cancelled") {
+      entry.operationalMw += f.capacityMw?.operational ?? 0;
+      entry.plannedMw += f.capacityMw?.planned ?? 0;
+    }
+    byState.set(state, entry);
+  }
+  return [...byState.entries()]
+    .map(([state, agg]) => ({ state, ...agg }))
+    .sort(
+      (a, b) =>
+        b.operationalMw + b.plannedMw - (a.operationalMw + a.plannedMw) ||
+        a.state.localeCompare(b.state)
+    )
+    .slice(0, n);
+}
+
+// ============================================================
 // Water use helpers (used by /stats Water use section)
 // ============================================================
 
