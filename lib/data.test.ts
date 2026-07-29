@@ -15,6 +15,7 @@ import {
   getStateAiClassificationCounts,
   getConfidenceCounts,
   getWaterUsage,
+  getFacilitiesByWaterUsage,
   getCoolingTypeCounts,
   getFacilityTypeCounts,
   getCommunityReceptionCounts,
@@ -484,6 +485,47 @@ describe("getWaterUsage", () => {
     for (const id of countedIds) {
       expect(cancelledIds.has(id)).toBe(false);
     }
+  });
+});
+
+describe("getFacilitiesByWaterUsage", () => {
+  it("returns only non-cancelled facilities with a positive reportedMgd", async () => {
+    const results = await getFacilitiesByWaterUsage(100);
+    expect(results.length).toBeGreaterThan(0);
+    for (const f of results) {
+      expect(f.status).not.toBe("cancelled");
+      expect(typeof f.water?.reportedMgd).toBe("number");
+      expect(f.water!.reportedMgd!).toBeGreaterThan(0);
+    }
+  });
+
+  it("sorts by reportedMgd desc, tie-broken by name A→Z", async () => {
+    const results = await getFacilitiesByWaterUsage(100);
+    for (let i = 1; i < results.length; i++) {
+      const prevMgd = results[i - 1].water!.reportedMgd!;
+      const curMgd = results[i].water!.reportedMgd!;
+      expect(prevMgd).toBeGreaterThanOrEqual(curMgd);
+      if (prevMgd === curMgd) {
+        expect(
+          results[i - 1].name.localeCompare(results[i].name)
+        ).toBeLessThanOrEqual(0);
+      }
+    }
+  });
+
+  it("respects the n parameter and defaults to 10", async () => {
+    const expectedCount = (await getAllFacilities()).filter(
+      (f) =>
+        f.status !== "cancelled" &&
+        typeof f.water?.reportedMgd === "number" &&
+        f.water.reportedMgd > 0
+    ).length;
+
+    const defaultResults = await getFacilitiesByWaterUsage();
+    expect(defaultResults.length).toBe(Math.min(10, expectedCount));
+
+    const limited = await getFacilitiesByWaterUsage(2);
+    expect(limited.length).toBe(Math.min(2, expectedCount));
   });
 });
 

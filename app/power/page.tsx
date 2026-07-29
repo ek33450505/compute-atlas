@@ -6,7 +6,10 @@ import {
   getGenerationByOfftaker,
   getGenerationStats,
   getEnergySourceCounts,
+  getFacilitiesByWaterUsage,
+  getCoolingTypeCounts,
   type EnergySource,
+  type CoolingType,
 } from "@/lib/data";
 import { formatCapacity, formatLocation, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
@@ -34,6 +37,11 @@ function technologyLabel(f: PowerGenerationFacility): string {
   return getGenerationTechnologyLabel(f.generation?.technology);
 }
 
+/** Formats a reported daily water figure as MGD (1 decimal), e.g. "12.5 MGD". */
+function formatMgd(mgd: number): string {
+  return `${mgd.toFixed(1)} MGD`;
+}
+
 /** Display order + labels for `energy.source` — mirrors the § Energy section on /stats. */
 const ENERGY_SOURCE_ENTRIES: { key: EnergySource; label: string }[] = [
   { key: "grid", label: "Grid" },
@@ -44,6 +52,14 @@ const ENERGY_SOURCE_ENTRIES: { key: EnergySource; label: string }[] = [
   { key: "hydro", label: "Hydro" },
   { key: "wind", label: "Wind" },
   { key: "other", label: "Other" },
+];
+
+/** Display order + labels for `water.coolingType` — ordered by water intensity (high -> minimal), mirrors /stats § Water use. */
+const COOLING_TYPE_ENTRIES: { key: CoolingType; label: string }[] = [
+  { key: "evaporative", label: "Evaporative (high water)" },
+  { key: "hybrid", label: "Hybrid" },
+  { key: "closed_loop", label: "Closed-loop (low water)" },
+  { key: "air", label: "Air-cooled (minimal)" },
 ];
 
 export const metadata: Metadata = {
@@ -62,11 +78,20 @@ export const metadata: Metadata = {
  * visual language (masthead, survey-stat row, § progress-bar sections).
  */
 export default async function PowerPage() {
-  const [stats, offtakerGroups, projects, energySourceCounts] = await Promise.all([
+  const [
+    stats,
+    offtakerGroups,
+    projects,
+    energySourceCounts,
+    topWaterFacilities,
+    coolingTypeCounts,
+  ] = await Promise.all([
     getGenerationStats(),
     getGenerationByOfftaker(),
     getPowerGenerationFacilities(),
     getEnergySourceCounts(),
+    getFacilitiesByWaterUsage(),
+    getCoolingTypeCounts(),
   ]);
   const allProjects = [...projects].sort(
     (a, b) =>
@@ -90,6 +115,14 @@ export default async function PowerPage() {
   );
   const energySourceReporting = energySourceRows.reduce(
     (sum, { key }) => sum + energySourceCounts[key],
+    0
+  );
+
+  const coolingTypeRows = COOLING_TYPE_ENTRIES.filter(
+    ({ key }) => coolingTypeCounts[key] > 0
+  );
+  const coolingTypeReporting = coolingTypeRows.reduce(
+    (sum, { key }) => sum + coolingTypeCounts[key],
     0
   );
 
@@ -370,6 +403,103 @@ export default async function PowerPage() {
           <p className="text-sm text-muted-foreground">
             Power-source data isn&apos;t tracked for any facility yet.
           </p>
+        )}
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § Water use                                                         */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="water-use-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <div className="space-y-2">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § Water use
+          </p>
+          <h2
+            id="water-use-heading"
+            className="font-display text-2xl text-foreground"
+          >
+            Facility-level water use
+          </h2>
+        </div>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          Cooling water is one of the least-transparent civic costs of a data
+          center, and this is a reported floor, not a dataset total — most
+          facilities don&apos;t publish a daily water figure.
+          {topWaterFacilities.length > 0
+            ? ` ${topWaterFacilities.length} tracked ${
+                topWaterFacilities.length === 1
+                  ? "facility discloses"
+                  : "facilities disclose"
+              } one, ranked below.`
+            : " No facilities disclose a daily water figure yet."}
+        </p>
+        {topWaterFacilities.length > 0 ? (
+          <ul className="divide-y divide-border">
+            {topWaterFacilities.map((f) => (
+              <li key={f.id}>
+                <Link
+                  href={`/facilities/${f.id}`}
+                  className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                >
+                  <span className="flex flex-col gap-0.5 min-w-0">
+                    <span className="text-sm text-foreground truncate">
+                      {f.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {formatLocation(f)}
+                    </span>
+                  </span>
+                  <span className="font-mono tabular-nums text-xs text-muted-foreground shrink-0">
+                    {formatMgd(f.water!.reportedMgd!)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No facilities disclose a daily water figure yet.
+          </p>
+        )}
+        {coolingTypeRows.length > 0 && (
+          <div className="space-y-4">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              Cooling method
+            </p>
+            <ul className="space-y-4">
+              {coolingTypeRows.map(({ key, label }) => {
+                const count = coolingTypeCounts[key];
+                const pct =
+                  coolingTypeReporting > 0
+                    ? (count / coolingTypeReporting) * 100
+                    : 0;
+                return (
+                  <li key={key} className="space-y-1.5">
+                    <div className="flex items-baseline justify-between gap-2 text-sm">
+                      <span className="text-foreground">{label}</span>
+                      <span className="font-mono tabular-nums text-muted-foreground">
+                        {count} &middot; {pct.toFixed(0)}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        aria-hidden="true"
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${pct.toFixed(2)}%`,
+                          backgroundColor: "var(--primary)",
+                          opacity: 0.7,
+                        }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         )}
       </section>
 
