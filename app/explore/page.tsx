@@ -70,6 +70,12 @@ const LENSES = [
       "The biggest tracked projects, largest operators, and states with the most capacity — ranked by tracked megawatts.",
   },
   {
+    label: "Learn",
+    href: "/learn",
+    description:
+      "Plain-language explainers behind the dataset — data center water and power use, what counts as an AI facility, and why communities push back.",
+  },
+  {
     label: "API",
     href: "/api",
     description:

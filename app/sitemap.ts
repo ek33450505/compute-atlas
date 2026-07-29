@@ -3,6 +3,7 @@ import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/d
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
 import { METROS } from "@/lib/metros";
+import { GLOSSARY_TOPICS } from "@/lib/glossary";
 import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
 
@@ -227,6 +228,33 @@ export async function buildMetroRoutes(): Promise<MetadataRoute.Sitemap> {
   ];
 }
 
+/**
+ * Builds the /learn index + 5 per-topic route entries for the sitemap.
+ * `GLOSSARY_TOPICS` (lib/glossary.ts) is a static content registry, not a
+ * facility-derived query — unlike buildStatusRoutes/buildMetroRoutes there's
+ * no dataset to await, so this builder is synchronous (mirrors
+ * buildStaticRoutes' sync shape) while still following the index-plus-N-
+ * children structure of buildStatusRoutes/buildMetroRoutes. Exported
+ * separately so it can be unit-tested without Next.js.
+ */
+export function buildLearnRoutes(): MetadataRoute.Sitemap {
+  const lastModified = new Date();
+  return [
+    {
+      url: `${siteConfig.url}/learn`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...GLOSSARY_TOPICS.map((topic) => ({
+      url: `${siteConfig.url}/learn/${topic.slug}`,
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
+  ];
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [stateRoutes, operatorRoutes, facilityRoutes, statusRoutes, metroRoutes] =
     await Promise.all([
@@ -238,6 +266,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
   return [
     ...buildStaticRoutes(),
+    ...buildLearnRoutes(),
     ...stateRoutes,
     ...operatorRoutes,
     ...facilityRoutes,
