@@ -6,11 +6,13 @@ import {
   buildFacilityRoutes,
   buildStatusRoutes,
   buildMetroRoutes,
+  buildLearnRoutes,
 } from "@/app/sitemap";
 import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
 import { METROS } from "@/lib/metros";
+import { GLOSSARY_TOPICS } from "@/lib/glossary";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
@@ -83,6 +85,17 @@ describe("sitemap", () => {
     }
     // 1 index + 27 per-metro entries, no duplicates.
     expect(metroRoutes).toHaveLength(METROS.length + 1);
+  });
+
+  it("learn routes include /learn and all 5 /learn/:slug routes, derived from GLOSSARY_TOPICS", () => {
+    const learnRoutes = buildLearnRoutes();
+    const urls = learnRoutes.map((r) => r.url);
+    expect(urls).toContain(`${siteConfig.url}/learn`);
+    for (const topic of GLOSSARY_TOPICS) {
+      expect(urls).toContain(`${siteConfig.url}/learn/${topic.slug}`);
+    }
+    // 1 index + 5 per-topic entries, no duplicates.
+    expect(learnRoutes).toHaveLength(GLOSSARY_TOPICS.length + 1);
   });
 
   it("state hub lastModified is derived from the state's facilities, not 'new Date()' now", async () => {
