@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { GET, POST } from "./route";
 import { __resetApiRateLimit, API_RATE_LIMIT_MAX } from "@/lib/api-rate-limit";
+import facilitiesRaw from "@/data/facilities.json";
 
 function req(query: string): Request {
   return new Request(`http://localhost/api/facilities${query}`);
@@ -25,7 +26,7 @@ describe("GET /api/facilities", () => {
   it("returns the full dataset with no filters", async () => {
     const res = await GET(req(""));
     const body = await res.json();
-    expect(body.count).toBe(310);
+    expect(body.count).toBe(facilitiesRaw.length);
     expect(body.facilities.length).toBe(body.count);
   });
 
@@ -38,7 +39,7 @@ describe("GET /api/facilities", () => {
     const res = await GET(req("?status=operational"));
     const body = await res.json();
     expect(body.count).toBeGreaterThan(0);
-    expect(body.count).toBeLessThan(310);
+    expect(body.count).toBeLessThan(facilitiesRaw.length);
     expect(
       body.facilities.every((f: { status: string }) => f.status === "operational")
     ).toBe(true);
@@ -47,7 +48,10 @@ describe("GET /api/facilities", () => {
   it("narrows by ?type=power_generation", async () => {
     const res = await GET(req("?type=power_generation"));
     const body = await res.json();
-    expect(body.count).toBe(5);
+    expect(body.count).toBe(
+      facilitiesRaw.filter((f: { facilityType: string }) => f.facilityType === "power_generation")
+        .length
+    );
   });
 
   it("accepts comma-separated values for a single param", async () => {
@@ -77,14 +81,14 @@ describe("GET /api/facilities", () => {
     // "bogus" is not a valid STATUS_ORDER member, so it's filtered out of the
     // statuses array; an empty statuses array means no status constraint —
     // the full dataset is returned, not zero results.
-    expect(body.count).toBe(310);
+    expect(body.count).toBe(facilitiesRaw.length);
   });
 
   it("narrows by ?q= substring", async () => {
     const res = await GET(req("?q=aws"));
     const body = await res.json();
     expect(body.count).toBeGreaterThan(0);
-    expect(body.count).toBeLessThan(310);
+    expect(body.count).toBeLessThan(facilitiesRaw.length);
   });
 
   it("carries a public Cache-Control header", async () => {
