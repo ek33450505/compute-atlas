@@ -1,5 +1,5 @@
 import { STATUS_META, type Status } from "@/lib/status";
-import type { Facility } from "@/lib/schema";
+import { aiClassificationEnum, type Facility } from "@/lib/schema";
 
 /**
  * Returns the maximum of operational/planned capacity in MW, or undefined if
@@ -56,6 +56,21 @@ export const AI_CLASSIFICATION_LABELS: Record<string, string> = {
   confirmed: "AI-specific",
   likely: "Likely AI-specific",
   mixed_use: "Mixed-use",
+};
+
+/**
+ * Confidence-tier labels for the aiClassification enum, for aggregate/breakdown
+ * contexts where the page already establishes the AI framing (/ai, /stats,
+ * /states/[state], the admin form). Per-facility contexts use
+ * {@link AI_CLASSIFICATION_LABELS} above, which is self-describing ("AI-specific").
+ */
+export const AI_CLASSIFICATION_CONFIDENCE_LABELS: Record<
+  (typeof aiClassificationEnum.options)[number],
+  string
+> = {
+  confirmed: "Confirmed",
+  likely: "Likely",
+  mixed_use: "Mixed use",
 };
 
 /** Human-readable labels for the confidence enum. */

@@ -16,21 +16,11 @@ import {
 } from "@/lib/us-states";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
-import { formatCapacity, formatLocation } from "@/lib/format";
+import { formatCapacity, formatLocation, AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { WatchButton } from "@/components/subscribe/watch-button";
 import { aiClassificationEnum } from "@/lib/schema";
-
-/** Display labels for AI classification enum keys — mirrors app/ai/page.tsx. */
-const AI_CLASSIFICATION_LABELS: Record<
-  (typeof aiClassificationEnum.options)[number],
-  string
-> = {
-  confirmed: "Confirmed",
-  likely: "Likely",
-  mixed_use: "Mixed use",
-};
 
 export const revalidate = false;
 
@@ -422,7 +412,7 @@ export default async function StatePage({
               .map((key) => (
                 <li key={key} className="flex items-baseline justify-between gap-2">
                   <span className="text-foreground">
-                    {AI_CLASSIFICATION_LABELS[key]}
+                    {AI_CLASSIFICATION_CONFIDENCE_LABELS[key]}
                   </span>
                   <span className="font-mono tabular-nums text-muted-foreground">
                     {aiCounts[key]}

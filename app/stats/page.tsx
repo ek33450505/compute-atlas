@@ -24,6 +24,7 @@ import type { Facility } from "@/lib/schema";
 import { aiClassificationEnum } from "@/lib/schema";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
+import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 
 export const revalidate = 3600;
 
@@ -32,16 +33,6 @@ export const metadata: Metadata = {
   description:
     "Coverage and completeness of the Compute Atlas dataset — facilities tracked, lifecycle status, civic-data coverage, and evidence quality across the U.S. grid-scale compute buildout.",
   alternates: { canonical: "/stats" },
-};
-
-/** Display labels for AI classification enum keys. */
-const AI_CLASSIFICATION_LABELS: Record<
-  (typeof aiClassificationEnum.options)[number],
-  string
-> = {
-  confirmed: "Confirmed",
-  likely: "Likely",
-  mixed_use: "Mixed use",
 };
 
 /** Display labels for confidence enum keys. */
@@ -612,11 +603,11 @@ export default async function StatsPage() {
             </p>
             <dl className="space-y-2 text-sm">
               {(
-                Object.keys(AI_CLASSIFICATION_LABELS) as (typeof aiClassificationEnum.options)[number][]
+                Object.keys(AI_CLASSIFICATION_CONFIDENCE_LABELS) as (typeof aiClassificationEnum.options)[number][]
               ).map(
                 (key) => (
                   <div key={key} className="flex items-baseline justify-between gap-2">
-                    <dt className="text-foreground">{AI_CLASSIFICATION_LABELS[key]}</dt>
+                    <dt className="text-foreground">{AI_CLASSIFICATION_CONFIDENCE_LABELS[key]}</dt>
                     <dd className="font-mono tabular-nums text-muted-foreground">
                       {aiCounts[key]}
                     </dd>

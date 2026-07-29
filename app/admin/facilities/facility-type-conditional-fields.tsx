@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 import { aiClassificationEnum } from "@/lib/schema";
 import type { FacilityType } from "@/lib/facility-type";
 
@@ -131,15 +132,6 @@ export function FacilityTypeConditionalFields({
 // Shared: aiClassification select (data_center + crypto_mining only)
 // ---------------------------------------------------------------------------
 
-const AI_CLASSIFICATION_LABELS: Record<
-  (typeof aiClassificationEnum.options)[number],
-  string
-> = {
-  confirmed: "Confirmed",
-  likely: "Likely",
-  mixed_use: "Mixed use",
-};
-
 function AiClassificationField({
   value,
   onChange,
@@ -157,7 +149,7 @@ function AiClassificationField({
         <SelectContent>
           {aiClassificationEnum.options.map((option) => (
             <SelectItem key={option} value={option}>
-              {AI_CLASSIFICATION_LABELS[option]}
+              {AI_CLASSIFICATION_CONFIDENCE_LABELS[option]}
             </SelectItem>
           ))}
         </SelectContent>
