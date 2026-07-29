@@ -13,10 +13,11 @@ import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/commun
 import { getFacilityMaxMw } from "@/lib/format";
 import { getMetroBySlug, metroCountyKey } from "@/lib/metros";
 import facilitiesRaw from "@/data/facilities.json";
-import { desc, eq, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
+import type { DiffEntry } from "@/lib/doc-diff";
 
 /** Parses and validates the bundled JSON fallback. Throws loudly on bad data. */
 function loadFromJson(): Facility[] {
@@ -1053,5 +1054,124 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
     // both render their existing empty state instead of the error boundary.
     console.warn("getRecentActivity: activity feed unavailable, degrading to empty", err);
     return [];
+  }
+}
+
+// ============================================================
+// Quarterly pipeline summary (used by the power/pipeline SEO lens)
+// ============================================================
+
+/** Aggregate counts of pipeline events (creates, status changes, cancellations) in the current calendar quarter. */
+export interface QuarterlyPipelineSummary {
+  newThisQuarter: number;
+  cancelledThisQuarter: number;
+  statusChangesThisQuarter: number;
+}
+
+/**
+ * Returns `{ start, end }` (end exclusive) for the calendar quarter containing
+ * `now`, computed in UTC so the result doesn't depend on the host machine's
+ * local timezone. Q1 = Jan-Mar, Q2 = Apr-Jun, Q3 = Jul-Sep, Q4 = Oct-Dec.
+ * `Date.UTC` naturally rolls a Q4 end into January of the following year.
+ */
+function getCurrentQuarterRange(now: Date = new Date()): { start: Date; end: Date } {
+  const year = now.getUTCFullYear();
+  const quarterIndex = Math.floor(now.getUTCMonth() / 3); // 0..3
+  const start = new Date(Date.UTC(year, quarterIndex * 3, 1, 0, 0, 0, 0));
+  const end = new Date(Date.UTC(year, quarterIndex * 3 + 3, 1, 0, 0, 0, 0));
+  return { start, end };
+}
+
+/**
+ * Returns quarter-scoped pipeline counts for the /power pipeline lens, driven
+ * entirely off `facility_history` (never `submissions` — see CLAUDE.md's
+ * write-staging invariant docs; a submission's approval is what produces the
+ * history row this reads).
+ *
+ * `facility_history.change_type` is only `create | update | delete` (see
+ * lib/db/schema.ts) — there is no distinct "cancelled" or "status-change"
+ * change type, so those two counts can't be read off `change_type` alone.
+ * Instead this inspects each `update` row's stored `diff` (`DiffEntry[]`,
+ * computed once at write time by `lib/facility-write.ts` via
+ * `computeDocDiff`, which diffs the full Facility doc at its top level):
+ *   - `statusChangesThisQuarter` counts `update` rows whose diff contains a
+ *     `key === "status"` entry — i.e. rows where the facility's `status`
+ *     field itself changed, not just any field.
+ *   - `cancelledThisQuarter` counts the distinct facilities among those whose
+ *     status-diff entry's `after` value is `"cancelled"` — i.e. facilities
+ *     that transitioned TO cancelled during the quarter. This is a real
+ *     event count, not a "current status is cancelled" snapshot, so a later
+ *     reversal within the same quarter doesn't retroactively invalidate it.
+ * Both are exact, dataset-derived counts — no fabrication, no submissions read.
+ *
+ * DB-only: degrades to the all-zero object when `DATABASE_URL` is unset (the
+ * JSON fallback bundle has no history to scope), and the query is wrapped in
+ * try/catch so a live DB failure also degrades to zero rather than throwing
+ * into the SEO lens page — same pattern as `getRecentActivity`.
+ */
+export async function getQuarterlyPipelineSummary(): Promise<QuarterlyPipelineSummary> {
+  const empty: QuarterlyPipelineSummary = {
+    newThisQuarter: 0,
+    cancelledThisQuarter: 0,
+    statusChangesThisQuarter: 0,
+  };
+
+  if (!hasDatabaseUrl()) {
+    return empty;
+  }
+
+  const db = getDb();
+  const { start, end } = getCurrentQuarterRange();
+
+  try {
+    const rows = await db
+      .select({
+        facilityId: facilityHistoryTable.facilityId,
+        changeType: facilityHistoryTable.changeType,
+        diff: facilityHistoryTable.diff,
+      })
+      .from(facilityHistoryTable)
+      .where(
+        and(
+          inArray(facilityHistoryTable.changeType, ["create", "update"]),
+          gte(facilityHistoryTable.changedAt, start),
+          lt(facilityHistoryTable.changedAt, end)
+        )
+      );
+
+    let newThisQuarter = 0;
+    let statusChangesThisQuarter = 0;
+    const cancelledFacilityIds = new Set<string>();
+
+    for (const row of rows) {
+      if (row.changeType === "create") {
+        newThisQuarter++;
+        continue;
+      }
+
+      const statusEntry = (row.diff as DiffEntry[]).find((entry) => entry.key === "status");
+      if (!statusEntry) {
+        continue;
+      }
+
+      statusChangesThisQuarter++;
+      if (statusEntry.after === "cancelled") {
+        cancelledFacilityIds.add(row.facilityId);
+      }
+    }
+
+    return {
+      newThisQuarter,
+      cancelledThisQuarter: cancelledFacilityIds.size,
+      statusChangesThisQuarter,
+    };
+  } catch (err) {
+    // A live query failure (DB unreachable or over-quota) degrades to the
+    // all-zero summary rather than throwing into the pipeline lens page.
+    console.warn(
+      "getQuarterlyPipelineSummary: pipeline summary unavailable, degrading to zero",
+      err
+    );
+    return empty;
   }
 }

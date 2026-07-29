@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Rss } from "lucide-react";
 
-import { getRecentActivity } from "@/lib/data";
+import { getQuarterlyPipelineSummary, getRecentActivity } from "@/lib/data";
 import { ActivityList } from "@/app/activity/activity-list";
 import { WatchButton } from "@/components/subscribe/watch-button";
 
@@ -22,7 +22,20 @@ const ACTIVITY_LIMIT = 50;
  * community contributions into a single list (see `getRecentActivity`).
  */
 export default async function ActivityPage() {
-  const entries = await getRecentActivity(ACTIVITY_LIMIT);
+  const [entries, pipelineSummary] = await Promise.all([
+    getRecentActivity(ACTIVITY_LIMIT),
+    getQuarterlyPipelineSummary(),
+  ]);
+
+  const {
+    newThisQuarter,
+    cancelledThisQuarter,
+    statusChangesThisQuarter,
+  } = pipelineSummary;
+  const hasPipelineActivity =
+    newThisQuarter > 0 ||
+    cancelledThisQuarter > 0 ||
+    statusChangesThisQuarter > 0;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
@@ -50,6 +63,12 @@ export default async function ActivityPage() {
           <WatchButton targetType="all" label="Watch all updates" />
         </div>
       </div>
+
+      <p className="mb-8 rounded-md border border-border px-4 py-3 font-mono text-sm text-muted-foreground">
+        {hasPipelineActivity
+          ? `This quarter: ${newThisQuarter} new · ${cancelledThisQuarter} cancelled · ${statusChangesThisQuarter} status changes`
+          : "No pipeline changes recorded this quarter yet."}
+      </p>
 
       <ActivityList entries={entries} />
     </div>
