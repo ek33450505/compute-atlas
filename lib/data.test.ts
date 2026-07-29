@@ -11,6 +11,8 @@ import {
   getTopStates,
   getTopOperators,
   getAiClassificationCounts,
+  getAiClassificationByState,
+  getStateAiClassificationCounts,
   getConfidenceCounts,
   getWaterUsage,
   getCoolingTypeCounts,
@@ -324,6 +326,93 @@ describe("getAiClassificationCounts", () => {
       (f) => f.facilityType === "data_center" && f.aiClassification
     ).length;
     expect(sum).toBe(classifiedDataCenterCount);
+  });
+});
+
+describe("getAiClassificationByState", () => {
+  it("omits states with zero AI-classified data_center facilities (no all-zero rows)", async () => {
+    for (const { counts } of await getAiClassificationByState()) {
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      expect(total).toBeGreaterThan(0);
+    }
+  });
+
+  it("each state's counts have exactly the aiClassificationEnum option keys", async () => {
+    const byState = await getAiClassificationByState();
+    expect(byState.length).toBeGreaterThan(0);
+    for (const { counts } of byState) {
+      expect(Object.keys(counts).sort()).toEqual([...aiClassificationEnum.options].sort());
+    }
+  });
+
+  it("sum across all states equals the count of AI-classified data_center facilities (excludes crypto_mining and unset)", async () => {
+    const byState = await getAiClassificationByState();
+    const sum = byState.reduce(
+      (total, { counts }) => total + Object.values(counts).reduce((a, b) => a + b, 0),
+      0
+    );
+    const classifiedDataCenterCount = (await getAllFacilities()).filter(
+      (f) => f.facilityType === "data_center" && f.aiClassification
+    ).length;
+    expect(sum).toBe(classifiedDataCenterCount);
+  });
+
+  it("each state's per-classification counts match a direct filter of the dataset", async () => {
+    const byState = await getAiClassificationByState();
+    const facilities = await getAllFacilities();
+    for (const { state, counts } of byState) {
+      for (const key of aiClassificationEnum.options) {
+        const expected = facilities.filter(
+          (f) =>
+            f.facilityType === "data_center" &&
+            f.aiClassification === key &&
+            f.location.state === state
+        ).length;
+        expect(counts[key]).toBe(expected);
+      }
+    }
+  });
+
+  it("sorts by total AI-classified count desc, then state A→Z (deterministic tie-break)", async () => {
+    const byState = await getAiClassificationByState();
+    for (let i = 1; i < byState.length; i++) {
+      const prevTotal = Object.values(byState[i - 1].counts).reduce((a, b) => a + b, 0);
+      const curTotal = Object.values(byState[i].counts).reduce((a, b) => a + b, 0);
+      expect(curTotal).toBeLessThanOrEqual(prevTotal);
+      if (curTotal === prevTotal) {
+        expect(byState[i].state.localeCompare(byState[i - 1].state)).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
+describe("getStateAiClassificationCounts", () => {
+  it("returns the all-zero record for a state with no AI-classified facilities", async () => {
+    const counts = await getStateAiClassificationCounts("ZZ");
+    expect(Object.keys(counts).sort()).toEqual([...aiClassificationEnum.options].sort());
+    expect(Object.values(counts).every((n) => n === 0)).toBe(true);
+  });
+
+  it("matches the corresponding entry from getAiClassificationByState for a known state", async () => {
+    const byState = await getAiClassificationByState();
+    expect(byState.length).toBeGreaterThan(0);
+    const { state, counts: expected } = byState[0];
+    const counts = await getStateAiClassificationCounts(state);
+    expect(counts).toEqual(expected);
+  });
+
+  it("excludes crypto_mining facilities and data_center facilities lacking aiClassification", async () => {
+    const facilities = await getAllFacilities();
+    const state = facilities.find((f) => f.facilityType === "data_center")!.location.state;
+    const counts = await getStateAiClassificationCounts(state);
+    const sum = Object.values(counts).reduce((a, b) => a + b, 0);
+    const expected = facilities.filter(
+      (f) =>
+        f.facilityType === "data_center" &&
+        f.aiClassification &&
+        f.location.state === state
+    ).length;
+    expect(sum).toBe(expected);
   });
 });
 
