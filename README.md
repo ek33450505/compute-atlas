@@ -2,7 +2,9 @@
 
 [![Compute Atlas — an interactive, source-cited map of U.S. grid-scale compute infrastructure](docs/media/map.png)](https://www.compute-atlas.com)
 
-[![facilities](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fek33450505%2Fcompute-atlas%2Fmain%2Fdata%2Ffacilities.json&query=%24.length&label=facilities&color=3F5B43&style=flat)](data/facilities.json)
+[![CI](https://github.com/ek33450505/compute-atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/ek33450505/compute-atlas/actions/workflows/ci.yml)
+[![facilities](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwww.compute-atlas.com%2Fapi%2Fstats&query=%24.count&label=facilities&color=3F5B43&style=flat)](https://www.compute-atlas.com/api/stats)
+[![states](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwww.compute-atlas.com%2Fapi%2Fstats&query=%24.states&label=states&color=3F5B43&style=flat)](https://www.compute-atlas.com/api/stats)
 [![code: MIT](https://img.shields.io/badge/code-MIT-informational?style=flat)](LICENSE)
 [![data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational?style=flat)](LICENSE-DATA)
 
@@ -20,7 +22,7 @@ Intended audience: journalists, researchers, local officials, and residents.
 
 ## The numbers
 
-The live facility count is shown in the badge above (read directly from `data/facilities.json`). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the live **[Statistics page](https://www.compute-atlas.com/stats)**, or read the raw data in [`data/facilities.json`](data/facilities.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
+The live facility and state counts are shown in the badges above (read live from the public **[`/api/stats`](https://www.compute-atlas.com/api/stats)** endpoint, so they never drift). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the live **[Statistics page](https://www.compute-atlas.com/stats)**, or read the raw data in [`data/facilities.json`](data/facilities.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
 
 ## How the data is built
 

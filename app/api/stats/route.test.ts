@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { GET } from "./route";
 import { __resetApiRateLimit, API_RATE_LIMIT_MAX } from "@/lib/api-rate-limit";
+import facilitiesRaw from "@/data/facilities.json";
 
 function req(): Request {
   return new Request("http://localhost/api/stats");
@@ -22,7 +23,7 @@ describe("GET /api/stats", () => {
       plannedMw: expect.any(Number),
       underConstructionMw: expect.any(Number),
     });
-    expect(body.count).toBe(310);
+    expect(body.count).toBe(facilitiesRaw.length);
   });
 
   it("carries the shared CORS header", async () => {
