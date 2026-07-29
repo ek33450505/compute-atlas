@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0](https://github.com/ek33450505/compute-atlas/compare/v1.3.0...v1.4.0) (2026-07-29)
+
+
+### Features
+
+* **seo:** power depth + quarterly pipeline freshness (Tier 2 Session 4) ([#54](https://github.com/ek33450505/compute-atlas/issues/54)) ([6c94515](https://github.com/ek33450505/compute-atlas/commit/6c945153e386378d4ea6486001d97da0f6597e8f))
+
 ## [1.3.0](https://github.com/ek33450505/compute-atlas/compare/v1.2.0...v1.3.0) (2026-07-29)
 
 
