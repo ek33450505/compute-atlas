@@ -7,6 +7,7 @@ import {
   getFacilitiesByStateCached,
   getStateSummaryCached,
   getNotableOppositionCases,
+  getStateAiClassificationCounts,
 } from "@/lib/data";
 import {
   stateNameFromCode,
@@ -19,6 +20,17 @@ import { formatCapacity, formatLocation } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { WatchButton } from "@/components/subscribe/watch-button";
+import { aiClassificationEnum } from "@/lib/schema";
+
+/** Display labels for AI classification enum keys — mirrors app/ai/page.tsx. */
+const AI_CLASSIFICATION_LABELS: Record<
+  (typeof aiClassificationEnum.options)[number],
+  string
+> = {
+  confirmed: "Confirmed",
+  likely: "Likely",
+  mixed_use: "Mixed use",
+};
 
 export const revalidate = false;
 
@@ -95,6 +107,12 @@ export default async function StatePage({
           (f) => f.location.state === code
         )
       : undefined;
+
+  // Cross-link callout (SEO Task 6.3): per-classification AI counts for this
+  // state; the callout below renders nothing when the total is zero.
+  const aiCounts = await getStateAiClassificationCounts(code);
+  const totalAiClassified =
+    aiCounts.confirmed + aiCounts.likely + aiCounts.mixed_use;
 
   const TOP_OPERATORS_DISPLAY = 15;
   const displayedOperators = summary.topOperators.slice(0, TOP_OPERATORS_DISPLAY);
@@ -370,6 +388,67 @@ export default async function StatePage({
           </p>
         )}
       </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § AI classification (SEO Task 6.3): cross-link callout, mirrors the */}
+      {/* Community-reception callout's conditional-render approach — renders */}
+      {/* nothing when this state has no AI-classified facilities.           */}
+      {/* ------------------------------------------------------------------ */}
+      {totalAiClassified > 0 && (
+        <section
+          aria-labelledby="ai-classification-heading"
+          className="space-y-6 border-t border-border pt-10"
+        >
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § AI classification
+          </p>
+          <h2
+            id="ai-classification-heading"
+            className="font-display text-2xl text-foreground"
+          >
+            AI-classified facilities
+          </h2>
+          <div className="flex flex-col gap-1">
+            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+              {totalAiClassified}
+            </span>
+            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Data center{totalAiClassified === 1 ? "" : "s"} with an AI classification
+            </span>
+          </div>
+          <ul className="space-y-2 text-sm">
+            {aiClassificationEnum.options
+              .filter((key) => aiCounts[key] > 0)
+              .map((key) => (
+                <li key={key} className="flex items-baseline justify-between gap-2">
+                  <span className="text-foreground">
+                    {AI_CLASSIFICATION_LABELS[key]}
+                  </span>
+                  <span className="font-mono tabular-nums text-muted-foreground">
+                    {aiCounts[key]}
+                  </span>
+                </li>
+              ))}
+          </ul>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            See the{" "}
+            <Link
+              href="/ai"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              AI data center hub
+            </Link>{" "}
+            for national context, or browse the{" "}
+            <Link
+              href="#facilities-heading"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              full facility list for {stateName}
+            </Link>{" "}
+            below.
+          </p>
+        </section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* § Operators                                                         */}

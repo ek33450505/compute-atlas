@@ -376,6 +376,63 @@ export async function getAiClassificationCounts(): Promise<Record<
 }
 
 /**
+ * Returns AI classification counts grouped by state, across data-center
+ * facilities only (mirrors the `getAiClassificationCounts` exclusion logic).
+ * Each state's record seeds all keys from `aiClassificationEnum.options` at 0
+ * before tallying. States with no AI-classified data-center facility are
+ * omitted entirely (no all-zero rows). Sorted by total AI-classified count
+ * desc, then state A→Z (deterministic tie-break).
+ */
+export async function getAiClassificationByState(): Promise<
+  { state: string; counts: Record<z.infer<typeof aiClassificationEnum>, number> }[]
+> {
+  const facilities = await loadFacilities();
+  const byState = new Map<string, Record<z.infer<typeof aiClassificationEnum>, number>>();
+  for (const f of facilities) {
+    if (f.facilityType !== "data_center" || !f.aiClassification) continue;
+    const state = f.location.state;
+    if (!byState.has(state)) {
+      byState.set(
+        state,
+        Object.fromEntries(
+          aiClassificationEnum.options.map((k) => [k, 0])
+        ) as Record<z.infer<typeof aiClassificationEnum>, number>
+      );
+    }
+    byState.get(state)![f.aiClassification]++;
+  }
+  return [...byState.entries()]
+    .map(([state, counts]) => ({ state, counts }))
+    .sort((a, b) => {
+      const totalA = Object.values(a.counts).reduce((sum, n) => sum + n, 0);
+      const totalB = Object.values(b.counts).reduce((sum, n) => sum + n, 0);
+      return totalB - totalA || a.state.localeCompare(b.state);
+    });
+}
+
+/**
+ * Returns AI classification counts for a single state, across data-center
+ * facilities only (mirrors the `getAiClassificationCounts` exclusion logic).
+ * Seeds all keys from `aiClassificationEnum.options` at 0 before tallying,
+ * so a state with no AI-classified data-center facility gracefully returns
+ * an all-zero record.
+ */
+export async function getStateAiClassificationCounts(
+  code: string
+): Promise<Record<z.infer<typeof aiClassificationEnum>, number>> {
+  const facilities = await loadFacilities();
+  const counts = Object.fromEntries(
+    aiClassificationEnum.options.map((k) => [k, 0])
+  ) as Record<z.infer<typeof aiClassificationEnum>, number>;
+  for (const f of facilities) {
+    if (f.facilityType === "data_center" && f.aiClassification && f.location.state === code) {
+      counts[f.aiClassification]++;
+    }
+  }
+  return counts;
+}
+
+/**
  * Returns a count per confidence level for all facilities.
  * Seeds all keys from `confidenceEnum.options` at 0 before tallying.
  */

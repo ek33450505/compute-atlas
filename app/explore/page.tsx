@@ -46,6 +46,12 @@ const LENSES = [
       "Bitcoin and altcoin mining sites, tracked separately from the AI data-center buildout.",
   },
   {
+    label: "AI classification",
+    href: "/ai",
+    description:
+      "Data centers by AI-classification density per state — confirmed, likely, or mixed-use.",
+  },
+  {
     label: "Opposition",
     href: "/opposition",
     description:
