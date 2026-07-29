@@ -35,6 +35,7 @@ import {
   getPoweredCampuses,
   getPoweredByGenerators,
   getRecentActivity,
+  getQuarterlyPipelineSummary,
 } from "@/lib/data";
 import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
@@ -739,6 +740,19 @@ describe("getRecentActivity", () => {
   // with getDb/hasDatabaseUrl mocked.
   it("returns an empty array when DATABASE_URL is unset", async () => {
     expect(await getRecentActivity()).toEqual([]);
+  });
+});
+
+describe("getQuarterlyPipelineSummary", () => {
+  // Same no-DB degrade path as getRecentActivity above. The DB-backed
+  // quarter-scoping/diff-inspection logic is covered separately in
+  // getQuarterlyPipelineSummary.db.test.ts with getDb/hasDatabaseUrl mocked.
+  it("returns the all-zero summary when DATABASE_URL is unset", async () => {
+    expect(await getQuarterlyPipelineSummary()).toEqual({
+      newThisQuarter: 0,
+      cancelledThisQuarter: 0,
+      statusChangesThisQuarter: 0,
+    });
   });
 });
 

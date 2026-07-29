@@ -5,6 +5,8 @@ import {
   getPowerGenerationFacilities,
   getGenerationByOfftaker,
   getGenerationStats,
+  getEnergySourceCounts,
+  type EnergySource,
 } from "@/lib/data";
 import { formatCapacity, formatLocation, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
@@ -32,6 +34,18 @@ function technologyLabel(f: PowerGenerationFacility): string {
   return getGenerationTechnologyLabel(f.generation?.technology);
 }
 
+/** Display order + labels for `energy.source` — mirrors the § Energy section on /stats. */
+const ENERGY_SOURCE_ENTRIES: { key: EnergySource; label: string }[] = [
+  { key: "grid", label: "Grid" },
+  { key: "mixed", label: "Mixed" },
+  { key: "on_site_gas", label: "On-site gas" },
+  { key: "nuclear", label: "Nuclear" },
+  { key: "solar", label: "Solar" },
+  { key: "hydro", label: "Hydro" },
+  { key: "wind", label: "Wind" },
+  { key: "other", label: "Other" },
+];
+
 export const metadata: Metadata = {
   title: "Data center power generation",
   description:
@@ -48,9 +62,13 @@ export const metadata: Metadata = {
  * visual language (masthead, survey-stat row, § progress-bar sections).
  */
 export default async function PowerPage() {
-  const stats = await getGenerationStats();
-  const offtakerGroups = await getGenerationByOfftaker();
-  const allProjects = [...(await getPowerGenerationFacilities())].sort(
+  const [stats, offtakerGroups, projects, energySourceCounts] = await Promise.all([
+    getGenerationStats(),
+    getGenerationByOfftaker(),
+    getPowerGenerationFacilities(),
+    getEnergySourceCounts(),
+  ]);
+  const allProjects = [...projects].sort(
     (a, b) =>
       (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
       a.name.localeCompare(b.name)
@@ -65,6 +83,14 @@ export default async function PowerPage() {
   }
   const presentTechnologies = GENERATION_TECHNOLOGY_ORDER.filter(
     (t) => (technologyCounts.get(t) ?? 0) > 0
+  );
+
+  const energySourceRows = ENERGY_SOURCE_ENTRIES.filter(
+    ({ key }) => energySourceCounts[key] > 0
+  );
+  const energySourceReporting = energySourceRows.reduce(
+    (sum, { key }) => sum + energySourceCounts[key],
+    0
   );
 
   if (stats.count === 0) {
@@ -116,7 +142,9 @@ export default async function PowerPage() {
         <p className="max-w-2xl text-base text-muted-foreground">
           Purpose-built generation — mostly nuclear and advanced SMRs — that
           hyperscalers are financing or contracting to feed AI and compute
-          demand directly, tracked here as its own facility layer.
+          demand directly, tracked here as its own facility layer. In plain
+          terms: these are data centers with their own power plant, generating
+          on-site rather than drawing solely from the grid.
         </p>
         <div className="border-t border-border" />
       </header>
@@ -277,6 +305,72 @@ export default async function PowerPage() {
             );
           })}
         </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § Energy source                                                     */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="energy-source-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <div className="space-y-2">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § Energy source
+          </p>
+          <h2
+            id="energy-source-heading"
+            className="font-display text-2xl text-foreground"
+          >
+            On-site generation vs. the grid
+          </h2>
+        </div>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          Beyond the dedicated projects above, individual data centers and
+          mining sites across the full dataset declare their own power
+          source — grid electricity, on-site generation, or a mix of both.
+          {energySourceReporting > 0
+            ? ` ${energySourceReporting} tracked ${
+                energySourceReporting === 1 ? "facility discloses" : "facilities disclose"
+              } this.`
+            : " No facilities disclose a power source yet."}
+        </p>
+        {energySourceRows.length > 0 ? (
+          <ul className="space-y-4">
+            {energySourceRows.map(({ key, label }) => {
+              const count = energySourceCounts[key];
+              const pct =
+                energySourceReporting > 0
+                  ? (count / energySourceReporting) * 100
+                  : 0;
+              return (
+                <li key={key} className="space-y-1.5">
+                  <div className="flex items-baseline justify-between gap-2 text-sm">
+                    <span className="text-foreground">{label}</span>
+                    <span className="font-mono tabular-nums text-muted-foreground">
+                      {count} &middot; {pct.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      aria-hidden="true"
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${pct.toFixed(2)}%`,
+                        backgroundColor: "var(--primary)",
+                        opacity: 0.7,
+                      }}
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Power-source data isn&apos;t tracked for any facility yet.
+          </p>
+        )}
       </section>
 
       {/* ------------------------------------------------------------------ */}
