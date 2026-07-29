@@ -40,6 +40,12 @@ const LENSES = [
       "Dedicated generation feeding the buildout, by offtaker and technology.",
   },
   {
+    label: "Crypto mining",
+    href: "/crypto",
+    description:
+      "Bitcoin and altcoin mining sites, tracked separately from the AI data-center buildout.",
+  },
+  {
     label: "Opposition",
     href: "/opposition",
     description:

@@ -30,6 +30,8 @@ import {
   normalizeOfftaker,
   getGenerationByOfftaker,
   getGenerationStats,
+  getCryptoMiningFacilities,
+  getCryptoMiningStats,
   getFacilitiesByCommunityStatus,
   getNotableOppositionCases,
   getPoweredCampuses,
@@ -805,6 +807,52 @@ describe("getGenerationStats", () => {
         .map(normalizeOfftaker)
     );
     expect((await getGenerationStats()).offtakerCount).toBe(distinct.size);
+  });
+});
+
+describe("getCryptoMiningFacilities", () => {
+  it("returns exactly the crypto_mining subset of getAllFacilities", async () => {
+    const expected = (await getAllFacilities()).filter(
+      (f) => f.facilityType === "crypto_mining"
+    );
+    expect((await getCryptoMiningFacilities()).length).toBe(expected.length);
+  });
+
+  it("every result has facilityType crypto_mining", async () => {
+    for (const f of await getCryptoMiningFacilities()) {
+      expect(f.facilityType).toBe("crypto_mining");
+    }
+  });
+});
+
+describe("getCryptoMiningStats", () => {
+  it("count matches getCryptoMiningFacilities length", async () => {
+    expect((await getCryptoMiningStats()).count).toBe(
+      (await getCryptoMiningFacilities()).length
+    );
+  });
+
+  it("operationalMw excludes cancelled facilities", async () => {
+    const { operationalMw } = await getCryptoMiningStats();
+    const manual = (await getCryptoMiningFacilities())
+      .filter((f) => f.status !== "cancelled")
+      .reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0);
+    expect(operationalMw).toBe(manual);
+  });
+
+  it("plannedMw excludes cancelled facilities", async () => {
+    const { plannedMw } = await getCryptoMiningStats();
+    const manual = (await getCryptoMiningFacilities())
+      .filter((f) => f.status !== "cancelled")
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    expect(plannedMw).toBe(manual);
+  });
+
+  it("stateCount matches the distinct state count across all crypto_mining facilities", async () => {
+    const distinct = new Set(
+      (await getCryptoMiningFacilities()).map((f) => f.location.state)
+    );
+    expect((await getCryptoMiningStats()).stateCount).toBe(distinct.size);
   });
 });
 
