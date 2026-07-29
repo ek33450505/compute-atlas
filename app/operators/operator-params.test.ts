@@ -24,15 +24,23 @@ describe("generateStaticParams (operators)", () => {
     }
   });
 
-  it("each slug reverses via getOperatorBySlug to a name in getOperators()", async () => {
-    const params = await generateStaticParams();
-    const operators = await getOperators();
-    for (const p of params) {
-      const name = await getOperatorBySlug(p.operator);
-      expect(name).toBeDefined();
-      expect(operators).toContain(name);
-    }
-  });
+  // Exhaustive over every tracked operator (264 and growing with the
+  // dataset) — each getOperatorBySlug call re-scans the full facility list,
+  // so this test is legitimately CPU-bound and slow. Explicit timeout gives
+  // CI (~10x slower than local) headroom.
+  it(
+    "each slug reverses via getOperatorBySlug to a name in getOperators()",
+    async () => {
+      const params = await generateStaticParams();
+      const operators = await getOperators();
+      for (const p of params) {
+        const name = await getOperatorBySlug(p.operator);
+        expect(name).toBeDefined();
+        expect(operators).toContain(name);
+      }
+    },
+    20000
+  );
 
   it("no slug is the literal string 'undefined'", async () => {
     const params = await generateStaticParams();
