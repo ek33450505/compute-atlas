@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import {
   facilitiesSchema,
   type Facility,
+  type CryptoMiningFacility,
   type PowerGenerationFacility,
   aiClassificationEnum,
   confidenceEnum,
@@ -807,6 +808,54 @@ export async function getPoweredByGenerators(facility: Facility): Promise<PowerG
         (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
         a.name.localeCompare(b.name)
     );
+}
+
+// ============================================================
+// Crypto-mining helpers (used by /crypto)
+// ============================================================
+
+/** All crypto_mining facilities (type-guarded so `.mining`-shaped fields narrow). */
+export async function getCryptoMiningFacilities(): Promise<CryptoMiningFacility[]> {
+  const facilities = await loadFacilities();
+  return facilities.filter(
+    (f): f is CryptoMiningFacility => f.facilityType === "crypto_mining"
+  );
+}
+
+/** Aggregate stats for the crypto_mining layer, used by /crypto's survey-stat row. */
+export interface CryptoMiningStats {
+  /** Number of crypto_mining facilities. */
+  count: number;
+  /** Sum of capacityMw.operational across non-cancelled crypto_mining facilities. */
+  operationalMw: number;
+  /** Sum of capacityMw.planned across non-cancelled crypto_mining facilities. */
+  plannedMw: number;
+  /** Distinct states among all crypto_mining facilities. */
+  stateCount: number;
+}
+
+/**
+ * Returns aggregate stats for the crypto_mining facility layer. Mirrors
+ * getGenerationStats' capacity math (excludes cancelled for operational/planned).
+ */
+export async function getCryptoMiningStats(): Promise<CryptoMiningStats> {
+  const mining = await getCryptoMiningFacilities();
+  const active = mining.filter((f) => f.status !== "cancelled");
+  const operationalMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.operational ?? 0),
+    0
+  );
+  const plannedMw = active.reduce(
+    (sum, f) => sum + (f.capacityMw?.planned ?? 0),
+    0
+  );
+  const states = new Set(mining.map((f) => f.location.state));
+  return {
+    count: mining.length,
+    operationalMw,
+    plannedMw,
+    stateCount: states.size,
+  };
 }
 
 // ============================================================
