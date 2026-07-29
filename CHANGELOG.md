@@ -5,6 +5,17 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0](https://github.com/ek33450505/compute-atlas/compare/v1.4.0...v1.5.0) (2026-07-29)
+
+
+### Features
+
+* **seo:** AI-classification-by-state hub — /ai page + query helpers (Tier 2 Session 6) ([#58](https://github.com/ek33450505/compute-atlas/issues/58)) ([75def5d](https://github.com/ek33450505/compute-atlas/commit/75def5de982fa6c84a6ee2297d6f310594f48fd4))
+* **seo:** crypto mining hub — /crypto page + query helpers (Tier 2 Session 5) ([#56](https://github.com/ek33450505/compute-atlas/issues/56)) ([7857e0e](https://github.com/ek33450505/compute-atlas/commit/7857e0e2d2c9572d5808d7ae53cbaf0c35e0ef1d))
+* **seo:** facility-level water usage on /power — helper + section (Tier 2 Session 7) ([#59](https://github.com/ek33450505/compute-atlas/issues/59)) ([40165af](https://github.com/ek33450505/compute-atlas/commit/40165af8b8ad63c5a9b114a543a3e6b4f9ddfe2a))
+* **seo:** learn/glossary hub — /learn index + [topic] pages + glossary registry (Tier 2 Session 11) ([#61](https://github.com/ek33450505/compute-atlas/issues/61)) ([99d2513](https://github.com/ek33450505/compute-atlas/commit/99d2513dc7817b01c33872757752c0ea19d4c76f))
+* **seo:** rankings hub — /rankings page + capacity-ranking helpers (Tier 2 Session 10) ([#60](https://github.com/ek33450505/compute-atlas/issues/60)) ([8426cad](https://github.com/ek33450505/compute-atlas/commit/8426cade002aeec115f28adedf42ee5e51112b64))
+
 ## [1.4.0](https://github.com/ek33450505/compute-atlas/compare/v1.3.0...v1.4.0) (2026-07-29)
 
 
