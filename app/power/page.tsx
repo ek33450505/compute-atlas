@@ -466,9 +466,16 @@ export default async function PowerPage() {
         )}
         {coolingTypeRows.length > 0 && (
           <div className="space-y-4">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              Cooling method
-            </p>
+            <div className="space-y-1">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                Cooling method
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Share of the {coolingTypeReporting} facilities that disclose a
+                cooling method — a broader set than the facilities publishing
+                a daily water figure above.
+              </p>
+            </div>
             <ul className="space-y-4">
               {coolingTypeRows.map(({ key, label }) => {
                 const count = coolingTypeCounts[key];

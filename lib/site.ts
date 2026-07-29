@@ -6,6 +6,5 @@ export const siteConfig = {
   url: "https://www.compute-atlas.com",
   /** Private during development. */
   repoUrl: "https://github.com/ek33450505/compute-atlas",
-  discussionsUrl: "https://github.com/ek33450505/compute-atlas/discussions",
   sponsorUrl: "https://github.com/sponsors/ek33450505",
 } as const;
