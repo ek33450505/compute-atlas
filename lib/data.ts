@@ -505,6 +505,15 @@ export interface WaterUsage {
   totalMgd: number;
 }
 
+/** Non-cancelled facility disclosing a positive `water.reportedMgd` figure. */
+function hasReportedWater(f: Facility): boolean {
+  return (
+    f.status !== "cancelled" &&
+    typeof f.water?.reportedMgd === "number" &&
+    f.water.reportedMgd > 0
+  );
+}
+
 /**
  * Returns the count and total daily water usage (MGD) across non-cancelled
  * facilities that disclose a positive `water.reportedMgd` figure.
@@ -512,12 +521,7 @@ export interface WaterUsage {
  */
 export async function getWaterUsage(): Promise<WaterUsage> {
   const facilities = await loadFacilities();
-  const reporting = facilities.filter(
-    (f) =>
-      f.status !== "cancelled" &&
-      typeof f.water?.reportedMgd === "number" &&
-      f.water.reportedMgd > 0
-  );
+  const reporting = facilities.filter(hasReportedWater);
   const totalMgd = reporting.reduce((sum, f) => sum + (f.water!.reportedMgd!), 0);
   return { reportingCount: reporting.length, totalMgd };
 }
@@ -548,6 +552,19 @@ export async function getCoolingTypeCounts(): Promise<Record<CoolingType, number
     }
   }
   return counts;
+}
+
+/**
+ * Returns up to `n` facilities ranked by reported daily water usage
+ * (`water.reportedMgd`) descending, tie-broken by name A→Z. Uses the same
+ * non-cancelled + positive-reportedMgd filter as `getWaterUsage`.
+ */
+export async function getFacilitiesByWaterUsage(n = 10): Promise<Facility[]> {
+  const facilities = await loadFacilities();
+  return facilities
+    .filter(hasReportedWater)
+    .sort((a, b) => b.water!.reportedMgd! - a.water!.reportedMgd! || a.name.localeCompare(b.name))
+    .slice(0, n);
 }
 
 // ============================================================
