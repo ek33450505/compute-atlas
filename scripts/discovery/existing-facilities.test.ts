@@ -1,11 +1,21 @@
 /**
  * Tests for projectExisting() — the compact per-state facility projection
- * injected into the discovery prompt as {{EXISTING_FACILITIES}}.
+ * injected into the discovery prompt as {{EXISTING_FACILITIES}} — plus its
+ * missing-enrichable-families column and the dead-sources block helpers
+ * (loadLatestSourceHealth / projectDeadSources).
  */
-import { describe, expect, it } from "vitest";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
+import { describe, expect, it, afterEach } from "vitest";
 
 import type { Facility } from "../../lib/schema";
-import { projectExisting } from "./existing-facilities";
+import type { SourceHealthReport } from "./check-sources";
+import { loadLatestSourceHealth, projectDeadSources, projectExisting } from "./existing-facilities";
+
+/** Every family missingEnrichableFamilies() reports for a bare makeFacility() default. */
+const ALL_MISSING = "capacityMw,energy,water,address,investmentUsd,landAcres,aiClassification,jobs,community,subsidies";
 
 function makeFacility(overrides: Partial<Facility> = {}): Facility {
   return {
@@ -53,7 +63,7 @@ describe("projectExisting", () => {
     const lines = result.trim().split("\n");
     expect(lines).toHaveLength(1);
     expect(lines[0]).toBe(
-      "acme-dc-1 | Acme Data Center 1 | Acme Corp | proposed | 2026-01-01 | https://example.com/acme-announcement"
+      `acme-dc-1 | Acme Data Center 1 | Acme Corp | proposed | 2026-01-01 | https://example.com/acme-announcement | missing:${ALL_MISSING}`
     );
   });
 
@@ -140,15 +150,15 @@ describe("projectExisting", () => {
 
     const injectedLine = lines.find((line) => line.includes("tx-injected"));
     expect(injectedLine).toBeDefined();
-    // The row still has exactly 6 fields (5 internal " | " delimiters) —
-    // the injected pipe was neutralized, not left as a 7th column.
-    expect(injectedLine!.split(" | ")).toHaveLength(6);
+    // The row still has exactly 7 fields (6 internal " | " delimiters) —
+    // the injected pipe was neutralized, not left as an 8th column.
+    expect(injectedLine!.split(" | ")).toHaveLength(7);
     expect(injectedLine).toContain("Foo / Bar");
     expect(injectedLine).toContain("Acme Evil Corp");
 
     const normalLine = lines.find((line) => line.includes("tx-normal"));
     expect(normalLine).toBe(
-      "tx-normal | Normal Co | Acme Corp | proposed | 2026-01-01 | https://example.com/acme-announcement"
+      `tx-normal | Normal Co | Acme Corp | proposed | 2026-01-01 | https://example.com/acme-announcement | missing:${ALL_MISSING}`
     );
   });
 
@@ -156,7 +166,7 @@ describe("projectExisting", () => {
     const facility = makeFacility();
     const result = projectExisting([facility], "TX");
     expect(result).toBe(
-      "acme-dc-1 | Acme Data Center 1 | Acme Corp | proposed | 2026-01-01 | https://example.com/acme-announcement"
+      `acme-dc-1 | Acme Data Center 1 | Acme Corp | proposed | 2026-01-01 | https://example.com/acme-announcement | missing:${ALL_MISSING}`
     );
   });
 
@@ -164,5 +174,179 @@ describe("projectExisting", () => {
     const facility = makeFacility({ name: "Foo | Bar" });
     const result = projectExisting([facility], "OH");
     expect(result).toBe("");
+  });
+
+  it("appends a missing: token listing missing enrichable families", () => {
+    const facility = makeFacility({
+      capacityMw: { planned: 100, operational: 50 },
+      energy: { source: "grid", utility: "Dominion", onSiteGenerationMw: 5 },
+      location: { lat: 30.2672, lon: -97.7431, state: "TX", precision: "exact" },
+    });
+    const result = projectExisting([facility], "TX");
+    expect(result).toContain("missing:");
+    expect(result).not.toContain("capacityMw");
+    expect(result).not.toContain(",energy");
+    expect(result).toContain("water");
+    expect(result).toContain("address");
+  });
+
+  it("emits missing:none for a fully-populated facility", () => {
+    const facility = makeFacility({
+      capacityMw: { planned: 100, operational: 50 },
+      energy: { source: "grid", utility: "Dominion", onSiteGenerationMw: 5 },
+      water: { coolingType: "air", reportedMgd: 1 },
+      location: {
+        lat: 30.2672,
+        lon: -97.7431,
+        state: "TX",
+        precision: "exact",
+        street: "100 Main St",
+        postalCode: "78701",
+      },
+      investmentUsd: 1_000_000,
+      landAcres: 10,
+      aiClassification: "confirmed",
+      jobs: { construction: 100, permanent: 20, sourceIndex: 0 },
+      community: { status: "supported", sourceIndex: 0 },
+      subsidies: [{ program: "Enterprise Zone", amountUsd: 1000, sourceIndex: 0 }],
+    });
+    const result = projectExisting([facility], "TX");
+    expect(result).toContain("missing:none");
+  });
+});
+
+describe("projectDeadSources", () => {
+  const txDead = makeFacility({ id: "tx-dead", location: { lat: 30, lon: -97, state: "TX", precision: "exact" } });
+  const txAlive = makeFacility({ id: "tx-alive", location: { lat: 30, lon: -97, state: "TX", precision: "exact" } });
+  const vaDead = makeFacility({ id: "va-dead", location: { lat: 38, lon: -77, state: "VA", precision: "exact" } });
+
+  function makeReport(overrides: Partial<SourceHealthReport> = {}): SourceHealthReport {
+    return {
+      generatedAt: "2026-07-30T00:00:00.000Z",
+      summary: {
+        ok: 0,
+        redirected: 0,
+        gone: 0,
+        bot_blocked: 0,
+        throttled: 0,
+        server_error: 0,
+        client_error: 0,
+        timeout: 0,
+        error: 0,
+        blocked: 0,
+        total: 0,
+      },
+      results: [],
+      ...overrides,
+    };
+  }
+
+  it("returns only gone sources for facilities in the target state", () => {
+    const report = makeReport({
+      results: [
+        {
+          facilityId: "tx-dead",
+          facilityName: "TX Dead",
+          url: "https://example.com/tx-dead",
+          sourceIndex: 0,
+          httpStatus: 404,
+          classification: "gone",
+          checkedAt: "2026-07-30T00:00:00.000Z",
+        },
+        {
+          facilityId: "tx-alive",
+          facilityName: "TX Alive",
+          url: "https://example.com/tx-alive",
+          sourceIndex: 0,
+          httpStatus: 200,
+          classification: "ok",
+          checkedAt: "2026-07-30T00:00:00.000Z",
+        },
+        {
+          facilityId: "va-dead",
+          facilityName: "VA Dead",
+          url: "https://example.com/va-dead",
+          sourceIndex: 0,
+          httpStatus: 410,
+          classification: "gone",
+          checkedAt: "2026-07-30T00:00:00.000Z",
+        },
+      ],
+    });
+    const result = projectDeadSources([txDead, txAlive, vaDead], "TX", report);
+    expect(result).toBe("tx-dead | https://example.com/tx-dead");
+  });
+
+  it("returns an empty string when the report has no gone entries for the state", () => {
+    const report = makeReport({
+      results: [
+        {
+          facilityId: "tx-alive",
+          facilityName: "TX Alive",
+          url: "https://example.com/tx-alive",
+          sourceIndex: 0,
+          httpStatus: 200,
+          classification: "ok",
+          checkedAt: "2026-07-30T00:00:00.000Z",
+        },
+      ],
+    });
+    const result = projectDeadSources([txAlive], "TX", report);
+    expect(result).toBe("");
+  });
+
+  it("returns an empty string when the report is null", () => {
+    const result = projectDeadSources([txDead], "TX", null);
+    expect(result).toBe("");
+  });
+});
+
+describe("loadLatestSourceHealth", () => {
+  let dir: string;
+
+  afterEach(() => {
+    if (dir) {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("returns the newest report by lexicographically-greatest filename", () => {
+    dir = mkdtempSync(path.join(tmpdir(), "existing-facilities-test-"));
+    const older: SourceHealthReport = {
+      generatedAt: "2026-07-29T00:00:00.000Z",
+      summary: {
+        ok: 1,
+        redirected: 0,
+        gone: 0,
+        bot_blocked: 0,
+        throttled: 0,
+        server_error: 0,
+        client_error: 0,
+        timeout: 0,
+        error: 0,
+        blocked: 0,
+        total: 1,
+      },
+      results: [],
+    };
+    const newer: SourceHealthReport = { ...older, generatedAt: "2026-07-30T00:00:00.000Z" };
+    writeFileSync(path.join(dir, "source-health-2026-07-29T00-00-00-000Z.json"), JSON.stringify(older));
+    writeFileSync(path.join(dir, "source-health-2026-07-30T00-00-00-000Z.json"), JSON.stringify(newer));
+
+    const result = loadLatestSourceHealth(dir);
+    expect(result?.generatedAt).toBe("2026-07-30T00:00:00.000Z");
+  });
+
+  it("returns null for a missing directory", () => {
+    const result = loadLatestSourceHealth(path.join(tmpdir(), "existing-facilities-test-does-not-exist"));
+    expect(result).toBeNull();
+  });
+
+  it("returns null (fail-open) for an unparseable report file", () => {
+    dir = mkdtempSync(path.join(tmpdir(), "existing-facilities-test-"));
+    writeFileSync(path.join(dir, "source-health-2026-07-30T00-00-00-000Z.json"), "{ not valid json");
+
+    const result = loadLatestSourceHealth(dir);
+    expect(result).toBeNull();
   });
 });
