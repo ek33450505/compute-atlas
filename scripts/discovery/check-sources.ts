@@ -22,12 +22,23 @@ import type { Facility } from "../../lib/schema";
 
 // --- types -----------------------------------------------------------------
 
-export type SourceClassification = "ok" | "dead" | "redirected" | "error" | "timeout" | "blocked";
+export type SourceClassification =
+  | "ok"
+  | "redirected"
+  | "gone" // 404, 410, 451 — genuinely gone (machine-consumed downstream)
+  | "bot_blocked" // 401, 403 — anti-bot, NOT dead
+  | "throttled" // 429 — rate-limited, transient
+  | "server_error" // 5xx
+  | "client_error" // other 4xx
+  | "timeout"
+  | "error"
+  | "blocked"; // SSRF-guard refusal — never re-used for anti-bot
 
 export interface SourceCheckResult {
   facilityId: string;
   facilityName: string;
   url: string;
+  sourceIndex: number;
   httpStatus: number | null;
   classification: SourceClassification;
   checkedAt: string;
@@ -37,12 +48,17 @@ export interface SourceCheckDeps {
   fetchImpl: typeof fetch;
   concurrency: number;
   timeoutMs: number;
+  /** Max retry attempts for 429/5xx responses. Defaults to 2. */
+  maxRetries?: number;
+  /** Injectable sleep for retry backoff. Defaults to a real setTimeout-based sleep. */
+  sleepImpl?: (ms: number) => Promise<void>;
 }
 
 interface SourceTask {
   facilityId: string;
   facilityName: string;
   url: string;
+  sourceIndex: number;
 }
 
 // --- core --------------------------------------------------------------
@@ -183,18 +199,56 @@ export function isBlockedHost(hostname: string): boolean {
   return false;
 }
 
+/** Real-browser headers — many source hosts anti-bot-block unlabeled clients
+ * with 401/403, which without a realistic User-Agent were previously
+ * indistinguishable from genuine link-rot. */
+const BROWSER_HEADERS: Record<string, string> = {
+  "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+};
+
+/** Upper bound on how long we'll honor a Retry-After wait before falling
+ * back to exponential backoff — keeps a full-dataset sweep tractable. */
+const RETRY_AFTER_CAP_MS = 15_000;
+
+const RETRY_BACKOFF_MS = [500, 1000];
+
+const defaultSleep = (ms: number): Promise<void> => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
 function classifyStatus(status: number): SourceClassification {
   if (status >= 200 && status < 300) return "ok";
   if (status >= 300 && status < 400) return "redirected";
-  return "dead";
+  if (status === 401 || status === 403) return "bot_blocked";
+  if (status === 429) return "throttled";
+  if (status === 404 || status === 410 || status === 451) return "gone";
+  if (status >= 500) return "server_error";
+  if (status >= 400) return "client_error";
+  return "client_error";
 }
 
-async function probeUrl(url: string, fetchImpl: typeof fetch, timeoutMs: number): Promise<{ httpStatus: number | null; classification: SourceClassification }> {
+/** Parses a `Retry-After` header value as integer seconds. HTTP-date form is
+ * not supported (falls back to exponential backoff by returning null). */
+function parseRetryAfterMs(value: string | null | undefined): number | null {
+  if (!value) return null;
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds) || seconds < 0) return null;
+  return seconds * 1000;
+}
+
+async function probeUrl(
+  url: string,
+  fetchImpl: typeof fetch,
+  timeoutMs: number,
+  maxRetries: number,
+  sleepImpl: (ms: number) => Promise<void>,
+): Promise<{ httpStatus: number | null; classification: SourceClassification }> {
   const attempt = async (method: "HEAD" | "GET"): Promise<Response> => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      return await fetchImpl(url, { method, signal: controller.signal, redirect: "manual" });
+      return await fetchImpl(url, { method, signal: controller.signal, redirect: "manual", headers: BROWSER_HEADERS });
     } finally {
       clearTimeout(timer);
     }
@@ -207,6 +261,25 @@ async function probeUrl(url: string, fetchImpl: typeof fetch, timeoutMs: number)
     if (!res.ok && (res.status === 405 || res.status === 501)) {
       res = await attempt("GET");
     }
+
+    let retries = 0;
+    while (retries < maxRetries && (res.status === 429 || res.status >= 500)) {
+      if (res.status === 429) {
+        // Header/object may be absent on mocked responses — guard both.
+        const retryAfterMs = parseRetryAfterMs(res.headers?.get?.("retry-after"));
+        const waitMs = retryAfterMs !== null && retryAfterMs <= RETRY_AFTER_CAP_MS ? retryAfterMs : RETRY_BACKOFF_MS[retries] ?? RETRY_BACKOFF_MS[RETRY_BACKOFF_MS.length - 1];
+        await sleepImpl(waitMs);
+      } else {
+        // 5xx — short exponential backoff.
+        await sleepImpl(RETRY_BACKOFF_MS[retries] ?? RETRY_BACKOFF_MS[RETRY_BACKOFF_MS.length - 1]);
+      }
+      retries++;
+      res = await attempt("HEAD");
+      if (!res.ok && (res.status === 405 || res.status === 501)) {
+        res = await attempt("GET");
+      }
+    }
+
     return { httpStatus: res.status, classification: classifyStatus(res.status) };
   } catch (err) {
     // Note: DOMException (thrown by AbortController.abort()) does not
@@ -246,10 +319,13 @@ async function runWithConcurrency<T, R>(items: T[], concurrency: number, worker:
 export async function checkSources(facilities: Facility[], deps: SourceCheckDeps): Promise<SourceCheckResult[]> {
   const tasks: SourceTask[] = [];
   for (const facility of facilities) {
-    for (const source of facility.sources) {
-      tasks.push({ facilityId: facility.id, facilityName: facility.name, url: source.url });
+    for (const [sourceIndex, source] of facility.sources.entries()) {
+      tasks.push({ facilityId: facility.id, facilityName: facility.name, url: source.url, sourceIndex });
     }
   }
+
+  const maxRetries = deps.maxRetries ?? 2;
+  const sleepImpl = deps.sleepImpl ?? defaultSleep;
 
   return runWithConcurrency(tasks, deps.concurrency, async (task): Promise<SourceCheckResult> => {
     const checkedAt = new Date().toISOString();
@@ -259,6 +335,7 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
         facilityId: task.facilityId,
         facilityName: task.facilityName,
         url: task.url,
+        sourceIndex: task.sourceIndex,
         httpStatus: null,
         classification: "error",
         checkedAt,
@@ -273,17 +350,19 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
         facilityId: task.facilityId,
         facilityName: task.facilityName,
         url: task.url,
+        sourceIndex: task.sourceIndex,
         httpStatus: null,
         classification: "blocked",
         checkedAt,
       };
     }
 
-    const { httpStatus, classification } = await probeUrl(task.url, deps.fetchImpl, deps.timeoutMs);
+    const { httpStatus, classification } = await probeUrl(task.url, deps.fetchImpl, deps.timeoutMs, maxRetries, sleepImpl);
     return {
       facilityId: task.facilityId,
       facilityName: task.facilityName,
       url: task.url,
+      sourceIndex: task.sourceIndex,
       httpStatus,
       classification,
       checkedAt,
@@ -315,26 +394,52 @@ async function loadExistingFacilities(baseUrl: string): Promise<Facility[]> {
   return JSON.parse(raw) as Facility[];
 }
 
+/** Machine-consumable source-health report envelope written to disk. */
+export interface SourceHealthReport {
+  generatedAt: string;
+  summary: Record<SourceClassification, number> & { total: number };
+  results: SourceCheckResult[];
+}
+
+function countByClassification(results: SourceCheckResult[]): Record<SourceClassification, number> & { total: number } {
+  const counts: Record<SourceClassification, number> & { total: number } = {
+    ok: 0,
+    redirected: 0,
+    gone: 0,
+    bot_blocked: 0,
+    throttled: 0,
+    server_error: 0,
+    client_error: 0,
+    timeout: 0,
+    error: 0,
+    blocked: 0,
+    total: results.length,
+  };
+  for (const r of results) counts[r.classification]++;
+  return counts;
+}
+
 function writeReport(results: SourceCheckResult[]): string {
   const dir = process.env.DISCOVERY_LOG_DIR ?? path.join(process.cwd(), "discovery-logs");
   mkdirSync(dir, { recursive: true });
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const logPath = path.join(dir, `source-health-${timestamp}.json`);
-  writeFileSync(logPath, JSON.stringify(results, null, 2));
+  const report: SourceHealthReport = {
+    generatedAt: new Date().toISOString(),
+    summary: countByClassification(results),
+    results,
+  };
+  writeFileSync(logPath, JSON.stringify(report, null, 2));
   return logPath;
 }
 
 function summarize(results: SourceCheckResult[]): string {
-  const counts: Record<SourceClassification, number> = {
-    ok: 0,
-    dead: 0,
-    redirected: 0,
-    error: 0,
-    timeout: 0,
-    blocked: 0,
-  };
-  for (const r of results) counts[r.classification]++;
-  return `checked ${results.length} sources: ok=${counts.ok} dead=${counts.dead} redirected=${counts.redirected} timeout=${counts.timeout} error=${counts.error} blocked=${counts.blocked}`;
+  const counts = countByClassification(results);
+  return (
+    `checked ${counts.total} sources: ok=${counts.ok} gone=${counts.gone} bot_blocked=${counts.bot_blocked} ` +
+    `throttled=${counts.throttled} server_error=${counts.server_error} client_error=${counts.client_error} ` +
+    `redirected=${counts.redirected} timeout=${counts.timeout} error=${counts.error} blocked=${counts.blocked}`
+  );
 }
 
 async function main(): Promise<void> {
