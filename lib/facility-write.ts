@@ -7,6 +7,7 @@ import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
 import { docToRow } from "@/lib/db/serialize";
 import { computeDocDiff, type DiffEntry } from "@/lib/doc-diff";
 import { statusUpdateIntentSchema, applyStatusUpdate } from "@/lib/status-update";
+import { enrichmentUpdateIntentSchema, applyEnrichmentUpdate } from "@/lib/enrichment-update";
 
 export type WriteResult =
   | { ok: true; facility: Facility }
@@ -178,6 +179,52 @@ export async function writeStatusUpdate(
   }
 
   const applied = applyStatusUpdate(existingRow.doc, parsedIntent.data);
+  const parsed = facilitySchema.safeParse(applied);
+  if (!parsed.success) {
+    return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };
+  }
+  const doc = parsed.data;
+
+  await db
+    .update(facilitiesTable)
+    .set({ ...docToRow(doc), updatedAt: new Date() })
+    .where(eq(facilitiesTable.id, id));
+  await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
+  revalidateForFacility(doc, existingRow.doc);
+  return { ok: true, facility: doc };
+}
+
+/**
+ * Applies an enrichment intent to an existing facility via the append-only
+ * applyEnrichmentUpdate (lib/enrichment-update.ts) — the safe alternative to
+ * updateFacility's shallow merge for discovery enrichment runs. Because it
+ * only fills currently-`undefined` fields and only appends to `sources`, it
+ * can never contest a curated value or move an existing sourceIndex-bearing
+ * field out of range, so the merged doc can't become internally inconsistent
+ * the way a sources-replacing update patch can. Re-validates the result
+ * against facilitySchema as defense-in-depth.
+ */
+export async function writeEnrichmentUpdate(
+  id: string,
+  intent: unknown,
+  source: string = "admin-direct"
+): Promise<WriteResult> {
+  const parsedIntent = enrichmentUpdateIntentSchema.safeParse(intent);
+  if (!parsedIntent.success) {
+    return { ok: false, status: 400, error: "Invalid enrichment update", issues: parsedIntent.error.issues };
+  }
+
+  const db = getDb();
+  const existingRows = await db
+    .select()
+    .from(facilitiesTable)
+    .where(eq(facilitiesTable.id, id));
+  const existingRow = existingRows[0];
+  if (!existingRow) {
+    return { ok: false, status: 404, error: "Facility not found" };
+  }
+
+  const applied = applyEnrichmentUpdate(existingRow.doc, parsedIntent.data);
   const parsed = facilitySchema.safeParse(applied);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };

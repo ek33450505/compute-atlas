@@ -16,7 +16,13 @@ import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
 import type { DataCenterFacility, PowerGenerationFacility, Source } from "@/lib/schema";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
-import { createFacility, deleteFacility, updateFacility, writeStatusUpdate } from "@/lib/facility-write";
+import {
+  createFacility,
+  deleteFacility,
+  updateFacility,
+  writeStatusUpdate,
+  writeEnrichmentUpdate,
+} from "@/lib/facility-write";
 
 function makeSource(label: string): Source {
   return {
@@ -142,6 +148,112 @@ describe("writeStatusUpdate", () => {
     // community.sourceIndex still resolves within the (now-grown) sources array.
     expect(result.facility.community?.sourceIndex).toBe(3);
     expect(result.facility.sources[3]).toEqual(seedDoc.sources[3]);
+  });
+});
+
+describe("writeEnrichmentUpdate", () => {
+  it("fills a missing field (energy.source) and appends the corroborating source", async () => {
+    const seedDoc = makeSeedDoc(); // energy is undefined on the seed
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await writeEnrichmentUpdate(seedDoc.id, {
+      date: "2026-07-30",
+      sources: [makeSource("enrichment-source")],
+      fields: { energy: { source: "grid" } },
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.facility.energy?.source).toBe("grid");
+    expect(result.facility.sources).toHaveLength(seedDoc.sources.length + 1);
+
+    const facilityRows = await tdb.db
+      .select()
+      .from(facilitiesTable)
+      .where(eq(facilitiesTable.id, seedDoc.id));
+    expect((facilityRows[0].doc as DataCenterFacility).energy?.source).toBe("grid");
+
+    const historyRows = await tdb.db
+      .select()
+      .from(facilityHistoryTable)
+      .where(eq(facilityHistoryTable.facilityId, seedDoc.id));
+    expect(historyRows).toHaveLength(1);
+    expect(historyRows[0].changeType).toBe("update");
+  });
+
+  it("does not overwrite a curated field that is already set", async () => {
+    const seedDoc = { ...makeSeedDoc(), investmentUsd: 1_000_000 };
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await writeEnrichmentUpdate(seedDoc.id, {
+      date: "2026-07-30",
+      sources: [makeSource("enrichment-source")],
+      fields: { investmentUsd: 999_999_999 },
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.facility.investmentUsd).toBe(1_000_000);
+  });
+
+  it("404s when the facility id does not exist", async () => {
+    const result = await writeEnrichmentUpdate("does-not-exist", {
+      date: "2026-07-30",
+      sources: [makeSource("s0")],
+      fields: { investmentUsd: 1 },
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(404);
+  });
+
+  it("400s on an invalid intent (empty sources array)", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await writeEnrichmentUpdate(seedDoc.id, {
+      date: "2026-07-30",
+      sources: [],
+      fields: { investmentUsd: 1 },
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(400);
+  });
+
+  it("400s on an out-of-range sourceRel", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await writeEnrichmentUpdate(seedDoc.id, {
+      date: "2026-07-30",
+      sources: [makeSource("s0")],
+      fields: { community: { status: "supported", sourceRel: 5 } },
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(400);
+  });
+
+  it("remaps a sourceRel to an absolute sourceIndex end-to-end (appendBase + sourceRel)", async () => {
+    const seedDoc = makeSeedDoc();
+    delete seedDoc.community;
+    // Seed carries 1 existing source ("s0") so appendBase === 1.
+    seedDoc.sources = [makeSource("s0")];
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await writeEnrichmentUpdate(seedDoc.id, {
+      date: "2026-07-30",
+      sources: [makeSource("community-source")],
+      fields: { community: { status: "supported", sourceRel: 0 } },
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.facility.community?.sourceIndex).toBe(1);
   });
 });
 
