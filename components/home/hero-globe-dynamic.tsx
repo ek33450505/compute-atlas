@@ -19,7 +19,7 @@ import dynamic from "next/dynamic";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import type { HeroPoint } from "@/components/home/hero-globe";
 
-const HERO_DEFAULT_HEIGHT_CLASS = "h-[75vh] min-h-[420px]";
+const HERO_DEFAULT_HEIGHT_CLASS = "h-[60vh] min-h-[420px]";
 
 interface HeroGlobeProps {
   points: HeroPoint[];

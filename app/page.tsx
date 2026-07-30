@@ -66,7 +66,7 @@ export default async function HomePage() {
       {/* ------------------------------------------------------------------ */}
       {/* Hero                                                                */}
       {/* ------------------------------------------------------------------ */}
-      <div className="relative mb-10 min-h-[75vh] overflow-hidden">
+      <div className="relative mb-10 min-h-[60vh] overflow-hidden">
         {/*
          * Living globe hero — every tracked facility plotted on a
          * globe-projection basemap, drawn in west→east on load. Purely

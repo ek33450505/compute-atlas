@@ -74,7 +74,7 @@ const DRIFT_DURATION_MS = 2500;
  */
 export function HeroGlobe({
   points,
-  heightClass = "h-[75vh] min-h-[420px]",
+  heightClass = "h-[60vh] min-h-[420px]",
 }: HeroGlobeProps) {
   const router = useRouter();
   const mapRef = useRef<MapRef>(null);
