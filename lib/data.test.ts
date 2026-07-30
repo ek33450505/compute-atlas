@@ -770,18 +770,13 @@ describe("operatorSlug", () => {
   });
 
   // Exhaustive over every tracked operator (264 and growing with the dataset)
-  // — each call re-scans the full facility list, so this test is legitimately
-  // CPU-bound and slow. Explicit timeout gives CI (~10x slower than local)
-  // headroom.
-  it(
-    "round-trips through getOperatorBySlug for every tracked operator",
-    async () => {
-      for (const name of await getOperators()) {
-        expect(await getOperatorBySlug(operatorSlug(name))).toBe(name);
-      }
-    },
-    20000
-  );
+  // — getOperatorBySlug is an O(1) lookup against a memoized operator index,
+  // so this stays fast without an explicit timeout.
+  it("round-trips through getOperatorBySlug for every tracked operator", async () => {
+    for (const name of await getOperators()) {
+      expect(await getOperatorBySlug(operatorSlug(name))).toBe(name);
+    }
+  });
 });
 
 describe("getOperatorBySlug", () => {
@@ -809,20 +804,17 @@ describe("getFacilitiesByOperator", () => {
     }
   });
 
-  // Exhaustive over every tracked operator — see comment on the operatorSlug
-  // round-trip test above re: CPU-bound cost and the explicit timeout.
-  it(
-    "partitions the full dataset (every facility has exactly one operator)",
-    async () => {
-      const operators = await getOperators();
-      let sum = 0;
-      for (const name of operators) {
-        sum += (await getFacilitiesByOperator(name)).length;
-      }
-      expect(sum).toBe((await getAllFacilities()).length);
-    },
-    20000
-  );
+  // Exhaustive over every tracked operator — getFacilitiesByOperator is now
+  // an O(1) map lookup against the memoized operator index (see comment on
+  // the operatorSlug round-trip test above), so no explicit timeout is needed.
+  it("partitions the full dataset (every facility has exactly one operator)", async () => {
+    const operators = await getOperators();
+    let sum = 0;
+    for (const name of operators) {
+      sum += (await getFacilitiesByOperator(name)).length;
+    }
+    expect(sum).toBe((await getAllFacilities()).length);
+  });
 });
 
 describe("getOperatorSummary", () => {
@@ -830,21 +822,17 @@ describe("getOperatorSummary", () => {
     expect(await getOperatorSummary("__nope__")).toBeNull();
   });
 
-  // Exhaustive over every tracked operator, and the heaviest of the four —
-  // each getOperatorSummary call re-scans the full facility list twice (once
-  // via itself, once via the paired getFacilitiesByOperator). See comment on
-  // the operatorSlug round-trip test re: CPU-bound cost and explicit timeout.
-  it(
-    "count matches getFacilitiesByOperator length",
-    async () => {
-      for (const name of await getOperators()) {
-        const summary = await getOperatorSummary(name);
-        expect(summary).not.toBeNull();
-        expect(summary!.count).toBe((await getFacilitiesByOperator(name)).length);
-      }
-    },
-    30000
-  );
+  // Exhaustive over every tracked operator — getOperatorSummary and
+  // getFacilitiesByOperator both resolve via the same memoized operator
+  // index (O(1) map lookups), so no explicit timeout is needed. See comment
+  // on the operatorSlug round-trip test above.
+  it("count matches getFacilitiesByOperator length", async () => {
+    for (const name of await getOperators()) {
+      const summary = await getOperatorSummary(name);
+      expect(summary).not.toBeNull();
+      expect(summary!.count).toBe((await getFacilitiesByOperator(name)).length);
+    }
+  });
 
   it("includes all byType and byStatus keys", async () => {
     const summary = (await getOperatorSummary("Google"))!;

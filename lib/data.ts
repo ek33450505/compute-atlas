@@ -20,8 +20,17 @@ import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/d
 import { rowToFacility } from "@/lib/db/serialize";
 import type { DiffEntry } from "@/lib/doc-diff";
 
-/** Parses and validates the bundled JSON fallback. Throws loudly on bad data. */
+/**
+ * Validated view of the bundled JSON fallback, memoized for the process
+ * lifetime. `data/facilities.json` is a static build-time import — immutable
+ * while the process runs — so it is validated exactly once and reused. Only
+ * the JSON-fallback path (no DATABASE_URL, incl. the VITEST suite) hits this;
+ * the DB path never calls it. Mutation-safe: callers only read (`.find`) or
+ * spread/filter before sorting, never sort this array in place.
+ */
+let jsonFallbackCache: Facility[] | undefined;
 function loadFromJson(): Facility[] {
+  if (jsonFallbackCache) return jsonFallbackCache;
   const parsed = facilitiesSchema.safeParse(facilitiesRaw);
   if (!parsed.success) {
     throw new Error(
@@ -31,7 +40,8 @@ function loadFromJson(): Facility[] {
           .join("\n")
     );
   }
-  return parsed.data;
+  jsonFallbackCache = parsed.data;
+  return jsonFallbackCache;
 }
 
 /**
@@ -1134,35 +1144,78 @@ export function operatorSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+interface OperatorIndex {
+  /** Operator name -> that operator's facilities, pre-sorted by max MW desc, then name A→Z. */
+  byOperator: Map<string, Facility[]>;
+  /** operatorSlug(name) -> operator name, for case-insensitive reverse slug lookup. */
+  slugToOperator: Map<string, string>;
+}
+
+/**
+ * Operator index memoized per `loadFacilities()` result (keyed by array
+ * identity in a WeakMap) so the per-operator helpers do O(1) map lookups
+ * instead of re-scanning the whole list. Removes the O(operators × facilities)
+ * blowup on the operators index page, the sitemap, and the exhaustive operator
+ * tests. When the same array reference is reused (e.g. within one request via
+ * the loadFacilities cache), the index is built once; otherwise it rebuilds
+ * cheaply (a single O(facilities) grouping pass — no Zod re-validation now that
+ * loadFromJson is memoized).
+ */
+const operatorIndexCache = new WeakMap<Facility[], OperatorIndex>();
+
+function buildOperatorIndex(facilities: Facility[]): OperatorIndex {
+  const cached = operatorIndexCache.get(facilities);
+  if (cached) return cached;
+
+  const byOperator = new Map<string, Facility[]>();
+  for (const f of facilities) {
+    const bucket = byOperator.get(f.operator);
+    if (bucket) bucket.push(f);
+    else byOperator.set(f.operator, [f]);
+  }
+
+  const slugToOperator = new Map<string, string>();
+  for (const [name, bucket] of byOperator) {
+    bucket.sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+    slugToOperator.set(operatorSlug(name), name);
+  }
+
+  const index: OperatorIndex = { byOperator, slugToOperator };
+  operatorIndexCache.set(facilities, index);
+  return index;
+}
+
+/** Loads the facility list and returns its memoized operator index. */
+async function getOperatorIndex(): Promise<OperatorIndex> {
+  return buildOperatorIndex(await loadFacilities());
+}
+
 /**
  * Returns the operator name for a URL slug (case-insensitive), or undefined if
- * unknown. The slug -> name map is built lazily from the async facility list
- * (it can no longer be precomputed at module scope now that the source is
- * async) — recomputed per call rather than cached, since `getOperators()`
- * already sits behind `loadFacilities`'s own cache.
+ * unknown. Backed by the memoized operator index — an O(1) map lookup rather
+ * than rebuilding a slug -> name map from `getOperators()` on every call.
  */
 export async function getOperatorBySlug(slug: string): Promise<string | undefined> {
-  const operators = await getOperators();
-  const slugToOperator: Record<string, string> = Object.fromEntries(
-    operators.map((name) => [operatorSlug(name), name])
-  );
-  return slugToOperator[slug.toLowerCase()];
+  const { slugToOperator } = await getOperatorIndex();
+  return slugToOperator.get(slug.toLowerCase());
 }
 
 /**
  * Returns all facilities operated by `name` (exact match), sorted by max
  * capacity (operational or planned) desc, then name A→Z (deterministic
- * tie-break).
+ * tie-break). Backed by the memoized operator index — an O(1) map lookup
+ * rather than a full-list filter+sort on every call.
  */
 export async function getFacilitiesByOperator(name: string): Promise<Facility[]> {
-  const facilities = await loadFacilities();
-  return facilities
-    .filter((f) => f.operator === name)
-    .sort(
-      (a, b) =>
-        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
-        a.name.localeCompare(b.name)
-    );
+  const { byOperator } = await getOperatorIndex();
+  const bucket = byOperator.get(name);
+  // Shallow copy so callers can't mutate the cached, pre-sorted bucket —
+  // preserves the previous .filter().sort() contract of returning a fresh array.
+  return bucket ? [...bucket] : [];
 }
 
 /** Aggregate summary of one operator's facilities. */
@@ -1185,8 +1238,8 @@ export interface OperatorSummary {
  * cancelled for operational/planned) and byType/byStatus seeding.
  */
 export async function getOperatorSummary(name: string): Promise<OperatorSummary | null> {
-  const facilities = await loadFacilities();
-  const operatorFacilities = facilities.filter((f) => f.operator === name);
+  const { byOperator } = await getOperatorIndex();
+  const operatorFacilities = byOperator.get(name) ?? [];
   const count = operatorFacilities.length;
   if (count === 0) {
     return null;
