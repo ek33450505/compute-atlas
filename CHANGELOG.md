@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0](https://github.com/ek33450505/compute-atlas/compare/v1.6.0...v1.7.0) (2026-07-30)
+
+
+### Features
+
+* **home:** modernize the below-hero into a data-showcase gateway ([#77](https://github.com/ek33450505/compute-atlas/issues/77)) ([b542cfd](https://github.com/ek33450505/compute-atlas/commit/b542cfdcad81e0f002d705f9662c2a1adefc9c30))
+
 ## [1.6.0](https://github.com/ek33450505/compute-atlas/compare/v1.5.3...v1.6.0) (2026-07-30)
 
 
