@@ -25,7 +25,10 @@ function makeFacility(overrides: Partial<Facility> = {}, urls: string[] = ["http
 }
 
 function makeFetch(
-  handler: (url: string, init?: RequestInit) => Promise<{ ok: boolean; status: number }> | never,
+  handler: (
+    url: string,
+    init?: RequestInit,
+  ) => Promise<{ ok: boolean; status: number; headers?: Record<string, string> }> | never,
 ) {
   return vi.fn<typeof fetch>(async (input, init) => {
     const url = typeof input === "string" ? input : input.toString();
@@ -33,6 +36,7 @@ function makeFetch(
     return {
       ok: result.ok,
       status: result.status,
+      headers: new Headers(result.headers ?? {}),
     } as Response;
   });
 }
@@ -42,6 +46,7 @@ function baseDeps(overrides: Partial<SourceCheckDeps> = {}): SourceCheckDeps {
     fetchImpl: makeFetch(async () => ({ ok: true, status: 200 })),
     concurrency: 5,
     timeoutMs: 10000,
+    sleepImpl: async () => {},
     ...overrides,
   };
 }
@@ -58,11 +63,69 @@ describe("checkSources", () => {
     expect(typeof results[0].checkedAt).toBe("string");
   });
 
-  it("classifies a 4xx/5xx response as dead", async () => {
+  it("classifies a 404 response as gone", async () => {
     const deps = baseDeps({ fetchImpl: makeFetch(async () => ({ ok: false, status: 404 })) });
     const results = await checkSources([makeFacility()], deps);
-    expect(results[0].classification).toBe("dead");
+    expect(results[0].classification).toBe("gone");
     expect(results[0].httpStatus).toBe(404);
+  });
+
+  it("classifies a 403 response as bot_blocked (not dead)", async () => {
+    const deps = baseDeps({ fetchImpl: makeFetch(async () => ({ ok: false, status: 403 })) });
+    const results = await checkSources([makeFacility()], deps);
+    expect(results[0].classification).toBe("bot_blocked");
+    expect(results[0].httpStatus).toBe(403);
+  });
+
+  it("classifies a 400 response as client_error", async () => {
+    const deps = baseDeps({ fetchImpl: makeFetch(async () => ({ ok: false, status: 400 })) });
+    const results = await checkSources([makeFacility()], deps);
+    expect(results[0].classification).toBe("client_error");
+    expect(results[0].httpStatus).toBe(400);
+  });
+
+  it("classifies a 500 response as server_error after retry exhaustion", async () => {
+    const deps = baseDeps({ fetchImpl: makeFetch(async () => ({ ok: false, status: 500 })) });
+    const results = await checkSources([makeFacility()], deps);
+    expect(results[0].classification).toBe("server_error");
+    expect(results[0].httpStatus).toBe(500);
+  });
+
+  it("retries a 429 honoring Retry-After, then classifies throttled after exhaustion", async () => {
+    let calls = 0;
+    const fetchImpl = makeFetch(async () => {
+      calls++;
+      return { ok: false, status: 429, headers: { "retry-after": "1" } };
+    });
+    const sleeps: number[] = [];
+    const deps = baseDeps({
+      fetchImpl,
+      maxRetries: 2,
+      sleepImpl: async (ms: number) => {
+        sleeps.push(ms);
+      },
+    });
+    const results = await checkSources([makeFacility()], deps);
+    expect(results[0].classification).toBe("throttled");
+    expect(results[0].httpStatus).toBe(429);
+    expect(sleeps).toEqual([1000, 1000]);
+    // 1 initial HEAD + 2 retries = 3 total attempts.
+    expect(calls).toBe(3);
+  });
+
+  it("retries a 429 with no Retry-After header using exponential backoff", async () => {
+    const fetchImpl = makeFetch(async () => ({ ok: false, status: 429 }));
+    const sleeps: number[] = [];
+    const deps = baseDeps({
+      fetchImpl,
+      maxRetries: 2,
+      sleepImpl: async (ms: number) => {
+        sleeps.push(ms);
+      },
+    });
+    const results = await checkSources([makeFacility()], deps);
+    expect(results[0].classification).toBe("throttled");
+    expect(sleeps).toEqual([500, 1000]);
   });
 
   it("classifies a 3xx response as redirected", async () => {
@@ -108,6 +171,23 @@ describe("checkSources", () => {
     expect(calls).toEqual(["HEAD", "GET"]);
     expect(results[0].classification).toBe("ok");
     expect(results[0].httpStatus).toBe(200);
+  });
+
+  it("dispatches requests with a browser-like User-Agent header", async () => {
+    const fetchImpl = vi.fn<typeof fetch>(async () => ({ ok: true, status: 200 }) as Response);
+    const deps = baseDeps({ fetchImpl });
+    await checkSources([makeFacility()], deps);
+    const [, init] = fetchImpl.mock.calls[0];
+    const headers = init?.headers as Record<string, string>;
+    expect(headers["User-Agent"]).toMatch(/Mozilla/);
+  });
+
+  it("populates sourceIndex per source within a facility", async () => {
+    const fetchImpl = vi.fn<typeof fetch>(async () => ({ ok: true, status: 200 }) as Response);
+    const facility = makeFacility({}, ["https://example.com/1", "https://example.com/2", "https://example.com/3"]);
+    const deps = baseDeps({ fetchImpl });
+    const results = await checkSources([facility], deps);
+    expect(results.map((r) => r.sourceIndex)).toEqual([0, 1, 2]);
   });
 
   it("rejects non-http(s) URLs without dispatching fetch", async () => {
