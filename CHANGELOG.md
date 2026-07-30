@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2](https://github.com/ek33450505/compute-atlas/compare/v1.5.1...v1.5.2) (2026-07-30)
+
+
+### Performance Improvements
+
+* **data:** index operator lookups; memoize JSON fallback validation ([#67](https://github.com/ek33450505/compute-atlas/issues/67)) ([52d6d5c](https://github.com/ek33450505/compute-atlas/commit/52d6d5c4ea18a3f8ed32abcb7beb66a4354689fa))
+
 ## [1.5.1](https://github.com/ek33450505/compute-atlas/compare/v1.5.0...v1.5.1) (2026-07-29)
 
 
