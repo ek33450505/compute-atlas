@@ -10,7 +10,7 @@ import {
   getAllFacilities,
 } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
-import { GraticuleSurvey } from "@/components/home/graticule-survey";
+import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
 import { ActivityList } from "@/app/activity/activity-list";
 
 export const revalidate = 3600;
@@ -43,6 +43,20 @@ export default async function HomePage() {
   const dateModified =
     maxLastUpdatedMs > 0 ? new Date(maxLastUpdatedMs).toISOString() : undefined;
 
+  // Slim point set for the hero globe — just enough to plot + link each
+  // facility, filtered defensively in case a record ever has a bad geocode.
+  const heroPoints = allFacilities
+    .filter(
+      (f) =>
+        Number.isFinite(f.location.lat) && Number.isFinite(f.location.lon)
+    )
+    .map((f) => ({
+      id: f.id,
+      lat: f.location.lat,
+      lon: f.location.lon,
+      status: f.status,
+    }));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
       <script
@@ -52,11 +66,35 @@ export default async function HomePage() {
       {/* ------------------------------------------------------------------ */}
       {/* Hero                                                                */}
       {/* ------------------------------------------------------------------ */}
-      <div className="relative mb-10">
-        {/* Hairline graticule background layer — self-surveyed draw-in on load */}
-        <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
+      <div className="relative mb-10 min-h-[60vh] overflow-hidden">
+        {/*
+         * Living globe hero — every tracked facility plotted on a
+         * globe-projection basemap, drawn in west→east on load. Purely
+         * decorative/progressive-enhancement: the accessible path is the
+         * SSR'd H1 below and the "Explore the map →" CTA further down (to
+         * the fully-accessible /map), not this canvas. `overflow-hidden`
+         * above clips the absolutely-positioned globe to this box — it can
+         * never bleed into the stats/links section below.
+         */}
+        <div className="absolute inset-0">
+          <HeroGlobe points={heroPoints} heightClass="h-full" />
+        </div>
 
-        <div className="relative space-y-4 pb-10">
+        {/*
+         * Parchment scrim so the cartouche stays legible over the map.
+         * Scoped to the text region, not a full-hero fade: near-opaque
+         * (≥92%) through 50% of the hero's height — generous headroom for
+         * the overline/H1/subhead even when the subhead wraps to several
+         * lines on narrow viewports — then fades to fully transparent by
+         * 85%, so the globe still reads clearly in the lower part of the
+         * (now taller) hero.
+         */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background from-0% via-background/92 via-50% to-transparent to-85%"
+        />
+
+        <div className="relative z-10 space-y-4 pt-8 pb-10">
           {/* Overline */}
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
             United States · Edition 2026 · 39.5°N 98.5°W
@@ -67,112 +105,105 @@ export default async function HomePage() {
             America&rsquo;s data centers, mapped and sourced.
           </h1>
 
-          {/* Subhead */}
-          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl">
-            The record is public but scattered across a hundred agencies — permits, tax abatements, water filings, interconnection queues. Compute Atlas gathers it into a single open, source-cited map, built and kept honest by the people who use it. Anyone can add a facility, correct a figure, or supply a missing source.
+          {/* Subhead — text-foreground/85 (not text-muted-foreground): needs
+              to stay legible against the map showing through the scrim. */}
+          <p className="text-base text-foreground/85 leading-relaxed max-w-2xl">
+            Public data on data centers is everywhere and nowhere — split across hundreds of local permits, tax abatements, water filings, and interconnection queues. Compute Atlas unifies it into a single open, source-cited map. Community-built, fully transparent, and continuously updated.
           </p>
         </div>
-
-        {/* Neatline rule under hero */}
-        <div className="border-t border-border" />
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
+      {/* Below the hero: stats + cross-links + primary CTA, grouped as one   */}
+      {/* unit on the plain parchment page background — reads clearly as     */}
+      {/* "below the hero," not "in the map."                                */}
       {/* ------------------------------------------------------------------ */}
-      <div className="mb-10 flex flex-wrap gap-8 border-b border-border pb-10">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {count}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Sites tracked
-          </span>
+      <div className="border-t border-border pt-10">
+        {/* Survey stats row */}
+        <div className="mb-10 flex flex-wrap gap-8 border-b border-border pb-10">
+          <div className="flex flex-col items-center gap-1 text-center">
+            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+              {count}
+            </span>
+            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Sites tracked
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+              {states}
+            </span>
+            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              States covered
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+              {(operationalMw / 1000).toFixed(1)} GW
+            </span>
+            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Operational
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+              {(plannedMw / 1000).toFixed(0)} GW
+            </span>
+            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Planned pipeline
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {states}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            States covered
-          </span>
+
+        {/* Statistics link */}
+        <div className="mb-6">
+          <Link
+            href="/stats"
+            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            View full statistics →
+          </Link>
         </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {(operationalMw / 1000).toFixed(1)} GW
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Operational
-          </span>
+
+        {/* Crypto mining cross-link */}
+        <div className="mb-6">
+          <Link
+            href="/crypto"
+            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            Browse crypto mining facilities →
+          </Link>
         </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {(plannedMw / 1000).toFixed(0)} GW
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Planned pipeline
-          </span>
+
+        {/* Rankings cross-link */}
+        <div className="mb-6">
+          <Link
+            href="/rankings"
+            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            See the biggest projects, operators, and states →
+          </Link>
         </div>
-      </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Statistics link                                                     */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="mb-6">
-        <Link
-          href="/stats"
-          className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          View full statistics →
-        </Link>
-      </div>
+        {/* Learn cross-link */}
+        <div className="mb-6">
+          <Link
+            href="/learn"
+            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            Learn the terms behind the dataset →
+          </Link>
+        </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Crypto mining cross-link                                            */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="mb-6">
-        <Link
-          href="/crypto"
-          className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          Browse crypto mining facilities →
-        </Link>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Rankings cross-link                                                 */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="mb-6">
-        <Link
-          href="/rankings"
-          className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          See the biggest projects, operators, and states →
-        </Link>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Learn cross-link                                                    */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="mb-6">
-        <Link
-          href="/learn"
-          className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          Learn the terms behind the dataset →
-        </Link>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Entry points                                                        */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="mb-12 flex flex-wrap items-center gap-4">
-        <Link
-          href="/map"
-          className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          Explore the map →
-        </Link>
+        {/* Entry points */}
+        <div className="mb-12 flex flex-wrap items-center gap-4">
+          <Link
+            href="/map"
+            className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            Explore the map →
+          </Link>
+        </div>
       </div>
 
       {/* ------------------------------------------------------------------ */}
