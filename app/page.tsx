@@ -11,11 +11,13 @@ import {
   getCommunityReceptionCounts,
   getAiClassificationCounts,
   getFacilityTypeCounts,
+  getNotableOppositionCases,
 } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
 import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
+import { ContestedStrip } from "@/components/home/contested-strip";
 import { ActivityList } from "@/app/activity/activity-list";
 
 export const revalidate = 3600;
@@ -37,6 +39,7 @@ export default async function HomePage() {
     await getStats();
   const notable = await getNotableFacilities(6);
   const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
+  const oppositionCases = await getNotableOppositionCases(3);
 
   // Max lastUpdated across the dataset, as an ISO string, for the Dataset
   // JSON-LD's dateModified. Falls back to omitting the field if the dataset
@@ -232,6 +235,18 @@ export default async function HomePage() {
           })}
         </div>
       </div>
+
+      {/* Contested sites — the differentiator */}
+      <ContestedStrip
+        cases={oppositionCases}
+        frictionCount={frictionCount}
+        breakdown={{
+          litigation: communityCounts.litigation ?? 0,
+          opposed: communityCounts.opposed ?? 0,
+          contested: communityCounts.contested ?? 0,
+        }}
+        className="mt-12 border-t border-border pt-10"
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Recent activity teaser                                              */}
