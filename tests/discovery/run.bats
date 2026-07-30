@@ -244,3 +244,90 @@ EOF
 	[ ! -s "$CLAUDE_CALL_LOG" ]
 	[[ "$output" != *"retrying once"* ]]
 }
+
+# --- session-limit hardening (2026-07-29 AZ crash) --------------------------
+
+@test "claude nonzero exit does not kill the run — reaches completion" {
+	export DISCOVERY_ENABLED=true
+	# Reproduces the 2026-07-29 AZ crash: claude -p exits nonzero on
+	# "You've hit your session limit" instead of a JSON array.
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"discovery run"*"complete"* ]]
+	[[ "$output" == *"skipping submit"* ]]
+}
+
+@test "no-array result skips the submit step" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# The retry gate's candidates_file_has_array() call is a `tsx -e` inline
+	# script that itself imports from submit-candidates.ts, so a bare
+	# "submit-candidates.ts" grep would false-positive on it — match on the
+	# actual submit invocation's --run-id flag instead.
+	run grep -c -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	[ "$status" -ne 0 ] || [ "${output//[[:space:]]/}" = "0" ]
+
+	run grep -q "check-sources.ts" "$NPX_CALL_LOG"
+	[ "$status" -eq 0 ]
+}
+
+@test "live run writes a heartbeat with claudeStatus ok on a valid array" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"X","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[ -f "$LOG_DIR/heartbeat.json" ]
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+	grep -q '"lastRunAt"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "session-limit run writes heartbeat with claudeStatus no_array" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[ -f "$LOG_DIR/heartbeat.json" ]
+	grep -q '"claudeStatus": "no_array"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "dry-run does not write a heartbeat" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -f "$LOG_DIR/heartbeat.json" ]
+}
