@@ -203,7 +203,7 @@ function PipelineBar({ label, figure, ariaLabel, pct, color }: PipelineBarProps)
         aria-hidden="true"
       >
         <div
-          className="h-full rounded-full transition-[width] duration-700 ease-out"
+          className="h-full rounded-full transition-[width] duration-700 ease-out motion-reduce:transition-none"
           style={{ width: `${pct}%`, backgroundColor: color, opacity: 0.7 }}
           aria-hidden="true"
         />
@@ -272,7 +272,10 @@ export function SurveyLedger({
   const caption = `Among sites that disclose capacity, the announced pipeline (${plannedGW} GW) outweighs operating capacity (${operatingGW} GW) by roughly ${ratio}-to-1 — ${ucGW} GW is already under construction. Sums cover disclosed capacities only.`;
 
   return (
-    <section aria-label="Dataset survey" className={className} ref={sectionRef}>
+    <section aria-labelledby="survey-heading" className={className} ref={sectionRef}>
+      <h2 id="survey-heading" className="sr-only">
+        Dataset survey
+      </h2>
       <div className="flex flex-wrap gap-8">
         <LedgerTile
           value={displayCount}

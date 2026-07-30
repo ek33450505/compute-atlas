@@ -155,6 +155,15 @@ describe("SurveyLedger", () => {
     expect(section).toHaveClass("mb-10", "border-b", "border-border", "pb-10");
   });
 
+  it("renders a screen-reader-only heading that establishes the section's accessible name", () => {
+    setReducedMotion(true);
+    render(<SurveyLedger {...PROPS} />);
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Dataset survey" })
+    ).toBeInTheDocument();
+  });
+
   it("hides every bar track and fill from assistive tech (decorative)", () => {
     setReducedMotion(true);
     const { container } = render(<SurveyLedger {...PROPS} />);
