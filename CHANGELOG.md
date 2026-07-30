@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.3](https://github.com/ek33450505/compute-atlas/compare/v1.5.2...v1.5.3) (2026-07-30)
+
+
+### Bug Fixes
+
+* **ui:** relabel back-link to "Back to Compute Atlas" on subscribe/404/error pages ([#72](https://github.com/ek33450505/compute-atlas/issues/72)) ([8866377](https://github.com/ek33450505/compute-atlas/commit/886637790894b7e9f29bdfc3bc1ca9e657e1f944))
+
 ## [1.5.2](https://github.com/ek33450505/compute-atlas/compare/v1.5.1...v1.5.2) (2026-07-30)
 
 
