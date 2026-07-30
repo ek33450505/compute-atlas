@@ -8,10 +8,17 @@ import {
   getNotableFacilities,
   getRecentActivity,
   getAllFacilities,
+  getCommunityReceptionCounts,
+  getAiClassificationCounts,
+  getFacilityTypeCounts,
+  getNotableOppositionCases,
 } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
-import { ActivityList } from "@/app/activity/activity-list";
+import { SurveyLedger } from "@/components/home/survey-ledger";
+import { LensGateway } from "@/components/home/lens-gateway";
+import { ContestedStrip } from "@/components/home/contested-strip";
+import { OpenRecord } from "@/components/home/open-record";
 
 export const revalidate = 3600;
 
@@ -28,9 +35,11 @@ export const metadata: Metadata = {
  * Server component: no client state needed.
  */
 export default async function HomePage() {
-  const { count, states, operationalMw, plannedMw } = await getStats();
+  const { count, states, operationalMw, plannedMw, underConstructionMw } =
+    await getStats();
   const notable = await getNotableFacilities(6);
   const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
+  const oppositionCases = await getNotableOppositionCases(3);
 
   // Max lastUpdated across the dataset, as an ISO string, for the Dataset
   // JSON-LD's dateModified. Falls back to omitting the field if the dataset
@@ -56,6 +65,27 @@ export default async function HomePage() {
       lon: f.location.lon,
       status: f.status,
     }));
+
+  const operatorCount = new Set(allFacilities.map((f) => f.operator)).size;
+  const sourcesCited = allFacilities.reduce(
+    (n, f) => n + (f.sources?.length ?? 0),
+    0
+  );
+
+  // Lens-gateway counts — cheap derivations off the same cached facility set
+  // (no new DB reads; getCommunityReceptionCounts/getAiClassificationCounts/
+  // getFacilityTypeCounts all read the shared loadFacilities() cache).
+  const communityCounts = await getCommunityReceptionCounts();
+  const frictionCount =
+    (communityCounts.contested ?? 0) +
+    (communityCounts.opposed ?? 0) +
+    (communityCounts.litigation ?? 0);
+  const aiCounts = await getAiClassificationCounts();
+  const aiClassified =
+    (aiCounts.confirmed ?? 0) + (aiCounts.likely ?? 0) + (aiCounts.mixed_use ?? 0);
+  const typeCounts = await getFacilityTypeCounts();
+  const cryptoCount = typeCounts.crypto_mining ?? 0;
+  const utilityLinked = allFacilities.filter((f) => f.energy?.utility).length;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
@@ -119,91 +149,32 @@ export default async function HomePage() {
       {/* "below the hero," not "in the map."                                */}
       {/* ------------------------------------------------------------------ */}
       <div className="border-t border-border pt-10">
-        {/* Survey stats row */}
-        <div className="mb-10 flex flex-wrap gap-8 border-b border-border pb-10">
-          <div className="flex flex-col items-center gap-1 text-center">
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {count}
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              Sites tracked
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {states}
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              States covered
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {(operationalMw / 1000).toFixed(1)} GW
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              Operational
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {(plannedMw / 1000).toFixed(0)} GW
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              Planned pipeline
-            </span>
-          </div>
-        </div>
+        {/* Survey ledger + pipeline-scale signature */}
+        <SurveyLedger
+          count={count}
+          states={states}
+          operators={operatorCount}
+          sources={sourcesCited}
+          operationalMw={operationalMw}
+          underConstructionMw={underConstructionMw}
+          plannedMw={plannedMw}
+          className="mb-10 border-b border-border pb-10"
+        />
 
-        {/* Statistics link */}
-        <div className="mb-6">
-          <Link
-            href="/stats"
-            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            View full statistics →
-          </Link>
-        </div>
-
-        {/* Crypto mining cross-link */}
-        <div className="mb-6">
-          <Link
-            href="/crypto"
-            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            Browse crypto mining facilities →
-          </Link>
-        </div>
-
-        {/* Rankings cross-link */}
-        <div className="mb-6">
-          <Link
-            href="/rankings"
-            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            See the biggest projects, operators, and states →
-          </Link>
-        </div>
-
-        {/* Learn cross-link */}
-        <div className="mb-6">
-          <Link
-            href="/learn"
-            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            Learn the terms behind the dataset →
-          </Link>
-        </div>
-
-        {/* Entry points */}
-        <div className="mb-12 flex flex-wrap items-center gap-4">
-          <Link
-            href="/map"
-            className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            Explore the map →
-          </Link>
-        </div>
+        {/* Lens gateway — the ways in */}
+        <LensGateway
+          className="mt-2"
+          counts={{
+            sites: count,
+            states,
+            utilityLinked,
+            frictionCount,
+            aiClassified,
+            operators: operatorCount,
+            plannedGw: Math.round(plannedMw / 1000),
+            cryptoCount,
+          }}
+        />
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -265,25 +236,24 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Recent activity teaser                                              */}
-      {/* ------------------------------------------------------------------ */}
-      {recentActivity.length > 0 && (
-        <div className="mt-12 border-t border-border pt-10">
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <h2 className="font-display text-2xl text-foreground">
-              Recent activity
-            </h2>
-            <Link
-              href="/activity"
-              className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-            >
-              View all →
-            </Link>
-          </div>
-          <ActivityList entries={recentActivity} />
-        </div>
-      )}
+      {/* Contested sites — the differentiator */}
+      <ContestedStrip
+        cases={oppositionCases}
+        frictionCount={frictionCount}
+        breakdown={{
+          litigation: communityCounts.litigation ?? 0,
+          opposed: communityCounts.opposed ?? 0,
+          contested: communityCounts.contested ?? 0,
+        }}
+        className="mt-12 border-t border-border pt-10"
+      />
+
+      {/* A living, open record — provenance, contribute, recent activity */}
+      <OpenRecord
+        sources={sourcesCited}
+        recentActivity={recentActivity}
+        className="mt-12 border-t border-border pt-10"
+      />
     </div>
   );
 }
