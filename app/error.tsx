@@ -26,7 +26,7 @@ export default function Error({
         <>
           <Button onClick={() => reset()}>Try again</Button>
           <Link href="/" className={buttonVariants({ variant: "outline" })}>
-            Back to the map
+            Back to Compute Atlas
           </Link>
         </>
       }

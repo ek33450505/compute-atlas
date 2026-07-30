@@ -36,7 +36,7 @@ describe("NotFound (app/not-found.tsx)", () => {
 
   it("renders a link back to the home page", () => {
     render(<NotFound />);
-    expect(screen.getByRole("link", { name: "Back to the map" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Back to Compute Atlas" })).toHaveAttribute(
       "href",
       "/"
     );

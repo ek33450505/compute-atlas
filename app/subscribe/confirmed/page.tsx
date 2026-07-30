@@ -20,7 +20,7 @@ export default function SubscribeConfirmedPage() {
       description="You'll get an email when this record changes. Every alert has a one-click unsubscribe."
       actions={
         <Link href="/" className={buttonVariants({ variant: "outline" })}>
-          Back to the map
+          Back to Compute Atlas
         </Link>
       }
     />

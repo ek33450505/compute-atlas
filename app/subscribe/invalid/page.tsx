@@ -20,7 +20,7 @@ export default function SubscribeInvalidPage() {
       description="This confirmation or unsubscribe link has already been used, or the link itself is no longer valid."
       actions={
         <Link href="/" className={buttonVariants({ variant: "outline" })}>
-          Back to the map
+          Back to Compute Atlas
         </Link>
       }
     />
