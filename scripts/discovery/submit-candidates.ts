@@ -1,15 +1,19 @@
 /**
  * Deterministic core of the discovery pipeline: takes a JSON array of
- * candidate facility docs (or `{ facility, provenance }` wrappers), or
- * compact `{ statusUpdate, provenance }` status-transition intents, validates
- * and dedupes them against the live facility set, and stages the survivors
+ * candidate facility docs (or `{ facility, provenance }` wrappers), compact
+ * `{ statusUpdate, provenance }` status-transition intents, or compact
+ * `{ enrichmentUpdate, provenance }` fill-missing intents, validates and
+ * dedupes them against the live facility set, and stages the survivors
  * as `pending` submissions via POST /api/submissions. Never writes live
  * facilities directly — that stays a human decision via the Phase 4 CLI
  * (`scripts/submissions.ts`).
  *
- * `statusUpdate` intents exist to avoid reconstructing a full facility doc
- * from a compact projection (see lib/status-update.ts) — the server applies
- * them append-only, appending new sources rather than rebuilding the array.
+ * `statusUpdate` and `enrichmentUpdate` intents exist to avoid reconstructing
+ * a full facility doc from a compact projection (see lib/status-update.ts and
+ * lib/enrichment-update.ts) — the server applies them append-only, appending
+ * new sources rather than rebuilding the array. Discovery (net-new facilities
+ * + status refreshes) is processed ahead of enrichment against the shared
+ * `--max` cap — see the `ordered` partition in `runSubmit`.
  *
  * Run via: tsx scripts/discovery/submit-candidates.ts <candidates.json> [flags]
  * Requires API_ADMIN_TOKEN in the environment (e.g. via --env-file=.env.local).
@@ -22,6 +26,7 @@ import path from "node:path";
 
 import { facilitySchema, type Facility } from "../../lib/schema";
 import { statusUpdateIntentSchema } from "../../lib/status-update";
+import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
 
 // --- types -----------------------------------------------------------------
 
@@ -37,14 +42,22 @@ export interface CandidateProvenance {
 /**
  * Normalized candidate shape. `facility` covers both the historical bare-doc
  * and `{ facility, provenance }` wrapper forms (unchanged reconstruct-and-
- * validate path). `status_update` covers the new compact-intent form emitted
- * for Responsibility 2 (status-refresh) — see lib/status-update.ts for why
- * this is append-only rather than a rebuilt full doc.
+ * validate path). `status_update` covers the compact-intent form emitted for
+ * Responsibility 2 (status-refresh) — see lib/status-update.ts for why this
+ * is append-only rather than a rebuilt full doc. `enrichment_update` covers
+ * the fill-missing compact-intent form emitted for Responsibility 3
+ * (enrichment) — see lib/enrichment-update.ts.
  */
 export type NormalizedCandidate =
   | { type: "facility"; doc: unknown; provenance: CandidateProvenance }
   | {
       type: "status_update";
+      targetFacilityId: unknown;
+      intent: unknown;
+      provenance: CandidateProvenance;
+    }
+  | {
+      type: "enrichment_update";
       targetFacilityId: unknown;
       intent: unknown;
       provenance: CandidateProvenance;
@@ -80,8 +93,10 @@ export interface RunSubmitSummary {
 
 /**
  * Accepts a bare Facility doc, a `{ facility, provenance }` wrapper (both
- * classified as `type: "facility"`), or a `{ statusUpdate, provenance }`
- * compact intent (classified as `type: "status_update"`).
+ * classified as `type: "facility"`), a `{ statusUpdate, provenance }`
+ * compact intent (classified as `type: "status_update"`), or an
+ * `{ enrichmentUpdate, provenance }` compact intent (classified as
+ * `type: "enrichment_update"`).
  */
 export function normalizeCandidates(raw: unknown[]): NormalizedCandidate[] {
   return raw.map((entry) => {
@@ -94,6 +109,18 @@ export function normalizeCandidates(raw: unknown[]): NormalizedCandidate[] {
         type: "status_update",
         targetFacilityId,
         intent: wrapped.statusUpdate,
+        provenance: wrapped.provenance ?? {},
+      };
+    }
+    if (entry && typeof entry === "object" && "enrichmentUpdate" in (entry as Record<string, unknown>)) {
+      const wrapped = entry as { enrichmentUpdate: unknown; provenance?: CandidateProvenance };
+      const intent = wrapped.enrichmentUpdate as Record<string, unknown> | null | undefined;
+      const targetFacilityId =
+        intent && typeof intent === "object" ? intent.targetFacilityId : undefined;
+      return {
+        type: "enrichment_update",
+        targetFacilityId,
+        intent: wrapped.enrichmentUpdate,
         provenance: wrapped.provenance ?? {},
       };
     }
@@ -170,7 +197,93 @@ export async function runSubmit(
     deps.existingFacilities
   );
 
-  for (const candidate of normalized) {
+  // Shared --max cap across all kinds, but net-new discovery + status refreshes
+  // take priority: process them first so a burst of enrichment can never starve
+  // discovery review. Enrichment fills leftover cap budget. (Ed's review-load
+  // calibration is a single daily number spanning both streams.)
+  const ordered = [
+    ...normalized.filter((c) => c.type !== "enrichment_update"),
+    ...normalized.filter((c) => c.type === "enrichment_update"),
+  ];
+
+  for (const candidate of ordered) {
+    if (candidate.type === "enrichment_update") {
+      const targetFacilityId = candidate.targetFacilityId;
+      const idLabel = typeof targetFacilityId === "string" && targetFacilityId ? targetFacilityId : "(no id)";
+
+      if (typeof targetFacilityId !== "string" || targetFacilityId.length === 0) {
+        console.log(`skip invalid: ${idLabel} — targetFacilityId is required`);
+        summary.skippedInvalid++;
+        continue;
+      }
+      if (!existingIds.has(targetFacilityId)) {
+        console.log(`skip invalid: ${targetFacilityId} — enrichment_update target not found`);
+        summary.skippedInvalid++;
+        continue;
+      }
+
+      // enrichmentUpdateIntentSchema is `.strict()` and does not declare
+      // targetFacilityId — it lives inside the wrapper alongside the intent
+      // fields (see lib/enrichment-update.ts), not as an intent field itself.
+      // Strip it before validating or a strict-schema extra-key rejection
+      // fires even on an otherwise well-formed intent.
+      const intentSource = (candidate.intent as Record<string, unknown>) ?? {};
+      const intentBody = Object.fromEntries(
+        Object.entries(intentSource).filter(([key]) => key !== "targetFacilityId")
+      );
+      const parsedIntent = enrichmentUpdateIntentSchema.safeParse(intentBody);
+      if (!parsedIntent.success) {
+        console.log(
+          `skip invalid: ${targetFacilityId} — ${parsedIntent.error.issues[0]?.message ?? "enrichment_update schema validation failed"}`
+        );
+        summary.skippedInvalid++;
+        continue;
+      }
+
+      if (summary.submitted >= opts.max) {
+        console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
+        summary.skippedOverCap++;
+        continue;
+      }
+
+      const envelope = {
+        kind: "enrichment_update" as const,
+        targetFacilityId,
+        payload: parsedIntent.data,
+        provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt),
+      };
+
+      if (opts.dryRun) {
+        console.log(`dry-run: would submit enrichment_update for ${targetFacilityId}`);
+        summary.submitted++;
+        summary.submittedIds.push(targetFacilityId);
+        continue;
+      }
+
+      try {
+        const res = await deps.fetchImpl(`${opts.baseUrl}/api/submissions`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.API_ADMIN_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(envelope),
+        });
+        if (!res.ok) {
+          const body = await res.text().catch(() => "");
+          console.log(`error: submit failed for ${targetFacilityId} — ${res.status} ${body}`);
+          summary.errors++;
+          continue;
+        }
+        summary.submitted++;
+        summary.submittedIds.push(targetFacilityId);
+      } catch (err) {
+        console.log(`error: submit threw for ${targetFacilityId} — ${(err as Error).message}`);
+        summary.errors++;
+      }
+      continue;
+    }
+
     if (candidate.type === "status_update") {
       const targetFacilityId = candidate.targetFacilityId;
       const idLabel = typeof targetFacilityId === "string" && targetFacilityId ? targetFacilityId : "(no id)";
