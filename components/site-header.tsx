@@ -4,6 +4,7 @@ import { Code2 } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { buildSearchIndex } from "@/lib/search";
 import { Wordmark } from "@/components/wordmark";
+import { PrimaryNav } from "@/components/primary-nav";
 import { MobileNav } from "@/components/mobile-nav";
 import { CommandPalette } from "@/components/search/command-palette";
 
@@ -14,6 +15,33 @@ const NAV_LINKS = [
   { label: "Explore", href: "/explore" },
   { label: "Activity", href: "/activity" },
   { label: "About", href: "/about" },
+] as const;
+
+const MOBILE_NAV_GROUPS = [
+  {
+    label: "Tools",
+    links: [
+      { label: "Map", href: "/map" },
+      { label: "Table", href: "/table" },
+      { label: "Stats", href: "/stats" },
+    ],
+  },
+  {
+    label: "Explore",
+    links: [
+      { label: "Explore all lenses", href: "/explore" },
+      { label: "Opposition", href: "/opposition" },
+    ],
+  },
+  {
+    label: "Project",
+    links: [
+      { label: "Activity", href: "/activity" },
+      { label: "About", href: "/about" },
+      { label: "Contribute", href: "/contribute" },
+      { label: "Source on GitHub", href: siteConfig.repoUrl, external: true },
+    ],
+  },
 ] as const;
 
 export async function SiteHeader() {
@@ -32,17 +60,7 @@ export async function SiteHeader() {
         </Link>
 
         {/* Primary nav — desktop only; MobileNav handles mobile */}
-        <nav aria-label="Primary" className="hidden sm:flex items-center gap-1 ml-2 sm:ml-4">
-          {NAV_LINKS.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex h-11 items-center px-1.5 sm:px-3 font-mono text-xs uppercase tracking-normal sm:tracking-wider text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
+        <PrimaryNav links={NAV_LINKS} />
 
         {/* Right-side controls */}
         <div className="ml-auto flex items-center gap-1">
@@ -58,7 +76,7 @@ export async function SiteHeader() {
             <Code2 aria-hidden className="size-4" />
           </a>
           {/* Mobile menu — hidden on sm+ */}
-          <MobileNav links={NAV_LINKS} />
+          <MobileNav groups={MOBILE_NAV_GROUPS} />
         </div>
       </div>
     </header>

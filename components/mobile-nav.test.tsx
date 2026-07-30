@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { usePathname } from "next/navigation";
 import { MobileNav } from "./mobile-nav";
@@ -41,11 +41,26 @@ vi.mock("next/link", () => ({
 // Fixtures
 // ---------------------------------------------------------------------------
 
-const NAV_LINKS = [
-  { label: "Map", href: "/map" },
-  { label: "Table", href: "/table" },
-  { label: "Stats", href: "/stats" },
-  { label: "About", href: "/about" },
+const GROUPS = [
+  {
+    label: "Tools",
+    links: [
+      { label: "Map", href: "/map" },
+      { label: "Table", href: "/table" },
+      { label: "Stats", href: "/stats" },
+    ],
+  },
+  {
+    label: "Project",
+    links: [
+      { label: "About", href: "/about" },
+      {
+        label: "Source on GitHub",
+        href: "https://github.com/example/repo",
+        external: true,
+      },
+    ],
+  },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -54,56 +69,78 @@ const NAV_LINKS = [
 
 describe("MobileNav — initial render", () => {
   it("renders the toggle button", () => {
-    render(<MobileNav links={NAV_LINKS} />);
+    render(<MobileNav groups={GROUPS} />);
     expect(
       screen.getByRole("button", { name: "Open navigation menu" })
     ).toBeInTheDocument();
   });
 
-  it("nav panel and links are not in the document initially (aria-expanded=false)", () => {
-    render(<MobileNav links={NAV_LINKS} />);
+  it("panel and links are not in the document initially (aria-expanded=false)", () => {
+    render(<MobileNav groups={GROUPS} />);
     const button = screen.getByRole("button", { name: "Open navigation menu" });
     expect(button).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByRole("link", { name: "Map" })).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: "About" })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "About" })).not.toBeInTheDocument();
   });
 
   it("button has aria-controls matching the panel id", () => {
-    render(<MobileNav links={NAV_LINKS} />);
+    render(<MobileNav groups={GROUPS} />);
     const button = screen.getByRole("button", { name: "Open navigation menu" });
     expect(button).toHaveAttribute("aria-controls", "mobile-nav-panel");
-    expect(button).not.toHaveAttribute("aria-haspopup");
   });
 });
 
 describe("MobileNav — open state", () => {
   it("clicking the button opens the panel: aria-expanded becomes true and links appear", async () => {
     const user = userEvent.setup();
-    render(<MobileNav links={NAV_LINKS} />);
+    render(<MobileNav groups={GROUPS} />);
 
     await user.click(
       screen.getByRole("button", { name: "Open navigation menu" })
     );
 
-    const button = screen.getByRole("button", { name: "Close navigation menu" });
-    expect(button).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("link", { name: "Map" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "Map" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
+
+    // The toggle button becomes inert (removed from the accessibility tree)
+    // once the modal dialog traps focus, so it's asserted via a raw DOM
+    // query rather than screen.getByRole — the panel's own close button
+    // shares the "Close navigation menu" accessible name while open, so a
+    // role query at this point would be ambiguous by design.
+    const toggle = document.querySelector('button[aria-controls="mobile-nav-panel"]');
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(toggle).toHaveAttribute("aria-label", "Close navigation menu");
+
+    // The panel's own close button remains the sole accessible match.
+    expect(
+      screen.getByRole("button", { name: "Close navigation menu" })
+    ).toBeInTheDocument();
   });
 
-  it("panel contains a GitHub source link", async () => {
+  it("groups links under labeled sections", async () => {
     const user = userEvent.setup();
-    render(<MobileNav links={NAV_LINKS} />);
+    render(<MobileNav groups={GROUPS} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Open navigation menu" })
+    );
+
+    await screen.findByRole("link", { name: "Map" });
+    expect(screen.getByText("Tools")).toBeInTheDocument();
+    expect(screen.getByText("Project")).toBeInTheDocument();
+  });
+
+  it("panel contains the external GitHub link with a new-tab accessible name", async () => {
+    const user = userEvent.setup();
+    render(<MobileNav groups={GROUPS} />);
 
     await user.click(
       screen.getByRole("button", { name: "Open navigation menu" })
     );
 
     expect(
-      screen.getByRole("link", {
-        name: "View source on GitHub (opens in new tab)",
+      await screen.findByRole("link", {
+        name: "Source on GitHub (opens in new tab)",
       })
     ).toBeInTheDocument();
   });
@@ -112,115 +149,129 @@ describe("MobileNav — open state", () => {
 describe("MobileNav — close behavior", () => {
   it("pressing Escape closes the panel (aria-expanded returns to false)", async () => {
     const user = userEvent.setup();
-    render(<MobileNav links={NAV_LINKS} />);
+    render(<MobileNav groups={GROUPS} />);
 
     await user.click(
       screen.getByRole("button", { name: "Open navigation menu" })
     );
-    // Verify it opened
-    expect(
-      screen.getByRole("button", { name: "Close navigation menu" })
-    ).toHaveAttribute("aria-expanded", "true");
+    await screen.findByRole("link", { name: "Map" });
 
     await user.keyboard("{Escape}");
 
-    expect(
-      screen.getByRole("button", { name: "Open navigation menu" })
-    ).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("link", { name: "Map" })).not.toBeInTheDocument();
-  });
-
-  it("clicking a nav link closes the panel", async () => {
-    const user = userEvent.setup();
-    render(<MobileNav links={NAV_LINKS} />);
-
-    await user.click(
-      screen.getByRole("button", { name: "Open navigation menu" })
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Open navigation menu" })
+      ).toHaveAttribute("aria-expanded", "false")
     );
-    await user.click(screen.getByRole("link", { name: "Map" }));
-
-    expect(
-      screen.getByRole("button", { name: "Open navigation menu" })
-    ).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("link", { name: "Map" })).not.toBeInTheDocument();
-  });
-
-  it("clicking the GitHub source link closes the panel", async () => {
-    const user = userEvent.setup();
-    render(<MobileNav links={NAV_LINKS} />);
-
-    await user.click(
-      screen.getByRole("button", { name: "Open navigation menu" })
-    );
-    await user.click(
-      screen.getByRole("link", {
-        name: "View source on GitHub (opens in new tab)",
-      })
-    );
-
-    expect(
-      screen.queryByRole("link", {
-        name: "View source on GitHub (opens in new tab)",
-      })
-    ).not.toBeInTheDocument();
-  });
-
-  it("pointer-down outside the container closes the panel", async () => {
-    const user = userEvent.setup();
-    render(<MobileNav links={NAV_LINKS} />);
-
-    await user.click(
-      screen.getByRole("button", { name: "Open navigation menu" })
-    );
-
-    const button = screen.getByRole("button", { name: "Close navigation menu" });
-    expect(button).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("link", { name: "Map" })).toBeInTheDocument();
-
-    fireEvent.pointerDown(document.body);
-
-    expect(
-      screen.getByRole("button", { name: "Open navigation menu" })
-    ).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByRole("link", { name: "Map" })).not.toBeInTheDocument();
   });
 
   it("pressing Escape returns focus to the toggle button", async () => {
     const user = userEvent.setup();
-    render(<MobileNav links={NAV_LINKS} />);
+    render(<MobileNav groups={GROUPS} />);
 
     await user.click(
       screen.getByRole("button", { name: "Open navigation menu" })
     );
-    expect(
-      screen.getByRole("button", { name: "Close navigation menu" })
-    ).toHaveAttribute("aria-expanded", "true");
+    await screen.findByRole("link", { name: "Map" });
 
-    fireEvent.keyDown(document, { key: "Escape" });
+    await user.keyboard("{Escape}");
 
-    // Panel closes synchronously; focus returns via requestAnimationFrame
-    expect(
-      screen.queryByRole("link", { name: "Map" })
-    ).not.toBeInTheDocument();
     const toggleButton = screen.getByRole("button", {
       name: "Open navigation menu",
     });
     await waitFor(() => expect(toggleButton).toHaveFocus());
-    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("an outside press (e.g. on the backdrop) closes the panel", async () => {
+    const user = userEvent.setup();
+    render(<MobileNav groups={GROUPS} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Open navigation menu" })
+    );
+    await screen.findByRole("link", { name: "Map" });
+
+    // Base UI's dismiss handling needs a full pointer down/up + click
+    // sequence (userEvent.click), not a bare fireEvent.pointerDown, to
+    // register as an outside press — verified empirically.
+    await user.click(document.body);
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Open navigation menu" })
+      ).toHaveAttribute("aria-expanded", "false")
+    );
+    expect(screen.queryByRole("link", { name: "Map" })).not.toBeInTheDocument();
+  });
+
+  it("clicking a nav link closes the panel", async () => {
+    const user = userEvent.setup();
+    render(<MobileNav groups={GROUPS} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Open navigation menu" })
+    );
+    await user.click(await screen.findByRole("link", { name: "Map" }));
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Open navigation menu" })
+      ).toHaveAttribute("aria-expanded", "false")
+    );
+    expect(screen.queryByRole("link", { name: "Map" })).not.toBeInTheDocument();
+  });
+
+  it("clicking the external GitHub link closes the panel too", async () => {
+    const user = userEvent.setup();
+    render(<MobileNav groups={GROUPS} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Open navigation menu" })
+    );
+    await user.click(
+      await screen.findByRole("link", {
+        name: "Source on GitHub (opens in new tab)",
+      })
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Open navigation menu" })
+      ).toHaveAttribute("aria-expanded", "false")
+    );
+  });
+
+  it("clicking the close button closes the panel", async () => {
+    const user = userEvent.setup();
+    render(<MobileNav groups={GROUPS} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Open navigation menu" })
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Close navigation menu" })
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Open navigation menu" })
+      ).toHaveAttribute("aria-expanded", "false")
+    );
   });
 });
 
 describe("MobileNav — aria-current", () => {
-  it("sets aria-current=page on the active route link (non-root)", async () => {
+  it("sets aria-current=page on the active route link only", async () => {
     vi.mocked(usePathname).mockReturnValue("/map");
     const user = userEvent.setup();
-    render(<MobileNav links={NAV_LINKS} />);
+    render(<MobileNav groups={GROUPS} />);
 
     await user.click(
       screen.getByRole("button", { name: "Open navigation menu" })
     );
 
-    expect(screen.getByRole("link", { name: "Map" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "Map" })).toHaveAttribute(
       "aria-current",
       "page"
     );
@@ -229,7 +280,6 @@ describe("MobileNav — aria-current", () => {
       "page"
     );
 
-    // Reset mock so other tests see "/"
     vi.mocked(usePathname).mockReturnValue("/");
   });
 });

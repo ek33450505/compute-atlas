@@ -1,71 +1,50 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Dialog } from "@base-ui/react/dialog";
 import { Menu, X } from "lucide-react";
 
-import { siteConfig } from "@/lib/site";
-
-interface MobileNavProps {
-  links: readonly { readonly label: string; readonly href: string }[];
+interface NavGroup {
+  readonly label: string;
+  readonly links: readonly {
+    readonly label: string;
+    readonly href: string;
+    readonly external?: boolean;
+  }[];
 }
 
-export function MobileNav({ links }: MobileNavProps) {
+interface MobileNavProps {
+  readonly groups: readonly NavGroup[];
+}
+
+const LINK_CLASSNAME =
+  "flex min-h-11 w-full items-center gap-1 rounded-sm px-2 font-mono text-sm uppercase tracking-wider text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 aria-[current=page]:text-foreground";
+
+export function MobileNav({ groups }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const close = useCallback(() => {
-    setOpen(false);
-  }, []);
-
-  const closeAndReturnFocus = useCallback(() => {
-    setOpen(false);
-    // Defer focus return so the panel has unmounted first
-    requestAnimationFrame(() => {
-      buttonRef.current?.focus();
-    });
-  }, []);
-
-  // Close on outside click / tap
-  useEffect(() => {
-    if (!open) return;
-    function handlePointerDown(e: PointerEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        close();
-      }
-    }
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [open, close]);
-
-  // Close on Escape and return focus to button
-  useEffect(() => {
-    if (!open) return;
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        closeAndReturnFocus();
-      }
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, closeAndReturnFocus]);
+  const close = () => setOpen(false);
 
   return (
-    <div ref={containerRef} className="relative sm:hidden">
+    <>
+      {/*
+        This toggle intentionally still swaps its aria-label/aria-expanded to a
+        "Close…" state when open, but Base UI's default `modal` Dialog makes it
+        pointer/AT-inert while the panel is open (it sits outside Dialog.Root's
+        tree), so the panel's own close button below is the only one exposed to
+        the accessibility tree at that point — both share the same accessible
+        name by design, not a duplicate-label bug.
+      */}
       <button
-        ref={buttonRef}
         type="button"
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:hidden"
       >
         {open ? (
           <X aria-hidden className="size-5" />
@@ -74,48 +53,76 @@ export function MobileNav({ links }: MobileNavProps) {
         )}
       </button>
 
-      {open && (
-        <div
-          id="mobile-nav-panel"
-          className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-lg"
-        >
-          <nav aria-label="Mobile navigation">
-            <ul>
-              {links.map(({ label, href }) => {
-                const isActive = pathname === href;
-                return (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      aria-current={isActive ? "page" : undefined}
-                      onClick={close}
-                      className="flex min-h-11 w-full items-center px-4 font-mono text-sm uppercase tracking-wider text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 aria-[current=page]:text-foreground"
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Portal>
+          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/20 transition-opacity duration-200 motion-reduce:transition-none data-ending-style:opacity-0 data-starting-style:opacity-0" />
+          <Dialog.Popup
+            id="mobile-nav-panel"
+            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-xs translate-x-0 flex-col overflow-y-auto border-l border-border bg-background shadow-lg transition-transform duration-200 ease-in-out motion-reduce:transition-none data-ending-style:translate-x-full data-starting-style:translate-x-full"
+          >
+            <Dialog.Description className="sr-only">
+              Site navigation. Press Escape or the close button to dismiss.
+            </Dialog.Description>
 
-          <div className="border-t border-border">
-            <a
-              href={siteConfig.repoUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label="View source on GitHub (opens in new tab)"
-              onClick={close}
-              className="flex min-h-11 w-full items-center px-4 font-mono text-sm uppercase tracking-wider text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              Source on GitHub{" "}
-              <span aria-hidden="true" className="ml-1">
-                ↗
-              </span>
-            </a>
-          </div>
-        </div>
-      )}
-    </div>
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <Dialog.Title className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                Navigation
+              </Dialog.Title>
+              <button
+                type="button"
+                aria-label="Close navigation menu"
+                onClick={close}
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <X aria-hidden className="size-5" />
+              </button>
+            </div>
+
+            <nav aria-label="Mobile navigation" className="flex-1 overflow-y-auto px-2 py-4">
+              {groups.map((group) => (
+                <div key={group.label} className="mb-6 last:mb-0">
+                  <p className="px-2 pb-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {group.label}
+                  </p>
+                  <ul>
+                    {group.links.map((link) => {
+                      const isActive = !link.external && pathname === link.href;
+                      return (
+                        <li key={link.href}>
+                          {link.external ? (
+                            <a
+                              href={link.href}
+                              target="_blank"
+                              rel="noreferrer noopener"
+                              aria-label={`${link.label} (opens in new tab)`}
+                              onClick={close}
+                              className={LINK_CLASSNAME}
+                            >
+                              {link.label}
+                              <span aria-hidden="true" className="ml-1">
+                                ↗
+                              </span>
+                            </a>
+                          ) : (
+                            <Link
+                              href={link.href}
+                              aria-current={isActive ? "page" : undefined}
+                              onClick={close}
+                              className={LINK_CLASSNAME}
+                            >
+                              {link.label}
+                            </Link>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+          </Dialog.Popup>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   );
 }
