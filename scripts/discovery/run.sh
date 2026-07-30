@@ -198,7 +198,7 @@ compute_cap() {
 }
 
 CAP="$(compute_cap)"
-log "review cap for $RUN_ID: --max=${MAX_CANDIDATES:-$CAP} (burst=${BURST_CAP}/day for ${BURST_DAYS}d from ${BURST_START_DATE}, then ${STEADY_CAP}/day)"
+log "review cap for $RUN_ID: --max=${MAX_CANDIDATES:-$CAP} (burst=${BURST_CAP}/day for ${BURST_DAYS}d from ${BURST_START_DATE}, then ${STEADY_CAP}/day) — shared across new discovery + status + enrichment"
 
 # --- submit step (deterministic — staging queue only) -----------------------
 if [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then

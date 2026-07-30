@@ -58,7 +58,7 @@ afterAll(async () => {
 });
 
 async function insertSubmission(values: {
-  kind: "create" | "update" | "status_update";
+  kind: "create" | "update" | "status_update" | "enrichment_update";
   targetFacilityId?: string;
   payload: Record<string, unknown>;
 }): Promise<string> {
@@ -123,6 +123,67 @@ describe("approveSubmission (kind: status_update)", () => {
       kind: "status_update",
       targetFacilityId: seedDoc.id,
       payload: { status: "operational", date: "2026-07-16", sources: [] },
+    });
+
+    const result = await approveSubmission(id);
+    expect(result.ok).toBe(false);
+
+    const submissionRows = await tdb.db
+      .select()
+      .from(submissionsTable)
+      .where(eq(submissionsTable.id, id));
+    expect(submissionRows[0].status).toBe("pending");
+  });
+});
+
+describe("approveSubmission (kind: enrichment_update)", () => {
+  it("promotes a pending enrichment_update submission: fills a missing field and marks the submission approved", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+    const id = await insertSubmission({
+      kind: "enrichment_update",
+      targetFacilityId: seedDoc.id,
+      payload: {
+        date: "2026-07-16",
+        sources: [makeSource("enrichment")],
+        fields: { energy: { source: "grid" } },
+      },
+    });
+
+    const result = await approveSubmission(id);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.facility.energy?.source).toBe("grid");
+    expect(result.facility.sources).toHaveLength(2);
+
+    const facilityRows = await tdb.db
+      .select()
+      .from(facilitiesTable)
+      .where(eq(facilitiesTable.id, seedDoc.id));
+    expect(facilityRows[0].doc.energy?.source).toBe("grid");
+
+    const submissionRows = await tdb.db
+      .select()
+      .from(submissionsTable)
+      .where(eq(submissionsTable.id, id));
+    expect(submissionRows[0].status).toBe("approved");
+
+    const historyRows = await tdb.db
+      .select()
+      .from(facilityHistoryTable)
+      .where(eq(facilityHistoryTable.facilityId, seedDoc.id));
+    expect(historyRows).toHaveLength(1);
+    expect(historyRows[0].changeType).toBe("update");
+    expect(historyRows[0].source).toBe(id);
+  });
+
+  it("leaves the submission pending when the enrichment_update payload is invalid", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+    const id = await insertSubmission({
+      kind: "enrichment_update",
+      targetFacilityId: seedDoc.id,
+      payload: { date: "2026-07-16", sources: [], fields: { energy: { source: "grid" } } },
     });
 
     const result = await approveSubmission(id);

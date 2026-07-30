@@ -43,6 +43,50 @@ export const statusEventSchema = z.object({
   sourceIndex: z.number().int().nonnegative().optional(),
 });
 
+// Sub-shapes extracted from `baseFacilityShape` so `lib/enrichment-update.ts`
+// can compose an intent schema from the SAME field-level validation instead
+// of duplicating it. Each export is the bare (non-optional) shape; call
+// sites in `baseFacilityShape` below apply `.optional()` themselves.
+export const capacityMwSchema = z.object({
+  planned: z.number().positive().optional(),
+  operational: z.number().positive().optional(),
+});
+
+export const energySchema = z.object({
+  source: z
+    .enum(["grid", "on_site_gas", "nuclear", "solar", "wind", "hydro", "mixed", "other"])
+    .optional(),
+  utility: z.string().optional(),
+  onSiteGenerationMw: z.number().positive().optional(),
+  notes: z.string().optional(),
+});
+
+export const waterSchema = z.object({
+  coolingType: z.enum(["evaporative", "air", "closed_loop", "hybrid", "unknown"]).optional(),
+  reportedMgd: z.number().nonnegative().optional(),
+  notes: z.string().optional(),
+});
+
+export const subsidySchema = z.object({
+  program: z.string().optional(),
+  amountUsd: z.number().nonnegative().optional(),
+  jurisdiction: z.string().optional(),
+  year: z
+    .string()
+    .regex(/^\d{4}(\/\d{4})*$/, "year must be a 4-digit year, or slash-separated 4-digit years (e.g. 2013/2015)")
+    .optional(),
+  sourceIndex: z.number().int().nonnegative().optional(),
+});
+
+export const communityStatusEnum = z.enum([
+  "supported",
+  "mixed",
+  "contested",
+  "opposed",
+  "litigation",
+  "unknown",
+]);
+
 // Shared fields common to every facility, regardless of type.
 // Both discriminated-union branches spread this shape and add their own
 // `facilityType` literal plus type-specific fields.
@@ -77,12 +121,7 @@ const baseFacilityShape = {
       })
       .optional(),
   }),
-  capacityMw: z
-    .object({
-      planned: z.number().positive().optional(),
-      operational: z.number().positive().optional(),
-    })
-    .optional(),
+  capacityMw: capacityMwSchema.optional(),
   poweredBy: z.string().optional(),
   announcedDate: z.string().optional(),
   statusHistory: z.array(statusEventSchema).default([]),
@@ -90,39 +129,11 @@ const baseFacilityShape = {
   lastUpdated: z.string().min(4),
   notes: z.string().optional(),
   // energy / power
-  energy: z
-    .object({
-      source: z
-        .enum(["grid", "on_site_gas", "nuclear", "solar", "wind", "hydro", "mixed", "other"])
-        .optional(),
-      utility: z.string().optional(),
-      onSiteGenerationMw: z.number().positive().optional(),
-      notes: z.string().optional(),
-    })
-    .optional(),
+  energy: energySchema.optional(),
   // water
-  water: z
-    .object({
-      coolingType: z.enum(["evaporative", "air", "closed_loop", "hybrid", "unknown"]).optional(),
-      reportedMgd: z.number().nonnegative().optional(),
-      notes: z.string().optional(),
-    })
-    .optional(),
+  water: waterSchema.optional(),
   // public money
-  subsidies: z
-    .array(
-      z.object({
-        program: z.string().optional(),
-        amountUsd: z.number().nonnegative().optional(),
-        jurisdiction: z.string().optional(),
-        year: z
-          .string()
-          .regex(/^\d{4}(\/\d{4})*$/, "year must be a 4-digit year, or slash-separated 4-digit years (e.g. 2013/2015)")
-          .optional(),
-        sourceIndex: z.number().int().nonnegative().optional(),
-      })
-    )
-    .optional(),
+  subsidies: z.array(subsidySchema).optional(),
   // economics
   investmentUsd: z.number().positive().optional(),
   landAcres: z.number().positive().optional(),
@@ -136,9 +147,7 @@ const baseFacilityShape = {
   // community
   community: z
     .object({
-      status: z
-        .enum(["supported", "mixed", "contested", "opposed", "litigation", "unknown"])
-        .optional(),
+      status: communityStatusEnum.optional(),
       notes: z.string().optional(),
       sourceIndex: z.number().int().nonnegative().optional(),
     })

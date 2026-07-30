@@ -3,7 +3,13 @@ import { eq, desc } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { submissionsTable, type SubmissionRow } from "@/lib/db/schema";
-import { createFacility, updateFacility, writeStatusUpdate, type WriteResult } from "@/lib/facility-write";
+import {
+  createFacility,
+  updateFacility,
+  writeStatusUpdate,
+  writeEnrichmentUpdate,
+  type WriteResult,
+} from "@/lib/facility-write";
 import { notifySubscribersOfChange } from "@/lib/notify";
 import type { Facility } from "@/lib/schema";
 
@@ -33,13 +39,13 @@ const provenanceSchema = z.object({
  */
 export const submissionInputSchema = z
   .object({
-    kind: z.enum(["create", "update", "status_update"]),
+    kind: z.enum(["create", "update", "status_update", "enrichment_update"]),
     targetFacilityId: z.string().optional(),
-    payload: z.record(z.string(), z.unknown()), // full doc for create, partial patch/intent for update/status_update
+    payload: z.record(z.string(), z.unknown()), // full doc for create, partial patch/intent for update/status_update/enrichment_update
     provenance: provenanceSchema,
   })
-  .refine((s) => (s.kind !== "update" && s.kind !== "status_update") || !!s.targetFacilityId, {
-    message: "targetFacilityId is required for update and status_update submissions",
+  .refine((s) => s.kind === "create" || !!s.targetFacilityId, {
+    message: "targetFacilityId is required for update, status_update, and enrichment_update submissions",
     path: ["targetFacilityId"],
   });
 
@@ -115,7 +121,9 @@ export async function approveSubmission(
       ? await createFacility(row.payload, id)
       : row.kind === "status_update"
         ? await writeStatusUpdate(row.targetFacilityId!, row.payload, id)
-        : await updateFacility(row.targetFacilityId!, row.payload, id);
+        : row.kind === "enrichment_update"
+          ? await writeEnrichmentUpdate(row.targetFacilityId!, row.payload, id)
+          : await updateFacility(row.targetFacilityId!, row.payload, id);
 
   if (!writeResult.ok) {
     return writeResult;
@@ -136,7 +144,9 @@ export async function approveSubmission(
         ? "added to the atlas"
         : row.kind === "status_update"
           ? "status updated"
-          : "record updated";
+          : row.kind === "enrichment_update"
+            ? "details enriched"
+            : "record updated";
     await notifySubscribersOfChange(writeResult.facility, changeLabel);
   } catch (err) {
     console.error("subscriber notification failed", err);

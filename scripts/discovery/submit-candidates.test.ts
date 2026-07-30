@@ -376,6 +376,159 @@ describe("runSubmit — status_update intents", () => {
   });
 });
 
+describe("runSubmit — enrichment_update intents", () => {
+  function makeEnrichmentUpdate(overrides: Record<string, unknown> = {}) {
+    return {
+      targetFacilityId: "existing-facility-tx",
+      date: "2026-07-20",
+      sources: [
+        { url: "https://example.com/enrichment", label: "10-Q filing", retrievedAt: "2026-07-20", kind: "filing" },
+      ],
+      fields: { investmentUsd: 500000000 },
+      ...overrides,
+    };
+  }
+
+  it("submits a valid enrichment_update as kind=enrichment_update with targetFacilityId stripped from payload", async () => {
+    const fetchImpl = makeFetch([{ ok: true, status: 200 }]);
+    const candidate = {
+      enrichmentUpdate: makeEnrichmentUpdate(),
+      provenance: { sources: ["https://example.com/enrichment"], discoveredBy: "test" },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(1);
+    expect(summary.submittedIds).toEqual(["existing-facility-tx"]);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    expect(body.kind).toBe("enrichment_update");
+    expect(body.targetFacilityId).toBe("existing-facility-tx");
+    // payload is the parsed EnrichmentUpdateIntent (enrichmentUpdateIntentSchema,
+    // which is .strict() and does not declare targetFacilityId) — it must not
+    // include targetFacilityId, which lives at the envelope level.
+    const { targetFacilityId: omittedTargetId, ...expectedIntent } = makeEnrichmentUpdate();
+    expect(omittedTargetId).toBe("existing-facility-tx");
+    expect(body.payload).toEqual(expectedIntent);
+    expect(body.provenance.sources).toEqual(["https://example.com/enrichment"]);
+    expect(body.provenance.discoveredBy).toBe("test");
+  });
+
+  it("skips an enrichment_update whose targetFacilityId is missing", async () => {
+    const fetchImpl = makeFetch([]);
+    const rest = Object.fromEntries(
+      Object.entries(makeEnrichmentUpdate()).filter(([key]) => key !== "targetFacilityId")
+    );
+    const candidate = {
+      enrichmentUpdate: rest,
+      provenance: { sources: ["https://example.com/x"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.skippedInvalid).toBe(1);
+    expect(summary.submitted).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("skips an enrichment_update whose targetFacilityId is not an existing facility", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      enrichmentUpdate: makeEnrichmentUpdate({ targetFacilityId: "no-such-facility" }),
+      provenance: { sources: ["https://example.com/x"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.skippedInvalid).toBe(1);
+    expect(summary.submitted).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("skips an enrichment_update with an unknown field key as malformed (strict schema)", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      enrichmentUpdate: makeEnrichmentUpdate({ fields: { notARealField: true } }),
+      provenance: { sources: ["https://example.com/x"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.skippedInvalid).toBe(1);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("skips an enrichment_update with an out-of-range sourceRel as malformed", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      enrichmentUpdate: makeEnrichmentUpdate({
+        fields: { community: { status: "supportive", sourceRel: 5 } },
+      }),
+      provenance: { sources: ["https://example.com/x"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.skippedInvalid).toBe(1);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("dry-run logs the enrichment_update line and does not POST", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      enrichmentUpdate: makeEnrichmentUpdate(),
+      provenance: { sources: ["https://example.com/x"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts({ dryRun: true }), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(1);
+    expect(summary.submittedIds).toEqual(["existing-facility-tx"]);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("processes discovery (net-new + status_update) ahead of enrichment_update under a tight shared --max cap", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    // enrichment_update appears FIRST in the array, the net-new create SECOND —
+    // discovery-first ordering means the create still wins the single cap slot.
+    const candidates = [
+      { enrichmentUpdate: makeEnrichmentUpdate(), provenance: { sources: ["https://x/enrich"] } },
+      { facility: makeCandidate({ id: "discovery-priority-tx" }), provenance: { sources: ["https://x/new"] } },
+    ];
+
+    const summary = await runSubmit(candidates, baseOpts({ max: 1 }), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(1);
+    expect(summary.submittedIds).toEqual(["discovery-priority-tx"]);
+    expect(summary.skippedOverCap).toBe(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    const [, init] = fetchImpl.mock.calls[0];
+    expect(JSON.parse(init!.body as string).kind).toBe("create");
+  });
+});
+
 describe("normalizeCandidates — status_update classification", () => {
   it("classifies a { statusUpdate, provenance } entry distinctly from facility entries", () => {
     const statusUpdateEntry = {
@@ -388,6 +541,29 @@ describe("normalizeCandidates — status_update classification", () => {
 
     expect(a.type).toBe("status_update");
     if (a.type === "status_update") {
+      expect(a.targetFacilityId).toBe("existing-facility-tx");
+    }
+    expect(b.type).toBe("facility");
+  });
+});
+
+describe("normalizeCandidates — enrichment_update classification", () => {
+  it("classifies an { enrichmentUpdate, provenance } entry distinctly from facility and status_update entries", () => {
+    const enrichmentUpdateEntry = {
+      enrichmentUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        date: "2026-07-20",
+        sources: [],
+        fields: {},
+      },
+      provenance: { sources: ["https://x"] },
+    };
+    const bareFacility = makeCandidate();
+
+    const [a, b] = normalizeCandidates([enrichmentUpdateEntry, bareFacility]);
+
+    expect(a.type).toBe("enrichment_update");
+    if (a.type === "enrichment_update") {
       expect(a.targetFacilityId).toBe("existing-facility-tx");
     }
     expect(b.type).toBe("facility");

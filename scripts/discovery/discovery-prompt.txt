@@ -1,5 +1,7 @@
-You have two responsibilities this session, both scoped to {{STATE}} for the Compute Atlas
-dataset (a source-cited public tracker). Do both; combine the results into one output array.
+You have four responsibilities this session, all scoped to {{STATE}} for the Compute Atlas
+dataset (a source-cited public tracker): discover net-new facilities, re-check existing
+facilities for genuine status changes, enrich missing facts on existing facilities, and
+re-source dead links. Do all four; combine the results into one output array.
 
 === Responsibility 1: discover net-new facilities ===
 
@@ -30,7 +32,10 @@ For each new facility you find:
 === Responsibility 2: re-check existing facilities for genuine status changes ===
 
 Below is a compact projection of facilities Compute Atlas already tracks in {{STATE}}, one
-line per facility: `id | name | operator | status | <latest status date> | <primary source url>`.
+line per facility: `id | name | operator | status | <latest status date> | <primary source
+url> | missing:<comma-separated enrichable families, or none>`. The `missing:` token lists
+the enrichable fields Compute Atlas does not yet have for that facility — used by
+Responsibility 3.
 
 {{EXISTING_FACILITIES}}
 
@@ -64,16 +69,74 @@ Rules for this responsibility:
     fields you cannot see, and you must not emit a full facility document for this
     responsibility.
 
+=== Responsibility 3: enrich MISSING facts on existing facilities ===
+
+For any existing-facility line above, if you can find NEW, sourced facts for one or more
+families listed in its `missing:` token, emit a compact enrichment intent. Fill ONLY families
+listed in that facility's `missing:` token. NEVER restate or contest a value you cannot see —
+the projection does not show current field values. Omit a family if you have no new citable
+source for it. Do NOT emit anything for a facility whose token is `missing:none`, or where you
+found nothing.
+
+The families and their `fields` shapes (must match exactly — the server rejects unknown keys):
+- `capacityMw`: `{ planned?: <MW number>, operational?: <MW number> }`
+- `energy`: `{ source?: one of grid|on_site_gas|nuclear|solar|wind|hydro|mixed|other,
+  utility?: string, onSiteGenerationMw?: number, notes?: string }`
+- `water`: `{ coolingType?: evaporative|air|closed_loop|hybrid|unknown, reportedMgd?: number,
+  notes?: string }`
+- `address` -> emit as `location`: `{ street?: string, postalCode?: string }`
+- `investmentUsd`: number (USD)
+- `landAcres`: number
+- `aiClassification`: the AI-classification value — NEVER emit for a power_generation facility
+- `jobs`: `{ construction?: int, permanent?: int, sourceRel: <int> }` (carries a source index)
+- `community`: `{ status?: supported|mixed|contested|opposed|litigation|unknown, notes?:
+  string, sourceRel: <int> }`
+- `subsidies`: `[ { program?, amountUsd?, jurisdiction?, year? (e.g. "2024"), sourceRel: <int>
+  } ]`
+
+Emit the element as:
+`{ "enrichmentUpdate": { "targetFacilityId": "<exact id from the line>",
+"date": "<today YYYY-MM-DD>", "sources": [ <NEW source object(s): {url,label,publisher,
+retrievedAt,kind}> ], "fields": { <only the missing families you sourced> } },
+"provenance": { "sources": [<same urls>], "confidence": "...", "discoveredBy":
+"discovery-pipeline", "note": "<brief why>" } }`
+
+Rules for this responsibility:
+- `sourceRel` (on jobs/community/subsidies) is a 0-based index into THIS intent's own
+  `sources[]` array — it points at the source backing that fact. It is NOT an index into the
+  facility's existing sources.
+- Every family you fill must be backed by a real source you include in `sources`.
+- Do not include any field key not listed above. At most ~20 `sources` and ~20 `subsidies`
+  per intent.
+- `targetFacilityId` must equal the id from the projection line exactly.
+
+=== Responsibility 4: re-source dead links ===
+
+If the projection includes a trailing `=== DEAD SOURCES (re-source these) ===` block (lines of
+`facilityId | deadUrl`), then for each dead URL try to find a CURRENTLY-LIVE replacement
+citation for the same fact (the page moved, or an equivalent primary source). Add it to that
+facility's `enrichmentUpdate`:
+- include the replacement source object in `sources`, AND
+- add a `reSourced` entry: `"reSourced": [ { "replacesUrl": "<exact dead url>", "sourceRel":
+  <0-based index of the replacement within this intent's sources[]> } ]`.
+
+NEVER ask to remove the dead source — the server only appends; a human prunes later. If you
+can't find a live replacement, omit that dead url (do not guess). You may combine
+Responsibility 3 fills and Responsibility 4 re-sourcing for the same facility into ONE
+`enrichmentUpdate` element.
+
 === Output requirements — read carefully ===
 
-- Output ONLY a single JSON array to stdout, mixing new-facility docs and status-change
-  intents together. Each element is one of:
+- Output ONLY a single JSON array to stdout, mixing new-facility docs, status-change intents,
+  and enrichment intents together. Each element is one of:
   - a bare Facility doc (new facility), or
   - `{ "facility": <Facility doc>, "provenance": {...} }` (new facility, wrapped), or
   - `{ "statusUpdate": {...}, "provenance": {...} }` (a genuine status change on an existing
-    facility — see Responsibility 2 above).
+    facility — see Responsibility 2 above), or
+  - `{ "enrichmentUpdate": {...}, "provenance": {...} }` (an enrichment of an existing
+    facility — see Responsibilities 3 & 4 above).
 - No prose, no markdown fences, no commentary before or after the JSON.
 - Do NOT edit any files in this repository. Do NOT run git commands. Do NOT commit anything.
 - This is a single, bounded research session — do not spawn sub-agents or multi-step workflows.
-- If you find zero credible new candidates AND zero genuine status changes, output an empty
-  array: []
+- If you find zero credible new candidates, zero genuine status changes, zero enrichable
+  facts, and zero re-sourceable dead links, output an empty array: []
