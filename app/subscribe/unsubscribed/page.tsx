@@ -20,7 +20,7 @@ export default function SubscribeUnsubscribedPage() {
       description="You won't receive further alerts for that subscription."
       actions={
         <Link href="/" className={buttonVariants({ variant: "outline" })}>
-          Back to the map
+          Back to Compute Atlas
         </Link>
       }
     />

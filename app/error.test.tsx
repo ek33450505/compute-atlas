@@ -55,7 +55,7 @@ describe("Error boundary (app/error.tsx)", () => {
   it("renders a link back to the home page", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     render(<ErrorBoundary error={new Error("boom")} reset={() => {}} />);
-    expect(screen.getByRole("link", { name: "Back to the map" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Back to Compute Atlas" })).toHaveAttribute(
       "href",
       "/"
     );

@@ -16,7 +16,7 @@ export default function NotFound() {
       actions={
         <>
           <Link href="/" className={buttonVariants()}>
-            Back to the map
+            Back to Compute Atlas
           </Link>
           <Link href="/explore" className={buttonVariants({ variant: "outline" })}>
             Explore the data
