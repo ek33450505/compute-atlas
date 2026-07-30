@@ -64,11 +64,14 @@ log "starting discovery run $RUN_ID for state=$STATE"
 # --- discovery step (agentic, subscription — NEVER run during dev) ---------
 OUTFILE="$LOG_DIR/candidates-${RUN_ID}.json"
 
+CLAUDE_ARRAY_OK=false
+
 if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
   log "DISCOVERY_DRY_RUN=true — skipping claude call, using empty candidate set"
   if [[ ! -f "$OUTFILE" ]]; then
     echo "[]" > "$OUTFILE"
   fi
+  CLAUDE_ARRAY_OK=true
 else
   log "invoking claude for state=$STATE (requires an authenticated subscription session)"
   # {{EXISTING_FACILITIES}} may contain unescaped facility name/operator/URL
@@ -104,12 +107,23 @@ d
     TIMEOUT_BIN="gtimeout"
   fi
 
+  # caffeinate (macOS only) prevents idle sleep from suspending the claude
+  # call mid-run (see the timeout-binary comment above re: "claude suspended
+  # across a sleep"). Absent on Linux/CI — CAFFEINATE_PREFIX stays an empty
+  # array, a no-op. Expanded via the bash-3.2-safe "${arr[@]+"${arr[@]}"}"
+  # idiom below so `set -u` never trips on an empty array on macOS's stock
+  # bash 3.2 (the launchd host).
+  CAFFEINATE_PREFIX=()
+  if command -v caffeinate >/dev/null 2>&1; then
+    CAFFEINATE_PREFIX=(caffeinate -i)
+  fi
+
   invoke_claude() {
     if [[ -n "$TIMEOUT_BIN" ]]; then
-      "$TIMEOUT_BIN" 600 claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
+      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" "$TIMEOUT_BIN" 600 claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
     else
       log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
-      claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
+      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
     fi
   }
 
@@ -129,29 +143,74 @@ try {
 ' "$1" >/dev/null 2>&1
   }
 
-  invoke_claude
+  # Guarded: a nonzero exit here (e.g. "You've hit your session limit") must
+  # not trip set -e and kill the whole run — the submit step below is gated
+  # on CLAUDE_ARRAY_OK instead of relying on invoke_claude having succeeded.
+  if ! invoke_claude; then
+    log "WARN: claude invocation for $RUN_ID exited nonzero (session limit / timeout / crash) — output may be empty or an error string; submit may be skipped"
+  fi
+  CLAUDE_ARRAY_OK=$(candidates_file_has_array "$OUTFILE" && echo true || echo false)
+
   # Bounded single retry: on 2026-07-15 the AZ run inherited the maintainer's
   # ~/.claude persona and ended its turn with a prose summary + journal write
   # instead of the JSON array — no array at all, not just malformed JSON. The
   # BATCH_CONTRACT above mitigates this but does not eliminate it, so retry
   # exactly once on a genuine no-array result, then proceed either way — the
-  # submit step below logs and no-ops on a still-empty/unparseable OUTFILE.
-  if ! candidates_file_has_array "$OUTFILE"; then
+  # submit step below skips (rather than crashes) on a still-empty/unparseable
+  # OUTFILE, tracked via CLAUDE_ARRAY_OK.
+  if [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
     log "WARN: claude output for $RUN_ID had no parseable JSON array — retrying once"
-    invoke_claude
-    if ! candidates_file_has_array "$OUTFILE"; then
-      log "WARN: retry for $RUN_ID still had no parseable JSON array — proceeding to submit anyway"
+    invoke_claude || log "WARN: retry claude invocation for $RUN_ID exited nonzero"
+    CLAUDE_ARRAY_OK=$(candidates_file_has_array "$OUTFILE" && echo true || echo false)
+    if [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
+      log "WARN: retry for $RUN_ID still had no parseable JSON array — skipping submit"
     fi
   fi
 fi
 
+# --- self-reverting review cap ----------------------------------------------
+# Burst: 10 candidates/day for the first BURST_DAYS days after BURST_START_DATE
+# (a deliberate ~2-week catch-up while the daily review queue is fresh), then
+# auto-revert to STEADY_CAP/day. No manual step to revert — the date does it.
+# MAX_CANDIDATES in the environment always overrides (escape hatch / tests).
+BURST_START_DATE="2026-07-30"   # date the self-reverting cap shipped
+BURST_DAYS=20
+BURST_CAP=10
+STEADY_CAP=5
+
+compute_cap() {
+  # BSD (macOS) and GNU (Linux/CI) date differ; try BSD -j -f first, then GNU -d.
+  local start_epoch now_epoch elapsed_days
+  start_epoch="$(date -j -f '%Y-%m-%d' "$BURST_START_DATE" '+%s' 2>/dev/null \
+    || date -d "$BURST_START_DATE" '+%s' 2>/dev/null || echo '')"
+  now_epoch="$(date '+%s')"
+  if [[ -z "$start_epoch" ]]; then
+    # date parsing failed on this platform — fail safe to the steady cap.
+    echo "$STEADY_CAP"
+    return 0
+  fi
+  elapsed_days=$(( (now_epoch - start_epoch) / 86400 ))
+  if (( elapsed_days >= 0 && elapsed_days < BURST_DAYS )); then
+    echo "$BURST_CAP"
+  else
+    echo "$STEADY_CAP"
+  fi
+}
+
+CAP="$(compute_cap)"
+log "review cap for $RUN_ID: --max=${MAX_CANDIDATES:-$CAP} (burst=${BURST_CAP}/day for ${BURST_DAYS}d from ${BURST_START_DATE}, then ${STEADY_CAP}/day)"
+
 # --- submit step (deterministic — staging queue only) -----------------------
-log "submitting candidates from $OUTFILE"
-npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
-  --run-id="$RUN_ID" \
-  --max="${MAX_CANDIDATES:-5}" \
-  --state="$STATE" \
-  ${API_BASE_URL:+--base-url="$API_BASE_URL"}
+if [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then
+  log "submitting candidates from $OUTFILE"
+  npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
+    --run-id="$RUN_ID" \
+    --max="${MAX_CANDIDATES:-$CAP}" \
+    --state="$STATE" \
+    ${API_BASE_URL:+--base-url="$API_BASE_URL"}
+else
+  log "WARN: no parseable candidate array for $RUN_ID — skipping submit (nothing to stage)"
+fi
 
 # --- source-liveness check (read-only — runs every run, including dry-run) --
 log "checking source liveness"
@@ -160,3 +219,20 @@ if ! npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_D
 fi
 
 log "discovery run $RUN_ID complete"
+
+# Heartbeat: a visible "last real run" marker so a silent launchd skip/crash is
+# obvious at a glance (stale lastRunAt = job not running; claudeStatus=no_array
+# = the run reached claude but got a session-limit/prose reply, not candidates).
+if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
+  HEARTBEAT_STATUS="no_array"
+  [[ "$CLAUDE_ARRAY_OK" == "true" ]] && HEARTBEAT_STATUS="ok"
+  cat >"$LOG_DIR/heartbeat.json" <<EOF
+{
+  "lastRunAt": "$(date '+%Y-%m-%dT%H:%M:%S%z')",
+  "runId": "$RUN_ID",
+  "state": "$STATE",
+  "claudeStatus": "$HEARTBEAT_STATUS"
+}
+EOF
+  log "wrote heartbeat -> $LOG_DIR/heartbeat.json (claudeStatus=$HEARTBEAT_STATUS)"
+fi

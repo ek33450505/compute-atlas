@@ -244,3 +244,161 @@ EOF
 	[ ! -s "$CLAUDE_CALL_LOG" ]
 	[[ "$output" != *"retrying once"* ]]
 }
+
+# --- session-limit hardening (2026-07-29 AZ crash) --------------------------
+
+@test "claude nonzero exit does not kill the run — reaches completion" {
+	export DISCOVERY_ENABLED=true
+	# Reproduces the 2026-07-29 AZ crash: claude -p exits nonzero on
+	# "You've hit your session limit" instead of a JSON array.
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"discovery run"*"complete"* ]]
+	[[ "$output" == *"skipping submit"* ]]
+}
+
+@test "no-array result skips the submit step" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# The retry gate's candidates_file_has_array() call is a `tsx -e` inline
+	# script that itself imports from submit-candidates.ts, so a bare
+	# "submit-candidates.ts" grep would false-positive on it — match on the
+	# actual submit invocation's --run-id flag instead.
+	run grep -c -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	[ "$status" -ne 0 ] || [ "${output//[[:space:]]/}" = "0" ]
+
+	run grep -q "check-sources.ts" "$NPX_CALL_LOG"
+	[ "$status" -eq 0 ]
+}
+
+@test "live run writes a heartbeat with claudeStatus ok on a valid array" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"X","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[ -f "$LOG_DIR/heartbeat.json" ]
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+	grep -q '"lastRunAt"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "session-limit run writes heartbeat with claudeStatus no_array" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[ -f "$LOG_DIR/heartbeat.json" ]
+	grep -q '"claudeStatus": "no_array"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "dry-run does not write a heartbeat" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -f "$LOG_DIR/heartbeat.json" ]
+}
+
+# --- self-reverting review cap (Phase 2 Unit B) ------------------------------
+# BURST_START_DATE is a script constant (2026-07-30, 20-day burst window), not
+# injectable from the test — so exact --max=10 assertions are clock-fragile
+# once the real calendar passes 2026-08-19. The two tests below are the
+# durable coverage: the env-override always wins regardless of clock, and the
+# cap-computation block always emits a sane, parseable --max value.
+
+@test "MAX_CANDIDATES env overrides the computed cap" {
+	export DISCOVERY_ENABLED=true
+	export MAX_CANDIDATES=3
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"Cap Override Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	npx_output="$output"
+	run grep -c -- "submit-candidates.ts .*--max=3" "$NPX_CALL_LOG"
+	[ "$status" -eq 0 ]
+	[ "${output//[[:space:]]/}" != "0" ]
+	[[ "$npx_output" == *"review cap for"* ]]
+}
+
+@test "review cap log line is emitted with a sane computed --max when no override is set" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"Cap Compute Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# the compute_cap block ran and logged its decision
+	[[ "$output" == *"review cap for"* ]]
+
+	# the submit call's --max is one of the two sane values (10 during the
+	# burst window, 5 after) — never empty, never something else
+	run grep -Eo -- "submit-candidates.ts .*--max=(10|5)" "$NPX_CALL_LOG"
+	[ "$status" -eq 0 ]
+	[ -n "$output" ]
+}
+
+@test "caffeinate-absent regression: live run completes without an unbound-variable error" {
+	# CAFFEINATE_PREFIX is an empty array whenever `caffeinate` is not on PATH
+	# (true on this Linux/CI shim PATH by default). Under `set -u`, expanding
+	# an empty array without the bash-3.2-safe idiom trips "unbound variable"
+	# and the run would exit nonzero here with that message on stderr.
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"Caffeinate Safety Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"unbound variable"* ]]
+	[[ "$output" == *"discovery run"*"complete"* ]]
+}

@@ -113,10 +113,25 @@ facility:
   `discovery-logs/DISABLED` exists. The launchd plist deliberately does NOT
   set `DISCOVERY_ENABLED` — enabling it is a separate, deliberate step.
 - **Bounded per run:** one state per run (rotation cursor), `--max` candidates
-  (new + updated combined) submitted per run (default 5, override via `MAX_CANDIDATES`).
+  (new + updated combined) submitted per run. The cap **self-reverts**: 10/day
+  for the first 20 days from the burst-start date baked into `run.sh`, then
+  automatically 5/day — no manual step to revert. `MAX_CANDIDATES` in the
+  environment overrides the computed cap (escape hatch / tests).
 - **No silent drops:** every skipped candidate (invalid schema, missing
   sources, duplicate, over cap, no genuine status change) is logged with a
   reason, both to stdout and to a JSON run summary in `discovery-logs/run-<runId>.json`.
+- **Survives a session-limit / unparseable reply:** if the `claude -p` call
+  exits nonzero (e.g. "You've hit your session limit") or returns no parseable
+  JSON array, the run no longer crashes under `set -e` — it logs a WARN, skips
+  the submit step (nothing to stage), still runs the source-liveness check, and
+  records the outcome in the heartbeat below.
+- **Heartbeat:** every real (non-dry-run) invocation writes
+  `discovery-logs/heartbeat.json` (`lastRunAt`, `runId`, `state`, `claudeStatus`)
+  as it completes. A stale `lastRunAt` means the daily job isn't running (a
+  launchd sleep-skip or crash); `claudeStatus: no_array` means the run reached
+  `claude` but got a session-limit/prose reply rather than candidates. A manual
+  dry-run deliberately does not write the heartbeat, so it never masks a real
+  launchd failure.
 - **Source-liveness check:** read-only, never auto-edits. Runs unconditionally
   every daily invocation (even in dry-run) and reports classifications to
   `discovery-logs/source-health-<timestamp>.json`. Current implementation is
@@ -190,7 +205,9 @@ Midday (rather than overnight) is deliberate: macOS `launchd` defers a missed
 skipped whenever the Mac is asleep. 13:00 assumes the machine is normally awake
 and lid-open then — if your usage differs, pick an hour when the Mac is reliably
 on, or move the job off the laptop entirely (e.g. a cron/CI runner with an API
-key instead of the subscription).
+key instead of the subscription). Once a run *has* started, `run.sh` wraps the
+`claude -p` call in `caffeinate -i` (macOS only; a no-op elsewhere) so idle sleep
+can't suspend a long research call mid-run.
 
 **PATH gotcha:** launchd runs with a bare `PATH`, so the plist's
 `EnvironmentVariables` must list wherever `claude`/`node`/`npx` live
