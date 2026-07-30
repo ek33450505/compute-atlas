@@ -5,6 +5,14 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0](https://github.com/ek33450505/compute-atlas/compare/v1.7.0...v1.8.0) (2026-07-30)
+
+
+### Features
+
+* **brand:** replace the graticule mark with the plate-stack mark ([#81](https://github.com/ek33450505/compute-atlas/issues/81)) ([154036b](https://github.com/ek33450505/compute-atlas/commit/154036b9a23becdc322aa31f862a536462e4dd90))
+* **chrome:** redesign header nav and footer as an atlas sitemap ([#79](https://github.com/ek33450505/compute-atlas/issues/79)) ([5509959](https://github.com/ek33450505/compute-atlas/commit/55099597a55d78417e20ec9a58500d17dbf67cbd))
+
 ## [1.7.0](https://github.com/ek33450505/compute-atlas/compare/v1.6.0...v1.7.0) (2026-07-30)
 
 
