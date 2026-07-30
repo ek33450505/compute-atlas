@@ -18,7 +18,7 @@ import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
 import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
-import { ActivityList } from "@/app/activity/activity-list";
+import { OpenRecord } from "@/components/home/open-record";
 
 export const revalidate = 3600;
 
@@ -248,25 +248,12 @@ export default async function HomePage() {
         className="mt-12 border-t border-border pt-10"
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Recent activity teaser                                              */}
-      {/* ------------------------------------------------------------------ */}
-      {recentActivity.length > 0 && (
-        <div className="mt-12 border-t border-border pt-10">
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <h2 className="font-display text-2xl text-foreground">
-              Recent activity
-            </h2>
-            <Link
-              href="/activity"
-              className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-            >
-              View all →
-            </Link>
-          </div>
-          <ActivityList entries={recentActivity} />
-        </div>
-      )}
+      {/* A living, open record — provenance, contribute, recent activity */}
+      <OpenRecord
+        sources={sourcesCited}
+        recentActivity={recentActivity}
+        className="mt-12 border-t border-border pt-10"
+      />
     </div>
   );
 }
