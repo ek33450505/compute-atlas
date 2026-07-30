@@ -9,34 +9,48 @@ interface WordmarkProps {
 export function Wordmark({ showTagline = false, className }: WordmarkProps) {
   return (
     <span className={cn("flex flex-col items-start gap-0", className)}>
-      <span className="flex items-center gap-1.5">
+      <span className="flex items-center gap-[9px]">
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
           fill="none"
-          className="wordmark-mark size-[18px] shrink-0 text-primary"
+          className="wordmark-mark size-[19px] shrink-0 text-primary"
+          shapeRendering="crispEdges"
         >
           <rect
-            className="wordmark-frame"
-            x="4"
-            y="4"
-            width="16"
-            height="16"
-            rx="2"
-            pathLength={1}
+            className="wordmark-plate-back"
+            x="7.5"
+            y="2.5"
+            width="14"
+            height="14"
             stroke="currentColor"
-            strokeWidth="1.8"
+            strokeWidth="1.5"
+            opacity="0.55"
           />
-          <line className="wordmark-axis-v" x1="12" y1="4" x2="12" y2="20" pathLength={1} stroke="currentColor" strokeWidth="1.8" />
-          <line className="wordmark-axis-h" x1="4" y1="12" x2="20" y2="12" pathLength={1} stroke="currentColor" strokeWidth="1.8" />
-          <circle className="wordmark-datum" cx="12" cy="12" r="2.4" fill="currentColor" />
+          <rect
+            className="wordmark-plate-front"
+            x="2.5"
+            y="7.5"
+            width="14"
+            height="14"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+          <rect
+            className="wordmark-datum"
+            x="7.5"
+            y="12.5"
+            width="4"
+            height="4"
+            fill="currentColor"
+          />
         </svg>
-        <span className="font-display text-lg sm:text-xl font-semibold tracking-tight text-foreground leading-none">
+        <span className="font-mono text-[13px] font-semibold uppercase tracking-[0.11em] text-foreground leading-none">
           {siteConfig.name}
         </span>
       </span>
       {showTagline && (
-        <span className="hidden sm:block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground leading-tight mt-0.5">
+        <span className="hidden sm:block font-mono text-[8.5px] uppercase tracking-[0.19em] text-muted-foreground leading-tight mt-0.5">
           Mapping the U.S. compute buildout
         </span>
       )}
