@@ -56,7 +56,7 @@ export async function SiteHeader() {
           aria-label={`${siteConfig.name}, home`}
           className="flex shrink-0 whitespace-nowrap flex-col items-start gap-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
         >
-          <Wordmark />
+          <Wordmark showTagline />
         </Link>
 
         {/* Primary nav — desktop only; MobileNav handles mobile */}
