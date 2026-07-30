@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.1](https://github.com/ek33450505/compute-atlas/compare/v1.9.0...v1.9.1) (2026-07-30)
+
+
+### Bug Fixes
+
+* **discovery:** accurate source-liveness classification (UA + retry) ([#85](https://github.com/ek33450505/compute-atlas/issues/85)) ([419e1ed](https://github.com/ek33450505/compute-atlas/commit/419e1ed340cddc06bdc6c60dbc4e745d1f3d98b0))
+
 ## [1.9.0](https://github.com/ek33450505/compute-atlas/compare/v1.8.0...v1.9.0) (2026-07-30)
 
 
