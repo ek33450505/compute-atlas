@@ -8,10 +8,14 @@ import {
   getNotableFacilities,
   getRecentActivity,
   getAllFacilities,
+  getCommunityReceptionCounts,
+  getAiClassificationCounts,
+  getFacilityTypeCounts,
 } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
 import { SurveyLedger } from "@/components/home/survey-ledger";
+import { LensGateway } from "@/components/home/lens-gateway";
 import { ActivityList } from "@/app/activity/activity-list";
 
 export const revalidate = 3600;
@@ -64,6 +68,21 @@ export default async function HomePage() {
     (n, f) => n + (f.sources?.length ?? 0),
     0
   );
+
+  // Lens-gateway counts — cheap derivations off the same cached facility set
+  // (no new DB reads; getCommunityReceptionCounts/getAiClassificationCounts/
+  // getFacilityTypeCounts all read the shared loadFacilities() cache).
+  const communityCounts = await getCommunityReceptionCounts();
+  const frictionCount =
+    (communityCounts.contested ?? 0) +
+    (communityCounts.opposed ?? 0) +
+    (communityCounts.litigation ?? 0);
+  const aiCounts = await getAiClassificationCounts();
+  const aiClassified =
+    (aiCounts.confirmed ?? 0) + (aiCounts.likely ?? 0) + (aiCounts.mixed_use ?? 0);
+  const typeCounts = await getFacilityTypeCounts();
+  const cryptoCount = typeCounts.crypto_mining ?? 0;
+  const utilityLinked = allFacilities.filter((f) => f.energy?.utility).length;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
@@ -139,55 +158,20 @@ export default async function HomePage() {
           className="mb-10 border-b border-border pb-10"
         />
 
-        {/* Statistics link */}
-        <div className="mb-6">
-          <Link
-            href="/stats"
-            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            View full statistics →
-          </Link>
-        </div>
-
-        {/* Crypto mining cross-link */}
-        <div className="mb-6">
-          <Link
-            href="/crypto"
-            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            Browse crypto mining facilities →
-          </Link>
-        </div>
-
-        {/* Rankings cross-link */}
-        <div className="mb-6">
-          <Link
-            href="/rankings"
-            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            See the biggest projects, operators, and states →
-          </Link>
-        </div>
-
-        {/* Learn cross-link */}
-        <div className="mb-6">
-          <Link
-            href="/learn"
-            className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            Learn the terms behind the dataset →
-          </Link>
-        </div>
-
-        {/* Entry points */}
-        <div className="mb-12 flex flex-wrap items-center gap-4">
-          <Link
-            href="/map"
-            className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            Explore the map →
-          </Link>
-        </div>
+        {/* Lens gateway — the ways in */}
+        <LensGateway
+          className="mt-2"
+          counts={{
+            sites: count,
+            states,
+            utilityLinked,
+            frictionCount,
+            aiClassified,
+            operators: operatorCount,
+            plannedGw: Math.round(plannedMw / 1000),
+            cryptoCount,
+          }}
+        />
       </div>
 
       {/* ------------------------------------------------------------------ */}
