@@ -178,15 +178,21 @@
       clip-path: inset(0 0 0 0);
     }
   }
-  /* wordmark mark — draws itself in on load: the surveyor inking the datum
-     point. Frame first, then the crosshair lines, then the datum dot settles
-     in last. Default (no animation applied): fully drawn, matching the
-     settled state — reduced-motion users see this immediately. */
-  .wordmark-frame,
-  .wordmark-axis-v,
-  .wordmark-axis-h {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 0;
+  /* wordmark mark — two printing plates sliding into register, then the site
+     is plotted at their crossing. Default (no animation applied): fully
+     settled, matching the end state — reduced-motion users see this
+     immediately. */
+  .wordmark-plate-back {
+    opacity: 0.55;
+    transform: translate(0, 0);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .wordmark-plate-front {
+    opacity: 1;
+    transform: translate(0, 0);
+    transform-box: fill-box;
+    transform-origin: center;
   }
   .wordmark-datum {
     opacity: 1;
@@ -195,35 +201,47 @@
     transform-origin: center;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .wordmark-frame {
-      animation: wordmark-draw 350ms ease-out backwards;
+    .wordmark-plate-back {
+      animation: plate-back 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
     }
-    .wordmark-axis-v {
-      animation: wordmark-draw 200ms ease-out 300ms backwards;
-    }
-    .wordmark-axis-h {
-      animation: wordmark-draw 200ms ease-out 420ms backwards;
+    .wordmark-plate-front {
+      animation: plate-front 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) 0.22s both;
     }
     .wordmark-datum {
-      animation: wordmark-settle 200ms ease-out 620ms backwards;
+      animation: datum-set 0.42s cubic-bezier(0.2, 1.5, 0.4, 1) 0.6s both;
     }
   }
-  @keyframes wordmark-draw {
+  @keyframes plate-back {
     from {
-      stroke-dashoffset: 1;
-    }
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-  @keyframes wordmark-settle {
-    from {
+      transform: translate(-3px, 3px);
       opacity: 0;
-      transform: scale(0.3);
     }
     to {
+      transform: translate(0, 0);
+      opacity: 0.55;
+    }
+  }
+  @keyframes plate-front {
+    from {
+      transform: translate(3px, -3px);
+      opacity: 0;
+    }
+    to {
+      transform: translate(0, 0);
       opacity: 1;
+    }
+  }
+  @keyframes datum-set {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    70% {
+      transform: scale(1.14);
+    }
+    100% {
       transform: scale(1);
+      opacity: 1;
     }
   }
   /* map neatline: hairline frame + inset rule, like a chart border */

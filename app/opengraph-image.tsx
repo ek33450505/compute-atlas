@@ -95,10 +95,11 @@ export default async function OGImage() {
                 viewBox="0 0 24 24"
                 style={{ display: "flex", flexShrink: 0 }}
               >
-                <rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
-                <line x1="12" y1="4" x2="12" y2="20" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
-                <line x1="4" y1="12" x2="20" y2="12" stroke={PRIMARY_GREEN} strokeWidth="1.6" />
-                <circle cx="12" cy="12" r="2.4" fill={PRIMARY_GREEN} />
+                <rect x="7" y="2.4" width="14.6" height="14.6" rx="0.4" fill="none" stroke={PRIMARY_GREEN} strokeWidth="1.2" opacity={0.45} />
+                <line x1="9.7" y1="7" x2="9.7" y2="21.6" stroke={PRIMARY_GREEN} strokeWidth="0.9" opacity={0.28} />
+                <line x1="2.4" y1="14.3" x2="17" y2="14.3" stroke={PRIMARY_GREEN} strokeWidth="0.9" opacity={0.28} />
+                <rect x="2.4" y="7" width="14.6" height="14.6" rx="0.4" fill="none" stroke={PRIMARY_GREEN} strokeWidth="1.85" />
+                <rect x="7.9" y="12.5" width="3.6" height="3.6" fill={PRIMARY_GREEN} />
               </svg>
               <span
                 style={{

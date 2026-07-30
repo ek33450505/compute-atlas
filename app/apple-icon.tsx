@@ -33,12 +33,13 @@ export default function AppleIcon() {
           }}
         />
 
-        {/* Centered graticule mark — inline SVG; ~55% of 180px canvas = ~99px */}
-        <svg width="99" height="99" viewBox="0 0 32 32" style={{ display: "flex" }}>
-          <rect x="6" y="6" width="20" height="20" rx="2.5" fill="none" stroke={PRIMARY_GREEN} strokeWidth="2.4" />
-          <line x1="16" y1="6" x2="16" y2="26" stroke={PRIMARY_GREEN} strokeWidth="2.4" />
-          <line x1="6" y1="16" x2="26" y2="16" stroke={PRIMARY_GREEN} strokeWidth="2.4" />
-          <circle cx="16" cy="16" r="3.2" fill={PRIMARY_GREEN} />
+        {/* Centered plate-stack mark — inline SVG; ~55% of 180px canvas = ~99px */}
+        <svg width="99" height="99" viewBox="0 0 24 24" style={{ display: "flex" }}>
+          <rect x="7" y="2.4" width="14.6" height="14.6" rx="0.4" fill="none" stroke={PRIMARY_GREEN} strokeWidth="1.2" opacity={0.45} />
+          <line x1="9.7" y1="7" x2="9.7" y2="21.6" stroke={PRIMARY_GREEN} strokeWidth="0.9" opacity={0.28} />
+          <line x1="2.4" y1="14.3" x2="17" y2="14.3" stroke={PRIMARY_GREEN} strokeWidth="0.9" opacity={0.28} />
+          <rect x="2.4" y="7" width="14.6" height="14.6" rx="0.4" fill="none" stroke={PRIMARY_GREEN} strokeWidth="1.85" />
+          <rect x="7.9" y="12.5" width="3.6" height="3.6" fill={PRIMARY_GREEN} />
         </svg>
       </div>
     ),
