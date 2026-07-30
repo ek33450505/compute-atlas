@@ -11,6 +11,7 @@ import {
 } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
+import { SurveyLedger } from "@/components/home/survey-ledger";
 import { ActivityList } from "@/app/activity/activity-list";
 
 export const revalidate = 3600;
@@ -28,7 +29,8 @@ export const metadata: Metadata = {
  * Server component: no client state needed.
  */
 export default async function HomePage() {
-  const { count, states, operationalMw, plannedMw } = await getStats();
+  const { count, states, operationalMw, plannedMw, underConstructionMw } =
+    await getStats();
   const notable = await getNotableFacilities(6);
   const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
 
@@ -56,6 +58,12 @@ export default async function HomePage() {
       lon: f.location.lon,
       status: f.status,
     }));
+
+  const operatorCount = new Set(allFacilities.map((f) => f.operator)).size;
+  const sourcesCited = allFacilities.reduce(
+    (n, f) => n + (f.sources?.length ?? 0),
+    0
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
@@ -119,41 +127,17 @@ export default async function HomePage() {
       {/* "below the hero," not "in the map."                                */}
       {/* ------------------------------------------------------------------ */}
       <div className="border-t border-border pt-10">
-        {/* Survey stats row */}
-        <div className="mb-10 flex flex-wrap gap-8 border-b border-border pb-10">
-          <div className="flex flex-col items-center gap-1 text-center">
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {count}
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              Sites tracked
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {states}
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              States covered
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {(operationalMw / 1000).toFixed(1)} GW
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              Operational
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {(plannedMw / 1000).toFixed(0)} GW
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              Planned pipeline
-            </span>
-          </div>
-        </div>
+        {/* Survey ledger + pipeline-scale signature */}
+        <SurveyLedger
+          count={count}
+          states={states}
+          operators={operatorCount}
+          sources={sourcesCited}
+          operationalMw={operationalMw}
+          underConstructionMw={underConstructionMw}
+          plannedMw={plannedMw}
+          className="mb-10 border-b border-border pb-10"
+        />
 
         {/* Statistics link */}
         <div className="mb-6">
