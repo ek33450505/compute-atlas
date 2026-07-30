@@ -107,12 +107,23 @@ d
     TIMEOUT_BIN="gtimeout"
   fi
 
+  # caffeinate (macOS only) prevents idle sleep from suspending the claude
+  # call mid-run (see the timeout-binary comment above re: "claude suspended
+  # across a sleep"). Absent on Linux/CI — CAFFEINATE_PREFIX stays an empty
+  # array, a no-op. Expanded via the bash-3.2-safe "${arr[@]+"${arr[@]}"}"
+  # idiom below so `set -u` never trips on an empty array on macOS's stock
+  # bash 3.2 (the launchd host).
+  CAFFEINATE_PREFIX=()
+  if command -v caffeinate >/dev/null 2>&1; then
+    CAFFEINATE_PREFIX=(caffeinate -i)
+  fi
+
   invoke_claude() {
     if [[ -n "$TIMEOUT_BIN" ]]; then
-      "$TIMEOUT_BIN" 600 claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
+      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" "$TIMEOUT_BIN" 600 claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
     else
       log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
-      claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
+      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" --output-format text < /dev/null > "$OUTFILE"
     fi
   }
 
@@ -157,12 +168,44 @@ try {
   fi
 fi
 
+# --- self-reverting review cap ----------------------------------------------
+# Burst: 10 candidates/day for the first BURST_DAYS days after BURST_START_DATE
+# (a deliberate ~2-week catch-up while the daily review queue is fresh), then
+# auto-revert to STEADY_CAP/day. No manual step to revert — the date does it.
+# MAX_CANDIDATES in the environment always overrides (escape hatch / tests).
+BURST_START_DATE="2026-07-30"   # date the self-reverting cap shipped
+BURST_DAYS=20
+BURST_CAP=10
+STEADY_CAP=5
+
+compute_cap() {
+  # BSD (macOS) and GNU (Linux/CI) date differ; try BSD -j -f first, then GNU -d.
+  local start_epoch now_epoch elapsed_days
+  start_epoch="$(date -j -f '%Y-%m-%d' "$BURST_START_DATE" '+%s' 2>/dev/null \
+    || date -d "$BURST_START_DATE" '+%s' 2>/dev/null || echo '')"
+  now_epoch="$(date '+%s')"
+  if [[ -z "$start_epoch" ]]; then
+    # date parsing failed on this platform — fail safe to the steady cap.
+    echo "$STEADY_CAP"
+    return 0
+  fi
+  elapsed_days=$(( (now_epoch - start_epoch) / 86400 ))
+  if (( elapsed_days >= 0 && elapsed_days < BURST_DAYS )); then
+    echo "$BURST_CAP"
+  else
+    echo "$STEADY_CAP"
+  fi
+}
+
+CAP="$(compute_cap)"
+log "review cap for $RUN_ID: --max=${MAX_CANDIDATES:-$CAP} (burst=${BURST_CAP}/day for ${BURST_DAYS}d from ${BURST_START_DATE}, then ${STEADY_CAP}/day)"
+
 # --- submit step (deterministic — staging queue only) -----------------------
 if [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then
   log "submitting candidates from $OUTFILE"
   npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
     --run-id="$RUN_ID" \
-    --max="${MAX_CANDIDATES:-5}" \
+    --max="${MAX_CANDIDATES:-$CAP}" \
     --state="$STATE" \
     ${API_BASE_URL:+--base-url="$API_BASE_URL"}
 else
