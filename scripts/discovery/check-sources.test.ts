@@ -298,8 +298,8 @@ describe("checkSources", () => {
       const results = await checkSources([facility], deps);
 
       expect(calledUrls).toEqual(["https://example.com/legit"]);
-      const blocked = results.find((r) => r.url.includes("169.254"));
-      const ok = results.find((r) => r.url.includes("example.com"));
+      const blocked = results.find((r) => r.url === "http://169.254.169.254/latest/meta-data/");
+      const ok = results.find((r) => r.url === "https://example.com/legit");
       expect(blocked?.classification).toBe("blocked");
       expect(ok?.classification).toBe("ok");
     });
