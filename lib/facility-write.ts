@@ -69,7 +69,7 @@ async function recordFacilityHistory(
     const db = getDb();
     await db.insert(facilityHistoryTable).values({ facilityId, changeType, diff, source });
   } catch (err) {
-    console.error(`facility_history insert failed for ${facilityId} (${changeType}):`, err);
+    console.error("facility_history insert failed for %s (%s):", facilityId, changeType, err);
   }
 }
 
