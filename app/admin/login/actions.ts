@@ -1,6 +1,6 @@
 "use server";
 
-import { createHash, timingSafeEqual } from "node:crypto";
+import { pbkdf2Sync, timingSafeEqual } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -99,21 +99,25 @@ function recordFailedLogin(ipHash: string): void {
 }
 
 /**
- * Verifies a submitted password against `API_ADMIN_TOKEN` using the same
- * hash+timingSafeEqual idiom as `lib/api-auth.ts`'s `requireAdmin`. Fails
- * closed if the env var is unset.
+ * Verifies a submitted password against `API_ADMIN_TOKEN` using PBKDF2 and a
+ * constant-time equality check. Fails closed if required env vars are unset.
  */
 function isCorrectPassword(password: string): boolean {
   const expected = process.env.API_ADMIN_TOKEN;
-  if (!expected) {
+  const salt = process.env.API_ADMIN_TOKEN_SALT;
+  if (!expected || !salt) {
     return false;
   }
   if (!password) {
     return false;
   }
 
-  const presentedHash = createHash("sha256").update(password).digest();
-  const expectedHash = createHash("sha256").update(expected).digest();
+  const iterations = 210_000;
+  const keylen = 32;
+  const digest = "sha256";
+
+  const presentedHash = pbkdf2Sync(password, salt, iterations, keylen, digest);
+  const expectedHash = pbkdf2Sync(expected, salt, iterations, keylen, digest);
   return timingSafeEqual(presentedHash, expectedHash);
 }
 
