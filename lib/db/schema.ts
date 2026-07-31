@@ -50,6 +50,17 @@ export const facilitiesTable = pgTable(
     // Generated column — see drizzle/0003_facilities_search_vector.sql and the
     // `tsvector` custom type comment above. Never set/updated by application
     // code (Postgres computes it from name/operator/doc->>'notes' on write).
+    // Scope is intentionally name + operator + notes only — city/county are
+    // NOT indexed (a possible future migration), so location search staying
+    // out of full-text is a documented decision, not an oversight.
+    // WARNING: this shim keeps schema.ts and the drizzle snapshot in
+    // agreement on column existence — removing it makes `drizzle-kit
+    // generate` emit a destructive `DROP COLUMN search_vector`. Relatedly,
+    // `facilities_search_vector_idx` (GIN, on this column) and
+    // `subscriptions_active_target_idx` (partial-unique, in the
+    // subscriptions table below) are hand-managed and not Drizzle-modeled —
+    // any future `drizzle-kit generate` regenerate must be hand-audited
+    // before apply so it doesn't try to drop either of them.
     searchVector: tsvector("search_vector"),
   },
   (table) => [
