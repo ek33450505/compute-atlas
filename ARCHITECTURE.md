@@ -21,7 +21,7 @@ All database reads flow through centralized loaders in `lib/data.ts`. Components
 
 **Cached loaders (internal):**
 - **`loadFacilities()`**: Whole-dataset loader, cached for 1 hour with tag `"facilities"`. Backs ~15 aggregate pages (home, map, table, stats, explore lenses, operators/states index, sitemap). Returns deterministically sorted by `id`.
-- **`loadFacilitiesForSearch()`**: Same data but cached for 24 hours with tag `"facilities-search"`. Used only for the global ⌘K search index in the root layout (deliberately decoupled from the 1h timer so the site-wide ISR floor stays long).
+- **`loadFacilitiesForSearch()`**: Same data cached for 24 hours with tag `"facilities"` (the cache key is `"facilities-search"`, but the tag is `"facilities"`). Used only for the global ⌘K search index in the root layout (deliberately decoupled from the 1h timer so the site-wide ISR floor stays long). This tag is inert — nothing calls `revalidateTag("facilities")` on write anymore.
 - **Scoped cached readers** (per-facility, per-state, power-generation, etc.): Tag-only, no timer. Revalidated only when writes affect their specific scope.
 
 All loaders read from either Neon (if `DATABASE_URL` is set) or fall back to the bundled JSON file `data/facilities.json` for offline development. In tests (vitest), caching is disabled.
@@ -44,14 +44,15 @@ A single source of truth for facility shape, expressed as a Zod discriminated un
 facilitySchema = dataCenterSchema | cryptoMiningSchema | powerGenerationSchema
 ```
 
-Every facility is one of these three types. Common fields (id, name, operator, location, status, sources, etc.) live in `baseFacilityShape`; each type adds its own fields (e.g., `power_generation` has `poweredBy` and `poweredFacilityIds` for cross-references).
+Every facility is one of these three types. Common fields (id, name, operator, location, status, sources, etc.) live in `baseFacilityShape`; each type adds its own fields. For cross-references: `poweredBy` is a base field on all facility types (set on compute records to point to their power source), and `poweredFacilityIds` is nested under `generation` on power-generation facilities (the one-directional source of truth; the reciprocal "Powered by" display is derived at render time).
 
 **Invariant:** No fact enters the system without a citable source. The `sources` array is required and validated by `sourceSchema` (url, label, kind, retrievedAt; publisher is optional). Omit unknown fields rather than fabricate them.
 
 ### API Endpoints: `app/api/`
 
-- **Public read:** `/api/facilities` (returns `{count, facilities}` unpaginated, filterable by `?status=`, `?type=`, `?state=`, `?operator=`, `?q=`), `/api/facilities/{id}`, `/api/search` (full-text search over the database), `/api/schema` (schema introspection). No authentication. All responses are rate-limited by IP and cached via Cache-Control headers (1h for list/facility, 10m for search, 24h for schema).
+- **Public read:** `/api/facilities` (returns `{count, facilities}` unpaginated, filterable by `?status=`, `?type=`, `?state=`, `?operator=`, `?q=`), `/api/facilities/{id}`, `/api/stats` (aggregate dataset figures: facility count, states, operational/planned/under-construction capacity), `/api/search` (full-text search over the database), `/api/schema` (schema introspection). No authentication. All responses are rate-limited by IP and cached via Cache-Control headers (1h for list/facility/stats, 10m for search, 24h for schema).
 - **Public intake:** `POST /api/contribute` (anonymous). Hard-pins `status=pending`, validates with Zod, ignores privileged fields, rate-limits by IP hash. Submissions are human-moderated before going live.
+- **Email alerts (double-opt-in):** `POST /api/subscribe` (public; starts subscription), `/api/subscribe/confirm` (confirms via emailed token), `/api/subscribe/unsubscribe` (opts out). No authentication; opt-in is tracked via email and token.
 - **Admin write:** `POST /api/submissions`, `/api/submissions/{id}/approve`, `/api/submissions/{id}/reject`. Require `API_ADMIN_TOKEN` bearer. Used by the admin UI and the discovery pipeline.
 
 All responses use the `jsonResponse()` helper for consistent status codes and CORS handling. The `/api/search` endpoint uses Postgres full-text search (the database `search_vector`), not the client-side Fuse.js library (which backs the ⌘K command palette in the UI).
@@ -91,7 +92,7 @@ Why decouple? Previous versions busted the global `"facilities"` tag on every wr
 ### Provenance Threading
 
 Every submission row carries a `provenance` JSON field recording:
-- `sources`: array of source indices (references into the facility's `sources` array)
+- `sources`: array of source URLs cited for this submission
 - `discoveredBy`: who/what proposed it (e.g., "data-wave:run-123" or "manual")
 - `confidence`, `runId`, `note`, `submitterIpHash`, `attribution`
 
@@ -159,12 +160,9 @@ graph TB
 
 ## Operational Considerations
 
-**Offline fallback:** If Neon is unreachable and `DATABASE_URL` is unset, the app falls back to `data/facilities.json`. For local development, `DATABASE_URL=` npm run dev` switches to JSON mode (useful during Neon outages).
+**Offline fallback:** If Neon is unreachable and `DATABASE_URL` is unset, the app falls back to `data/facilities.json`. For local development, `` `DATABASE_URL= npm run dev` `` switches to JSON mode (useful during Neon outages).
 
-**Local discovery runs:** The pipeline is scheduled via launchd but can be invoked ad hoc:
-```
-claude -p "run the discovery pipeline" --append-system-prompt '{"tools": ["read", "bash", "write"]}'
-```
+**Local discovery runs:** The pipeline is scheduled via launchd but can be invoked ad hoc via `bash scripts/discovery/run.sh` with `DISCOVERY_ENABLED=true` set in the environment. The underlying `claude -p` call uses `--append-system-prompt` with a plain-text batch contract (not JSON) to enforce JSON-only output mode for parsing reliability.
 
 **Admin CLI:** `npm run submissions -- list pending | approve <id> "note" | reject <id> "note"` for staging-queue review and approval.
 
@@ -187,6 +185,6 @@ claude -p "run the discovery pipeline" --append-system-prompt '{"tools": ["read"
 ## Further Reading
 
 - **Data model:** `lib/schema.ts` — Zod schemas for all facility types and enums.
-- **DB migrations:** `lib/db/migrations/` — Drizzle migration files; apply with `npm run db:migrate`.
+- **DB migrations:** `drizzle/` — Drizzle migration files; apply with `npm run db:migrate`.
 - **Discovery pipeline:** `scripts/discovery/` and `docs/discovery-pipeline.md` — methodology and source enumeration.
 - **Public contribution:** `CONTRIBUTING.md` — editorial standards for source-cited data.
