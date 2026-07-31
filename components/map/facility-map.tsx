@@ -30,6 +30,7 @@ import { CompassRose } from "@/components/map/compass-rose";
 import { LocationSearch } from "@/components/map/location-search";
 import { ViewToggle3D } from "@/components/map/view-toggle-3d";
 import { BasemapToggle } from "@/components/map/basemap-toggle";
+import { MapLayerControl } from "@/components/map/map-layer-control";
 import type { Facility } from "@/lib/schema";
 import type { GeocodeResult } from "@/lib/geocode";
 
@@ -79,6 +80,12 @@ export function FacilityMap({
   const [cursor, setCursor] = useState<{ lat: number; lon: number } | null>(
     null
   );
+  // Optional overlay layers (Layers control) — off by default, lazy-loaded:
+  // each corresponding <Source> only mounts (and fetches its GeoJSON) once
+  // its flag flips true, so the 1.9 MB power.geojson never loads unrequested.
+  const [showWater, setShowWater] = useState<boolean>(false);
+  const [showPower, setShowPower] = useState<boolean>(false);
+  const [showDrought, setShowDrought] = useState<boolean>(false);
 
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
@@ -382,6 +389,89 @@ export function FacilityMap({
             />
           </Source>
 
+          {/* Optional overlay: drought areas (fill), off by default (Layers control).
+              Rendered first among the overlay sources so water/transmission draw on
+              top of it. Fill hidden over satellite imagery — a fill clashes with the
+              raster. Lazy-loaded: drought.geojson is fetched only while this is on. */}
+          {showDrought && (
+            <Source id="drought" type="geojson" data="/data/drought.geojson">
+              <Layer
+                id="drought-fill-layer"
+                type="fill"
+                layout={{ visibility: isSatellite ? "none" : "visible" }}
+                paint={{
+                  "fill-color": [
+                    "match",
+                    ["get", "dm"],
+                    0,
+                    "#EBD9B0",
+                    1,
+                    "#E3C489",
+                    2,
+                    "#D69C5A",
+                    3,
+                    "#B5702F",
+                    4,
+                    "#8F4108",
+                    "#EBD9B0",
+                  ],
+                  "fill-opacity": 0.35,
+                }}
+              />
+            </Source>
+          )}
+
+          {/* Optional overlay: waterways (lakes as fill + outline, rivers as line),
+              off by default. Lake fill hides over satellite (clashes with imagery);
+              the lake outline and river lines stay visible over satellite — lines
+              read fine over imagery. Lazy-loaded: water.geojson fetched only when on. */}
+          {showWater && (
+            <Source id="water" type="geojson" data="/data/water.geojson">
+              <Layer
+                id="water-lake-fill-layer"
+                type="fill"
+                filter={["==", ["get", "waterKind"], "lake"]}
+                layout={{ visibility: isSatellite ? "none" : "visible" }}
+                paint={{ "fill-color": "#8FA9B3", "fill-opacity": 0.35 }}
+              />
+              <Layer
+                id="water-lake-outline-layer"
+                type="line"
+                filter={["==", ["get", "waterKind"], "lake"]}
+                paint={{ "line-color": "#5E7D8A", "line-width": 0.5 }}
+              />
+              <Layer
+                id="water-river-layer"
+                type="line"
+                filter={["==", ["get", "waterKind"], "river"]}
+                layout={{ "line-join": "round" }}
+                paint={{
+                  "line-color": "#5E7D8A",
+                  "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.6, 8, 1.6],
+                  "line-opacity": 0.65,
+                }}
+              />
+            </Source>
+          )}
+
+          {/* Optional overlay: transmission lines >=230 kV, off by default. 1.9 MB —
+              lazy-loaded so it's fetched only once this Source mounts, drawn above
+              water so lines read clearly over the water/drought fills. */}
+          {showPower && (
+            <Source id="power" type="geojson" data="/data/power.geojson">
+              <Layer
+                id="power-layer"
+                type="line"
+                layout={{ "line-join": "round" }}
+                paint={{
+                  "line-color": "#8F4108",
+                  "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.5, 8, 1.4],
+                  "line-opacity": 0.55,
+                }}
+              />
+            </Source>
+          )}
+
           {clusters.map((cluster) => {
             if (cluster.members.length === 1) {
               const facility = cluster.members[0];
@@ -457,6 +547,14 @@ export function FacilityMap({
           <BasemapToggle
             isSatellite={isSatellite}
             onToggle={() => setIsSatellite((s) => !s)}
+          />
+          <MapLayerControl
+            showWater={showWater}
+            onToggleWater={() => setShowWater((s) => !s)}
+            showPower={showPower}
+            onTogglePower={() => setShowPower((s) => !s)}
+            showDrought={showDrought}
+            onToggleDrought={() => setShowDrought((s) => !s)}
           />
         </div>
 
