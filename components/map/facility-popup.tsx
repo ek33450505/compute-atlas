@@ -2,13 +2,29 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { ExternalLink, X } from "lucide-react";
+import { Droplets, ExternalLink, X, Zap } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
+import { getSitingContext } from "@/lib/siting-context";
 import type { Facility } from "@/lib/schema";
 
 interface FacilityPopupProps {
   facility: Facility;
   onClose: () => void;
+}
+
+/**
+ * Compact, popup-scale siting cues — distance-first (mirrors the on-page
+ * SitingContextSection's word choice but reorders to lead with the number,
+ * since this is a one-line summary, not a labeled definition list).
+ */
+function formatWaterCue(name: string, distanceMi: number): string {
+  if (distanceMi === 0) return `on ${name}`;
+  return `≈ ${distanceMi.toFixed(1)} mi · ${name}`;
+}
+
+function formatTransmissionCue(voltageKv: number, distanceMi: number): string {
+  if (distanceMi === 0) return `on ${voltageKv} kV line`;
+  return `≈ ${distanceMi.toFixed(1)} mi · ${voltageKv} kV line`;
 }
 
 /**
@@ -47,6 +63,8 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
   const cityState = location.city
     ? `${location.city}, ${location.state}`
     : location.state;
+  const sitingContext = getSitingContext(facility.id);
+  const { nearestWater, nearestTransmission } = sitingContext ?? {};
 
   return (
     <div className="p-1 min-w-[220px] max-w-[280px]">
@@ -78,6 +96,29 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
         <p className="text-xs italic text-muted-foreground mb-1">
           Distributed operation — pin is illustrative
           {facility.location.multiSite && ` (${facility.location.multiSite.states.join(", ")})`}
+        </p>
+      )}
+
+      {/* Siting cue: pure proximity, not a stated interconnection — compact
+          one-line summary of the on-page SitingContextSection. Nothing renders
+          when neither datum is present. */}
+      {(nearestWater || nearestTransmission) && (
+        <p className="flex items-center gap-2 mb-2 font-mono text-[10px]/tight tabular-nums text-muted-foreground">
+          {nearestWater && (
+            <span className="flex items-center gap-1">
+              <Droplets className="size-3" aria-hidden="true" />
+              {formatWaterCue(nearestWater.name, nearestWater.distanceMi)}
+            </span>
+          )}
+          {nearestTransmission && (
+            <span className="flex items-center gap-1">
+              <Zap className="size-3" aria-hidden="true" />
+              {formatTransmissionCue(
+                nearestTransmission.voltageKv,
+                nearestTransmission.distanceMi,
+              )}
+            </span>
+          )}
         </p>
       )}
 

@@ -9,8 +9,12 @@ import Map, {
   Source,
   Layer,
   type MapRef,
+  type MapLayerMouseEvent,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { circle } from "@turf/circle";
+import { Radius } from "lucide-react";
+import type { FeatureCollection, Polygon } from "geojson";
 
 import {
   BASEMAP_STYLE_URL,
@@ -87,6 +91,15 @@ export function FacilityMap({
   const [showPower, setShowPower] = useState<boolean>(false);
   const [showDrought, setShowDrought] = useState<boolean>(false);
 
+  // Radius-ring measurement tool: off by default, on-demand. When enabled, the
+  // next map click sets a center; 3, distance rings (5/10/25 mi) are drawn
+  // around it. Toggling off (or re-toggling on) clears the center, which
+  // unmounts the rings Source below.
+  const [ringsEnabled, setRingsEnabled] = useState<boolean>(false);
+  const [ringCenter, setRingCenter] = useState<{ lon: number; lat: number } | null>(
+    null
+  );
+
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
   const mapRef = useRef<MapRef>(null);
@@ -99,6 +112,20 @@ export function FacilityMap({
 
   // Static graticule GeoJSON — built once, independent of facilities/zoom.
   const graticuleData = useMemo(() => buildGraticuleGeoJSON(), []);
+
+  // Radius-ring geometry: 3 concentric circles at 5/10/25 mi around the
+  // clicked center, recomputed only when the center moves. Outline-only
+  // rendering (no fill) — the Layer below sets no fill-* paint properties.
+  const ringsData = useMemo<FeatureCollection<Polygon> | null>(() => {
+    if (!ringCenter) return null;
+    const center: [number, number] = [ringCenter.lon, ringCenter.lat];
+    return {
+      type: "FeatureCollection",
+      features: [5, 10, 25].map((radiusMiles) =>
+        circle(center, radiusMiles, { units: "miles", steps: 128 })
+      ),
+    };
+  }, [ringCenter]);
 
   // Lazy initializer is safe here: this component only renders client-side
   // via the ssr:false dynamic wrapper, so window is always defined at init.
@@ -199,6 +226,30 @@ export function FacilityMap({
     setIs3D(next);
     mapRef.current?.easeTo({ pitch: next ? 55 : 0, duration: reducedMotion ? 0 : 600 });
   }, [is3D, reducedMotion]);
+
+  /** Toggles the radius-ring tool; turning it off clears any placed center. */
+  const handleToggleRings = useCallback(() => {
+    setRingsEnabled((on) => {
+      const next = !on;
+      if (!next) setRingCenter(null);
+      return next;
+    });
+  }, []);
+
+  /**
+   * Map click handler, guarded so it only places a radius-ring center when
+   * the tool is active — it must not interfere with normal map interaction
+   * (marker selection, search, etc.) when the tool is off. Markers are DOM
+   * <button> overlays outside the canvas, so their clicks never reach this
+   * handler regardless; the ringsEnabled guard is the explicit contract.
+   */
+  const handleMapClick = useCallback(
+    (e: MapLayerMouseEvent) => {
+      if (!ringsEnabled) return;
+      setRingCenter({ lat: e.lngLat.lat, lon: e.lngLat.lng });
+    },
+    [ringsEnabled]
+  );
 
   /** Flies the map to a geocoded place, capping zoom at 8 to land at state level. */
   const handleGoToPlace = useCallback(
@@ -320,6 +371,7 @@ export function FacilityMap({
           reuseMaps
           attributionControl={false}
           onLoad={handleMapLoad}
+          onClick={handleMapClick}
           onZoomEnd={(e) => setZoom(e.viewState.zoom)}
           onMoveEnd={(e) => {
             setBearing(e.viewState.bearing);
@@ -472,6 +524,27 @@ export function FacilityMap({
             </Source>
           )}
 
+          {/* Radius-ring measurement tool: outline-only (no fill) 5/10/25 mi rings
+              around the last clicked center, drawn above the optional data
+              overlays. Mounts only once a center has been placed; unmounts
+              (clearing the rings) when the tool is toggled off. */}
+          {ringsData && (
+            <Source id="radius-rings" type="geojson" data={ringsData}>
+              <Layer
+                id="radius-rings-layer"
+                type="line"
+                layout={{ "line-join": "round" }}
+                paint={{
+                  "line-color": "#5C5344",
+                  "line-width": 1,
+                  "line-opacity": 0.7,
+                  "line-dasharray": [2, 2],
+                  "line-opacity-transition": { duration: reducedMotion ? 0 : 300 },
+                }}
+              />
+            </Source>
+          )}
+
           {clusters.map((cluster) => {
             if (cluster.members.length === 1) {
               const facility = cluster.members[0];
@@ -556,6 +629,44 @@ export function FacilityMap({
             showDrought={showDrought}
             onToggleDrought={() => setShowDrought((s) => !s)}
           />
+
+          {/* Radius-ring measurement tool toggle. Reuses BasemapToggle's
+              parchment button styling: ≥44px hit target, aria-pressed,
+              focus-visible ring, primary-tinted icon when active. */}
+          <button
+            type="button"
+            onClick={handleToggleRings}
+            aria-pressed={ringsEnabled}
+            aria-label="Toggle radius rings tool"
+            className={[
+              "flex h-11 w-11 items-center justify-center",
+              "rounded-sm bg-popover border border-border",
+              "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+              "cursor-pointer transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+              ringsEnabled ? "ring-1 ring-primary/50" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <Radius
+              aria-hidden="true"
+              className={["size-4", ringsEnabled ? "text-primary" : "text-foreground"].join(
+                " "
+              )}
+            />
+          </button>
+          {ringsEnabled && (
+            <p className="max-w-[8.5rem] rounded-sm border border-border bg-popover px-2 py-1 font-mono text-[9px] leading-tight tabular-nums text-muted-foreground shadow-[0_1px_4px_rgba(0,0,0,0.12)]">
+              rings: 5 · 10 · 25 mi
+              {!ringCenter && (
+                <>
+                  <br />
+                  click map to place
+                </>
+              )}
+            </p>
+          )}
         </div>
 
         {/* Bottom-left: map legend (unchanged position) */}
