@@ -4,17 +4,22 @@ import userEvent from "@testing-library/user-event";
 import { MapLegend } from "./map-legend";
 
 // ---------------------------------------------------------------------------
-// MapLegend now collapses to a "⌖ Key" toggle chip by default on every
-// viewport (desktop included) — it only expands into the full status/type
-// panel on click. There is no longer a viewport-based branch to mock.
+// MapLegend's "Key to symbols" title header IS the toggle button (no
+// separate "⌖ Key" chip) — collapsed by default on every viewport, it only
+// expands into the full status/type panel on click.
 // ---------------------------------------------------------------------------
 
 describe("MapLegend", () => {
-  it("renders the collapsed toggle chip by default", () => {
+  it("renders the title header as the toggle button by default, collapsed", () => {
     render(<MapLegend />);
-    const toggle = screen.getByRole("button", { name: "Show map key" });
+    const toggle = screen.getByRole("button", { name: "Key to symbols" });
     expect(toggle).toBeInTheDocument();
     expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("does not render a separate 'Key' chip", () => {
+    render(<MapLegend />);
+    expect(screen.queryByRole("button", { name: "Key" })).not.toBeInTheDocument();
   });
 
   it("does not render status or type entries before expanding", () => {
@@ -30,13 +35,13 @@ describe("MapLegend", () => {
     ).toBeInTheDocument();
   });
 
-  it("expands the full panel when the chip is clicked, showing all 5 status labels and all facility types", async () => {
+  it("expands the full panel when the title header is clicked, showing all 5 status labels and all facility types", async () => {
     const user = userEvent.setup();
     render(<MapLegend />);
 
-    await user.click(screen.getByRole("button", { name: "Show map key" }));
+    const toggle = screen.getByRole("button", { name: "Key to symbols" });
+    await user.click(toggle);
 
-    const toggle = screen.getByRole("button", { name: "Hide map key" });
     expect(toggle).toHaveAttribute("aria-expanded", "true");
 
     expect(screen.getByText("Operational")).toBeInTheDocument();
@@ -54,10 +59,10 @@ describe("MapLegend", () => {
     const user = userEvent.setup();
     render(<MapLegend />);
 
-    await user.click(screen.getByRole("button", { name: "Show map key" }));
-    await user.click(screen.getByRole("button", { name: "Hide map key" }));
+    const toggle = screen.getByRole("button", { name: "Key to symbols" });
+    await user.click(toggle);
+    await user.click(toggle);
 
-    const toggle = screen.getByRole("button", { name: "Show map key" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByText("Operational")).not.toBeInTheDocument();
   });

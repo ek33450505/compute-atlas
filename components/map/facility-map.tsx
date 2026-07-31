@@ -621,16 +621,23 @@ export function FacilityMap({
          * Not a MapLibre control — a plain positioned element so it doesn't fight
          * MapLibre's ctrl-group z-index stacking.
          */}
-        <div className="absolute top-20 right-2 z-20 flex flex-col gap-2">
+        <div className="absolute top-20 right-2 z-20 flex flex-col items-end gap-2">
           {/* Single disclosure toggle for the compass/3D/basemap/layers/radius
               stack below — collapsed by default to maximize the visible map.
-              NavigationControl (zoom +/-, top-2) is separate and always shown. */}
+              NavigationControl (zoom +/-, top-2) is separate and always shown.
+              `items-end` on this column (and the panel below) right-aligns
+              every child regardless of its own width — without it, the
+              default flex `stretch` cross-alignment left-anchors fixed-width
+              buttons inside the wider box the MapLayerControl/radius-caption
+              panels create when expanded, so the Tools toggle and icon
+              buttons visibly drift left off the right-2 edge. */}
           <button
             type="button"
             onClick={() => setShowTools((s) => !s)}
             aria-expanded={showTools}
             aria-controls={TOOLS_PANEL_ID}
             aria-label={showTools ? "Hide map tools" : "Show map tools"}
+            title="Map tools"
             className={[
               "flex h-11 w-11 items-center justify-center",
               "rounded-sm bg-popover border border-border",
@@ -653,7 +660,7 @@ export function FacilityMap({
           {showTools && (
             <div
               id={TOOLS_PANEL_ID}
-              className="flex flex-col gap-2 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+              className="flex flex-col items-end gap-2 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
             >
               <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
               <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
@@ -678,6 +685,7 @@ export function FacilityMap({
                 onClick={handleToggleRings}
                 aria-pressed={ringsEnabled}
                 aria-label="Toggle radius rings tool"
+                title="Radius rings"
                 className={[
                   "flex h-11 w-11 items-center justify-center",
                   "rounded-sm bg-popover border border-border",

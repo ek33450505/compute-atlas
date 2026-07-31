@@ -1,28 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MapLayerControl } from "./map-layer-control";
-
-// ---------------------------------------------------------------------------
-// Helpers — viewport mock, mirrors map-legend.test.tsx / map-filter-subheader.test.tsx
-// ---------------------------------------------------------------------------
-
-function mockMatchMedia(matches: boolean) {
-  Object.defineProperty(window, "matchMedia", {
-    writable: true,
-    configurable: true,
-    value: (query: string) => ({
-      matches,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }),
-  });
-}
 
 function makeSetters() {
   return {
@@ -50,28 +29,14 @@ function renderControl(
 }
 
 describe("MapLayerControl", () => {
-  beforeEach(() => mockMatchMedia(true));
-
-  it("renders collapsed by default with a 'show layers' toggle button", () => {
+  it("renders collapsed by default as an icon-only 'show layers' toggle button", () => {
     renderControl();
     const toggle = screen.getByRole("button", { name: "Show map layers panel" });
     expect(toggle).toBeInTheDocument();
     expect(toggle).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByText("Waterways")).not.toBeInTheDocument();
-  });
-
-  it("shows the 'Layers' text label on a wide viewport", () => {
-    renderControl();
-    expect(screen.getByText("Layers")).toBeInTheDocument();
-  });
-
-  it("hides the 'Layers' text label on a narrow viewport, keeping the accessible name", () => {
-    mockMatchMedia(false);
-    renderControl();
+    expect(toggle).toHaveAttribute("title", "Map layers");
     expect(screen.queryByText("Layers")).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Show map layers panel" })
-    ).toBeInTheDocument();
+    expect(screen.queryByText("Waterways")).not.toBeInTheDocument();
   });
 
   it("expands the panel with three labeled toggles on click", async () => {
