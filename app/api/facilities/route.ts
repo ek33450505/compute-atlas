@@ -7,14 +7,29 @@ import { requireAdmin } from "@/lib/api-auth";
 import { createFacility } from "@/lib/facility-write";
 import { extractClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
+import { MAX_SEARCH_QUERY_LEN } from "@/lib/search-db";
 
-/** Splits comma-separated/repeated query values into a flat, trimmed, non-empty list. */
+/**
+ * Hard cap on values collected per query-param key. This does NOT bound
+ * CDN cache-key cardinality — Vercel derives the cache key from the raw
+ * request URL at the edge, before this app-side truncation ever runs. What
+ * it bounds is APP-SIDE COMPUTE: an unbounded list of repeated/comma-
+ * separated values (e.g. `?operator=a,b,c,...` thousands deep) would
+ * otherwise blow up the filter work below on a single request. Origin load
+ * from the resulting unique-URL cache misses is separately bounded by the
+ * read-API rate limiter (`checkApiRateLimit`, which fires on cache misses —
+ * see below).
+ */
+const MAX_PARAM_VALUES = 50;
+
+/** Splits comma-separated/repeated query values into a flat, trimmed, non-empty, length-capped list. */
 function collectParam(searchParams: URLSearchParams, key: string): string[] {
   return searchParams
     .getAll(key)
     .flatMap((v) => v.split(","))
     .map((v) => v.trim())
-    .filter((v) => v.length > 0);
+    .filter((v) => v.length > 0)
+    .slice(0, MAX_PARAM_VALUES);
 }
 
 /**
@@ -37,7 +52,11 @@ export async function GET(request: Request): Promise<Response> {
   );
   const states = collectParam(searchParams, "state");
   const operators = collectParam(searchParams, "operator");
-  const query = searchParams.get("q") ?? undefined;
+  // Same app-side-compute-bounding reasoning as MAX_PARAM_VALUES above: cap
+  // `q` to the same limit /api/search enforces (lib/search-db.ts) rather
+  // than letting an unbounded/high-entropy value reach the filter work.
+  const rawQuery = searchParams.get("q");
+  const query = rawQuery ? rawQuery.slice(0, MAX_SEARCH_QUERY_LEN) : undefined;
 
   const filters: FacilityFilters = {
     states,
@@ -45,6 +64,7 @@ export async function GET(request: Request): Promise<Response> {
     operators,
     statuses,
     query,
+    // minMw (lib/filters.ts) is intentionally UI-only — not exposed as a public query param here.
   };
 
   const facilities = filterFacilities(await getAllFacilities(), filters);
