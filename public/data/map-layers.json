@@ -1,0 +1,12 @@
+{
+  "water": {
+    "attribution": "Natural Earth"
+  },
+  "power": {
+    "attribution": "HIFLD (ORNL/LANL/INL/NGA HSIP Team)"
+  },
+  "drought": {
+    "attribution": "U.S. Drought Monitor (NDMC / USDA / NOAA)",
+    "asOf": "2026-07-31"
+  }
+}
