@@ -133,6 +133,18 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
   );
   const flat = useMemo(() => groups.flatMap((g) => g.items), [groups]);
 
+  // Per-group starting offset into `flat`, precomputed once per `groups`
+  // change instead of re-scanning all groups for every group on every render.
+  const groupOffsets = useMemo(() => {
+    const offsets = new Map<string, number>();
+    let running = 0;
+    for (const g of groups) {
+      offsets.set(g.type, running);
+      running += g.items.length;
+    }
+    return offsets;
+  }, [groups]);
+
   // Reset the active option whenever the query (and thus results) changes.
   // Adjusted during render (React's recommended pattern) rather than in an
   // effect, to avoid an extra cascading render on every keystroke.
@@ -236,11 +248,7 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
               className="max-h-[60vh] overflow-y-auto py-1"
             >
               {groups.map((group) => {
-                let groupStart = 0;
-                for (const g of groups) {
-                  if (g === group) break;
-                  groupStart += g.items.length;
-                }
+                const groupStart = groupOffsets.get(group.type) ?? 0;
                 return (
                   <li key={group.type}>
                     <div className="px-3 pb-1 pt-2 font-mono text-[0.65rem] uppercase tracking-wider text-muted-foreground">
@@ -260,6 +268,7 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
                           >
                             <button
                               type="button"
+                              tabIndex={-1}
                               onClick={() => go(item.href)}
                               onMouseEnter={() => setActiveIndex(flatIndex)}
                               className={cn(
