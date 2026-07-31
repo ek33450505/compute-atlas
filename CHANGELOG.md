@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.2](https://github.com/ek33450505/compute-atlas/compare/v1.10.1...v1.10.2) (2026-07-31)
+
+
+### Bug Fixes
+
+* clear all open Dependabot + CodeQL security alerts ([#93](https://github.com/ek33450505/compute-atlas/issues/93)) ([79e6837](https://github.com/ek33450505/compute-atlas/commit/79e6837357d626f9b5a0486dd42290eff3319eed))
+
 ## [1.10.1](https://github.com/ek33450505/compute-atlas/compare/v1.10.0...v1.10.1) (2026-07-31)
 
 
