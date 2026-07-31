@@ -23,4 +23,4 @@ CREATE INDEX "subscriptions_ip_idx" ON "subscriptions" USING btree ("submitter_i
 -- still allows re-subscribe after unsubscribe (status='unsubscribed' rows excluded).
 -- COALESCE(target_id,'') so two target_type='all' (NULL target_id) rows for the same
 -- email collide instead of both being allowed.
-CREATE UNIQUE INDEX "subscriptions_active_target_idx" ON "subscriptions" USING btree ("email","target_type",(COALESCE("target_id", ''))) WHERE "status" <> 'unsubscribed';
+CREATE UNIQUE INDEX IF NOT EXISTS "subscriptions_active_target_idx" ON "subscriptions" USING btree ("email","target_type",(COALESCE("target_id", ''))) WHERE "status" <> 'unsubscribed';

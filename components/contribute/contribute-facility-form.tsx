@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META, type FacilityType } from "@/lib/facility-type";
+import { numOrUndefined } from "@/lib/form-payload";
 import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
 import { US_STATE_NAMES } from "@/lib/us-states";
 
@@ -64,14 +65,12 @@ const STATE_OPTIONS = Object.entries(US_STATE_NAMES)
   .sort((a, b) => a.name.localeCompare(b.name));
 
 // ---------------------------------------------------------------------------
-// Payload building — mirrors buildFacilityPayload in the admin form: numeric
-// string fields parse to `number | undefined` (empty -> undefined, never
-// NaN or 0), optional text empties are omitted rather than sent as "".
+// Payload building — numeric parsing delegated to lib/form-payload.ts
+// (shared with the admin form); optional text empties are omitted rather
+// than sent as "".
 // ---------------------------------------------------------------------------
 
 export function buildContributePayload(state: ContributeFormState): Record<string, unknown> {
-  const num = (v: string): number | undefined => (v.trim() === "" ? undefined : Number(v));
-
   const payload: Record<string, unknown> = {
     kind: "create",
     website: state.website,
@@ -80,15 +79,15 @@ export function buildContributePayload(state: ContributeFormState): Record<strin
     state: state.state.toUpperCase(),
     facilityType: state.facilityType,
     status: state.status,
-    lat: num(state.lat),
-    lon: num(state.lon),
+    lat: numOrUndefined(state.lat),
+    lon: numOrUndefined(state.lon),
     sourceUrl: state.sourceUrl.trim(),
   };
 
   if (state.city.trim()) payload.city = state.city.trim();
-  const capacityOperationalMw = num(state.capacityOperationalMw);
+  const capacityOperationalMw = numOrUndefined(state.capacityOperationalMw);
   if (capacityOperationalMw !== undefined) payload.capacityOperationalMw = capacityOperationalMw;
-  const capacityPlannedMw = num(state.capacityPlannedMw);
+  const capacityPlannedMw = numOrUndefined(state.capacityPlannedMw);
   if (capacityPlannedMw !== undefined) payload.capacityPlannedMw = capacityPlannedMw;
   if (state.sourceLabel.trim()) payload.sourceLabel = state.sourceLabel.trim();
   if (state.attribution.trim()) payload.attribution = state.attribution.trim();

@@ -4,13 +4,17 @@
 -- drizzle-kit's PostgreSQL snapshot/generator has no first-class support for
 -- STORED generated columns of type `tsvector`, so this file's SQL body is
 -- authored by hand. `--custom` still gives it a normal journaled entry (see
--- `drizzle/meta/_journal.json`, idx 3) and a carry-forward snapshot (see
--- `drizzle/meta/0003_snapshot.json`) that does NOT attempt to model
--- `search_vector` — so `npm run db:migrate` applies this file exactly like
--- any other migration, and a future `drizzle-kit generate` run diffs against
--- a snapshot that was never asked to represent tsvector in the first place.
--- See lib/db/schema.ts's `searchVector` column comment for the corresponding
--- Drizzle-side awareness shim.
+-- `drizzle/meta/_journal.json`, idx 3). The carry-forward snapshot at the
+-- time (`drizzle/meta/0003_snapshot.json`) does NOT model `search_vector` at
+-- all, but the very next migration's snapshot (`drizzle/meta/0004_snapshot.json`)
+-- DOES record it — as a plain (non-generated) tsvector column, matching
+-- lib/db/schema.ts's `searchVector` shim. So from 0004 onward, schema.ts and
+-- the snapshot agree the column exists; what neither the snapshot nor
+-- schema.ts capture is the GENERATED ALWAYS AS (...) STORED expression below
+-- or the `facilities_search_vector_idx` GIN index — both remain hand-managed
+-- and invisible to `drizzle-kit generate`, which will not reproduce or alter
+-- them on its own. See lib/db/schema.ts's `searchVector` column comment for
+-- the corresponding Drizzle-side awareness shim.
 --
 -- Adds a generated `search_vector` tsvector column to `facilities`, computed
 -- from name + operator + notes (from the `doc` jsonb's `notes` field is NOT
@@ -23,7 +27,7 @@
 -- exactly as the phase spec's `coalesce(notes, '')` describes, sourced from
 -- the jsonb doc rather than a scalar column that doesn't exist.
 ALTER TABLE "facilities"
-  ADD COLUMN "search_vector" tsvector
+  ADD COLUMN IF NOT EXISTS "search_vector" tsvector
   GENERATED ALWAYS AS (
     to_tsvector(
       'english',
@@ -31,4 +35,4 @@ ALTER TABLE "facilities"
     )
   ) STORED;
 --> statement-breakpoint
-CREATE INDEX "facilities_search_vector_idx" ON "facilities" USING gin ("search_vector");
+CREATE INDEX IF NOT EXISTS "facilities_search_vector_idx" ON "facilities" USING gin ("search_vector");

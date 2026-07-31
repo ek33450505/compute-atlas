@@ -47,6 +47,7 @@ next-env.d.ts
 # internal planning notes — kept local, not part of the public repo
 /docs/NEXT-SESSION.md
 /docs/ROADMAP.md
+/docs/phase3-audit-report.md
 /docs/session-archive-*.md
 /docs/track-c-candidate-ledger.md
 /docs/seo-promotion-checklist.md

@@ -24,7 +24,7 @@ export const meta = {
   ],
 }
 
-const REPO = '/Users/edkubiak/Projects/personal/ai-datacenter-tracker'
+const REPO = args?.repo ?? '.'
 const { state, stateAbbr, focusHint, existingFacilities } = args || {}
 
 if (!state || !stateAbbr || !existingFacilities) {
