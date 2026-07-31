@@ -18,13 +18,13 @@ interface FacilityPopupProps {
  * since this is a one-line summary, not a labeled definition list).
  */
 function formatWaterCue(name: string, distanceMi: number): string {
-  if (distanceMi === 0) return `on ${name}`;
-  return `≈ ${distanceMi.toFixed(1)} mi · ${name}`;
+  if (distanceMi === 0) return `On ${name}`;
+  return `≈ ${distanceMi.toFixed(1)} mi — ${name}`;
 }
 
 function formatTransmissionCue(voltageKv: number, distanceMi: number): string {
-  if (distanceMi === 0) return `on ${voltageKv} kV line`;
-  return `≈ ${distanceMi.toFixed(1)} mi · ${voltageKv} kV line`;
+  if (distanceMi === 0) return `On a ${voltageKv} kV line`;
+  return `≈ ${distanceMi.toFixed(1)} mi — ${voltageKv} kV line`;
 }
 
 /**

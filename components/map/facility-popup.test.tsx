@@ -93,6 +93,6 @@ describe("FacilityPopup", () => {
 
   it("renders no siting cue for a facility without siting context", () => {
     render(<FacilityPopup facility={fixture} onClose={() => {}} />);
-    expect(screen.queryByText(/mi ·/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/mi —/)).not.toBeInTheDocument();
   });
 });
