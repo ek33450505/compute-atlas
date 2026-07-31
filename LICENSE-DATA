@@ -17,6 +17,16 @@ under its own terms and is not relicensed here, including:
 
   - Map basemap tiles and geometry: © OpenStreetMap contributors, licensed
     under the Open Database License (ODbL), served via OpenFreeMap.
+  - Natural Earth (public domain) — generalized rivers and lakes geometry for
+    the optional "waterways" map overlay.
+  - HIFLD "Electric Power Transmission Lines" (public domain, U.S. Government
+    Works; credit "ORNL/LANL/INL/NGA HSIP Team") — the optional "transmission"
+    map overlay and per-facility nearest-transmission distance calculations.
+  - USGS National Hydrography Dataset — NHD (public domain) — per-facility
+    nearest-named-waterway distance calculations.
+  - U.S. Drought Monitor (NDMC / USDA / NOAA) — the optional "drought" map
+    overlay (point-in-time snapshot; see public/data/map-layers.json for
+    "as of" date).
   - Any figures attributed to Epoch AI: CC BY 4.0, © Epoch AI.
 
 Individual facility records cite their own primary sources (permit filings,
