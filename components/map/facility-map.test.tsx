@@ -492,18 +492,36 @@ describe("FacilityMap", () => {
       expect(screen.getByTestId("location-search")).toBeInTheDocument();
     });
 
-    it("renders the compass rose control", () => {
+    it("keeps the compass, 3D, and basemap controls collapsed behind a Tools toggle by default", () => {
       render(<FacilityMap facilities={[]} />);
+      // Decluttered default: the instrument controls are hidden until the
+      // "Show map tools" disclosure is opened, so the map canvas stays clear.
+      expect(screen.queryByTestId("compass-rose")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("view-toggle-3d")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("basemap-toggle")).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /show map tools/i })
+      ).toBeInTheDocument();
+    });
+
+    it("reveals the compass rose control when the Tools toggle is opened", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       expect(screen.getByTestId("compass-rose")).toBeInTheDocument();
     });
 
-    it("renders the 3D view toggle", () => {
+    it("reveals the 3D view toggle when the Tools toggle is opened", async () => {
+      const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       expect(screen.getByTestId("view-toggle-3d")).toBeInTheDocument();
     });
 
-    it("renders the basemap toggle", () => {
+    it("reveals the basemap toggle when the Tools toggle is opened", async () => {
+      const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       expect(screen.getByTestId("basemap-toggle")).toBeInTheDocument();
     });
   });
@@ -513,6 +531,8 @@ describe("FacilityMap", () => {
       const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
 
+      // The basemap toggle lives inside the collapsed Tools disclosure — open it first.
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       const basemapToggle = screen.getByTestId("basemap-toggle");
 
       // Initial state: satellite layer should not be visible
