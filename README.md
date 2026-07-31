@@ -61,13 +61,10 @@ Compute Atlas exposes a public JSON API for programmatic access to the dataset. 
 - `GET /api/stats` — Aggregate dataset figures: total facility count, number of states, and operational / planned / under-construction capacity (MW).
 - `GET /api/schema` — JSON Schema export of the facility data model (derived from Zod schema).
 
-**Rate limiting and caching:** Public endpoints are rate-limited to 60 requests per minute per IP; requests over the limit receive a `429` response with a `Retry-After` header. Responses are CDN-cached and carry `Cache-Control` headers; repeat reads are edge-served. All responses include attribution headers: `X-License: CC-BY-4.0`, `Link: <https://creativecommons.org/licenses/by/4.0/>; rel="license"`, and `X-API-Version: 1`.
+**Rate limiting and caching:** Public endpoints are rate-limited to 60 requests per minute per IP; requests over the limit receive a `429` response with a `Retry-After` header. Responses are CDN-cached and carry `Cache-Control` headers; repeat reads are edge-served. All public read responses include attribution headers: `X-License: CC-BY-4.0`, `Link: <https://creativecommons.org/licenses/by/4.0/>; rel="license"`, and `X-API-Version: 1`.
 
-**Admin-only write endpoints** (require `Authorization: Bearer <API_ADMIN_TOKEN>` header):
+**Admin-only submission endpoints** (require `Authorization: Bearer <API_ADMIN_TOKEN>` header):
 
-- `POST /api/facilities` — Create a new facility (201 on success).
-- `PATCH /api/facilities/{id}` — Update an existing facility.
-- `DELETE /api/facilities/{id}` — Remove a facility.
 - `GET /api/submissions` — List staged submissions (optionally filter by `?status`).
 - `POST /api/submissions` — Stage a new submission (create or update candidate).
 

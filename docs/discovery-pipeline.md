@@ -33,8 +33,9 @@ run.sh (launchd, daily)
   (macOS ships neither by default — in that case it runs uncapped and logs a
   WARN).
 - `scripts/discovery/discovery-prompt.txt` — the bounded, single-session
-  research prompt template. Contains two responsibilities: (1) discover
-  net-new facilities, (2) re-check existing facilities for status changes.
+  research prompt template. Contains four responsibilities: (1) discover
+  net-new facilities, (2) re-check existing facilities for genuine status changes,
+  (3) enrich missing facts on existing facilities, and (4) re-source dead links.
   Uses `{{STATE}}` and `{{EXISTING_FACILITIES}}` placeholders substituted
   by `run.sh`.
 - `scripts/discovery/existing-facilities.ts` — projects a compact line-per-facility
@@ -51,17 +52,18 @@ run.sh (launchd, daily)
 
 Since Phase 5 launch (s30, 2026-07-14), each scheduled invocation now does
 **both** discovery of net-new facilities AND re-checking of existing facilities
-in a single daily `claude -p` call, driven by a two-responsibility prompt.
+in a single daily `claude -p` call, driven by a four-responsibility prompt.
 
-- **Single call, dual responsibility:** `discovery-prompt.txt` directives:
+- **Single call, four responsibilities:** `discovery-prompt.txt` directives:
   (1) research net-new AI/crypto/power facilities in the state, (2) re-check
   existing facilities in that state for genuine status changes since their
-  `statusHistory` was last updated. Both results are combined into one output
+  `statusHistory` was last updated, (3) enrich missing facts on existing
+  facilities, and (4) re-source dead links. Results are combined into one output
   array and submitted in a single batch.
 - **{{EXISTING_FACILITIES}} injection:** `existing-facilities.ts` projects
   a compact line-per-facility view, one per line:
-  `id | name | operator | status | <latest statusHistory date> | <primary source url>`.
-  Kept compact (~100 chars/line) so a large state (TX, ~43 facilities) stays
+  `id | name | operator | status | <latest statusHistory date> | <primary source url> | missing:<comma-separated enrichable families, or "none">`.
+  The `missing:` field lists enrichable fields (capacity, energy, water, jobs, community, etc.) that Compute Atlas does not yet have for that facility, driving Responsibility 3 (enrichment). Kept compact (~100 chars/line) so a large state stays
   well under 5KB in the prompt. `run.sh` fetches this projection fail-open
   (logs a warning to the run log and `existing-facilities.err` on failure;
   proceeds with an empty string if unavailable), and injects it via a
@@ -69,38 +71,63 @@ in a single daily `claude -p` call, driven by a two-responsibility prompt.
   content — critical because facility names, operators, and URLs may contain
   slashes, ampersands, newlines, and shell metacharacters.
 
-## Full-document update semantics
+## Update and enrichment semantics: append-only intent model
 
-When the discovery prompt finds a genuine status change (e.g., "proposed" →
-"under_construction" → "operational") and emits an update for an existing
-facility:
+Discovery (Responsibilities 2, 3, and 4) never reconstructs full facility documents.
+Instead, it emits compact, append-only intents that the server applies safely:
 
-- **Complete vs. partial:** The update MUST be a complete, valid facility
-  document (same schema, same `id`), NOT a partial patch. The staging queue
-  classification logic (`submit-candidates.ts:150-155`) matches by `id` to
-  determine whether a submission is a `create` or `update`. An update then
-  routes to `approveSubmission` → `updateFacility`, which replaces the
-  entire facility record.
-- **statusHistory semantics:** APPEND a new entry to the existing
-  `statusHistory` array (new status + today's date), never replace or reorder.
-  The entry includes the index of the new source that corroborates the change.
-  Existing history must remain intact — `statusHistory` is the immutable audit
-  trail.
-- **Field rules:**
-  - `status`: updated to the new, source-backed status.
-  - `lastUpdated`: bumped to today's date.
-  - `sources`: APPEND the new corroborating source to the existing sources
-    array. If you cannot reconstruct the full prior sources array, include
-    at minimum the projection's primary source URL plus your new source, so
-    the array stays non-empty and traceable.
-  - **All other fields** (name, operator, location, capacity, type, confidence):
-    carried through unchanged. This is a status-only refresh, not a full-fact
-    refresh — do not attempt to verify/update anything except status/history/
-    sources/lastUpdated.
-- **Fail-safe:** If the prompt cannot find a genuine, citable status change
-  for a facility listed in the projection, do not emit an entry for it at all.
-  Do not "refresh" or touch a facility merely because it appeared in the list
-  — omit it entirely from the output.
+### Status updates (Responsibility 2)
+
+When a genuine status change is found (e.g., "proposed" → "under_construction"),
+emit a `statusUpdate` intent:
+```json
+{ "statusUpdate": { "targetFacilityId": "<exact id from projection>",
+  "status": "<new status>", "date": "<today, YYYY-MM-DD>",
+  "note": "<brief sourced explanation>",
+  "sources": [ { "url": "...", "label": "...", "retrievedAt": "...", "kind": "..." } ]
+}, "provenance": { "sources": ["<url>"], "confidence": "confirmed", ... } }
+```
+The server appends the new source(s) to the facility's sources array, adds a
+statusHistory entry (with sourceIndex pointing to the first appended source),
+and preserves all existing fields. The facility never loses prior sources,
+history entries, or sourceIndex references.
+
+**Fail-safe:** If no genuine, citable status change is found, emit nothing for that facility.
+
+### Enrichment updates (Responsibility 3)
+
+For missing facts listed in the `missing:` token, emit an `enrichmentUpdate` intent.
+The enrichable families go inside a strict `fields` object (the server rejects unknown
+keys), and `sources` / `date` sit alongside it:
+```json
+{ "enrichmentUpdate": { "targetFacilityId": "<id>",
+  "date": "<today, YYYY-MM-DD>",
+  "sources": [ { "url": "...", "label": "...", "retrievedAt": "...", "kind": "..." } ],
+  "fields": { "capacityMw": { "operational": 100 }, "energy": { "source": "solar" } }
+}, "provenance": { ... } }
+```
+Fill ONLY families listed in that facility's `missing:` token (`capacityMw`, `energy`,
+`water`, `location`, `investmentUsd`, `landAcres`, `aiClassification`, `jobs`,
+`community`, `subsidies`). Enrichment is fill-missing, not overwrite: the server sets a
+family only when the curated record doesn't already have it, and appends the new
+sources — it never reorders or drops existing sources. Families that carry their own
+citation (`jobs`, `community`, `subsidies`) include a `sourceRel` index into this
+intent's own `sources[]`.
+
+### Source refresh (Responsibility 4)
+
+When a facility's projection carries a trailing `=== DEAD SOURCES (re-source these) ===`
+block (`facilityId | deadUrl` lines, fed from the prior check-sources report), find a
+currently-live replacement citation for the same fact and fold it into that facility's
+`enrichmentUpdate`: include the replacement in `sources`, and add a `reSourced` entry —
+`{ "replacesUrl": "<exact dead url>", "sourceRel": <index of the replacement within this
+intent's sources[]> }`. The dead source is never removed — the server only appends the
+fresh citation (a human prunes later). Responsibility 3 fills and Responsibility 4
+re-sourcing for the same facility may be combined into one `enrichmentUpdate` element.
+
+**Key principle:** Every intent is validated against the facility schema server-side.
+Never restate fields you cannot see from the projection or prior submissions.
+Omit a field if you have no new citable source for it.
 
 ## Safety properties
 
@@ -238,9 +265,11 @@ npm run submissions -- approve <id> "looks good, verified sources"
 npm run submissions -- reject <id> "source doesn't support the claim"
 ```
 
-When approving an update submission, the operation replaces the entire facility
-record with the updated document (matching the same `id`), so the existing
-`statusHistory` is preserved and appended with the new status entry.
+When approving an update submission with a `statusUpdate` or `enrichmentUpdate` intent,
+the server applies the append-only transformation: new sources are appended to the
+facility's sources array, new enrichment fields are merged in (filling only keys
+present in the intent), and statusHistory entries are appended if present. All
+existing data is preserved — nothing is replaced or reordered.
 
 Nothing becomes a live facility without one of these explicit human calls.
 
@@ -249,7 +278,10 @@ Nothing becomes a live facility without one of these explicit human calls.
 The `check-sources.ts` utility runs after every discovery invocation and probes
 the liveness of every source URL across all facilities. It generates a JSON
 report at `discovery-logs/source-health-<timestamp>.json` with per-URL status
-classifications: `ok` (2xx), `redirected` (3xx), `dead` (4xx/5xx), `timeout`,
-`error`. This is a flag/report-only tool — it never modifies facilities or
-submissions. A future Phase 5.1 enhancement may wire these reports into an
-admin dashboard or automated deprecation workflow.
+classifications: `ok` (2xx), `redirected` (3xx), `gone` (404/410/451), `bot_blocked`
+(401/403 anti-bot), `throttled` (429 rate-limited), `server_error` (5xx),
+`client_error` (other 4xx), `timeout`, `error`, `blocked` (SSRF-guard refusal).
+Note that `bot_blocked` and `throttled` are transient/anti-bot signals, not
+"dead" sources. This is a flag/report-only tool — it never modifies facilities or
+submissions. A future enhancement may wire these reports into an admin dashboard
+or automated deprecation workflow.

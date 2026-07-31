@@ -168,7 +168,7 @@ means reading its provenance:
   reordered or rewritten; new events and sources are appended, so the trail stays
   intact.
 - **`location.precision`** — `exact` when the coordinate is a real footprint,
-  `approximate` when it is a geocoded town/parcel centroid.
+  `approximate` when it is a geocoded town/parcel centroid, or `representative_multi_site` when the facility spans multiple discrete sites (e.g. a campus or distributed fleet) and the coordinate is an illustrative point only.
 
 Put together: follow the `sources`, weigh the `confidence`, and read the
 `statusHistory` — that is what "source-cited" means here, and it is the whole

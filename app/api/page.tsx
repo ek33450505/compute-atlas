@@ -7,7 +7,7 @@ import { GraticuleSurvey } from "@/components/home/graticule-survey";
 export const metadata: Metadata = {
   title: "API",
   description:
-    "The Compute Atlas API — a public, CORS-open JSON read API over the dataset, plus an admin write and provenance-staged submissions API for contributors.",
+    "The Compute Atlas API — a public, CORS-open JSON read API over the dataset, plus a provenance-staged submissions API for contributors.",
 };
 
 /** Shared style for inline `<code>` tokens (endpoints, headers, param names). */
@@ -44,24 +44,6 @@ const READ_ENDPOINTS: Endpoint[] = [
     method: "GET",
     path: "/api/schema",
     description: "The JSON Schema of a facility record, derived from the underlying Zod schema.",
-  },
-];
-
-const WRITE_ENDPOINTS: Endpoint[] = [
-  {
-    method: "POST",
-    path: "/api/facilities",
-    description: "Create a facility. 201 on success, 400 on a schema-invalid body, 409 on a duplicate id.",
-  },
-  {
-    method: "PATCH",
-    path: "/api/facilities/{id}",
-    description: "Partially update a facility. 200 on success, 400 on a schema-invalid body, 404 if the id isn't found.",
-  },
-  {
-    method: "DELETE",
-    path: "/api/facilities/{id}",
-    description: "Delete a facility. 200 on success, 404 if the id isn't found.",
   },
 ];
 
@@ -270,22 +252,6 @@ curl ${siteConfig.url}/api/facilities/${"{id}"}
 curl ${siteConfig.url}/api/stats`}</code>
           </pre>
         </div>
-      </section>
-
-      {/* ---- Admin writes ---- */}
-      <section aria-labelledby="writes-heading" className="space-y-4 border-t border-border pt-10">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Writing the data
-        </p>
-        <h2 id="writes-heading" className="font-display text-2xl text-foreground">
-          Admin writes
-        </h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Creating, updating, and deleting facility records requires an admin
-          bearer token: <code className={CODE}>Authorization: Bearer &lt;token&gt;</code>.
-          These are operator endpoints, not public write access.
-        </p>
-        <EndpointTable endpoints={WRITE_ENDPOINTS} />
       </section>
 
       {/* ---- Provenance & submissions ---- */}
