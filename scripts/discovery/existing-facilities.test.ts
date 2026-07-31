@@ -11,7 +11,7 @@ import path from "node:path";
 import { describe, expect, it, afterEach } from "vitest";
 
 import type { Facility } from "../../lib/schema";
-import type { SourceHealthReport } from "./check-sources";
+import type { SourceCheckResult, SourceHealthReport } from "./check-sources";
 import { loadLatestSourceHealth, projectDeadSources, projectExisting } from "./existing-facilities";
 
 /** Every family missingEnrichableFamilies() reports for a bare makeFacility() default. */
@@ -299,6 +299,15 @@ describe("projectDeadSources", () => {
     const result = projectDeadSources([txDead], "TX", null);
     expect(result).toBe("");
   });
+
+  it("returns an empty string, not a throw, when report.results is not an array (defensive guard)", () => {
+    // Simulates a caller passing a malformed/legacy report that slipped past
+    // loadLatestSourceHealth's own shape check — belt-and-suspenders so
+    // projectDeadSources is safe regardless of caller.
+    const malformed = { generatedAt: "2026-07-30T00:00:00.000Z" } as unknown as SourceHealthReport;
+    const result = projectDeadSources([txDead], "TX", malformed);
+    expect(result).toBe("");
+  });
 });
 
 describe("loadLatestSourceHealth", () => {
@@ -345,6 +354,36 @@ describe("loadLatestSourceHealth", () => {
   it("returns null (fail-open) for an unparseable report file", () => {
     dir = mkdtempSync(path.join(tmpdir(), "existing-facilities-test-"));
     writeFileSync(path.join(dir, "source-health-2026-07-30T00-00-00-000Z.json"), "{ not valid json");
+
+    const result = loadLatestSourceHealth(dir);
+    expect(result).toBeNull();
+  });
+
+  it("returns null (fail-open) for a legacy bare-array report (pre-envelope shape)", () => {
+    dir = mkdtempSync(path.join(tmpdir(), "existing-facilities-test-"));
+    const legacyResults: SourceCheckResult[] = [
+      {
+        facilityId: "tx-dead",
+        facilityName: "TX Dead",
+        url: "https://example.com/tx-dead",
+        sourceIndex: 0,
+        httpStatus: 404,
+        classification: "gone",
+        checkedAt: "2026-07-30T00:00:00.000Z",
+      },
+    ];
+    writeFileSync(
+      path.join(dir, "source-health-2026-07-30T21-34-44-199Z.json"),
+      JSON.stringify(legacyResults)
+    );
+
+    const result = loadLatestSourceHealth(dir);
+    expect(result).toBeNull();
+  });
+
+  it("returns null (fail-open) for a parsed non-object (e.g. a JSON string)", () => {
+    dir = mkdtempSync(path.join(tmpdir(), "existing-facilities-test-"));
+    writeFileSync(path.join(dir, "source-health-2026-07-30T00-00-00-000Z.json"), JSON.stringify("not a report"));
 
     const result = loadLatestSourceHealth(dir);
     expect(result).toBeNull();

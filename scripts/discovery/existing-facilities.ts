@@ -94,8 +94,11 @@ export function projectExisting(facilities: Facility[], state: string): string {
 /**
  * Loads the most recent check-sources.ts report from `logDir` (or
  * `DISCOVERY_LOG_DIR`, or `<cwd>/discovery-logs`). Fail-open: returns `null`
- * on a missing directory, no matching report file, or a parse error — a
- * missing/corrupt report must never break the {{EXISTING_FACILITIES}} build.
+ * on a missing directory, no matching report file, a parse error, or a
+ * parsed value that isn't a well-formed `SourceHealthReport` envelope (e.g. a
+ * pre-envelope legacy report that is a bare `SourceCheckResult[]`) — a
+ * missing/corrupt/wrong-shape report must never break the
+ * {{EXISTING_FACILITIES}} build.
  * Report filenames (`source-health-<ISO-timestamp-with-dashes>.json`) sort
  * chronologically as strings, so the lexicographically-greatest name is the
  * newest report.
@@ -111,7 +114,16 @@ export function loadLatestSourceHealth(logDir?: string): SourceHealthReport | nu
     }
     const latest = files[files.length - 1];
     const raw = readFileSync(path.join(dir, latest), "utf-8");
-    return JSON.parse(raw) as SourceHealthReport;
+    const parsed = JSON.parse(raw) as unknown;
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      Array.isArray(parsed) ||
+      !Array.isArray((parsed as { results?: unknown }).results)
+    ) {
+      return null;
+    }
+    return parsed as SourceHealthReport;
   } catch {
     return null;
   }
@@ -125,7 +137,7 @@ export function loadLatestSourceHealth(logDir?: string): SourceHealthReport | nu
  * non-empty.
  */
 export function projectDeadSources(facilities: Facility[], state: string, report: SourceHealthReport | null): string {
-  if (!report) {
+  if (!report || !Array.isArray(report.results)) {
     return "";
   }
   const stateIds = new Set(
