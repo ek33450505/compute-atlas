@@ -6,9 +6,17 @@
  * small committed static assets, and pre-computes per-facility "nearest
  * water" / "nearest transmission line" stats.
  *
- * BUILD-TIME ONLY: the large source downloads (10m water, full HIFLD
- * transmission set, drought monitor snapshot) are never written to disk —
- * only the small derived outputs below are committed:
+ * The rendered water.geojson overlay comes from Natural Earth (50m rivers +
+ * lakes — good for a small map layer, but far too coarse for per-facility
+ * proximity: it only has major rivers/lakes, so "nearest water" against it
+ * reports things like a Salton Sea 136mi away). The per-facility nearest-water
+ * STAT instead queries USGS NHD (National Hydrography Dataset, public domain)
+ * live per facility — NHD has fine-grained streams/ponds essentially
+ * everywhere, giving credible short distances.
+ *
+ * BUILD-TIME ONLY: the large source downloads (full HIFLD transmission set,
+ * drought monitor snapshot) and the per-facility NHD query responses are
+ * never written to disk — only the small derived outputs below are committed:
  *
  *   public/data/water.geojson       (US-clipped 50m rivers + lakes overlay)
  *   public/data/power.geojson       (US-clipped >=230kV transmission overlay)
@@ -40,13 +48,39 @@ const US_BBOX = [-179, 18, -66, 72]; // covers CONUS + AK + HI
 const SOURCES = {
   water50Rivers: 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_rivers_lake_centerlines.geojson',
   water50Lakes: 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_lakes.geojson',
-  water10Rivers: 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_rivers_lake_centerlines.geojson',
-  water10Lakes: 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_lakes.geojson',
   drought: 'https://droughtmonitor.unl.edu/data/json/usdm_current.json',
 };
 
 const HIFLD_TRANSMISSION_URL = 'https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/Electric_Power_Transmission_Lines/FeatureServer/0/query';
 const HIFLD_PAGE_SIZE = 2000;
+
+// USGS NHD (National Hydrography Dataset, public domain) — per-facility
+// nearest-water lookup. We use the SMALL-SCALE (generalized) layers and
+// restrict to NAMED features (GNIS_NAME present), which is the combination
+// that yields a meaningful "nearest significant water body" signal:
+//   - Layer 4  = Flowline - Small Scale (major rivers/streams, lines)
+//   - Layer 10 = Waterbody - Small Scale (significant lakes/reservoirs, polygons)
+// Rationale (verified against live queries across LA / NYC / Memphis / San
+// Antonio / Ashburn): the LARGE-scale layers (6/12) are so dense they either
+// return an unnamed drainage ditch 0.2mi away (useless as a "water source"
+// datum) or blow past NHD's 2000-feature cap in metros and miss the actual
+// major river. Natural Earth (the other extreme) is too coarse and misses
+// local water entirely (LA -> "Salton Sea" 136mi). Small-scale + named lands
+// in the middle: real, recognizable names at sensible distances (Memphis ->
+// Nonconnah Creek 0.7mi, NYC -> Hudson River 0.9mi, LA -> Los Angeles River
+// 0.5mi). Small-scale is sparse enough that the feature cap is never hit.
+const NHD_BASE = 'https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer';
+const NHD_FLOWLINE_LAYER = 4;
+const NHD_WATERBODY_LAYER = 10;
+// Server-side filter to NAMED features only. NHD encodes "unnamed" as either
+// NULL or a single space, so exclude both.
+const NHD_NAMED_WHERE = "GNIS_NAME IS NOT NULL AND GNIS_NAME <> ' '";
+// Ring sequence for the per-facility envelope search, in degrees (~69mi/deg).
+// 0.15 deg (~10mi) captures any water within ~10mi at ring 0; the wider rings
+// are a rural fallback. Small-scale + named is sparse, so no cap concern.
+const NHD_RING_STEPS_DEG = [0.15, 0.4, 0.9, 1.8];
+const NHD_REQUEST_DELAY_MS = 150;
+const NHD_CONSECUTIVE_FAILURE_BUDGET = 10; // abort if the service looks down
 
 const BUDGETS = {
   water: 1.5 * 1024 * 1024,
@@ -259,6 +293,140 @@ function buildCandidateIndex(features, extraFn) {
 }
 
 // ---------------------------------------------------------------------------
+// USGS NHD (per-facility nearest-water)
+// ---------------------------------------------------------------------------
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+let lastNHDRequestAt = 0;
+/** Enforce a minimum gap between outbound NHD requests (be polite to the federal service). */
+async function nhdPoliteDelay() {
+  const elapsed = Date.now() - lastNHDRequestAt;
+  if (elapsed < NHD_REQUEST_DELAY_MS) await sleep(NHD_REQUEST_DELAY_MS - elapsed);
+  lastNHDRequestAt = Date.now();
+}
+
+/** Case-insensitive property lookup (NHD layers use inconsistent casing across layers). */
+function propGNISName(props) {
+  const raw = props?.GNIS_NAME ?? props?.gnis_name ?? props?.GnisName ?? null;
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  return trimmed === '' ? null : trimmed;
+}
+
+/** Ray-casting point-in-polygon (even-odd rule, holes supported). No new turf dep needed. */
+function isPointInRing(pt, ring) {
+  const [x, y] = pt;
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i];
+    const [xj, yj] = ring[j];
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function isPointInPolygonGeometry(pt, geometry) {
+  if (!geometry) return false;
+  const polys = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.type === 'MultiPolygon' ? geometry.coordinates : [];
+  for (const rings of polys) {
+    if (!rings.length) continue;
+    let inside = isPointInRing(pt, rings[0]);
+    for (let h = 1; h < rings.length; h++) {
+      if (isPointInRing(pt, rings[h])) inside = false; // hole
+    }
+    if (inside) return true;
+  }
+  return false;
+}
+
+/** Query one NHD layer within an envelope around [lat,lon]. Returns { ok, features }. */
+async function nhdQueryLayer(layer, lat, lon, halfDeg) {
+  const geometry = JSON.stringify({
+    xmin: lon - halfDeg,
+    ymin: lat - halfDeg,
+    xmax: lon + halfDeg,
+    ymax: lat + halfDeg,
+    spatialReference: { wkid: 4326 },
+  });
+  const url = `${NHD_BASE}/${layer}/query?where=${encodeURIComponent(NHD_NAMED_WHERE)}&geometry=${encodeURIComponent(geometry)}&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=GNIS_NAME&returnGeometry=true&f=geojson`;
+  await nhdPoliteDelay();
+  try {
+    const data = await fetchJSON(url, { label: `NHD layer ${layer} @ ${lat.toFixed(3)},${lon.toFixed(3)} D=${halfDeg}`, retries: 1 });
+    return { ok: true, features: data.features || [] };
+  } catch (err) {
+    console.error(`  [warn] NHD layer ${layer} permanently failed at (${lat.toFixed(3)},${lon.toFixed(3)}) D=${halfDeg}: ${err.message}`);
+    return { ok: false, features: [] };
+  }
+}
+
+/**
+ * Per-facility nearest water via live NHD queries: named small-scale flowlines
+ * (rivers/streams, layer 4) and waterbodies (lakes/reservoirs, layer 10), expanding the search
+ * ring until at least one feature is found. Returns { nearest, allFailed }.
+ */
+async function nearestWaterViaNHD(lat, lon) {
+  const pt = turfPoint([lon, lat]);
+  let anySuccess = false;
+
+  for (let ring = 0; ring < NHD_RING_STEPS_DEG.length; ring++) {
+    const halfDeg = NHD_RING_STEPS_DEG[ring];
+    const flowRes = await nhdQueryLayer(NHD_FLOWLINE_LAYER, lat, lon, halfDeg);
+    const waterRes = await nhdQueryLayer(NHD_WATERBODY_LAYER, lat, lon, halfDeg);
+    if (flowRes.ok || waterRes.ok) anySuccess = true;
+
+    const flow = flowRes.features;
+    const water = waterRes.features;
+    if (flow.length === 0 && water.length === 0) {
+      if (ring < NHD_RING_STEPS_DEG.length - 1) continue; // expand and retry
+      return { nearest: null, allFailed: !anySuccess };
+    }
+
+    let best = null;
+
+    // Rivers: every returned flowline is already NAMED (server-side filter);
+    // take the nearest.
+    for (const f of flow) {
+      const name = propGNISName(f.properties);
+      for (const line of flattenToLineParts(f)) {
+        let dist;
+        try {
+          dist = pointToLineDistance(pt, line, { units: 'miles' });
+        } catch {
+          /* fake-success-ok: degenerate flowline segment skipped, not scored. */
+          continue;
+        }
+        if (!best || dist < best.dist) best = { dist, name, kind: 'river' };
+      }
+    }
+
+    // Lakes/ponds: 0 if the point falls inside the polygon, else distance to boundary.
+    for (const f of water) {
+      const name = propGNISName(f.properties);
+      if (isPointInPolygonGeometry([lon, lat], f.geometry)) {
+        if (!best || best.dist > 0) best = { dist: 0, name, kind: 'lake' };
+        continue;
+      }
+      for (const line of polygonFeatureToLineParts(f)) {
+        let dist;
+        try {
+          dist = pointToLineDistance(pt, line, { units: 'miles' });
+        } catch {
+          /* fake-success-ok: degenerate waterbody boundary segment skipped. */
+          continue;
+        }
+        if (!best || dist < best.dist) best = { dist, name, kind: 'lake' };
+      }
+    }
+
+    return { nearest: best, allFailed: false };
+  }
+  return { nearest: null, allFailed: !anySuccess };
+}
+
+// ---------------------------------------------------------------------------
 // Water
 // ---------------------------------------------------------------------------
 async function buildWater() {
@@ -283,26 +451,9 @@ async function buildWater() {
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(WATER_OUT, JSON.stringify(waterFC), 'utf8');
 
-  // 10m sets for higher-accuracy nearest-computation (build-time only, NOT written to disk)
-  console.log('  fetching 10m water sets for siting-context (build-time only)...');
-  const [rivers10, lakes10] = await Promise.all([
-    fetchJSON(SOURCES.water10Rivers, { label: 'water10Rivers' }),
-    fetchJSON(SOURCES.water10Lakes, { label: 'water10Lakes' }),
-  ]);
-  console.log(`  fetched 10m rivers: ${rivers10.features.length} features, 10m lakes: ${lakes10.features.length} features`);
-  const nearestRivers = clipCollection(rivers10.features, '10m rivers');
-  const nearestLakes = clipCollection(lakes10.features, '10m lakes');
-
-  const riverName = (props) => props?.name ?? props?.NAME ?? props?.name_en ?? null;
-  const riverCandidates = buildCandidateIndex(nearestRivers, (f) => ({ name: riverName(f.properties), kind: 'river' }));
-  const lakeCandidates = buildCandidateIndex(nearestLakes, (f) => ({ name: riverName(f.properties), kind: 'lake' }));
-
-  return {
-    waterTolerance,
-    waterSize,
-    riverCandidates,
-    lakeCandidates,
-  };
+  // Per-facility nearest-water is computed separately via live USGS NHD
+  // queries (nearestWaterViaNHD) — Natural Earth is too coarse for that stat.
+  return { waterTolerance, waterSize };
 }
 
 // ---------------------------------------------------------------------------
@@ -379,32 +530,38 @@ async function buildDrought() {
 // ---------------------------------------------------------------------------
 // Siting context (per-facility nearest water / transmission)
 // ---------------------------------------------------------------------------
-function computeSitingContext(facilities, riverCandidates, lakeCandidates, powerCandidates) {
+async function computeSitingContext(facilities, powerCandidates) {
   console.log('\n=== Siting context (per-facility nearest water/transmission) ===');
   const result = {};
+  let consecutiveNHDFailures = 0;
+  let processed = 0;
+
   for (const facility of facilities) {
     const { lat, lon } = facility.location ?? {};
     if (typeof lat !== 'number' || typeof lon !== 'number') continue;
     const pt = turfPoint([lon, lat]);
     const searchBBox = searchBBoxFor(lat, lon, NEAREST_CAP_MILES);
 
-    const nearestRiver = nearestFromCandidates(pt, riverCandidates, searchBBox, NEAREST_CAP_MILES);
-    const nearestLake = nearestFromCandidates(pt, lakeCandidates, searchBBox, NEAREST_CAP_MILES);
-    let nearestWater = null;
-    if (nearestRiver && (!nearestLake || nearestRiver.dist <= nearestLake.dist)) {
-      nearestWater = nearestRiver;
-    } else if (nearestLake) {
-      nearestWater = nearestLake;
+    const waterOutcome = await nearestWaterViaNHD(lat, lon);
+    if (waterOutcome.allFailed) {
+      consecutiveNHDFailures++;
+      if (consecutiveNHDFailures >= NHD_CONSECUTIVE_FAILURE_BUDGET) {
+        throw new Error(
+          `USGS NHD service appears unreachable: ${consecutiveNHDFailures} consecutive facilities failed both layers`
+        );
+      }
+    } else {
+      consecutiveNHDFailures = 0;
     }
 
     const nearestTransmission = nearestFromCandidates(pt, powerCandidates, searchBBox, NEAREST_CAP_MILES);
 
     const entry = {};
-    if (nearestWater) {
+    if (waterOutcome.nearest) {
       entry.nearestWater = {
-        name: nearestWater.name ?? null,
-        kind: nearestWater.kind,
-        distanceMi: Math.round(nearestWater.dist * 10) / 10,
+        name: waterOutcome.nearest.name ?? null,
+        kind: waterOutcome.nearest.kind,
+        distanceMi: Math.round(waterOutcome.nearest.dist * 10) / 10,
       };
     }
     if (nearestTransmission) {
@@ -416,6 +573,9 @@ function computeSitingContext(facilities, riverCandidates, lakeCandidates, power
     if (Object.keys(entry).length > 0) {
       result[facility.id] = entry;
     }
+
+    processed++;
+    if (processed % 50 === 0) console.log(`  ... ${processed}/${facilities.length} facilities processed`);
   }
   console.log(`  computed siting context for ${Object.keys(result).length}/${facilities.length} facilities`);
   return result;
@@ -432,12 +592,7 @@ async function main() {
   const powerResult = await buildPower();
   const droughtResult = await buildDrought();
 
-  const sitingContext = computeSitingContext(
-    facilities,
-    waterResult.riverCandidates,
-    waterResult.lakeCandidates,
-    powerResult.powerCandidates
-  );
+  const sitingContext = await computeSitingContext(facilities, powerResult.powerCandidates);
   mkdirSync(dirname(SITING_CONTEXT_OUT), { recursive: true });
   writeFileSync(SITING_CONTEXT_OUT, JSON.stringify(sitingContext, null, 2), 'utf8');
 
