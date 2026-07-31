@@ -13,7 +13,7 @@ import Map, {
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { circle } from "@turf/circle";
-import { Radius } from "lucide-react";
+import { Radius, SlidersHorizontal } from "lucide-react";
 import type { FeatureCollection, Polygon } from "geojson";
 
 import {
@@ -37,6 +37,8 @@ import { BasemapToggle } from "@/components/map/basemap-toggle";
 import { MapLayerControl } from "@/components/map/map-layer-control";
 import type { Facility } from "@/lib/schema";
 import type { GeocodeResult } from "@/lib/geocode";
+
+const TOOLS_PANEL_ID = "map-tools-panel";
 
 interface FacilityMapProps {
   facilities: Facility[];
@@ -84,6 +86,11 @@ export function FacilityMap({
   const [cursor, setCursor] = useState<{ lat: number; lon: number } | null>(
     null
   );
+  // Right-side control stack (compass/3D/basemap/layers/radius) is collapsed
+  // behind a single "Tools" disclosure toggle, default false, so the map
+  // canvas stays maximized until the visitor asks for the extra controls.
+  // NavigationControl (zoom +/-, top-right) is unaffected — always visible.
+  const [showTools, setShowTools] = useState<boolean>(false);
   // Optional overlay layers (Layers control) — off by default, lazy-loaded:
   // each corresponding <Source> only mounts (and fetches its GeoJSON) once
   // its flag flips true, so the 1.9 MB power.geojson never loads unrequested.
@@ -615,57 +622,93 @@ export function FacilityMap({
          * MapLibre's ctrl-group z-index stacking.
          */}
         <div className="absolute top-20 right-2 z-20 flex flex-col gap-2">
-          <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
-          <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
-          <BasemapToggle
-            isSatellite={isSatellite}
-            onToggle={() => setIsSatellite((s) => !s)}
-          />
-          <MapLayerControl
-            showWater={showWater}
-            onToggleWater={() => setShowWater((s) => !s)}
-            showPower={showPower}
-            onTogglePower={() => setShowPower((s) => !s)}
-            showDrought={showDrought}
-            onToggleDrought={() => setShowDrought((s) => !s)}
-          />
-
-          {/* Radius-ring measurement tool toggle. Reuses BasemapToggle's
-              parchment button styling: ≥44px hit target, aria-pressed,
-              focus-visible ring, primary-tinted icon when active. */}
+          {/* Single disclosure toggle for the compass/3D/basemap/layers/radius
+              stack below — collapsed by default to maximize the visible map.
+              NavigationControl (zoom +/-, top-2) is separate and always shown. */}
           <button
             type="button"
-            onClick={handleToggleRings}
-            aria-pressed={ringsEnabled}
-            aria-label="Toggle radius rings tool"
+            onClick={() => setShowTools((s) => !s)}
+            aria-expanded={showTools}
+            aria-controls={TOOLS_PANEL_ID}
+            aria-label={showTools ? "Hide map tools" : "Show map tools"}
             className={[
               "flex h-11 w-11 items-center justify-center",
               "rounded-sm bg-popover border border-border",
               "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
               "cursor-pointer transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-              ringsEnabled ? "ring-1 ring-primary/50" : "",
+              showTools ? "ring-1 ring-primary/50" : "",
             ]
               .filter(Boolean)
               .join(" ")}
           >
-            <Radius
+            <SlidersHorizontal
               aria-hidden="true"
-              className={["size-4", ringsEnabled ? "text-primary" : "text-foreground"].join(
+              className={["size-4", showTools ? "text-primary" : "text-foreground"].join(
                 " "
               )}
             />
           </button>
-          {ringsEnabled && (
-            <p className="max-w-[8.5rem] rounded-sm border border-border bg-popover px-2 py-1 font-mono text-[9px] leading-tight tabular-nums text-muted-foreground shadow-[0_1px_4px_rgba(0,0,0,0.12)]">
-              rings: 5 · 10 · 25 mi
-              {!ringCenter && (
-                <>
-                  <br />
-                  click map to place
-                </>
+
+          {showTools && (
+            <div
+              id={TOOLS_PANEL_ID}
+              className="flex flex-col gap-2 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+            >
+              <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
+              <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
+              <BasemapToggle
+                isSatellite={isSatellite}
+                onToggle={() => setIsSatellite((s) => !s)}
+              />
+              <MapLayerControl
+                showWater={showWater}
+                onToggleWater={() => setShowWater((s) => !s)}
+                showPower={showPower}
+                onTogglePower={() => setShowPower((s) => !s)}
+                showDrought={showDrought}
+                onToggleDrought={() => setShowDrought((s) => !s)}
+              />
+
+              {/* Radius-ring measurement tool toggle. Reuses BasemapToggle's
+                  parchment button styling: ≥44px hit target, aria-pressed,
+                  focus-visible ring, primary-tinted icon when active. */}
+              <button
+                type="button"
+                onClick={handleToggleRings}
+                aria-pressed={ringsEnabled}
+                aria-label="Toggle radius rings tool"
+                className={[
+                  "flex h-11 w-11 items-center justify-center",
+                  "rounded-sm bg-popover border border-border",
+                  "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+                  "cursor-pointer transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  ringsEnabled ? "ring-1 ring-primary/50" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <Radius
+                  aria-hidden="true"
+                  className={[
+                    "size-4",
+                    ringsEnabled ? "text-primary" : "text-foreground",
+                  ].join(" ")}
+                />
+              </button>
+              {ringsEnabled && (
+                <p className="max-w-[8.5rem] rounded-sm border border-border bg-popover px-2 py-1 font-mono text-[9px] leading-tight tabular-nums text-muted-foreground shadow-[0_1px_4px_rgba(0,0,0,0.12)]">
+                  rings: 5 · 10 · 25 mi
+                  {!ringCenter && (
+                    <>
+                      <br />
+                      click map to place
+                    </>
+                  )}
+                </p>
               )}
-            </p>
+            </div>
           )}
         </div>
 
