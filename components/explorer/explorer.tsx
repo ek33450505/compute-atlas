@@ -102,7 +102,7 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
   // -------------------------------------------------------------------------
   if (mode === "map") {
     return (
-      <div className="flex flex-col h-[calc(100dvh-4rem)]">
+      <div className="flex flex-col overflow-hidden h-[calc(100dvh-4rem)] supports-[height:100svh]:h-[calc(100svh-4rem)]">
         <MapFilterSubheader
           facilities={facilities}
           values={{ status, state, operator, facilityType, minMw }}
