@@ -668,14 +668,6 @@ export function FacilityMap({
                 isSatellite={isSatellite}
                 onToggle={() => setIsSatellite((s) => !s)}
               />
-              <MapLayerControl
-                showWater={showWater}
-                onToggleWater={() => setShowWater((s) => !s)}
-                showPower={showPower}
-                onTogglePower={() => setShowPower((s) => !s)}
-                showDrought={showDrought}
-                onToggleDrought={() => setShowDrought((s) => !s)}
-              />
 
               {/* Radius-ring measurement tool toggle. Reuses BasemapToggle's
                   parchment button styling: ≥44px hit target, aria-pressed,
@@ -716,6 +708,18 @@ export function FacilityMap({
                   )}
                 </p>
               )}
+
+              {/* Layers control is last in the stack — its own root
+                  right-aligns itself independently (see map-layer-control.tsx),
+                  so its position here doesn't depend on being narrowest. */}
+              <MapLayerControl
+                showWater={showWater}
+                onToggleWater={() => setShowWater((s) => !s)}
+                showPower={showPower}
+                onTogglePower={() => setShowPower((s) => !s)}
+                showDrought={showDrought}
+                onToggleDrought={() => setShowDrought((s) => !s)}
+              />
             </div>
           )}
         </div>

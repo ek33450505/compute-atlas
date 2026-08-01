@@ -577,6 +577,52 @@ describe("FacilityMap", () => {
     });
   });
 
+  describe("Radius Ring Tool", () => {
+    it("toggles aria-pressed and shows the caption when enabled from the Tools disclosure", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
+
+      const radiusToggle = screen.getByRole("button", { name: /radius rings/i });
+      expect(radiusToggle).toHaveAttribute("aria-pressed", "false");
+      expect(screen.queryByText(/rings: 5 · 10 · 25 mi/)).not.toBeInTheDocument();
+
+      await user.click(radiusToggle);
+
+      expect(radiusToggle).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByText(/rings: 5 · 10 · 25 mi/)).toBeInTheDocument();
+      expect(screen.getByText(/click map to place/)).toBeInTheDocument();
+
+      await user.click(radiusToggle);
+
+      expect(radiusToggle).toHaveAttribute("aria-pressed", "false");
+      expect(screen.queryByText(/rings: 5 · 10 · 25 mi/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Layer Overlays (lazy mount)", () => {
+    it("does not mount the waterways layer until enabled via the Layers panel", async () => {
+      // Fresh slate: __layerPropsById is a shared module-level global that
+      // persists across tests in this file, so reset it before asserting
+      // absence — a prior test could otherwise leave a stale entry behind.
+      globalThis.__layerPropsById = {};
+
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      expect(globalThis.__layerPropsById["water-river-layer"]).toBeUndefined();
+
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
+      await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+      await user.click(screen.getByLabelText("Waterways"));
+
+      await waitFor(() => {
+        expect(globalThis.__layerPropsById["water-river-layer"]).toBeDefined();
+      });
+    });
+  });
+
   describe("Empty & Edge Cases", () => {
     it("renders gracefully with an empty facility list", () => {
       render(<FacilityMap facilities={[]} />);

@@ -4,27 +4,16 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Droplets, ExternalLink, X, Zap } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
-import { getSitingContext } from "@/lib/siting-context";
+import {
+  formatNearestTransmission,
+  formatNearestWater,
+  getSitingContext,
+} from "@/lib/siting-context";
 import type { Facility } from "@/lib/schema";
 
 interface FacilityPopupProps {
   facility: Facility;
   onClose: () => void;
-}
-
-/**
- * Compact, popup-scale siting cues — distance-first (mirrors the on-page
- * SitingContextSection's word choice but reorders to lead with the number,
- * since this is a one-line summary, not a labeled definition list).
- */
-function formatWaterCue(name: string, distanceMi: number): string {
-  if (distanceMi === 0) return `On ${name}`;
-  return `≈ ${distanceMi.toFixed(1)} mi — ${name}`;
-}
-
-function formatTransmissionCue(voltageKv: number, distanceMi: number): string {
-  if (distanceMi === 0) return `On a ${voltageKv} kV line`;
-  return `≈ ${distanceMi.toFixed(1)} mi — ${voltageKv} kV line`;
 }
 
 /**
@@ -107,15 +96,16 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
           {nearestWater && (
             <span className="flex items-center gap-1">
               <Droplets className="size-3" aria-hidden="true" />
-              {formatWaterCue(nearestWater.name, nearestWater.distanceMi)}
+              {formatNearestWater(nearestWater.name, nearestWater.distanceMi)}
             </span>
           )}
           {nearestTransmission && (
             <span className="flex items-center gap-1">
               <Zap className="size-3" aria-hidden="true" />
-              {formatTransmissionCue(
+              {formatNearestTransmission(
                 nearestTransmission.voltageKv,
                 nearestTransmission.distanceMi,
+                { compact: true },
               )}
             </span>
           )}

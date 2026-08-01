@@ -55,6 +55,18 @@ function LayerToggle({ id, label, checked, onChange }: LayerToggleProps) {
  *
  * Styling mirrors MapLegend / BasemapToggle (parchment bg-popover +
  * border-border, ≥44px hit targets, focus-visible rings).
+ *
+ * Alignment: the root is its own `flex flex-col items-end` — not just a
+ * plain block wrapper — so the button and the (much wider) expanded panel
+ * each right-align independently to the control's own box. Without this,
+ * a plain block wrapper's width is dictated by its widest child (the
+ * panel, once mounted), and the fixed-width button — a block element with
+ * no auto margins — stays glued to the wrapper's LEFT edge while the
+ * panel is right-aligned by the parent Tools column's own `items-end`,
+ * so the two visibly diverge. `items-end` here keeps the button pinned to
+ * the same page position whether the panel is open or closed, and the
+ * panel opens downward (`mt-2`, later in flex-col order) with its right
+ * edge matching the button's — i.e. it grows to the left.
  */
 export function MapLayerControl({
   showWater,
@@ -68,7 +80,7 @@ export function MapLayerControl({
   const anyOn = showWater || showPower || showDrought;
 
   return (
-    <div className="pointer-events-auto">
+    <div className="pointer-events-auto flex flex-col items-end">
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}

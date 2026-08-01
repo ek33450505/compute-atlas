@@ -1,18 +1,11 @@
 import { Droplets } from "lucide-react";
 
 import type { Facility } from "@/lib/schema";
-import { getSitingContext } from "@/lib/siting-context";
-
-// --- Formatting helpers ---
-function formatWaterValue(name: string, distanceMi: number): string {
-  if (distanceMi === 0) return `On ${name}`;
-  return `≈ ${distanceMi.toFixed(1)} mi — ${name}`;
-}
-
-function formatTransmissionValue(voltageKv: number, distanceMi: number): string {
-  if (distanceMi === 0) return `On a ${voltageKv} kV transmission line`;
-  return `≈ ${distanceMi.toFixed(1)} mi — ${voltageKv} kV line`;
-}
+import {
+  formatNearestTransmission,
+  formatNearestWater,
+  getSitingContext,
+} from "@/lib/siting-context";
 
 // --- Predicate ---
 export function hasSitingContext(facility: Facility): boolean {
@@ -46,7 +39,7 @@ export function SitingContextSection({ facility }: { facility: Facility }) {
               Nearest named waterway
             </dt>
             <dd className="mt-1 text-sm font-mono tabular-nums">
-              {formatWaterValue(nearestWater.name, nearestWater.distanceMi)}
+              {formatNearestWater(nearestWater.name, nearestWater.distanceMi)}
             </dd>
           </div>
         )}
@@ -57,7 +50,7 @@ export function SitingContextSection({ facility }: { facility: Facility }) {
               Nearest high-voltage line
             </dt>
             <dd className="mt-1 text-sm font-mono tabular-nums">
-              {formatTransmissionValue(
+              {formatNearestTransmission(
                 nearestTransmission.voltageKv,
                 nearestTransmission.distanceMi,
               )}
