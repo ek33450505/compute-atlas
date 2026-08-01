@@ -24,6 +24,7 @@ import { ProvenancePanel } from "@/components/facility/provenance-panel";
 import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-dynamic";
 import { CivicImpactSection, hasCivicImpact } from "@/components/facility/civic-impact";
 import { PowerLinksSection, hasPowerLinks } from "@/components/facility/power-links";
+import { SitingContextSection, hasSitingContext } from "@/components/facility/siting-context";
 import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
@@ -278,6 +279,13 @@ export default async function FacilityPage({
           </div>
         </dl>
       </section>
+
+      {hasSitingContext(facility) && (
+        <>
+          <Separator />
+          <SitingContextSection facility={facility} />
+        </>
+      )}
 
       {(await hasPowerLinks(facility)) && (
         <>

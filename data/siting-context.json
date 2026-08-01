@@ -1,0 +1,7977 @@
+{
+  "32-avenue-of-the-americas-ny": {
+    "nearestWater": {
+      "name": "Hudson River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    }
+  },
+  "60-hudson-street-ny": {
+    "nearestWater": {
+      "name": "Hudson River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "9ldg-niagara-falls-ny": {
+    "nearestWater": {
+      "name": "Chippawa Channel Niagara River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "a1-data-center-millville-nj": {
+    "nearestWater": {
+      "name": "Maurice River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    }
+  },
+  "aboutbit-merom-sullivan-county-in": {
+    "nearestWater": {
+      "name": "Turtle Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    }
+  },
+  "adp-ladysmith-data-hub-caroline-va": {
+    "nearestWater": {
+      "name": "Lake Caroline",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.3
+    }
+  },
+  "air-products-cetronia-road-upper-macungie-pa": {
+    "nearestWater": {
+      "name": "Iron Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.9
+    }
+  },
+  "aligned-conesville-oh": {
+    "nearestWater": {
+      "name": "Morgan Run",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.4
+    }
+  },
+  "aligned-dfw-01-tx": {
+    "nearestWater": {
+      "name": "Beck Branch",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    }
+  },
+  "aligned-dfw-03-tx": {
+    "nearestWater": {
+      "name": "Low Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "aligned-iad-01-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "aligned-iad-03-va": {
+    "nearestWater": {
+      "name": "Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "aligned-neo-01-oh": {
+    "nearestWater": {
+      "name": "Mills Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    }
+  },
+  "aligned-ord-01-il": {
+    "nearestWater": {
+      "name": "Addison Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "aligned-pdx-01-or": {
+    "nearestWater": {
+      "name": "Storey Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "aligned-phx-01-02-03-az": {
+    "nearestWater": {
+      "name": "Scatter Wash",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "aligned-phx13-glendale-az": {
+    "nearestWater": {
+      "name": "Cave Creek",
+      "kind": "river",
+      "distanceMi": 5.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "aligned-project-caprock-hale-county-tx": {
+    "nearestWater": {
+      "name": "Lubbock Terminal Reservoir",
+      "kind": "lake",
+      "distanceMi": 11.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "aligned-quantum-frederick-md": {
+    "nearestWater": {
+      "name": "Furnace Branch",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    }
+  },
+  "aligned-shippingport-pa": {
+    "nearestWater": {
+      "name": "Ohio River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "amazon-becker-mn": {
+    "nearestWater": {
+      "name": "Elk River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    }
+  },
+  "amazon-blackwell-road-warrenton-va": {
+    "nearestWater": {
+      "name": "Cedar Run",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    }
+  },
+  "amazon-devlin-tech-park-va": {
+    "nearestWater": {
+      "name": "Kettle Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    }
+  },
+  "amazon-gilroy-ca": {
+    "nearestWater": {
+      "name": "Miller Slough",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.6
+    }
+  },
+  "amazon-northwest-louisiana": {
+    "nearestWater": {
+      "name": "Cross Bayou",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.9
+    }
+  },
+  "amazon-potomac-church-fredericksburg-va": {
+    "nearestWater": {
+      "name": "Accokeek Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "amazon-project-rainier-new-carlisle-in": {
+    "nearestWater": {
+      "name": "Kankakee River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "american-bitcoin-niagara-falls-ny": {
+    "nearestWater": {
+      "name": "Gill Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    }
+  },
+  "anchorstone-58-east-data-campus-ringgold-va": {
+    "nearestWater": {
+      "name": "Tom Fork",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    }
+  },
+  "andover-hpc-development-nj": {
+    "nearestWater": {
+      "name": "Drakes Pond",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "apple-maiden-nc": {
+    "nearestWater": {
+      "name": "Bel-Air Pond",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "apple-mesa-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "apple-reno-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "apple-waukee-ia": {
+    "nearestWater": {
+      "name": "Sugar Creek",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "applied-digital-delta-forge-1-la": {
+    "nearestWater": {
+      "name": "Little Sandy Bayou",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    }
+  },
+  "applied-digital-deuel-county-sd": {
+    "nearestWater": {
+      "name": "Sixmile Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    }
+  },
+  "applied-digital-jamestown-nd": {
+    "nearestWater": {
+      "name": "Depuy Dam Lake",
+      "kind": "lake",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "applied-digital-polaris-forge-1-ellendale-nd": {
+    "nearestWater": {
+      "name": "Sewer Branch",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2
+    }
+  },
+  "applied-digital-polaris-forge-2-harwood-nd": {
+    "nearestWater": {
+      "name": "Rush River",
+      "kind": "river",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    }
+  },
+  "applied-digital-polaris-forge-3-oliver-nd": {
+    "nearestWater": {
+      "name": "Square Butte Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    }
+  },
+  "aps-desert-sun-power-plant-gila-bend-az": {
+    "nearestWater": {
+      "name": "Sauceda Wash",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    }
+  },
+  "arizona-land-consulting-hassayampa-ranch-tonopah-az": {
+    "nearestWater": {
+      "name": "Jackrabbit Wash",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4
+    }
+  },
+  "ark-data-centers-akron-i-summit-county-oh": {
+    "nearestWater": {
+      "name": "Summit Lake",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7
+    }
+  },
+  "ark-data-centers-akron-ii-summit-county-oh": {
+    "nearestWater": {
+      "name": "Summit Lake",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7
+    }
+  },
+  "ark-data-centers-green-bay-harrison-campus-wi": {
+    "nearestWater": {
+      "name": "Lake Winnebago 6124",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.3
+    }
+  },
+  "ark-data-centers-independence-cuyahoga-county-oh": {
+    "nearestWater": {
+      "name": "Cuyahoga River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    }
+  },
+  "atlas-compute-ai-data-center-campus-fort-pierce-fl": {
+    "nearestWater": {
+      "name": "Moore Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.8
+    }
+  },
+  "avaio-digital-leo-little-rock-ar": {
+    "nearestWater": {
+      "name": "Little Fourche Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.8
+    }
+  },
+  "avaio-taurus-brandon-ms": {
+    "nearestWater": {
+      "name": "Terrapin Skin Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.7
+    }
+  },
+  "aws-2550-beech-road-new-albany-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    }
+  },
+  "aws-3180-beech-road-new-albany-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "aws-beech-road-new-albany-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "aws-birchwood-data-campus-king-george-va": {
+    "nearestWater": {
+      "name": "Muddy Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "aws-boardman-morrow-county-or": {
+    "nearestWater": {
+      "name": "Lake Umatilla",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "aws-calvert-cliffs-md": {
+    "nearestWater": {
+      "name": "Woodland Branch",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    }
+  },
+  "aws-carters-store-tech-campus-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Ni River",
+      "kind": "river",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.8
+    }
+  },
+  "aws-cosgray-hilliard-oh": {
+    "nearestWater": {
+      "name": "Hayden Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    }
+  },
+  "aws-cosner-technology-campus-massaponax-va": {
+    "nearestWater": {
+      "name": "Massaponax Creek",
+      "kind": "river",
+      "distanceMi": 2.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.4
+    }
+  },
+  "aws-crosby-court-franklin-county-oh": {
+    "nearestWater": {
+      "name": "South Fork Indian Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    }
+  },
+  "aws-cumulus-salem-township-pa": {
+    "nearestWater": {
+      "name": "Susquehanna River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "aws-falls-township-pa": {
+    "nearestWater": {
+      "name": "Manor Lake",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    }
+  },
+  "aws-galaxy-sidney-oh": {
+    "nearestWater": {
+      "name": "Tilberry Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.9
+    }
+  },
+  "aws-green-new-florence-mo": {
+    "nearestWater": {
+      "name": "Clear Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.7
+    }
+  },
+  "aws-hayden-run-hilliard-oh": {
+    "nearestWater": {
+      "name": "Hayden Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    }
+  },
+  "aws-hobart-in": {
+    "nearestWater": {
+      "name": "Sprout Ditch",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "aws-industrial-parkway-jerome-township-oh": {
+    "nearestWater": {
+      "name": "North Fork Indian Run",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "aws-lake-anna-technology-campus-louisa-va": {
+    "nearestWater": {
+      "name": "Sedges Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "aws-laveen-az": {
+    "nearestWater": {
+      "name": "Salt River",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "aws-mattermeade-caroline-va": {
+    "nearestWater": {
+      "name": "Maracossic Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 8.5
+    }
+  },
+  "aws-newton-court-new-albany-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    }
+  },
+  "aws-north-creek-technology-campus-louisa-va": {
+    "nearestWater": {
+      "name": "Desper Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "aws-project-atlas-madison-county-ms": {
+    "nearestWater": {
+      "name": "Batchelor Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    }
+  },
+  "aws-project-cosmos-marysville-oh": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 3.6
+    }
+  },
+  "aws-richmond-county-nc": {
+    "nearestWater": {
+      "name": "Hitchcock Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "aws-scioto-darby-hilliard-oh": {
+    "nearestWater": {
+      "name": "Scioto River",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "aws-summit-crossing-tech-campus-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Haislip Pond",
+      "kind": "lake",
+      "distanceMi": 2.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    }
+  },
+  "aws-wallula-gap-walla-walla-wa": {
+    "nearestWater": {
+      "name": "Lake Wallula",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.5
+    }
+  },
+  "aws-warner-road-jerome-township-oh": {
+    "nearestWater": {
+      "name": "North Fork Indian Run",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    }
+  },
+  "aws-wheatfield-in": {
+    "nearestWater": {
+      "name": "Kankakee River",
+      "kind": "river",
+      "distanceMi": 4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    }
+  },
+  "beacon-golden-valley-ca": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 7.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    }
+  },
+  "beacon-westline-dove-creek-san-angelo-tx": {
+    "nearestWater": {
+      "name": "Pecan Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.3
+    }
+  },
+  "beale-gardner-johnson-county-ks": {
+    "nearestWater": {
+      "name": "Kill Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "beale-project-blue-pima-county-az": {
+    "nearestWater": {
+      "name": "Pantano Wash",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.2
+    }
+  },
+  "beale-project-clydesdale-tulsa-county-ok": {
+    "nearestWater": {
+      "name": "Oknoname 143019 Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.7
+    }
+  },
+  "beale-project-mustang-claremore-ok": {
+    "nearestWater": {
+      "name": "Cat Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    }
+  },
+  "beale-project-pilot-de-soto-ks": {
+    "nearestWater": {
+      "name": "Kill Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    }
+  },
+  "beltline-oklahoma-city-frisco-road-ok": {
+    "nearestWater": {
+      "name": "Shell Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "beltline-piedmont-kingfisher-county-ok": {
+    "nearestWater": {
+      "name": "Clear Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "bermuda-hundred-data-center-chesterfield-va": {
+    "nearestWater": {
+      "name": "Redwater Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "bit-mining-viking-akron-summit-county-oh": {
+    "nearestWater": {
+      "name": "Springfield Lake Outlet",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.4
+    }
+  },
+  "bitdeer-clarington-oh": {
+    "nearestWater": {
+      "name": "Gardner Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    }
+  },
+  "bitdeer-knoxville-tn": {
+    "nearestWater": {
+      "name": "French Broad River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.8
+    }
+  },
+  "bitdeer-massillon-stark-county-oh": {
+    "nearestWater": {
+      "name": "Tuscarawas River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    }
+  },
+  "bitdeer-rockdale-tx": {
+    "nearestWater": {
+      "name": "Sandy Creek",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.5
+    }
+  },
+  "bitdeer-shalersville-portage-county-oh": {
+    "nearestWater": {
+      "name": "Harmon Brook",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    }
+  },
+  "bitdeer-wenatchee-pangborn-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "bitdeer-whitetail-creek-trumbull-county-oh": {
+    "nearestWater": {
+      "name": "Mosquito Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "bloomberg-orangeburg-ny": {
+    "nearestWater": {
+      "name": "Hackensack River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    }
+  },
+  "bristolville-25-lordstown-oh": {
+    "nearestWater": {
+      "name": "Duck Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    }
+  },
+  "bull-church-data-center-caroline-va": {
+    "nearestWater": {
+      "name": "Reedy Swamp",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.9
+    }
+  },
+  "calethos-lithium-valley-imperial-county-ca": {
+    "nearestWater": {
+      "name": "New River",
+      "kind": "river",
+      "distanceMi": 5.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    }
+  },
+  "cascade-advanced-energy-facility-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 3.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    }
+  },
+  "cassville-grant-county-wi": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 11.9
+    }
+  },
+  "centersquare-phx3-az": {
+    "nearestWater": {
+      "name": "Salt River",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    }
+  },
+  "cerebras-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "North Canadian River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.5
+    }
+  },
+  "cielo-clarksville-tn": {
+    "nearestWater": {
+      "name": "Cumberland River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7
+    }
+  },
+  "cipher-barber-lake-colorado-city-tx": {
+    "nearestWater": {
+      "name": "Colorado River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.1
+    }
+  },
+  "cipher-black-pearl-wink-tx": {
+    "nearestWater": {
+      "name": "Monument Pond",
+      "kind": "lake",
+      "distanceMi": 11.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 36.3
+    }
+  },
+  "cipher-colchis-tom-green-tx": {
+    "nearestWater": {
+      "name": "Red Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    }
+  },
+  "cipher-digital-odessa-tx": {
+    "nearestWater": {
+      "name": "Averitt Number 2 Lake",
+      "kind": "lake",
+      "distanceMi": 3.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    }
+  },
+  "cipher-mclennan-county-tx": {
+    "nearestWater": {
+      "name": "Lake Creek Lake",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "cipher-mikeska-mcculloch-county-tx": {
+    "nearestWater": {
+      "name": "Brady Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 17.7
+    }
+  },
+  "cipher-milsing-huntsville-walker-tx": {
+    "nearestWater": {
+      "name": "Town Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.9
+    }
+  },
+  "cipher-reveille-cotulla-la-salle-tx": {
+    "nearestWater": {
+      "name": "Mustang Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 24.2
+    }
+  },
+  "cipher-stingray-andrews-county-tx": {
+    "nearestWater": {
+      "name": "Shafter Lake",
+      "kind": "lake",
+      "distanceMi": 7.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 12.7
+    }
+  },
+  "cleanarc-ruther-glen-va": {
+    "nearestWater": {
+      "name": "Long Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3
+    }
+  },
+  "cloudburst-san-marcos-tx": {
+    "nearestWater": {
+      "name": "Purgatory Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.8
+    }
+  },
+  "cloudhq-lc1-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "cloudhq-lc3-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "cloudhq-manassas-mcc-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "cloverleaf-project-open-sky-piedmont-ok": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    }
+  },
+  "cloverleaf-troy-mo": {
+    "nearestWater": {
+      "name": "Trojan Lake (historical)",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.6
+    }
+  },
+  "coinmint-massena-ny": {
+    "nearestWater": {
+      "name": "Raquette River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "cologix-ash1-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "cologix-col5-orange-township-delaware-county-oh": {
+    "nearestWater": {
+      "name": "Deep Run",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 0.6
+    }
+  },
+  "cologix-jax1-fl": {
+    "nearestWater": {
+      "name": "Marco Lake",
+      "kind": "lake",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.1
+    }
+  },
+  "cologix-johnstown-oh": {
+    "nearestWater": {
+      "name": "Raccoon Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 3.5
+    }
+  },
+  "cologix-sv1-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.8
+    }
+  },
+  "comanche-circle-sailfish-hood-county-tx": {
+    "nearestWater": {
+      "name": "Comanche Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "compass-datacenters-loudoun-county-i-true-north-va": {
+    "nearestWater": {
+      "name": "Goose Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "compass-lauderdale-meridian-ms": {
+    "nearestWater": {
+      "name": "Sowashee Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    }
+  },
+  "compass-red-oak-tx": {
+    "nearestWater": {
+      "name": "Brushy Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "compass-statesville-nc": {
+    "nearestWater": {
+      "name": "Gregory Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.4
+    }
+  },
+  "convergent-technology-park-remington-fauquier-va": {
+    "nearestWater": {
+      "name": "Tinpot Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    }
+  },
+  "core-scientific-marble-cherokee-county-nc": {
+    "nearestWater": {
+      "name": "Long Branch",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 42.8
+    }
+  },
+  "core-scientific-muskogee-ok": {
+    "nearestWater": {
+      "name": "Coody Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    }
+  },
+  "core-scientific-pecos-tx": {
+    "nearestWater": {
+      "name": "Sand Lake",
+      "kind": "lake",
+      "distanceMi": 4.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 68.5
+    }
+  },
+  "core-scientific-quinlan-tx": {
+    "nearestWater": {
+      "name": "Bois d'arc Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.1
+    }
+  },
+  "coresite-at1-atlanta-ga-ga": {
+    "nearestWater": {
+      "name": "Proctor Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "coresite-at2-marietta-data-center-ga": {
+    "nearestWater": {
+      "name": "Rottenwood Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    }
+  },
+  "coresite-bo1-boston-ma-ma": {
+    "nearestWater": {
+      "name": "Charles River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    }
+  },
+  "coresite-bowers-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
+    }
+  },
+  "coresite-dc1-washington-d-c-dc": {
+    "nearestWater": {
+      "name": "Carp Pond (historical)",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    }
+  },
+  "coresite-de3-denver-co": {
+    "nearestWater": {
+      "name": "Cherry Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "coresite-la2-los-angeles-ca-ca": {
+    "nearestWater": {
+      "name": "Los Angeles River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "coresite-ny2-secaucus-nj-nj": {
+    "nearestWater": {
+      "name": "Cromakill Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    }
+  },
+  "coresite-or1-orlando-fl": {
+    "nearestWater": {
+      "name": "Shingle Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    }
+  },
+  "coresite-sv1-san-jose-ca-ca": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    }
+  },
+  "coresite-va1-reston-va-va": {
+    "nearestWater": {
+      "name": "Smilax Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "coresite-va3-reston-va-va": {
+    "nearestWater": {
+      "name": "Sugarland Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "coreweave-dalton-ii-old-tilton-road-whitfield-ga": {
+    "nearestWater": {
+      "name": "Jobs Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "coreweave-digital-crossroads-hammond-in": {
+    "nearestWater": {
+      "name": "East Arm Little Calumet River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.8
+    }
+  },
+  "coreweave-kenilworth-nj": {
+    "nearestWater": {
+      "name": "West Branch Elizabeth River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    }
+  },
+  "coreweave-lancaster-pa": {
+    "nearestWater": {
+      "name": "Conestoga River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.8
+    }
+  },
+  "corscale-gainesville-crossing-va": {
+    "nearestWater": {
+      "name": "Lake Manassas",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "crane-clean-energy-center-tmi-pa": {
+    "nearestWater": {
+      "name": "Susquehanna River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "crane-pdx01-forest-grove-or": {
+    "nearestWater": {
+      "name": "Gales Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.6
+    }
+  },
+  "creekstone-delta-ut": {
+    "nearestWater": {
+      "name": "Sevier River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.8
+    }
+  },
+  "crusoe-blue-energy-victoria-tx": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    }
+  },
+  "crusoe-warrenton-mo": {
+    "nearestWater": {
+      "name": "Hickory Lick Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.8
+    }
+  },
+  "csquare-sfo1-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.9
+    }
+  },
+  "csquare-sfo2-ca": {
+    "nearestWater": {
+      "name": "Calabazas Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    }
+  },
+  "csquare-sfo3-ca": {
+    "nearestWater": {
+      "name": "Calabazas Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    }
+  },
+  "csquare-sfo4-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    }
+  },
+  "culpeper-brandy-station-va": {
+    "nearestWater": {
+      "name": "Flat Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5
+    }
+  },
+  "cyrusone-chi1-chi3-aurora-il": {
+    "nearestWater": {
+      "name": "Waubonsie Creek",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "cyrusone-cin3-cincinnati-mason-oh": {
+    "nearestWater": {
+      "name": "Polk Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "cyrusone-dfw3-dfw5-allen-tx": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.3
+    }
+  },
+  "cyrusone-dugway-proving-ground-tooele-county-ut": {
+    "nearestWater": {
+      "name": "Government Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 48.7
+    }
+  },
+  "cyrusone-nas-lemoore-ca": {
+    "nearestWater": {
+      "name": "North Fork Kings River",
+      "kind": "river",
+      "distanceMi": 3.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    }
+  },
+  "cyrusone-new-albany-col1-licking-county-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "cyrusone-nva1-nva2-nva3-sterling-va": {
+    "nearestWater": {
+      "name": "Cabin Branch",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    }
+  },
+  "cyrusone-nva5-sterling-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "cyrusone-nva7-sterling-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "cyrusone-nva8-sterling-va": {
+    "nearestWater": {
+      "name": "Cabin Branch",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    }
+  },
+  "cyrusone-nym1-somerset-nj": {
+    "nearestWater": {
+      "name": "Randolph Brook",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    }
+  },
+  "cyrusone-nym5-norwalk-ct": {
+    "nearestWater": {
+      "name": "Saugatuck River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 11.3
+    }
+  },
+  "cyrusone-sat1-san-antonio-tx": {
+    "nearestWater": {
+      "name": "Culebra Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "cyrusone-sat2-sat4-san-antonio-tx": {
+    "nearestWater": {
+      "name": "Culebra Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "cyrusone-vint-hill-fauquier-va": {
+    "nearestWater": {
+      "name": "South Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "data-city-energy-abundance-laredo-tx": {
+    "nearestWater": {
+      "name": "Zacata Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.5
+    }
+  },
+  "databank-indo-cartersville-ga": {
+    "nearestWater": {
+      "name": "Pettit Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "databank-red-oak-tx": {
+    "nearestWater": {
+      "name": "Bear Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    }
+  },
+  "databank-vernon-la-ca": {
+    "nearestWater": {
+      "name": "Los Angeles River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "dc-blox-atlanta-west-ga": {
+    "nearestWater": {
+      "name": "Groovers Lake",
+      "kind": "lake",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    }
+  },
+  "dc-blox-henrico-county-va": {
+    "nearestWater": {
+      "name": "Swan Lake",
+      "kind": "lake",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.8
+    }
+  },
+  "dc-blox-warren-township-marion-county-in": {
+    "nearestWater": {
+      "name": "Pleasant Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    }
+  },
+  "dcblox-atlanta-east-conyers-ga": {
+    "nearestWater": {
+      "name": "Tanyard Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.8
+    }
+  },
+  "digihost-erie-county-ny": {
+    "nearestWater": {
+      "name": "Scajaquada Creek",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    }
+  },
+  "digihost-north-tonawanda-ny": {
+    "nearestWater": {
+      "name": "Tonawanda Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.2
+    }
+  },
+  "digital-realty-8100-boone-boulevard-former-dupont-fabros-va3-va": {
+    "nearestWater": {
+      "name": "Wolftrap Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    }
+  },
+  "digital-realty-acc10-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "digital-realty-acc3-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "digital-realty-acc9-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "digital-realty-atl11-ga": {
+    "nearestWater": {
+      "name": "Chattahoochee River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "digital-realty-atlanta-atl13-ga": {
+    "nearestWater": {
+      "name": "Proctor Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "digital-realty-aus11-tx": {
+    "nearestWater": {
+      "name": "Carson Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    }
+  },
+  "digital-realty-ch2-il": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    }
+  },
+  "digital-realty-charlotte-nc": {
+    "nearestWater": {
+      "name": "Ticer Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    }
+  },
+  "digital-realty-chicago-ch1-il": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    }
+  },
+  "digital-realty-iad38-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "digital-realty-iad41-building-p-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "digital-realty-iad42-building-r-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "digital-realty-iad43-building-s-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "digital-realty-iad44-va": {
+    "nearestWater": {
+      "name": "Stallion Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "digital-realty-iad55-va": {
+    "nearestWater": {
+      "name": "Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "digital-realty-iad73-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "digital-realty-jfk10-manhattan-ny": {
+    "nearestWater": {
+      "name": "Hudson River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "digital-realty-lax12-ca": {
+    "nearestWater": {
+      "name": "Dominguez Channel",
+      "kind": "river",
+      "distanceMi": 2.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "digital-realty-new-york-ewr10-nj": {
+    "nearestWater": {
+      "name": "Hackensack Reservoir Number Two",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    }
+  },
+  "digital-realty-new-york-ewr11-nj": {
+    "nearestWater": {
+      "name": "Ambrose Brook",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "digital-realty-new-york-ewr12-nj": {
+    "nearestWater": {
+      "name": "Ambrose Brook",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "digital-realty-northern-virginia-acc4-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "digital-realty-northern-virginia-acc5-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "digital-realty-northern-virginia-iad14-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "digital-realty-ord10-il": {
+    "nearestWater": {
+      "name": "Lake Michigan",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "digital-realty-ord11-il": {
+    "nearestWater": {
+      "name": "Chicago Sanitary and Ship Canal",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    }
+  },
+  "digital-realty-pdx11-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    }
+  },
+  "digital-realty-phx-tempe-az": {
+    "nearestWater": {
+      "name": "Salt River",
+      "kind": "river",
+      "distanceMi": 6.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.8
+    }
+  },
+  "digital-realty-phx15-az": {
+    "nearestWater": {
+      "name": "Gila River",
+      "kind": "river",
+      "distanceMi": 7.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    }
+  },
+  "digital-realty-sc1-ca": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    }
+  },
+  "digital-realty-sea1-intergate-seattle-east-bldg-4-wa": {
+    "nearestWater": {
+      "name": "Duwamish River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "digital-realty-sfo10-ca": {
+    "nearestWater": {
+      "name": "South Basin",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "digital-realty-sfo12-365-main-street-ca": {
+    "nearestWater": {
+      "name": "Mountain Lake",
+      "kind": "lake",
+      "distanceMi": 4.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "digital-realty-silicon-valley-sjc10-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    }
+  },
+  "digital-realty-silicon-valley-sjc11-ca": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.8
+    }
+  },
+  "digital-realty-silicon-valley-sjc16-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    }
+  },
+  "digital-realty-silicon-valley-sjc30-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    }
+  },
+  "digital-realty-silicon-valley-sjc31-ca": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    }
+  },
+  "digital-realty-sjc34-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.1
+    }
+  },
+  "digital-realty-somerset-650-randolph-road-nj": {
+    "nearestWater": {
+      "name": "Randolph Brook",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "digital-realty-va3-va": {
+    "nearestWater": {
+      "name": "Colvin Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "digital-realty-va4-va": {
+    "nearestWater": {
+      "name": "Rocky Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "dominion-chesterfield-energy-reliability-center-va": {
+    "nearestWater": {
+      "name": "James River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "drox-group-rural-hall-forsyth-county-nc": {
+    "nearestWater": {
+      "name": "Town Fork Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    }
+  },
+  "eagle-rock-meridian-technology-park-taylorville-il": {
+    "nearestWater": {
+      "name": "Brush Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "eagle-rock-pairmont-data-center-campus-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Poni River",
+      "kind": "river",
+      "distanceMi": 2.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    }
+  },
+  "ecl-csc1-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4
+    }
+  },
+  "edgeconnex-ashville-oh": {
+    "nearestWater": {
+      "name": "Scioto River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.1
+    }
+  },
+  "edgeconnex-cedar-creek-tx": {
+    "nearestWater": {
+      "name": "Maha Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    }
+  },
+  "edgeconnex-chi02-il": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "edgeconnex-det01-mi": {
+    "nearestWater": {
+      "name": "River Rouge",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    }
+  },
+  "edgeconnex-mcn-new-albany-licking-county-oh": {
+    "nearestWater": {
+      "name": "South Fork Licking River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "edgeconnex-mesa-campus-phx11-3302-s-hawes-rd-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 5.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.4
+    }
+  },
+  "edgeconnex-por01-por02-hillsboro-campus-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "edgeconnex-sac01-ca": {
+    "nearestWater": {
+      "name": "Mather Lake",
+      "kind": "lake",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.3
+    }
+  },
+  "edgeconnex-sdg01-ca": {
+    "nearestWater": {
+      "name": "Tecolote Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "edgecore-mesa-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 5.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    }
+  },
+  "edgecore-shannon-hill-louisa-va": {
+    "nearestWater": {
+      "name": "Big Lickinghole Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.1
+    }
+  },
+  "edged-aurora-il": {
+    "nearestWater": {
+      "name": "Fox River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "edged-columbus-new-albany-oh": {
+    "nearestWater": {
+      "name": "Rocky Fork Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    }
+  },
+  "element-critical-austin-one-tx": {
+    "nearestWater": {
+      "name": "Little Walnut Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.5
+    }
+  },
+  "element-critical-chicago-one-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "element-critical-chicago-two-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "emerald-lakes-etheridge-lakes-data-center-chesapeake-va": {
+    "nearestWater": {
+      "name": "Pocaty River",
+      "kind": "river",
+      "distanceMi": 3.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "energy-storage-solutions-fayetteville-cumberland-county-nc": {
+    "nearestWater": {
+      "name": "Cross Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    }
+  },
+  "energy-storage-solutions-kingsboro-edgecombe-county-nc": {
+    "nearestWater": {
+      "name": "Buck Swamp",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    }
+  },
+  "entergy-franklin-farms-power-station-la": {
+    "nearestWater": {
+      "name": "Hurricane Bayou",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.8
+    }
+  },
+  "equinix-ashburn-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "equinix-ch1-il": {
+    "nearestWater": {
+      "name": "Lake Michigan",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2
+    }
+  },
+  "equinix-ch7-il": {
+    "nearestWater": {
+      "name": "Mays Lakes",
+      "kind": "lake",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    }
+  },
+  "equinix-ch8-minooka-il": {
+    "nearestWater": {
+      "name": "DuPage River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    }
+  },
+  "equinix-dc2-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "equinix-dc3-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "equinix-ny5-nj": {
+    "nearestWater": {
+      "name": "Hackensack River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "equinix-ny7-nj": {
+    "nearestWater": {
+      "name": "Cromakill Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "equinix-sv1-ca": {
+    "nearestWater": {
+      "name": "Coyote Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "equinix-sv15-ca": {
+    "nearestWater": {
+      "name": "Calabazas Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    }
+  },
+  "equinix-sv2-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    }
+  },
+  "equinix-sv4-ca": {
+    "nearestWater": {
+      "name": "Guadalupe Slough",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.5
+    }
+  },
+  "equinix-sv8-ca": {
+    "nearestWater": {
+      "name": "San Francisquito Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    }
+  },
+  "expedient-baltimore-tide-point-md": {
+    "nearestWater": {
+      "name": "Patapsco River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4
+    }
+  },
+  "expedient-bwi1-owings-mills-md": {
+    "nearestWater": {
+      "name": "Red Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "expedient-mke1-milwaukee-franklin-wi": {
+    "nearestWater": {
+      "name": "Root River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    }
+  },
+  "expedient-pit1-green-tree-pittsburgh-south-pa": {
+    "nearestWater": {
+      "name": "Sawmill Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    }
+  },
+  "fermi-matador-amarillo-tx": {
+    "nearestWater": {
+      "name": "Icehouse Lake",
+      "kind": "lake",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "firstlight-portsmouth-nh-data-center-nh": {
+    "nearestWater": {
+      "name": "Great Bog",
+      "kind": "lake",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    }
+  },
+  "flexential-allentown-data-center-abe01-pa": {
+    "nearestWater": {
+      "name": "Catasauqua Lake",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.8
+    }
+  },
+  "flexential-atlanta-alpharetta-data-center-ga": {
+    "nearestWater": {
+      "name": "Big Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "flexential-atlanta-douglasville-1-ga": {
+    "nearestWater": {
+      "name": "Sweetwater Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "flexential-atlanta-douglasville-2-ga": {
+    "nearestWater": {
+      "name": "Sweetwater Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "flexential-atlanta-norcross-atl01-02-ga": {
+    "nearestWater": {
+      "name": "Beaver Ruin Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "flexential-charlotte-north-clt04-05-nc": {
+    "nearestWater": {
+      "name": "Mallard Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "flexential-charlotte-south-clt01-02-03-nc": {
+    "nearestWater": {
+      "name": "Coffey Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    }
+  },
+  "flexential-cincinnati-cin01-02-oh": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "flexential-dallas-downtown-dallas-tx": {
+    "nearestWater": {
+      "name": "Trinity River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    }
+  },
+  "flexential-dallas-plano-tx": {
+    "nearestWater": {
+      "name": "Beck Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.7
+    }
+  },
+  "flexential-dallas-richardson-tx": {
+    "nearestWater": {
+      "name": "Pittman Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "flexential-denver-aurora-den03-co": {
+    "nearestWater": {
+      "name": "Cherry Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    }
+  },
+  "flexential-denver-centennial-den05-co": {
+    "nearestWater": {
+      "name": "Lone Tree Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "flexential-denver-downtown-champa-co": {
+    "nearestWater": {
+      "name": "Cherry Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "flexential-denver-englewood-co": {
+    "nearestWater": {
+      "name": "Lone Tree Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.5
+    }
+  },
+  "flexential-fort-lauderdale-fll01-02-fl": {
+    "nearestWater": {
+      "name": "North Fork Middle River",
+      "kind": "river",
+      "distanceMi": 2.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "flexential-jacksonville-fl": {
+    "nearestWater": {
+      "name": "Pottsburg Creek Swamp",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    }
+  },
+  "flexential-las-vegas-downtown-nv": {
+    "nearestWater": {
+      "name": "Las Vegas Wash",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.3
+    }
+  },
+  "flexential-las-vegas-north-las04-nv": {
+    "nearestWater": {
+      "name": "Las Vegas Wash",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    }
+  },
+  "flexential-louisville-downtown-ky": {
+    "nearestWater": {
+      "name": "South Fork Beargrass Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.5
+    }
+  },
+  "flexential-louisville-east-nas-equivalent-lou-east-ky": {
+    "nearestWater": {
+      "name": "Cow Lake",
+      "kind": "lake",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.7
+    }
+  },
+  "flexential-minneapolis-chaska-msp01-mn": {
+    "nearestWater": {
+      "name": "McKnight Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    }
+  },
+  "flexential-nashville-brentwood-nas01-04-tn": {
+    "nearestWater": {
+      "name": "Moore Branch",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    }
+  },
+  "flexential-nashville-cool-springs-tn": {
+    "nearestWater": {
+      "name": "Dry Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2
+    }
+  },
+  "flexential-nashville-franklin-tn": {
+    "nearestWater": {
+      "name": "Curd Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.6
+    }
+  },
+  "flexential-philadelphia-collegeville-phl01-pa": {
+    "nearestWater": {
+      "name": "Doe Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    }
+  },
+  "flexential-phoenix-deer-valley-az": {
+    "nearestWater": {
+      "name": "Scatter Wash",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    }
+  },
+  "flexential-portland-hillsboro-1-pdx01-or": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "flexential-portland-hillsboro-2-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    }
+  },
+  "flexential-portland-hillsboro-3-or": {
+    "nearestWater": {
+      "name": "Storey Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    }
+  },
+  "flexential-portland-hillsboro-4-pdx04-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    }
+  },
+  "flexential-raleigh-ral02-ral03-nc": {
+    "nearestWater": {
+      "name": "Stirrup Iron Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "flexential-richmond-ric01-02-va": {
+    "nearestWater": {
+      "name": "Flippen Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.7
+    }
+  },
+  "flexential-salt-lake-city-downtown-ut": {
+    "nearestWater": {
+      "name": "Jordan River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    }
+  },
+  "flexential-salt-lake-city-fair-park-ut": {
+    "nearestWater": {
+      "name": "Jordan River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "flexential-salt-lake-city-lindon-ut": {
+    "nearestWater": {
+      "name": "U S Steel Corporation Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "flexential-salt-lake-city-millcreek-ut": {
+    "nearestWater": {
+      "name": "Big Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    }
+  },
+  "flexential-salt-lake-city-south-valley-slc09-ut": {
+    "nearestWater": {
+      "name": "Barneys Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    }
+  },
+  "flexential-tampa-north-tpa03-fl": {
+    "nearestWater": {
+      "name": "Hillsborough River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "flexential-tampa-west-fl": {
+    "nearestWater": {
+      "name": "Sweetwater Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "fluidstack-abernathy-tx": {
+    "nearestWater": {
+      "name": "Lubbock Terminal Reservoir",
+      "kind": "lake",
+      "distanceMi": 11.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "fort-spunky-pacifico-energy-hood-county-tx": {
+    "nearestWater": {
+      "name": "Lake Granbury",
+      "kind": "lake",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    }
+  },
+  "fremont-peak-luckett-road-marana-az": {
+    "nearestWater": {
+      "name": "Santa Cruz River",
+      "kind": "river",
+      "distanceMi": 4.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.1
+    }
+  },
+  "galaxy-digital-mcgregor-tx": {
+    "nearestWater": {
+      "name": "Harris Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "galaxy-helios-dickens-county-tx": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 2.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "galaxy-helios-dickens-tx": {
+    "nearestWater": {
+      "name": "Mexican Creek",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "gemini-data-center-sioux-falls-sd": {
+    "nearestWater": {
+      "name": "Big Sioux River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    }
+  },
+  "geronimo-nobles-county-powered-data-park-mn": {
+    "nearestWater": {
+      "name": "Okabena Lake",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.6
+    }
+  },
+  "gigaland-data-centers-remington-fauquier-va": {
+    "nearestWater": {
+      "name": "Craig Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "google-arcola-loudoun-va": {
+    "nearestWater": {
+      "name": "Cabin Branch",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "google-armstrong-county-tx": {
+    "nearestWater": {
+      "name": "Dripping Springs Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    }
+  },
+  "google-bosc-lima-oh": {
+    "nearestWater": {
+      "name": "Schoonover Lake",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.7
+    }
+  },
+  "google-cedar-rapids-ia": {
+    "nearestWater": {
+      "name": "Hoosier Creek",
+      "kind": "river",
+      "distanceMi": 3.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.3
+    }
+  },
+  "google-council-bluffs-ia": {
+    "nearestWater": {
+      "name": "Pony Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "google-fort-wayne-in": {
+    "nearestWater": {
+      "name": "Saint Marys River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    }
+  },
+  "google-haskell-county-tx": {
+    "nearestWater": {
+      "name": "Rice Springs Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.9
+    }
+  },
+  "google-henderson-nv": {
+    "nearestWater": {
+      "name": "Duck Creek",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "google-jackson-county-stevenson-al": {
+    "nearestWater": {
+      "name": "Tennessee River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    }
+  },
+  "google-lancaster-oh": {
+    "nearestWater": {
+      "name": "Hunters Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.4
+    }
+  },
+  "google-lenoir-nc": {
+    "nearestWater": {
+      "name": "Lower Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "google-loch-midlothian-va": {
+    "nearestWater": {
+      "name": "Swift Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.1
+    }
+  },
+  "google-meitner-pampa-tx": {
+    "nearestWater": {
+      "name": "Red Deer Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.1
+    }
+  },
+  "google-moncks-corner-sc": {
+    "nearestWater": {
+      "name": "Canterhill Swamp",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "google-montgomery-county-tn": {
+    "nearestWater": {
+      "name": "Cumberland River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.2
+    }
+  },
+  "google-muskogee-county-ok": {
+    "nearestWater": {
+      "name": "Gentry Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "google-nebraska-ai-campus-proposed": {
+    "nearestWater": {
+      "name": "Pratts Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "google-new-albany-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "google-papillion-ne": {
+    "nearestWater": {
+      "name": "Springfield Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    }
+  },
+  "google-port-of-little-rock-data-center-ar": {
+    "nearestWater": {
+      "name": "Murray Lake",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 9.7
+    }
+  },
+  "google-project-dazzler-franklin-furnace-oh": {
+    "nearestWater": {
+      "name": "Pine Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 4.4
+    }
+  },
+  "google-project-louie-monrovia-in": {
+    "nearestWater": {
+      "name": "White Lick Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    }
+  },
+  "google-project-mica-kc-northland-mo": {
+    "nearestWater": {
+      "name": "Rush Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.5
+    }
+  },
+  "google-project-peanut-chester-va": {
+    "nearestWater": {
+      "name": "Fishpond",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "google-project-skye-midlothian-va": {
+    "nearestWater": {
+      "name": "Otterdale Branch",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    }
+  },
+  "google-pryor-ok": {
+    "nearestWater": {
+      "name": "Salt Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.2
+    }
+  },
+  "google-putnam-county-campus-wv": {
+    "nearestWater": {
+      "name": "Eightmile Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 1.9
+    }
+  },
+  "google-red-oak-tx": {
+    "nearestWater": {
+      "name": "Brushy Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    }
+  },
+  "google-redhawk-mesa-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 4.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "google-ridgeville-sc": {
+    "nearestWater": {
+      "name": "Timothy Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "google-skyway-pine-island-mn": {
+    "nearestWater": {
+      "name": "North Branch Middle Fork Zumbro River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    }
+  },
+  "google-spade-new-florence-mo": {
+    "nearestWater": {
+      "name": "Big Spring",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.8
+    }
+  },
+  "google-spring-sand-springs-ok": {
+    "nearestWater": {
+      "name": "Delaware Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    }
+  },
+  "google-stillwater-ok": {
+    "nearestWater": {
+      "name": "Boomer Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.6
+    }
+  },
+  "google-the-dalles-or": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    }
+  },
+  "google-west-memphis-ar": {
+    "nearestWater": {
+      "name": "Tenmile Bayou",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.7
+    }
+  },
+  "google-wilbarger-vernon-tx": {
+    "nearestWater": {
+      "name": "Pease River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "google-winding-woods-st-george-sc": {
+    "nearestWater": {
+      "name": "Gum Branch",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "green-energy-ventures-king-george-technology-center-va": {
+    "nearestWater": {
+      "name": "Rappahannock River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "greenidge-generation-dresden-ny": {
+    "nearestWater": {
+      "name": "Seneca Lake",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 31.2
+    }
+  },
+  "gw-ranch-pacifico-energy-pecos-county-tx": {
+    "nearestWater": {
+      "name": "Leon Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 33.4
+    }
+  },
+  "h5-buffalo-i-lockport-ny": {
+    "nearestWater": {
+      "name": "Bull Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.2
+    }
+  },
+  "h5-buffalo-ii-lockport-ny": {
+    "nearestWater": {
+      "name": "Bull Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    }
+  },
+  "hanton-city-smithfield-ri": {
+    "nearestWater": {
+      "name": "Reaper Brook",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    }
+  },
+  "homer-city-energy-campus-pa": {
+    "nearestWater": {
+      "name": "Yellow Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "hunters-ridge-south-data-center-campus-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Massaponax Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.8
+    }
+  },
+  "hut8-beacon-point-robstown-tx": {
+    "nearestWater": {
+      "name": "Oso Creek",
+      "kind": "river",
+      "distanceMi": 4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    }
+  },
+  "hut8-king-mountain-mccamey-tx": {
+    "nearestWater": {
+      "name": "Soda Lake",
+      "kind": "lake",
+      "distanceMi": 8.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.9
+    }
+  },
+  "hut8-river-bend-west-feliciana-la": {
+    "nearestWater": {
+      "name": "Alligator Bayou",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "hut8-vega-amarillo-tx": {
+    "nearestWater": {
+      "name": "Amarillo Lake",
+      "kind": "lake",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6
+    }
+  },
+  "impactdata-greensboro-nc": {
+    "nearestWater": {
+      "name": "Muddy Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    }
+  },
+  "iren-horizon-childress-tx": {
+    "nearestWater": {
+      "name": "Park Lake",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "iren-sweetwater-tx": {
+    "nearestWater": {
+      "name": "Town Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    }
+  },
+  "iren-woods-county-ok": {
+    "nearestWater": {
+      "name": "Salt Fork Arkansas River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.9
+    }
+  },
+  "iron-mountain-azp-1-az": {
+    "nearestWater": {
+      "name": "Salt River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    }
+  },
+  "iron-mountain-azp-2-az": {
+    "nearestWater": {
+      "name": "Salt River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    }
+  },
+  "iron-mountain-azs-1-az": {
+    "nearestWater": {
+      "name": "Cave Creek",
+      "kind": "river",
+      "distanceMi": 10.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "iron-mountain-mia-1-miami-fl": {
+    "nearestWater": {
+      "name": "Lake Henry",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    }
+  },
+  "iron-mountain-va-2-va": {
+    "nearestWater": {
+      "name": "Dawkins Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "iron-mountain-va-3-va": {
+    "nearestWater": {
+      "name": "Dawkins Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "iron-mountain-va-4-va": {
+    "nearestWater": {
+      "name": "Dawkins Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "iron-mountain-va-6-va": {
+    "nearestWater": {
+      "name": "Dawkins Branch",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "iron-mountain-white-oak-henrico-va": {
+    "nearestWater": {
+      "name": "James River",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    }
+  },
+  "ivcm-imperial-county-ca": {
+    "nearestWater": {
+      "name": "New River",
+      "kind": "river",
+      "distanceMi": 3.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    }
+  },
+  "joliet-technology-center-il": {
+    "nearestWater": {
+      "name": "Jackson Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "joule-millard-county-ut": {
+    "nearestWater": {
+      "name": "Wild Goose Creek",
+      "kind": "river",
+      "distanceMi": 2.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.7
+    }
+  },
+  "kairos-hermes-2-oak-ridge-tn": {
+    "nearestWater": {
+      "name": "Poplar Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0
+    }
+  },
+  "lambda-aligned-plano-tx": {
+    "nearestWater": {
+      "name": "Spring Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "lambda-chicago-edgeconnex-il": {
+    "nearestWater": {
+      "name": "Chicago Sanitary and Ship Canal",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    }
+  },
+  "lambda-kansas-city-mo": {
+    "nearestWater": {
+      "name": "Prairie Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.5
+    }
+  },
+  "lancium-crusoe-abilene-tx": {
+    "nearestWater": {
+      "name": "Truitt Davis Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "lancium-fort-stockton-tx": {
+    "nearestWater": {
+      "name": "Comanche Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 34.7
+    }
+  },
+  "lavue-massaponax-tech-campus-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Ni River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.8
+    }
+  },
+  "lerner-brightseat-tech-park-md": {
+    "nearestWater": {
+      "name": "Cattail Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    }
+  },
+  "liquidcool-loring-afb-me": {
+    "nearestWater": {
+      "name": "Butterfield Brook",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 69.1
+    }
+  },
+  "lumen-albany-4-ny": {
+    "nearestWater": {
+      "name": "Shakers Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    }
+  },
+  "lumen-ashburn-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "lumen-austin-1-tx": {
+    "nearestWater": {
+      "name": "Williamson Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    }
+  },
+  "lumen-austin-3-tx": {
+    "nearestWater": {
+      "name": "Boggy Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.8
+    }
+  },
+  "lumen-baltimore-1-md": {
+    "nearestWater": {
+      "name": "Gwynns Falls",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.5
+    }
+  },
+  "lumen-cleveland-1-oh": {
+    "nearestWater": {
+      "name": "Lake Erie",
+      "kind": "lake",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    }
+  },
+  "lumen-dallas-1-tx": {
+    "nearestWater": {
+      "name": "Trinity River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "lumen-dallas-6-tx": {
+    "nearestWater": {
+      "name": "Elm Fork Trinity River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "lumen-madison-1-wi": {
+    "nearestWater": {
+      "name": "Lake Monona",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2
+    }
+  },
+  "lumen-mclean-1-va": {
+    "nearestWater": {
+      "name": "Scott Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "lumen-minneapolis-3-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    }
+  },
+  "lumen-norristown-pa": {
+    "nearestWater": {
+      "name": "Mine Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "lumen-phoenix-1-az": {
+    "nearestWater": {
+      "name": "Salt River",
+      "kind": "river",
+      "distanceMi": 4.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "lumen-san-antonio-2-tx": {
+    "nearestWater": {
+      "name": "Alazan Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.3
+    }
+  },
+  "lumen-santa-clara-1-ca": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    }
+  },
+  "lumen-spokane-wa": {
+    "nearestWater": {
+      "name": "Spokane River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    }
+  },
+  "lumen-sunnyvale-1-ca": {
+    "nearestWater": {
+      "name": "Calabazas Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    }
+  },
+  "mara-flared-gas-fleet-tx-nd": {
+    "nearestWater": {
+      "name": "Averitt Number 2 Lake",
+      "kind": "lake",
+      "distanceMi": 5.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    }
+  },
+  "mara-granbury-hood-tx": {
+    "nearestWater": {
+      "name": "Lambert Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.1
+    }
+  },
+  "mara-hannibal-monroe-oh": {
+    "nearestWater": {
+      "name": "Bares Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 3.4
+    }
+  },
+  "mara-hopedale-harrison-oh": {
+    "nearestWater": {
+      "name": "Piney Fork",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 2.5
+    }
+  },
+  "mara-kearney-buffalo-ne": {
+    "nearestWater": {
+      "name": "Wood River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 8.5
+    }
+  },
+  "mara-site-mat-1177-matagorda-tx": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.7
+    }
+  },
+  "marathon-digital-garden-city-tx": {
+    "nearestWater": {
+      "name": "Lacy Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 13.4
+    }
+  },
+  "markley-boston-summer-street-ma": {
+    "nearestWater": {
+      "name": "Charles River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    }
+  },
+  "markley-lowell-ma": {
+    "nearestWater": {
+      "name": "Concord River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "menomonie-data-center-wi": {
+    "nearestWater": {
+      "name": "Lake Menomin",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    }
+  },
+  "meta-aiken-county-sc": {
+    "nearestWater": {
+      "name": "Horse Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    }
+  },
+  "meta-altoona-ia": {
+    "nearestWater": {
+      "name": "Little Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "meta-anthem-tulsa-ok": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.8
+    }
+  },
+  "meta-beaver-dam-wi": {
+    "nearestWater": {
+      "name": "Beaver Dam Lake",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.2
+    }
+  },
+  "meta-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Wyoming Hereford Ranch Reservoir Number One",
+      "kind": "lake",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    }
+  },
+  "meta-eagle-mountain-ut": {
+    "nearestWater": {
+      "name": "Utah Lake",
+      "kind": "lake",
+      "distanceMi": 3.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "meta-el-paso-tx": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    }
+  },
+  "meta-forest-city-nc": {
+    "nearestWater": {
+      "name": "Second Broad River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.1
+    }
+  },
+  "meta-fort-worth-tx": {
+    "nearestWater": {
+      "name": "Cade Branch",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    }
+  },
+  "meta-gallatin-tn": {
+    "nearestWater": {
+      "name": "Town Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.3
+    }
+  },
+  "meta-huntsville-al": {
+    "nearestWater": {
+      "name": "McDonald Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.1
+    }
+  },
+  "meta-hyperion-richland-parish-la": {
+    "nearestWater": {
+      "name": "Glade Slough",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.7
+    }
+  },
+  "meta-jeffersonville-in": {
+    "nearestWater": {
+      "name": "Lancassange Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "meta-kansas-city-northland-mo": {
+    "nearestWater": {
+      "name": "Weatherby Lake",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.9
+    }
+  },
+  "meta-kuna-id": {
+    "nearestWater": {
+      "name": "Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    }
+  },
+  "meta-lebanon-in": {
+    "nearestWater": {
+      "name": "Browns Wonder Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.6
+    }
+  },
+  "meta-los-lunas-ai-nm": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.9
+    }
+  },
+  "meta-mesa-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 5.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.4
+    }
+  },
+  "meta-middleton-township-oh": {
+    "nearestWater": {
+      "name": "Tontogany Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    }
+  },
+  "meta-montgomery-al": {
+    "nearestWater": {
+      "name": "Ramer Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "meta-prineville-or": {
+    "nearestWater": {
+      "name": "Ochoco Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 1000,
+      "distanceMi": 4.5
+    }
+  },
+  "meta-project-klondike-piqua-oh": {
+    "nearestWater": {
+      "name": "Great Miami River",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.5
+    }
+  },
+  "meta-prometheus-new-albany-oh": {
+    "nearestWater": {
+      "name": "Rocky Fork Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    }
+  },
+  "meta-rosemount-mn": {
+    "nearestWater": {
+      "name": "Kegan Lake",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "meta-sarpy-springfield-ne": {
+    "nearestWater": {
+      "name": "Buffalo Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    }
+  },
+  "metrobloks-liberty-mo": {
+    "nearestWater": {
+      "name": "Cates Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "metrobloks-martindale-brightwood-indianapolis-in": {
+    "nearestWater": {
+      "name": "Fall Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.7
+    }
+  },
+  "mghpcc-holyoke-ma": {
+    "nearestWater": {
+      "name": "Connecticut River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    }
+  },
+  "microsoft-alviso-san-jose-ca": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    }
+  },
+  "microsoft-boydton-bn-campus-mecklenburg-va": {
+    "nearestWater": {
+      "name": "Mines Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 11.8
+    }
+  },
+  "microsoft-bristow-mnz03-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    }
+  },
+  "microsoft-cheyenne-expansion-wy": {
+    "nearestWater": {
+      "name": "Wyoming Hereford Ranch Reservoir Number One",
+      "kind": "lake",
+      "distanceMi": 2.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    }
+  },
+  "microsoft-douglasville-ga": {
+    "nearestWater": {
+      "name": "Slater Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "microsoft-east-wenatchee-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    }
+  },
+  "microsoft-el-mirage-az": {
+    "nearestWater": {
+      "name": "Agua Fria River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "microsoft-fairwater-fayetteville-ga": {
+    "nearestWater": {
+      "name": "Pye Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "microsoft-fernley-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 3.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 1000,
+      "distanceMi": 2.2
+    }
+  },
+  "microsoft-firecracker-rome-ga": {
+    "nearestWater": {
+      "name": "Burwell Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.9
+    }
+  },
+  "microsoft-ginger-west-ia": {
+    "nearestWater": {
+      "name": "North Raccoon River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.7
+    }
+  },
+  "microsoft-goodyear-az": {
+    "nearestWater": {
+      "name": "Agua Fria River",
+      "kind": "river",
+      "distanceMi": 2.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    }
+  },
+  "microsoft-granger-in": {
+    "nearestWater": {
+      "name": "Judy Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "microsoft-heath-oh": {
+    "nearestWater": {
+      "name": "South Fork Licking River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.5
+    }
+  },
+  "microsoft-hebron-oh": {
+    "nearestWater": {
+      "name": "Ramp Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    }
+  },
+  "microsoft-kenosha-wi": {
+    "nearestWater": {
+      "name": "Jerome Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "microsoft-laporte-in": {
+    "nearestWater": {
+      "name": "Lily Lake",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.6
+    }
+  },
+  "microsoft-malaga-wa": {
+    "nearestWater": {
+      "name": "Tarpiscan Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 287,
+      "distanceMi": 0
+    }
+  },
+  "microsoft-mount-pleasant-wi": {
+    "nearestWater": {
+      "name": "Hoods Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    }
+  },
+  "microsoft-pecos-tx": {
+    "nearestWater": {
+      "name": "Pecos River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 64.1
+    }
+  },
+  "microsoft-person-county-roxboro-nc": {
+    "nearestWater": {
+      "name": "Marlowe Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    }
+  },
+  "microsoft-san-antonio-expansion-tx": {
+    "nearestWater": {
+      "name": "Medina River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.7
+    }
+  },
+  "microsoft-skipwith-road-campus-mecklenburg-va": {
+    "nearestWater": {
+      "name": "Rudd Branch",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.3
+    }
+  },
+  "microsoft-tunstall-road-hillcrest-mecklenburg-va": {
+    "nearestWater": {
+      "name": "Taylors Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 10.4
+    }
+  },
+  "microsoft-tyrone-ga": {
+    "nearestWater": {
+      "name": "Flat Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    }
+  },
+  "muncy-data-center-lycoming-county-pa": {
+    "nearestWater": {
+      "name": "Wolf Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    }
+  },
+  "natelli-new-hill-nc": {
+    "nearestWater": {
+      "name": "Shaddox Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    }
+  },
+  "natelli-vance-county-henderson-nc": {
+    "nearestWater": {
+      "name": "Ruin Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "nautilus-cryptomine-building-1-pa": {
+    "nearestWater": {
+      "name": "Walker Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    }
+  },
+  "ne-edge-millstone-ct": {
+    "nearestWater": {
+      "name": "Niantic River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "nebius-bhm01-birmingham-al": {
+    "nearestWater": {
+      "name": "Griffin Brook",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    }
+  },
+  "nebius-independence-mo": {
+    "nearestWater": {
+      "name": "Spring Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.1
+    }
+  },
+  "nebius-vineland-nj": {
+    "nearestWater": {
+      "name": "Bear Branch",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.8
+    }
+  },
+  "netrality-210-north-tucker-st-louis-mo": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    }
+  },
+  "netrality-717-south-wells-il": {
+    "nearestWater": {
+      "name": "Chicago Sanitary and Ship Canal",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "new-day-ports-technology-campus-piketon-oh": {
+    "nearestWater": {
+      "name": "Big Beaver Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    }
+  },
+  "new-era-energy-digital-lea-county-data-center-nm": {
+    "nearestWater": {
+      "name": "Red Lake",
+      "kind": "lake",
+      "distanceMi": 8.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "nextnrg-nassau-county-data-center-energy-campus-fl": {
+    "nearestWater": {
+      "name": "Thomas Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5
+    }
+  },
+  "nexus-hubbard-campus-hill-county-tx": {
+    "nearestWater": {
+      "name": "Pin Oak Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14
+    }
+  },
+  "niagara-digital-campus-niagara-falls-ny": {
+    "nearestWater": {
+      "name": "Niagara River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    }
+  },
+  "novva-mesa-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 7.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "novva-tahoe-reno-storey-county-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.7
+    }
+  },
+  "nscale-monarch-mason-county-wv": {
+    "nearestWater": {
+      "name": "Crooked Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "ntt-ashburn-va1-data-center-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "ntt-ashburn-va2-data-center-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "ntt-ashburn-va5-data-center-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "ntt-ashburn-va7-data-center-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "ntt-ashburn-va8-data-center-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "ntt-chicago-ch1-data-center-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "ntt-chicago-ch2-data-center-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "ntt-data-quincy-data-center-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 2.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "ntt-global-data-centers-dallas-tx1-tx": {
+    "nearestWater": {
+      "name": "Spring Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "ntt-global-mesa-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 5.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    }
+  },
+  "ntt-hillsboro-hi1-data-center-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "ntt-phoenix-ph1-data-center-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 3.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    }
+  },
+  "ntt-sacramento-ca1-data-center-ca": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "ntt-sacramento-ca2-data-center-ca": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "ntt-sacramento-ca3-data-center-ca": {
+    "nearestWater": {
+      "name": "Magpie Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "ntt-silicon-valley-sv1-data-center-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
+    }
+  },
+  "oklo-aurora-pike-county-oh": {
+    "nearestWater": {
+      "name": "Atomic Energy Commission Pond",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    }
+  },
+  "patmos-kansas-city-mo": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.6
+    }
+  },
+  "pch-wi-holdings-wisconsin-rapids-wood-county-wi": {
+    "nearestWater": {
+      "name": "Wisconsin River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8
+    }
+  },
+  "pennhurst-data-center-east-vincent-chester-county-pa": {
+    "nearestWater": {
+      "name": "Schuylkill River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "penzance-bedington-berkeley-county-wv": {
+    "nearestWater": {
+      "name": "Potomac River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.2
+    }
+  },
+  "percheron-data-center-or": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 7.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "pointone-remington-technology-park-fauquier-va": {
+    "nearestWater": {
+      "name": "Tinpot Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.7
+    }
+  },
+  "poolside-project-horizon-pecos-county-tx": {
+    "nearestWater": {
+      "name": "Comanche Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 34.8
+    }
+  },
+  "powerhouse-95-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Ta River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.2
+    }
+  },
+  "powerhouse-abx-1-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "powerhouse-charlotte-nc": {
+    "nearestWater": {
+      "name": "Little Sugar Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.5
+    }
+  },
+  "powerhouse-chirisa-chester-va": {
+    "nearestWater": {
+      "name": "Rieves Lake",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "powerhouse-ctp-02-va": {
+    "nearestWater": {
+      "name": "James River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    }
+  },
+  "powerhouse-louisville-ky": {
+    "nearestWater": {
+      "name": "Cane Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "powerhouse-pax-carlisle-pa": {
+    "nearestWater": {
+      "name": "Letort Spring Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5
+    }
+  },
+  "powerhouse-provident-grand-prairie-tx": {
+    "nearestWater": {
+      "name": "Walnut Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.8
+    }
+  },
+  "powerhouse-uhland-caldwell-county-tx": {
+    "nearestWater": {
+      "name": "Hemphill Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "powertransitions-project-yardbird-ks": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.3
+    }
+  },
+  "prime-avondale-az": {
+    "nearestWater": {
+      "name": "Agua Fria River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "prime-dfw01-01-tx": {
+    "nearestWater": {
+      "name": "Elm Fork Trinity River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "prime-santa-clara-silicon-valley-campus-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.8
+    }
+  },
+  "prime-smf02-sacramento-ca": {
+    "nearestWater": {
+      "name": "Magpie Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    }
+  },
+  "prince-william-digital-gateway-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    }
+  },
+  "project-boulder-colleton-county-sc": {
+    "nearestWater": {
+      "name": "Hickory Hill Lake",
+      "kind": "lake",
+      "distanceMi": 2.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.9
+    }
+  },
+  "project-cannoli-van-buren-township-wayne-county-mi": {
+    "nearestWater": {
+      "name": "Belleville Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "project-cardinal-yorkville-il": {
+    "nearestWater": {
+      "name": "Rob Roy Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "project-delta-walnut-cove-nc": {
+    "nearestWater": {
+      "name": "Town Fork Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.2
+    }
+  },
+  "project-gravity-archbald-lackawanna-county-pa": {
+    "nearestWater": {
+      "name": "Lackawanna River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.9
+    }
+  },
+  "project-hazelnut-hazle-township-pa": {
+    "nearestWater": {
+      "name": "Black Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    }
+  },
+  "project-shirley-eagle-creek-township-lake-county-in": {
+    "nearestWater": {
+      "name": "Stony Run",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    }
+  },
+  "project-tango-loxahatchee-fl": {
+    "nearestWater": {
+      "name": "The Everglades",
+      "kind": "lake",
+      "distanceMi": 8.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.5
+    }
+  },
+  "prologis-mila-trenton-oh": {
+    "nearestWater": {
+      "name": "Great Miami River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "prologis-project-sail-coweta-ga": {
+    "nearestWater": {
+      "name": "Newnan Waterworks Reservoir Number 5",
+      "kind": "lake",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    }
+  },
+  "prologis-rue-ferrari-san-jose-ca": {
+    "nearestWater": {
+      "name": "Coyote Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "prologis-silver-creek-valley-san-jose-ca": {
+    "nearestWater": {
+      "name": "Coyote Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "prologis-stem-park-zanker-road-san-jose-ca": {
+    "nearestWater": {
+      "name": "Coyote Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "prometheus-hyperscale-casper-wy": {
+    "nearestWater": {
+      "name": "North Platte River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "prometheus-hyperscale-evanston-wy": {
+    "nearestWater": {
+      "name": "Felter Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 22.5
+    }
+  },
+  "qts-ashburn-1-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "qts-ashburn-2-ashburn-lockridge-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "qts-atlanta-1-atlanta-metro-dc1-ga": {
+    "nearestWater": {
+      "name": "Proctor Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "qts-aurora-co": {
+    "nearestWater": {
+      "name": "Coal Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    }
+  },
+  "qts-blue-hole-blakely-ga": {
+    "nearestWater": {
+      "name": "Lake Myrtice",
+      "kind": "lake",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.8
+    }
+  },
+  "qts-cedar-rapids-ia": {
+    "nearestWater": {
+      "name": "Hoosier Creek",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.5
+    }
+  },
+  "qts-clinton-clinton-county-ia": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    }
+  },
+  "qts-dane-county-deforest-wi": {
+    "nearestWater": {
+      "name": "Yahara River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.6
+    }
+  },
+  "qts-eagle-mountain-ut": {
+    "nearestWater": {
+      "name": "Utah Lake",
+      "kind": "lake",
+      "distanceMi": 4.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    }
+  },
+  "qts-eisenhower-augusta-ga": {
+    "nearestWater": {
+      "name": "Raes Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    }
+  },
+  "qts-hillsboro-1-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "qts-hillsboro-3-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    }
+  },
+  "qts-irving-1-tx": {
+    "nearestWater": {
+      "name": "Hackberry Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    }
+  },
+  "qts-marvel-bessemer-al": {
+    "nearestWater": {
+      "name": "Opossum Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    }
+  },
+  "qts-new-albany-1-franklin-county-oh": {
+    "nearestWater": {
+      "name": "South Fork Licking River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    }
+  },
+  "qts-new-albany-2-franklin-county-oh": {
+    "nearestWater": {
+      "name": "Muddy Fork",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    }
+  },
+  "qts-new-albany-3-franklin-county-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    }
+  },
+  "qts-new-albany-4-licking-county-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    }
+  },
+  "qts-piscataway-1-nj": {
+    "nearestWater": {
+      "name": "Ambrose Brook",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "qts-richmond-1-dc1-ric1-white-oak-technology-park-va": {
+    "nearestWater": {
+      "name": "Canal Swamp",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "qts-sacramento-ca": {
+    "nearestWater": {
+      "name": "Magpie Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "qts-santa-clara-1-ca": {
+    "nearestWater": {
+      "name": "Calabazas Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
+    }
+  },
+  "qts-white-oak-technology-park-ii-henrico-va": {
+    "nearestWater": {
+      "name": "White Oak Swamp",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    }
+  },
+  "quantica-bsdi-billings-mt": {
+    "nearestWater": {
+      "name": "South Fork Alkali Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    }
+  },
+  "raeden-taurus-colorado-springs-co": {
+    "nearestWater": {
+      "name": "Monument Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.2
+    }
+  },
+  "ranalli-lysander-ny": {
+    "nearestWater": {
+      "name": "Seneca River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    }
+  },
+  "rck-crossroads-technology-campus-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Massaponax Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.7
+    }
+  },
+  "rcm-hill-project-aquila-hill-county-tx": {
+    "nearestWater": {
+      "name": "Katy Lake",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "red-ace-data-center-culpeper-va": {
+    "nearestWater": {
+      "name": "Mountain Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.1
+    }
+  },
+  "red-post-maverick-project-wise-va": {
+    "nearestWater": {
+      "name": "Bear Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 17.7
+    }
+  },
+  "red-wolf-dcd-properties-project-red-wolf-ks": {
+    "nearestWater": {
+      "name": "Piper Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.3
+    }
+  },
+  "riot-calvert-city-marshall-ky": {
+    "nearestWater": {
+      "name": "Cypress Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.5
+    }
+  },
+  "riot-paducah-mccracken-ky": {
+    "nearestWater": {
+      "name": "Mud Branch",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.2
+    }
+  },
+  "riot-platforms-corsicana-tx": {
+    "nearestWater": {
+      "name": "Post Oak Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.3
+    }
+  },
+  "riot-platforms-rockdale-tx": {
+    "nearestWater": {
+      "name": "Sandy Creek",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.5
+    }
+  },
+  "riverview-innovation-tech-campus-tonawanda-ny": {
+    "nearestWater": {
+      "name": "Niagara River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.5
+    }
+  },
+  "rowan-digital-frederick-md": {
+    "nearestWater": {
+      "name": "Furnace Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.2
+    }
+  },
+  "rowan-temple-tx": {
+    "nearestWater": {
+      "name": "Williamson Branch",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    }
+  },
+  "ryan-companies-project-swan-lakeland-fl": {
+    "nearestWater": {
+      "name": "Lake Bonnet",
+      "kind": "lake",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "sabey-decatur-technology-park-marion-county-in": {
+    "nearestWater": {
+      "name": "Seerley Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    }
+  },
+  "sabey-intergate-ashburn-building-a-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "sabey-intergate-columbia-building-a-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 2.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    }
+  },
+  "sabey-intergate-east-building-1-wa": {
+    "nearestWater": {
+      "name": "Duwamish River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "sabey-intergate-east-building-5-sdc-east-5-wa": {
+    "nearestWater": {
+      "name": "Duwamish River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "sabey-intergate-west-building-a-wa": {
+    "nearestWater": {
+      "name": "Duwamish River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "sabey-intergate-west-building-c-wa": {
+    "nearestWater": {
+      "name": "Duwamish River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "sabey-umatilla-or": {
+    "nearestWater": {
+      "name": "Umatilla River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "samx-data-centers-remington-fauquier-va": {
+    "nearestWater": {
+      "name": "Tinpot Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.7
+    }
+  },
+  "sentinel-east-whiteland-chester-county-pa": {
+    "nearestWater": {
+      "name": "Little Valley Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "sentinel-jay-me": {
+    "nearestWater": {
+      "name": "Androscoggin River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 23.4
+    }
+  },
+  "serverfarm-covington-hazelbrand-ga": {
+    "nearestWater": {
+      "name": "Dried Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    }
+  },
+  "servistar-westfield-ma": {
+    "nearestWater": {
+      "name": "Arm Brook Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.2
+    }
+  },
+  "skybox-chicago-i-il": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "skybox-houston-one-tx": {
+    "nearestWater": {
+      "name": "Mason Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "solis-arx-progress-park-wythe-va": {
+    "nearestWater": {
+      "name": "Reed Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 2.6
+    }
+  },
+  "soluna-project-dorothy-silverton-tx": {
+    "nearestWater": {
+      "name": "Los Lingos Creek",
+      "kind": "river",
+      "distanceMi": 5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    }
+  },
+  "soluna-project-kati-willacy-tx": {
+    "nearestWater": {
+      "name": "Harbin Reservoir",
+      "kind": "lake",
+      "distanceMi": 7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    }
+  },
+  "soluna-project-sophie-murray-ky": {
+    "nearestWater": {
+      "name": "Bee Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.7
+    }
+  },
+  "stack-berry-hill-va": {
+    "nearestWater": {
+      "name": "Lawless Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.3
+    }
+  },
+  "stack-bossier-parish-la": {
+    "nearestWater": {
+      "name": "Black Bayou",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    }
+  },
+  "stack-caddo-parish-la": {
+    "nearestWater": {
+      "name": "Choctaw Bayou",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    }
+  },
+  "stack-chi01-il": {
+    "nearestWater": {
+      "name": "Higgins Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "stack-hillsboro-or": {
+    "nearestWater": {
+      "name": "Jackson Slough",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.1
+    }
+  },
+  "stack-nova-loudoun-va": {
+    "nearestWater": {
+      "name": "Beaverdam Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "stack-nva01a-va": {
+    "nearestWater": {
+      "name": "Broad Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "stack-por01-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "stack-por02-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    }
+  },
+  "stack-por03-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    }
+  },
+  "stack-stafford-technology-campus-va": {
+    "nearestWater": {
+      "name": "Claiborne Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    }
+  },
+  "stack-svy01-ca": {
+    "nearestWater": {
+      "name": "Berryessa Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "stack-svy02-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.6
+    }
+  },
+  "stargate-abilene-tx": {
+    "nearestWater": {
+      "name": "Cedar Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.2
+    }
+  },
+  "stargate-lordstown-oh": {
+    "nearestWater": {
+      "name": "Mud Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    }
+  },
+  "stargate-milam-county-tx": {
+    "nearestWater": {
+      "name": "Little River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9
+    }
+  },
+  "stargate-port-washington-wi": {
+    "nearestWater": {
+      "name": "Sauk Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    }
+  },
+  "stargate-project-jupiter-dona-ana-nm": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 4.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    }
+  },
+  "stargate-saline-township-mi": {
+    "nearestWater": {
+      "name": "Saline River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    }
+  },
+  "starwood-digital-project-washington-de": {
+    "nearestWater": {
+      "name": "Dragon Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    }
+  },
+  "stonebridge-fort-meade-fl": {
+    "nearestWater": {
+      "name": "Peace River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "stonebridge-powder-mills-lawrence-county-pa": {
+    "nearestWater": {
+      "name": "Mahoning River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    }
+  },
+  "strata-hanging-rock-haverhill-data-center-oh": {
+    "nearestWater": {
+      "name": "Ohio River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 0.2
+    }
+  },
+  "stratos-box-elder-ut": {
+    "nearestWater": {
+      "name": "Muddy Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 66.6
+    }
+  },
+  "stream-data-centers-dfwa-dfw-vii-tx": {
+    "nearestWater": {
+      "name": "Spring Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "stream-data-centers-phxa-phoenix-i-vii-goodyear-campus-az": {
+    "nearestWater": {
+      "name": "Agua Fria River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "switch-atlanta-the-keep-ga": {
+    "nearestWater": {
+      "name": "Lake Echo",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "switch-big-beaver-pa": {
+    "nearestWater": {
+      "name": "Brady Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.5
+    }
+  },
+  "switch-citadel-storey-county-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    }
+  },
+  "switch-edge-1-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "switch-las-vegas-10-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    }
+  },
+  "switch-las-vegas-11-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "switch-las-vegas-12-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    }
+  },
+  "switch-las-vegas-5-nv": {
+    "nearestWater": {
+      "name": "Flamingo Wash",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    }
+  },
+  "switch-las-vegas-7-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "switch-las-vegas-9-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "switch-pyramid-campus-grand-rapids-mi": {
+    "nearestWater": {
+      "name": "Sharps Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4
+    }
+  },
+  "switch-tahoe-reno-1-the-citadel-campus-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 3.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.9
+    }
+  },
+  "switch-tahoe-reno-2-the-citadel-campus-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 3.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.6
+    }
+  },
+  "switch-tahoe-reno-3-the-citadel-campus-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 3.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    }
+  },
+  "switch-the-rock-round-rock-tx": {
+    "nearestWater": {
+      "name": "Gilleland Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.9
+    }
+  },
+  "t5-atlanta-i-ga": {
+    "nearestWater": {
+      "name": "Big Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    }
+  },
+  "t5-atlanta-iv-palmetto-ga": {
+    "nearestWater": {
+      "name": "Cedar Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    }
+  },
+  "t5-charlotte-nc": {
+    "nearestWater": {
+      "name": "Potts Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.9
+    }
+  },
+  "t5-chicago-ii-il": {
+    "nearestWater": {
+      "name": "Higgins Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    }
+  },
+  "t5-chicago-iv-grayslake-il": {
+    "nearestWater": {
+      "name": "Grays Lake",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    }
+  },
+  "t5-cleveland-oh": {
+    "nearestWater": {
+      "name": "Rocky River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    }
+  },
+  "takanock-project-baccara-maricopa-county-az": {
+    "nearestWater": {
+      "name": "Picacho Wash",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    }
+  },
+  "talen-susquehanna-aws-pa": {
+    "nearestWater": {
+      "name": "Walker Run",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0
+    }
+  },
+  "tallgrass-cheyenne-power-hub-wy": {
+    "nearestWater": {
+      "name": "Polaris Reservoir",
+      "kind": "lake",
+      "distanceMi": 2.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    }
+  },
+  "tallgrass-project-jade-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Clear Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "taurus-digital-realty-project-bunkhouse-stilesboro-ga": {
+    "nearestWater": {
+      "name": "Raccoon Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1
+    }
+  },
+  "tcdc-ector-county-tx": {
+    "nearestWater": {
+      "name": "Coyote Lake",
+      "kind": "lake",
+      "distanceMi": 4.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    }
+  },
+  "tenkey-franklin-ky": {
+    "nearestWater": {
+      "name": "Sharps Branch",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 19.6
+    }
+  },
+  "terawulf-hawesville-ky": {
+    "nearestWater": {
+      "name": "Lead Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    }
+  },
+  "terawulf-lake-mariner-ny": {
+    "nearestWater": {
+      "name": "Lake Ontario",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "terawulf-lansing-ny": {
+    "nearestWater": {
+      "name": "Minnegar Brook",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 17.9
+    }
+  },
+  "terawulf-morgantown-charles-county-md": {
+    "nearestWater": {
+      "name": "Chotank Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.8
+    }
+  },
+  "terawulf-muskie-eastpark-ky": {
+    "nearestWater": {
+      "name": "Cobb Fork",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 2.8
+    }
+  },
+  "terra-hosting-vermillion-rise-newport-in": {
+    "nearestWater": {
+      "name": "Little Vermilion River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    }
+  },
+  "tesla-cortex-2-giga-texas-austin-tx": {
+    "nearestWater": {
+      "name": "Colorado River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    }
+  },
+  "thor-equities-augusta-township-mi": {
+    "nearestWater": {
+      "name": "Koch Warner Drain",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    }
+  },
+  "thornberry-data-center-campus-caroline-va": {
+    "nearestWater": {
+      "name": "Little River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.4
+    }
+  },
+  "thornburg-business-park-data-center-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Matta River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.3
+    }
+  },
+  "thornburg-industrial-park-data-center-spotsylvania-va": {
+    "nearestWater": {
+      "name": "Po River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.8
+    }
+  },
+  "tierpoint-baltimore-bwi-md": {
+    "nearestWater": {
+      "name": "Patapsco River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "tierpoint-boston-andover-ma": {
+    "nearestWater": {
+      "name": "Fish Brook",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    }
+  },
+  "tierpoint-charlotte-center-park-nc": {
+    "nearestWater": {
+      "name": "Coffey Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    }
+  },
+  "tierpoint-dallas-allen-tx": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.2
+    }
+  },
+  "tierpoint-dallas-tx": {
+    "nearestWater": {
+      "name": "Trinity River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    }
+  },
+  "tierpoint-hawthorne-westchester-ny": {
+    "nearestWater": {
+      "name": "Rockefeller Brook",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "tierpoint-kansas-city-lenexa-ks": {
+    "nearestWater": {
+      "name": "Little Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    }
+  },
+  "tierpoint-little-rock-ar": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.4
+    }
+  },
+  "tierpoint-milwaukee-wi": {
+    "nearestWater": {
+      "name": "Kinnickinnic River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    }
+  },
+  "tierpoint-nashville-tn": {
+    "nearestWater": {
+      "name": "North Ewingville Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.2
+    }
+  },
+  "tierpoint-sioux-falls-west-sd": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.1
+    }
+  },
+  "tierpoint-spokane-wa": {
+    "nearestWater": {
+      "name": "Spokane River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    }
+  },
+  "tierpoint-st-louis-olive-mo": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    }
+  },
+  "tierpoint-tulsa-archer-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.9
+    }
+  },
+  "tierpoint-valley-forge-pa": {
+    "nearestWater": {
+      "name": "Mine Run",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "tpa-social-circle-technology-park-ga": {
+    "nearestWater": {
+      "name": "Means Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.5
+    }
+  },
+  "tract-buckeye-tech-corridor-az": {
+    "nearestWater": {
+      "name": "Hassayampa River",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.6
+    }
+  },
+  "tract-caldwell-valley-uhland-tx": {
+    "nearestWater": {
+      "name": "Plum Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    }
+  },
+  "tract-mooresville-nc": {
+    "nearestWater": {
+      "name": "Dye Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    }
+  },
+  "tract-morris-technology-park-il": {
+    "nearestWater": {
+      "name": "East Fork Nettle Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 2.9
+    }
+  },
+  "tract-mountain-road-technology-park-hanover-va": {
+    "nearestWater": {
+      "name": "Holtzgrefe Pond",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "tract-tuckahoe-technology-park-goochland-county-va": {
+    "nearestWater": {
+      "name": "Tuckahoe Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    }
+  },
+  "triboro-industrial-park-jessup-olyphant-lackawanna-county-pa": {
+    "nearestWater": {
+      "name": "Sterry Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    }
+  },
+  "valley-oak-shinn-street-fremont-ca": {
+    "nearestWater": {
+      "name": "Alameda Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    }
+  },
+  "vantage-ashburn-ii-va2-va": {
+    "nearestWater": {
+      "name": "Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    }
+  },
+  "vantage-frontier-shackelford-county-tx": {
+    "nearestWater": {
+      "name": "North Fork Salt Prong Hubbard Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    }
+  },
+  "vantage-nv1-storey-county-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "vantage-oh1-new-albany-licking-county-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    }
+  },
+  "vantage-phoenix-campus-goodyear-az-az": {
+    "nearestWater": {
+      "name": "Agua Fria River",
+      "kind": "river",
+      "distanceMi": 2.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    }
+  },
+  "vantage-quincy-wa11-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 5.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    }
+  },
+  "vantage-san-antonio-tx11-tx": {
+    "nearestWater": {
+      "name": "Lucas Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    }
+  },
+  "vantage-san-antonio-tx22-tx": {
+    "nearestWater": {
+      "name": "Culebra Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    }
+  },
+  "vantage-santa-clara-ii-ca2-ca": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    }
+  },
+  "vantage-stafford-va4-va": {
+    "nearestWater": {
+      "name": "Accokeek Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    }
+  },
+  "vantage-wa12-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 5.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    }
+  },
+  "vermaland-la-osa-eloy-az": {
+    "nearestWater": {
+      "name": "Santa Cruz River",
+      "kind": "river",
+      "distanceMi": 3.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    }
+  },
+  "verrus-project-flex-lyon-township-oakland-county-mi": {
+    "nearestWater": {
+      "name": "Thornton Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    }
+  },
+  "vint-hill-corners-fauquier-va": {
+    "nearestWater": {
+      "name": "South Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    }
+  },
+  "voltagrid-covington-power-plant-ga": {
+    "nearestWater": {
+      "name": "Dried Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    }
+  },
+  "westin-building-digital-realty-seattle-sea10-wa": {
+    "nearestWater": {
+      "name": "Lake Union",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    }
+  },
+  "white-oak-technology-park-columbia-county-ga": {
+    "nearestWater": {
+      "name": "Pollards Lake",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 10.3
+    }
+  },
+  "whitefiber-nc1-madison-nc": {
+    "nearestWater": {
+      "name": "Dan River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.8
+    }
+  },
+  "wildcat-ridge-archbald-lackawanna-county-pa": {
+    "nearestWater": {
+      "name": "Lackawanna River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    }
+  },
+  "wiscasset-proposed-me": {
+    "nearestWater": {
+      "name": "Sheepscot River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    }
+  },
+  "wise-innovation-hub-wise-va": {
+    "nearestWater": {
+      "name": "Bear Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 17.7
+    }
+  },
+  "xai-colossus-2-power-station-southaven-ms": {
+    "nearestWater": {
+      "name": "Horn Lake Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    }
+  },
+  "xai-colossus-memphis-tn": {
+    "nearestWater": {
+      "name": "Nonconnah Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.5
+    }
+  },
+  "xai-southaven-ms": {
+    "nearestWater": {
+      "name": "Rocky Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.8
+    }
+  },
+  "zenith-volts-roswell-chaves-county-data-center-nm": {
+    "nearestWater": {
+      "name": "Rio Felix",
+      "kind": "river",
+      "distanceMi": 2.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 16.1
+    }
+  }
+}

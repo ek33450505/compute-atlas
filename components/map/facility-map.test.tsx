@@ -492,18 +492,36 @@ describe("FacilityMap", () => {
       expect(screen.getByTestId("location-search")).toBeInTheDocument();
     });
 
-    it("renders the compass rose control", () => {
+    it("keeps the compass, 3D, and basemap controls collapsed behind a Tools toggle by default", () => {
       render(<FacilityMap facilities={[]} />);
+      // Decluttered default: the instrument controls are hidden until the
+      // "Show map tools" disclosure is opened, so the map canvas stays clear.
+      expect(screen.queryByTestId("compass-rose")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("view-toggle-3d")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("basemap-toggle")).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /show map tools/i })
+      ).toBeInTheDocument();
+    });
+
+    it("reveals the compass rose control when the Tools toggle is opened", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       expect(screen.getByTestId("compass-rose")).toBeInTheDocument();
     });
 
-    it("renders the 3D view toggle", () => {
+    it("reveals the 3D view toggle when the Tools toggle is opened", async () => {
+      const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       expect(screen.getByTestId("view-toggle-3d")).toBeInTheDocument();
     });
 
-    it("renders the basemap toggle", () => {
+    it("reveals the basemap toggle when the Tools toggle is opened", async () => {
+      const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       expect(screen.getByTestId("basemap-toggle")).toBeInTheDocument();
     });
   });
@@ -513,6 +531,8 @@ describe("FacilityMap", () => {
       const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
 
+      // The basemap toggle lives inside the collapsed Tools disclosure — open it first.
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       const basemapToggle = screen.getByTestId("basemap-toggle");
 
       // Initial state: satellite layer should not be visible
@@ -554,6 +574,52 @@ describe("FacilityMap", () => {
       });
       expect(region).toHaveClass("h-full");
       expect(region).not.toHaveClass("h-[70vh]");
+    });
+  });
+
+  describe("Radius Ring Tool", () => {
+    it("toggles aria-pressed and shows the caption when enabled from the Tools disclosure", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
+
+      const radiusToggle = screen.getByRole("button", { name: /radius rings/i });
+      expect(radiusToggle).toHaveAttribute("aria-pressed", "false");
+      expect(screen.queryByText(/rings: 5 · 10 · 25 mi/)).not.toBeInTheDocument();
+
+      await user.click(radiusToggle);
+
+      expect(radiusToggle).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByText(/rings: 5 · 10 · 25 mi/)).toBeInTheDocument();
+      expect(screen.getByText(/click map to place/)).toBeInTheDocument();
+
+      await user.click(radiusToggle);
+
+      expect(radiusToggle).toHaveAttribute("aria-pressed", "false");
+      expect(screen.queryByText(/rings: 5 · 10 · 25 mi/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Layer Overlays (lazy mount)", () => {
+    it("does not mount the waterways layer until enabled via the Layers panel", async () => {
+      // Fresh slate: __layerPropsById is a shared module-level global that
+      // persists across tests in this file, so reset it before asserting
+      // absence — a prior test could otherwise leave a stale entry behind.
+      globalThis.__layerPropsById = {};
+
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      expect(globalThis.__layerPropsById["water-river-layer"]).toBeUndefined();
+
+      await user.click(screen.getByRole("button", { name: /show map tools/i }));
+      await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+      await user.click(screen.getByLabelText("Waterways"));
+
+      await waitFor(() => {
+        expect(globalThis.__layerPropsById["water-river-layer"]).toBeDefined();
+      });
     });
   });
 

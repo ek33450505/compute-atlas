@@ -5,9 +5,10 @@ const TILE = 256;
 /**
  * At or above this zoom, clustering is disabled entirely: every facility renders
  * as its own marker. Chosen so that by the time the viewport shows roughly a
- * single state (~600 mi across), all individual sites are visible for impact.
+ * multi-state / large-region view, all individual sites are visible sooner —
+ * surfacing the drama of the total site count earlier in the zoom-in.
  */
-export const UNCLUSTER_ZOOM = 5.5;
+export const UNCLUSTER_ZOOM = 4.3;
 
 /** Web-Mercator world-pixel X at a given zoom. */
 export function lonToX(lon: number, zoom: number): number {

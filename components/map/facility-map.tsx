@@ -9,8 +9,12 @@ import Map, {
   Source,
   Layer,
   type MapRef,
+  type MapLayerMouseEvent,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { circle } from "@turf/circle";
+import { Radius, SlidersHorizontal } from "lucide-react";
+import type { FeatureCollection, Polygon } from "geojson";
 
 import {
   BASEMAP_STYLE_URL,
@@ -30,8 +34,11 @@ import { CompassRose } from "@/components/map/compass-rose";
 import { LocationSearch } from "@/components/map/location-search";
 import { ViewToggle3D } from "@/components/map/view-toggle-3d";
 import { BasemapToggle } from "@/components/map/basemap-toggle";
+import { MapLayerControl } from "@/components/map/map-layer-control";
 import type { Facility } from "@/lib/schema";
 import type { GeocodeResult } from "@/lib/geocode";
+
+const TOOLS_PANEL_ID = "map-tools-panel";
 
 interface FacilityMapProps {
   facilities: Facility[];
@@ -79,6 +86,26 @@ export function FacilityMap({
   const [cursor, setCursor] = useState<{ lat: number; lon: number } | null>(
     null
   );
+  // Right-side control stack (compass/3D/basemap/layers/radius) is collapsed
+  // behind a single "Tools" disclosure toggle, default false, so the map
+  // canvas stays maximized until the visitor asks for the extra controls.
+  // NavigationControl (zoom +/-, top-right) is unaffected — always visible.
+  const [showTools, setShowTools] = useState<boolean>(false);
+  // Optional overlay layers (Layers control) — off by default, lazy-loaded:
+  // each corresponding <Source> only mounts (and fetches its GeoJSON) once
+  // its flag flips true, so the 1.9 MB power.geojson never loads unrequested.
+  const [showWater, setShowWater] = useState<boolean>(false);
+  const [showPower, setShowPower] = useState<boolean>(false);
+  const [showDrought, setShowDrought] = useState<boolean>(false);
+
+  // Radius-ring measurement tool: off by default, on-demand. When enabled, the
+  // next map click sets a center; 3, distance rings (5/10/25 mi) are drawn
+  // around it. Toggling off (or re-toggling on) clears the center, which
+  // unmounts the rings Source below.
+  const [ringsEnabled, setRingsEnabled] = useState<boolean>(false);
+  const [ringCenter, setRingCenter] = useState<{ lon: number; lat: number } | null>(
+    null
+  );
 
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastSelectedIdRef = useRef<string | null>(null);
@@ -92,6 +119,20 @@ export function FacilityMap({
 
   // Static graticule GeoJSON — built once, independent of facilities/zoom.
   const graticuleData = useMemo(() => buildGraticuleGeoJSON(), []);
+
+  // Radius-ring geometry: 3 concentric circles at 5/10/25 mi around the
+  // clicked center, recomputed only when the center moves. Outline-only
+  // rendering (no fill) — the Layer below sets no fill-* paint properties.
+  const ringsData = useMemo<FeatureCollection<Polygon> | null>(() => {
+    if (!ringCenter) return null;
+    const center: [number, number] = [ringCenter.lon, ringCenter.lat];
+    return {
+      type: "FeatureCollection",
+      features: [5, 10, 25].map((radiusMiles) =>
+        circle(center, radiusMiles, { units: "miles", steps: 128 })
+      ),
+    };
+  }, [ringCenter]);
 
   // Lazy initializer is safe here: this component only renders client-side
   // via the ssr:false dynamic wrapper, so window is always defined at init.
@@ -192,6 +233,30 @@ export function FacilityMap({
     setIs3D(next);
     mapRef.current?.easeTo({ pitch: next ? 55 : 0, duration: reducedMotion ? 0 : 600 });
   }, [is3D, reducedMotion]);
+
+  /** Toggles the radius-ring tool; turning it off clears any placed center. */
+  const handleToggleRings = useCallback(() => {
+    setRingsEnabled((on) => {
+      const next = !on;
+      if (!next) setRingCenter(null);
+      return next;
+    });
+  }, []);
+
+  /**
+   * Map click handler, guarded so it only places a radius-ring center when
+   * the tool is active — it must not interfere with normal map interaction
+   * (marker selection, search, etc.) when the tool is off. Markers are DOM
+   * <button> overlays outside the canvas, so their clicks never reach this
+   * handler regardless; the ringsEnabled guard is the explicit contract.
+   */
+  const handleMapClick = useCallback(
+    (e: MapLayerMouseEvent) => {
+      if (!ringsEnabled) return;
+      setRingCenter({ lat: e.lngLat.lat, lon: e.lngLat.lng });
+    },
+    [ringsEnabled]
+  );
 
   /** Flies the map to a geocoded place, capping zoom at 8 to land at state level. */
   const handleGoToPlace = useCallback(
@@ -313,6 +378,7 @@ export function FacilityMap({
           reuseMaps
           attributionControl={false}
           onLoad={handleMapLoad}
+          onClick={handleMapClick}
           onZoomEnd={(e) => setZoom(e.viewState.zoom)}
           onMoveEnd={(e) => {
             setBearing(e.viewState.bearing);
@@ -381,6 +447,110 @@ export function FacilityMap({
               }}
             />
           </Source>
+
+          {/* Optional overlay: drought areas (fill), off by default (Layers control).
+              Rendered first among the overlay sources so water/transmission draw on
+              top of it. Fill hidden over satellite imagery — a fill clashes with the
+              raster. Lazy-loaded: drought.geojson is fetched only while this is on. */}
+          {showDrought && (
+            <Source id="drought" type="geojson" data="/data/drought.geojson">
+              <Layer
+                id="drought-fill-layer"
+                type="fill"
+                layout={{ visibility: isSatellite ? "none" : "visible" }}
+                paint={{
+                  "fill-color": [
+                    "match",
+                    ["get", "dm"],
+                    0,
+                    "#EBD9B0",
+                    1,
+                    "#E3C489",
+                    2,
+                    "#D69C5A",
+                    3,
+                    "#B5702F",
+                    4,
+                    "#8F4108",
+                    "#EBD9B0",
+                  ],
+                  "fill-opacity": 0.35,
+                }}
+              />
+            </Source>
+          )}
+
+          {/* Optional overlay: waterways (lakes as fill + outline, rivers as line),
+              off by default. Lake fill hides over satellite (clashes with imagery);
+              the lake outline and river lines stay visible over satellite — lines
+              read fine over imagery. Lazy-loaded: water.geojson fetched only when on. */}
+          {showWater && (
+            <Source id="water" type="geojson" data="/data/water.geojson">
+              <Layer
+                id="water-lake-fill-layer"
+                type="fill"
+                filter={["==", ["get", "waterKind"], "lake"]}
+                layout={{ visibility: isSatellite ? "none" : "visible" }}
+                paint={{ "fill-color": "#8FA9B3", "fill-opacity": 0.35 }}
+              />
+              <Layer
+                id="water-lake-outline-layer"
+                type="line"
+                filter={["==", ["get", "waterKind"], "lake"]}
+                paint={{ "line-color": "#5E7D8A", "line-width": 0.5 }}
+              />
+              <Layer
+                id="water-river-layer"
+                type="line"
+                filter={["==", ["get", "waterKind"], "river"]}
+                layout={{ "line-join": "round" }}
+                paint={{
+                  "line-color": "#5E7D8A",
+                  "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.6, 8, 1.6],
+                  "line-opacity": 0.65,
+                }}
+              />
+            </Source>
+          )}
+
+          {/* Optional overlay: transmission lines >=230 kV, off by default. 1.9 MB —
+              lazy-loaded so it's fetched only once this Source mounts, drawn above
+              water so lines read clearly over the water/drought fills. */}
+          {showPower && (
+            <Source id="power" type="geojson" data="/data/power.geojson">
+              <Layer
+                id="power-layer"
+                type="line"
+                layout={{ "line-join": "round" }}
+                paint={{
+                  "line-color": "#8F4108",
+                  "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.5, 8, 1.4],
+                  "line-opacity": 0.55,
+                }}
+              />
+            </Source>
+          )}
+
+          {/* Radius-ring measurement tool: outline-only (no fill) 5/10/25 mi rings
+              around the last clicked center, drawn above the optional data
+              overlays. Mounts only once a center has been placed; unmounts
+              (clearing the rings) when the tool is toggled off. */}
+          {ringsData && (
+            <Source id="radius-rings" type="geojson" data={ringsData}>
+              <Layer
+                id="radius-rings-layer"
+                type="line"
+                layout={{ "line-join": "round" }}
+                paint={{
+                  "line-color": "#5C5344",
+                  "line-width": 1,
+                  "line-opacity": 0.7,
+                  "line-dasharray": [2, 2],
+                  "line-opacity-transition": { duration: reducedMotion ? 0 : 300 },
+                }}
+              />
+            </Source>
+          )}
 
           {clusters.map((cluster) => {
             if (cluster.members.length === 1) {
@@ -451,13 +621,107 @@ export function FacilityMap({
          * Not a MapLibre control — a plain positioned element so it doesn't fight
          * MapLibre's ctrl-group z-index stacking.
          */}
-        <div className="absolute top-20 right-2 z-20 flex flex-col gap-2">
-          <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
-          <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
-          <BasemapToggle
-            isSatellite={isSatellite}
-            onToggle={() => setIsSatellite((s) => !s)}
-          />
+        <div className="absolute top-20 right-2 z-20 flex flex-col items-end gap-2">
+          {/* Single disclosure toggle for the compass/3D/basemap/layers/radius
+              stack below — collapsed by default to maximize the visible map.
+              NavigationControl (zoom +/-, top-2) is separate and always shown.
+              `items-end` on this column (and the panel below) right-aligns
+              every child regardless of its own width — without it, the
+              default flex `stretch` cross-alignment left-anchors fixed-width
+              buttons inside the wider box the MapLayerControl/radius-caption
+              panels create when expanded, so the Tools toggle and icon
+              buttons visibly drift left off the right-2 edge. */}
+          <button
+            type="button"
+            onClick={() => setShowTools((s) => !s)}
+            aria-expanded={showTools}
+            aria-controls={TOOLS_PANEL_ID}
+            aria-label={showTools ? "Hide map tools" : "Show map tools"}
+            title="Map tools"
+            className={[
+              "flex h-11 w-11 items-center justify-center",
+              "rounded-sm bg-popover border border-border",
+              "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+              "cursor-pointer transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+              showTools ? "ring-1 ring-primary/50" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <SlidersHorizontal
+              aria-hidden="true"
+              className={["size-4", showTools ? "text-primary" : "text-foreground"].join(
+                " "
+              )}
+            />
+          </button>
+
+          {showTools && (
+            <div
+              id={TOOLS_PANEL_ID}
+              className="flex flex-col items-end gap-2 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+            >
+              <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
+              <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
+              <BasemapToggle
+                isSatellite={isSatellite}
+                onToggle={() => setIsSatellite((s) => !s)}
+              />
+
+              {/* Radius-ring measurement tool toggle. Reuses BasemapToggle's
+                  parchment button styling: ≥44px hit target, aria-pressed,
+                  focus-visible ring, primary-tinted icon when active. */}
+              <button
+                type="button"
+                onClick={handleToggleRings}
+                aria-pressed={ringsEnabled}
+                aria-label="Toggle radius rings tool"
+                title="Radius rings"
+                className={[
+                  "flex h-11 w-11 items-center justify-center",
+                  "rounded-sm bg-popover border border-border",
+                  "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+                  "cursor-pointer transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  ringsEnabled ? "ring-1 ring-primary/50" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <Radius
+                  aria-hidden="true"
+                  className={[
+                    "size-4",
+                    ringsEnabled ? "text-primary" : "text-foreground",
+                  ].join(" ")}
+                />
+              </button>
+              {ringsEnabled && (
+                <p className="max-w-[8.5rem] rounded-sm border border-border bg-popover px-2 py-1 font-mono text-[9px] leading-tight tabular-nums text-muted-foreground shadow-[0_1px_4px_rgba(0,0,0,0.12)]">
+                  rings: 5 · 10 · 25 mi
+                  {!ringCenter && (
+                    <>
+                      <br />
+                      click map to place
+                    </>
+                  )}
+                </p>
+              )}
+
+              {/* Layers control is last in the stack — its own root
+                  right-aligns itself independently (see map-layer-control.tsx),
+                  so its position here doesn't depend on being narrowest. */}
+              <MapLayerControl
+                showWater={showWater}
+                onToggleWater={() => setShowWater((s) => !s)}
+                showPower={showPower}
+                onTogglePower={() => setShowPower((s) => !s)}
+                showDrought={showDrought}
+                onToggleDrought={() => setShowDrought((s) => !s)}
+              />
+            </div>
+          )}
         </div>
 
         {/* Bottom-left: map legend (unchanged position) */}

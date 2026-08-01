@@ -29,6 +29,7 @@ export function CompassRose({ bearing, onResetNorth }: CompassRoseProps) {
       type="button"
       onClick={onResetNorth}
       aria-label="Reset map orientation to north"
+      title="Reset north"
       className={[
         // Size — ≥44 px touch target (WCAG 2.5.8 project rule)
         "flex h-11 w-11 items-center justify-center",

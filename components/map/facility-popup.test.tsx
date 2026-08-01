@@ -81,4 +81,18 @@ describe("FacilityPopup", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it("renders a siting-distance cue for a facility with siting context", () => {
+    // xai-colossus-memphis-tn has a real entry in data/siting-context.json:
+    // nearestWater "Nonconnah Creek" (0.7 mi) + nearestTransmission 500 kV (4.5 mi).
+    const withContext = { ...fixture, id: "xai-colossus-memphis-tn" };
+    render(<FacilityPopup facility={withContext} onClose={() => {}} />);
+    expect(screen.getByText(/Nonconnah Creek/)).toBeInTheDocument();
+    expect(screen.getByText(/0\.7 mi/)).toBeInTheDocument();
+  });
+
+  it("renders no siting cue for a facility without siting context", () => {
+    render(<FacilityPopup facility={fixture} onClose={() => {}} />);
+    expect(screen.queryByText(/mi —/)).not.toBeInTheDocument();
+  });
 });

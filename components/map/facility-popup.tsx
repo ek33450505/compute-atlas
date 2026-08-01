@@ -2,8 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { ExternalLink, X } from "lucide-react";
+import { Droplets, ExternalLink, X, Zap } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
+import {
+  formatNearestTransmission,
+  formatNearestWater,
+  getSitingContext,
+} from "@/lib/siting-context";
 import type { Facility } from "@/lib/schema";
 
 interface FacilityPopupProps {
@@ -47,6 +52,8 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
   const cityState = location.city
     ? `${location.city}, ${location.state}`
     : location.state;
+  const sitingContext = getSitingContext(facility.id);
+  const { nearestWater, nearestTransmission } = sitingContext ?? {};
 
   return (
     <div className="p-1 min-w-[220px] max-w-[280px]">
@@ -78,6 +85,30 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
         <p className="text-xs italic text-muted-foreground mb-1">
           Distributed operation — pin is illustrative
           {facility.location.multiSite && ` (${facility.location.multiSite.states.join(", ")})`}
+        </p>
+      )}
+
+      {/* Siting cue: pure proximity, not a stated interconnection — compact
+          one-line summary of the on-page SitingContextSection. Nothing renders
+          when neither datum is present. */}
+      {(nearestWater || nearestTransmission) && (
+        <p className="flex items-center gap-2 mb-2 font-mono text-[10px]/tight tabular-nums text-muted-foreground">
+          {nearestWater && (
+            <span className="flex items-center gap-1">
+              <Droplets className="size-3" aria-hidden="true" />
+              {formatNearestWater(nearestWater.name, nearestWater.distanceMi)}
+            </span>
+          )}
+          {nearestTransmission && (
+            <span className="flex items-center gap-1">
+              <Zap className="size-3" aria-hidden="true" />
+              {formatNearestTransmission(
+                nearestTransmission.voltageKv,
+                nearestTransmission.distanceMi,
+                { compact: true },
+              )}
+            </span>
+          )}
         </p>
       )}
 
