@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0](https://github.com/ek33450505/compute-atlas/compare/v1.10.2...v1.11.0) (2026-08-01)
+
+
+### Features
+
+* **map:** siting context, overlays, radius tool, mobile-first + declutter ([#95](https://github.com/ek33450505/compute-atlas/issues/95)) ([a71c9de](https://github.com/ek33450505/compute-atlas/commit/a71c9de1addac38904b11713d226baa0507583fb))
+
 ## [1.10.2](https://github.com/ek33450505/compute-atlas/compare/v1.10.1...v1.10.2) (2026-07-31)
 
 

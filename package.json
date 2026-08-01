@@ -1,6 +1,6 @@
 {
   "name": "ai-datacenter-tracker",
-  "version": "1.10.2",
+  "version": "1.11.0",
   "private": true,
   "engines": {
     "node": "22.x"
