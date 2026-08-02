@@ -7650,22 +7650,8 @@
       },
       {
         "url": "https://www.vedp.org/press-release/2025-11/cleanarc-caroline",
-        "label": "CleanArc to establish data center campus in Caroline County",
-        "publisher": "Virginia Economic Development Partnership",
-        "retrievedAt": "2026-07-07",
-        "kind": "filing"
-      },
-      {
-        "url": "https://www.vedp.org/press-release/2025-11/cleanarc-caroline",
         "label": "CleanArc Data Centers invests $3 billion in Caroline County",
         "publisher": "Virginia Economic Development Partnership",
-        "retrievedAt": "2026-07-08",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.datacenterdynamics.com/en/news/cleanarc-gets-green-light-for-600mw-data-center-campus-in-caroline-county-virginia/",
-        "label": "CleanArc gets green light for data center campus in Caroline County, Virginia",
-        "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-08",
         "kind": "press"
       },
@@ -7707,23 +7693,23 @@
         "program": "Caroline County EDA annual grant - 25% of incremental tax revenue for 15 years (40% for 10 years if the first data hall is operational by Sept 30 2027), capped at 10% of taxable investment",
         "jurisdiction": "Caroline County, VA",
         "year": "2025",
-        "sourceIndex": 3
+        "sourceIndex": 0
       },
       {
         "program": "Virginia Data Center Retail Sales & Use Tax exemption (eligibility per VEDP; no certified award value)",
         "jurisdiction": "Commonwealth of Virginia",
         "year": "2025",
-        "sourceIndex": 2
+        "sourceIndex": 1
       }
     ],
     "investmentUsd": 3000000000,
     "jobs": {
-      "sourceIndex": 2
+      "sourceIndex": 1
     },
     "community": {
       "status": "mixed",
       "notes": "The Caroline County Board of Supervisors approved the performance agreement 5-1 (Aug 12 2025; lone dissent from Vice-Chair Jeff Sili). Governor Youngkin attended the Nov 20 2025 groundbreaking. No organized community opposition or litigation was found.",
-      "sourceIndex": 3
+      "sourceIndex": 0
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -8179,6 +8165,13 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.deq.virginia.gov/home/showpublisheddocument/25974/638889504246870000",
+        "label": "Virginia DEQ air permit 74235-2 (issued 2025-07-23)",
+        "publisher": "Virginia DEQ",
+        "retrievedAt": "2026-07-30",
+        "kind": "permit"
       }
     ],
     "lastUpdated": "2026-07-23",
@@ -10038,6 +10031,13 @@
         "publisher": "Coalition to Protect Prince William County",
         "retrievedAt": "2026-07-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.deq.virginia.gov/home/showpublisheddocument/35467/639105417615730000",
+        "label": "Virginia DEQ air permit 74241-3 (issued 2025-11-21)",
+        "publisher": "Virginia DEQ",
+        "retrievedAt": "2026-07-30",
+        "kind": "permit"
       }
     ],
     "lastUpdated": "2026-07-26",
@@ -14134,6 +14134,13 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.deq.virginia.gov/home/showpublisheddocument/26115/638639803959100000",
+        "label": "Virginia DEQ air permit 73162-3 (issued 2010-03-05)",
+        "publisher": "Virginia DEQ",
+        "retrievedAt": "2026-07-30",
+        "kind": "permit"
       }
     ],
     "lastUpdated": "2026-07-23",
@@ -14174,6 +14181,13 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-07-22",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.deq.virginia.gov/home/showpublisheddocument/26117/638639805143900000",
+        "label": "Virginia DEQ air permit 73180-4 (issued 2008-08-07)",
+        "publisher": "Virginia DEQ",
+        "retrievedAt": "2026-07-30",
+        "kind": "permit"
       }
     ],
     "lastUpdated": "2026-07-23",
@@ -31654,6 +31668,13 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.deq.virginia.gov/home/showpublisheddocument/25821/638628728843130000",
+        "label": "Virginia DEQ air permit 74094-1 (issued 2016-01-13)",
+        "publisher": "Virginia DEQ",
+        "retrievedAt": "2026-07-30",
+        "kind": "permit"
       }
     ],
     "lastUpdated": "2026-07-23",
@@ -47193,5 +47214,129 @@
     "notes": "Operator corrected to T5 Data Centers, not Serverfarm: Serverfarm's own current locations page does not list a Newark/Silicon Valley property, and Serverfarm has acquired only one T5 property to date (El Segundo/LAX1, already tracked separately as serverfarm-lax1-el-segundo-ca) - not a company-wide rebrand. T5 Data Centers remains an active, independent company. The existing 128,000 SF/17MW building (built 2002 per county assessor record) was sold by Apple to T5 in an Aug 2020 ($30M) deed transfer, announced by T5 Oct 6 2020 alongside a disclosed plan to add 32.1MW/180,000 SF (49.1MW total target); no source confirms whether that expansion has completed. The $30M figure is a real-estate acquisition price for the existing building only, not development capex, so it is not recorded as investmentUsd. Apple as tenant is corroborated by secondary sources (an aggregator listing and a contractor's own portfolio page naming Apple independently) but not by a primary T5/Apple source, which refers only to 'a Fortune 100 enterprise' - flagged reported, not primary-confirmed. No AI/HPC/GPU-specific marketing found, so aiClassification is omitted. T5 markets this campus as 'Silicon Valley,' but Newark is geographically East Bay/Alameda County, not South Bay/Santa Clara County. Coordinates are a best-effort approximate estimate for the disclosed street address, not an independently geocoded parcel point - recommend a follow-up pass with a mapping source to confirm precisely.",
     "landAcres": 13.45,
     "facilityType": "data_center"
+  },
+  {
+    "id": "fleet-data-centers-storey-county-nv",
+    "name": "Fleet Data Centers Storey County Campus (South Valley & Peru Ridge)",
+    "operator": "Fleet Data Centers",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.53,
+      "lon": -119.43,
+      "city": "McCarran",
+      "county": "Storey",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-05-20",
+        "note": "Groundbreaking attended by Gov. Joe Lombardo at TRIC along USA Parkway.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/fleet-data-centers-closes-46bn-in-senior-secured-notes-for-230mw-storey-county-campus/",
+        "label": "Fleet Data Centers closes $4.6bn in senior secured notes for 230MW Storey County campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nnbw.com/news/2026/jun/02/fleet-data-centers-breaks-ground-on-2-facilities/",
+        "label": "Fleet Data Centers breaks ground on 2 facilities",
+        "publisher": "Northern Nevada Business Weekly",
+        "retrievedAt": "2026-07-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nevadaappeal.com/news/2026/jun/09/nevada-data-center-firm-working-on-two-campuses-at-tahoe-reno-industrial-center/",
+        "label": "Data center firm working on 2 campuses at Tahoe Reno Industrial Center",
+        "publisher": "Nevada Appeal",
+        "retrievedAt": "2026-07-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kolotv.com/2026/05/20/gov-lombardo-construction-companies-break-ground-2-million-sq-ft-data-center-storey-co/",
+        "label": "Gov. Lombardo, construction companies break ground on 2 million sq. ft. data center in Storey Co.",
+        "publisher": "KOLO 8 News Now",
+        "retrievedAt": "2026-07-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-07-30",
+    "notes": "Two adjacent TRIC campuses (South Valley and Peru Ridge) along USA Parkway in Storey County, dual two-story buildings each, ~769-acre combined footprint and a reported combined ~400MW of critical compute plus ~30MW/campus utility power. Fully leased to an unnamed AA-rated, investment-grade tenant (market cap >$3T) under a ~16.4-year triple-net lease; Fleet closed $4.6B in senior secured notes for a 230MW Storey County campus. Groundbreaking May 2026. Coordinates approximate to the TRIC/USA Parkway area.",
+    "landAcres": 769,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "tract-silver-springs-nv",
+    "name": "Tract Silver Springs Data Center Park",
+    "operator": "Tract",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.407,
+      "lon": -119.229,
+      "city": "Silver Springs",
+      "county": "Lyon",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1600
+    },
+    "announcedDate": "2025-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09",
+        "note": "Tract closed on ~1,060 acres near Silver Springs following rezoning and a development agreement approved by Lyon County; site master-planned for up to 1.6GW with an initial 700MW under utility study.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tract.com/news/tract-expands-its-greater-reno-portfolio-closing-on-1060-acres-in-silver-springs-nevada-following-successful-rezoning-and-development-agreement-with-lyon-county/",
+        "label": "Tract Expands Its Greater Reno Portfolio, Closing on 1,060 Acres in Silver Springs, Nevada",
+        "publisher": "Tract",
+        "retrievedAt": "2026-07-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/tract-acquires-1000-acres-in-nevada-for-16gw-data-center-park/",
+        "label": "Tract acquires 1,000 acres in Nevada for 1.6GW data center park",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://citizenportal.ai/articles/2740005/Lyon-County/Nevada/Lyon-County-approves-Tract-Capitals-data-center-project-plan-in-Silver-Springs",
+        "label": "Lyon County approves Tract Capital's data center project plan in Silver Springs",
+        "publisher": "CitizenPortal.ai",
+        "retrievedAt": "2026-07-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/nevada/reno/tract-silver-springs/",
+        "label": "Tract Silver Springs Data Center",
+        "publisher": "Data Center Map",
+        "retrievedAt": "2026-07-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-07-30",
+    "notes": "Master-planned data center park near Silver Springs, Lyon County (near the US-50/USA Parkway corridor east of Reno). ~1,060 acres acquired with approved rezoning and a Lyon County development agreement; buildout capacity up to 1.6GW with an initial 700MW under utility study, planned dry/air-cooled to minimize water use. Land/entitlement stage — proposed, not yet under construction. Coordinates approximate to Silver Springs.",
+    "landAcres": 1060,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   }
 ]
