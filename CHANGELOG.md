@@ -5,6 +5,18 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0](https://github.com/ek33450505/compute-atlas/compare/v1.13.0...v1.14.0) (2026-08-02)
+
+
+### Features
+
+* **data:** Florida data wave — 8 facilities (Miami, Jacksonville, Orlando, Polk) ([#103](https://github.com/ek33450505/compute-atlas/issues/103)) ([7b50d43](https://github.com/ek33450505/compute-atlas/commit/7b50d433c53539b03588f130a00f5476f32cabc2))
+
+
+### Bug Fixes
+
+* **activity:** surface bulk-seeded facilities in /activity feed ([#105](https://github.com/ek33450505/compute-atlas/issues/105)) ([41bdf13](https://github.com/ek33450505/compute-atlas/commit/41bdf13b79c57122c94d66a90b410132ba035b3d))
+
 ## [1.13.0](https://github.com/ek33450505/compute-atlas/compare/v1.12.0...v1.13.0) (2026-08-02)
 
 
