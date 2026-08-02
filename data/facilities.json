@@ -46880,5 +46880,318 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "stack-svy03a-hayward-ca",
+    "name": "STACK SVY03A",
+    "operator": "STACK Infrastructure",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.6281336,
+      "lon": -122.1195048,
+      "city": "Hayward",
+      "county": "Alameda",
+      "street": "26203 Production Avenue",
+      "postalCode": "94545",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "landAcres": 11.3,
+    "jobs": {
+      "construction": 380,
+      "permanent": 41,
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Approved via a zoning classification (Hayward Municipal Code Section 10-1.1604) that treated data centers as \"office use,\" letting the project bypass City Council-level review and go through Planning Commission alone. Council members publicly raised concerns about the project's power and water draw; the developer added a $2M Public Benefits Package (up from an initial $1.3M offer) during the approval process. This controversy is the documented precursor to Hayward's April 2026 ordinance creating a data-center-specific Major Conditional Use Permit category requiring Council-level public hearings for future data-center applications.",
+      "sourceIndex": 4
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-03-24",
+        "note": "CEQA Mitigated Negative Declaration filed (SCH# 2025030999).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2025-05-22",
+        "note": "Hayward Planning Commission unanimously approved Major Site Plan Review / Administrative Use Permit SPR-23-0036; no appeals filed.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ceqanet.lci.ca.gov/2025030999",
+        "label": "CEQAnet Mitigated Negative Declaration filing (SCH# 2025030999)",
+        "publisher": "California State Clearinghouse (CEQAnet)",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/stack-svy03a-data-center-campus",
+        "label": "STACK SVY03A backup generating system docket (23-SPPE-01)",
+        "publisher": "California Energy Commission",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.hayward-ca.gov/business/for-developers/data-center-development-applications",
+        "label": "Data center development applications",
+        "publisher": "City of Hayward",
+        "retrievedAt": "2026-08-02",
+        "kind": "permit"
+      },
+      {
+        "url": "https://tricityvoice.com/who-approved-haywards-largest-data-center/",
+        "label": "Who approved Hayward's largest data center?",
+        "publisher": "Tri City Voice",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://opgov.news/articles/hayward-data-center-under-public-scrutiny-as-loopholes-pile-up",
+        "label": "Hayward data center under public scrutiny as loopholes pile up",
+        "publisher": "OpGov News",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "STACK's first tracked East Bay CA site (existing STACK entries stack-svy01-ca/San Jose and stack-svy02-ca/Santa Clara are both South Bay). 300,000 sq ft campus at Production Ave/Investment Blvd: 3-story primary data center building + 1-story secondary building, height 100ft (+8ft variance approved); site plan also shows frontage on Eden Landing Road, treated as the same 11.3-acre parcel, not a separate site. energy.onSiteGenerationMw reflects the CEC SPPE-disclosed backup-generator capacity (28 generators across two yards, docket 23-SPPE-01) - this is NOT a disclosed IT/critical-load figure; no whole-facility IT MW is publicly disclosed anywhere. The 76.6 MW figure supersedes the original CEQA filing's 67.2 MW. Jobs figures (41 permanent, ~380 construction) are single-sourced to local press (Tri City Voice; Hayward Herald ran the same underlying story). Coordinates are a geocoded street-address point, not parcel-confirmed.",
+    "energy": {
+      "source": "grid",
+      "onSiteGenerationMw": 76.6,
+      "notes": "76.6 MW is CEC SPPE-disclosed backup-generator capacity (docket 23-SPPE-01, 28 generators), not IT/critical load."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-oak10-ca",
+    "name": "Digital Realty OAK10",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.7992148,
+      "lon": -122.2829762,
+      "city": "Oakland",
+      "county": "Alameda",
+      "street": "720 2nd Street",
+      "postalCode": "94607",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/silicon-valley/oak10",
+        "label": "OAK10 Data Center facility page",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/377378597",
+        "label": "OpenStreetMap way/377378597",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-02",
+        "kind": "osm"
+      },
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/digital-realty/720-2nd-street/oak10",
+        "label": "DataCenterHawk OAK10 marketplace listing",
+        "publisher": "DataCenterHawk",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Established 2007-built, 4-story, 122,000 sq ft (121,220 sq ft raised floor) carrier-neutral colocation facility (15+ ISPs), N+1 UPS redundancy (seven 2MW Hitec Continuous Power Systems units), LEED Gold. No whole-facility MW figure is publicly disclosed by the operator; aggregator listings (datacenters.com, cloudandcolocation.com) repeat a derived \"14.0 MW\" figure (the 7x2MW UPS units summed) that is not an independent primary disclosure - omitted here per this dataset's disclosed-only convention. Coordinates are an OSM building centroid (way/377378597), not parcel-confirmed.",
+    "environmental": {
+      "renewablePercent": 100
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "avaio-perseus-pittsburg-ca",
+    "name": "AVAIO Digital Perseus",
+    "operator": "AVAIO Digital Partners",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.011358,
+      "lon": -121.91098,
+      "city": "Pittsburg",
+      "county": "Contra Costa",
+      "street": "2232 Golf Club Rd",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 99
+    },
+    "announcedDate": "2024-12",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-11",
+        "note": "Pittsburg City Council approved the Pittsburg Technology Park Specific Plan 5-0, enabling redevelopment of the former Delta View Golf Course into a 3-phase technology park including the Perseus Data Center."
+      },
+      {
+        "status": "permitted",
+        "date": "2025-12-08",
+        "note": "California Energy Commission granted opt-in certification for 99 MW (Phase 1); City of Pittsburg Zoning Administrator granted Commercial Design Review approval Dec 11, 2025, with a further modification approved Feb 12, 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.avaiodigital.com/developments/pittsburg-california",
+        "label": "AVAIO Perseus (Pittsburg, CA) project page",
+        "publisher": "AVAIO Digital Partners",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.avaiodigital.com/updates/avaio-digital-marks-major-milestone-as-cec-approves-99mw-for-bay-area-data-center-project-perseus",
+        "label": "AVAIO Digital marks major milestone as CEC approves 99MW for Bay Area data center project Perseus",
+        "publisher": "AVAIO Digital Partners",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://ceqanet.lci.ca.gov/2025100607/4",
+        "label": "Notice of Determination - Commercial Design Review modification",
+        "publisher": "California CEQAnet",
+        "retrievedAt": "2026-08-02",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.climatecasechart.com/collections/center-for-biological-diversity-v-city-of-pittsburg_4f57be",
+        "label": "Center for Biological Diversity v. City of Pittsburg - case record",
+        "publisher": "Sabin Center Climate Litigation Database",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://biologicaldiversity.org/w/news/press-releases/agreement-secures-renewable-energy-recycled-water-for-california-data-center-2025-12-16/",
+        "label": "Agreement secures renewable energy, recycled water for California data center",
+        "publisher": "Center for Biological Diversity",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://contracosta.news/2026/06/16/residents-blast-pittsburg-city-council-over-data-center-approval/",
+        "label": "Residents blast Pittsburg City Council over data center approval",
+        "publisher": "Contra Costa News",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Redevelopment of the former Delta View Golf Course (76 acres) into a 3-phase Pittsburg Technology Park; Phase 1 is the ~300,000 sq ft Perseus Data Center, targeting first occupancy in 2027. Status corrected to 'permitted' (not 'proposed'): the project holds a CEC opt-in certification (99 MW, Dec 8 2025) and a City of Pittsburg Commercial Design Review approval (Dec 11 2025, modified Feb 12 2026); no source confirms groundbreaking/construction has started. capacityMw.planned=99 reflects the CEC-certified figure, superseding an earlier ~92MW target; the Specific Plan's long-term ceiling of up to 500MW across the full technology park is undated/speculative and not recorded here. Investment ($800M+) is AVAIO's own Dec 2024 disclosure, widely syndicated but not independently audited. Jobs figures are not disclosed anywhere found and are omitted. aiClassification set to 'likely': AVAIO's own materials use explicit 'AI and cloud-driven deployments' language but do not publish GPU/HPC-specific technical specs. The Center for Biological Diversity's CEQA lawsuit (Case No. N24-2162, filed Dec 2024) was SETTLED in Dec 2025 (CBD agreed not to oppose Phase 1 in exchange for 100% renewable/carbon-free electricity, rooftop solar, 100% recycled water for cooling, wildlife monitoring, and a $750,000 community climate-resiliency payment) - it is not an active legal threat, though broader public opposition continues (see community).",
+    "energy": {
+      "notes": "Dec 2025 CBD settlement commits the project to 100% renewable/carbon-free electricity plus rooftop solar."
+    },
+    "water": {
+      "notes": "Dec 2025 CBD settlement commits the project to 100% recycled water for cooling."
+    },
+    "investmentUsd": 800000000,
+    "landAcres": 76,
+    "community": {
+      "status": "contested",
+      "notes": "The CBD CEQA lawsuit was settled Dec 2025, but public opposition continues independently: a Change.org petition had roughly 14,000 signatures as of June 2026, and a June 15 2026 City Council meeting drew 200+ attendees with mostly-opposed public comment; the Mayor and Council directed an additional public workshop (held July 30, 2026).",
+      "sourceIndex": 5
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "t5-silicon-valley-newark-ca",
+    "name": "T5@Silicon Valley",
+    "operator": "T5 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.5461,
+      "lon": -122.0312,
+      "city": "Newark",
+      "county": "Alameda",
+      "street": "39800 Eureka Drive",
+      "postalCode": "94560",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 17,
+      "planned": 49.1
+    },
+    "announcedDate": "2020-10",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020-10-06",
+        "note": "T5 Data Centers announced acquisition of the existing, already-operational 128,000 SF / 17MW building from a Fortune 100 enterprise (identified as a former Apple facility by secondary sources — see notes), plus a planned 32.1MW/180,000 SF expansion (49.1MW total target).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://t5datacenters.com/resources/t5-data-centers-announces-new-enterprise-data-center-in-silicon-valley-ca/",
+        "label": "T5 Data Centers announces new enterprise data center in Silicon Valley, CA",
+        "publisher": "T5 Data Centers",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/t5-data-centers-announces-new-enterprise-data-center-in-silicon-valley-ca-301146933.html",
+        "label": "T5 Data Centers announces new enterprise data center in Silicon Valley, CA (PR Newswire)",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.propertyshark.com/mason/Property/38901571/39800-Eureka-Dr-Newark-CA-94560/",
+        "label": "39800 Eureka Dr, Newark, CA 94560 - property record",
+        "publisher": "PropertyShark",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.loopnet.com/property/39800-eureka-dr-newark-ca-94560/06001-901%20018503300/",
+        "label": "39800 Eureka Dr, Newark, CA 94560 - property listing",
+        "publisher": "LoopNet",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/t5-silicon-valley-newark",
+        "label": "T5@Silicon Valley (Newark) data center listing",
+        "publisher": "baxtel",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://ocmcdonald.com/apple-newark-data-facility/",
+        "label": "Apple Newark data facility project",
+        "publisher": "O.C. McDonald Co.",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.serverfarmllc.com/data-centers/",
+        "label": "Serverfarm data center locations",
+        "publisher": "Serverfarm",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Operator corrected to T5 Data Centers, not Serverfarm: Serverfarm's own current locations page does not list a Newark/Silicon Valley property, and Serverfarm has acquired only one T5 property to date (El Segundo/LAX1, already tracked separately as serverfarm-lax1-el-segundo-ca) - not a company-wide rebrand. T5 Data Centers remains an active, independent company. The existing 128,000 SF/17MW building (built 2002 per county assessor record) was sold by Apple to T5 in an Aug 2020 ($30M) deed transfer, announced by T5 Oct 6 2020 alongside a disclosed plan to add 32.1MW/180,000 SF (49.1MW total target); no source confirms whether that expansion has completed. The $30M figure is a real-estate acquisition price for the existing building only, not development capex, so it is not recorded as investmentUsd. Apple as tenant is corroborated by secondary sources (an aggregator listing and a contractor's own portfolio page naming Apple independently) but not by a primary T5/Apple source, which refers only to 'a Fortune 100 enterprise' - flagged reported, not primary-confirmed. No AI/HPC/GPU-specific marketing found, so aiClassification is omitted. T5 markets this campus as 'Silicon Valley,' but Newark is geographically East Bay/Alameda County, not South Bay/Santa Clara County. Coordinates are a best-effort approximate estimate for the disclosed street address, not an independently geocoded parcel point - recommend a follow-up pass with a mapping source to confirm precisely.",
+    "landAcres": 13.45,
+    "facilityType": "data_center"
   }
 ]
