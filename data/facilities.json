@@ -45889,5 +45889,381 @@
       "sourceIndex": 2
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-727-s-grand-ave-la-ca",
+    "name": "Digital Realty 727 S. Grand Avenue (DTLA)",
+    "operator": "Digital Realty",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.046823,
+      "lon": -118.257149,
+      "city": "Los Angeles",
+      "county": "Los Angeles",
+      "street": "727 S. Grand Avenue",
+      "postalCode": "90017",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023-05-24",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-05-24",
+        "note": "Initial Site Development Plan / Development Agreement filing (applicant of record: GIP 7th Street LLC) for a 13-story, approximately 485,892 sq ft data center replacing a 1960s-era parking structure.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterfrontier.com/colocation/article/33005622/digital-realty-plans-13-story-data-center-in-downtown-los-angeles",
+        "label": "Digital Realty Plans 13-Story Data Center in Downtown Los Angeles",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://la.urbanize.city/post/dtla-data-center-727-s-grand-ave-track-start-work-2025",
+        "label": "DTLA data center at 727 S. Grand Ave. on track to start work in 2025",
+        "publisher": "Urbanize LA",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://la.urbanize.city/post/heres-updated-look-big-data-center-727-s-grand-ave-dtla",
+        "label": "Here's the updated look for the big data center at 727 S. Grand Ave.",
+        "publisher": "Urbanize LA",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.bisnow.com/los-angeles/news/data-center/727-grand-avenue-downtown-los-angeles-digital-realty-data-center-127124",
+        "label": "Digital Realty To Add New Data Center To Downtown LA Block",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://downtownla.com/building/727-s-grand-data-center",
+        "label": "727 S. Grand (Data Center) project tracker",
+        "publisher": "Downtown LA",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/digital-realty/727-south-grand-avenue/lax13",
+        "label": "Digital Realty LAX13 - 727 South Grand Avenue",
+        "publisher": "datacenterHawk",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://therealdeal.com/la/2025/11/07/digital-realty-buys-site-for-data-center-in-la-suburb-vernon/",
+        "label": "Digital Realty drops $9M per acre on Vernon data center site (confirms 727 Grand Ave. status as 'unclear' as of Nov 2025)",
+        "publisher": "The Real Deal",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "13-story, approximately 485,892-486,000 gross sq ft tower (roughly 230,000 sq ft technical/server space per Bisnow) replacing a 1960s-era parking structure at 727-737 S. Grand Ave; architect OfficeUntitled. No city entitlements confirmed as of the most recent dated reporting - only an initial environmental study has been completed. A Nov 2025 trade-press report describes the project's status as 'unclear.' Industry-tracked as 'LAX13' (datacenterHawk); across the street from Digital Realty's untracked LAX10 (600 W. 7th St.) and near One Wilshire (624 S. Grand Ave); distinct from the already-tracked digital-realty-lax12-ca (El Segundo). No AI/HPC-specific marketing found anywhere - demand is framed as general entertainment/gaming and colocation. Correction: a widely-repeated '32MW, land acquired Nov 2025' claim associated with this address actually belongs to a separate, unrelated Digital Realty transaction at 4400 Pacific Blvd, Vernon, CA (5.4 acres, $48.8M, 32MW) - do not conflate; the Vernon site is not tracked in this dataset. Coordinates are an approximate street-level geocode, not a parcel-confirmed point.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "rb-inyokern-data-center-ca",
+    "name": "RB Inyokern Data Center",
+    "operator": "R&L Capital, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.631817,
+      "lon": -117.807864,
+      "city": "Inyokern",
+      "county": "Kern",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 99
+    },
+    "announcedDate": "2026-05-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-08",
+        "note": "R&L Capital, Inc. filed a Small Power Plant Exemption (SPPE) application with the California Energy Commission (Docket 26-SPPE-01) for a phased 30-35 MW to 65-70 MW to 99 MW backup-generation buildout.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/rb-inyokern-data-center",
+        "label": "RB Inyokern Data Center - CEC backup generating system docket page",
+        "publisher": "California Energy Commission",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://efiling.energy.ca.gov/Lists/DocketLog.aspx?docketnumber=26-SPPE-01",
+        "label": "CEC Docket Log - 26-SPPE-01",
+        "publisher": "California Energy Commission",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=271058&DocumentContentId=108645",
+        "label": "CEC filing TN 271058 - site/APN detail, SCE interconnection, phased capacity buildout",
+        "publisher": "California Energy Commission",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.tehachapinews.com/news/data-center-proposed-in-inyokern-draws-water-other-concerns-in-east-kern/article_dc8cc3da-77d1-5e5f-a1bf-2c22444680a6.html",
+        "label": "Data center proposed in Inyokern draws water, other concerns in East Kern",
+        "publisher": "Tehachapi News",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://roadrunner395.com/2026/04/26/say-it-isnt-so-an-ai-data-center-is-coming-to-downtown-inyokern/",
+        "label": "Say it isn't so: an AI data center is coming to downtown Inyokern",
+        "publisher": "Roadrunner395",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kget.com/news/local-news/proposed-inyokern-data-center-could-use-12-to-16-million-gallons-of-water-annually/amp/",
+        "label": "Proposed Inyokern data center could use 12 to 16 million gallons of water annually",
+        "publisher": "KGET 17",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://somachlaw.com/policy-alert/ai-data-center-environmental-review-proposed-inyokern-data-center-highlights-water-use-concerns/",
+        "label": "AI Data Center Environmental Review: Proposed Inyokern Data Center Highlights Water-Use Concerns",
+        "publisher": "Somach Law",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Unincorporated Kern County site south of West Inyokern Road (Hwy 178) and west of North Brown Road (APNs 084-010-43, -44, -45 portion; broader ~95-acre study area across 19 APNs). The CEC SPPE docket formally governs 40 diesel backup generator sets rated to 99 MW combined backup capacity, described by the CEC as not electrically interconnected to the transmission or distribution grid; primary power is a separate 115 kV interconnection to Southern California Edison. Proposer entities per the primary CEC filing: Intuva Inc. and Valley Wide Engineering & Construction, alongside applicant R&L Capital, Inc. (CEO Robbie Barker). Unconfirmed pending a direct read of the CEC Basis-of-Design filing: press claims of '6 modular data halls' and on-site canopy solar. Jobs figures are inconsistent across sources (30-60 permanent, 1,600 temporary construction, and a softer 530-total-including-indirect claim, all secondary/company-sourced) and are omitted from the structured jobs field for that reason. Investment (~$250M) is a company estimate reported by Tehachapi News, not seen in a primary filing. A Phase I cultural resources survey found no CRHR-eligible or tribal cultural resources (NAHC response negative, 2026-03-16). Distinct from the already-tracked Golden Valley Technology Hub (Beacon/CRC, Elk Hills) - different operator, site, capacity, and power model. Coordinates are an approximate road-intersection geocode near North Brown Road, not a parcel-confirmed point.",
+    "energy": {
+      "source": "grid",
+      "utility": "Southern California Edison (SCE)",
+      "notes": "Primary power via a 115 kV grid interconnection; the 99 MW SPPE docket capacity is diesel backup generation, not the grid draw."
+    },
+    "landAcres": 55.54,
+    "investmentUsd": 250000000,
+    "community": {
+      "status": "contested",
+      "notes": "Active opposition (Ridgecrest City Councilman Skip Gorman; the Indian Wells Valley groundwater basin is in critical overdraft, with water-use estimates ranging from the company's claim of 50 acre-ft/yr or less to opposition estimates of approximately 500 acre-ft/yr) alongside organized labor support - IBEW Local 47 and regional Building & Construction Trades Councils have filed CEC letters of support. Filed at 99 MW, just under the 100 MW threshold that would trigger a more rigorous CEC Application for Certification instead of the lighter SPPE exemption.",
+      "sourceIndex": 4
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "coachella-valley-technology-campus-ca",
+    "name": "Coachella Valley Technology Campus",
+    "operator": "Stronghold Power Systems",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.671181,
+      "lon": -116.169492,
+      "city": "Coachella",
+      "county": "Riverside",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-02-11",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-11",
+        "note": "Coachella City Council approved a conceptual Municipal Utility Development Agreement with Coachella Valley Power Services LLC, a Stronghold Power Systems subsidiary; the project never reached the Planning Commission for its own land-use entitlements.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-06-04",
+        "note": "City Council unanimously terminated the Stronghold utility agreement and approved a 45-day data-center moratorium after sustained community opposition. The moratorium was extended roughly 10.5 months on 2026-07-08, and the Planning Commission recommended a permanent citywide data-center ban (two conditions attached) on 2026-07-15, with Council adoption votes scheduled for 2026-08-12 and 2026-08-26.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nbcpalmsprings.com/2026/05/12/coachella-residents-pack-town-hall-over-proposed-ai-data-center-raising-alarms-about-water-power-costs-and-transparency",
+        "label": "Coachella residents pack town hall over proposed 'AI data center,' raising alarms about water, power costs and transparency",
+        "publisher": "NBC Palm Springs",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://riversiderecord.org/coachella-valley-data-center-town-hall/",
+        "label": "Coachella Valley data center town hall",
+        "publisher": "Riverside Record",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://kvcr.org/news/local/2026-05-28/coachella-considers-moratorium-on-data-centers-as-community-pushes-back-against-proposed-tech-campus",
+        "label": "Coachella considers moratorium on data centers as community pushes back against proposed tech campus",
+        "publisher": "KVCR",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nbcpalmsprings.com/2026/06/04/coachella-approves-data-center-moratorium-ends-stronghold-power-agreement",
+        "label": "Coachella approves data center moratorium, ends Stronghold power agreement",
+        "publisher": "NBC Palm Springs",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://kesq.com/news/2026/06/04/coachella-moves-closer-to-permanent-data-center-ban-as-it-approves-moratorium-and-terminates-agreement-with-developer/",
+        "label": "Coachella moves closer to permanent data center ban as it approves moratorium and terminates agreement with developer",
+        "publisher": "KESQ",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://gpsbusinessinsider.com/coachella-power-strategy/",
+        "label": "Coachella's power strategy",
+        "publisher": "GPS Business Insider",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://dmkprojects.com/coachella-valley-technology-campus/",
+        "label": "Coachella Valley Technology Campus - project page",
+        "publisher": "DMK Project Solutions Services",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://kesq.com/news/2026/07/08/coachella-city-council-to-extends-45-day-data-center-moratorium-in-preparation-of-permanent-ban/",
+        "label": "Coachella City Council extends 45-day data center moratorium in preparation of permanent ban",
+        "publisher": "KESQ",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nbcpalmsprings.com/2026/07/16/coachella-planning-commission-recommends-permanent-data-center-ban-with-two-conditions-attached",
+        "label": "Coachella Planning Commission recommends permanent data center ban with two conditions attached",
+        "publisher": "NBC Palm Springs",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "450-acre, two-phase project (Phase 1: 240 acres, reportedly 270-300 MW across three to six buildings - sources disagree on the building count; Phase 2: 210 acres, up to roughly 600 MW combined) near the Fillmore Street and Avenue 52 intersection in eastern Coachella. Status recorded as cancelled as the closest schema fit: the city's only concrete agreement with the developer was terminated by City Council on 2026-06-04 and the city is one to two votes (2026-08-12, 2026-08-26) from a permanent data-center ban, though the developer has not formally withdrawn. Re-check after the August 2026 council votes. No AI/HPC-specific marketing found anywhere - both the developer and press use generic 'data center'/'technology campus' language; the NBC headline's 'AI data center' phrasing is journalistic shorthand, not developer marketing. Planned around three microgrids and an energy center under a self-supplied municipal-utility model (Coachella Valley Power Services LLC, a Stronghold subsidiary; DMK Project Solutions Services is the named project-management partner); the Imperial Irrigation District separately projected approximately $42M in municipal-utility infrastructure financing - not project capex, so investmentUsd is left unset. Capacity is disclosed only as a range and jobs only as vague estimates ('hundreds of local jobs'), so both are omitted from structured fields per this dataset's range-omit convention. Only cross-streets are known (Fillmore Street and Avenue 52) - no parcel address confirmed. Coordinates are an approximate road-segment geocode (Avenue 52), not a parcel-confirmed point.",
+    "landAcres": 450,
+    "community": {
+      "status": "opposed",
+      "notes": "Hundreds attended town halls over water use, power costs, air quality, noise, farmland loss, and proximity to Valle del Sol Elementary (about 2 miles). Former Mayor Steven Hernandez, a recipient of Stronghold campaign donations, pleaded guilty to a felony conflict-of-interest charge in 2026. No lawsuit found (unlike the already-tracked IVCM facility in Imperial County). Neighboring Indio is independently pursuing its own data-center ban as part of a regional trend.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digico-lax1-monterey-park-ca",
+    "name": "DigiCo LAX1 (1977 Saturn Street)",
+    "operator": "DigiCo Infrastructure REIT",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.039510,
+      "lon": -118.115058,
+      "city": "Monterey Park",
+      "county": "Los Angeles",
+      "street": "1977 Saturn Street",
+      "postalCode": "91755",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-10",
+        "note": "Initial Study/Mitigated Negative Declaration filed for Development Agreement No. 24.02 / Site Development Plan No. 24-040 (revised October 2025).",
+        "sourceIndex": 4
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-03-31",
+        "note": "HMC StratCap 1977 Saturn, LLC (a DigiCo Infrastructure REIT subsidiary) formally withdrew Development Agreement No. 24.02 / Site Development Plan No. 24-040 in a signed letter to the Monterey Park City Council (signed by Interim CEO Chris Maher) - filed before, not after, the city's Measure NDC ballot vote.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.montereypark.ca.gov/DocumentCenter/View/18798/26_03_31_SIGNED_LAX---Letter-to-City-of-Monterey-Park",
+        "label": "Signed withdrawal letter - HMC StratCap 1977 Saturn, LLC to City of Monterey Park (March 31, 2026)",
+        "publisher": "City of Monterey Park",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.montereypark.ca.gov/1710/Data-Center-Information",
+        "label": "Data Center Information - Ordinance 2279 / Measure NDC",
+        "publisher": "City of Monterey Park",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://laist.com/news/politics/developer-pulls-monterey-park-data-center-plan-after-backlash",
+        "label": "Developer pulls Monterey Park data center plan after backlash",
+        "publisher": "LAist",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.foxbusiness.com/fox-news-tech/monterey-park-permanent-data-center-ban",
+        "label": "Monterey Park voters approve permanent data center ban",
+        "publisher": "Fox Business",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nodatacentermpk.org/projectoverview",
+        "label": "Project overview - No Data Center MPK",
+        "publisher": "No Data Center MPK",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.coloradoboulevard.net/data-center-developer-withdraws-monterey-park-proposal-as-measure-ndc-heads-to-june-ballot/",
+        "label": "Data center developer withdraws Monterey Park proposal as Measure NDC heads to June ballot",
+        "publisher": "ColoradoBoulevard.net",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.realestatesource.com.au/digico-sells-la-data-centre-sites/",
+        "label": "DigiCo sells LA data centre sites",
+        "publisher": "Real Estate Source (AU)",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/digico-los-angeles-lax1",
+        "label": "DigiCo Los Angeles LAX1 - Baxtel facility record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "DigiCo Infrastructure REIT is externally managed by HMC Capital (ASX-listed); the applicant/signing entity was HMC StratCap 1977 Saturn, LLC. Approximately 250,000 sq ft hyperscale data center campus planned at 1977 Saturn Street, adjacent to a companion site at 1980 Saturn Street (referred to in trade coverage as DigiCo 'LAX2') which is NOT tracked as a separate record here - LAX2's specifics trace only to aggregator listings with no independent primary or press confirmation found this pass; it is being divested in the same HMC Capital transaction. Capacity disputed, omitted: sources disagree materially (49.5-50 MW per Fox Business and No Data Center MPK, citing the applicant's own Initial Study/MND; approximately 56 MW per aggregators, apparently derived from 14 backup diesel generators at 4 MW each; 66-72 MW per CoStar describing 'the original proposal') and the primary withdrawal letter discloses no MW figure at all. Acreage disputed, omitted: approximately 5 acres per a community group's math from the building footprint versus 16 acres per Baxtel (aggregator-only - treated as unconfirmed). HMC Capital bought the parcel for approximately $39M (December 2024) and has agreed to sell it back for roughly $39M plus $33.5M for the adjacent LAX2 site plus a $10M contingent earn-out, settling in H1 FY27 - real-estate transaction values, not construction capex, since the facility was never built; investmentUsd is left unset. No jobs figures disclosed anywhere. No AI/HPC-specific marketing language found for this project. City had a pre-existing data-center moratorium before this project surfaced. Coordinates are an approximate street-level geocode, not a parcel-confirmed point.",
+    "community": {
+      "status": "opposed",
+      "notes": "Measure NDC, a permanent citywide data-center ban, passed 88.34% (10,321-1,362) in a June 2, 2026 special election and was implemented via Ordinance 2279; the applicant's withdrawal (March 31, 2026) preceded the vote. The community group 'No Data Center MPK' cited approximately 12 million gallons/year of water use, approximately 434 GWh/year of power draw, noise, and approximately 77,034 metric tons CO2e/year, sourced to the applicant's own Initial Study/MND.",
+      "sourceIndex": 3
+    },
+    "facilityType": "data_center"
   }
 ]
