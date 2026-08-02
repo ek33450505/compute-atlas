@@ -26,6 +26,10 @@ export const meta = {
 
 const REPO = args?.repo ?? '.'
 const { state, stateAbbr, focusHint, existingFacilities } = args || {}
+// Date stamped onto new records' lastUpdated/retrievedAt. Pass args.today (the run
+// date) each wave — Workflow scripts can't call new Date(). Falls back to a fixed
+// date only if omitted, so a stale literal never silently reappears across waves.
+const TODAY = args?.today ?? '2026-07-10'
 
 if (!state || !stateAbbr || !existingFacilities) {
   throw new Error(
@@ -85,7 +89,10 @@ if (candidates.length === 0) {
 }
 
 phase('Verify')
-const BATCH_SIZE = 3
+// One candidate per verify dispatch: the `researcher` agent hard-refuses 3+
+// heterogeneous targets in a single dispatch (its Multi-target scope pre-flight
+// rule), so batching 3 returns a NEEDS_CONTEXT refusal instead of a verification.
+const BATCH_SIZE = 1
 const batches = []
 for (let i = 0; i < candidates.length; i += BATCH_SIZE) batches.push(candidates.slice(i, i + BATCH_SIZE))
 
@@ -127,15 +134,15 @@ Below is verified research for ${state} (${stateAbbr}) facility candidates. For 
 
 NOTE: other write agents may be concurrently appending to this same file — before you write, RE-READ the file's current tail to get correct insertion syntax; if your edit attempt fails with a "modified since read" error, just re-read and retry.
 
-Use id format: lowercase-kebab-slug ending in the state abbreviation (must match regex ^[a-z0-9-]+$; grep the file first to avoid collisions). Use "lastUpdated": "2026-07-10" and "retrievedAt": "2026-07-10" for all new entries. Set "precision": "approximate" on location unless a source gives an exact parcel-confirmed point. Only set capacityMw/investmentUsd/landAcres/jobs fields when a source actually discloses them — never guess a number.
+Use id format: lowercase-kebab-slug ending in the state abbreviation (must match regex ^[a-z0-9-]+$; grep the file first to avoid collisions). Use "lastUpdated": "${TODAY}" and "retrievedAt": "${TODAY}" for all new entries. Set "precision": "approximate" on location unless a source gives an exact parcel-confirmed point. Only set capacityMw/investmentUsd/landAcres/jobs fields when a source actually discloses them — never guess a number.
 
 Also: for each candidate you add, find its row in ${REPO}/docs/track-c-candidate-ledger.md (if present) and mark it (INTAKEN) following the file's existing convention.
 
 VERIFIED RESEARCH:
 ${chunk}
 
-After inserting: validate the file is valid JSON, run \`npx tsc --noEmit\`, and run \`npx vitest run\`. Fix any schema violations ONLY in what you just added — do not touch unrelated existing records. Do NOT commit. Report exactly what you inserted (ids + names) and what you dropped (with reasons), plus the final test/typecheck results.`,
-      { label: `write:${stateAbbr}:chunk${i}`, phase: 'Write', agentType: 'code-writer' }
+After inserting: validate the file is valid JSON, run \`npx tsc --noEmit\`, and run \`npx vitest run\`. Fix any schema violations ONLY in what you just added — do not touch unrelated existing records. Do NOT commit, and do NOT dispatch code-reviewer or the commit agent yourself — this workflow runs its own review phase after you. Report exactly what you inserted (ids + names) and what you dropped (with reasons), plus the final test/typecheck results.`,
+      { label: `write:${stateAbbr}:chunk${i}`, phase: 'Write', agentType: 'backend-writer' }
     )
   )
 )
