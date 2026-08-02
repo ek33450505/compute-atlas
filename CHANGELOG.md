@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0](https://github.com/ek33450505/compute-atlas/compare/v1.12.0...v1.13.0) (2026-08-02)
+
+
+### Features
+
+* **data:** deeper California wave — 4 East Bay facilities ([#100](https://github.com/ek33450505/compute-atlas/issues/100)) ([d8893da](https://github.com/ek33450505/compute-atlas/commit/d8893da267e8da5f392b08d00b56b6ccf21f5642))
+
 ## [1.12.0](https://github.com/ek33450505/compute-atlas/compare/v1.11.0...v1.12.0) (2026-08-02)
 
 
