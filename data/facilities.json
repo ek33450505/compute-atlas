@@ -47338,5 +47338,481 @@
     "landAcres": 1060,
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "digital-realty-mia10-fl",
+    "name": "Digital Realty MIA10",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 25.7758419,
+      "lon": -80.1929625,
+      "city": "Miami",
+      "county": "Miami-Dade",
+      "street": "36 NE 2nd Street",
+      "postalCode": "33132",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/miami/mia10",
+        "label": "Digital Realty MIA10",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/miami",
+        "label": "Digital Realty Miami",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.databank.com/data-centers/miami/36-northeast-2nd-street/",
+        "label": "DataBank Miami (36 NE 2nd Street)",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Carrier-neutral colocation building in downtown Miami; 150,000 sq ft across 7 stories per the operator's own current listing (some aggregators cite an older 162,000 sq ft figure). No MW capacity disclosed by the operator; third-party aggregators report conflicting, unconfirmed figures (roughly 1.3-2.0 MW). Digital Realty brands the full building as MIA10, though other colo resellers (including DataBank) also operate space within it. No AI/HPC-specific marketing found for this facility.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-mi1-nap-of-the-americas-fl",
+    "name": "Equinix MI1 (NAP of the Americas)",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 25.7823590,
+      "lon": -80.1930886,
+      "city": "Miami",
+      "county": "Miami-Dade",
+      "street": "50 NE 9th Street",
+      "postalCode": "33132",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2017-05-01",
+        "note": "Acquired by Equinix from Verizon as part of a 29-data-center, $3.6B portfolio deal (closed May 1, 2017); originally built by Terremark as the \"NAP of the Americas.\"",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.equinix.com/content/dam/eqxcorp/en_us/documents/resources/ibx-tech-specs/ibx_mi1_en.pdf",
+        "label": "Equinix MI1 IBX Technical Specifications",
+        "publisher": "Equinix",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.equinix.com/data-centers/americas-colocation/united-states-colocation/miami-data-centers",
+        "label": "Equinix Miami Data Centers",
+        "publisher": "Equinix",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://investor.equinix.com/news-events/press-releases/detail/288/equinix-completes-acquisition-of-29-data-centers-from",
+        "label": "Equinix Completes Acquisition of 29 Data Centers from Verizon",
+        "publisher": "Equinix Investor Relations",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Formerly Terremark's \"NAP of the Americas\"; acquired by Equinix from Verizon in a 29-facility, $3.6B portfolio deal that closed May 1, 2017. Equinix's own technical spec sheet reports 296,775 sq ft of colocation space (255,512 sq ft in MI1-1&2, 41,263 sq ft in MI1-3) -- distinct from the widely-repeated but unsourced 750,000 sq ft gross-building figure. No single headline MW capacity is disclosed by the operator (spec sheet lists standby/UPS power per floor rather than a total IT-load figure); aggregators report conflicting, unconfirmed estimates in the 17-28 MW range. No AI/HPC-specific marketing found for this facility.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "qts-mia1-sweetwater-fl",
+    "name": "QTS Miami (MIA1)",
+    "operator": "QTS Data Centers (Blackstone)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 25.7915329,
+      "lon": -80.3795596,
+      "city": "Sweetwater",
+      "county": "Miami-Dade County",
+      "street": "11234 NW 20th St",
+      "postalCode": "33172",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "landAcres": 1,
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://q.com/data-centers/miami/",
+        "label": "QTS Miami (MIA1) facility page",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/florida/miami/quality-miami-data-center/",
+        "label": "QTS Miami Data Center listing",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterjournal.com/data-centers/florida/miami/qts-miami-mia1/",
+        "label": "QTS Miami MIA1 profile",
+        "publisher": "Data Center Journal",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/qts-announces-open-internet-exchange-oix-data-center-certifications-301511386.html",
+        "label": "QTS Announces Open Internet Exchange (OIX) Data Center Certifications",
+        "publisher": "PR Newswire / QTS Data Centers",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/featured/article/11428144/blackstone-to-acquire-qts-in-blockbuster-data-center-m038a-deal",
+        "label": "Blackstone to Acquire QTS in Blockbuster Data Center M&A Deal",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "1-acre / ~37,000-38,000 sq ft legacy colocation facility positioned around South American/Caribbean connectivity. Address (11234 NW 20th St) is commonly listed as \"Miami\" per USPS mailing-city convention, but independently resolves to Sweetwater city, Miami-Dade County via both the US Census Bureau Geocoder and OpenStreetMap Nominatim (same building/parcel, ~90m agreement) -- corrected here per dataset precedent (cf. iron-mountain-mia-1-miami-fl, tracked under city Westview). DC OIX-2 certified per a March 2022 QTS press release. No AI/HPC/GPU-specific marketing found; owned by Blackstone (Infrastructure Partners + BREIT) since the 2021 QTS acquisition.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cielo-haines-city-fl",
+    "name": "Cielo Haines City Data Center",
+    "operator": "Cielo Digital Infrastructure",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 28.1114,
+      "lon": -81.6198,
+      "city": "Haines City",
+      "county": "Polk",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2026-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11",
+        "note": "Cielo Digital Infrastructure held an initial meeting with Haines City on Nov 4, 2025; the Deputy City Manager signed a non-binding concurrence letter on Nov 17, 2025 -- roughly seven months before the project became public.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "proposed",
+        "date": "2026-07",
+        "note": "Project publicly disclosed via local news coverage of city commission records. No formal site plan, zoning request, or development agreement filed. Blocked pending Southwest Florida Water Management District (SWFWMD) approval of a Water Use Permit modification; city officials say full approval is unlikely before end of 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://finance.yahoo.com/technology/ai/articles/florida-data-center-project-stalls-180033586.html",
+        "label": "Florida data center project stalls amid water permit fight",
+        "publisher": "Yahoo Finance (syndicating Data Center Dynamics)",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://thecitrustea.com/2026/07/02/haines-city-data-center-new-documents-show-what-commissioners-were-told-before-the-public-and-when/",
+        "label": "Haines City data center: new documents show what commissioners were told before the public, and when",
+        "publisher": "The Citrus Tea",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/planned-data-center-in-florida-held-back-by-lack-of-available-water-from-city/",
+        "label": "Planned data center in Florida held back by lack of available water from city",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "300 MW planned, ~74-acre site along Marion Road and State Road 544 East, Haines City, Polk County -- pre-application stage (no site plan, zoning request, or development agreement filed as of Aug 2026), distinct from the already-tracked Lakeland (Ryan Companies/Project Swan) and Fort Meade (Stonebridge/Florida Ecopark) Polk County sites. No precise parcel address, investment figure, or jobs figure disclosed in any source found; coordinates are the Haines City area centroid, not the actual site. The Data Center Dynamics original report (sources[2]) returned a 403 on direct re-fetch this session -- corroborated via Yahoo Finance syndication and independent Citrus Tea investigative reporting citing city commission records; multiple other independent local outlets (WFLA, Fox 13 Tampa Bay, Bay News 9) covered the same story at headline level.",
+    "landAcres": 74,
+    "water": {
+      "reportedMgd": 0.15,
+      "notes": "Cielo has requested 150,000 gallons/day. Haines City's pending SWFWMD Water Use Permit modification seeks to raise the city's total Floridan Aquifer allocation to 16.42M gal/day; city currently pumps ~7M of a permitted 10M gal/day and cannot cover the request without separate SWFWMD Governing Board approval."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "City commissioners Anne Huffman, Kim Downing, and Lekia Johnson have voiced opposition citing infrastructure, energy, water, traffic, and quality-of-life concerns. City was under Phase III water restrictions (once-weekly lawn watering) at time of public disclosure. No lawsuits identified as of Aug 2026.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "metrobloks-mia-a1-miami-fl",
+    "name": "Metrobloks MIA-A1 (MB01)",
+    "operator": "Metrobloks",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 25.79,
+      "lon": -80.41,
+      "city": "Miami",
+      "county": "Miami-Dade",
+      "street": "500 NW 137th Avenue",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 15.2
+    },
+    "announcedDate": "2025-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-04",
+        "note": "Metrobloks (Los Angeles-based) closed on 4.05 acres in Miami's Airport West submarket (seller: Sagard Real Estate; buyer broker: Cushman & Wakefield; seller broker: Transwestern) to build a 15.2 MW AI-ready data center; targeting operations by end of 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.metrobloks.com/press-release/metrobloks-acquires-land-in-miami-fl-to-build-15-2mw-ai-ready-data-center",
+        "label": "Metrobloks acquires land in Miami, FL to build 15.2MW AI-ready data center",
+        "publisher": "Metrobloks",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.metrobloks.com/sites/mia-mb01",
+        "label": "MIA A1 (MB01) site page",
+        "publisher": "Metrobloks",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cushmanwakefield.com/en/united-states/news/2025/04/represents-metrobloks-in-acquisition-of-developable-land-in-miami",
+        "label": "Cushman & Wakefield represents Metrobloks in acquisition of developable land in Miami",
+        "publisher": "Cushman & Wakefield",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "500 NW 137th Avenue, Miami-Dade County (Airport West submarket, near Miami International Airport). Land acquisition closed March 31, 2025; targeting operations by end of 2026, but no permit or construction-start source located -- recorded proposed, not under_construction. Capacity is disputed between the operator's own two pages: 15.2 MW at the press-release/land-acquisition stage (independently corroborated by Cushman & Wakefield) vs. 16.8 MW critical IT on the current site page, which separately claims ~40,500 sq ft of total whitespace across two 15,200 sq ft halls (an internal arithmetic inconsistency on the operator's own page). Recorded the better-corroborated 15.2 MW figure. The operator's site page states ~21ms round-trip latency to the NAP of the Americas and Uptime Tier III design intent with liquid cooling to 150kW/rack; no confirmed total-building square footage, investment figure, or jobs figure located -- omitted per project convention rather than using unconfirmed numbers. No opposition/permit coverage found this session; Airport West is a commercial/industrial submarket. Coordinates are an approximate Airport West-area estimate, not a parcel-confirmed geocode of the street address.",
+    "landAcres": 4.05,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "radiusdc-miami-i-sweetwater-fl",
+    "name": "RadiusDC Miami I",
+    "operator": "RadiusDC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 25.7871,
+      "lon": -80.3839,
+      "city": "Sweetwater",
+      "county": "Miami-Dade",
+      "street": "11300 NW 25th St",
+      "postalCode": "33172",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 9.2,
+      "operational": 3.2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/radiusdc-announces-acquisition-of-network-centric-data-center-in-miami-302220596.html",
+        "label": "RadiusDC Announces Acquisition of Network-Centric Data Center in Miami",
+        "publisher": "PR Newswire / RadiusDC",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lightwaveonline.com/data-center/article/55132665/radiusdc-acquires-south-florida-data-center",
+        "label": "RadiusDC Acquires South Florida Data Center",
+        "publisher": "Lightwave",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/ipis-radiusdc-acquires-miami-data-center/",
+        "label": "IPI's RadiusDC Acquires Miami Data Center",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/radiusdc-miami-i",
+        "label": "RadiusDC Miami I facility profile",
+        "publisher": "baxtel",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.loopnet.com/property/11300-nw-25th-st-miami-fl-33172/12086-2530310210013/",
+        "label": "11300 NW 25th St property record (Miami-Dade parcel 25-3031-021-0013)",
+        "publisher": "LoopNet",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Carrier-neutral, telecom-focused colocation facility with an 11-provider meet-me-room; originally built for Telefonica's own use (\"KeyCenter\" lineage), sold to Asterion in 2019, passed through Nabiax and Actis-owned NextStream before IPI Partners-backed RadiusDC acquired it (announced Aug 13, 2024). 3.2 MW operational with an announced expansion to 9.2 MW expected in 2026 (sources disagree on exact quarter -- H1 2026 vs Q3 2026); RadiusDC also cites 15+ MW as long-term site potential, which is aspirational and not a disclosed capacity figure -- omitted as a data point. Financial terms of the acquisition were not disclosed. City is confirmed as Sweetwater via the Miami-Dade County parcel record (APN 25-3031-021-0013); one aggregator (datacenters.com) labels a same-site legacy Telefonica listing \"Doral,\" likely a stale pre-rebrand mislabel outweighed by the parcel record and primary press coverage.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "colocsx-jacksonville-fl",
+    "name": "ColoCSX (CSX Data Center)",
+    "operator": "ColoCSX (CSX Transportation)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.1988,
+      "lon": -81.5812,
+      "city": "Jacksonville",
+      "county": "Duval",
+      "street": "6425 Southpoint Parkway",
+      "postalCode": "32216",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 6
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.csx.com/index.cfm/about-us/company-overview/colocation-services/",
+        "label": "CSX colocation services overview",
+        "publisher": "CSX Corporation",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/florida/jacksonville/csx-data-center/",
+        "label": "CSX Data Center (ColoCSX), Jacksonville",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/6425-southpoint-parkway-jacksonville/colocsx/datacenter/jacksonville",
+        "label": "ColoCSX Jacksonville building listing",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://members.jaxchamber.com/Information-Technology/ColoCSX-16564",
+        "label": "ColoCSX member listing",
+        "publisher": "Jacksonville Chamber of Commerce",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.city-data.com/duval-county/S/Southpoint-Parkway-4.html",
+        "label": "Duval County property tax record, Southpoint Parkway",
+        "publisher": "city-data.com (Duval County Property Appraiser)",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Decades-old multi-tenant enterprise colocation facility (built 1990, 15,872 sq ft) owned by CSX Transportation Inc. per Duval County property tax records. 6 MW / Tier 3 / ISO 27001 / SOC 1 Type II / SAS 70 Type II / LEED Silver figures are corroborated across four independent data-center marketplace aggregators, but several listings read as syndicated/mirrored copy from one origin; the operator's own sites (colocsx.com, csx.com) returned HTTP 403 to direct fetch this session, so confidence is recorded as reported rather than confirmed pending primary-source re-verification.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "hostdime-eatonville-fl",
+    "name": "HostDime Orlando Tier IV Data Center",
+    "operator": "HostDime",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 28.6106,
+      "lon": -81.3806,
+      "city": "Eatonville",
+      "county": "Orange",
+      "postalCode": "32751",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "landAcres": 5,
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.hostdime.com/new-orlando-data-center",
+        "label": "HostDime New Orlando Data Center",
+        "publisher": "HostDime",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://docs.hostdime.com/data-center-data-sheets/Orlando-Tier-IV-Data-Center-Data-Sheet_74907752/",
+        "label": "Orlando Tier IV Data Center data sheet",
+        "publisher": "HostDime",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.growthspotter.com/2023/10/16/data-center-along-i-4-in-eatonville-nears-completion-despite-ballooning-construction-costs/",
+        "label": "Data center along I-4 in Eatonville nears completion despite ballooning construction costs",
+        "publisher": "GrowthSpotter",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.clickorlando.com/news/local/2026/06/16/eatonville-council-weighs-transparency-push-as-data-center-raises-resident-concerns/",
+        "label": "Eatonville council weighs transparency push as data center raises resident concerns",
+        "publisher": "ClickOrlando",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/06/eatonville-council-turns-up-heat-on-hostdime-data-center-over-water-power-fears/",
+        "label": "Eatonville council turns up heat on HostDime data center over water, power fears",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/hostdime-seeks-deadline-extension-for-data-center-in-eatonville-orlando/",
+        "label": "HostDime seeks deadline extension for data center in Eatonville, Orlando",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "5-acre parcel (of the historic 99-acre Hungerford tract) fronting I-4 at Wymore Rd -- governing municipality is Eatonville, not Maitland; HostDime's own current marketing copy lists a mailing address of \"1 Innovative Pl, Maitland, FL 32751\" while an aggregator (baxtel) lists \"1000 Wymore Rd, Eatonville, FL\" for the same building -- both addresses are disputed/unverifiable via parcel search, so no street field is recorded. 100,000 sq ft, 7-story building, 3 data-center floors, >1,000 racks. Groundbreaking May 2021; HostDime's own landing page and data-sheet page disagree on completion quarter (Q3 2026 vs Q2 2026) and the project has slipped repeatedly since an original ~2024 target; as of ClickOrlando's June 2026 report the facility was still not open. Investment is conflicting and stale: GrowthSpotter (Oct 2023) reported an original $35M budget grown to $58M actual (65.7% overrun); a separately-circulating $100M figure is single-sourced and unreconciled, so no investmentUsd is recorded. No disclosed capacityMw. Distinct from HostDime's unrelated, already-operational 25,000 sq ft Tier III facility at 440 W Kennedy Blvd, Orlando. Eatonville Town Council (led by Councilwoman Wanda Randolph) has pushed a transparency measure over electricity/water use, noise, and appearance, and has assessed missed-deadline fines ($250-500/day); this intersects Florida SB 484 (effective July 1, 2026), which expands local authority over large-load customers and data-center water permits.",
+    "community": {
+      "status": "contested",
+      "notes": "Eatonville Town Council members have pushed for transparency and raised water/power/noise/appearance concerns; the town has assessed missed-deadline fines. No lawsuit or formal permit denial identified as of Aug 2026.",
+      "sourceIndex": 3
+    },
+    "facilityType": "data_center"
   }
 ]
