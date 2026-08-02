@@ -1299,16 +1299,19 @@ export interface ActivityEntry {
 /**
  * Returns a reverse-chronological feed of facility creates/updates, driven
  * entirely off `facility_history` — the single source of truth for change
- * events. Every create/update/delete, whether an admin-direct write or a
- * submission approval, goes through `lib/facility-write.ts` and writes
- * exactly one history row (see `createFacility`/`updateFacility` and
- * `approveSubmission` in lib/submissions.ts). Reading from history instead of
- * merging `facilitiesTable` (by `updatedAt`) with `submissionsTable` (by
- * `reviewedAt`) eliminates a double-entry bug: both of those sources could
- * capture the *same* create, showing it once as "new facility added" and
- * again as "facility updated" — and a direct admin create was mislabeled
- * "facility updated" entirely since `facilitiesTable.updatedAt` is set on
- * insert too.
+ * events. History rows come from two paths: `lib/facility-write.ts` writes
+ * exactly one row per admin-direct write or submission approval (see
+ * `createFacility`/`updateFacility` and `approveSubmission` in
+ * lib/submissions.ts, source `"admin-direct"` or a submission id), and
+ * `scripts/seed.ts` (the `db:seed` CLI) writes a `create` row for each
+ * genuinely-new facility inserted by a bulk data wave (source `"db-seed"`) —
+ * so bulk-seeded facilities show up in the feed too. Reading from history
+ * instead of merging `facilitiesTable` (by `updatedAt`) with
+ * `submissionsTable` (by `reviewedAt`) eliminates a double-entry bug: both of
+ * those sources could capture the *same* create, showing it once as "new
+ * facility added" and again as "facility updated" — and a direct admin
+ * create was mislabeled "facility updated" entirely since
+ * `facilitiesTable.updatedAt` is set on insert too.
  *
  * DB-only: the JSON fallback bundle has no history to sort on, so this
  * returns `[]` when `DATABASE_URL` is unset rather than throwing — the

@@ -20,9 +20,10 @@ import path from "node:path";
 
 import { facilitiesSchema } from "../lib/schema";
 import type { Facility } from "../lib/schema";
-import { facilitiesTable } from "../lib/db/schema";
+import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { docToRow } from "../lib/db/serialize";
+import { computeDocDiff } from "../lib/doc-diff";
 
 export interface SeedResult {
   /** Ids present in the JSON but absent from the DB — always inserted. */
@@ -57,12 +58,41 @@ export async function seedFacilities(
   // Always insert new ids. onConflictDoNothing() keeps this race-safe (e.g.
   // a concurrent seed run or a submission approved between the id-fetch
   // above and this insert) without ever touching an existing row's data.
+  //
+  // We record `facility_history` directly here (rather than going through
+  // lib/facility-write.ts's recordFacilityHistory) because seed.ts is a
+  // plain tsx CLI: facility-write.ts imports `revalidateTag` from
+  // `next/cache` at module scope, which only resolves inside the Next.js
+  // runtime and throws when imported from a bare Node/tsx process. Only
+  // computeDocDiff (a pure module) is safe to reuse here. .returning() lets
+  // us tell a real insert from a no-op conflict, so history is written only
+  // for facilities that were actually inserted.
   for (const facility of toInsert) {
-    await db.insert(facilitiesTable).values(docToRow(facility)).onConflictDoNothing();
+    const inserted = await db
+      .insert(facilitiesTable)
+      .values(docToRow(facility))
+      .onConflictDoNothing()
+      .returning({ id: facilitiesTable.id });
+    if (inserted.length > 0) {
+      try {
+        await db.insert(facilityHistoryTable).values({
+          facilityId: facility.id,
+          changeType: "create",
+          diff: computeDocDiff(null, facility),
+          source: "db-seed",
+        });
+      } catch (err) {
+        console.error("facility_history insert failed for %s (create):", facility.id, err);
+      }
+    }
   }
 
   // Only touch ids that already exist when explicitly forced — this is the
-  // old always-upsert behavior, now opt-in.
+  // old always-upsert behavior, now opt-in. Deliberately does NOT write
+  // history: a bulk --force reseed can touch hundreds of existing rows, and
+  // flooding the activity feed with "facility updated" entries for a
+  // routine reseed would drown out real edits. History here stays scoped to
+  // create-on-new-insert only.
   if (options.force) {
     for (const facility of existingInJson) {
       const row = docToRow(facility);

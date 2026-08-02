@@ -10,7 +10,7 @@ vi.mock("../lib/db/client");
 
 import * as dbClient from "../lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { facilitiesTable } from "../lib/db/schema";
+import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import type { DataCenterFacility, Source } from "../lib/schema";
 
 // Imported after the mock above so the mocked ../lib/db/client is in effect.
@@ -142,5 +142,43 @@ describe("seedFacilities", () => {
       .where(eq(facilitiesTable.id, "db-only-facility"));
     expect(dbOnlyRows).toHaveLength(1);
     expect(dbOnlyRows[0].name).toBe("DB Only");
+  });
+
+  it("default (no force): writes exactly one 'create' history row for a new facility, and none for a skipped-existing row", async () => {
+    const existingDoc = makeDoc({ id: "existing-facility", name: "Original Name" });
+    await seedFacility(tdb.db, existingDoc);
+
+    const newDoc = makeDoc({ id: "brand-new-facility", name: "New Facility" });
+
+    await seedFacilities([existingDoc, newDoc], { force: false });
+
+    const newHistory = await tdb.db
+      .select()
+      .from(facilityHistoryTable)
+      .where(eq(facilityHistoryTable.facilityId, "brand-new-facility"));
+    expect(newHistory).toHaveLength(1);
+    expect(newHistory[0].changeType).toBe("create");
+    expect(newHistory[0].source).toBe("db-seed");
+
+    const existingHistory = await tdb.db
+      .select()
+      .from(facilityHistoryTable)
+      .where(eq(facilityHistoryTable.facilityId, "existing-facility"));
+    expect(existingHistory).toHaveLength(0);
+  });
+
+  it("--force: overwriting an existing row does not write a history row", async () => {
+    const originalDoc = makeDoc({ id: "existing-facility", name: "Original Name" });
+    await seedFacility(tdb.db, originalDoc);
+
+    const differingJsonDoc = makeDoc({ id: "existing-facility", name: "Changed In JSON" });
+
+    await seedFacilities([differingJsonDoc], { force: true });
+
+    const history = await tdb.db
+      .select()
+      .from(facilityHistoryTable)
+      .where(eq(facilityHistoryTable.facilityId, "existing-facility"));
+    expect(history).toHaveLength(0);
   });
 });
