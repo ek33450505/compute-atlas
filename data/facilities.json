@@ -46265,5 +46265,620 @@
       "sourceIndex": 3
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-la3-el-segundo-ca",
+    "name": "Equinix LA3",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.9263426,
+      "lon": -118.3940556,
+      "city": "El Segundo",
+      "county": "Los Angeles",
+      "street": "1920 East Maple Avenue",
+      "postalCode": "90245",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.equinix.com/data-centers/americas-colocation/united-states-colocation/los-angeles-data-centers/la3",
+        "label": "Equinix LA3 official facility page",
+        "publisher": "Equinix",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/equinix-el-segundo-la3",
+        "label": "Equinix El Segundo LA3 - Baxtel facility record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/333",
+        "label": "Equinix LA3/LA4 - Los Angeles, El Segundo (PeeringDB facility record)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/424945843",
+        "label": "OpenStreetMap way/424945843 (1920 East Maple Avenue building)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Multi-tenant colocation/interconnection facility (cloud on-ramps to AWS/GCP, FASTER subsea cable peering); no AI/HPC-specific marketing found. A widely-repeated ~7.8MW capacity claim is unconfirmed by any source and is omitted; aggregator sites converge on ~5.0MW but that figure traces only to an aggregator page, not a direct primary fetch, so it is likewise omitted rather than asserted. Equinix's own product page returned HTTP 403 to direct fetch this pass; existence/address confirmed via Baxtel, PeeringDB, and OSM instead. Distinct building from the adjacent Equinix LA4 (445 North Douglas Street) on the same El Segundo campus. Coordinates are an approximate building-centroid geocode (OSM), not a parcel-confirmed point.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-la4-el-segundo-ca",
+    "name": "Equinix LA4",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.9219979,
+      "lon": -118.383118,
+      "city": "El Segundo",
+      "county": "Los Angeles",
+      "street": "445 North Douglas Street",
+      "postalCode": "90245",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.equinix.com/data-centers/americas-colocation/united-states-colocation/los-angeles-data-centers/la4",
+        "label": "Equinix LA4 official facility page",
+        "publisher": "Equinix",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/333",
+        "label": "Equinix LA3/LA4 - Los Angeles, El Segundo (PeeringDB facility record)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/equinix-el-segundo-la4",
+        "label": "Equinix El Segundo LA4 Data Center - Baxtel facility record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/equinix/445-n-douglas-street/la4",
+        "label": "Equinix LA4 - datacenterHawk marketplace listing",
+        "publisher": "datacenterHawk",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "One of two Equinix IBX facilities in El Segundo (LA3 and LA4); campus cross-connect to the adjacent Equinix LA3 (1920 East Maple Avenue). Multi-tenant colocation/interconnection space (Cloud Exchange to AWS/GCP); no AI/HPC-specific marketing found. No capacity (MW) disclosed by any source - not asserted. Equinix's own product page returned HTTP 403 to direct fetch this pass; existence/address independently corroborated via PeeringDB, Baxtel, and datacenterHawk. Coordinates are an approximate geocode, not a parcel-confirmed point.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-la1-los-angeles-ca",
+    "name": "CoreSite LA1 (One Wilshire)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.0478871,
+      "lon": -118.2555541,
+      "city": "Los Angeles",
+      "county": "Los Angeles",
+      "street": "624 South Grand Avenue",
+      "postalCode": "90017",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/la1-los-angeles-ca",
+        "label": "CoreSite LA1 facility page",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.coresite.com/spec-sheets/los-angeles-la1-facility-spec-sheet",
+        "label": "CoreSite LA1 facility spec sheet",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/gi-partners-refinances-one-wilshire-carrier-hotel-in-los-angeles/",
+        "label": "GI Partners refinances One Wilshire carrier hotel in Los Angeles",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/deals/gi-partners-buys-la-telecom-hub-one-wilshire",
+        "label": "GI Partners buys LA telecom hub One Wilshire",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "This record represents only CoreSite's leased footprint (35 suites since 2007) inside One Wilshire, a 30-story, 300+-tenant carrier-hotel building built in 1966. The building is owned by GI Partners' TechCore fund (a CalPERS-backed real-estate vehicle), not by CoreSite - GI Partners acquired it for $437.5M in 2013. No capacity (MW) disclosed by CoreSite for its LA1 suites; an aggregator-only ~32MW whole-building figure is not attributed to CoreSite and is omitted, consistent with this dataset's treatment of other multi-tenant carrier hotels (see the NY1/60 Hudson Street record). No AI/HPC-specific marketing found - generic high-density/connectivity language only. Distinct from CoreSite's LA2 (900 N. Alameda Street, a former mail facility). Coordinates are an approximate building geocode, not a parcel-confirmed point.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "serverfarm-lax1-el-segundo-ca",
+    "name": "Serverfarm LAX1",
+    "operator": "Serverfarm",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.9217807,
+      "lon": -118.3864589,
+      "city": "El Segundo",
+      "county": "Los Angeles",
+      "street": "444 North Nash Street",
+      "postalCode": "90245",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 17.3
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.serverfarmllc.com/los-angeles-data-center/",
+        "label": "Serverfarm Los Angeles (LAX1) data center page",
+        "publisher": "Serverfarm",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.serverfarmllc.com/press-releases/serverfarm-acquires-los-angeles-data-center/",
+        "label": "Serverfarm acquires Los Angeles data center (press release)",
+        "publisher": "Serverfarm",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://transwestern.com/news-detail/117-000-sf-data-center-trades-in-el-segundo-ca",
+        "label": "117,000 SF data center trades in El Segundo, CA",
+        "publisher": "Transwestern",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://labusinessjournal.com/real-estate/serverfarm-strikes-71m-el-segundo-hq/",
+        "label": "Serverfarm strikes $71M El Segundo HQ deal",
+        "publisher": "LA Business Journal",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://ceqanet.lci.ca.gov/2012121003",
+        "label": "T5 Data Expansion Project (EA 971), 444 North Nash Street - CEQA filing",
+        "publisher": "California CEQAnet",
+        "retrievedAt": "2026-08-02",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Formerly T5 Data Centers (T5@LA), built 2011 (~$30M construction cost); sold to Serverfarm + NantWorks for $71M in April 2021 and rebranded LAX1. Capacity corrected: Serverfarm's own current site discloses 17.3MW IT capacity / 26MVA utility capacity (not the 22MW figure some discovery leads cite, which conflates the 2021 acquisition press release's '22 MVA' apparent-power figure with real MW); datacenterHawk independently corroborates ~18.3MW commissioned. aiClassification set to 'likely' on the strength of facility-specific 'AI-ready... liquid cooling... 200 W/sq ft' language on Serverfarm's current site, though no named AI/HPC tenant was confirmed. Distinct from an unrelated, separate 2026 community-opposition story at 750 North Nash Street (a different, proposed, since-withdrawn project) - no opposition attaches to this facility.",
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "prime-lax01-vernon-ca",
+    "name": "Prime Data Centers LAX01",
+    "operator": "Prime Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.0014335,
+      "lon": -118.2303092,
+      "city": "Vernon",
+      "county": "Los Angeles",
+      "street": "4701 South Santa Fe Avenue",
+      "postalCode": "90058",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 33
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://primedatacenters.com/news/prime-opens-los-angeles-data-center/",
+        "label": "Prime opens Los Angeles data center",
+        "publisher": "Prime Data Centers",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/prime-data-centers-announces-the-opening-of-its-hyperscale-data-center-in-vernon-california-302305195.html",
+        "label": "Prime Data Centers announces opening of its hyperscale data center in Vernon, California",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://primedatacenters.com/news/prime-data-centers-and-lambda-partner-to-power-the-next-era-of-superintelligence-with-ai-optimized-infrastructure-in-southern-california/",
+        "label": "Prime Data Centers and Lambda partner on AI-optimized infrastructure in Southern California",
+        "publisher": "Prime Data Centers",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://lambda.ai/blog/prime-data-centers-and-lambda-partner-to-power-the-next-era-of-superintelligence-with-ai-optimized-infrastructure-in-southern-california",
+        "label": "Lambda partners with Prime Data Centers in Southern California",
+        "publisher": "Lambda",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/prime-launches-33mw-data-center-in-vernon-california/",
+        "label": "Prime launches 33MW data center in Vernon, California",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Opened November 14, 2024; 33MW of critical IT power at full build-out across six data halls, 100% leased at opening to two initially-unnamed AI companies. Lambda was named as a tenant via a separate press release approximately one year later (November 13, 2025), leasing 21MW of the 33MW total for NVIDIA Blackwell-based AI infrastructure - these are two distinct announcements, not one event. One of at least three independent data-center developments in Vernon (a small, ~200-resident, all-industrial city), alongside a separate Digital Realty land purchase (4400 Pacific Blvd) and the DataBank/Goodman Group 'Vernon LA Campus' - driven by Vernon Public Utilities offering industrial power at roughly half the rate of neighboring investor-owned utilities.",
+    "energy": {
+      "utility": "Vernon Public Utilities"
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "digital-realty-vernon-ca",
+    "name": "Digital Realty Vernon Data Center",
+    "operator": "Digital Realty",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.9995100,
+      "lon": -118.2252615,
+      "city": "Vernon",
+      "county": "Los Angeles",
+      "street": "4400 Pacific Boulevard",
+      "postalCode": "90058",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 32
+    },
+    "investmentUsd": 48800000,
+    "landAcres": 5.4,
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.bisnow.com/los-angeles/news/data-center-development/digital-realty-buys-vernon-data-center-site-49m-131715",
+        "label": "Digital Realty buys Vernon data center site for $49M",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.klabin.com/news/the-klabin-company-represents-digital-realty-in-488-million-land-acquisition-in-vernon",
+        "label": "The Klabin Company represents Digital Realty in $48.8 million land acquisition in Vernon",
+        "publisher": "The Klabin Company",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/digital-realty-reports-third-quarter-2025-results-302593261.html",
+        "label": "Digital Realty reports third quarter 2025 results",
+        "publisher": "Digital Realty / PR Newswire",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/california/1886/digital-realty-vernon-data-center",
+        "label": "Digital Realty Vernon Data Center",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Raw industrial land (5.4 acres, with an existing 1925-era ~235,000-253,200 sq ft building to be redeveloped) purchased for $48.8M, closing November 4, 2025, from Pacific Santa Fe Industrial, LLC; Digital Realty's own Q3 2025 earnings release confirms ~5 acres/~$49M/32MW IT capacity for a Los Angeles-metro site. No AI/HPC-specific marketing found - this is undeveloped land with no announced tenant. Distinct from the already-tracked databank-vernon-la-ca (DataBank/Goodman Group JV) and from Prime Data Centers' operational LAX01 (4701 South Santa Fe Avenue) - trade coverage describing a Prime facility under construction 'across the street' likely refers to a Prime expansion phase near its original campus rather than the original LAX01 building itself. One of at least three independent Vernon data-center developments drawn by Vernon Public Utilities' below-market industrial power rates. Coordinates are an approximate street-level geocode, not a parcel-confirmed point.",
+    "energy": {
+      "utility": "Vernon Public Utilities"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "centersquare-lax5-irvine-ca",
+    "name": "Centersquare LAX5",
+    "operator": "Centersquare (Cyxtera/Evoque)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.6847703,
+      "lon": -117.8366956,
+      "city": "Irvine",
+      "county": "Orange",
+      "street": "2681 Kelvin Avenue",
+      "postalCode": "92614",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 17.3
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/data-centers/los-angeles",
+        "label": "Centersquare Los Angeles-market data center directory (LAX3/LAX5)",
+        "publisher": "Centersquare",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/6670",
+        "label": "Centersquare Los Angeles (LAX5) - PeeringDB facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/centersquare-irvine-lax2",
+        "label": "Centersquare Irvine LAX2/LAX5 - Baxtel facility record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Officially named 'LAX5' on Centersquare's own current site; 'LAX2' is a deprecated Evoque-era code for this same building that persists on some aggregator pages. Capacity corrected to 17.3MW (Centersquare's current disclosed figure) from a stale/legacy 15MW aggregator figure. Centersquare = Brookfield's April 2024 combination of Evoque Data Center Solutions + acquired Cyxtera Technologies assets. No AI/HPC-specific marketing found for this building specifically (only portfolio-wide language). Distinct building from Centersquare's other Irvine facility, LAX3 (17836 Gillette Avenue), approximately 0.7 miles away - same operator, not the same campus. First Orange County, CA facility tracked in this dataset.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "centersquare-lax3-irvine-ca",
+    "name": "Centersquare LAX3",
+    "operator": "Centersquare (Cyxtera/Evoque)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.6870931,
+      "lon": -117.8479769,
+      "city": "Irvine",
+      "county": "Orange",
+      "street": "17836 Gillette Avenue",
+      "postalCode": "92614",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 24.9
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/data-centers/los-angeles",
+        "label": "Centersquare Los Angeles-market data center directory (LAX3/LAX5)",
+        "publisher": "Centersquare",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/2641",
+        "label": "Centersquare Los Angeles (LAX3) - PeeringDB facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/17836-gillette-avenue-irvine/centersquare/datacenter/oc2",
+        "label": "Centersquare LAX3-A / OC2, 17836 Gillette Avenue - Inflect listing",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "'OC2' is a legacy Cyxtera/Savvis codename for this same building, now branded 'LAX3' on Centersquare's current site (independently confirmed by OSM, which tags this building 'Cyxtera LAX3 Data Center'). Capacity corrected to 24.9MW - Centersquare's own disclosed Utility figure (matching the convention already used for the tracked centersquare-phx3-az record) - from a stale/inconsistent aggregator figure of 12MW that does not reconcile with that same aggregator's own suite-level sub-splits. No AI/HPC-specific marketing found for this building specifically. Distinct building from Centersquare's other Irvine facility, LAX5 (2681 Kelvin Avenue, formerly aggregator-labeled 'LAX2'), approximately 0.7 miles away - same operator, not the same campus.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-san1-san-diego-ca",
+    "name": "DataBank San Diego SAN1",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.9886013,
+      "lon": -117.073246,
+      "city": "San Diego",
+      "county": "San Diego",
+      "street": "12270 World Trade Drive, Suite 100",
+      "postalCode": "92128",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 7.2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/san-diego/12270-world-trade-drive/",
+        "label": "DataBank San Diego (SAN1), 12270 World Trade Drive - facility page",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.databank.com/resources/press-releases/databank-expands-capacity-of-san1-data-center-in-san-diego/",
+        "label": "DataBank expands capacity of SAN1 data center in San Diego",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/databank-san-diego-san1",
+        "label": "DataBank San Diego SAN1 - Baxtel facility record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Capacity corrected/clarified: DataBank's current live product page states 7.2MW critical IT load / 55,239 IT sq ft (independently corroborated by a DataCenterMap aggregator listing); DataBank's own 2022-2023 expansion press materials instead cite a 7.5MW/60,000 sq ft total-capacity target, which is not a contradiction but an older total-capacity framing rather than the current critical-IT-load figure. aiClassification set to 'likely' on the strength of an 'HPC Capable' designation and '40kW+ Cab Density Air' cooling spec on DataBank's own page, though this is a general multi-tenant colo facility rather than a dedicated AI/GPU campus. Distinct from the already-tracked EdgeConneX SDG01 (5761 Copley Drive, Kearny Mesa) - different operator and neighborhood (this site is in Rancho Bernardo/Carmel Mountain Ranch). Coordinates are an approximate geocode, not a parcel-confirmed point.",
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "scalematrix-san-diego-ca",
+    "name": "ScaleMatrix San Diego",
+    "operator": "ScaleMatrix",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.8377287,
+      "lon": -117.132639,
+      "city": "San Diego",
+      "county": "San Diego",
+      "street": "5775 Kearny Villa Road",
+      "postalCode": "92123",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 5,
+      "planned": 20
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.scalematrix.com/san-diego-data-center.html",
+        "label": "ScaleMatrix San Diego data center",
+        "publisher": "ScaleMatrix",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.scalematrix.com/press/scalematrix-announces-gpu-service-solution-ideal-hpc-deepmachine-learning-and-artificial.html",
+        "label": "ScaleMatrix announces GPU-as-a-Service solution ideal for HPC, deep/machine learning, and AI workloads",
+        "publisher": "ScaleMatrix",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.areadevelopment.com/newsItems/11-14-2018/scalematrix-data-center-san-diego-california.shtml",
+        "label": "ScaleMatrix / HPE Hybrid HPC Center of Excellence sited at San Diego headquarters",
+        "publisher": "Area Development",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.interconnection.fyi/data-center/project/scalematrix-5103cd17",
+        "label": "ScaleMatrix San Diego - interconnection/capacity cross-check",
+        "publisher": "Interconnection.fyi / GridTracker",
+        "retrievedAt": "2026-08-02",
+        "kind": "iso_queue"
+      },
+      {
+        "url": "https://opengovwa.com/corporation/604264407",
+        "label": "Scalematrix Management, LLC - business entity filing (5775 Kearny Villa Rd address)",
+        "publisher": "Washington State Corporations Registry",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/scalematrix-nearly-doubles-size-of-san-diego-data-center/",
+        "label": "ScaleMatrix nearly doubles size of San Diego data center",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "ScaleMatrix's own site discloses '5MW aggregate availability; 20MW+ utility upgrade capacity' - the widely-repeated flat '20MW' figure on aggregator sites is the future upgrade ceiling, not installed/operational capacity; cross-validated by an independent SDG&E-sourced interconnection record showing <10MW. A May 2026 expansion added 46,000 sq ft to the ~50,000 sq ft Kearny Mesa campus (~96,000 sq ft total) - this 'doubling' is square footage, not MW capacity. aiClassification set to 'likely': ScaleMatrix markets GPU-as-a-Service explicitly for HPC/deep learning/AI workloads, and this San Diego site is confirmed as the location of a ScaleMatrix/HPE 'Hybrid HPC Center of Excellence.' Address confirmed via a Washington-state LLC filing and parcel records; this is the company's headquarters campus, operating since approximately 2011-2012 in the Kearny Mesa neighborhood of the City of San Diego.",
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "raeden-grand-crossing-south-city-of-industry-ca",
+    "name": "Grand Crossing South - Building 10",
+    "operator": "Raeden (proposed tenant; developer Majestic Realty)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.0051077,
+      "lon": -117.8333142,
+      "city": "City of Industry",
+      "county": "Los Angeles",
+      "street": "110 Marcellin Drive",
+      "postalCode": "91789",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://investigatela.org/2026/03/02/city-of-industry-discussed-data-center-sites-months-before-zoning-vote/",
+        "label": "City of Industry discussed data center sites months before zoning vote",
+        "publisher": "Investigate LA",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://investigatela.org/2026/02/11/nobody-is-really-paying-attention-city-of-industry-zoning-and-energy-moves-raise-data-center-concerns/",
+        "label": "Nobody is really paying attention: City of Industry zoning and energy moves raise data center concerns",
+        "publisher": "Investigate LA",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://lataco.com/stop-sgv-data-center-building",
+        "label": "How to Stop A Data Center in Your Backyard",
+        "publisher": "L.A. TACO",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.majesticrealty.com/projects/grand-crossing-south/",
+        "label": "Grand Crossing South project page",
+        "publisher": "Majestic Realty Co.",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://raeden.com/data-centers/",
+        "label": "Raeden data centers overview",
+        "publisher": "Raeden Inc.",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "December 2025: Raeden Inc. proposed leasing 'Building 10' (110 Marcellin Drive) within Majestic Realty's 290-acre Grand Crossing South business park for a data center, requesting up to 30 MVA (an apparent-power unit, not converted to a MW figure since no source discloses one). No lease is confirmed executed; City of Industry directed consultants to plan the site as a future data center 'whether with Raeden or another tenant.' aiClassification set to 'likely' on the strength of Raeden's company-wide AI/HPC/neocloud-focused business model (150kW+/rack, liquid cooling, GPU-cloud tenants), though no site-specific tenant or spec has been disclosed yet. Investment/acreage/jobs not disclosed for this specific building (Grand Crossing South's 290 acres covers the whole multi-building park, not this parcel alone) and are omitted. ZIP 91789 spans both City of Industry and Diamond Bar - jurisdiction resolved to City of Industry via the city government body actively considering this project, not postal city alone; recommend parcel/APN-level confirmation in a future pass. Distinct from the unrelated Puente Hills Mall/MARICI battery-storage project in the same city (rezoned for battery storage, not a data center, in Feb 2026). Coordinates are an approximate representative point within the Grand Crossing master-planned development (the specific private road 'Marcellin Drive' is not indexed in OpenStreetMap), not a parcel-confirmed point.",
+    "community": {
+      "status": "contested",
+      "notes": "Organized, citywide opposition to City of Industry data-center development exists (an 18,000-signature 'No Data Centers SGV Coalition' petition per LA TACO, and a separate Action Network petition titled 'No Data Centers in City of Industry!'), but no source names Raeden or this specific building as the target of that opposition - the opposition is citywide/policy-level, not project-specific.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   }
 ]
