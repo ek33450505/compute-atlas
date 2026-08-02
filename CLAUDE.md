@@ -21,8 +21,9 @@ bats tests/discovery/run.bats   # shell tests for the discovery harness
 # Database (Neon Postgres + Drizzle) — all read .env.local
 npm run db:generate    # generate a migration from schema changes
 npm run db:migrate     # apply migrations
-npm run db:seed        # seed from data/facilities.json
-npm run db:export      # export live facilities back to data/facilities.json
+npm run db:seed        # insert NEW facilities into Neon (existing rows untouched)
+npm run db:seed -- --force   # ALSO overwrite existing Neon rows from the JSON
+npm run db:export      # export live facilities back to data/facilities.json (Neon → JSON)
 
 # Map data
 npm run build:mapdata                 # build static map overlays and siting-context from public sources
@@ -109,9 +110,18 @@ tool, not part of the deployed app.
 
 - **`.env.local` quoting:** `vercel env add` keeps surrounding quotes; a quoted
   `DATABASE_URL` is invalid and fails *silently* (no fallback). Strip quotes.
-- **Prod cache:** reads use tag-based `unstable_cache` with no timer. Data-only
-  changes reach prod only via a prod-runtime write (approve on prod) or a redeploy —
-  approving on a local runtime updates Neon but not prod's cache.
+- **Prod cache & bulk go-live:** aggregate pages (home/map/table/stats/explore) read
+  `loadFacilities` with a **1h ISR timer** (`revalidate: 3600`) — they self-heal within
+  the hour. Scoped pages (facility detail, state landing) are **tag-only, no timer** —
+  they refresh only when a write busts their tag via `lib/facility-write.ts`. A **direct
+  Neon write** (`db:seed`, or a bulk-upsert script) does NOT bust any tag, so after one
+  hit the admin-bearer `POST /api/revalidate` with the affected tags (e.g.
+  `{"tags":["facilities","state:CA"]}`) to surface scoped pages immediately; brand-new
+  facility ids need no bust (cache-miss populates them). The normal approve-on-prod path
+  busts tags for you — this is only for out-of-band bulk writes.
+- **JSON ↔ Neon — Neon is truth.** `data/facilities.json` can drift behind Neon
+  (records approved but not yet re-exported). `db:seed` is insert-new-safe by default
+  (never reverts a drifted row without `--force`); `db:export` pulls Neon→JSON to reconcile.
 - **Local-only docs:** `docs/NEXT-SESSION.md` and `docs/track-c-candidate-ledger.md`
   are gitignored maintainer notes — never commit them.
 - **Dev server:** don't run `next build`/`start` while `next dev` is live (it

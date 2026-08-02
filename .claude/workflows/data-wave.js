@@ -9,6 +9,15 @@
 //   //   for f in d if f['location']['state']=='OH']))"
 // }})
 //
+// ⚠️ ARGS GOTCHA (observed 2026-08-02): the Workflow `args` global did NOT reach
+// this script in-session — both `Workflow({name:'data-wave', args})` and
+// `{scriptPath, args}` delivered `args === undefined` (fails at the guard, 0 agents).
+// Until that's resolved, run a WAVE by baking inputs into a self-contained copy
+// (literal state/stateAbbr/today/existingFacilities, no `args`) and launching that
+// via `{scriptPath}`. GO-LIVE after a wave: the write is direct-to-JSON → curate via
+// PR, then get records into Neon (`db:seed`, insert-new-safe) and bust scoped caches
+// with `POST /api/revalidate {"tags":["facilities","state:XX"]}`.
+//
 // Stops before commit/push — the main session reads the diff and review verdict, then ships.
 
 export const meta = {
