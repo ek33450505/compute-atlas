@@ -5,6 +5,18 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0](https://github.com/ek33450505/compute-atlas/compare/v1.11.0...v1.12.0) (2026-08-02)
+
+
+### Features
+
+* **data:** California data wave - 4 facilities + data-wave workflow fixes ([#97](https://github.com/ek33450505/compute-atlas/issues/97)) ([eb77326](https://github.com/ek33450505/compute-atlas/commit/eb773268613a5e3236a11e3ebab263d626791aab))
+
+
+### Bug Fixes
+
+* **data:** harden bulk go-live — insert-new-safe db:seed + POST /api/revalidate ([#99](https://github.com/ek33450505/compute-atlas/issues/99)) ([bf928c9](https://github.com/ek33450505/compute-atlas/commit/bf928c9940bb326853706dd485b72eab3791978f))
+
 ## [1.11.0](https://github.com/ek33450505/compute-atlas/compare/v1.10.2...v1.11.0) (2026-08-01)
 
 
