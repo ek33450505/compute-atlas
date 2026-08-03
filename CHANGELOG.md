@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0](https://github.com/ek33450505/compute-atlas/compare/v1.15.0...v1.16.0) (2026-08-03)
+
+
+### Features
+
+* **data:** SEC-filer mining wave batch 1 — 11 crypto/AI-HPC facilities ([#108](https://github.com/ek33450505/compute-atlas/issues/108)) ([24d1226](https://github.com/ek33450505/compute-atlas/commit/24d1226785019bf0eaf83c071413d0608a9be501))
+
 ## [1.15.0](https://github.com/ek33450505/compute-atlas/compare/v1.14.0...v1.15.0) (2026-08-03)
 
 
