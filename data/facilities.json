@@ -47814,5 +47814,306 @@
       "sourceIndex": 3
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-akron-2-oh",
+    "name": "Lumen Akron 2",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.0695694,
+      "lon": -81.4907582,
+      "city": "Akron",
+      "county": "Summit",
+      "street": "110 S. Arlington St.",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://signalakron.org/where-7-data-centers-operate-in-summit-county-and-why-it-matters/",
+        "label": "Where 7 data centers operate in Summit County — and why it matters",
+        "publisher": "Signal Akron",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://signalakron.org/future-data-centers-in-akron-may-face-new-review-process/",
+        "label": "Future data centers in Akron may face new review process",
+        "publisher": "Signal Akron",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/lumen-akron-2",
+        "label": "Lumen Akron 2 data center listing",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenters.com/lumen-akron-2",
+        "label": "Lumen Akron 2 data center listing",
+        "publisher": "datacenters.com",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Distinct from lumen-cleveland-1-oh (different city/county). Address and neighborhood (Middlebury/Goodyear Heights) independently confirmed via Signal Akron local journalism and OSM Nominatim geocode, corroborated by three aggregator listings (datacentermap.com, baxtel.com, datacenters.com), which consistently label it 'Akron 2' (legacy Level 3 branding) to distinguish it from a separate, unverified 'Lumen Akron 1' at 520 S. Main St. Building is ~12,000 sqft with ~6,000 sqft raised-floor colocation space; certifications (HIPAA, ISO 27001, PCI DSS, SOC 1/2, SSAE 18) are generic enterprise-colocation marks, not AI/GPU-specific, so no aiClassification is set. No capacity MW disclosed in any source. Akron City Council approved a 2026-07-27 conditional-use review ordinance for new data centers; Signal Akron names this facility explicitly as an existing site unaffected by the ordinance (not retroactive). No operator-primary (assets.lumen.com) page exists for this specific site, unlike Cleveland.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "logistix-hamilton-innovation-center-butler-county-oh",
+    "name": "Hamilton Innovation Center",
+    "operator": "Logistix Property Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.3995,
+      "lon": -84.5613,
+      "city": "Hamilton",
+      "county": "Butler",
+      "street": "1380 University Boulevard",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-11",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-11",
+        "note": "Hamilton City Council approved sale of ~15 acres (University Commerce Park, Riverside neighborhood) to Logistix for $65,000; original plan ~155,000 sq ft data center + 95,000 sq ft substation, ~$15M investment, ~15 MW.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2025-10",
+        "note": "Project rescaled: Logistix partnered with Wharton Equity Partners and moved to a 29.2-acre city-owned parcel at 1380 University Boulevard, targeting 320,000 sq ft, 200+ MW (up from an earlier 80 MW plan), $1B+ investment, and 100+ jobs; groundbreaking targeted January 2026.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "City-commissioned feasibility study found the grid can deliver only 45 MW within 24 months against Logistix's 240 MW request; Logistix asked the city to pause the study, stating no decision had been made on the project.",
+        "sourceIndex": 4
+      },
+      {
+        "status": "proposed",
+        "date": "2026-06",
+        "note": "Butler County Commissioners' data-center moratorium coverage (moratorium covers only unincorporated townships, not the City of Hamilton) confirms the Hamilton project has been on pause since January 2026, with no resumption, cancellation, or construction start confirmed since.",
+        "sourceIndex": 5
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.journal-news.com/news/hamilton-oks-plan-for-data-center-project-in-riverside-neighborhood/BFSJT4SRYFC5XGE7DKESMRI72U/",
+        "label": "Hamilton OKs plan for data center project in Riverside neighborhood",
+        "publisher": "Journal-News",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://waremalcomb.com/projects/hamilton-innovation-center/",
+        "label": "Hamilton Innovation Center — project page",
+        "publisher": "Ware Malcomb",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.thebcfa.org/ignitebutler/featured-news-articles/p/item/64490/1b-hyperscale-data-center-could-break-ground-in-city-of-hamilton-in-2026",
+        "label": "$1B hyperscale data center could break ground in City of Hamilton in 2026",
+        "publisher": "Butler County Foundation for Advancement",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://local12.com/news/local/plans-1-billion-cincinnati-hamilton-ohio-data-center-advance-despite-environmental-energy-concerns",
+        "label": "Plans for $1 billion Cincinnati, Hamilton Ohio data center advance despite environmental, energy concerns",
+        "publisher": "Local12/WKRC",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wvxu.org/environment/2026-01-15/hamilton-data-center-paused-study",
+        "label": "Feasibility study for Hamilton data center paused as developer considers next steps",
+        "publisher": "WVXU / Cincinnati Public Radio",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wvxu.org/environment/2026-06-17/butler-county-approves-data-center-moratorium",
+        "label": "Butler County Commissioners approve short-term data center moratorium",
+        "publisher": "WVXU / Cincinnati Public Radio",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/ohio/922/hamilton-innovation-center",
+        "label": "Hamilton Innovation Center",
+        "publisher": "CleanView",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Site scaled and moved twice: original Nov 2024 plan was ~15 acres/155,000 sq ft/~$15M/~15 MW at University Commerce Park; by fall 2025 it had grown to a 29.2-acre city-owned parcel at 1380 University Boulevard, 320,000 sq ft, 200+ MW, $1B+ (Wharton Equity Partners partnership). No single capacityMw figure is asserted here — disclosed MW figures range from an original 15 MW up to a 240 MW request that a Jan 2026 city feasibility study found undeliverable (only 45 MW available within 24 months). Project has been paused since January 2026 pending resolution of that power-delivery gap; most recent confirmed reporting (June 2026) states it remains paused, with no resumption, cancellation, or construction start found. No AI/HPC-specific marketing language found in any source, so aiClassification is omitted. Coordinates are the Hamilton, OH city-area centroid, not an independently geocoded parcel point for 1380 University Boulevard.",
+    "investmentUsd": 1000000000,
+    "landAcres": 29.2,
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Organized resident opposition on environmental, health, and energy-cost concerns documented since at least fall 2025; the project's power-delivery shortfall (240 MW requested vs. 45 MW/24-month deliverable) triggered the Jan 2026 pause. Butler County's June 2026 moratorium legally covers only unincorporated townships, not the City of Hamilton, but reflects regional opposition context.",
+      "sourceIndex": 3
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "5c-group-vultr-prime-ohio-springfield-oh",
+    "name": "5C Group / Vultr Data Center (Prime Ohio)",
+    "operator": "5C Group (Hypertec Cloud + 5C Data Centers); tenant Vultr (The Constant Company, LLC)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.8664,
+      "lon": -83.7936,
+      "city": "Springfield",
+      "county": "Clark",
+      "street": "601 Benjamin Drive",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.wyso.org/news/2025-12-09/new-1-3-billion-data-center-in-springfield-expected-to-open-in-early-2026",
+        "label": "New $1.3 billion Springfield data center expected to open in early 2026",
+        "publisher": "WYSO",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.jobsohio.com/newsroom/news-press/vultr-announces-1-billion-data-center-investment-in-springfield",
+        "label": "Vultr Announces $1 Billion Data Center Investment in Springfield",
+        "publisher": "JobsOhio",
+        "retrievedAt": "2026-08-02",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://springfieldohio.gov/5c-data-center-faqs/",
+        "label": "5C Data Center FAQs",
+        "publisher": "City of Springfield",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/hypertec-cloud-acquires-5c-data-centers-forms-5c-group/",
+        "label": "Hypertec Cloud acquires 5C Data Centers, forms 5C Group",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.springfieldnewssun.com/local/clark-county-approves-new-zoning-rules-for-data-centers/article_941ca03e-6407-53b8-85b4-e86901b4c0b4.html",
+        "label": "Clark County approves new zoning rules for data centers",
+        "publisher": "Springfield News-Sun",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "5C Group (formed May 2025 when Hypertec Cloud acquired 5C Data Centers) owns/builds the campus in the Prime Ohio corporate park; Vultr (legal entity The Constant Company, LLC) is the AI/cloud tenant. Corrects a discovery-pipeline conflation of this project with a separate, independently tax-credited Crusoe Energy Systems project elsewhere in Springfield -- not the same facility. Capacity: 75 MW disclosed operating load at opening vs. 150 MW max design load (city FAQ) -- both real, tracked field carries the larger design figure. Investment: ~$1.3B total project cost (multi-source) vs. $901.3M JobsOhio incentive-scoped committed investment -- tracked field carries the total-project figure. 120 permanent jobs / >$14M annual payroll disclosed (WYSO); a separate JobsOhio incentive filing cites 20 committed data-infrastructure jobs (narrower, incentive-scoped count). Incentives: ~$95M city enterprise-zone abatement over 15 years; $32M+ state 10-year 50% Ohio Tax Credit Authority credit (Oct 2025) to The Constant Company. Community context: Springfield passed a 6-month moratorium on new data centers and a citizen petition to ban them was launched; Clark County (Jul 2026) restricted data centers to I-2 heavy-industrial zoning, but the county's own zoning administrator noted no I-2 parcels currently exist in county jurisdiction, and Springfield Township (where Prime Ohio sits) zones separately from the county -- this rule change may not directly bind this site.",
+    "energy": {
+      "source": "grid",
+      "utility": "Ohio Edison / FirstEnergy"
+    },
+    "subsidies": [
+      {
+        "program": "Enterprise Zone property tax abatement",
+        "amountUsd": 95000000,
+        "jurisdiction": "City of Springfield"
+      },
+      {
+        "program": "Ohio Tax Credit Authority -- 10-year 50% Job Creation Tax Credit",
+        "amountUsd": 32000000,
+        "jurisdiction": "State of Ohio",
+        "year": "2025"
+      }
+    ],
+    "investmentUsd": 1300000000,
+    "jobs": {
+      "permanent": 120,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "6-month moratorium, citizen ban petition, and a county zoning restriction (I-2 heavy-industrial, of unclear applicability to this township-zoned site) -- see notes field for full context.",
+      "sourceIndex": 4
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "cogent-akron-summit-county-oh",
+    "name": "Cogent Data Center Akron",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.0876,
+      "lon": -81.5183,
+      "city": "Akron",
+      "county": "Summit",
+      "street": "120 North Broadway Street",
+      "postalCode": "44304",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 5
+    },
+    "landAcres": 2.6,
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/en/cogent-cleveland/471-akron-dc",
+        "label": "Cogent Communications -- Akron Data Center",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-08-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://signalakron.org/where-7-data-centers-operate-in-summit-county-and-why-it-matters/",
+        "label": "Where 7 data centers operate in Summit County and why it matters",
+        "publisher": "Signal Akron",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sdxcentral.com/news/cogent-puts-four-data-centers-up-for-sale-in-us/",
+        "label": "Cogent Puts Four Data Centers Up for Sale in US",
+        "publisher": "SDxCentral",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cogent-communications-announces-closing-of-sale-of-10-data-center-facilities-302813574.html",
+        "label": "Cogent Communications Announces Closing of Sale of 10 Data Center Facilities",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Located in the Cascade Valley neighborhood. Capacity (5.0 MW total / 4.41 MW usable) is press-sourced (Avison Young sale/lease listing via Data Center Dynamics/SDxCentral, Feb 2025), not disclosed on Cogent's own operator page. The facility was marketed for sale/lease as of Feb 2025 (asking $44.1M -- a real-estate listing price, not a capex investment figure) but was confirmed NOT part of Cogent's June 2026 10-facility sale to I Squared Capital; Cogent's own site continues to advertise active colocation service here.",
+    "facilityType": "data_center"
   }
 ]
