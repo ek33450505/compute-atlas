@@ -48115,5 +48115,675 @@
     "lastUpdated": "2026-08-02",
     "notes": "Located in the Cascade Valley neighborhood. Capacity (5.0 MW total / 4.41 MW usable) is press-sourced (Avison Young sale/lease listing via Data Center Dynamics/SDxCentral, Feb 2025), not disclosed on Cogent's own operator page. The facility was marketed for sale/lease as of Feb 2025 (asking $44.1M -- a real-estate listing price, not a capex investment figure) but was confirmed NOT part of Cogent's June 2026 10-facility sale to I Squared Capital; Cogent's own site continues to advertise active colocation service here.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "bitfarms-panther-creek-nesquehoning-pa",
+    "name": "Panther Creek Plant",
+    "operator": "Bitfarms Ltd. (Keel Infrastructure Corp.)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.8557,
+      "lon": -75.828,
+      "city": "Nesquehoning",
+      "county": "Carbon",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 60,
+      "planned": 350
+    },
+    "announcedDate": "2025-04-02",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-03-14",
+        "note": "Bitfarms Ltd. (now Keel Infrastructure Corp.) completes its merger with Stronghold Digital Mining, Inc., assuming ownership of the Panther Creek coal-refuse power plant, which co-locates Bitcoin mining with its own power generation.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-05-11",
+        "note": "Per the company's Q1 2026 results, the disclosed 350 MW HPC/AI data-center conversion (via a PPL Electric Utilities Electric Service Agreement) remains pre-construction: zoning secured, site development progressing toward lease signing; no groundbreaking or Notice to Proceed confirmed in any filing through this date.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1812477/000121390026037514/ea0282809-10k_bitfarms.htm",
+        "label": "Keel Infrastructure Corp. (fka Bitfarms Ltd.) FY2025 Form 10-K, filed 2026-03-31",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1812477/000121390025097957/ea026090401ex99-1_bitfarms.htm",
+        "label": "Bitfarms Converts Macquarie Debt Facility to $300M Project Financing (6-K Exhibit 99.1, Oct 10, 2025)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1812477/000121390026054167/ea028991401ex99-1.htm",
+        "label": "Keel Infrastructure Corp. Q1 2026 results press release (May 11, 2026)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Currently an operating coal-refuse (culm) waste-to-energy power plant, a PURPA Qualifying Facility selling into PJM, that self-supplies electricity to co-located Bitcoin mining. 60 MW is the current owned/energized capacity (not 80 MW, which belongs to Bitfarms' separate Sharon, PA site). A 350 MW HPC/AI data-center conversion is disclosed and funded (phased: 50 MW by end-2026, 300 MW by end-2027, under a PPL Electric Utilities ESA), backed by a $300M Macquarie project-financing facility (drawn $100M, fully repaid Feb 2026) plus a share of the company's $588M Oct-2025 convertible notes -- but as of the most recent filing found (Q1 2026 results, May 2026) the project is still pre-lease/pre-construction: zoning secured, no groundbreaking or Notice to Proceed confirmed. Site totals nearly 320 acres of contiguous land, plus a pending agreement for ~200 additional adjacent acres not yet closed (omitted from landAcres pending close). No facility-specific investment or jobs total is disclosed. Operator renamed Bitfarms Ltd. -> Keel Infrastructure Corp. (NASDAQ/TSX: KEEL), same CIK 1812477, effective 2026-03-31/April 2026; acquired via merger with Stronghold Digital Mining, Inc. (closed 2025-03-14).",
+    "energy": {
+      "source": "other",
+      "notes": "Coal-refuse (culm) waste-to-energy generation; PJM wholesale market; PPL Electric Utilities interconnection for the planned HPC/AI load."
+    },
+    "landAcres": 320,
+    "facilityType": "crypto_mining",
+    "aiClassification": "likely",
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "behind_meter"
+    }
+  },
+  {
+    "id": "bitfarms-scrubgrass-kennerdell-pa",
+    "name": "Scrubgrass Generating Plant",
+    "operator": "Bitfarms Ltd. (Keel Infrastructure Corp.)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.2306,
+      "lon": -79.8517,
+      "city": "Kennerdell",
+      "county": "Venango",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 63
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-06-25",
+        "note": "Scrubgrass Generating Plant's parent company (Stronghold Digital Mining, predecessor to the current operator) raises $105M to power Bitcoin mining at the coal-refuse plant.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-06-02",
+        "note": "Local reporting describes conceptual (non-committed) load studies with FirstEnergy for 250/500/750 MW expansion scenarios (potential up to 1,363 MW) to support a future AI data-center campus; CEO Ben Gagnon: earliest additional power at that scale 'around 2028.' No permits, site plan, or construction confirmed -- planning stage only.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.exploreclarion.com/local/2021/06/25/scrubgrass-generating-plant-parent-company-raises-105m-to-power-bitcoin-mining-659916/",
+        "label": "Scrubgrass Generating Plant Parent Company Raises $105M to Power Bitcoin Mining",
+        "publisher": "exploreClarion.com",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.exploreclarion.com/local/2026/06/02/scrubgrass-could-become-areas-largest-ai-data-center-campus-866965/",
+        "label": "Scrubgrass Could Become Area's Largest AI Data Center Campus",
+        "publisher": "exploreClarion.com",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Originally the Scrubgrass Generating Plant, a waste-coal (culm) power plant; currently an operating Bitcoin-mining plus waste-to-energy site. 63 MW is the currently accessible/confirmed capacity -- an unconfirmed 85 MW upper bound appears in some secondary sources and is omitted here. Conceptual FirstEnergy load studies (250/500/750 MW scenarios, potential up to 1,363 MW) and a possible 550+ MW behind-the-meter natural-gas build plus a Tennessee Gas Pipeline connection are under evaluation for a future AI/HPC campus, but remain pre-permit/pre-site-plan; CEO Ben Gagnon puts the earliest realistic timeline around 2028 -- aiClassification is intentionally left unset pending real evidence of a committed AI/HPC buildout. A March 2025 settlement (Scrubgrass Reclamation Company) requires coal-ash pile removal by September 2026. Operator is Bitfarms Ltd. (now Keel Infrastructure Corp., NASDAQ/TSX: KEEL, effective 2026-03-31/April 2026), which acquired Stronghold Digital Mining, Inc. (the site's prior owner) via merger closed 2025-03-14 -- not to be confused with the unrelated 'Stronghold Power Systems' entity elsewhere in this dataset (Coachella, CA). The SEC 10-K citation for this site could not be independently verified this session (sec.gov returned 403 to automated fetches); facts here rest on dated local reporting with named authors and quotes.",
+    "energy": {
+      "source": "other",
+      "notes": "Waste-coal (culm) generation; conceptual behind-the-meter natural-gas expansion (550+ MW) under evaluation, not committed."
+    },
+    "landAcres": 650,
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "behind_meter"
+    }
+  },
+  {
+    "id": "bitfarms-moses-lake-wa",
+    "name": "Moses Lake Facility",
+    "operator": "Bitfarms Ltd. (Keel Infrastructure Corp.)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.1301,
+      "lon": -119.2781,
+      "city": "Moses Lake",
+      "county": "Grant",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 18
+    },
+    "announcedDate": "2021-11-11",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-11-11",
+        "note": "Bitfarms acquires a 24 MW hydro-powered Bitcoin mining facility in Moses Lake, Grant County, WA, for $26M total ($23M cash + $3M in common shares).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2025-11-13",
+        "note": "Bitfarms announces a binding, fully-funded turnkey agreement (~$128-129M, figure dual-sourced across filings) with Vertiv Group to convert the site to HPC/AI workloads (NVIDIA GB300 reference architecture, liquid cooling, target PUE 1.2-1.3), targeting completion December 2026. As of the FY2025 10-K, the site remains an active Bitcoin-mining operation -- conversion not yet complete.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1812477/000121390021058326/ea150439ex99-1_bitfarms.htm",
+        "label": "Bitfarms Acquires 24 Megawatts of Hydro Power in the U.S. (6-K Exhibit 99.1, Nov 11, 2021)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1812477/000121390025109575/ea026548201ex99-2_bitfarms.htm",
+        "label": "Bitfarms Announces Plans for Conversion of Washington Site to HPC/AI Workloads (6-K Exhibit 99.2, Nov 13, 2025)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1812477/000121390026037514/ea0282809-10k_bitfarms.htm",
+        "label": "Keel Infrastructure Corp. (fka Bitfarms Ltd.) FY2025 Form 10-K, filed 2026-03-31",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "18 MW is the current operating capacity per the FY2025 10-K property table (down from the 24 MW nameplate acquired in 2021). Powered by Grant County PUD hydroelectric power. A binding, fully-funded HPC/AI conversion agreement with Vertiv Group is disclosed -- reported as $128M in the Nov 2025 press release and $129M in the FY2025 10-K (a genuine cross-filing discrepancy, both cited); target hardware is NVIDIA GB300 (up to 190kW/rack), liquid cooling, target PUE 1.2-1.3, targeting completion December 2026. No GPUs are installed/operating as of the most recent filing -- aiClassification is 'likely,' not 'confirmed.' A widely-repeated 6-acre/~60,000 sq ft site-size claim could not be confirmed in any SEC filing and is omitted. No exact street address disclosed. Grant PUD has imposed regional load-growth limits on data-center customers and approved a 10.6% rate increase (2026-01-27) for its crypto-mining rate schedule -- a supply-constraint risk factor, not site-specific opposition.",
+    "energy": {
+      "source": "hydro",
+      "utility": "Grant County PUD"
+    },
+    "facilityType": "crypto_mining",
+    "aiClassification": "likely",
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "chirisa-volo-data-center-il",
+    "name": "Volo Data Center",
+    "operator": "Chirisa Technology Parks",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.3486,
+      "lon": -88.1382,
+      "city": "Volo",
+      "county": "Lake",
+      "street": "300 S Fish Lake Road",
+      "postalCode": "60073",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 14
+    },
+    "sources": [
+      {
+        "url": "https://www.datacenterfrontier.com/energy/article/55127752/coreweave-chirisa-illinois-data-center-project-taps-bloom-energy-for-fuel-cell-power-leans-into-microgrids",
+        "label": "CoreWeave, Chirisa Tap Bloom Energy For Illinois AI Data Center Project",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.microgridknowledge.com/data-center-microgrids/article/55126611/bloom-energy-bringing-fuel-cell-power-to-coreweave-data-center-project-in-illinois",
+        "label": "Bloom Energy Bringing Fuel Cell Power to CoreWeave Data Center Project",
+        "publisher": "Microgrid Knowledge",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://chirisatechnologyparks.com/bloom-energy-and-coreweave-partner-to-revolutionize-ai-data-center-power-solutions/",
+        "label": "Bloom Energy and CoreWeave Partner to Revolutionize AI Data Center Power Solutions",
+        "publisher": "Chirisa Technology Parks",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "160,000 sq ft leased facility; tenant is CoreWeave, Inc. (public GPU/AI-cloud compute provider) -- every source frames this explicitly as an AI data center supporting AI computing operations. 14 MW is the existing/disclosed grid power supply; a planned on-site Bloom Energy fuel-cell/microgrid buildout was targeted for Q3 2025 commissioning but its MW capacity is not disclosed in any source found and is omitted (a distinct figure from the 14 MW grid supply, not additive to it here). Acreage (~50 acres) and the exact street address/postal code are corroborated only via a single aggregator/cached-search path (a direct Data Center Dynamics fetch on the site's HSBC/Capital One former-tenant history returned 403 both attempts) -- flagged as single-path, not independently cross-verified; treat address/acreage as approximate. Former site occupant: HSBC (built ~2007), later Capital One (acquired HSBC's US card operations, 2012), vacant and auctioned ~2023 before Chirisa's redevelopment. No SEC filing or Bloom Energy investor press release could be located this session to corroborate; neither is cited as a source. Investment and jobs figures are not disclosed anywhere and are omitted.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Grid-supplied 14 MW plus a planned on-site Bloom Energy fuel-cell/microgrid buildout (targeted Q3 2025 commissioning; MW not disclosed)."
+    },
+    "landAcres": 50,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "cleanspark-austin-county-tx",
+    "name": "CleanSpark Austin County AI Data Center Campus",
+    "operator": "CleanSpark, Inc.",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 29.9508,
+      "lon": -96.2661,
+      "county": "Austin",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 285
+    },
+    "landAcres": 271,
+    "announcedDate": "2025-10-29",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-29",
+        "note": "CleanSpark executed 285 MW of long-term power supply agreements (a 28% increase to contracted power) for a ~271-acre AI/HPC data center campus in Austin County; substation construction underway, site design/vertical construction not yet started.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525254934/clsk-20251029.htm",
+        "label": "CleanSpark, Inc. Form 8-K, filed 2025-10-29 (Item 8.01)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525254934/clsk-ex99_1.htm",
+        "label": "CleanSpark Exhibit 99.1 press release: AI Data Center in Greater Houston",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "First of CleanSpark's two announced Greater Houston-area sites (see also the separate Brazoria County campus). No city/address disclosed anywhere in the filing — company language is only 'positioned between Houston and Austin'; Austin County (seat Bellville) fits that framing, so coordinates are an approximate county reference point, not a parcel. Targeting energization of >200 MW in H1 2027. Explicitly framed by named CleanSpark executives (CBO, SVP of AI Data Centers) as an AI/HPC campus, not continued bitcoin mining or generic cloud — clears the schema's evidence bar for aiClassification. Combined with the separate Brazoria County campus, CleanSpark cites 'more than 890 MW of aggregate potential utility capacity' in the greater Houston area.",
+    "energy": {
+      "source": "grid"
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "cleanspark-brazoria-county-tx",
+    "name": "CleanSpark Brazoria County (Second Texas) Campus",
+    "operator": "CleanSpark, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.1694,
+      "lon": -95.431,
+      "county": "Brazoria",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "landAcres": 447,
+    "announcedDate": "2026-01-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-14",
+        "note": "CleanSpark announced acquisition of up to 447 acres in Brazoria County with 300 MW (expandable to 600 MW) of ERCOT-approved interconnection capacity for a second Texas AI/HPC campus near Houston.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "CleanSpark's February 2026 operational update confirms the acquisition closed, adding '300 megawatts of ERCOT-approved capacity.' No construction-start evidence found; site remains staged as proposed.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-expands-texas-footprint-with-major-power-acquisition-near-houston-to-support-scaled-ai-and-hpc-development-302660752.html",
+        "label": "CleanSpark Expands Texas Footprint with Major Power Acquisition Near Houston",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://investors.cleanspark.com/news/news-details/2026/CleanSpark-Expands-Texas-Footprint-with-Major-Power-Acquisition-Near-Houston-to-Support-Scaled-AI-and-HPC-Development/default.aspx",
+        "label": "CleanSpark Expands Texas Footprint (issuer IR copy)",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://investors.cleanspark.com/news/news-details/2026/CleanSpark-Releases-February-2026-Operational-Update/default.aspx",
+        "label": "CleanSpark Releases February 2026 Operational Update",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "CleanSpark's second announced Houston-area AI/HPC campus (see also the separate Austin County campus, ~890 MW aggregate potential combined). No city or street address disclosed in any source found — coordinates are an approximate reference point at the Brazoria County seat (Angleton, TX), not a parcel location. 447 acres is disclosed as an 'up to' ceiling. An additional 300 MW (to a 600 MW total) is described as a potential future expansion, not yet ERCOT-approved or contracted. No named AI/HPC tenant or GPU lease disclosed for this specific site (unlike CleanSpark's Sandersville, GA site), so aiClassification is 'likely' rather than 'confirmed.' No raw SEC 8-K located this session for this transaction; sourced to CleanSpark's own press release and investor-relations pages, independently corroborated by trade press (DataCenterDynamics, The Energy Mag).",
+    "energy": {
+      "source": "grid"
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "cleanspark-cheyenne-wy",
+    "name": "CleanSpark Cheyenne Bitcoin Mining Campus",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.14,
+      "lon": -104.8202,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 75
+    },
+    "announcedDate": "2024-08-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-07-26",
+        "note": "CleanSpark acquired a 30 MW Bitcoin mining site in Cheyenne, Wyoming (immersion-cooled S21 XPs, targeting >2 EH/s).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2024-09-11",
+        "note": "CleanSpark closed on a second, 45 MW Wyoming site (targeting +3 EH/s), bringing the combined campus to 75 MW / 5+ EH/s targeted; company targeted operational status before end of 2024.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017024088986/clsk-20240726.htm",
+        "label": "CleanSpark, Inc. Form 8-K, filed 2024-08-01 (Item 8.01)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://investors.cleanspark.com/news/news-details/2024/CleanSpark-Executes-75-MW-of-Power-Contracts-and-Completes-Acquisition-of-Bitcoin-Mining-Site-in-Wyoming/default.aspx",
+        "label": "CleanSpark Executes 75 MW of Power Contracts in Wyoming",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Two-parcel buildout totaling 75 MW contracted power (30 MW site 1 + 45 MW site 2), combined target of 5+ EH/s using all-new S21 immersion XPs. Site 1 (30 MW) is confirmed as Cheyenne, Laramie County via the primary SEC 8-K; site 2 (45 MW) is described only as 'Wyoming' in the 8-K, with secondary/aggregator sources placing it in the 'Cheyenne market' — coordinates and city are therefore approximate for the combined record. Current operational status has not been independently reverified since the 2024 announcement. Pure bitcoin ASIC mining — no AI/HPC evidence found for this site (a later, unrelated CNBC report on CleanSpark pursuing a Wyoming AI data center was not tied to this facility and is not reflected here).",
+    "energy": {
+      "source": "grid"
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "coolingType": "immersion",
+      "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "cleanspark-college-park-ga",
+    "name": "CleanSpark College Park Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.6407,
+      "lon": -84.4277,
+      "city": "College Park",
+      "county": "Fulton",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "landAcres": 6,
+    "announcedDate": "2020-12-10",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-11-25",
+        "note": "CleanSpark's FY2025 10-K states in present tense: 'We own a property in College Park, Georgia, that mines bitcoin through immersion technology.'",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Item 1 Business, Item 2 Properties)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-agrees-to-acquire-bitcoin-miner-atl-data-center-301190492.html",
+        "label": "CleanSpark Agrees to Acquire Bitcoin Miner ATL Data Center",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "Formerly ATL Data Center; acquired by CleanSpark on December 10, 2020 (up to $19.4M in CLSK stock) — correcting an aggregator-cited 2022 date, which describes a separate, unrelated CleanSpark Georgia deal. The 2020 acquisition announcement described a plan to expand from 9.6 MW to 50 MW using air-cooled pods, but the current (FY2025) 10-K instead states the site now mines bitcoin via immersion technology and discloses no site-specific MW figure — Georgia capacity is reported only in aggregate (620 MW / 27.02 EH/s across 15 locations in 10 GA cities as of 2025-09-30). capacityMw is therefore omitted rather than carrying forward the stale 2020-era planned figure. No AI/HPC evidence for this specific site — CleanSpark's 10-K frames Georgia/Mississippi/Tennessee as bitcoin-mining-only, distinct from its separate AI/HPC-pivot sites (e.g. Sandersville, GA; Austin County, TX).",
+    "energy": {
+      "source": "grid"
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "coolingType": "immersion",
+      "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "cleanspark-meridian-ms",
+    "name": "CleanSpark Meridian Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.3643,
+      "lon": -88.7037,
+      "city": "Meridian",
+      "county": "Lauderdale",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "landAcres": 5,
+    "announcedDate": "2024-02-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-02-06",
+        "note": "CleanSpark 8-K discloses a Real Property Purchase and Sale Agreement (via subsidiary CSRE Properties Mississippi, LLC) for a ~5-acre 'Meridian Property,' one of three Mississippi sites in a combined $10,000,000 PSA.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2024-02-26",
+        "note": "The three-site Mississippi acquisition (Meridian, Vicksburg, Wiggins) closed for $19,771K combined, per CleanSpark's FY2025 10-K.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017024011571/clsk-20240202.htm",
+        "label": "CleanSpark, Inc. Form 8-K, filed 2024-02-06 (Item 1.01, Mississippi Acquisition)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017024011571/clsk-ex99_1.htm",
+        "label": "CleanSpark Exhibit 99.1 press release: three turnkey bitcoin mining facilities in Mississippi",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "One of three Mississippi sites (Meridian, Vicksburg, Wiggins) acquired together via subsidiary CSRE Properties Mississippi, LLC (a wholly-owned CleanSpark, Inc. subsidiary — not 'CleanSpark of Georgia, LLC,' an aggregator misattribution that returns zero hits in SEC full-text search) for $19,771K combined, closed 2024-02-26, from an initial $10,000,000 PSA. Combined three-site expected hashrate at announcement was 2.4 EH/s — not attributable per-site, so hashrate/MW is omitted here. CleanSpark's FY2025 10-K discloses Mississippi capacity only in aggregate (63 MW / 2.63 EH/s across 5 locations in 4 cities as of 2025-09-30); no per-site figure is disclosed anywhere. No street address disclosed. Air-cooled bitcoin ASIC mining per the 10-K's blanket description of CleanSpark's Georgia/Mississippi/Tennessee facilities — no AI/HPC evidence.",
+    "energy": {
+      "source": "grid"
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "coolingType": "air",
+      "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "cleanspark-vicksburg-ms",
+    "name": "CleanSpark Vicksburg Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.3526,
+      "lon": -90.8779,
+      "city": "Vicksburg",
+      "county": "Warren",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "landAcres": 5,
+    "announcedDate": "2024-02-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-02-06",
+        "note": "CleanSpark 8-K discloses a Real Property Purchase and Sale Agreement (via subsidiary CSRE Properties Mississippi, LLC) for a ~5-acre 'Vicksburg Property,' one of three Mississippi sites in a combined $10,000,000 PSA.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2024-02-26",
+        "note": "The three-site Mississippi acquisition (Meridian, Vicksburg, Wiggins) closed for $19,771K combined, per CleanSpark's FY2025 10-K.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017024011571/clsk-20240202.htm",
+        "label": "CleanSpark, Inc. Form 8-K, filed 2024-02-06 (Item 1.01, Mississippi Acquisition)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017024011571/clsk-ex99_1.htm",
+        "label": "CleanSpark Exhibit 99.1 press release: three turnkey bitcoin mining facilities in Mississippi",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "One of three Mississippi sites (Meridian, Vicksburg, Wiggins) acquired together via subsidiary CSRE Properties Mississippi, LLC (a wholly-owned CleanSpark, Inc. subsidiary — not 'CleanSpark of Georgia, LLC,' an aggregator misattribution) for $19,771K combined, closed 2024-02-26, from an initial $10,000,000 PSA. An aggregator's claim of 2.4 EH/s for Vicksburg alone is not credible (it would exceed the entire Mississippi state aggregate) and is not used. CleanSpark's FY2025 10-K discloses Mississippi capacity only in aggregate (63 MW / 2.63 EH/s across 5 locations in 4 cities as of 2025-09-30); no per-site figure is disclosed. No street address disclosed; a secondary claim of a 17,500 sq ft building could not be independently verified and is omitted. Air-cooled bitcoin ASIC mining per the 10-K's blanket description — no AI/HPC evidence.",
+    "energy": {
+      "source": "grid"
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "coolingType": "air",
+      "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "cleanspark-wiggins-ms",
+    "name": "CleanSpark Wiggins Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.8508,
+      "lon": -89.1284,
+      "city": "Wiggins",
+      "county": "Stone",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "landAcres": 9,
+    "announcedDate": "2024-02-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-02-06",
+        "note": "CleanSpark 8-K discloses a Real Property Purchase and Sale Agreement (via subsidiary CSRE Properties Mississippi, LLC) for a ~9-acre 'Wiggins Property,' one of three Mississippi sites in a combined $10,000,000 PSA.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2024-02-26",
+        "note": "The three-site Mississippi acquisition (Meridian, Vicksburg, Wiggins) closed for $19,771K combined, per CleanSpark's FY2025 10-K.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017024011571/clsk-20240202.htm",
+        "label": "CleanSpark, Inc. Form 8-K, filed 2024-02-06 (Item 1.01, Mississippi Acquisition)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017024011571/clsk-ex99_1.htm",
+        "label": "CleanSpark Exhibit 99.1 press release: three turnkey bitcoin mining facilities in Mississippi",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-ex21_1.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K, Exhibit 21.1 (Subsidiaries)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-02",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-02",
+    "notes": "One of three Mississippi sites (Meridian, Vicksburg, Wiggins) acquired together via subsidiary CSRE Properties Mississippi, LLC / CleanSpark MS, LLC (both wholly-owned CleanSpark, Inc. subsidiaries per 10-K Exhibit 21.1 — 'CleanSpark of Georgia, LLC' does not exist and is an aggregator misattribution) for $19,771K combined, closed 2024-02-26, from an initial $10,000,000 PSA. CleanSpark's FY2025 10-K discloses Mississippi capacity only in aggregate (63 MW / 2.63 EH/s across 5 locations in 4 cities as of 2025-09-30); no per-site figure is disclosed. A secondary claim of a 10,500 sq ft building could not be independently verified and is omitted. No street address disclosed. Air-cooled bitcoin ASIC mining per the 10-K's blanket description — no AI/HPC evidence.",
+    "energy": {
+      "source": "grid"
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "coolingType": "air",
+      "powerArrangement": "grid"
+    }
   }
 ]
