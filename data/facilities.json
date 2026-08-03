@@ -48785,5 +48785,885 @@
       "coolingType": "air",
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "core-scientific-auburn-al",
+    "name": "Core Scientific Auburn Data Center (AUBix)",
+    "operator": "Core Scientific, Inc.",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.6089,
+      "lon": -85.4879,
+      "city": "Auburn",
+      "county": "Lee",
+      "state": "AL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 16
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-02-19",
+        "note": "Core Scientific leased the existing AUBix facility at 1571 W Samford Ave and is bringing it online in phases; first ~16MW targeted, full ~$400M build ongoing as of the Feb 2025 announcement.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://investors.corescientific.com/news-events/press-releases/detail/107/core-scientific-announces-expansion-into-auburn-alabama-with-new-high-performance-computing-facility",
+        "label": "Core Scientific Announces Expansion into Auburn, Alabama with New High-Performance Computing Facility",
+        "publisher": "Core Scientific IR (BusinessWire-syndicated)",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://alabamanewscenter.com/2025/02/20/core-scientific-bringing-high-performance-computing-operation-to-auburn-alabama/",
+        "label": "Core Scientific bringing high-performance computing operation to Auburn, Alabama",
+        "publisher": "Alabama News Center",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/alabama/auburn/aubix-data-center/",
+        "label": "AUBix Data Center in Auburn | 1571 W Samford Ave (3 MW)",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "investmentUsd": 400000000,
+    "community": {
+      "status": "supported",
+      "notes": "Core Scientific retained the facility's 11 existing full-time employees and plans to grow to 20+; local officials (Auburn city/state leaders) publicly supportive; projected ~$1.5M/yr local tax revenue.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "core-scientific-calvert-city-ky",
+    "name": "Core Scientific Calvert City Data Center (Calvert 1, 2 & 3)",
+    "operator": "Core Scientific, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.0328,
+      "lon": -88.3527,
+      "city": "Calvert City",
+      "county": "Marshall",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 150
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2019-11",
+        "note": "Opened Nov 2019 as a converted Gerdau steel-mill site; still Core Scientific's sole listed Kentucky property in the FY2025 10-K (KY count=1), now expanded to a Calvert 1/2/3 campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.areadevelopment.com/newsitems/11-14-2019/core-scientific-calvert-city-kentucky.shtml",
+        "label": "Core Scientific Opens Blockchain Facility in Calvert City, Kentucky",
+        "publisher": "Area Development",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/core-scientific-opens-world-class-blockchain-hosting-facility-in-calvert-city-ky-300956631.html",
+        "label": "Core Scientific opens world-class blockchain hosting facility in Calvert City, KY",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/kentucky/calvert-city/core-scientific-calvert-city/",
+        "label": "Core Scientific Calvert City Data Center | 1035 Shar-Cal Rd",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/kentucky/calvert-city/riot-platforms-calvert-city/",
+        "label": "Riot Platforms Calvert City Data Center | 1542 N Main St",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "energy": {
+      "source": "grid",
+      "utility": "TVA / Jackson Purchase Energy",
+      "notes": "Powered via TVA and Jackson Purchase Energy; the Area Development/PRNewswire launch coverage cited ~125MW ready at opening, current listings (datacenterHawk) show 150MW across the built-out Calvert 1/2/3 campus."
+    },
+    "landAcres": 15,
+    "community": {
+      "notes": "Repurposed a shuttered (2016) Gerdau steel rolling mill, framed locally as an economic-revival/jobs project.",
+      "sourceIndex": 3
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "core-scientific-grand-forks-nd",
+    "name": "Core Scientific Grand Forks Data Center (Grand Forks 1)",
+    "operator": "Core Scientific, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.8912,
+      "lon": -97.0434,
+      "city": "Grand Forks",
+      "county": "Grand Forks",
+      "state": "ND",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-03",
+        "note": "Commissioned Nov 2021, reached full 100MW operating capacity March 2022. Sole ND facility in Core Scientific's FY2025 10-K property count (ND=1).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.areadevelopment.com/newsitems/5-7-2021/core-scientific-grand-forks-north-dakota.shtml",
+        "label": "Core Scientific Establishes Grand Forks, North Dakota, Facility",
+        "publisher": "Area Development",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://corescientific.com/high-density-data-centers/grand-forks-nd/",
+        "label": "Grand Forks, North Dakota Data Center (Grand Forks 1)",
+        "publisher": "Core Scientific (operator site)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/north-dakota/grand-forks/core-scientific-grand-forks/",
+        "label": "Core Scientific Grand Forks Data Center | 5601 11th Ave S",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "energy": {
+      "source": "grid",
+      "utility": "Nodak Electric Cooperative / Minnkota Power Cooperative",
+      "notes": "Powered by Nodak Electric Cooperative and Minnkota Power Cooperative; reported energy mix ~55% lignite coal, 34% wind, 8% hydroelectric."
+    },
+    "landAcres": 20,
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "core-scientific-denton-tx",
+    "name": "Core Scientific Denton Data Center (Denton 1)",
+    "operator": "Core Scientific, Inc.",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.1932,
+      "lon": -97.1276,
+      "city": "Denton",
+      "county": "Denton",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 260
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-02-26",
+        "note": "Converted bitcoin-mining campus (8171 Jim Christal Rd) being rebuilt into a CoreWeave AI/HPC hub; renovation began Nov 2024, phased buildout continuing; full critical IT load reaches ~260MW after the Feb 2025 70MW expansion, with other coverage citing a 2027 full-site launch target.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://investors.corescientific.com/news-events/press-releases/detail/110/core-scientific-and-coreweave-announce-1-2-billion-expansion-at-denton-tx-site",
+        "label": "Core Scientific and CoreWeave Announce $1.2 Billion Expansion at Denton, TX Site",
+        "publisher": "Core Scientific IR (BusinessWire-syndicated)",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/core-scientific-denton-tx",
+        "label": "Core Scientific: Denton, TX Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://corescientific.com/high-density-data-centers/denton-texas/",
+        "label": "Denton, TX Data Center | High-Density at Scale",
+        "publisher": "Core Scientific (operator site)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "investmentUsd": 1200000000,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "core-scientific-austin-tx",
+    "name": "Core Scientific Austin Data Center (Austin 1)",
+    "operator": "Core Scientific, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.214,
+      "lon": -97.622,
+      "city": "Austin",
+      "county": "Travis",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200,
+      "operational": 16
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-06-03",
+        "note": "Formerly a Hewlett Packard hosting/HPC facility; Core Scientific delivered the initial 16MW CoreWeave contract more than 30 days ahead of schedule (2024), then expanded via the June 2024 ~200MW hosting agreement.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.businesswire.com/news/home/20240603752657/en/Core-Scientific-to-Provide-Approximately-200-MW-of-Infrastructure-to-Host-CoreWeave%E2%80%99s-High-Performance-Computing-Services-Capturing-Significant-AI-Compute-Opportunity",
+        "label": "Core Scientific to Provide Approximately 200 MW of Infrastructure to Host CoreWeave's High-Performance Computing Services",
+        "publisher": "BusinessWire",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://corescientific.com/high-density-data-centers/austin-tx/",
+        "label": "Data Center Austin TX | High-Density Infrastructure",
+        "publisher": "Core Scientific (operator site)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/texas/austin/core-scientific-austin/",
+        "label": "Core Scientific Austin Data Center | 3301 Hibbetts Rd",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "landAcres": 38,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "mara-findlay-oh",
+    "name": "MARA Findlay Data Center",
+    "operator": "MARA Holdings, Inc.",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.0442,
+      "lon": -83.6499,
+      "city": "Findlay",
+      "county": "Hancock",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150,
+      "operational": 30
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Part of MARA's combined 372MW Ohio buildout (Findlay + Hannibal + Hopedale) targeted for full energization by end of 2025; Findlay is the only piece of that trio not already tracked.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ir.mara.com/news-events/press-releases/detail/1375/mara-adds-372-megawatts-of-capacity-in-ohio-with-152-megawatts-operational-and-220-megawatts-in-development",
+        "label": "MARA Adds 372 Megawatts of Capacity in Ohio, with 152 Megawatts Operational and 220 Megawatts in Development",
+        "publisher": "MARA Holdings IR",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2024/11/11/2978305/0/en/MARA-Adds-372-Megawatts-of-Capacity-in-Ohio-with-152-Megawatts-Operational-and-220-Megawatts-in-Development.html",
+        "label": "MARA Adds 372 Megawatts of Capacity in Ohio (mirror)",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/mara-findlay-ohio",
+        "label": "MARA: Findlay, Ohio Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "energy": {
+      "notes": "Press release notes 'much of the future capacity is alongside operating generation' (co-location with a power plant implied) but does not specify the generation type for Findlay specifically."
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "soluna-project-ellen-rio-hondo-tx",
+    "name": "Soluna Project Ellen",
+    "operator": "Soluna Holdings",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 26.2373,
+      "lon": -97.5814,
+      "city": "Rio Hondo",
+      "county": "Cameron",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-04-17",
+        "note": "Term sheet for power signed April 2025; PPA, land, and ERCOT interconnection agreements still in progress per baxtel (year planned 2026).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solunacomputing.com/news/project-ellen-term-sheet/",
+        "label": "Soluna to Expand Renewable-Powered AI & Bitcoin Computing With New 100MW Site",
+        "publisher": "Soluna Computing",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/soluna-project-ellen",
+        "label": "Soluna: Project Ellen Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/palmas-wind-llc/61773",
+        "label": "Palmas Wind, LLC plant record",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "energy": {
+      "source": "wind",
+      "notes": "Co-located with the 145 MW Palmas Wind (Palmas Altas) wind farm near Rio Hondo, Cameron County (independently verified at 144.9 MW nameplate via GridInfo); built in two 50 MW phases."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "soluna-project-annie-paris-tx",
+    "name": "Soluna Project Annie",
+    "operator": "Soluna Holdings",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.6609,
+      "lon": -95.5555,
+      "city": "Paris",
+      "county": "Lamar",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 75
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-05-22",
+        "note": "Term sheet announced May 22 2025 (Soluna's first solar-powered site); PPA, land, and ERCOT interconnection still in progress (baxtel: year planned 2028).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solunacomputing.com/?post_type=news&p=15253",
+        "label": "Soluna to Launch First Solar-Powered Data Center With 75 MW Project",
+        "publisher": "Soluna Computing",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/soluna-project-annie",
+        "label": "Soluna: Project Annie Details",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://corvusunited.com/project/tyson-nick-solar/",
+        "label": "Tyson Nick Solar project profile",
+        "publisher": "Corvus United",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "notes": "Directory listings give a street address (4210 Old Bonham Rd, Paris, TX 75460) but I could not independently geocode it; lat/lon here is the Paris, TX city centroid — precision should be treated as approximate, not exact, until the address is geocoded.",
+    "energy": {
+      "source": "solar",
+      "notes": "Co-located with the 114 MW Tyson Nick Solar Project near Paris, Lamar County (independently verified at 112 MW via Corvus United); Soluna's first solar-powered deployment."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "soluna-project-fei-childress-tx",
+    "name": "Soluna Project Fei",
+    "operator": "Soluna Holdings",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.4262,
+      "lon": -100.2013,
+      "city": "Childress",
+      "county": "Childress",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-26",
+        "note": "Announced Aug 26 2025 as part of Soluna's '1 GW milestone'; still in land acquisition, power contract negotiation, and ERCOT interconnection planning per Soluna. Baxtel lists year planned 2028.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solunacomputing.com/news/1gw/",
+        "label": "Soluna Surpasses One Gigawatt of Clean Computing Projects with Launch of Two New Sites",
+        "publisher": "Soluna Computing",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/soluna-project-fei",
+        "label": "Soluna Project Fei Data Center Details",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "energy": {
+      "source": "solar",
+      "notes": "Co-located with a 240 MW utility-scale solar farm; named for AI researcher Fei-Fei Li."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "soluna-project-grace-silverton-tx",
+    "name": "Soluna Project Grace",
+    "operator": "Soluna Holdings",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.4692,
+      "lon": -101.3082,
+      "city": "Silverton",
+      "county": "Briscoe",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-01-08",
+        "note": "Siemens MOU announced Jan 8 2026 for a 2 MW behind-the-meter power-and-controls pilot to validate managing rapid GPU-driven power swings for AI/HPC workloads at the Project Grace site. Soluna's own project tracker lists Grace as 'Under Construction.'",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solunacomputing.com/news/siemens-partnership/",
+        "label": "Soluna and Siemens Collaborate to Solve GPU Power Swings in Behind-the-Meter AI",
+        "publisher": "Soluna Computing",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/soluna-project-grace",
+        "label": "Soluna: Project Grace Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.solunacomputing.com/projects/",
+        "label": "Data Centers — Soluna Computing (project tracker)",
+        "publisher": "Soluna Computing",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "energy": {
+      "source": "wind",
+      "notes": "Wind-powered pilot near Soluna's existing Dorothy 1A/1B/2 sites in Silverton (~3.7 miles away, per Baxtel — a distinct physical site). Siemens partnership will supply electrical/mechanical equipment (transformers, switchgear, power converters) to test behind-the-meter AI/HPC power management. Named for Grace Hopper."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "canaan-alborz-happy-tx",
+    "name": "Alborz Bitcoin Mine",
+    "operator": "WindHQ LLC / Canaan Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.012,
+      "lon": -101.9165,
+      "city": "Happy",
+      "county": "Randall",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 40
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-08-09",
+        "note": "Completed deployment and operational by Aug 2022 per The Block; still operational as of the Feb 2026 Canaan acquisition, which describes it as part of an operating JV.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/canaan-inc-acquires-cipher-minings-interest-in-multiple-operational-mining-projects-totaling-4-4-ehs-in-west-texas-302694773.html",
+        "label": "Canaan Inc. Acquires Cipher Mining's Interest in Multiple Operational Mining Projects Totaling ~4.4 EH/s in West Texas",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/canaan-alborz",
+        "label": "Canaan: Alborz Data Center",
+        "publisher": "Baxtel (data center aggregator)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.theblock.co/post/162413/cipher-mining-completes-40-megawatt-wind-powered-site-in-texas",
+        "label": "Cipher Mining completes 40-megawatt wind powered site in Texas",
+        "publisher": "The Block",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "notes": "~1.3 EH/s hashrate. Distinct from all nine already-tracked Cipher TX facilities — none of those match Happy/Randall County.",
+    "energy": {
+      "source": "wind",
+      "notes": "Wind-powered: substation site within/adjacent to the 163 MW Astra Wind Farm (WindHQ affiliate). $46.9M BlockFi Lending loan financed original construction in 2022 (construction financing, not necessarily total project cost)."
+    },
+    "investmentUsd": 46900000,
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "canaan-bear-andrews-tx",
+    "name": "Bear Bitcoin Mine",
+    "operator": "WindHQ LLC / Canaan Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.2691,
+      "lon": -102.6042,
+      "city": "Andrews",
+      "county": "Andrews",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 40
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-01-03",
+        "note": "Operational since ~2022-2023 (base site); +30 MW expansion announced/contracted Jan 2024 via new Avalon A1466 miners from Canaan, delivery Q2 2024.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/canaan-inc-acquires-cipher-minings-interest-in-multiple-operational-mining-projects-totaling-4-4-ehs-in-west-texas-302694773.html",
+        "label": "Canaan Inc. Acquires Cipher Mining's Interest in Multiple Operational Mining Projects Totaling ~4.4 EH/s in West Texas",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/canaan-bear",
+        "label": "Canaan: Bear Data Center",
+        "publisher": "Baxtel (data center aggregator)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2024/01/03/2803639/0/en/Cipher-Mining-Announces-60-MW-Expansion-of-its-Bear-and-Chief-Joint-Venture-Data-Centers-and-Purchase-of-16-700-New-Miners-from-Canaan-Inc.html",
+        "label": "Cipher Mining Announces 60 MW Expansion of its Bear and Chief Joint Venture Data Centers and Purchase of 16,700 New Miners from Canaan Inc.",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "notes": "Distinct from the already-tracked Cipher Stingray HPC Data Center (id=cipher-stingray-andrews-county-tx) — Stingray is a separate, wholly Cipher-owned 100-250 MW 'proposed'-status development also near Andrews/Lyntegar territory, while Bear is a smaller, older (2022-built), WindHQ joint-venture operational bitcoin-mining site. Both being near Andrews and on the same coop grid is coincidental co-location, not the same site — no shared address, developer, or JV structure found.",
+    "energy": {
+      "source": "grid",
+      "utility": "Lyntegar Electric Cooperative",
+      "notes": "Connects to Lyntegar Electric Cooperative grid. Highly competitive sub-3-cents/kWh power rate cited in the Feb 2026 Canaan release; site participates in ERCOT demand response/energy arbitrage."
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "canaan-chief-mountain-andrews-tx",
+    "name": "Chief Mountain Bitcoin Mine",
+    "operator": "WindHQ LLC / Canaan Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.285,
+      "lon": -102.625,
+      "city": "Andrews",
+      "county": "Andrews",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 40
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-01-03",
+        "note": "Operational base site pre-2024; +30 MW expansion announced/contracted Jan 2024 via new Avalon A1466 miners from Canaan, delivery Q2 2024.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/canaan-inc-acquires-cipher-minings-interest-in-multiple-operational-mining-projects-totaling-4-4-ehs-in-west-texas-302694773.html",
+        "label": "Canaan Inc. Acquires Cipher Mining's Interest in Multiple Operational Mining Projects Totaling ~4.4 EH/s in West Texas",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/canaan-chief-mountain",
+        "label": "Canaan: Chief Mountain Data Center",
+        "publisher": "Baxtel (data center aggregator)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2024/01/03/2803639/0/en/Cipher-Mining-Announces-60-MW-Expansion-of-its-Bear-and-Chief-Joint-Venture-Data-Centers-and-Purchase-of-16-700-New-Miners-from-Canaan-Inc.html",
+        "label": "Cipher Mining Announces 60 MW Expansion of its Bear and Chief Joint Venture Data Centers and Purchase of 16,700 New Miners from Canaan Inc.",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "notes": "Distinct from the already-tracked Cipher Stingray HPC Data Center (id=cipher-stingray-andrews-county-tx) — different ownership structure (wholly Cipher-owned, 'proposed' status, 100-250 MW) vs. this smaller, operational WindHQ JV site. No shared address or developer link found.",
+    "energy": {
+      "source": "grid",
+      "notes": "Sub-3-cents/kWh power rate cited for Bear/Chief in the Feb 2026 Canaan release; ERCOT grid demand-response/energy-arbitrage participation."
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "hut8-salt-creek-culberson-tx",
+    "name": "Hut 8 Salt Creek Facility",
+    "operator": "Hut 8 Corp",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.825,
+      "lon": -103.909,
+      "county": "Culberson",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 63
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-04-16",
+        "note": "Energized in phases beginning April 16, 2024 (78 days from groundbreaking to first energization); still operating and staffing as of 2025 operational updates.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2024/04/16/2863407/0/en/Hut-8-optimizes-self-mining-operations-as-miners-come-online-at-Salt-Creek.html",
+        "label": "Hut 8 optimizes self-mining operations as miners come online at Salt Creek",
+        "publisher": "GlobeNewswire (Hut 8 Corp)",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/03/31/3052066/0/en/Hut-8-and-Eric-Trump-Launch-American-Bitcoin-to-Set-a-New-Standard-in-Bitcoin-Mining.html",
+        "label": "Hut 8 and Eric Trump Launch American Bitcoin to Set a New Standard in Bitcoin Mining",
+        "publisher": "GlobeNewswire (Hut 8 Corp)",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://cdn.kscope.io/4a3545ac7cd83ed5809d42e808998efa.pdf",
+        "label": "Hut 8 Corp Form 10-KT (filed 2024-03-28), Item 2 Properties",
+        "publisher": "SEC EDGAR (kscope.io mirror)",
+        "retrievedAt": "2026-08-03",
+        "kind": "filing"
+      },
+      {
+        "url": "https://baxtel.com/data-center/hut-8-culberson-county-tx",
+        "label": "Hut 8: Culberson County, TX Data Center",
+        "publisher": "Baxtel (data center directory)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.tshaonline.org/handbook/entries/orla-tx",
+        "label": "Orla, Texas: A Historical Overview of the Rural Oil Supply Center",
+        "publisher": "Texas State Historical Association",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "energy": {
+      "notes": "Hut 8's first fully greenfield-developed mining site; built to 63 MW; ~3.6 EH/s self-mining capacity potential per Hut 8's FY2023 10-KT. Uses Hut 8's proprietary 'Reactor' energy-curtailment/optimization software."
+    },
+    "landAcres": 1.9,
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "hut8-batavia-il",
+    "name": "Hut 8 Batavia Data Center",
+    "operator": "Batavia DC Corp (Hut 8 Corp subsidiary)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.859,
+      "lon": -88.275,
+      "city": "Batavia",
+      "county": "Kane",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-07-21",
+        "note": "Batavia City Council approved the Master Services Agreement with Batavia DC Corp (Hut 8 subsidiary) 12-1 on July 21, 2025; a follow-up amended agreement (water terms) was approved September 2025. Initial 20 MW operation targeted winter 2026; full 50 MW buildout phased through ~2031.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.shawlocal.com/kane-county-chronicle/2025/08/01/batavia-data-center-gets-nod-as-residents-worry-about-it-gobbling-up-energy-reserves/",
+        "label": "Batavia data center gets nod as residents worry about it 'gobbling up' energy reserves",
+        "publisher": "Shaw Local / Kane County Chronicle",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.shawlocal.com/kane-county-chronicle/2025/09/02/500m-batavia-data-center-could-be-limited-to-1k-gallons-of-water-per-day/",
+        "label": "$500M Batavia data center could be limited to 1K gallons of water per day",
+        "publisher": "Shaw Local / Kane County Chronicle",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/08/26/3139102/0/en/Hut-8-Announces-Plans-to-Develop-Four-New-Sites-with-More-Than-1-5-GW-of-Total-Capacity.html",
+        "label": "Hut 8 Announces Plans to Develop Four New Sites with More Than 1.5 GW of Total Capacity",
+        "publisher": "GlobeNewswire (Hut 8 Corp)",
+        "retrievedAt": "2026-08-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://il-batavia.civicplus.com/1248/City-of-Batavia-Data-Center-Project",
+        "label": "City of Batavia Data Center Project",
+        "publisher": "City of Batavia, IL (official)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/hut-8-batavia-il",
+        "label": "Hut 8: Batavia, IL Data Center",
+        "publisher": "Baxtel (data center directory)",
+        "retrievedAt": "2026-08-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-03",
+    "energy": {
+      "source": "grid",
+      "utility": "ComEd",
+      "notes": "Requires ~$18M off-site electrical improvements (developer-funded, city-reimbursed over 7 years via utility revenue) and a fourth substation transformer plus added ComEd capacity to reach full 50 MW. City projects ~$2.3M/yr utility revenue + $375K/yr franchise fees at 20 MW, rising to ~$5.7M/$800K at 50 MW."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Amended agreement caps facility water draw/discharge at 1,000 gallons/day (city-metered); closed-loop cooling system needs an initial ~450,000-gallon ionized-water charge, replaced roughly every 5.5 years."
+    },
+    "investmentUsd": 500000000,
+    "landAcres": 7.2,
+    "community": {
+      "status": "mixed",
+      "notes": "Council approved 12-1 (one dissent, one absent) amid resident concern the facility would 'gobble up' local energy reserves. The agreement contains an explicit contractual ban on 'blockchain-related activities, including bitcoin (digital money) mining' at this site.",
+      "sourceIndex": 4
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   }
 ]
