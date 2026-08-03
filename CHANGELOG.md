@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0](https://github.com/ek33450505/compute-atlas/compare/v1.14.0...v1.15.0) (2026-08-03)
+
+
+### Features
+
+* **data:** Ohio data wave — 4 facilities (Akron, Hamilton, Springfield) ([#106](https://github.com/ek33450505/compute-atlas/issues/106)) ([af3b616](https://github.com/ek33450505/compute-atlas/commit/af3b616cb236dd3542d137f11168ad3de1e1896f))
+
 ## [1.14.0](https://github.com/ek33450505/compute-atlas/compare/v1.13.0...v1.14.0) (2026-08-02)
 
 
