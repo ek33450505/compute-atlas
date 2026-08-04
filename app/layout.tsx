@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import { Fraunces } from "next/font/google";
 import "./globals.css";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -88,6 +89,7 @@ export default function RootLayout({
             <Toaster />
           </TooltipProvider>
         </NuqsAdapter>
+        <SpeedInsights />
       </body>
     </html>
   );
