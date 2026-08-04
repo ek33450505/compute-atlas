@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0](https://github.com/ek33450505/compute-atlas/compare/v1.17.0...v1.18.0) (2026-08-04)
+
+
+### Features
+
+* homepage watch-CTA and Speed Insights monitoring ([#113](https://github.com/ek33450505/compute-atlas/issues/113)) ([df3f183](https://github.com/ek33450505/compute-atlas/commit/df3f1838d5aab998fd8ca1c059c506ab7fc9c09d))
+
 ## [1.17.0](https://github.com/ek33450505/compute-atlas/compare/v1.16.0...v1.17.0) (2026-08-03)
 
 
