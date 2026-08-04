@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { ActivityList } from "@/app/activity/activity-list";
+import { WatchButton } from "@/components/subscribe/watch-button";
 import type { ActivityEntry } from "@/lib/data";
 
 export interface OpenRecordProps {
@@ -101,13 +102,14 @@ export function OpenRecord({
         ))}
       </ul>
 
-      <div className="mt-8">
+      <div className="mt-8 flex flex-wrap items-center gap-4">
         <Link
           href="/contribute"
           className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors motion-reduce:transition-none hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           Add a facility · Correct a figure →
         </Link>
+        <WatchButton targetType="all" label="Watch all updates" />
       </div>
 
       {recentActivity.length > 0 && (
