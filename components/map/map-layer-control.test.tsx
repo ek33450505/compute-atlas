@@ -22,6 +22,7 @@ function renderControl(
     showWaterStress: boolean;
     showGroundwater: boolean;
     showAquifers: boolean;
+    isSatellite: boolean;
   }> = {},
   setters = makeSetters()
 ) {
@@ -39,6 +40,7 @@ function renderControl(
       onToggleGroundwater={setters.onToggleGroundwater}
       showAquifers={overrides.showAquifers ?? false}
       onToggleAquifers={setters.onToggleAquifers}
+      isSatellite={overrides.isSatellite ?? false}
     />
   );
   return setters;
@@ -180,5 +182,112 @@ describe("MapLayerControl", () => {
 
     await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
     expect(screen.queryByText(/Drought as of/)).not.toBeInTheDocument();
+  });
+
+  it("renders the water-stress legend with band labels and facility counts when the layer is on", async () => {
+    const user = userEvent.setup();
+    renderControl({ showWaterStress: true });
+
+    await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+
+    expect(screen.getByText("Extremely High (>80%)")).toBeInTheDocument();
+    expect(screen.getByText("126")).toBeInTheDocument();
+  });
+
+  it("renders the groundwater-decline legend with band labels and facility counts when the layer is on", async () => {
+    const user = userEvent.setup();
+    renderControl({ showGroundwater: true });
+
+    await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+
+    expect(screen.getByText("High (4-8 cm/y)")).toBeInTheDocument();
+    expect(screen.getByText("52")).toBeInTheDocument();
+  });
+
+  it("does not render legends when their layers are off", async () => {
+    const user = userEvent.setup();
+    renderControl();
+
+    await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+
+    expect(screen.queryByText("Extremely High (>80%)")).not.toBeInTheDocument();
+    expect(screen.queryByText("High (4-8 cm/y)")).not.toBeInTheDocument();
+  });
+
+  it("renders a key-only drought legend with no facility counts when drought is on", async () => {
+    const user = userEvent.setup();
+    renderControl({ showDrought: true });
+
+    await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+
+    expect(screen.getByText("D4 — Exceptional")).toBeInTheDocument();
+    expect(screen.getByText("D0 — Abnormally Dry")).toBeInTheDocument();
+    // Drought has no per-facility distribution counts anywhere in the panel.
+    expect(screen.queryByText("126")).not.toBeInTheDocument();
+  });
+
+  it("disables the three fill-only toggles and shows a hint when isSatellite is true, leaving the others enabled", async () => {
+    const user = userEvent.setup();
+    renderControl({ isSatellite: true });
+
+    await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+
+    const waterStress = screen.getByLabelText("Baseline water stress") as HTMLInputElement;
+    const groundwater = screen.getByLabelText("Groundwater decline") as HTMLInputElement;
+    const drought = screen.getByLabelText("Drought") as HTMLInputElement;
+    expect(waterStress).toBeDisabled();
+    expect(groundwater).toBeDisabled();
+    expect(drought).toBeDisabled();
+
+    const hints = screen.getAllByText("shown on standard basemap only");
+    expect(hints).toHaveLength(3);
+
+    const waterways = screen.getByLabelText("Waterways") as HTMLInputElement;
+    const power = screen.getByLabelText("Transmission (≥230 kV)") as HTMLInputElement;
+    const aquifers = screen.getByLabelText("Aquifers") as HTMLInputElement;
+    expect(waterways).not.toBeDisabled();
+    expect(power).not.toBeDisabled();
+    expect(aquifers).not.toBeDisabled();
+  });
+
+  it("does not disable the fill-only toggles when isSatellite is false", async () => {
+    const user = userEvent.setup();
+    renderControl({ isSatellite: false });
+
+    await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+
+    expect(screen.getByLabelText("Baseline water stress")).not.toBeDisabled();
+    expect(screen.queryByText("shown on standard basemap only")).not.toBeInTheDocument();
+  });
+
+  it("closes the panel and returns focus to the toggle button on Escape", async () => {
+    const user = userEvent.setup();
+    renderControl();
+
+    const openButton = screen.getByRole("button", { name: "Show map layers panel" });
+    await user.click(openButton);
+    expect(screen.getByRole("button", { name: "Hide map layers panel" })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
+
+    await user.keyboard("{Escape}");
+
+    const closedButton = screen.getByRole("button", { name: "Show map layers panel" });
+    expect(closedButton).toHaveAttribute("aria-expanded", "false");
+    expect(closedButton).toHaveFocus();
+  });
+
+  it("wraps the panel's scrollable content in a bounded, scrollable container", async () => {
+    const user = userEvent.setup();
+    renderControl();
+
+    await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+
+    const heading = screen.getByText("Optional layers");
+    const scrollContainer = heading.parentElement;
+    expect(scrollContainer).not.toBeNull();
+    expect(scrollContainer?.className).toContain("overflow-y-auto");
+    expect(scrollContainer?.className).toContain("max-h-[calc(100dvh-8rem)]");
   });
 });
