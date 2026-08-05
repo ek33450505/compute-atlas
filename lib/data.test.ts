@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   getAllFacilities,
   getFacilityById,
   getFacilityByIdCached,
+  withJsonFallback,
   getStates,
   getOperators,
   getStatusCounts,
@@ -43,7 +44,7 @@ import {
   getRecentActivity,
   getQuarterlyPipelineSummary,
 } from "@/lib/data";
-import { facilitySchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
+import { facilitySchema, facilitiesSchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER } from "@/lib/community";
 import { STATUS_ORDER } from "@/lib/status";
@@ -93,6 +94,97 @@ describe("getFacilityByIdCached", () => {
 
   it("returns undefined for an unknown id", async () => {
     expect(await getFacilityByIdCached("not-a-real-facility")).toBeUndefined();
+  });
+});
+
+describe("withJsonFallback", () => {
+  // Proves the build-time DB-read resilience fix: a Neon read that throws
+  // `fetch failed` (the observed build-time-concurrency failure mode) must
+  // degrade to the bundled JSON snapshot instead of propagating, after a
+  // short retry. This is the pre-deploy proof for lib/data.ts's readers —
+  // `withJsonFallback` is a pure function of `fn`/`fallback`, so it's
+  // testable directly without mocking the module-scoped `getDb()` singleton
+  // that the real Neon-reading callers (loadFacilitiesUncached, etc.) use.
+
+  it("returns the primary result without retrying when fn succeeds", async () => {
+    let calls = 0;
+    const result = await withJsonFallback(
+      async () => {
+        calls++;
+        return "primary";
+      },
+      () => "fallback"
+    );
+    expect(result).toBe("primary");
+    expect(calls).toBe(1);
+  });
+
+  it("retries a transient failure and returns the primary result once fn succeeds", async () => {
+    let calls = 0;
+    const result = await withJsonFallback(
+      async () => {
+        calls++;
+        if (calls < 2) throw new Error("fetch failed");
+        return "primary-after-retry";
+      },
+      () => "fallback"
+    );
+    expect(result).toBe("primary-after-retry");
+    expect(calls).toBe(2);
+  });
+
+  it("falls back to the JSON snapshot after exhausting retries, without throwing", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    let calls = 0;
+    const jsonSnapshot = await getAllFacilities();
+
+    const result = await withJsonFallback(
+      async () => {
+        calls++;
+        throw new Error("fetch failed");
+      },
+      () => jsonSnapshot,
+      3
+    );
+
+    expect(calls).toBe(3);
+    expect(result).toBe(jsonSnapshot);
+    expect(result.length).toBeGreaterThan(0);
+    const parsed = facilitiesSchema.safeParse(result);
+    expect(parsed.success).toBe(true);
+
+    warnSpy.mockRestore();
+  });
+
+  it("logs a visible warning on fallback, never silently", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await withJsonFallback(
+      async () => {
+        throw new Error("fetch failed");
+      },
+      () => "fallback",
+      2
+    );
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy.mock.calls[0][0]).toContain(
+      "[data] Neon read failed, falling back to bundled JSON snapshot:"
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it("never invokes the fallback when fn succeeds", async () => {
+    let fallbackCalls = 0;
+    await withJsonFallback(
+      async () => "ok",
+      () => {
+        fallbackCalls++;
+        return "fallback";
+      }
+    );
+    expect(fallbackCalls).toBe(0);
   });
 });
 
