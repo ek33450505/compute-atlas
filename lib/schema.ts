@@ -214,6 +214,7 @@ const powerGenerationSchema = z
       .enum([
         "nuclear_smr",
         "nuclear",
+        "fusion",
         "natural_gas",
         "solar",
         "wind",

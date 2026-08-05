@@ -532,6 +532,7 @@ function CryptoMiningFields({
 const TECHNOLOGY_LABELS: Record<string, string> = {
   nuclear_smr: "Nuclear (SMR)",
   nuclear: "Nuclear",
+  fusion: "Fusion",
   natural_gas: "Natural gas",
   solar: "Solar",
   wind: "Wind",
