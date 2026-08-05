@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Layers } from "lucide-react";
 
 import mapLayers from "@/public/data/map-layers.json";
@@ -208,9 +208,15 @@ function DroughtKeyLegend() {
  * edge matching the button's — i.e. it grows to the left.
  *
  * The panel's inner content is its own scroll container
- * (`max-h-[calc(100dvh-8rem)] overflow-y-auto`) so on short/mobile
- * viewports the full set of toggles + legends scrolls inside the panel
- * instead of being clipped by the viewport edge.
+ * (`overflow-y-auto`, with a static `max-h-[calc(100dvh-8rem)]` fallback
+ * class for first paint). Because the button lives low in a stacked Tools
+ * column, its top offset varies a lot — a purely viewport-relative cap is
+ * often taller than the actual space left below the panel, which leaves
+ * content overflowing the viewport with no scrollbar. A `useLayoutEffect`
+ * measures the container's real top via `getBoundingClientRect()` on
+ * expand/resize and applies an inline `maxHeight` (viewport height minus
+ * top offset minus a small margin) that overrides the static class, so the
+ * panel scrolls internally and never exceeds the viewport bottom.
  */
 export function MapLayerControl({
   showWater,
@@ -229,6 +235,8 @@ export function MapLayerControl({
 }: MapLayerControlProps) {
   const [expanded, setExpanded] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollMaxHeight, setScrollMaxHeight] = useState<number | undefined>(undefined);
   const anyOn =
     showWater ||
     showPower ||
@@ -249,6 +257,38 @@ export function MapLayerControl({
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [expanded]);
+
+  // The panel can open low in the viewport (it's the last of several
+  // stacked tool buttons), so a static viewport-relative max-height
+  // (e.g. `100dvh - 8rem`) is frequently taller than the space actually
+  // remaining below the panel — content then overflows the viewport
+  // bottom with no scrollbar, because it's shorter than the (too-generous)
+  // static cap. Measure the panel's real top offset instead and cap the
+  // scroll container to exactly what's left above the viewport bottom.
+  useLayoutEffect(() => {
+    if (!expanded) {
+      setScrollMaxHeight(undefined);
+      return;
+    }
+    const el = scrollRef.current;
+    if (!el) return;
+
+    function recompute() {
+      const node = scrollRef.current;
+      if (!node) return;
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      const top = node.getBoundingClientRect().top;
+      setScrollMaxHeight(Math.max(120, viewportHeight - top - 16));
+    }
+
+    recompute();
+    window.addEventListener("resize", recompute);
+    window.visualViewport?.addEventListener("resize", recompute);
+    return () => {
+      window.removeEventListener("resize", recompute);
+      window.visualViewport?.removeEventListener("resize", recompute);
+    };
   }, [expanded]);
 
   const waterStressDisabled = fillOnlyDisabled && FILL_ONLY_OVERLAY_IDS.includes("waterStress");
@@ -287,7 +327,11 @@ export function MapLayerControl({
           id={PANEL_ID}
           className="mt-2 rounded-sm border border-border bg-popover p-[3px]"
         >
-          <div className="max-h-[calc(100dvh-8rem)] min-w-[190px] overflow-y-auto overscroll-contain rounded-[1px] border border-border/50 px-3 py-2.5">
+          <div
+            ref={scrollRef}
+            style={scrollMaxHeight !== undefined ? { maxHeight: `${scrollMaxHeight}px` } : undefined}
+            className="max-h-[calc(100dvh-8rem)] min-w-[190px] overflow-y-auto overscroll-contain rounded-[1px] border border-border/50 px-3 py-2.5"
+          >
             <p className="mb-2 border-b border-border/60 pb-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Optional layers
             </p>

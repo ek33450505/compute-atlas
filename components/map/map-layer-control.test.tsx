@@ -290,4 +290,70 @@ describe("MapLayerControl", () => {
     expect(scrollContainer?.className).toContain("overflow-y-auto");
     expect(scrollContainer?.className).toContain("max-h-[calc(100dvh-8rem)]");
   });
+
+  it("applies a position-aware inline maxHeight to the scroll container once expanded, and clears it on collapse", async () => {
+    const user = userEvent.setup();
+
+    // Simulate the panel opening low in the viewport: top offset 400px,
+    // viewport 800px tall -> expected maxHeight = 800 - 400 - 16 = 384px.
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      top: 400,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+
+    renderControl();
+
+    const toggle = screen.getByRole("button", { name: "Show map layers panel" });
+    // Before expansion, no inline maxHeight has been applied anywhere.
+    expect(toggle.parentElement?.querySelector('[style*="max-height"]')).toBeNull();
+
+    await user.click(toggle);
+
+    const heading = screen.getByText("Optional layers");
+    const scrollContainer = heading.parentElement as HTMLElement;
+    expect(scrollContainer.style.maxHeight).toBe("384px");
+
+    await user.click(screen.getByRole("button", { name: "Hide map layers panel" }));
+
+    // Collapsed: the panel (and its inline-styled container) is unmounted.
+    expect(screen.queryByText("Optional layers")).not.toBeInTheDocument();
+
+    vi.restoreAllMocks();
+  });
+
+  it("floors the computed maxHeight at 120px when the panel opens very low in the viewport", async () => {
+    const user = userEvent.setup();
+
+    // top offset (760px) is close to the viewport height (800px), so the
+    // naive computation (800 - 760 - 16 = 24) would be uselessly tiny.
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      top: 760,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+
+    renderControl();
+    await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+
+    const heading = screen.getByText("Optional layers");
+    const scrollContainer = heading.parentElement as HTMLElement;
+    expect(scrollContainer.style.maxHeight).toBe("120px");
+
+    vi.restoreAllMocks();
+  });
 });
