@@ -51441,5 +51441,1788 @@
     ],
     "lastUpdated": "2026-08-05",
     "notes": "Former Westinghouse Electric plant in Sharon, Mercer County, PA, leased from Vertua Ltd. - the SAME site Mawson Infrastructure exited in Feb 2024 (Mawson's cancelled Sharon lease is therefore NOT tracked separately; this record supersedes it under the current operator). Bitfarms assumed control June/Aug 2024, then purchased the site outright Nov 2025 ($32.3M + $128.7M committed). ~30 MW of Bitcoin mining online, being converted to HPC/AI (branded SharonAI / Keel Infrastructure Corp.) with an added 80 MW substation targeting 110 MW total by end-2026. aiClassification mixed_use reflects the mining-to-HPC transition. Operator label mirrors the tracked Bitfarms Panther Creek/Scrubgrass records."
+  },
+  {
+    "id": "newrays-one-bono-ar",
+    "name": "NewRays One Bitcoin Mine",
+    "operator": "NewRays One LLC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.256,
+      "lon": -92.476,
+      "city": "Bono",
+      "county": "Faulkner",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "litigation"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://katv.com/news/local/newrays-one-crypto-mine-in-bono-facing-federal-lawsuit-amid-investigation-by-attorney-general-metahash-global-greenland-usa-yizheng-ethan-wang-arkansas-cryptomining-bitcoin-green-digital-jones-digital-moreland-holding-faulkner-county-chinese-ownership",
+        "label": "'Newrays One' crypto-mine in Bono facing federal lawsuit amid investigation by AG",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ualrpublicradio.org/local-regional-news/2023-06-29/rural-arkansas-crypto-mines-prompt-noise-complaints-from-residents",
+        "label": "Rural Arkansas 'crypto mines' prompt noise complaints from residents",
+        "publisher": "UALR Public Radio (KUAR)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://arkansas.hometownlocator.com/ar/faulkner/bono.cfm",
+        "label": "Bono Populated Place Profile / Faulkner County, Arkansas Data",
+        "publisher": "HomeTownLocator",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Originally Green Digital LLC; renamed NewRays One LLC. Arkansas Secretary of Agriculture identified it as affiliated with the same ownership network as Jones Digital LLC, MetaHash Global, and Bono Management. Operating at full capacity per KATV. Faces a federal lawsuit (moved from Faulkner County Circuit Court to U.S. District Court, E.D. Ark.) brought by Bono/Greenbrier/Damascus-area neighbors (incl. resident Gladys Anderson, whose autistic son is disturbed by the noise) over noise, property devaluation, and power usage; company installed sound barriers that residents say are insufficient. Faulkner County's noise ordinance is separately being challenged by the company as targeting it over 'anti-Chinese sentiment.' Arkansas AG and Secretary of Agriculture are investigating the company's ownership/Chinese-government-affiliation questions."
+  },
+  {
+    "id": "jones-eagle-dewitt-ar",
+    "name": "Jones Eagle Bitcoin Mine",
+    "operator": "Jones Eagle LLC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.2875,
+      "lon": -91.3383,
+      "city": "DeWitt",
+      "county": "Arkansas",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "litigation"
+    },
+    "announcedDate": "2023",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://katv.com/news/local/federal-judge-blocks-arkansas-laws-in-crypto-mine-legal-battle-in-2023-jones-eagle-llc-formerly-jones-digital-llc-the-owner-of-the-crypto-mine-near-dewitt-filed-a-lawsuit-against-arkansas-department-of-agriculture-secretary-wes-ward-arkansas-attorne",
+        "label": "Federal judge blocks Arkansas laws in crypto mine legal battle",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://arktimes.com/arkansas-blog/2024/12/10/state-cant-enforce-foreign-ownership-laws-against-arkansas-county-crypto-mine-judge-says",
+        "label": "State can't enforce foreign ownership laws against Arkansas County crypto mine, judge says",
+        "publisher": "Arkansas Times",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://katv.com/news/local/arkansas-officials-barred-from-enforcing-crypto-regulations-as-lawsuit-proceeds-judge-kristine-baker-granted-jones-eagle-llc-the-owner-of-a-crypto-mine-near-dewitt-a-preliminary-injunction-restraining-both-wes-ward-secretary-of-the-arkansas-department",
+        "label": "Arkansas officials barred from enforcing crypto regulations as lawsuit proceeds",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Owner Qimin 'Jimmy' Chen (Eagle Asset Holding Inc.) is a naturalized U.S. citizen born in China. Operates ~2,800 mining computers per Arkansas Business reporting; investment reported >$1.4M excl. Entergy deposits/land lease. Jones Eagle sued the State of Arkansas (AG Tim Griffin, Ag Secretary Wes Ward) over Act 636 (foreign ownership of ag land) and Act 174 (foreign-party-controlled businesses); U.S. District Judge Kristine Baker granted a TRO/preliminary injunction in Nov 2024 blocking enforcement, finding Jones Eagle likely to prevail. Arkansas County residents/quorum court fought the facility over noise, water use, and grid strain (Act 851 'Right to Mine' backlash)."
+  },
+  {
+    "id": "interstate-holdings-blockchain-cabot-ar",
+    "name": "Interstate Holdings Blockchain Cabot Mine",
+    "operator": "Interstate Holdings Blockchain",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.9748,
+      "lon": -92.0179,
+      "city": "Cabot",
+      "county": "Lonoke",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "contested"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://katv.com/news/local/arkansas-officials-halt-cryptomine-near-lr-airbase-due-to-national-security-concerns-state-senator-ricky-hill-lonoke-county-judge-doug-erwin-cabot-mayor-ken-kincade-interstate-holdings-arkansas-blockchain-council-benjamin-smith-steven-landers-jr-lrafb",
+        "label": "Arkansas officials halt cryptomine near LR Airbase due to national security concerns",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://katv.com/news/local/cryptomine-owned-by-steve-landers-jr-to-be-built-after-judge-lifts-cease-desist-cabot-doug-erwin-little-rock-air-force-base-arkansas-blockchain-council-president-benjamin-smith-chinese-crypto-jones-digital-green-digital-national-security-noise-bono-china",
+        "label": "Cryptomine owned by Steve Landers Jr. to be built after judge lifts cease & desist",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/crypto-mining-facility-owner-speaks-022809587.html",
+        "label": "Crypto mining facility owner speaks on addressing community concerns amid plans for Vilonia expansion",
+        "publisher": "KLRT FOX16 (via Yahoo News)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "American-owned (Steve Landers Jr., of the Landers Auto Group family; Arkansas Blockchain Council member) — company positions itself against Chinese-owned rivals. Lonoke County Judge Doug Erwin issued a cease-and-desist in fall 2024 over unpermitted land-clearing/floodplain concerns; lifted in Dec 2024 after FEMA requirements were met. State Sen. Ricky Hill and Cabot Mayor Ken Kincade raised national-security concerns given the <5-mile proximity to Little Rock Air Force Base. By March 2025 the company reported the facility open and 'well received,' running ~60 dB (comparable to a restaurant/office) and using 'excess' contracted Entergy power. Same operator separately pursued (and lost) a Vilonia, Faulkner County site — see companion candidate."
+  },
+  {
+    "id": "interstate-holdings-blockchain-vilonia-ar",
+    "name": "Interstate Holdings Blockchain Vilonia Mine (proposed, denied)",
+    "operator": "Interstate Holdings Blockchain",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.1073,
+      "lon": -92.2071,
+      "city": "Vilonia",
+      "county": "Faulkner",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "community": {
+      "status": "opposed"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://arktimes.com/arkansas-blog/2025/05/21/vilonia-rejects-crypto-mine-proposed-by-steve-landers-jr",
+        "label": "Vilonia rejects crypto mine proposed by Steve Landers Jr.",
+        "publisher": "Arkansas Times",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://katv.com/news/local/city-of-vilonia-denies-permit-for-steve-landers-jr-cryptomine-interstate-holdings-blockchain-cryptomining-green-digital-newrays-one-faulkner-county-arkansas-bitcoin-data-center-opposition-mike-matos-bono-planning-commission-meeting-cabot-lonoke-crypto",
+        "label": "City of Vilonia denies permit for Steve Landers Jr. cryptomine",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Proposed by Interstate Holdings Blockchain (Steve Landers Jr., who also operates the Cabot, Lonoke County site) for a wooded parcel next to Vilonia's Entergy substation. Vilonia's Planning Commission recommended denial on April 24, 2025 after two-plus hours of public opposition; the City Council unanimously upheld the denial on May 20, 2025, citing noise and grid-load concerns. This is a separate/second Faulkner County proposal from the earlier Green Digital/NewRays One project that was also tried in the Vilonia area before relocating to Bono."
+  },
+  {
+    "id": "green-digital-harrison-ar",
+    "name": "Green Digital Harrison Mine (proposed, withdrawn)",
+    "operator": "Green Digital LLC",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.2298,
+      "lon": -93.1077,
+      "city": "Harrison",
+      "county": "Boone",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "community": {
+      "status": "opposed"
+    },
+    "announcedDate": "2023",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.ozarksfirst.com/news/arkansas/fate-of-crypto-mining-facility-deferred-to-harrison-city-council-vote/",
+        "label": "Fate of crypto mining facility deferred to Harrison City Council vote",
+        "publisher": "OzarksFirst / KOLR-KOZL",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ky3.com/2023/11/29/harrison-ark-city-council-votes-remove-moratorium-crypto-mining-center-during-special-meeting/",
+        "label": "Harrison Ark., City Council votes to remove moratorium on crypto mining center during special meeting",
+        "publisher": "KY3",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://katv.com/news/local/arkansas-lawmakers-grapple-with-cryptomining-concerns-as-right-to-mine-bill-comes-under-fire-department-commerce-bitcoin-green-digital-harrison-metahash-senator-bryan-king-economic-development-commission-entergy-blockchain-council-chinese-communist-party",
+        "label": "Arkansas lawmakers grapple with cryptomining concerns as 'Right to Mine' bill under fire",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Same operator (Green Digital LLC) that later became NewRays One in Bono. Harrison's Planning Commission had to relocate a May 2023 meeting to a large auditorium to accommodate hundreds of residents opposing the conditional-use permit; the commission forwarded the application to City Council rather than deciding outright, and Green Digital withdrew the application before a council vote. Harrison's City Council separately voted in Nov 2023 to remove a blanket moratorium on crypto-mining facilities (a general zoning move, not a reinstatement of this specific project)."
+  },
+  {
+    "id": "artemis-technologies-cave-city-ar",
+    "name": "Artemis Technologies Cave City Bitcoin Data Center",
+    "operator": "Artemis Technologies",
+    "facilityType": "crypto_mining",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.94806,
+      "lon": -91.55083,
+      "city": "Cave City",
+      "county": "Sharp",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "coolingType": "air"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "opposed"
+    },
+    "announcedDate": "2025",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://katv.com/news/local/cave-city-citizens-push-back-on-cryptomine-being-built-in-their-town-meeting-dumb-kids-locals-artemis-technologies-arkansas-blockchain-council-power-requirements-bitcoin",
+        "label": "Cave City citizens push back on cryptomine being built near their town",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.whiterivernow.com/2025/04/30/there-goes-the-neighborhood-data-center-draws-fire-from-cave-city-residents/",
+        "label": "There goes the neighborhood? Data center draws fire from Cave City residents",
+        "publisher": "White River Now",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Air-cooled, indoor 'Bitcoin Data Center' on a reported 3-acre site adjoining Cave City limits; described by local press as Artemis Technologies' third Arkansas location (after unverified sites in Monticello and Newark — see held). A contentious April 2025 public meeting at Cave City High School drew pushback after Artemis and an Entergy representative declined to disclose power-draw figures; Sharp County Judge Mark Counts publicly opposed the project. Exact MW and construction-completion status not disclosed in available sourcing — flag for re-check."
+  },
+  {
+    "id": "immersionbtc-walnut-ridge-ar",
+    "name": "ImmersionBTC Walnut Ridge Mine",
+    "operator": "ImmersionBTC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.0684,
+      "lon": -90.9526,
+      "city": "Walnut Ridge",
+      "county": "Lawrence",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "coolingType": "immersion"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "supported"
+    },
+    "announcedDate": "2019",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://katv.com/news/local/arkansans-complete-guide-to-cryptocurrency-and-crypto-mining",
+        "label": "Arkansan's complete guide to cryptocurrency and crypto-mining",
+        "publisher": "KATV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kait8.com/2023/11/06/town-welcome-second-crypto-mining-facility/",
+        "label": "Town to welcome second crypto-mining facility",
+        "publisher": "KAIT8",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Owner Ben Smith, president of the Arkansas Blockchain Council, mining in Arkansas since 2019; positioned in local press as a locally-owned, lower-conflict counterexample to the foreign-owned mines (Green Digital/NewRays One, Jones Digital/Jones Eagle) that drew lawsuits and noise complaints. A second, unnamed-operator facility on Midway Road (south side of Walnut Ridge) was under construction as of Nov 2023 with engineered sound barriers targeting 55 dB at the property line — held separately pending an operator name."
+  },
+  {
+    "id": "atlas-power-williston-nd",
+    "name": "Atlas Power Data Center (Williston)",
+    "operator": "Atlas Power",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 48.147,
+      "lon": -103.618,
+      "city": "Williston",
+      "county": "Williams",
+      "state": "ND",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 240,
+      "planned": 700
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "litigation"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/atlas-power-williston-north-dakota",
+        "label": "Atlas Power: Williston, North Dakota Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.inforum.com/news/north-dakota/northwest-north-dakota-commission-directs-co-op-to-cut-power-to-crypto-data-center",
+        "label": "Northwest North Dakota commission directs co-op to cut power to crypto data center",
+        "publisher": "InForum (Forum Communications)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yesenergy.com/blog/crypto-mining-power-consumption-atlas-power",
+        "label": "Crypto Mining Power Consumption: Atlas Power Sparks Grid Congestion",
+        "publisher": "Yes Energy",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "$1.9B three-phase crypto-mining + GPU-as-a-service facility built by FX Solutions for Atlas Power LLC (~65% of load is bitcoin mining per InForum). Phase 1 (~240MW) operational since 2022-23; ~700MW planned across three phases (delayed from original timeline). Interconnected via Mountrail-Williams Electric Cooperative (a Basin Electric G&T member). Atlas Power's load drove the Charlie Creek-to-Watford 230kV constraint, the costliest real-time constraint in SPP for 2023 (~$1.1M in shadow-price impact across 35% of operating hours, per Yes Energy analysis of public SPP data); Basin Electric is adding 600MW to Pioneer Generation Station plus a new 230kV Canada tie partly to relieve this congestion. Williams County Commission voted unanimously 2023-06-20 to direct MWEC to cut power to Phase II over unmet final-inspection/noise-mitigation conditions; MWEC instead filed for a district-court declaratory judgment on its authority to do so, and the commission imposed a 6-month moratorium on new crypto data centers. Not one of the 4 ND sites already tracked (Applied Digital Jamestown, Core Scientific Grand Forks, Bitzero Nekoma, Greenidge Underwood)."
+  },
+  {
+    "id": "enerfore-pleasant-valley-tioga-nd",
+    "name": "Enerfore Pleasant Valley Data Center",
+    "operator": "Enerfore Digital",
+    "facilityType": "crypto_mining",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 48.28,
+      "lon": -102.9424,
+      "city": "Tioga",
+      "county": "Williams",
+      "state": "ND",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 30
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "contested"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.kfyrtv.com/2025/02/04/williams-county-commissioners-approve-conditional-use-permit-new-data-center/",
+        "label": "Williams County Commissioners approve conditional use permit for new data center",
+        "publisher": "KFYR-TV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sdxcentral.com/news/enerfore-digital-gets-go-ahead-for-data-center-proposal-in-north-dakota/",
+        "label": "Enerfore Digital gets go-ahead for data center proposal in North Dakota",
+        "publisher": "SDxCentral",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Bismarck-based Enerfore Digital (six ND sites, ~200MW combined per company site) proposed a 20,000 sq ft cryptomining facility on a 10-acre site in Dry Fork Township, Williams County ('Pleasant Valley Data Center'). Initial July 2024 application was denied for sitting inside the county's 1-mile residential setback (three homes nearby); company appealed citing noise-mitigation plans, Williams County Commission granted a temporary bypass in September 2024 to conduct a noise survey, then approved a conditional use permit 4-1 on 2025-02-04 (dissenting commissioner cited landowner-consent concerns). Company targeted operational by end of 2025; no primary source found this pass confirms the facility has actually gone live as of 2026-08, so status is held at under_construction/permitted rather than operational."
+  },
+  {
+    "id": "big-watt-digital-onida-sd",
+    "name": "Big Watt Digital Sully Buttes Mining Facility",
+    "operator": "Big Watt Digital",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.705,
+      "lon": -100.3115,
+      "city": "Onida",
+      "county": "Sully",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 30,
+      "planned": 300
+    },
+    "mining": {
+      "powerArrangement": "curtailed_renewable"
+    },
+    "energy": {
+      "source": "wind"
+    },
+    "community": {
+      "status": "supported"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.onidawatchman.com/news/article_ce136784-8c57-11ed-a366-7ba7e3d8d91d.html",
+        "label": "Planning and zoning board gives the nod to Bitcoin facility",
+        "publisher": "Onida Watchman",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2023/07/25/2710263/0/en/Big-Watt-Digital-Forms-Joint-Venture-with-Consensus-Technology-Group.html",
+        "label": "Big Watt Digital Forms Joint Venture with Consensus Technology Group",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://southdakotasearchlight.com/2026/01/30/sully-county-home-to-sds-largest-data-center-would-welcome-more-with-open-arms-official-says/",
+        "label": "Sully County, home to SD's largest data center, would welcome more with 'open arms,' official says",
+        "publisher": "South Dakota Searchlight",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Pierre-based Big Watt Digital's Sully Buttes facility, ~12 mi west of Onida adjacent to Oahe Electric's Sully Buttes substation, Sully County. Sully County Planning & Zoning recommended approval 2022-12-28 (initial ~12.5MW draw, 24 liquid-cooled containerized units, projected 15-25 jobs and ~$325K/yr in kWh tax revenue to the Agar-Blunt-Onida school district); targeted March 2023 startup. Big Watt formed a July 2023 joint venture with Consensus Technology Group covering an initial 30MW of hosting capacity. As of January 2026 (South Dakota Searchlight), it is South Dakota's largest data center, with plans to scale to 300MW / ~100 FTE jobs plus ~300 construction jobs; the county's economic-development official described welcoming further expansion 'with open arms.' Company markets the site as '100% renewable energy' ('carbon-neutral Bitcoin mining'); exact generation mix (direct wind PPA vs. purchased renewable credits) not independently confirmed in sources read this pass. First tracked SD facility of any type in this dataset (SD previously zero)."
+  },
+  {
+    "id": "miningstore-grundy-center-ia",
+    "name": "MiningStore Grundy Center Facility",
+    "operator": "MiningStore",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.37,
+      "lon": -92.925,
+      "city": "Grundy Center",
+      "county": "Grundy",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "curtailed_renewable"
+    },
+    "energy": {
+      "source": "mixed"
+    },
+    "announcedDate": "2019",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.thegazette.com/news/grundy-county-bitcoin-mining-facility-destroyed-by-fire-sunday/article_444b579a-3015-547b-9415-e86bddd73150.html",
+        "label": "Grundy County Bitcoin mining facility destroyed by fire Sunday",
+        "publisher": "The Gazette (Cedar Rapids)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://miningstore.com/case-study/grundy-county-rural-electric-cooperative/",
+        "label": "Grundy County Rural Electric Cooperative case study",
+        "publisher": "MiningStore",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Opened 2020 as one of Iowa's first bitcoin mines (~5.6-7MW, ~1,700 mining computers per company materials and GEM.wiki), powered by a mix of surplus wind and grid power via Grundy County Rural Electric Cooperative; consumed more electricity than the town of Grundy Center's residential customers combined. Destroyed by fire on 2025-01-09 (structure fully vented/burned before crews arrived per Grundy County Emergency Management Coordinator, quoted in The Gazette); MiningStore could not be reached for comment on rebuild plans at the time, and no primary-source confirmation of a rebuild/reopening was found this pass (2026-08). MiningStore's own site still advertises 11 total Iowa facilities (62.5MW combined) but names no city/county for any site except this one, and does not clarify whether the Grundy Center site is among the 11 currently listed as live — see held item on the other 10 unnamed sites. Capacity omitted per cancelled-status convention."
+  },
+  {
+    "id": "sovereign-gazelle-somerville-al",
+    "name": "Sovereign Gazelle Bitcoin Mining Data Center",
+    "operator": "Sovereign Gazelle",
+    "facilityType": "crypto_mining",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.457,
+      "lon": -86.7603,
+      "city": "Somerville",
+      "county": "Morgan",
+      "state": "AL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "opposed"
+    },
+    "announcedDate": "2026",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.decaturdaily.com/news/morgan_county/bitcoin-mining-data-center-trying-to-build-near-somerville/article_59757f8f-a8cb-496c-b551-43f037e8c3b8.html",
+        "label": "Bitcoin mining data center trying to build near Somerville",
+        "publisher": "Decatur Daily",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nbcpalmsprings.com/2026/06/13/alabama-homeowners-turn-down-free-cash-and-internet-to-block-bitcoin-mining-data-center",
+        "label": "Alabama Homeowners Turn Down Free Cash and Internet to Block Bitcoin Mining Data Center",
+        "publisher": "NBC Palm Springs (AP-syndicated)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Texas-based Sovereign Global Solutions Inc. (CEO Kevin Mohan, also affiliated with Big Star Blockchain, a bitcoin-data-center services firm) bought 15 acres at 369 Union Road for $300,000 in August 2025; incorporated the project entity 'Sovereign Gazelle' in April 2026. Plan: a 50MW bitcoin mining data center occupying 10 of the 15 acres. Build depends on easements from four neighboring landowners for 75-ft utility poles carrying the 50MW line — all four have refused as of June 2026. Morgan County Commission passed a 12-month moratorium on bitcoin-mining data centers on 2026-06-23 after resident petitions (450+ signatures) citing noise/air-quality/property-value concerns. VoltCore is the EPC/engineering contractor for the power buildout, not the site owner/operator — do not attribute operatorship to VoltCore. County officials describe the project as 'still pursuing' but stalled pending right-of-way."
+  },
+  {
+    "id": "atlas-power-butte-mt",
+    "name": "Atlas Power Butte Data Center",
+    "operator": "Atlas Power",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.930855,
+      "lon": -112.518238,
+      "city": "Butte",
+      "county": "Silver Bow",
+      "state": "MT",
+      "precision": "exact"
+    },
+    "mining": {
+      "powerArrangement": "mixed"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "mixed"
+    },
+    "announcedDate": "2018",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/northwestern-energy-to-supply-atlas-power-with-75mw-of-energy-to-power-montana-data-center/",
+        "label": "NorthWestern Energy to supply Atlas Power with 75MW",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://mtstandard.com/news/local/atlas-power-suing-equipment-supplier-for-over-11m/article_f9ab550f-1329-5f14-988a-067f974b46a8.html",
+        "label": "Atlas Power suing equipment supplier for over $11M",
+        "publisher": "Montana Standard",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/montana/butte/atlas-power-butte/",
+        "label": "Atlas Power Butte Data Center listing, 200 Technology Way",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gem.wiki/Atlas_Power:_Butte",
+        "label": "Atlas Power: Butte",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://mtstandard.com/news/local/cryptowatt-bitcoin-mining-operation-ramps-up-production-at-facility-near/article_dba4ab7b-18ba-5e3b-8f8a-2f238ae807ea.html",
+        "label": "CryptoWatt bitcoin mining operation ramps up production",
+        "publisher": "Montana Standard",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Former Mike Mansfield Advanced Technology Center (MSE Technologies) campus at Basin Creek TEDD south of Butte. CryptoWatt LLC (subsidiary of The Burrell Group) launched bitcoin mining here in 2018; the site was later acquired/rebranded and now operates as Atlas Power (already the named operator by a Dec 2022 equipment-supplier lawsuit against BlockFills). Atlas mines crypto (ASIC/bitcoin, later pivoted partly to GPU/Ethereum) and offers ML/data-processing hosting. Reported capacity figures conflict across sources (permitted ~75MW; one listing shows 150MW; actual draw reported as low as 25MW during the ETH pivot) so capacity is left unset here pending a primary-source figure I could personally verify. NorthWestern Energy has agreed to supply Atlas 75MW of grid power beginning 2026 with a further ~75MW expected within 3-5 years (Datacenter Dynamics). A related 1,600-acre Basin Creek Solar Project expansion (intended to help power the site) was denied by the Butte Zoning Board in the face of strong public opposition."
+  },
+  {
+    "id": "sentinum-bni-montana-richland-mt",
+    "name": "Sentinum BNI Montana Bitcoin Mining Facility",
+    "operator": "Sentinum (Hyperscale Data)",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.716735,
+      "lon": -104.155973,
+      "city": "Sidney",
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 10,
+      "planned": 125
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "announcedDate": "2023-02",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.businesswire.com/news/home/20240508846020/en/Ault-Alliance%E2%80%99s-Subsidiary-Sentinum-Completes-Initial-Bitcoin-Mining-Installation-at-Montana-Location",
+        "label": "Sentinum Completes Initial Bitcoin Mining Installation at Montana Location",
+        "publisher": "Business Wire",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/sentinum-breaks-ground-on-20mw-cryptomine-data-center-in-montana/",
+        "label": "Sentinum breaks ground on 20MW cryptomine data center in Montana",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://contracts.justia.com/companies/dpw-holdings-inc-7638/contract/1302092/",
+        "label": "Novation Agreement among TypeX LLC, BNI Montana LLC, and Lower Yellowstone REC",
+        "publisher": "Justia (SEC contract exhibit)",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/hyperscale-data-announces-intent-to-sell-land-leases-and-power-contracts-of-its-montana-data-properties-to-focus-on-michigan-flagship-campus-302553520.html",
+        "label": "Hyperscale Data Announces Intent to Sell Montana Data Properties (Sept 2025)",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/hyperscale-data-receives-utility-will-serve-determination-for-approximately-125-additional-megawatts-at-one-of-its-montana-sites-302809728.html",
+        "label": "Hyperscale Data Receives Utility Will Serve Determination for ~125 Additional MW (June 2026)",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "BNI Montana LLC acquired two land-lease/power-purchase agreements in Richland County in Feb 2023 (served by Lower Yellowstone Rural Electric Cooperative); broke ground Aug 2023; one site fully built to 10MW and mining bitcoin since early-to-mid 2024 (miners relocated in from the company's Michigan facility). In Sept 2025 the company announced intent to sell/divest the Montana properties to focus on its Michigan AI campus, but a June 2026 press release (utility 'will serve' for ~125 additional MW at one Montana site) frames Montana as part of the company's 'long-term strategy' with no mention of the prior sale plan -- treat the divestiture announcement as apparently superseded/reversed, current operator confirmed as of June 2026. A second Montana site (~15 miles from the first, ~10MW potential) is leased but not yet built out -- see 'held'."
+  },
+  {
+    "id": "nydig-dfm-kraken-richland-mt",
+    "name": "NYDIG DFM Kraken Central Site",
+    "operator": "NYDIG DFM",
+    "facilityType": "crypto_mining",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.873,
+      "lon": -103.924,
+      "city": "Sidney vicinity (unincorporated)",
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "flared_gas"
+    },
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "announcedDate": "2025",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5262-05.pdf",
+        "label": "MAQP #5262-05 Kraken Central Site permit",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-08-05",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.montanarightnow.com/great-falls/public-comment-period-for-proposed-data-center-in-richland-county/article_4cda1b4e-9f00-486f-a57b-baac43377af5.html",
+        "label": "Public comment period for proposed data center in Richland County",
+        "publisher": "MontanaRightNow",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nydig.com/research/nydig-expands-technology-capabilities-with-acquisition-of-crusoes-bitcoin-mining-business",
+        "label": "NYDIG Expands Technology Capabilities with Acquisition of Crusoe's Bitcoin Mining Business",
+        "publisher": "NYDIG",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://montanafreepress.org/2021/06/17/bitcoin-fracking-eastern-montana/",
+        "label": "Bitcoin fracking turns waste gas to digital gold in Bakken oil field",
+        "publisher": "Montana Free Press",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of several small well-pad bitcoin-mining sites NYDIG DFM, LLC operates in the Bakken oil field portion of Richland County, MT, continuing the flared/stranded 'Digital Flare Mitigation' gas-to-bitcoin model NYDIG acquired from Crusoe Energy's bitcoin-mining business in 2025 (Crusoe itself sourced this gas from well pads in the area since ~2021). The Kraken Central Site's Aug/Oct 2025 DEQ air-quality permit (MAQP #5262-05) covers eight 2,500-brake-horsepower engines burning well-pad field gas to power a modular data center; capacity is expressed in engine horsepower, not MW, in the source and is not converted here. Sibling NYDIG DFM permits for nearby pads in the same county (Kennedy Pad MAQP #5301-01, Nate Facility MAQP #5314-01, and others: 5268-02/03, 5313-02, 5328-01) indicate this is a multi-site cluster, not a single facility -- only the best-documented site (Kraken Central) is logged here."
+  },
+  {
+    "id": "big-horn-data-hub-hardin-mt",
+    "name": "Big Horn Data Hub (Hardin Generating Station)",
+    "operator": "Beowulf Electricity & Data",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.765054,
+      "lon": -107.598778,
+      "city": "Hardin",
+      "county": "Big Horn",
+      "state": "MT",
+      "precision": "exact"
+    },
+    "mining": {
+      "powerArrangement": "behind_meter"
+    },
+    "energy": {
+      "source": "other"
+    },
+    "announcedDate": "2020",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.bozemandailychronicle.com/news/data-center-pulls-out-of-great-falls-group-says-others-charge-ahead/article_b0db80fc-ee47-4dae-ae21-fbebbe76dbcd.html",
+        "label": "Data center pulls out of Great Falls, group says, others charge ahead (Beowulf/Hardin still not operating, Nov 2025)",
+        "publisher": "Bozeman Daily Chronicle / Daily Montanan",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ypradio.org/energy/2022-04-28/as-crypto-company-departs-hardin-whats-next-for-the-communities-it-leaves-behind",
+        "label": "As crypto company departs Hardin, what's next for the communities it leaves behind?",
+        "publisher": "Yellowstone Public Radio",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Marathon_Digital_Hardin_Facility",
+        "label": "Marathon Digital Hardin Facility",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://ir.mara.com/news-events/press-releases/detail/1282/marathon-digital-holdings-announces-intent-to-transition-hardin-montana-bitcoin-mining-operations-to-more-sustainable-power-sources",
+        "label": "Marathon Digital Holdings Announces Intent to Transition Hardin, Montana Bitcoin Mining Operations",
+        "publisher": "MARA Investor Relations",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://meic.org/is-northwestern-hoodwinking-customers-as-it-lures-data-centers-into-the-state/big-horn-data-hardin/",
+        "label": "Big Horn Data Hardin",
+        "publisher": "Montana Environmental Information Center",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Marathon Digital (in a joint venture with plant owner Beowulf Energy) ran a 20-acre, 30,000+ Antminer S19 bitcoin-mining data center (up to ~57MW) behind-the-meter at the coal-fired Hardin Generating Station (119MW) from 2020. Marathon announced its exit in April 2022 to pursue carbon-neutral sites, leaving its infrastructure in place 'so another miner can come in.' As of the most recent reporting found (Daily Montanan, Nov 2025), the Big Horn Data Hub is still 'not currently operating,' though Beowulf Electricity & Data has stated it intends to expand/redevelop the site and local officials have expressed support. No confirmed new bitcoin-mining tenant/operator was found as of this check -- logged as cancelled (former operation ended) per the tracker's no-decommissioned-status convention; capacity omitted since nothing is currently producing. Note: a data-center aggregator (baxtel.com) attributes this site to 'TeraWulf,' but TeraWulf's own SEC 10-K lists only its Lake Mariner (NY) facility and a since-divested Nautilus JV stake (PA) -- no Montana facility appears in TeraWulf's own filings, so that attribution is treated as an unverified aggregator error, not used here."
+  },
+  {
+    "id": "hyperblock-bonner-mt",
+    "name": "Bonner Mill Bitcoin Mine (Project Spokane / HyperBlock)",
+    "operator": "HyperBlock Inc.",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 46.872644,
+      "lon": -113.873623,
+      "city": "Bonner",
+      "county": "Missoula",
+      "state": "MT",
+      "precision": "exact"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "coolingType": "air"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "opposed"
+    },
+    "announcedDate": "2017",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://missoulian.com/news/local/bonner-bitcoin-mining-riding-out-cratering-market/article_bd285a25-a979-52da-bf67-95188e1072b4.html",
+        "label": "Bonner Bitcoin mining riding out cratering market",
+        "publisher": "Missoulian",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.bitcointalkradio.com/bonner-bitcoin-company-ceases-operations/",
+        "label": "Bonner bitcoin company ceases operations",
+        "publisher": "Bitcoin Talk Radio",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.govtech.com/policy/montana-cryptocurrency-zoning-law-may-be-countrys-first.html",
+        "label": "Montana Cryptocurrency Zoning Law May Be Country's First",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://missoulian.com/news/local/bonner-bitcoin-data-center-noise-a-continuing-concern/article_fbb8efe6-0261-54bf-8462-9482e8b03b48.html",
+        "label": "Bonner Bitcoin data center noise a continuing concern",
+        "publisher": "Missoulian",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Opened April 2017 as Project Spokane, Montana's first crypto-mining operation, at the former Bonner (Milltown) sawmill industrial site; acquired by HyperBlock in July 2018 (13,000+ servers at peak, using as much power as roughly a third of the county's homes). Persistent resident complaints about cooling-fan noise led Missoula County to adopt interim, then in 2021 permanent, crypto-mining zoning rules -- among the first of their kind in the US. HyperBlock ceased operations and the facility filed for bankruptcy/shut down in spring 2020; no current bitcoin-mining operator. The same Bonner Mill site is now associated with a separate, more recent proposed AI data-center project (a different facility type, not evaluated here)."
+  },
+  {
+    "id": "crusoe-walden-co",
+    "name": "Crusoe Energy Digital Flare Mitigation — Oxbow Well Pad",
+    "operator": "NYDIG DFM",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.7331,
+      "lon": -106.2848,
+      "city": "Walden",
+      "county": "Jackson",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "flared_gas"
+    },
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "community": {
+      "status": "contested"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://coloradosun.com/2022/08/29/oil-and-gas-and-cryptocurrency-miners-are-colorados-new-odd-couple-and-theyre-making-quite-a-bit-of-coin/",
+        "label": "Oil and gas, cryptocurrency miners are Colorado's new odd couple",
+        "publisher": "The Colorado Sun",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.crusoe.ai/resources/newsroom/nydig-to-acquire-crusoes-bitcoin-mining-operation-crusoe-to-scale-vertically",
+        "label": "NYDIG to acquire Crusoe's bitcoin mining operation",
+        "publisher": "Crusoe Energy Systems",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cnbc.com/2025/03/25/crusoe-energy-sells-bitcoin-mining-unit-to-nydig-to-focus-on-ai.html",
+        "label": "Crusoe sells its Bitcoin mining business to NYDIG",
+        "publisher": "CNBC",
+        "kind": "press",
+        "retrievedAt": "2026-08-05"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Crusoe Energy Systems (Denver) runs Digital Flare Mitigation (DFM) modular bitcoin-mining units at D90 Energy's Oxbow well pad (53 wells at 36 locations) southwest of Walden, Jackson County, CO — a North Park Basin field acquired by Fulcrum Energy Capital Funds in early 2021, previously described as the largest single flaring source in the state before Crusoe cut flaring ~75%. Colorado Sun (Aug 2022) documented 6 Crusoe units operating with room for expansion; Earthworks infrared surveys (Jun/Jul 2022) still found active flaring at the pad alongside the Crusoe units, prompting complaints to COGCC and CDPHE Air Pollution Control Division — treat community/regulatory posture as contested, not settled. IMPORTANT OPERATOR CAVEAT: on 2025-03-25 NYDIG announced a definitive agreement to acquire Crusoe's entire bitcoin-mining/DFM business (425 modular units, 250+ MW, across CO/ND/MT/WY/NM/UT/TX plus Argentina); per Crusoe's own newsroom page (retrieved 2026-08-05) the deal is still 'subject to regulator approvals, customary consents and final closing' — no confirmed close date found. Verify at intake whether NYDIG has since become the operator of record for this specific pad. Operator updated: Crusoe sold its entire Bitcoin-mining business (including this flared-gas Digital Flare Mitigation fleet) to NYDIG, closing March 2025; NYDIG DFM LLC registered in Colorado in April 2025 at a Walden address on the D90 Energy well-pad corridor."
+  },
+  {
+    "id": "westblock-shiprock-nm",
+    "name": "WestBlock Capital Bitcoin Mine (Shiprock)",
+    "operator": "WestBlock Capital",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.7867,
+      "lon": -108.6866,
+      "city": "Shiprock",
+      "county": "San Juan",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "contested"
+    },
+    "announcedDate": "2018",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://futurism.com/navajo-bitcoin-mine-startup",
+        "label": "Startup Criticized for Bitcoin Mine in Impoverished Navajo Community",
+        "publisher": "Futurism",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.vice.com/en/article/financial-colonialism-a-bitcoin-mine-in-navajo-nation-flares-tensions/",
+        "label": "'Financial Colonialism': A Bitcoin Mine in Navajo Nation Flares Tensions",
+        "publisher": "Vice",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.coindesk.com/policy/2021/11/10/why-shouldnt-the-navajo-mine-bitcoin",
+        "label": "Why Shouldn't the Navajo Mine Bitcoin?",
+        "publisher": "CoinDesk",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "WestBlock Capital (Calgary, AB) began mining bitcoin near Shiprock, San Juan County, NM in 2018/2019 on Navajo Nation land, drawing from a 7 MW (later 15 MW, expanded by Jan 2022) NTUA substation load that had been sitting unused; NTUA sold the underutilized capacity near-at-cost. Company was acquired by Luxxfolio Holdings Inc. (2021). Framed by Vice/Coindesk (Nov 2021) as 'financial/monetary colonialism' — Navajo community reaction was contested, citing residents without electricity/running water near a mine paying ~$48K tax + ~$60K land-lease revenue over the prior several years. STATUS: per WebSearch-surfaced OTC Markets / Luxxfolio filings (not independently page-verified this session — direct fetch attempts to otcmarkets.com and gem.wiki both failed, timeout/403), WestBlock LLC idled operations around 2022-11-23 and went non-operating by 2022-11-30 following an NTUA access restriction tied to non-payment and a default notice (~$1.155M). Treat the closure date/details as reported-not-confirmed pending a direct read of the primary filing; the site's existence, location, and 2018-2022 operating history ARE independently confirmed via Futurism/Vice/Coindesk."
+  },
+  {
+    "id": "highwire-evansville-wy",
+    "name": "Highwire Energy Partners Bitcoin Mining Facility (Evansville)",
+    "operator": "Highwire Energy Partners",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.8508,
+      "lon": -106.2735,
+      "city": "Evansville",
+      "county": "Natrona",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "stranded_gas"
+    },
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "community": {
+      "status": "supported"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://oilcity.news/community/2022/11/28/cryptocurrency-mining-operation-coming-to-evansville/",
+        "label": "Cryptocurrency mining operation coming to Evansville",
+        "publisher": "Oil City News",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://oilcity.news/startup/2021/03/05/modern-miners-new-casper-business-mines-bitcoin-at-unused-gas-wells/",
+        "label": "Modern Miners: New Casper business mines Bitcoin at unused gas wells",
+        "publisher": "Oil City News",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://finance.yahoo.com/news/creek-road-miners-inc-completes-103100694.html",
+        "label": "Creek Road Miners, Inc. Completes Merger with Prairie Operating Co., LLC",
+        "publisher": "Yahoo Finance / GlobeNewswire",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Highwire Energy Partners (Casper, WY entrepreneurs Will Reese/Kris Holbrook/Wayne Neumiller) mined bitcoin at Wyoming wellhead sites using stranded/shut-in gas via field generators feeding custom 14x14 huts; Evansville Town Council unanimously approved a company-partner-owned Blackmore Road site in Nov 2022, described favorably by the mayor as a good use for otherwise-awkward land. Highwire's energy-producing assets (WY/SD/ND) were acquired by Creek Road Miners, Inc. on 2022-05-31. Creek Road Miners then merged with/renamed to Prairie Operating Co. (effective 2023-10-16) and repositioned entirely to conventional oil & gas E&P in the DJ Basin (Weld County, CO) — the merger-completion press release (Yahoo Finance, read directly) makes no mention of the Wyoming crypto-mining assets or their disposition. DIVESTITURE-TRAP CAVEAT: no direct closure announcement for the Evansville site itself was found; status 'cancelled' here is inferred from the successor company's complete pivot away from crypto mining and silence on the WY assets in its own investor materials — verify current site use (satellite/local news) before intake."
+  },
+  {
+    "id": "polaris-technologies-muskogee-ok",
+    "name": "Polaris Technologies Muskogee Bitcoin Mining Facility (\"Project Bifrost\")",
+    "operator": "Polaris Technologies, Inc.",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.7479,
+      "lon": -95.3697,
+      "city": "Muskogee",
+      "county": "Muskogee",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 200,
+      "planned": 400
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "coolingType": "air"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "mixed"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://okcfox.com/news/local/oklahoma-bets-on-bitcoin-boom-muskogee-locals-worry-about-noise-from-crypto-mining-port-of-muskogee-bitcoin-bill-of-rights-ok-law-polaris-technologies-inc-brian-hill-oge-electricity-power-data-artifitial-intelligence-ai-stitt",
+        "label": "Oklahoma bets on bitcoin boom, Muskogee locals worry about noise from crypto mining",
+        "publisher": "OKC Fox 25",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://tulsaworld.com/news/local/business/new-100-million-data-center-planned-for-port-muskogee/article_c0cba9e6-caa5-11ee-8752-c709fcc5109e.html",
+        "label": "Polaris plans $100 million data center for Port Muskogee",
+        "publisher": "Tulsa World",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/crypto-firm-polaris-technology-to-build-200mw-data-center-in-muskogee-oklahoma/",
+        "label": "Crypto firm Polaris Technology to build 200MW data center in Muskogee, Oklahoma",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.muskogeeok.gov/news_detail_T2_R666.php",
+        "label": "Polaris Technologies, Inc. invests $100M to establish Muskogee's first data center facility",
+        "publisher": "City of Muskogee",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://streetlightnews.org/data-centers/",
+        "label": "A Muskogee Bitcoin mining facility that received OSHA fines is part of the data center race in Oklahoma",
+        "publisher": "Streetlight",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://finance.yahoo.com/sectors/technology/articles/core-scientific-seeks-aquire-polaris-021700855.html",
+        "label": "Core Scientific seeks to acquire Polaris Technologies as part of expansion",
+        "publisher": "Yahoo Finance",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Bitcoin mining data center (\"Project Bifrost\") on a 42-acre site at Port Muskogee's John T. Griffin Industrial Park, south of Tulsa; ~$100M initial investment (Feb 2024 announcement), since doubled. Operational with ~40,000 miners across shipping containers at ~200MW drawn from OG&E, expanding toward 400MW / 400,000-home-equivalent load. OSHA cited the facility for 6 safety violations (~$68K initial penalty, late 2024: coolant on floors, work around energized circuits without PPE, untrained staff); Oklahoma DEQ found stormwater/sediment violations affecting Sam Creek. Polaris sued the City of Muskogee in 2025 over annexation and a proposed 3% utility franchise fee. Core Scientific has a PENDING (not yet closed) agreement to acquire Polaris Technologies, expected to close Q3 2026 as part of a much larger planned 1.5GW AI campus at the same industrial park — operator of record here remains Polaris Technologies pending that close."
+  },
+  {
+    "id": "northern-data-pryor-ok",
+    "name": "Northern Data North American Operational Center (Pryor) — cancelled",
+    "operator": "Northern Data AG",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.29167,
+      "lon": -95.31806,
+      "city": "Pryor",
+      "county": "Mayes",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://nondoc.com/2022/03/09/northern-data-selects-oklahoma-for-north-american-headquarters/",
+        "label": "Germany's Northern Data selects Oklahoma for North American headquarters (incl. later 'not moving forward' update)",
+        "publisher": "NonDoc",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://maip.com/news/article/state-of-oklahoma-announces-northern-data-to-build-north-american-operational-center-at-midamerica-industrial-park",
+        "label": "State of Oklahoma announces Northern Data to build North American Operational Center at MidAmerica Industrial Park",
+        "publisher": "MidAmerica Industrial Park",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.okcommerce.gov/northern-data-to-build-north-american-headquarters-at-midamerica-industrial-park/",
+        "label": "Northern Data to Build North American Headquarters at MidAmerica Industrial Park",
+        "publisher": "Oklahoma Dept. of Commerce",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Northern Data AG (German crypto/HPC infrastructure firm) announced a $270M, up to 250MW \"North American Operational Center\" at MidAmerica Industrial Park in Pryor in March 2022, backed by up to 250MW of Grand River Dam Authority power and promising 150+ jobs. An editor's-note update appended to the original nondoc.com report quotes MidAmerica Industrial Park officials confirming the project \"is not moving forward\" — it never broke ground. Recorded here as cancelled/never-built; omit capacity per data-rigor rules."
+  },
+  {
+    "id": "evolution-technology-bourbon-county-ks",
+    "name": "Evolution Technology Bitcoin Mine (Bourbon County)",
+    "operator": "Evolution Technology",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.8473,
+      "lon": -94.9753,
+      "city": "Uniontown",
+      "county": "Bourbon",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "stranded_gas"
+    },
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "community": {
+      "status": "opposed"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.fourstateshomepage.com/news/local/its-miserable-bitcoin-mining-facility-in-rural-kansas-too-loud-neighbors-say/",
+        "label": "'It's miserable,' Bitcoin mining facility in rural Kansas too loud, neighbors say",
+        "publisher": "FourStatesHomepage (KSNF/KODE)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://fortscott.biz/news/bourbon-county-commission-discusses-bitcoin-mining-noise-issue-cemetery-records",
+        "label": "Bourbon County Commission Discusses Bitcoin Mining Noise Issue, Cemetery Records",
+        "publisher": "Fort Scott Biz",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fourstateshomepage.com/news/local/evolution-tech-aims-to-resolve-noise-issues-at-bitcoin-mine/",
+        "label": "Evolution Tech aims to resolve noise issues at Bitcoin mine",
+        "publisher": "FourStatesHomepage (KSNF/KODE)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Rural bitcoin mine of four shipping containers of mining computers powered by on-site natural-gas generators near plugged/abandoned oil-and-gas wells (two new wells reportedly planned as of Oct 2025), operating since roughly 2023. Sustained ~80dB hum/vibration audible up to a mile away has drawn repeated neighbor complaints (e.g., Dereck Ranes); Bourbon County commissioners discussed a noise ordinance (citing Jefferson County's 45dB limit as a benchmark) and, per an Oct 16, 2025 report, voted a moratorium on expansion of the site pending resolution. Capacity (MW) not publicly disclosed."
+  },
+  {
+    "id": "crypto-colo-center-mclouth-ks",
+    "name": "Crypto Colo Center McLouth Data Center (proposed) — cancelled",
+    "operator": "Crypto Colo Center Corp",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.19611,
+      "lon": -95.20833,
+      "city": "McLouth",
+      "county": "Jefferson",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "stranded_gas"
+    },
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "community": {
+      "status": "opposed"
+    },
+    "announcedDate": "2023",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://startlandnews.com/2023/03/no-crypto/",
+        "label": "Small town KS just blocked its new crypto mining neighbor",
+        "publisher": "Startland News",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Crypto Colo Center Corp (CCC), on behalf of property owner Dei Vitae Enterprises, filed a conditional-use permit application to build a 32.4MW natural-gas-powered colocation/crypto-mining facility (plus an internet exchange point) roughly 0.3 miles outside McLouth (pop. ~858), Jefferson County — about 45 minutes west of Kansas City. Roughly 140 residents (~1/6 of the town) turned out to oppose the project over noise, environmental, and safety concerns. CCC withdrew the permit application Feb 27, 2023, and Jefferson County commissioners subsequently approved a 12-month countywide moratorium on data-center development. Never built; recorded as cancelled, capacity omitted."
+  },
+  {
+    "id": "jigowatt-stanton-ne",
+    "name": "Jigowatt Stanton Bitcoin Mine",
+    "operator": "Jigowatt",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.94722,
+      "lon": -97.21722,
+      "city": "Stanton",
+      "county": "Stanton",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "coolingType": "hybrid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "community": {
+      "status": "opposed"
+    },
+    "announcedDate": "2023",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://flatwaterfreepress.org/crypto-needs-cheap-energy-it-found-a-whole-bunch-in-nebraska/",
+        "label": "Crypto needs cheap energy. It found a whole bunch in Nebraska.",
+        "publisher": "Flatwater Free Press",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ktiv.com/2024/04/30/bitcoin-descended-small-nebraska-county-bringing-big-business-with-big-complaints-neighbors/",
+        "label": "Bitcoin descended on a small Nebraska county bringing big business, with big complaints from neighbors",
+        "publisher": "KTIV",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.1011now.com/2025/06/28/nebraska-crypto-company-wants-get-bigger-landowners-decry-nppds-use-eminent-domain-that-will-help-it-grow/",
+        "label": "A Nebraska crypto company wants to get bigger. Landowners decry NPPD's use of eminent domain that will help it grow.",
+        "publisher": "1011now (KOLN)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.norfolkneradio.com/news/many-positives-and-negatives-coming-from-new-data-mining-facility-in-stanton-county/article_3e1b0ed2-9b85-11ee-b6c5-1b766c2bde62.html",
+        "label": "Many positives and negatives coming from new data mining facility in Stanton County",
+        "publisher": "Norfolk NE Radio",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Lincoln-based Jigowatt began installing shipping-container-housed mining rigs (a mix of air-cooled and immersion-cooled containers) on Stanton Public Power District's (SPPD) grid near Stanton starting in 2023; SPPD created a discounted \"interruptible\" large-load electric rate to recruit/retain the customer. Jigowatt is now Stanton County's largest electricity customer by far and is seeking to roughly triple its allowed load, backed by a ~$20M ratepayer-funded distribution upgrade and an NPPD transmission project that has drawn eminent-domain objections from area landowners (reported June/July 2025). Neighbors half a mile or more away (e.g., the Wortmanns) report a persistent low-frequency hum/vibration and resulting health/property concerns; one neighbor abandoned plans to build a new home nearby. MW capacity not publicly disclosed in the coverage reviewed."
+  },
+  {
+    "id": "abundant-mines-cascadelocks-or",
+    "name": "Abundant Mines – Cascade Locks Facility",
+    "operator": "Abundant Mines (Good Life Realty LLC)",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.6697,
+      "lon": -121.8931,
+      "city": "Cascade Locks",
+      "county": "Hood River",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "hydro"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.portofcascadelocks.gov/port-tenants",
+        "label": "Port of Cascade Locks — Port Tenants (lists Good Life Realty LLC dba Abundant Mines, Herman Creek Business Park Flex 1 Suite 101)",
+        "publisher": "Port of Cascade Locks",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://abundantmines.com/",
+        "label": "Abundant Mines — company homepage (Pacific Northwest hydro power, Columbia Gorge facility)",
+        "publisher": "Abundant Mines",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://bitcoinmagazine.com/press-releases/abundant-mines-wins-inaugural-satos-award-for-mining-energy",
+        "label": "Abundant Mines Wins Inaugural Satos Award For Mining & Energy",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://bitcoinmagazine.com/press-releases/celebrating-one-year-of-hashrate-redirect-how-abundant-mines-redefined-uptime-and-protected-millions-in-client-bitcoin-rewards",
+        "label": "Celebrating One Year of Hashrate Redirect™ (dateline: Hood River County, Oregon – Dec 16, 2025)",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Bitcoin-mining/HPC hosting company \"Abundant Mines\" (legal entity Good Life Realty LLC) is a confirmed tenant at the Port of Cascade Locks' Herman Creek Business Park. Company press releases (Bitcoin Magazine, Dec 2025 and May 2026) describe six active facilities across Oregon and >25 MW of capacity in development company-wide, plus a seventh site slated for Q2 2026 — those figures are company-wide, not specific to this Cascade Locks site, so per-site capacity is left blank rather than guessed. Company also lists a corporate office at 615 SE Glenwood Dr, Bend, OR (administrative, not a mining site). Region is served by Columbia River hydroelectric supply."
+  },
+  {
+    "id": "trex-peakdigital-orofino-id",
+    "name": "Peak Digital Solutions – Orofino Facility",
+    "operator": "T-REX Acquisition Corp (Peak Digital Solutions LLC)",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 46.4794,
+      "lon": -116.254,
+      "city": "Orofino",
+      "county": "Clearwater",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.stocktitan.net/news/TRXA/t-rex-acquisition-corp-completes-asset-acquisition-of-peak-digital-43sgz8183y9d.html",
+        "label": "T-REX Acquisition Corp. Completes Asset Acquisition of Peak Digital Solutions LLC",
+        "publisher": "StockTitan (GlobeNewswire mirror)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.icua.coop/member/clearwater-power-co/",
+        "label": "Clearwater Power Co. member profile (consumer-owned cooperative, Lewiston ID HQ, ~11,500 accounts)",
+        "publisher": "Idaho Consumer Owned Utilities Association",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "T-REX Acquisition Corp (Nasdaq: TRXA) completed an asset acquisition of Peak Digital Solutions LLC's turnkey Bitcoin-mining/co-location facility in Orofino, Idaho (~6,000 sq ft, with racks, cooling and operational systems) on March 11, 2025, after first agreeing to the deal in July 2024 and consolidating T-REX's mining operations from two other sites into this one; deal valued at ~$500,000. At close, co-location tenants occupied roughly one-third of rack space with T-REX using the remainder for proprietary mining. Power is supplied by Clearwater Power Company, a member-owned rural electric cooperative headquartered in Lewiston, ID (serving ~11,500 accounts across northern Idaho); SEC filing indexes reference an October 2024 power-service agreement between T-REX and Clearwater Power, but the exact contracted MW capacity was not found in directly-read sources, so it is left blank rather than estimated from the sq-ft figure."
+  },
+  {
+    "id": "geobitmine-aberdeen-id",
+    "name": "GeoBitmine Bingham County Facility",
+    "operator": "GeoBitmine",
+    "facilityType": "crypto_mining",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.9442,
+      "lon": -112.8383,
+      "city": "Aberdeen",
+      "county": "Bingham",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 6
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "grid"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.utilitydive.com/news/geobitmine-idaho-power-cryptocurrency-mining-rate/626724/",
+        "label": "GeoBitmine challenges Idaho Power's 'discriminatory' rate for cryptocurrency mining facilities",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Proposed co-generation crypto-mine + greenhouse project at the closed J.R. Simplot potato-processing plant in Aberdeen (Bingham County). GeoBitmine planned to pipe mining-rig waste heat into industrial greenhouses (with a University of Idaho seed-research tie-in) and estimated a 6 MW load. Project stalled when Idaho Power created a crypto-specific \"Schedule 20\" tariff (approved June 15, 2022) that GeoBitmine calls discriminatory — it allows up to 225 hours/year of interruptible service and marginal energy-based pricing, which GeoBitmine says makes financing impossible; GeoBitmine filed for PUC reconsideration July 6, 2022. This wave's directly-read sourcing tops out at 2022; secondary (unread) search results suggest the Schedule 20 dispute was still before the Idaho PUC as late as January 2026, but that later date was not independently verified against a primary document this session — treat status as long-pending/unresolved rather than confirmed-dead or confirmed-built."
+  },
+  {
+    "id": "salcido-pangborn-east-wenatchee-wa",
+    "name": "Salcido Pangborn Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.3985,
+      "lon": -120.2075,
+      "city": "East Wenatchee",
+      "county": "Douglas",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 10
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "hydro"
+    },
+    "aiClassification": "mixed_use",
+    "announcedDate": "2018",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.geekwire.com/2018/power-struggle-bitcoin-mining-boom-transforming-apple-country-one-megawatt-time/",
+        "label": "Power struggle: How a bitcoin mining boom is transforming apple country, one megawatt at a time",
+        "publisher": "GeekWire",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (Alpha/Pangborn, 10MW, completed May 2018)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/salcido-pangborn-data-center",
+        "label": "Salcido Pangborn Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.wenatcheeworld.com/wvbusiness/after-15-years-in-crypto-salcido-enterprises-pivots-toward-ai-global-aid/article_931ae07f-0e2f-4a58-b2c6-a9ae8453245e.html",
+        "label": "After 15 years in crypto, Salcido Enterprises pivots toward AI, global aid",
+        "publisher": "Wenatchee World",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Salcido Enterprises' flagship site, completed May 2018, 10MW, in the Pangborn Business Park near Pangborn Memorial Airport, East Wenatchee. GeekWire (2018) describes it as the company's main Bitcoin mining facility, powered by Columbia River hydro via Douglas County PUD. Founder Malachi Salcido is the largest independent crypto-mining operator in the Mid-Columbia Basin (~11.5MW company-wide as of Sept 2025 across Chelan/Douglas/Grant counties). CAVEAT: a June 2026 Wenatchee World profile quotes Salcido saying the company is now \"quickly becoming AI compute with a little bit of crypto currency\" company-wide — Pangborn's current exact crypto-vs-AI workload split is not independently confirmed, though it is still referenced (via a 2021 bitcoin-mining-servers photo) as the company's bitcoin site in that same 2026 piece. GigaWatt's former (now-defunct) mine was also sited in this same business park — do not conflate the two; they are separate parcels/operators."
+  },
+  {
+    "id": "salcido-columbia-wenatchee-wa",
+    "name": "Salcido Columbia Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.4235,
+      "lon": -120.3103,
+      "city": "Wenatchee",
+      "county": "Chelan",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "hydro"
+    },
+    "aiClassification": "mixed_use",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.geekwire.com/2018/power-struggle-bitcoin-mining-boom-transforming-apple-country-one-megawatt-time/",
+        "label": "Power struggle: How a bitcoin mining boom is transforming apple country, one megawatt at a time",
+        "publisher": "GeekWire",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (Tower Two / Columbia, Wenatchee)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "GeekWire (2018) reported 1,800 mining machines running 24/7 \"solving complicated algorithms to earn digital currency\" at this converted cold-storage warehouse. Company's own site lists it as \"Tower Two (Columbia)\" in Wenatchee. GeekWire notes Salcido was building a facility \"five times the size\" of Columbia (i.e. Pangborn, ~10MW), implying Columbia is roughly ~2MW, but that figure is not independently confirmed so capacity is omitted here. Same pivot-to-AI caveat as Pangborn applies (see that record's notes) — current crypto share of this site's workload not independently confirmed for 2025/2026."
+  },
+  {
+    "id": "salcido-cashmere-cashmere-wa",
+    "name": "Salcido Cashmere Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.5262,
+      "lon": -120.4692,
+      "city": "Cashmere",
+      "county": "Chelan",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "hydro"
+    },
+    "announcedDate": "2014",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (Core / Cashmere, complete 2014, cryptocurrency mining conversion)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-centers/salcido-enterprises",
+        "label": "Salcido Enterprises Data Centers and Colocation",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Company's own site lists \"Core (Cashmere)\", completed 2014, described as a converted industrial complex for cryptocurrency mining — the company's oldest listed facility. Baxtel corroborates a Cashmere site in the Salcido portfolio. No independent (non-operator) press specifically naming this site was found; capacity not disclosed. Same company-wide crypto-to-AI pivot caveat applies (see Pangborn record)."
+  },
+  {
+    "id": "salcido-fortress-quincy-wa",
+    "name": "Salcido Fortress Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.234,
+      "lon": -119.8528,
+      "city": "Quincy",
+      "county": "Grant",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 4.6
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "hydro"
+    },
+    "aiClassification": "mixed_use",
+    "announcedDate": "2023",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/salcido-fortress",
+        "label": "Salcido: Fortress Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (Core Valley / Fortress, Grant County, built 2023, 4.6MW)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Purpose-built 2023, 4.6MW; company markets it for \"24x7 blockchain and AI workloads\" (mixed use, not exclusively crypto). Distinct from Salcido's other Quincy site (Horizon) but exact street address for either is not published, so both use the same Quincy centroid — treat as two candidate parcels pending precise siting. Company-wide crypto-to-AI pivot caveat applies (see Pangborn record)."
+  },
+  {
+    "id": "salcido-horizon-quincy-wa",
+    "name": "Salcido Horizon Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.236,
+      "lon": -119.85,
+      "city": "Quincy",
+      "county": "Grant",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 4
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "hydro"
+    },
+    "aiClassification": "mixed_use",
+    "announcedDate": "2019",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/salcido-horizon",
+        "label": "Salcido: Horizon Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (Center Plus / Horizon, online Q1 2019, 4MW)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Online Q1 2019, 4MW; Baxtel describes it as designed for \"advanced AI and cryptocurrency data systems\" (mixed use). Distinct from Fortress (see that record's note on shared Quincy centroid — exact parcel addresses unpublished for both). Company-wide crypto-to-AI pivot caveat applies (see Pangborn record)."
+  },
+  {
+    "id": "salcido-wheeler-moses-lake-wa",
+    "name": "Salcido Wheeler Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.125,
+      "lon": -119.285,
+      "city": "Moses Lake",
+      "county": "Grant",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 4.8
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "hydro"
+    },
+    "aiClassification": "mixed_use",
+    "announcedDate": "2024",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/salcido-wheeler",
+        "label": "Salcido: Wheeler Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (Park Prime / Wheeler, Dec 2024, 4.8MW)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Newest Salcido facility, opened December 2024, 4.8MW — the company's third purpose-built Grant County site. Baxtel: \"custom-built, high-density Tier-0 facility... expanding capacity for blockchain and AI operations\" (mixed use). Distinct from the already-tracked bitfarms-moses-lake-wa (different operator/site). Company-wide crypto-to-AI pivot caveat applies (see Pangborn record) — being the newest site, it may skew more AI-weighted than the older facilities."
+  },
+  {
+    "id": "gigawatt-east-wenatchee-wa",
+    "name": "Giga Watt Mining Facility (former)",
+    "operator": "Giga Watt Inc.",
+    "facilityType": "crypto_mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.3968,
+      "lon": -120.2042,
+      "city": "East Wenatchee",
+      "county": "Douglas",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid"
+    },
+    "energy": {
+      "source": "hydro"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.coindesk.com/markets/2018/11/21/bitcoin-mining-firm-giga-watt-declares-bankruptcy-owing-millions",
+        "label": "Bitcoin Mining Firm Giga Watt Declares Bankruptcy Owing Millions",
+        "publisher": "CoinDesk",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wenatcheeworld.com/news/local/port-will-study-future-uses-for-former-cryptocurrency-mine/article_9f67f584-cab3-11ea-a042-97ef303665a1.html",
+        "label": "Port will study future uses for former cryptocurrency mine",
+        "publisher": "Wenatchee World",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Giga Watt (formerly MegaBigPower, founded by ex-Microsoft engineer Dave Carlson) was a pioneering Mid-Columbia Basin Bitcoin miner/hosting operator in the Pangborn Business Park, East Wenatchee, Douglas County. Filed Chapter 11 bankruptcy in Nov 2018 (Eastern District of WA), owing Douglas County PUD $310K+ among other creditors. As of March 2023 (Wenatchee World), the Port of Douglas County was awarded a $50,000 grant to study alternative future uses (e.g. startup/small-distribution cluster) for the former mine property — confirming the site is defunct/non-operational, not merely dormant. Capacity omitted per cancelled-site convention. Distinct from Salcido's Pangborn Data Center, a separate, still-operating parcel in the same business park."
   }
 ]
