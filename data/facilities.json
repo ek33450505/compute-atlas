@@ -50213,12 +50213,12 @@
     },
     "facilityType": "power_generation",
     "generation": {
-      "technology": "other",
+      "technology": "fusion",
       "offtaker": "Microsoft",
       "poweredFacilityIds": [
         "microsoft-malaga-wa"
       ],
-      "notes": "Orion is billed as the world's first commercial fusion power plant, targeting at least 50 MW to Microsoft (PPA signed 2023, delivery targeted 2028). Under construction in Malaga, WA following first-of-a-kind Washington Dept. of Health fusion licensing in June 2026. An ADDITIONAL power source for the co-located Microsoft Malaga campus (microsoft-malaga-wa), otherwise served by Chelan County PUD hydropower. Technology recorded as 'other' — the schema has no 'fusion' value (a recommended future enum addition)."
+      "notes": "Orion is billed as the world's first commercial fusion power plant, targeting at least 50 MW to Microsoft (PPA signed 2023, delivery targeted 2028). Under construction in Malaga, WA following first-of-a-kind Washington Dept. of Health fusion licensing in June 2026. An ADDITIONAL power source for the co-located Microsoft Malaga campus (microsoft-malaga-wa), otherwise served by Chelan County PUD hydropower. Recorded under the `fusion` technology type."
     },
     "sources": [
       {
@@ -50244,7 +50244,7 @@
       }
     ],
     "lastUpdated": "2026-08-04",
-    "notes": "The world's first commercial fusion power plant, under construction in Malaga, WA to deliver at least 50 MW to Microsoft — the first fusion PPA ever signed. An additional, co-located power source for Microsoft's Malaga campus. Fuel/technology recorded as 'other' pending a schema 'fusion' value."
+    "notes": "The world's first commercial fusion power plant, under construction in Malaga, WA to deliver at least 50 MW to Microsoft — the first fusion PPA ever signed. An additional, co-located power source for Microsoft's Malaga campus. Recorded under the new `fusion` technology type."
   },
   {
     "id": "davis-besse-nuclear-ottawa-county-oh",

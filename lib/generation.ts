@@ -5,10 +5,11 @@
  * lib/status.ts. Kept to labels/order only for now.
  */
 
-/** All 9 generation technology keys (stable, exhaustive — mirrors schema `generation.technology` enum). */
+/** All 10 generation technology keys (stable, exhaustive — mirrors schema `generation.technology` enum). */
 export const GENERATION_TECHNOLOGY_ORDER = [
   "nuclear_smr",
   "nuclear",
+  "fusion",
   "natural_gas",
   "solar",
   "wind",
@@ -24,6 +25,7 @@ export type GenerationTechnology = (typeof GENERATION_TECHNOLOGY_ORDER)[number];
 export const GENERATION_TECHNOLOGY_LABELS: Record<GenerationTechnology, string> = {
   nuclear_smr: "Nuclear · SMR",
   nuclear: "Nuclear · conventional",
+  fusion: "Fusion",
   natural_gas: "Natural gas",
   solar: "Solar",
   wind: "Wind",

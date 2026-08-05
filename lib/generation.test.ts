@@ -6,8 +6,8 @@ import {
 } from "./generation";
 
 describe("GENERATION_TECHNOLOGY_ORDER", () => {
-  it("has exactly 9 entries", () => {
-    expect(GENERATION_TECHNOLOGY_ORDER).toHaveLength(9);
+  it("has exactly 10 entries", () => {
+    expect(GENERATION_TECHNOLOGY_ORDER).toHaveLength(10);
   });
 });
 
@@ -22,6 +22,10 @@ describe("GENERATION_TECHNOLOGY_LABELS", () => {
 describe("getGenerationTechnologyLabel", () => {
   it("returns the exact label for nuclear_smr", () => {
     expect(getGenerationTechnologyLabel("nuclear_smr")).toBe("Nuclear · SMR");
+  });
+
+  it("returns the exact label for fusion", () => {
+    expect(getGenerationTechnologyLabel("fusion")).toBe("Fusion");
   });
 
   it("returns the fallback for undefined", () => {
