@@ -22918,7 +22918,7 @@
   {
     "id": "hut8-vega-amarillo-tx",
     "name": "Hut 8 Vega Facility",
-    "operator": "Hut 8",
+    "operator": "American Bitcoin (Hut 8)",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -49519,7 +49519,7 @@
   {
     "id": "hut8-salt-creek-culberson-tx",
     "name": "Hut 8 Salt Creek Facility",
-    "operator": "Hut 8",
+    "operator": "American Bitcoin (Hut 8)",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -50455,5 +50455,991 @@
     ],
     "lastUpdated": "2026-08-04",
     "notes": "Two-unit PWR at Shippingport, PA, ~1,872 MW. Part of the Jan 2026 Vistra-Meta PPA package, but distinctively its Meta allocation is a 140 MW future-uprate share only — none of the existing output. Included to complete the three-plant deal; grid-delivered."
+  },
+  {
+    "id": "cleanspark-lenoir-city-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Lenoir City Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.7973,
+      "lon": -84.256,
+      "city": "Lenoir City",
+      "county": "Loudon",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 20,
+      "planned": 40
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "energy": {
+      "source": "grid",
+      "utility": "TVA",
+      "notes": "GRIID/CleanSpark sites in Tennessee are serviced by the Tennessee Valley Authority."
+    },
+    "announcedDate": "2024-10-31",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-announces-agreement-to-acquire-griid-infrastructure-based-on-an-enterprise-value-of-155-million-and-expansion-plans-of-over-400-mw-in-tennessee-302184116.html",
+        "label": "CleanSpark Announces Agreement to Acquire GRIID Infrastructure",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2024/02/14/2828934/0/en/GRIID-Infrastructure-Announces-Plans-to-Double-Capacity-of-Lenoir-City-Tenn-Bitcoin-Mining-Operations.html",
+        "label": "GRIID Infrastructure Announces Plans to Double Capacity of Lenoir City, Tenn. Bitcoin Mining Operations",
+        "publisher": "GlobeNewswire (GRIID Infrastructure, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Item 2 Properties / Tennessee Operations)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of GRIID Infrastructure's three original Tennessee sites, inherited by CleanSpark when it closed the GRIID acquisition Oct 31, 2024. GRIID announced a 20 MW -> 40 MW expansion plan for this specific site in Feb 2024 (pre-acquisition); treat the 40 MW figure as a disclosed target, not a verified current state. The FY2025 10-K confirms CleanSpark operated 10 wholly-owned TN locations (234 MW / 12.43 EH/s aggregate) as of 2025-09-30, including this site, but discloses no updated per-site MW."
+  },
+  {
+    "id": "cleanspark-maynardville-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Maynardville Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.2506,
+      "lon": -83.7974,
+      "city": "Maynardville",
+      "county": "Union",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "energy": {
+      "source": "grid",
+      "utility": "TVA",
+      "notes": "GRIID/CleanSpark sites in Tennessee are serviced by the Tennessee Valley Authority."
+    },
+    "announcedDate": "2024-10-31",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-announces-agreement-to-acquire-griid-infrastructure-based-on-an-enterprise-value-of-155-million-and-expansion-plans-of-over-400-mw-in-tennessee-302184116.html",
+        "label": "CleanSpark Announces Agreement to Acquire GRIID Infrastructure",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Item 2 Properties / Tennessee Operations)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of GRIID Infrastructure's three original Tennessee sites, inherited by CleanSpark when it closed the GRIID acquisition Oct 31, 2024. No site-specific MW disclosed; Tennessee capacity is reported only in aggregate (234 MW / 12.43 EH/s across 10 locations as of 2025-09-30)."
+  },
+  {
+    "id": "cleanspark-limestone-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Limestone Bitcoin Mining Facility (closed 2026)",
+    "operator": "CleanSpark, Inc.",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.2235,
+      "lon": -82.625,
+      "city": "Limestone",
+      "county": "Washington",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "energy": {
+      "source": "grid",
+      "utility": "BrightRidge (TVA)",
+      "notes": "Powered under a 2020 BrightRidge (local power distributor) energy contract. Historically ran ~25 MW before the 2026 shutdown."
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "Shut down 2026-03-28 under a 2023 Washington County lawsuit settlement over noise/zoning violations."
+    },
+    "announcedDate": "2020",
+    "sources": [
+      {
+        "url": "https://www.wjhl.com/news/local/bitcoin-mine-would-close-move-in-proposed-lawsuit-settlement/",
+        "label": "County OKs Bitcoin mine lawsuit settlement after gaining concessions",
+        "publisher": "WJHL Tri-Cities News",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/noisy-bitcoin-mine-shuts-down-212411956.html",
+        "label": "Noisy Bitcoin mine shuts down in Washington County, TN",
+        "publisher": "WJHL / Yahoo News",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-announces-agreement-to-acquire-griid-infrastructure-based-on-an-enterprise-value-of-155-million-and-expansion-plans-of-over-400-mw-in-tennessee-302184116.html",
+        "label": "CleanSpark Announces Agreement to Acquire GRIID Infrastructure",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Real, well-documented ex-GRIID site (25 MW per a 2020 BrightRidge/Red Dog LLC contract) that CleanSpark inherited in the Oct 2024 GRIID acquisition, but which PERMANENTLY CEASED OPERATIONS on 2026-03-28 under a 2023 Washington County lawsuit settlement over noise/zoning violations. The schema has no 'decommissioned' status; 'cancelled' is used as the closest fit for a shut-down facility. Illustrative of the community-opposition dimension of crypto mining."
+  },
+  {
+    "id": "cleanspark-jellico-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Jellico Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.5825,
+      "lon": -84.1306,
+      "city": "Jellico",
+      "county": "Campbell",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-09-11",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-to-add-5-ehs-and-increase-2024-guidance-with-acquisition-of-seven-additional-bitcoin-mining-facilities-in-tennessee-302244673.html",
+        "label": "CleanSpark to Add 5 EH/s ... Acquisition of Seven Additional Bitcoin Mining Facilities in Tennessee",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Tennessee acquisitions / Exponential Digital MIPAs)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of seven TN bitcoin mining sites CleanSpark acquired from Exponential Digital, LLC for a combined $27.5-29.85M (closed Sept-Oct 2024) - a SEPARATE transaction from the GRIID acquisition. Site city named in the FY2025 10-K ('MIPA 1: Jellico, TN and West Crossville, TN'); the press release discloses only aggregate figures (85 MW / 5 EH/s across all 7 sites), so capacityMw is omitted rather than guessed."
+  },
+  {
+    "id": "cleanspark-west-crossville-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark West Crossville Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.9487,
+      "lon": -85.0269,
+      "city": "Crossville",
+      "county": "Cumberland",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-09-11",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-to-add-5-ehs-and-increase-2024-guidance-with-acquisition-of-seven-additional-bitcoin-mining-facilities-in-tennessee-302244673.html",
+        "label": "CleanSpark to Add 5 EH/s ... Acquisition of Seven Additional Bitcoin Mining Facilities in Tennessee",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Tennessee acquisitions / Exponential Digital MIPAs)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of seven TN sites acquired from Exponential Digital, LLC (see cleanspark-jellico-tn for deal terms). The 10-K names the city only as 'West Crossville, TN'; not a separately mapped postal place, so coordinates are approximated to Crossville's town center (Cumberland County) - a coarse approximation."
+  },
+  {
+    "id": "cleanspark-campbell-junction-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Campbell Junction Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.0436,
+      "lon": -85.1692,
+      "city": "Campbell Junction",
+      "county": "Cumberland",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-09-11",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-to-add-5-ehs-and-increase-2024-guidance-with-acquisition-of-seven-additional-bitcoin-mining-facilities-in-tennessee-302244673.html",
+        "label": "CleanSpark to Add 5 EH/s ... Acquisition of Seven Additional Bitcoin Mining Facilities in Tennessee",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Tennessee acquisitions / Exponential Digital MIPAs)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of seven TN sites acquired from Exponential Digital, LLC (see cleanspark-jellico-tn for deal terms). 10-K: 'MIPA 2: Campbell Junction, TN and Decatur, TN.' Campbell Junction is an unincorporated community in Cumberland County."
+  },
+  {
+    "id": "cleanspark-decatur-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Decatur Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.5148,
+      "lon": -84.7902,
+      "city": "Decatur",
+      "county": "Meigs",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-09-11",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-to-add-5-ehs-and-increase-2024-guidance-with-acquisition-of-seven-additional-bitcoin-mining-facilities-in-tennessee-302244673.html",
+        "label": "CleanSpark to Add 5 EH/s ... Acquisition of Seven Additional Bitcoin Mining Facilities in Tennessee",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Tennessee acquisitions / Exponential Digital MIPAs)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of seven TN sites acquired from Exponential Digital, LLC (see cleanspark-jellico-tn for deal terms). 10-K: 'MIPA 2: Campbell Junction, TN and Decatur, TN.' Decatur is the Meigs County seat."
+  },
+  {
+    "id": "cleanspark-winfield-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Winfield Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.5619,
+      "lon": -84.4506,
+      "city": "Winfield",
+      "county": "Scott",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-09-11",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-to-add-5-ehs-and-increase-2024-guidance-with-acquisition-of-seven-additional-bitcoin-mining-facilities-in-tennessee-302244673.html",
+        "label": "CleanSpark to Add 5 EH/s ... Acquisition of Seven Additional Bitcoin Mining Facilities in Tennessee",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Tennessee acquisitions / Exponential Digital MIPAs)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of seven TN sites acquired from Exponential Digital, LLC (see cleanspark-jellico-tn for deal terms). 10-K: 'MIPA 3: Winfield, TN; Oneida, TN; and Tazewell, TN.'"
+  },
+  {
+    "id": "cleanspark-oneida-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Oneida Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.4981,
+      "lon": -84.5127,
+      "city": "Oneida",
+      "county": "Scott",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-09-11",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-to-add-5-ehs-and-increase-2024-guidance-with-acquisition-of-seven-additional-bitcoin-mining-facilities-in-tennessee-302244673.html",
+        "label": "CleanSpark to Add 5 EH/s ... Acquisition of Seven Additional Bitcoin Mining Facilities in Tennessee",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Tennessee acquisitions / Exponential Digital MIPAs)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of seven TN sites acquired from Exponential Digital, LLC (see cleanspark-jellico-tn for deal terms). 10-K: 'MIPA 3: Winfield, TN; Oneida, TN; and Tazewell, TN.' Oneida is the Scott County seat."
+  },
+  {
+    "id": "cleanspark-new-tazewell-tn",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark New Tazewell Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.4426,
+      "lon": -83.5996,
+      "city": "New Tazewell",
+      "county": "Claiborne",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-09-11",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-to-add-5-ehs-and-increase-2024-guidance-with-acquisition-of-seven-additional-bitcoin-mining-facilities-in-tennessee-302244673.html",
+        "label": "CleanSpark to Add 5 EH/s ... Acquisition of Seven Additional Bitcoin Mining Facilities in Tennessee",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Tennessee acquisitions / Exponential Digital MIPAs)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "One of seven TN sites acquired from Exponential Digital, LLC (see cleanspark-jellico-tn for deal terms). 10-K names the city only as 'Tazewell, TN', which does not disambiguate the unincorporated Tazewell community from the incorporated town of New Tazewell (~3 mi apart) in Claiborne County; coordinates use New Tazewell - confidence downgraded to 'reported' pending disambiguation."
+  },
+  {
+    "id": "cleanspark-lafayette-ga",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark LaFayette Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.7048,
+      "lon": -85.2819,
+      "city": "LaFayette",
+      "county": "Walker",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2025-05-13",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Asset Acquisitions: Georgia acquisition - LaFayette, GA)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Brand-new 2025 CleanSpark site (not GRIID-related): on 2025-05-13 subsidiary CSRE Properties, LLC acquired real estate and 'certain mining related infrastructures' in LaFayette, GA from MGT Capital Investments, Inc. for a combined $1.413M. No MW figure disclosed for this specific site; Georgia capacity reported only in aggregate (620 MW / 27.02 EH/s across ten GA cities as of 2025-09-30). Sourced solely to the 10-K - a completed SEC-disclosed transaction, no dedicated press release."
+  },
+  {
+    "id": "cleanspark-twin-city-ga",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Twin City Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.5829,
+      "lon": -82.1551,
+      "city": "Twin City",
+      "county": "Emanuel",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2025-01-21",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark, Inc. FY2025 Form 10-K (Asset Acquisitions: Georgia acquisition - Twin City, GA)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Brand-new 2025 CleanSpark site (not GRIID-related): on 2025-01-21 subsidiary CSRE Properties Sandersville, LLC acquired a bitcoin mining facility in Twin City, GA from Apex Data Centers Inc. for a combined $5.9M. No MW figure disclosed for this specific site; Georgia capacity reported only in aggregate. Sourced solely to the 10-K - a completed SEC-disclosed transaction, no dedicated press release."
+  },
+  {
+    "id": "peak-mining-texas-1-corpus-christi-tx",
+    "facilityType": "crypto_mining",
+    "name": "Peak Mining Texas 1 (Saxet Energy Park)",
+    "operator": "Peak Mining",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 27.8487,
+      "lon": -97.4263,
+      "city": "Corpus Christi",
+      "county": "Nueces",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 100,
+      "planned": 300
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2023-12-11",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.co.uk/news-releases/peak-mining-a-northern-data-group-company-announces-purchase-of-300mw-mining-data-center-site-302011494.html",
+        "label": "Peak Mining announces purchase of 300MW mining data center site",
+        "publisher": "PR Newswire / Northern Data Group",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.tdlr.texas.gov/TABS/Search/Print/TABS2023019972",
+        "label": "Saxet Energy Park - Data Center Bldg C permit record (1102 McKinzie Rd, Corpus Christi, TX 78410, Nueces County)",
+        "publisher": "Texas Department of Licensing and Regulation",
+        "retrievedAt": "2026-08-05",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.texasobserver.org/corpus-christi-cryptomine-water-usage-secret/",
+        "label": "A Corpus Christi Cryptomine Guzzled over 11 Million Gallons. Now, Its Water Usage Is Being Kept Secret.",
+        "publisher": "Texas Observer",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://northerndata.de/en/investor-relations/news/northern-data-announces-expiry-of-option-to-sell-corpus-christi-site-to-global-infrastructure-asset-management-firm",
+        "label": "Northern Data Announces Expiry of Option to Sell Corpus Christi Site",
+        "publisher": "Northern Data AG",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Original 33-acre, 300MW site (Saxet Energy Park / 'Data Center Bldg C'), permitted address 1102 McKinzie Rd, Corpus Christi TX 78410 (Nueces County, TDLR permit TABS2023019972). Developed by Bootstrap Energy, acquired by Peak Mining (then a Northern Data Group subsidiary) Dec 2023; ramped to ~100MW mining capacity in Q1 2024 against a 300MW ERCOT Load Zone South interconnect. Confirmed still actively mining as of a June 2026 Texas Observer water-usage investigation. Northern Data AG fully divested Peak Mining LLC in Nov 2025 to Tether-linked buyers; operator recorded as 'Peak Mining' (current, standalone)."
+  },
+  {
+    "id": "peak-mining-texas-2-corpus-christi-tx",
+    "facilityType": "crypto_mining",
+    "name": "Peak Mining Texas 2",
+    "operator": "Peak Mining",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 27.852,
+      "lon": -97.421,
+      "city": "Corpus Christi",
+      "county": "Nueces",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-05-24",
+    "sources": [
+      {
+        "url": "https://www.prnewswire.co.uk/news-releases/northern-data-groups-peak-mining-announces-purchase-of-a-second-300mw-data-center-location-in-corpus-christi-texas-302155098.html",
+        "label": "Peak Mining purchases a second 300MW data center location in Corpus Christi, Texas",
+        "publisher": "PR Newswire / Northern Data Group",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.theblock.co/post/383439/tether-backed-northern-data-sold-bitcoin-mining-arm-to-companies-run-by-tethers-own-executives-ft",
+        "label": "Tether-backed Northern Data sold bitcoin mining arm to companies run by Tether's own executives",
+        "publisher": "The Block",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://northerndata.de/en/investor-relations/news/northern-data-announces-expiry-of-option-to-sell-corpus-christi-site-to-global-infrastructure-asset-management-firm",
+        "label": "Northern Data Announces Expiry of Option to Sell Corpus Christi Site (600MW available, 100MW used for mining)",
+        "publisher": "Northern Data AG",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Second 300MW parcel, adjacent to Texas 1, purchased May 2024 with its own ERCOT interconnect. Lowered to 'reported'/under_construction: Northern Data's Jan 2026 disclosure states the combined Corpus Christi campus has 600MW of available grid capacity but only 100MW is actually used for Bitcoin mining (matching Texas 1), implying Texas 2 is not yet in active mining use; a June 2026 Texas Observer piece describes the project as 'scaled to one facility.' Same ownership-change caveat as Texas 1. Coordinates are an approximate adjacent-parcel estimate."
+  },
+  {
+    "id": "mawson-midland-pa",
+    "facilityType": "crypto_mining",
+    "name": "Big Digital Energy Midland Facility",
+    "operator": "Big Digital Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.6532,
+      "lon": -80.3968,
+      "city": "Midland",
+      "county": "Beaver",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 120
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2023",
+    "sources": [
+      {
+        "url": "https://www.mawsoninc.com/mawson-infrastructure-group-inc-expands-midland-facility-to-120-mw/",
+        "label": "Mawson Infrastructure Group Inc Expands Midland Facility to 120 MW",
+        "publisher": "Mawson Infrastructure Group (company release)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/04/23/3280391/0/en/mawson-infrastructure-group-inc-becomes-big-digital-energy-inc-receives-nasdaq-listing-determination-already-in-compliance-to-request-hearing.html",
+        "label": "Mawson Infrastructure Group Inc. Becomes Big Digital Energy, Inc.",
+        "publisher": "GlobeNewswire (company release)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/04/27/3281610/0/en/big-digital-energy-inc-announces-colocation-agreement-with-the-endeavor-group.html",
+        "label": "Big Digital Energy, Inc. Announces Colocation Agreement with the Endeavor Group",
+        "publisher": "GlobeNewswire (company release)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Formerly Mawson Infrastructure Group (NASDAQ: MIGI), rebranded Big Digital Energy (BGDE) April 2026. ~950 Railroad Ave, Midland, PA (Beaver County). Expanded from 100MW to 120MW via lease amendment; the April 2026 rebrand release reported 129MW online company-wide. April 2026: 75MW of Midland capacity placed under a 12-month related-party colocation agreement with the Endeavor Group (an affiliate)."
+  },
+  {
+    "id": "mawson-bellefonte-pa",
+    "facilityType": "crypto_mining",
+    "name": "Big Digital Energy Bellefonte Facility",
+    "operator": "Big Digital Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.9145,
+      "lon": -77.7791,
+      "city": "Bellefonte",
+      "county": "Centre",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/11/07/3183921/0/en/Mawson-Infrastructure-Group-Inc-Announces-Lease-Extension-For-Its-Bellefonte-PA-Facility.html",
+        "label": "Mawson Infrastructure Group Inc. Announces Lease Extension For Its Bellefonte, PA Facility",
+        "publisher": "GlobeNewswire (company release)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.citybiz.co/article/769898/mawson-infrastructure-group-announces-lease-extension-for-its-bellefonte-pa-facility/",
+        "label": "Mawson Infrastructure Group Announces Lease Extension For Its Bellefonte, PA Facility",
+        "publisher": "citybiz",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "9,918 sq ft self-mining-only facility (no hosting/co-location) in Bellefonte, Centre County. Lease extended five years (to Dec 31, 2030) via amendment executed Nov 6, 2025, while under the Mawson name; rebranded Big Digital Energy April 2026. Capacity in MW not disclosed; small footprint."
+  },
+  {
+    "id": "blockfusion-niagara-falls-ny",
+    "facilityType": "crypto_mining",
+    "name": "Blockfusion Niagara Falls Facility (North East Data)",
+    "operator": "Blockfusion",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.0962,
+      "lon": -79.0377,
+      "city": "Niagara Falls",
+      "county": "Niagara",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 46,
+      "planned": 100
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "community": {
+      "status": "contested",
+      "notes": "A 2021 transformer explosion and an Oct 2022 city cease-and-desist over zoning forced a shutdown; a 2025 zoning amendment plus Niagara Falls Planning Board site-plan approval let it resume."
+    },
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/blockfusion-owner-operator-of-a-strategically-located-clean-energy-powered-data-center-to-go-public-via-business-combination-with-blue-acquisition-corp-302620260.html",
+        "label": "Blockfusion to Go Public via Business Combination with Blue Acquisition Corp.",
+        "publisher": "PR Newswire (company release)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.niagara-gazette.com/news/falls-planning-board-considers-recommending-operating-permit-for-frontier-avenue-bitcoin-mine/article_3614d579-696d-4175-95ac-875c7714886b.html",
+        "label": "Falls Planning Board considers recommending operating permit for Frontier Avenue bitcoin mine",
+        "publisher": "Niagara Gazette",
+        "retrievedAt": "2026-08-05",
+        "kind": "permit"
+      },
+      {
+        "url": "https://cointelegraph.com/news/city-of-niagara-falls-orders-blockfusion-facility-to-cease-and-desist-crypto-mining",
+        "label": "City of Niagara Falls orders Blockfusion facility to cease and desist crypto mining",
+        "publisher": "Cointelegraph",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Operated by subsidiary North East Data, LLC at a converted former coal-power-plant site on Frontier Avenue. Per the company's Nov 19, 2025 release (ahead of a ~$450M SPAC merger with Blue Acquisition Corp), 46MW is energized/operating with a path to 100MW+ Tier 3. A July 2026 report describes a non-binding LOI for up to 300MW of AI/HPC capacity at this same campus - an AI pivot layered on top of the operating bitcoin-mining load."
+  },
+  {
+    "id": "bitzero-nekoma-nd",
+    "facilityType": "crypto_mining",
+    "name": "Bitzero Nekoma Data Center (Stanley R. Mickelsen Safeguard Complex)",
+    "operator": "Bitzero",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 48.5894194,
+      "lon": -98.3567389,
+      "city": "Nekoma",
+      "county": "Cavalier",
+      "state": "ND",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 2.5,
+      "planned": 300
+    },
+    "mining": {
+      "powerArrangement": "mixed",
+      "hardwareType": "unknown"
+    },
+    "announcedDate": "2022-07-25",
+    "sources": [
+      {
+        "url": "https://www.governor.nd.gov/news/burgum-bitzero-signs-agreement-acquire-nekoma-pyramid-develop-it-highly-secure-data-center",
+        "label": "Burgum: Bitzero signs agreement to acquire Nekoma pyramid, develop it into highly secure data center",
+        "publisher": "North Dakota Office of the Governor",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/bitzero-announces-expansion-of-global-data-center-network-delivering-clean-power-at-scale-for-the-next-era-of-high-performance-computing-302468827.html",
+        "label": "Bitzero Announces Expansion of Global Data Center Network",
+        "publisher": "PR Newswire (Bitzero)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.bleedingheartland.com/2024/02/26/north-dakota-bitzero-project-raises-management-ownership-questions/",
+        "label": "North Dakota Bitzero project raises management, ownership questions",
+        "publisher": "Bleeding Heartland",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Bitzero acquired the Cold War-era Stanley R. Mickelsen Safeguard Complex ('the Pyramid') near Nekoma, Cavalier County, ND from the Cavalier County Job Development Authority (signed July 2022, closed Dec 2022) and is redeveloping the ~184-193 acre site into a data center, up to $500M planned. Bitzero's June 2025 press release states 2.5MW currently live, 30MW prepped, up to 300MW potential. A Feb 2024 Bleeding Heartland investigation flagged due-diligence concerns (2023 CEO resignation, foreign-ownership ties, unpaid CCJDA bills); site is real and multi-source confirmed, but self-reported operational MW is company-sourced, hence confidence=reported. ~90mi NW of Grand Forks in Cavalier County (built to defend Grand Forks AFB)."
+  },
+  {
+    "id": "greenidge-spartanburg-sc",
+    "facilityType": "crypto_mining",
+    "name": "Greenidge Spartanburg (South Carolina)",
+    "operator": "Greenidge Generation",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.9494,
+      "lon": -81.925,
+      "city": "Spartanburg",
+      "county": "Spartanburg",
+      "street": "300 Jones Road",
+      "postalCode": "29307",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "energy": {
+      "source": "grid",
+      "notes": "Grid-drawn (Duke Energy service territory); no on-site generation, unlike the Dresden, NY plant."
+    },
+    "announcedDate": "2022-01-25",
+    "sources": [
+      {
+        "url": "https://governor.sc.gov/news/2022-01/greenidge-generation-establishing-operations-spartanburg-county",
+        "label": "Greenidge Generation Establishing Operations in Spartanburg County",
+        "publisher": "Office of SC Governor Henry McMaster",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-12-03/greenidge-south-caroline-sale-bitcoin",
+        "label": "Greenidge Sells South Carolina Land and Power Rights as Bitcoin Mining Footprint Shrinks",
+        "publisher": "TheMinerMag / TheEnergyMag",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1844971/000162828025051859/gree-20250930.htm",
+        "label": "Greenidge Generation Holdings Inc. Form 10-Q, Q3 FY2025",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Former LSC Communications/RR Donnelley printing plant (175 acres, bought Dec 2021 for $15M); unveiled Jan 2022 as a planned $264M, up-to-100MW buildout. Greenidge built 44 MW of Bitcoin mining, transferred to NYDIG in 2023 as a debt-settlement; per Greenidge's SEC filings the NYDIG hosting arrangement now covers 'substantially all' of Greenidge's mining capacity at the New York facility, not South Carolina. The remaining 152 acres + 60 MW power rights went through a failed Nov 2024 sale to Data Journey LLC (terminated Aug 2025) before Greenidge sold the land outright to a Lightstone Group / Lighthouse Datacenters affiliate on Dec 11, 2025. Status cancelled: Greenidge holds no confirmed ongoing operating interest as of its most recent 10-Q."
+  },
+  {
+    "id": "greenidge-columbus-ms",
+    "facilityType": "crypto_mining",
+    "name": "Greenidge Columbus (Mississippi)",
+    "operator": "Greenidge Generation",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.4957,
+      "lon": -88.4273,
+      "city": "Columbus",
+      "county": "Lowndes",
+      "street": "249 Datco Industrial Road",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-03-11",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1844971/000184497124000010/ex991pressrelease3-11x2024.htm",
+        "label": "Greenidge Announces Expansion of Power Capacity with 40 MW of Low-Cost Power in Key Territories",
+        "publisher": "Greenidge Generation Holdings Inc. (SEC 8-K exhibit)",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1844971/000162828025051859/gree-20250930.htm",
+        "label": "Greenidge Generation Holdings Inc. Form 10-Q, Q3 FY2025",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.businesswire.com/news/home/20250917929642/en/Greenidge-Generation-Closes-Sale-of-its-Mississippi-Bitcoin-Mining-Facility",
+        "label": "Greenidge Generation Closes Sale of its Mississippi Bitcoin Mining Facility",
+        "publisher": "Business Wire",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "12-acre parcel at 249 Datco Industrial Road, Columbus (Lowndes County), MS, bought April 2024 for $1.45M, announced Mar 11 2024 alongside the North Dakota lease. Built with Greenidge's modular 'Pod X' design; live July 1, 2024 (7 MW self-mining per SEC filings). Sold via APA (closed Sept 16, 2025) for $4.2M to US Digital Mining Mississippi LLC, a subsidiary of LM Funding America (Nasdaq: LMFA). Status cancelled: Greenidge fully divested. (Greenidge separately still owns an UNRELATED 34-acre Columbus greenfield site for a future AI/HPC datacenter - not this record.)"
+  },
+  {
+    "id": "greenidge-underwood-nd",
+    "facilityType": "crypto_mining",
+    "name": "Greenidge Underwood (North Dakota)",
+    "operator": "Greenidge Generation",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.4564,
+      "lon": -101.1371,
+      "city": "Underwood",
+      "county": "McLean",
+      "state": "ND",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 7.5
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "announcedDate": "2024-03-11",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1844971/000184497124000010/ex991pressrelease3-11x2024.htm",
+        "label": "Greenidge Announces Expansion of Power Capacity with 40 MW of Low-Cost Power in Key Territories",
+        "publisher": "Greenidge Generation Holdings Inc. (SEC 8-K exhibit)",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1844971/000162828025051859/gree-20250930.htm",
+        "label": "Greenidge Generation Holdings Inc. Form 10-Q, Q3 FY2025",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001844971/000162828026035547/gree-20260331.htm",
+        "label": "Greenidge Generation Holdings Inc. Form 10-Q, Q1 FY2026",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "5-year capacity lease entered January 2024, announced Mar 11 2024, providing 7.5 MW of self-mining capacity in Underwood, McLean County, ND; miners deployed ~April 2024. SEC 10-Q filings for both Q3 FY2025 and Q1 FY2026 (most recent found) confirm the 'North Dakota Facility' remains an active leased site - the only other US site besides the New York (Dresden) plant that Greenidge still operates. No street address disclosed; city-level coordinates, approximate."
+  },
+  {
+    "id": "bitfarms-sharon-pa",
+    "facilityType": "crypto_mining",
+    "name": "Bitfarms Sharon Facility (former Westinghouse plant)",
+    "operator": "Bitfarms Ltd. (Keel Infrastructure Corp.)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.2334,
+      "lon": -80.497,
+      "city": "Sharon",
+      "county": "Mercer",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 30,
+      "planned": 110
+    },
+    "mining": {
+      "powerArrangement": "grid",
+      "hardwareType": "asic"
+    },
+    "aiClassification": "mixed_use",
+    "announcedDate": "2024-06-13",
+    "sources": [
+      {
+        "url": "https://investor.bitfarms.com/news-releases/news-release-details/bitfarms-announces-assumption-control-sharon-pa-site",
+        "label": "Bitfarms Announces Assumption of Control of Sharon, PA Site",
+        "publisher": "Bitfarms Ltd.",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/11/13/3187170/0/en/Bitfarms-Reports-Third-Quarter-2025-Results.html",
+        "label": "Bitfarms Reports Third Quarter 2025 Results (Sharon, PA purchase + HPC conversion)",
+        "publisher": "GlobeNewswire (Bitfarms Ltd.)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/zoning-board-of-sharon-pa-approves-planned-expansion-of-keel-infrastructures-existing-data-center-development/",
+        "label": "Zoning board of Sharon, PA approves planned expansion of Keel Infrastructure's data center development",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Former Westinghouse Electric plant in Sharon, Mercer County, PA, leased from Vertua Ltd. - the SAME site Mawson Infrastructure exited in Feb 2024 (Mawson's cancelled Sharon lease is therefore NOT tracked separately; this record supersedes it under the current operator). Bitfarms assumed control June/Aug 2024, then purchased the site outright Nov 2025 ($32.3M + $128.7M committed). ~30 MW of Bitcoin mining online, being converted to HPC/AI (branded SharonAI / Keel Infrastructure Corp.) with an added 80 MW substation targeting 110 MW total by end-2026. aiClassification mixed_use reflects the mining-to-HPC transition. Operator label mirrors the tracked Bitfarms Panther Creek/Scrubgrass records."
   }
 ]
