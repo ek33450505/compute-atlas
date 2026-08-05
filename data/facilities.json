@@ -53224,5 +53224,209 @@
     ],
     "lastUpdated": "2026-08-05",
     "notes": "Giga Watt (formerly MegaBigPower, founded by ex-Microsoft engineer Dave Carlson) was a pioneering Mid-Columbia Basin Bitcoin miner/hosting operator in the Pangborn Business Park, East Wenatchee, Douglas County. Filed Chapter 11 bankruptcy in Nov 2018 (Eastern District of WA), owing Douglas County PUD $310K+ among other creditors. As of March 2023 (Wenatchee World), the Port of Douglas County was awarded a $50,000 grant to study alternative future uses (e.g. startup/small-distribution cluster) for the former mine property — confirming the site is defunct/non-operational, not merely dormant. Capacity omitted per cancelled-site convention. Distinct from Salcido's Pangborn Data Center, a separate, still-operating parcel in the same business park."
+  },
+  {
+    "id": "cleanspark-washington-ga",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Washington Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.7376,
+      "lon": -82.7379,
+      "city": "Washington",
+      "county": "Wilkes",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    },
+    "capacityMw": {
+      "operational": 36
+    },
+    "announcedDate": "2022-08-09",
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2022/08/09/2494690/0/en/CleanSpark-Acquires-Plug-in-Ready-Bitcoin-Mining-Facility-Scalable-to-86-Megawatts-or-2-6-EH-s.html",
+        "label": "CleanSpark press release: acquisition of Washington, GA facility from Waha Technologies (36 MW built, scalable to 86 MW)",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017024132565/clsk-20240930.htm",
+        "label": "CleanSpark FY2024 10-K MD&A: \"our Washington and Sandersville locations which were acquired in August 2022 and October 2022, respectively\"",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "notes": "Acquired Aug 2022 from Waha Technologies Inc. for $16.2M (facility) + $8.9M (~3,400 miners) via subsidiary CSRE Properties Washington, LLC. 36 MW built at acquisition, site scalable to 86 MW; current build-out not separately disclosed in the FY2025 10-K (folded into the GA aggregate of 620 MW / 15 locations). Distinct from Sandersville, GA even though Sandersville sits in Washington County — confirmed as its own city/site via the 10-K's list of GA subsidiaries (CSRE Properties Washington, LLC vs. CSRE Properties Sandersville, LLC).",
+    "lastUpdated": "2026-08-05"
+  },
+  {
+    "id": "cleanspark-sandersville-ga",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Sandersville Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.9807,
+      "lon": -82.8071,
+      "city": "Sandersville",
+      "county": "Washington",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    },
+    "announcedDate": "2022-10-08",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark FY2025 10-K, Note 5 — Acquisitions, \"Mawson Infrastructure Group — Sandersville, GA\": lease for ~16.35 acres in Sandersville, Washington County, Georgia, completed Oct 8, 2022, from subsidiaries of Mawson Infrastructure Group, Inc.",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "notes": "Acquired Oct 8, 2022 from Mawson Infrastructure Group subsidiaries; ~16.35 leased acres plus an additional purchase of the same acreage plus ~10 more acres from the Development Authority of Washington County (per FY2024 10-K). Buyer entity CSRE Properties Sandersville, LLC (this same entity later served as buyer for the unrelated Twin City, GA acquisition — entity name is not 1:1 with site name). No per-site MW disclosed in the 10-K; folded into the GA aggregate of 620 MW / 15 locations.",
+    "lastUpdated": "2026-08-05"
+  },
+  {
+    "id": "cleanspark-norcross-ga",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Norcross Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.9412,
+      "lon": -84.2135,
+      "city": "Norcross",
+      "county": "Gwinnett",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    },
+    "capacityMw": {
+      "operational": 20
+    },
+    "announcedDate": "2021-08-06",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000166357721000387/ex99_1.htm",
+        "label": "CleanSpark 8-K Exhibit 99.1, \"CleanSpark Acquires Second Data Center to Increase Bitcoin Mining Capacity\": closed Aug 6, 2021 on ~87,000 sq ft former Sprint/Nextel data center on 7+ acres in Norcross, Georgia, for $6.55M; 20 MW of power",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark FY2025 10-K: \"3,336 S19j Pro miners, which are located at our College Park, GA and Norcross, GA sites\" (confirms site still active as of FY2025)",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "notes": "Acquired Aug 6, 2021 for $6.55M; ~87,000 sq ft former Sprint/Nextel data center, immersion-cooled. Confirmed still operating as of the FY2025 10-K (named as miner-collateral location alongside College Park). 20 MW figure is from the 2021 acquisition announcement, not independently restated in the FY2025 10-K (which only gives the GA aggregate of 620 MW / 15 locations).",
+    "lastUpdated": "2026-08-05"
+  },
+  {
+    "id": "cleanspark-dalton-ga",
+    "facilityType": "crypto_mining",
+    "name": "CleanSpark Dalton Bitcoin Mining Facility",
+    "operator": "CleanSpark, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.7698,
+      "lon": -84.9702,
+      "city": "Dalton",
+      "county": "Whitfield",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    },
+    "announcedDate": "2023-06-21",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000095017023029069/clsk-ex99_1.htm",
+        "label": "CleanSpark 8-K Exhibit 99.1, \"CleanSpark to Acquire Turnkey Bitcoin Mining Facilities for $9.3M in All-cash Deal\": two turnkey bitcoin mining campuses in Dalton, Georgia, announced June 21, 2023, adding just under 1 EH/s combined",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/827876/000119312525297510/clsk-20250930.htm",
+        "label": "CleanSpark FY2025 10-K, Note 5 — Acquisitions, \"Dalton 3 acquisition — Dalton, GA\": Feb 2, 2024, CSRE Properties Dalton, LLC acquired ~2 acres in Dalton, Whitfield County, Georgia",
+        "publisher": "CleanSpark, Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      }
+    ],
+    "notes": "CleanSpark's Dalton, GA campus, built across three acquisitions: \"Dalton One and Two\" ($9.3M, announced June 21, 2023, ~1 EH/s combined) and \"Dalton Three\" (~2 acres, ~$3.57M, Feb 2, 2024) via subsidiary CSRE Properties Dalton, LLC. No per-site MW disclosed; folded into the GA aggregate of 620 MW / 15 locations.",
+    "lastUpdated": "2026-08-05"
+  },
+  {
+    "id": "cango-greenvolt-soperton-ga",
+    "facilityType": "crypto_mining",
+    "name": "Cango GreenVolt Soperton Facility",
+    "operator": "Cango Inc. (GreenVolt Technology LLC)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.3811,
+      "lon": -82.5917,
+      "city": "Soperton",
+      "county": "Treutlen",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    },
+    "capacityMw": {
+      "operational": 50
+    },
+    "announcedDate": "2025-08",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1725123/000110465926041972/cang-20251231x20f.htm",
+        "label": "Cango Inc. FY2025 Form 20-F (filed 2026-04-10), Item 5 MD&A and PP&E note: seller LN Energy 3 LLC, $19.5M cash, 50 MW, land + buildings + equipment; agreement July 2025, closed August 2025; GreenVolt Technology LLC holds the mining site assets",
+        "publisher": "Cango Inc. / SEC EDGAR",
+        "retrievedAt": "2026-08-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cango-inc-acquires-50-mw-bitcoin-mining-facility-in-georgia-laying-groundwork-for-future-energy-strategy-302526334.html",
+        "label": "Cango Inc. press release (Aug 11, 2025): 50 MW Georgia facility, $19.5M, fully operational, 30 MW self-mining / 20 MW third-party hosting; had previously hosted Cango's own miners",
+        "publisher": "PR Newswire / Cango Inc.",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenters.com/providers/ln-compute-inc",
+        "label": "LN Compute provider profile: announces completion of the sale of its 50 MW air-cooled Bitcoin mining project (Soperton, GA) to Cango Inc.",
+        "publisher": "Datacenters.com / LN Compute",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "notes": "Cango Inc. (NYSE: CANG) acquired this ~50 MW air-cooled bitcoin mining facility from LN Compute for $19.5M cash (agreement July 2025, closed August 2025); held via subsidiary GreenVolt Technology LLC, seller entity LN Energy 3, LLC. 30 MW self-mining / 20 MW third-party hosting; already operational and had previously hosted Cango's own miners. City/county (Soperton, Treutlen County) is NOT stated in Cango's SEC filings (the 20-F and 2025 6-Ks say only \"Georgia\"); it is corroborated by LN Compute's own announcement of the sale plus a Soperton, GA property listing — hence confidence \"reported\" and approximate coordinates (city center). Distinct from CleanSpark's separate 2024 acquisition of five LN Energy turnkey sites (a lease assumption, not this land + equipment sale).",
+    "lastUpdated": "2026-08-05"
   }
 ]
