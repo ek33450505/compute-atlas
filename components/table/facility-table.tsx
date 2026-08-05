@@ -76,7 +76,7 @@ const columns: ColumnDef<Facility>[] = [
       <Link
         href={`/facilities/${row.original.id}`}
         title={row.original.name}
-        className="block max-w-[240px] truncate font-medium text-foreground underline underline-offset-2 transition-colors hover:text-primary hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+        className="block max-w-[240px] truncate font-medium text-foreground underline underline-offset-2 transition-colors motion-reduce:transition-none hover:text-primary hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
       >
         {row.original.name}
       </Link>
@@ -209,7 +209,14 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
 
   return (
     <div className="overflow-hidden rounded-sm border border-border">
-      <Table>
+      <Table
+        containerProps={{
+          role: "region",
+          "aria-label": "Data centers table (scroll horizontally to see more columns)",
+          tabIndex: 0,
+        }}
+        containerClassName="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
       <TableCaption className="sr-only">
         Data centers — sortable table
       </TableCaption>
@@ -249,7 +256,7 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
                       type="button"
                       onClick={header.column.getToggleSortingHandler()}
                       aria-label={`Sort by ${header.column.columnDef.header as string}`}
-                      className="inline-flex items-center gap-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+                      className="inline-flex items-center gap-0.5 text-muted-foreground transition-colors motion-reduce:transition-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                     >
                       {flexRender(
                         header.column.columnDef.header,
