@@ -14,6 +14,12 @@ export interface MapLayerControlProps {
   onTogglePower: () => void;
   showDrought: boolean;
   onToggleDrought: () => void;
+  showWaterStress: boolean;
+  onToggleWaterStress: () => void;
+  showGroundwater: boolean;
+  onToggleGroundwater: () => void;
+  showAquifers: boolean;
+  onToggleAquifers: () => void;
 }
 
 interface LayerToggleProps {
@@ -21,10 +27,17 @@ interface LayerToggleProps {
   label: string;
   checked: boolean;
   onChange: () => void;
+  /**
+   * Representative map color for this layer, shown as a small swatch before
+   * the label. Always paired with the text label — Ed (the maintainer) is
+   * color-deficient, so the swatch alone is never the sole cue; it's a quick
+   * visual key for what's already on the map, not the source of truth.
+   */
+  swatchColor: string;
 }
 
-/** A single labeled checkbox row with a ≥44px hit target and a visible focus ring. */
-function LayerToggle({ id, label, checked, onChange }: LayerToggleProps) {
+/** A single labeled checkbox row with a ≥44px hit target, a color swatch, and a visible focus ring. */
+function LayerToggle({ id, label, checked, onChange, swatchColor }: LayerToggleProps) {
   return (
     <li>
       <label
@@ -38,20 +51,45 @@ function LayerToggle({ id, label, checked, onChange }: LayerToggleProps) {
           onChange={onChange}
           className="size-4 shrink-0 accent-primary rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
         />
+        <span
+          aria-hidden="true"
+          className="size-3 shrink-0 rounded-[1px] border border-border/40"
+          style={{ backgroundColor: swatchColor }}
+        />
         {label}
       </label>
     </li>
   );
 }
 
+interface LayerGroupProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+/** A named group of layer toggles (e.g. "Water", "Power", "Geology"). */
+function LayerGroup({ title, children }: LayerGroupProps) {
+  return (
+    <div>
+      <p className="mb-1 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/80">
+        {title}
+      </p>
+      <ul role="list" className="space-y-0.5">
+        {children}
+      </ul>
+    </div>
+  );
+}
+
 /**
- * Compact progressive-disclosure control for the map's optional data overlays
- * (waterways, transmission lines, drought). Collapsed by default (on every
+ * Compact progressive-disclosure control for the map's optional data overlays,
+ * grouped by theme (Water / Power / Geology). Collapsed by default (on every
  * viewport) into an icon-only button — sized/styled to match its sibling
  * icon buttons in the Tools column (CompassRose / ViewToggle3D /
  * BasemapToggle / the radius toggle: h-11 w-11, parchment skin, primary
- * ring when active); expands into a small panel with three checkbox
- * toggles plus a per-layer attribution/"as of" caption.
+ * ring when active); expands into a small panel with grouped checkbox
+ * toggles (each with a color swatch keying its map color) plus a per-layer
+ * attribution/"as of" caption.
  *
  * Styling mirrors MapLegend / BasemapToggle (parchment bg-popover +
  * border-border, ≥44px hit targets, focus-visible rings).
@@ -75,9 +113,21 @@ export function MapLayerControl({
   onTogglePower,
   showDrought,
   onToggleDrought,
+  showWaterStress,
+  onToggleWaterStress,
+  showGroundwater,
+  onToggleGroundwater,
+  showAquifers,
+  onToggleAquifers,
 }: MapLayerControlProps) {
   const [expanded, setExpanded] = useState(false);
-  const anyOn = showWater || showPower || showDrought;
+  const anyOn =
+    showWater ||
+    showPower ||
+    showDrought ||
+    showWaterStress ||
+    showGroundwater ||
+    showAquifers;
 
   return (
     <div className="pointer-events-auto flex flex-col items-end">
@@ -114,34 +164,81 @@ export function MapLayerControl({
             <p className="mb-2 border-b border-border/60 pb-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Optional layers
             </p>
-            <ul role="list" className="space-y-0.5">
-              <LayerToggle
-                id="map-layer-water"
-                label="Waterways"
-                checked={showWater}
-                onChange={onToggleWater}
-              />
-              <LayerToggle
-                id="map-layer-power"
-                label="Transmission (≥230 kV)"
-                checked={showPower}
-                onChange={onTogglePower}
-              />
-              <LayerToggle
-                id="map-layer-drought"
-                label="Drought"
-                checked={showDrought}
-                onChange={onToggleDrought}
-              />
-            </ul>
+
+            <div className="space-y-3">
+              <LayerGroup title="Water">
+                <LayerToggle
+                  id="map-layer-water"
+                  label="Waterways"
+                  checked={showWater}
+                  onChange={onToggleWater}
+                  swatchColor="#5E7D8A"
+                />
+                <LayerToggle
+                  id="map-layer-water-stress"
+                  label="Baseline water stress"
+                  checked={showWaterStress}
+                  onChange={onToggleWaterStress}
+                  swatchColor="#7CA9C0"
+                />
+                <LayerToggle
+                  id="map-layer-groundwater"
+                  label="Groundwater decline"
+                  checked={showGroundwater}
+                  onChange={onToggleGroundwater}
+                  swatchColor="#A87FC0"
+                />
+                <LayerToggle
+                  id="map-layer-drought"
+                  label="Drought"
+                  checked={showDrought}
+                  onChange={onToggleDrought}
+                  swatchColor="#D69C5A"
+                />
+              </LayerGroup>
+
+              <LayerGroup title="Power">
+                <LayerToggle
+                  id="map-layer-power"
+                  label="Transmission (≥230 kV)"
+                  checked={showPower}
+                  onChange={onTogglePower}
+                  swatchColor="#8F4108"
+                />
+              </LayerGroup>
+
+              <LayerGroup title="Geology">
+                <LayerToggle
+                  id="map-layer-aquifers"
+                  label="Aquifers"
+                  checked={showAquifers}
+                  onChange={onToggleAquifers}
+                  swatchColor="#C9B79C"
+                />
+              </LayerGroup>
+            </div>
+
             {anyOn && (
               <p className="mt-2 space-y-0.5 border-t border-border/60 pt-1.5 font-mono text-[9px] leading-tight text-muted-foreground">
                 {showWater && <span className="block">Water: {mapLayers.water.attribution}</span>}
-                {showPower && <span className="block">Power: {mapLayers.power.attribution}</span>}
+                {showWaterStress && (
+                  <span className="block">
+                    Water stress: {mapLayers.waterStress.attribution}
+                  </span>
+                )}
+                {showGroundwater && (
+                  <span className="block">
+                    Groundwater: {mapLayers.groundwaterDecline.attribution}
+                  </span>
+                )}
                 {showDrought && (
                   <span className="block">
                     Drought as of {mapLayers.drought.asOf} &mdash; {mapLayers.drought.attribution}
                   </span>
+                )}
+                {showPower && <span className="block">Power: {mapLayers.power.attribution}</span>}
+                {showAquifers && (
+                  <span className="block">Aquifers: {mapLayers.aquifers.attribution}</span>
                 )}
               </p>
             )}

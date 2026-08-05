@@ -97,6 +97,9 @@ export function FacilityMap({
   const [showWater, setShowWater] = useState<boolean>(false);
   const [showPower, setShowPower] = useState<boolean>(false);
   const [showDrought, setShowDrought] = useState<boolean>(false);
+  const [showWaterStress, setShowWaterStress] = useState<boolean>(false);
+  const [showGroundwater, setShowGroundwater] = useState<boolean>(false);
+  const [showAquifers, setShowAquifers] = useState<boolean>(false);
 
   // Radius-ring measurement tool: off by default, on-demand. When enabled, the
   // next map click sets a center; 3, distance rings (5/10/25 mi) are drawn
@@ -531,6 +534,97 @@ export function FacilityMap({
             </Source>
           )}
 
+          {/* Optional overlay: WRI Aqueduct baseline water stress (fill), off by
+              default. Single-hue light->dark blue-teal ramp keyed on bws_cat
+              (0=low .. 4=extreme) — severity reads by LUMINANCE, not hue, so it
+              stays legible for color-deficient users. Fill hidden over satellite
+              like the other overlay fills. Lazy-loaded: fetched only when on. */}
+          {showWaterStress && (
+            <Source id="water-stress" type="geojson" data="/data/water-stress.geojson">
+              <Layer
+                id="water-stress-fill-layer"
+                type="fill"
+                layout={{ visibility: isSatellite ? "none" : "visible" }}
+                paint={{
+                  "fill-color": [
+                    "match",
+                    ["get", "bws_cat"],
+                    0,
+                    "#DCEAF2",
+                    1,
+                    "#AFCBDC",
+                    2,
+                    "#7CA9C0",
+                    3,
+                    "#4A80A0",
+                    4,
+                    "#1E4E6B",
+                    "#DCEAF2",
+                  ],
+                  "fill-opacity": 0.4,
+                }}
+              />
+            </Source>
+          )}
+
+          {/* Optional overlay: WRI Aqueduct groundwater table decline (fill), off
+              by default. Same single-hue light->dark ramp technique as water
+              stress above, but a DIFFERENT hue (violet/plum) so the two water
+              layers stay distinguishable while both remain luminance-ordered.
+              Keyed on gtd_cat (0=low .. 4=extreme). Lazy-loaded. */}
+          {showGroundwater && (
+            <Source
+              id="groundwater-decline"
+              type="geojson"
+              data="/data/groundwater-decline.geojson"
+            >
+              <Layer
+                id="groundwater-decline-fill-layer"
+                type="fill"
+                layout={{ visibility: isSatellite ? "none" : "visible" }}
+                paint={{
+                  "fill-color": [
+                    "match",
+                    ["get", "gtd_cat"],
+                    0,
+                    "#EDE3F0",
+                    1,
+                    "#CDB3DA",
+                    2,
+                    "#A87FC0",
+                    3,
+                    "#7D4F9E",
+                    4,
+                    "#4A2A66",
+                    "#EDE3F0",
+                  ],
+                  "fill-opacity": 0.4,
+                }}
+              />
+            </Source>
+          )}
+
+          {/* Optional overlay: USGS principal aquifers (fill + outline), off by
+              default. Categorical, not ordinal — a single flat muted earth-tone
+              tint (there are too many named aquifers for a per-category scale;
+              this is context, not a severity gradient). Fill hidden over
+              satellite; the outline stays visible. Lazy-loaded. */}
+          {showAquifers && (
+            <Source id="aquifers" type="geojson" data="/data/aquifers.geojson">
+              <Layer
+                id="aquifers-fill-layer"
+                type="fill"
+                layout={{ visibility: isSatellite ? "none" : "visible" }}
+                paint={{ "fill-color": "#C9B79C", "fill-opacity": 0.18 }}
+              />
+              <Layer
+                id="aquifers-outline-layer"
+                type="line"
+                paint={{ "line-color": "#8A7A5C", "line-width": 0.6, "line-opacity": 0.6 }}
+              />
+            </Source>
+          )}
+
           {/* Radius-ring measurement tool: outline-only (no fill) 5/10/25 mi rings
               around the last clicked center, drawn above the optional data
               overlays. Mounts only once a center has been placed; unmounts
@@ -719,6 +813,12 @@ export function FacilityMap({
                 onTogglePower={() => setShowPower((s) => !s)}
                 showDrought={showDrought}
                 onToggleDrought={() => setShowDrought((s) => !s)}
+                showWaterStress={showWaterStress}
+                onToggleWaterStress={() => setShowWaterStress((s) => !s)}
+                showGroundwater={showGroundwater}
+                onToggleGroundwater={() => setShowGroundwater((s) => !s)}
+                showAquifers={showAquifers}
+                onToggleAquifers={() => setShowAquifers((s) => !s)}
               />
             </div>
           )}
