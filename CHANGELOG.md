@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.0](https://github.com/ek33450505/compute-atlas/compare/v1.23.1...v1.24.0) (2026-08-05)
+
+
+### Features
+
+* **data:** Georgia crypto-mining backfill — 5 CleanSpark + Cango facilities ([#128](https://github.com/ek33450505/compute-atlas/issues/128)) ([1b8125b](https://github.com/ek33450505/compute-atlas/commit/1b8125b38b485ecbf1e7fbbb08f65a9ce1515476))
+
 ## [1.23.1](https://github.com/ek33450505/compute-atlas/compare/v1.23.0...v1.23.1) (2026-08-05)
 
 
