@@ -24325,7 +24325,7 @@
     "notes": "Originally proposed Dec 2021 as Lancium's \"Project Artemis\" — a Bitcoin-mining and grid-demand-response campus using stranded/curtailed West Texas wind and solar power, with Lancium throttling load during ERCOT peak demand. Crusoe Energy has since built and operates AI/HPC data-center buildings on the site (publicly branded \"Stargate Site 1\"), with Oracle Cloud Infrastructure as the tenant hosting NVIDIA GPU clusters for OpenAI's Stargate project — Oracle sits contractually between Crusoe and OpenAI; no confirmed direct OpenAI-Crusoe lease. Lancium retains land/electrical-infrastructure ownership; Crusoe leases and operates part of an approximately 800-1,000-acre campus. First 2 of 8 planned buildings (~200+ MW) were operational by mid-2025; remaining 6 are under construction, with a full 1.2 GW build-out targeted for completion in 2026-2027 (dates vary by source). Construction-workforce and total AI-era investment figures conflict significantly across sources (reported range: 2,000-9,000 workers; an unverified ~$11.6B raise) and are not repeated here as fact. Coordinates are approximate (geocoded from a listed street address, not parcel-confirmed — the ~800-1,000-acre campus could place any specific building up to ~1-2 miles from this point).",
     "energy": {
       "source": "grid",
-      "notes": "Originally designed as an ERCOT-integrated demand-response/curtailable load site; on-site or dedicated gas generation for this specific campus (vs. Crusoe's broader gas supply deal) is not confirmed."
+      "notes": "Originally designed as an ERCOT-integrated demand-response/curtailable load site. On-site behind-the-meter natural-gas generation for this campus IS now confirmed via TCEQ Standard Permit Reg. 177263 — 10 turbines totaling 360.5 MW, 'for onsite use only for data centers and computing,' with a large expansion proposed — tracked separately as the power_generation record crusoe-abilene-onsite-generation-tx."
     },
     "landAcres": 1000,
     "community": {
@@ -49665,5 +49665,795 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "homer-city-energy-campus-generation-pa",
+    "name": "Homer City Energy Campus — natural gas generation",
+    "operator": "Homer City Redevelopment",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.5383,
+      "lon": -79.1542,
+      "city": "Homer City",
+      "county": "Indiana",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 4500
+    },
+    "announcedDate": "2025-04-02",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-04-02",
+        "note": "Homer City Redevelopment and Kiewit announced redevelopment of the retired Homer City coal plant into an on-site natural-gas-powered AI/HPC data-center campus with up to 4.5 GW of new generation from seven GE Vernova turbines.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-11-20",
+        "note": "Pennsylvania DEP issued the air-quality plan approval; first turbine deliveries expected 2026, first power targeted 2027.",
+        "sourceIndex": 1
+      }
+    ],
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "PJM (interconnects with FirstEnergy Pennsylvania Electric); site also touches NYISO",
+      "notes": "Behind-the-meter baseload for the on-site data-center campus, with surplus delivered to the local grid. Fueled by Marcellus natural gas (EQT supply) via the nearby Texas Eastern pipeline."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "On-site AI/HPC data-center campus (Homer City Energy Campus)",
+      "poweredFacilityIds": [
+        "homer-city-energy-campus-pa"
+      ],
+      "unitCount": 7,
+      "notes": "Seven hydrogen-enabled GE Vernova gas turbines (7HA.02 class) rated up to 4.5 GW combined — described as the largest US natural-gas plant powering an on-site AI data-center campus, on the ~3,200-acre site of the retired 1,884 MW Homer City coal plant (demolished 2023–25). 4.5 GW is an 'up to' ceiling with no confirmed point value. Total campus investment (generation plus data centers) reported at ~$10B, backed by Knighthead Capital Management."
+    },
+    "sources": [
+      {
+        "url": "https://www.gevernova.com/news/press-releases/homer-city-redevelopment-kiewit-announce-country-largest-natural-gas-powered-data-center-support-ai-hpc-demand",
+        "label": "Homer City Redevelopment and Kiewit announce country's largest natural-gas-powered data-center campus",
+        "publisher": "GE Vernova",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.pa.gov/agencies/dep/dep-regions/northwest-regional-office/homer-city-generation-redevelopment",
+        "label": "Homer City Generation Site Redevelopment",
+        "publisher": "Pennsylvania DEP",
+        "retrievedAt": "2026-07-06",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/homer-city-gas-fired-power-station-data-center-firstenergy/744332/",
+        "label": "Largest US gas-fired power plant planned for data centers in Pennsylvania",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.axios.com/local/pittsburgh/2026/03/31/homer-city-power-plant-grid-data-centers-pennsylvania",
+        "label": "Homer City power plant to boost grid as data-center demand rises",
+        "publisher": "Axios",
+        "retrievedAt": "2026-07-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "Dedicated on-site power generation for the co-located Homer City Energy Campus data centers (tracked separately as homer-city-energy-campus-pa). Redevelopment of Pennsylvania's largest former coal plant into up to 4.5 GW of natural-gas generation via seven GE Vernova turbines; PA DEP air-quality plan approval issued 2025-11-20, first power targeted 2027. Same-site companion to the data-center record."
+  },
+  {
+    "id": "duane-arnold-energy-center-palo-ia",
+    "name": "Duane Arnold Energy Center (restart)",
+    "operator": "NextEra Energy",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.10125,
+      "lon": -91.77764,
+      "city": "Palo",
+      "county": "Linn",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 615
+    },
+    "announcedDate": "2025-10-27",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-10-27",
+        "note": "NextEra Energy and Google announced a 25-year power purchase agreement to restart the plant (offline since 2020), with NextEra agreeing to acquire 100% ownership. Google takes over 90% (~565 MW) of output; CIPCO purchases the remainder on identical terms.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-08-25",
+        "note": "FERC approved the MISO interconnection waiver needed for the restart; Linn County rezoning followed (Jan 2026) and the Iowa Utilities Commission issued a 615 MWe construction certificate (Jun 2026). The NRC federal operating-license reauthorization — the final gate — is targeted for ~Jan 2028; grid delivery targeted Q1 2029.",
+        "sourceIndex": 1
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "Single-unit boiling water reactor (BWR), 615 MW net, offline since Aug 10, 2020 (derecho damage). Restart delivers into the MISO grid under a 25-year Google PPA."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Google",
+      "notes": "25-year PPA under which Google takes over 90% (~565 MW) of output, with Central Iowa Power Cooperative (CIPCO) purchasing the remainder on identical terms. Google is separately pursuing 'Project Meridian', a ~545-acre data-center campus immediately south of the plant, whose zoning/annexation (Linn County vs. City of Palo) remained unresolved as of mid-2026 — so no specific campus id is linked. Reported net capacity ranges 610–622 MW across outlets; 615 MW matches NextEra's release and the IUC certificate. Restart targeted Q1 2029."
+    },
+    "sources": [
+      {
+        "url": "https://newsroom.nexteraenergy.com/NextEra-Energy-and-Google-Announce-New-Collaboration-to-Accelerate-Nuclear-Energy-Deployment-in-the-U-S?l=12",
+        "label": "NextEra Energy and Google Announce New Collaboration to Accelerate Nuclear Energy Deployment",
+        "publisher": "NextEra Energy",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/ferc-nextera-waiver-duane-arnold-nuclear/758590/",
+        "label": "FERC approves NextEra waiver needed for Duane Arnold nuclear plant restart",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.iowapublicradio.org/ipr-news/2026-04-23/google-data-center-linn-county-palo",
+        "label": "Google's data center project creates rift between Palo and Linn County",
+        "publisher": "Iowa Public Radio",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://facilityexplorer.iowadnr.gov/facilityexplorer/SiteDetail.aspx?facID=310377472",
+        "label": "Facility Details: NextEra Energy Duane Arnold Energy Center",
+        "publisher": "Iowa DNR Facility Explorer",
+        "retrievedAt": "2026-08-04",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.linncountyiowa.gov/1868/Duane-Arnold-Energy-Center",
+        "label": "Duane Arnold Energy Center — Linn County official page",
+        "publisher": "Linn County, IA",
+        "retrievedAt": "2026-08-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "Restart of NextEra's 615 MW single-unit BWR near Palo, Iowa (offline since 2020) under a 25-year Google power-purchase agreement — one of a wave of AI-demand-driven US nuclear restarts. Cleared FERC (2025), Linn County rezoning (2026) and an Iowa Utilities Commission construction certificate (Jun 2026); NRC operating-license reauthorization targeted ~Jan 2028, restart Q1 2029."
+  },
+  {
+    "id": "crusoe-abilene-onsite-generation-tx",
+    "name": "Crusoe Abilene on-site gas generation (Project Ludicrous)",
+    "operator": "Crusoe Energy Systems",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.502213,
+      "lon": -99.788717,
+      "city": "Abilene",
+      "county": "Taylor",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 360.5
+    },
+    "announcedDate": "2024-08",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-08",
+        "note": "TCEQ issued Standard Permit Registration 177263 for on-site electric generating units at the 'Longhorn Data Center' site, Taylor County; a Jan 2025 modification set 10 simple-cycle turbines (5x Solar Titan 350 + 5x GE LM2500 = 360.5 MW) 'for onsite use only for data centers and computing,' with no ERCOT export.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-07",
+        "note": "The 10 turbines (360.5 MW) reported operational. A separate major TCEQ air permit (public-comment stage) seeks 41 additional turbines (~1.4 GW) plus 18 diesel backup generators; GE Vernova separately confirmed booking 29 LM2500 units (~1 GW) for Crusoe.",
+        "sourceIndex": 1
+      }
+    ],
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Behind-the-meter, primary-plus-backup on-site generation dedicated to the campus; explicitly not exporting to ERCOT."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Crusoe Energy (on-site); compute tenant Oracle (OCI) serving OpenAI 'Stargate'",
+      "poweredFacilityIds": [
+        "lancium-crusoe-abilene-tx"
+      ],
+      "unitCount": 10,
+      "notes": "TCEQ Standard Permit Technical Review (Registration 177263, approved 2025-01-22) confirms 10 simple-cycle turbines — 5x Solar Titan 350 (~38 MW) + 5x GE LM2500 (~34.1 MW) = 360.5 MW — behind-the-meter for on-site compute, no grid export. A proposed expansion (major TCEQ permit filed Jul 2026, not yet approved) would add 41 turbines (~1.4 GW) plus 18 diesel gensets; the ~1.2 GW figure often cited for the campus describes IT/interconnect capacity, not generation nameplate. Gas-plant buildout cost reported at ~$500M, distinct from the ~$1.1B data-center project figure."
+    },
+    "sources": [
+      {
+        "url": "https://records.tceq.texas.gov/cs/idcplg?IdcService=TCEQ_EXTERNAL_SEARCH_GET_FILE&dID=8600163&Rendition=Web",
+        "label": "TCEQ Electric Generating Unit Standard Permit Technical Review, Registration No. 177263",
+        "publisher": "Texas Commission on Environmental Quality",
+        "retrievedAt": "2026-08-04",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.texastribune.org/2026/07/09/texas-data-centers-ai-power-plants-pollution-state-permits/",
+        "label": "Planned Texas data centers could emit significant pollution",
+        "publisher": "Texas Tribune",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.crusoe.ai/resources/newsroom/ge-vernova-and-crusoe-announce-major-29-unit-gas-turbine-deal",
+        "label": "GE Vernova and Crusoe announce major 29-unit aeroderivative gas turbine deal",
+        "publisher": "Crusoe Energy",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/natural-gas-plant-planned-for-stargate-ai-data-center-campus-report/",
+        "label": "Natural gas plant planned for Stargate AI data center campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "On-site behind-the-meter natural-gas generation for the co-located Crusoe / Lancium Clean Campus ('Stargate Site 1', tracked separately as lancium-crusoe-abilene-tx). 10 turbines totaling 360.5 MW are permit-confirmed (TCEQ Reg. 177263) and reported operational as of mid-2026, with a large expansion proposed. Same-site companion to the data-center record; supersedes the older 'on-site gas not confirmed' note on that record."
+  },
+  {
+    "id": "fervo-project-red-humboldt-county-nv",
+    "name": "Fervo Energy Project Red",
+    "operator": "Fervo Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.9953,
+      "lon": -118.1428,
+      "county": "Humboldt",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 3.5
+    },
+    "announcedDate": "2021",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-11",
+        "note": "Project Red — the first commercial enhanced-geothermal (EGS) plant — reached ~3.5 MW gross output and began supplying NV Energy, following a Google-Fervo partnership announced in 2021 and drilling begun in 2022.",
+        "sourceIndex": 0
+      }
+    ],
+    "energy": {
+      "source": "other",
+      "utility": "NV Energy",
+      "notes": "Enhanced geothermal (horizontal-well doublet) adjacent to the Blue Mountain geothermal field in Humboldt County, northern Nevada; power sold to NV Energy, which serves Google's Nevada data centers."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "geothermal",
+      "offtaker": "Google (via NV Energy grid)",
+      "notes": "Fervo's original commercial-pilot EGS facility, operational since Nov 2023 at ~3.5 MW gross — the first enhanced-geothermal plant to deliver power commercially. Google backed it as an early partner and frames it as powering the local grid serving its Nevada data centers. A larger, separate Fervo Nevada project — Corsac Station (Churchill County) under Nevada's PUC-approved Clean Transition Tariff — is the site that formally routes ~115 MW to Google and is tracked separately, not folded here."
+    },
+    "sources": [
+      {
+        "url": "https://www.canarymedia.com/articles/geothermal/americas-first-enhanced-geothermal-plant-just-got-up-and-running",
+        "label": "America's first 'enhanced' geothermal plant just got up and running",
+        "publisher": "Canary Media",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-fervo-geothermal-energy-partnership/",
+        "label": "Google and Fervo launch first-of-its-kind geothermal project",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "The first commercial enhanced-geothermal (EGS) power plant, operational since November 2023 in Humboldt County, northern Nevada, at ~3.5 MW gross. Developed by Fervo with Google as the founding corporate partner; output is sold to NV Energy, which serves Google's Nevada data centers. Small but landmark — Compute Atlas's first geothermal generation record."
+  },
+  {
+    "id": "entergy-waterford-power-station-st-charles-la",
+    "name": "Waterford Power Station (new combined-cycle units for Meta)",
+    "operator": "Entergy Louisiana",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.99528,
+      "lon": -90.47111,
+      "city": "Killona",
+      "county": "St. Charles Parish",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-08",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-08",
+        "note": "The Louisiana Public Service Commission approved Docket U-37425, authorizing Entergy Louisiana to build a third combined-cycle combustion-turbine plant at its existing Waterford site in St. Charles Parish — alongside the two Richland Parish units (Franklin Farms) — to power Meta's Hyperion campus. No groundbreaking reported for the Waterford unit as of mid-2026; target in-service end of 2029.",
+        "sourceIndex": 0
+      }
+    ],
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Entergy Louisiana",
+      "notes": "New combined-cycle combustion-turbine generation at Entergy's existing Waterford complex; power reaches Meta's Richland Parish campus via new long-distance 500 kV transmission (~200+ miles) rather than on-site."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Meta",
+      "poweredFacilityIds": [
+        "meta-hyperion-richland-parish-la"
+      ],
+      "notes": "The third of three combined-cycle plants (2,260 MW total) approved in LPSC Docket U-37425 (Aug 2025) for Meta's Hyperion campus; the other two are the Richland Parish units tracked as entergy-franklin-farms-power-station-la (~1,500 MW). This Waterford unit's individual capacity is not itemized by Entergy — roughly 760 MW is a derived estimate (2,260 minus 1,500). A separate, larger Phase 2 buildout (Docket U-37882: seven unsited plants, >5,200 MW) remains unapproved and is not tracked."
+    },
+    "sources": [
+      {
+        "url": "https://www.entergy.com/news/entergy-louisiana-receives-lpsc-approval-for-major-infrastructure-investments-to-support-metas-data-center-and-improve-reliability",
+        "label": "Entergy Louisiana receives LPSC approval for major infrastructure investments to support Meta's data center",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/news/entergy-louisiana-power-meta-s-data-center-in-richland-parish",
+        "label": "Entergy Louisiana to power Meta's data center in Richland Parish",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/gas/combined-cycle/entergy-louisiana-breaks-ground-on-two-new-combined-cycle-plants-to-power-meta-data-center/",
+        "label": "Entergy Louisiana breaks ground on two new combined cycle plants to power Meta data center",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nola.com/news/business/entergy-power-meta-ai-data-center/article_4509eaa2-45a1-4d28-9482-fa1c6bed80de.html",
+        "label": "Entergy seeks to boost power capacity for Louisiana's Meta AI data center",
+        "publisher": "NOLA.com / The Times-Picayune",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "A distinct Entergy Louisiana plant from Franklin Farms — a new combined-cycle facility at the existing Waterford complex in St. Charles Parish, approved in the same Aug 2025 LPSC settlement (Docket U-37425) as the third of three plants (2,260 MW total) dedicated to Meta's Hyperion campus. Power is delivered north to Richland Parish via new 500 kV transmission; target in-service end of 2029."
+  },
+  {
+    "id": "fervo-corsac-station-churchill-county-nv",
+    "name": "Fervo Energy Corsac Station",
+    "operator": "Fervo Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.75,
+      "lon": -118.55,
+      "county": "Churchill",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 115
+    },
+    "announcedDate": "2024-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-05",
+        "note": "The Public Utilities Commission of Nevada approved NV Energy's 'Clean Transition Tariff', enabling Fervo and NV Energy to supply 115 MW of geothermal power to Google's Nevada data centers. Construction expected to begin 2026; commercial operation targeted 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "energy": {
+      "source": "other",
+      "utility": "NV Energy",
+      "notes": "Enhanced geothermal (EGS) in Nevada's Forty Mile Desert (Churchill County per Nevada Division of Minerals permits). Output routed to Google's Nevada data centers via NV Energy under the PUC-approved Clean Transition Tariff."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "geothermal",
+      "offtaker": "Google (via NV Energy Clean Transition Tariff)",
+      "notes": "115 MW enhanced-geothermal project structured under Nevada's first-of-its-kind Clean Transition Tariff (approved by the Public Utilities Commission of Nevada, May 2025), which routes the plant's 24/7 carbon-free output to Google's Nevada data centers with NV Energy as intermediary. Developed by Fervo (permit entity Forty Mile Desert Resources LLC); construction expected 2026, commercial operation ~2027. Distinct from Fervo's operational 3.5 MW Project Red pilot in Humboldt County."
+    },
+    "sources": [
+      {
+        "url": "https://www.utilitydive.com/news/google-fervo-nv-energy-nevada-puc-clean-energy-tariff/719472/",
+        "label": "NV Energy seeks new tariff to supply Google with 24/7 power from Fervo geothermal plant",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-buys-115mw-of-geothermal-energy-to-power-nevada-data-centers/",
+        "label": "Google buys 115MW of geothermal energy to power Nevada data centers",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.latitudemedia.com/news/the-clean-transition-tariff-won-approval-in-nevada-whats-next-for-fervo/",
+        "label": "The 'clean transition tariff' won approval in Nevada. What's next for Fervo?",
+        "publisher": "Latitude Media",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.thinkgeoenergy.com/nevada-approves-first-of-its-kind-geothermal-power-supply-agreement/",
+        "label": "Nevada approves first-of-its-kind geothermal power supply agreement",
+        "publisher": "ThinkGeoEnergy",
+        "retrievedAt": "2026-08-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "A 115 MW enhanced-geothermal plant — the first project under Nevada's Clean Transition Tariff, a novel regulatory structure (PUC-approved May 2025) that lets a hyperscaler contract dedicated 24/7 clean generation through the utility. Fervo's output is committed to Google's Nevada data centers via NV Energy; construction expected 2026, commercial operation ~2027."
+  },
+  {
+    "id": "comanche-peak-nuclear-somervell-county-tx",
+    "name": "Comanche Peak Nuclear Power Plant (AWS PPA)",
+    "operator": "Vistra (Luminant)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.2983,
+      "lon": -97.785,
+      "city": "Glen Rose",
+      "county": "Somervell",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2400
+    },
+    "announcedDate": "2025-09-29",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-09-29",
+        "note": "Vistra announced a 20-year, 1,200 MW power-purchase agreement from Comanche Peak with an initially undisclosed customer (option to extend 20 more years).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-02-26",
+        "note": "Vistra's Q4/FY2025 earnings confirmed Amazon (AWS) as the customer; delivery targets Q4 2027, ramping to the full 1,200 MW by 2032. Somervell County separately advanced a development agreement (Feb 2026) for AWS's adjacent ~$5B 'Project Spectrum' data-center campus on Vistra land.",
+        "sourceIndex": 1
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "Existing two-unit pressurized-water reactor station (~2,400 MW), operating since the 1990s and delivering into ERCOT. 1,200 MW is contracted to AWS under a 20-year PPA."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Amazon Web Services (AWS)",
+      "notes": "A 20-year, 1,200 MW PPA (of the ~2,400 MW two-unit plant) supports Amazon's adjacent 'Project Spectrum' data-center campus (~$5B, Amazon Data Services) advancing through Somervell County approvals. Project Spectrum is not yet a tracked Compute Atlas campus, so no poweredFacilityIds is set. Distinct from the separately-tracked 'Comanche Circle' (comanche-circle-sailfish-hood-county-tx), an unrelated project in the same corridor."
+    },
+    "sources": [
+      {
+        "url": "https://world-nuclear-news.org/articles/ppas-support-extended-operations-at-vistra-plants",
+        "label": "Amazon and Meta agreements boost Vistra nuclear plants",
+        "publisher": "World Nuclear News",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/nuclear/vistra-secures-long-term-nuclear-ppa-from-comanche-peak-nuclear-plant/",
+        "label": "Vistra secures long-term nuclear PPA from Comanche Peak nuclear plant",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/amazon-to-collocate-5-billion-project-spectrum-data-center-campus-in-texas-with-nuclear-power-plant/",
+        "label": "Amazon to Collocate $5B Project Spectrum Data Center Campus with Nuclear Power Plant",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "The two-unit Comanche Peak nuclear station near Glen Rose, TX, whose 1,200 MW 20-year PPA to Amazon (announced 2025, customer confirmed Feb 2026) underpins AWS's adjacent 'Project Spectrum' campus — one of a wave of hyperscaler nuclear PPAs alongside Microsoft/Crane and AWS/Susquehanna. Delivery to AWS targets Q4 2027."
+  },
+  {
+    "id": "helion-orion-malaga-wa",
+    "name": "Helion Orion fusion power plant",
+    "operator": "Helion Energy",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.3722,
+      "lon": -120.2011,
+      "city": "Malaga",
+      "county": "Chelan",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "announcedDate": "2023",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023",
+        "note": "Helion signed the world's first fusion energy PPA, committing to deliver at least 50 MW to Microsoft by 2028.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2025",
+        "note": "Helion secured an ~80-acre Chelan County PUD land lease in Malaga and obtained environmental review (MDNS) and a Conditional Use Permit.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-06",
+        "note": "Washington Dept. of Health granted Radioactive Materials and Radioactive Air Emissions licenses — the first such operational licensing for a private fusion company — and generator-building earthwork began.",
+        "sourceIndex": 2
+      }
+    ],
+    "energy": {
+      "source": "other",
+      "notes": "Fusion (Helion's pulsed magneto-inertial approach). Recorded with energy source 'other' because the schema enum has no dedicated fusion value."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "offtaker": "Microsoft",
+      "poweredFacilityIds": [
+        "microsoft-malaga-wa"
+      ],
+      "notes": "Orion is billed as the world's first commercial fusion power plant, targeting at least 50 MW to Microsoft (PPA signed 2023, delivery targeted 2028). Under construction in Malaga, WA following first-of-a-kind Washington Dept. of Health fusion licensing in June 2026. An ADDITIONAL power source for the co-located Microsoft Malaga campus (microsoft-malaga-wa), otherwise served by Chelan County PUD hydropower. Technology recorded as 'other' — the schema has no 'fusion' value (a recommended future enum addition)."
+    },
+    "sources": [
+      {
+        "url": "https://www.helionenergy.com/orion",
+        "label": "Orion project page",
+        "publisher": "Helion Energy",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wenatcheeworld.com/business/helion-clears-key-licensing-hurdle-for-fusion-power-plant-in-malaga-closer-to-energizing-microsoft/article_b395a76f-a95e-421c-9677-739f960ae082.html",
+        "label": "Helion clears key licensing hurdle for fusion power plant in Malaga",
+        "publisher": "Wenatchee World",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.geekwire.com/2026/helion-secures-worlds-first-regulatory-licenses-for-fusion-power-plant-being-built-in-washington/",
+        "label": "Helion secures world's first regulatory licenses for fusion power plant in Washington",
+        "publisher": "GeekWire",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "The world's first commercial fusion power plant, under construction in Malaga, WA to deliver at least 50 MW to Microsoft — the first fusion PPA ever signed. An additional, co-located power source for Microsoft's Malaga campus. Fuel/technology recorded as 'other' pending a schema 'fusion' value."
+  },
+  {
+    "id": "davis-besse-nuclear-ottawa-county-oh",
+    "name": "Davis-Besse Nuclear Power Station",
+    "operator": "Vistra",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.59667,
+      "lon": -83.08639,
+      "city": "Oak Harbor",
+      "county": "Ottawa",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 908,
+      "planned": 988
+    },
+    "announcedDate": "2026-01-09",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-01-09",
+        "note": "Vistra and Meta announced a 20-year PPA; Meta contracts the plant's full 908 MW existing output plus an 80 MW share of a planned uprate (988 MW total), per Vistra's SEC Form 8-K.",
+        "sourceIndex": 0
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "Single-unit ~908 MWe net PWR (commercial operation 1978), delivering into the PJM grid. Meta contracts 908 MW of existing output plus an 80 MW uprate share under a 20-year PPA."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Meta",
+      "notes": "Part of the Jan 2026 Vistra-Meta 20-year PPA package (2,609 MW across three Vistra nuclear plants). Meta takes 100% of Davis-Besse's 908 MW operating output plus an 80 MW share of a fleet-wide uprate program. Grid-matched — power continues to the PJM grid (Vistra cites serving Meta's Ohio load, including its New Albany 'Prometheus' cluster), not a single dedicated campus, so no poweredFacilityIds. Operated by Vistra since the 2024 Energy Harbor acquisition; license to 2037."
+    },
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/vistra-and-meta-announce-agreements-to-support-nuclear-plants-in-pjm-and-add-new-nuclear-generation-to-the-grid-302656941.html",
+        "label": "Vistra and Meta Announce Agreements to Support Nuclear Plants in PJM",
+        "publisher": "PR Newswire (Vistra Corp.)",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/nuclear/vistra-and-meta-ink-ppa-for-2-6-gw-of-nuclear-power-in-pjm-region/",
+        "label": "Vistra and Meta ink PPA for 2.6 GW of nuclear power in PJM region",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://stocktitan.net/news/VST/vistra-and-meta-announce-agreements-to-support-nuclear-plants-in-pjm-zul6gbxgqjn9.html",
+        "label": "Vistra, Meta sign 20-year deal for 2,609 MW nuclear power (reproduces SEC Form 8-K per-plant MW)",
+        "publisher": "StockTitan (SEC Form 8-K mirror)",
+        "retrievedAt": "2026-08-04",
+        "kind": "filing"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Davis%E2%80%93Besse_Nuclear_Power_Station",
+        "label": "Davis-Besse Nuclear Power Station (site coordinates)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-08-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "Single-unit PWR near Oak Harbor, OH (site actually in Carroll Township), ~908 MW, placed under a 20-year Meta PPA announced Jan 2026 — one of three Vistra nuclear plants (2,609 MW total) matched to Meta's PJM-region data-center load. Grid-delivered; Meta also funds an 80 MW uprate share."
+  },
+  {
+    "id": "perry-nuclear-lake-county-oh",
+    "name": "Perry Nuclear Power Plant",
+    "operator": "Vistra",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.80083,
+      "lon": -81.14333,
+      "city": "North Perry",
+      "county": "Lake",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1268,
+      "planned": 1481
+    },
+    "announcedDate": "2026-01-09",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-01-09",
+        "note": "Vistra and Meta announced a 20-year PPA; Meta contracts the plant's full 1,268 MW existing output plus a 213 MW share of a planned uprate (1,481 MW total), per Vistra's SEC Form 8-K — the largest per-plant allocation in the deal.",
+        "sourceIndex": 0
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "Single-unit ~1,268 MWe net BWR-6 (commercial operation 1987), delivering into the PJM grid. Meta contracts 1,268 MW of existing output plus a 213 MW uprate share under a 20-year PPA."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Meta",
+      "notes": "Part of the Jan 2026 Vistra-Meta 20-year PPA package (2,609 MW across three Vistra nuclear plants) — Perry is the single largest allocation (1,268 MW existing + 213 MW uprate). Grid-matched: power continues to the PJM grid rather than a dedicated campus feed, so no poweredFacilityIds. Operated by Vistra since the 2024 Energy Harbor acquisition; NRC license renewed to 2046."
+    },
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/vistra-and-meta-announce-agreements-to-support-nuclear-plants-in-pjm-and-add-new-nuclear-generation-to-the-grid-302656941.html",
+        "label": "Vistra and Meta Announce Agreements to Support Nuclear Plants in PJM",
+        "publisher": "PR Newswire (Vistra Corp.)",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/nuclear/vistra-and-meta-ink-ppa-for-2-6-gw-of-nuclear-power-in-pjm-region/",
+        "label": "Vistra and Meta ink PPA for 2.6 GW of nuclear power in PJM region",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://stocktitan.net/news/VST/vistra-and-meta-announce-agreements-to-support-nuclear-plants-in-pjm-zul6gbxgqjn9.html",
+        "label": "Vistra, Meta sign 20-year deal for 2,609 MW nuclear power (reproduces SEC Form 8-K per-plant MW)",
+        "publisher": "StockTitan (SEC Form 8-K mirror)",
+        "retrievedAt": "2026-08-04",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.ans.org/news/article-7668/the-metavistra-deal-a-closer-look/",
+        "label": "The Meta-Vistra deal: A closer look",
+        "publisher": "ANS / Nuclear Newswire",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "Single-unit BWR near North Perry, OH, ~1,268 MW, placed under a 20-year Meta PPA announced Jan 2026 — the largest of three Vistra nuclear plants (2,609 MW total) matched to Meta's PJM-region data-center load. Grid-delivered; Meta also funds a 213 MW uprate share."
+  },
+  {
+    "id": "beaver-valley-power-station-beaver-county-pa",
+    "name": "Beaver Valley Power Station",
+    "operator": "Vistra",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.62333,
+      "lon": -80.43056,
+      "city": "Shippingport",
+      "county": "Beaver",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1872,
+      "planned": 2012
+    },
+    "announcedDate": "2026-01-09",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-01-09",
+        "note": "Vistra and Meta announced a 20-year PPA; unlike Davis-Besse/Perry, Meta's Beaver Valley allocation is uprate-only — a 140 MW share of a planned equipment uprate, with none of the plant's existing 1,872 MW contracted to Meta.",
+        "sourceIndex": 0
+      }
+    ],
+    "energy": {
+      "source": "nuclear",
+      "notes": "Two-unit ~1,872 MWe net PWR station (units commercial 1976 and 1987), delivering into the PJM grid. Of this, only a planned 140 MW uprate share is contracted to Meta; the existing output continues serving the broader grid."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Meta",
+      "notes": "Part of the Jan 2026 Vistra-Meta 20-year PPA package (2,609 MW total across three plants). IMPORTANT: Beaver Valley's Meta allocation is uprate-only — a 140 MW share of a fleet-wide uprate program (full delivery targeted ~2034), roughly 7% of the plant's ~1,872 MW capacity. None of its existing output is Meta-contracted; the 1,872 MW / 2,012 MW capacities are the whole plant, not Meta's slice. Grid-matched, so no poweredFacilityIds. Operated by Vistra since the 2024 Energy Harbor acquisition."
+    },
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/vistra-and-meta-announce-agreements-to-support-nuclear-plants-in-pjm-and-add-new-nuclear-generation-to-the-grid-302656941.html",
+        "label": "Vistra and Meta Announce Agreements to Support Nuclear Plants in PJM",
+        "publisher": "PR Newswire (Vistra Corp.)",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/nuclear/vistra-and-meta-ink-ppa-for-2-6-gw-of-nuclear-power-in-pjm-region/",
+        "label": "Vistra and Meta ink PPA for 2.6 GW of nuclear power in PJM region",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-08-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://stocktitan.net/news/VST/vistra-and-meta-announce-agreements-to-support-nuclear-plants-in-pjm-zul6gbxgqjn9.html",
+        "label": "Vistra, Meta sign 20-year deal for 2,609 MW nuclear power (reproduces SEC Form 8-K: 140 MW uprate from Beaver Valley)",
+        "publisher": "StockTitan (SEC Form 8-K mirror)",
+        "retrievedAt": "2026-08-04",
+        "kind": "filing"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Beaver_Valley_Power_Station",
+        "label": "Beaver Valley Power Station (site coordinates)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-08-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-04",
+    "notes": "Two-unit PWR at Shippingport, PA, ~1,872 MW. Part of the Jan 2026 Vistra-Meta PPA package, but distinctively its Meta allocation is a 140 MW future-uprate share only — none of the existing output. Included to complete the three-plant deal; grid-delivered."
   }
 ]
