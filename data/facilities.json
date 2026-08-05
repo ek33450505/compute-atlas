@@ -838,9 +838,23 @@
         "label": "Aligned Chicago data centers page",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/energy-power-supply/aligned-launches-one-chicago-data-center-and-breaks-ground-on-another",
+        "kind": "press",
+        "label": "Aligned Launches One Chicago Data Center and Breaks Ground on Another",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.datacenters.com/aligned-energy-ord-01-chicago",
+        "kind": "other",
+        "label": "Aligned Energy ORD-01 Chicago (Northlake, IL)",
+        "publisher": "Datacenters.com",
+        "retrievedAt": "2026-08-03"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-03",
     "notes": "Confirmed via Aligned Chicago page and DatacenterDynamics ('Aligned completes first Chicago data center'); 505 Northwest Ave, Northlake, IL; 48MW, operational. AI/HPC (likely): Northlake ORD-01 hyperscale, adaptive AI/HPC cooling platform.",
     "energy": {
       "source": "grid",
@@ -848,7 +862,11 @@
       "notes": "Aligned's Chicagoland ORD-01 campus in Northlake draws redundant, critical power from two on-site substations (170 MW total capacity) fed by the Commonwealth Edison grid. No site-specific renewable PPA or dedicated generation was found — this is standard utility grid power with enhanced substation redundancy for reliab"
     },
     "facilityType": "data_center",
-    "aiClassification": "likely"
+    "aiClassification": "likely",
+    "water": {
+      "notes": "Delta Cube (Delta³) adiabatic, air-cooled modular cooling system (evaporative-assisted air).",
+      "coolingType": "hybrid"
+    }
   },
   {
     "id": "aligned-pdx-01-or",
@@ -1766,9 +1784,23 @@
         "publisher": "WSBT",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://wsbt.com/news/local/amazons-project-rainier-starts-operations-create-jobs-ai-billion-dollar-project-near-new-carlisle-st-joseph-county-indiana",
+        "kind": "press",
+        "label": "Amazon's 'Project Rainier' starts operations in New Carlisle",
+        "publisher": "WSBT",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.cnbc.com/2025/10/29/amazon-opens-11-billion-ai-data-center-project-rainier-in-indiana.html",
+        "kind": "press",
+        "label": "Amazon opens $11 billion AI data center Project Rainier in Indiana",
+        "publisher": "CNBC",
+        "retrievedAt": "2026-08-05"
       }
     ],
-    "lastUpdated": "2026-07-05",
+    "lastUpdated": "2026-08-05",
     "energy": {
       "source": "grid",
       "utility": "Indiana Michigan Power (AEP)",
@@ -1805,7 +1837,8 @@
       "sourceIndex": 5
     },
     "facilityType": "data_center",
-    "aiClassification": "confirmed"
+    "aiClassification": "confirmed",
+    "landAcres": 1200
   },
   {
     "id": "american-bitcoin-niagara-falls-ny",
@@ -6928,9 +6961,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://wisconsinwatch.org/2026/06/a-2-billion-proposal-then-silence-how-a-driftless-area-data-center-deal-fell-apart/",
+        "kind": "press",
+        "label": "A $2 billion proposal, then silence: How a Driftless Area data center deal fell apart",
+        "publisher": "Wisconsin Watch",
+        "retrievedAt": "2026-08-04"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-04",
     "notes": "Coordinates are Cassville city centroid; proposed site was ~400-500 acres in the town of Cassville. Grant County ED director confirmed company 'people will recognize' but declined to name it. Energy requirement estimated at 400-500 MW (per Wisconsin Watch, citing economic development director estimate). Investment range $1B-$2B; investmentUsd represents the floor. Town vote was April 16, 2026: 44-0 to ban data centers (ordinance lasts up to two years). Developer went silent post-vote and was reportedly considering Indiana and North Dakota sites.",
     "energy": {
       "source": "grid",
@@ -6944,7 +6984,11 @@
       "sourceIndex": 2
     },
     "facilityType": "data_center",
-    "aiClassification": "likely"
+    "aiClassification": "likely",
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 4
+    }
   },
   {
     "id": "centersquare-phx3-az",
@@ -9949,9 +9993,30 @@
         "publisher": "Government Technology",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://lancasteronline.com/news/local/ai-cloud-computing-firm-announces-plans-for-6b-data-center-in-lancaster-county/article_269bec19-6d27-41f0-8486-01149492ecf0.html",
+        "kind": "press",
+        "label": "AI cloud computing firm announces plans for $6B data center in Lancaster County",
+        "publisher": "LancasterOnline",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/coreweave-plans-6bn-data-center-in-lancaster-pennsylvania/",
+        "kind": "press",
+        "label": "CoreWeave plans $6bn data center in Lancaster, Pennsylvania",
+        "publisher": "DataCenterDynamics",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://www.credaily.com/briefs/coreweave-funding-powers-4b-ai-data-center-in-pennsylvania/",
+        "kind": "press",
+        "label": "CoreWeave Funding Powers $4B AI Data Center In Pennsylvania",
+        "publisher": "CRE Daily",
+        "retrievedAt": "2026-08-02"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-02",
     "energy": {
       "source": "grid",
       "utility": "PPL Electric",
@@ -9968,7 +10033,13 @@
       "sourceIndex": 4
     },
     "facilityType": "data_center",
-    "aiClassification": "confirmed"
+    "aiClassification": "confirmed",
+    "jobs": {
+      "permanent": 70,
+      "sourceIndex": 7,
+      "construction": 600
+    },
+    "investmentUsd": 6000000000
   },
   {
     "id": "corscale-gainesville-crossing-va",
@@ -20869,9 +20940,30 @@
         "publisher": "Daily Journal (Johnson County, IN)",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.ibj.com/articles/aes-indiana-details-plan-to-power-proposed-google-data-center-southwest-of-indianapolis",
+        "kind": "press",
+        "label": "AES Indiana details plan to power proposed Google data center southwest of Indianapolis",
+        "publisher": "Indianapolis Business Journal",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.insideindianabusiness.com/articles/indiana-regulators-ok-energy-project-tied-to-googles-morgan-county-data-center",
+        "kind": "press",
+        "label": "Indiana regulators OK energy project tied to Google's Morgan County data center",
+        "publisher": "Inside INdiana Business",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.ipm.org/news/2026-07-14/activist-group-blasts-energy-project-related-to-monrovia-data-center",
+        "kind": "press",
+        "label": "Activist group blasts energy project related to Monrovia data center",
+        "publisher": "Indiana Public Media",
+        "retrievedAt": "2026-08-05"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-05",
     "notes": "Codename 'Project Louie'; Google initially concealed via shell company 'Woodland Caribou LLC'. Campus totals approximately 550 acres in Morgan Township east of Monrovia (bounded by Keller Hill Rd, N Antioch Rd, SR-42, W Union Church Rd); additional ~80 acres acquired within Monrovia town limits, bringing total Google holdings to ~628 acres. Planned 1,200 MW AES Indiana substation per IURC Cause No. 46394 (filed Apr 22 2026); that figure is the utility substation capacity ceiling, not a confirmed steady-state data center load — treated as notes per spec. Six buildings plus substation planned. Reported total investment ~$1 billion (IDS News; not confirmed as a firm Google-stated commitment — left out of investmentUsd). Land acquisition spend: ~$78 million for ~15 parcels Sep–Nov 2025. Coordinates approximate (site east of Monrovia near SR-42/Keller Hill Rd area). Annexation dispute with Town of Monrovia active July 2026: county transferred Google parcels to RDC under IC 36-4-3-4.3 to block annexation; Google offered $12M sewer plant upgrade to Monrovia to drop the effort.",
     "energy": {
       "source": "grid",
@@ -22625,13 +22717,35 @@
         "publisher": "Spotlight PA",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businesswire.com/news/home/20250402452555/en/Homer-City-Redevelopment-and-Kiewit-Announce-Countrys-Largest-Natural-Gas-Powered-Data-Center-Campus-to-Support-AI-and-HPC-Demand",
+        "kind": "press",
+        "label": "Homer City Redevelopment and Kiewit Announce Country's Largest Natural Gas-Powered Data Center Campus",
+        "publisher": "Business Wire",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/homer-city-and-kiewit-unveil-plans-for-45gw-natural-gas-powered-ai-data-center-in-pennsylvania/",
+        "kind": "press",
+        "label": "Homer City and Kiewit unveil plans for 4.5GW natural gas powered AI data center in Pennsylvania",
+        "publisher": "DataCenterDynamics",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://www.gevernova.com/news/press-releases/homer-city-redevelopment-kiewit-announce-country-largest-natural-gas-powered-data-center-support-ai-hpc-demand",
+        "kind": "press",
+        "label": "GE Vernova to supply seven 7HA.02 turbines for Homer City data center campus",
+        "publisher": "GE Vernova",
+        "retrievedAt": "2026-08-02"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-02",
     "energy": {
       "source": "on_site_gas",
       "utility": "PJM (via FirstEnergy Pennsylvania Electric)",
-      "notes": "Redevelopment of the former Homer City coal plant (Pennsylvania's largest, demolished 2023–25) into what developers call the largest US natural-gas plant powering an on-site AI data-center campus — seven GE Vernova 7HA.02 turbines cited at 'up to 4.4–4.7 GW' (a ceiling; no confirmed point value). EQT is to supply Marcellus gas; first power is targeted for 2027. PA DEP issued the air-quality plan approval on Nov 20, 2025. Developers describe the redevelopment site as spanning more than 3,200 acres."
+      "notes": "Redevelopment of the former Homer City coal plant (Pennsylvania's largest, demolished 2023–25) into what developers call the largest US natural-gas plant powering an on-site AI data-center campus — seven GE Vernova 7HA.02 turbines cited at 'up to 4.4–4.7 GW' (a ceiling; no confirmed point value). EQT is to supply Marcellus gas; first power is targeted for 2027. PA DEP issued the air-quality plan approval on Nov 20, 2025. Developers describe the redevelopment site as spanning more than 3,200 acres.",
+      "onSiteGenerationMw": 4500
     },
     "water": {
       "notes": "A legacy 1,800-acre reservoir (Two Lick) remains available for cooling; NPDES permit PAD320011 (June 2026) covers Two Lick Creek outfalls. No cooling-water volume (MGD) is disclosed."
@@ -22651,7 +22765,9 @@
       "sourceIndex": 5
     },
     "facilityType": "data_center",
-    "aiClassification": "confirmed"
+    "aiClassification": "confirmed",
+    "landAcres": 3200,
+    "investmentUsd": 10000000000
   },
   {
     "id": "hunters-ridge-south-data-center-campus-spotsylvania-va",
@@ -23836,9 +23952,23 @@
         "publisher": "NBC Chicago",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cbsnews.com/chicago/news/joliet-city-council-approves-data-center-plan/",
+        "kind": "press",
+        "label": "Joliet City Council approves plans for Illinois' largest data center",
+        "publisher": "CBS Chicago",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.constructionowners.com/news/joliet-approves-massive-795-acre-data-center-project",
+        "kind": "press",
+        "label": "Joliet Approves Illinois' Largest Data Center, 795-Acre Project Moves Forward",
+        "publisher": "Construction Owners",
+        "retrievedAt": "2026-08-03"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-03",
     "notes": "Coordinates approximate Jackson Township at Rowell and Bernhard Rds, south Joliet (~40 mi SW of Chicago), near Chicagoland Speedway. 24 two-story buildings planned. No confirmed hyperscale tenant as of permit date. Construction start targeted early 2027; first sub-campus by 2028. Construction jobs range reported as 7,000-10,000; permanent approximately 700.",
     "energy": {
       "source": "grid",
@@ -27118,9 +27248,16 @@
         "label": "Facilities Dive - Meta to bring 210 MW of solar energy to Indiana",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/meta-to-develop-data-center-campus-in-jeffersonville-indiana/",
+        "kind": "press",
+        "label": "Meta to develop data center campus in Jeffersonville, Indiana",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-05"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-05",
     "notes": "River Ridge Commerce Center, Jeffersonville IN (Clark County, across Ohio River from Louisville KY). ~700,000 sq ft; AI-native design with liquid cooling from the start. Coordinates are approximate River Ridge Commerce Center area.",
     "energy": {
       "source": "solar",
@@ -27152,7 +27289,10 @@
       "sourceIndex": 2
     },
     "facilityType": "data_center",
-    "aiClassification": "confirmed"
+    "aiClassification": "confirmed",
+    "capacityMw": {
+      "planned": 407
+    }
   },
   {
     "id": "meta-kansas-city-northland-mo",
@@ -27368,9 +27508,16 @@
         "publisher": "City of Lebanon, IN",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://finance.yahoo.com/news/meta-announces-plans-to-build-1-gigawatt-data-center-in-indiana-as-part-of-ai-build-out-180052467.html",
+        "kind": "press",
+        "label": "Meta announces plans to build 1-gigawatt data center in Indiana as part of AI build-out",
+        "publisher": "Yahoo Finance",
+        "retrievedAt": "2026-08-05"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-05",
     "notes": "LEAP Innovation and Research District, Lebanon IN (Boone County, ~30 mi NW of Indianapolis). 1,500 acres, 4 million sq ft total; 13 buildings. Among Meta's largest single infrastructure investments. Coordinates are approximate LEAP District area north of Lebanon.",
     "energy": {
       "source": "grid",
@@ -29880,7 +30027,7 @@
     "id": "microsoft-mount-pleasant-wi",
     "name": "Microsoft Mount Pleasant Data Center Campus",
     "operator": "Microsoft",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 42.7209,
@@ -29907,6 +30054,12 @@
         "date": "2025",
         "note": "Construction active; Racine County site confirmed",
         "sourceIndex": 1
+      },
+      {
+        "date": "2026-08-04",
+        "note": "Microsoft announced June 23, 2026 that its first Fairwater datacenter facility in Mount Pleasant is fully operational (equipment came online April 2026), with nearly 550 employees on site; a second adjacent facility remains under construction (targeted 2028).",
+        "status": "operational",
+        "sourceIndex": 7
       }
     ],
     "sources": [
@@ -29958,9 +30111,23 @@
         "publisher": "Wisconsin Public Radio",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://news.microsoft.com/source/2026/06/23/microsoft-completes-construction-on-first-datacenter-facility-in-mount-pleasant-wisconsin/",
+        "kind": "press",
+        "label": "Microsoft completes construction on first datacenter facility in Mount Pleasant, Wisconsin",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-08-04"
+      },
+      {
+        "url": "https://www.wpr.org/news/microsoft-finishes-construction-mount-pleasant-data-center",
+        "kind": "press",
+        "label": "Microsoft finishes construction of Mount Pleasant data center, plans for more",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-08-04"
       }
     ],
-    "lastUpdated": "2026-07-05",
+    "lastUpdated": "2026-08-04",
     "energy": {
       "source": "mixed",
       "utility": "We Energies",
@@ -33356,9 +33523,23 @@
         "publisher": "Protect Cumberland County PA",
         "retrievedAt": "2026-07-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/07/15/3115977/0/en/Pennsylvania-Data-Center-Partners-and-PowerHouse-Data-Centers-Launch-Joint-Venture-to-Build-Next-Gen-1-35-GW-Hyperscale-Data-Center-Campus-in-Carlisle-Pennsylvania.html",
+        "kind": "press",
+        "label": "PA Data Center Partners and PowerHouse launch JV for 1.35 GW hyperscale campus in Carlisle",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://constructionreviewonline.com/450-mw-substation-approved-for-15b-pennsylvania-digital-i-pax-ai-data-center-in-carlisle/",
+        "kind": "press",
+        "label": "450 MW substation approved for $15B Pennsylvania Digital I (PAX) AI data center in Carlisle",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-08-02"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-02",
     "notes": "'Pennsylvania Digital I' (PAX) in Carlisle, Cumberland County: a ~700-acre, three-campus development delivering 1.35 GW (expandable to 1.8 GW — in notes), each campus with six buildings and a 450 MW substation. The $15B is the project value across all three campuses (in notes). Near-term 300 MW by Q2 2027. Coordinates are the Carlisle area centroid. The $15B figure is the three-campus JV total, not broken out per campus -> investmentUsd omitted. Pennsylvania's data-center sales-tax exemption eligibility is likely but no confirmed award or LERTA designation was found.",
     "energy": {
       "source": "grid",
@@ -34011,9 +34192,23 @@
         "publisher": "Yorkville Herald",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://poweredbywho.com/stories/illinois-data-center-boom-2026",
+        "kind": "press",
+        "label": "Illinois Data Center Boom: $20B+ Approved in Two Weeks",
+        "publisher": "PoweredByWho",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/illinois-town-approved-could-state-184426082.html",
+        "kind": "press",
+        "label": "Which Illinois town approved what could be the state's largest data center?",
+        "publisher": "Yahoo News",
+        "retrievedAt": "2026-08-03"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-03",
     "notes": "Coordinates approximate NW of IL Rt 47 and Galena Rd in Yorkville; exact parcel spans ~1,037 acres. 14 two-story buildings at 17 million sq ft total. No confirmed hyperscale tenant named. Companion project 'Project Steel' (Prologis, 540 acres, 24 buildings) also approved in same Yorkville corridor. First data center operational target: 2029.",
     "energy": {
       "source": "grid",
@@ -37378,7 +37573,8 @@
       "city": "Decatur Township",
       "county": "Marion",
       "state": "IN",
-      "precision": "exact"
+      "precision": "exact",
+      "street": "Kentucky Avenue & Camby Road"
     },
     "capacityMw": {
       "planned": 250
@@ -37399,9 +37595,23 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/sabey-targets-indianapolis-for-250mw-data-center-campus/",
+        "kind": "press",
+        "label": "Sabey targets Indianapolis for 250MW data center campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/indy-commission-clears-way-first-092737761.html",
+        "kind": "press",
+        "label": "Indy commission clears way for first hyperscale data center in city",
+        "publisher": "Yahoo News / IBJ",
+        "retrievedAt": "2026-08-05"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-05",
     "notes": "More than one million sq ft, 250MW over a 5-year period. Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -37414,7 +37624,8 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center",
-    "aiClassification": "likely"
+    "aiClassification": "likely",
+    "landAcres": 130
   },
   {
     "id": "sabey-intergate-ashburn-building-a-va",
@@ -39691,9 +39902,23 @@
         "publisher": "Wisconsin Public Radio",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://vantage-dc.com/news/openai-oracle-and-vantage-data-centers-announce-stargate-data-center-site-in-wisconsin/",
+        "kind": "press",
+        "label": "OpenAI, Oracle and Vantage Data Centers Announce Stargate Data Center Site in Wisconsin",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-08-04"
+      },
+      {
+        "url": "https://biztimes.com/groundbreaking-held-as-construction-begins-on-15b-port-washington-data-center/",
+        "kind": "press",
+        "label": "Groundbreaking held as construction begins on $15 billion Port Washington data center",
+        "publisher": "BizTimes Milwaukee",
+        "retrievedAt": "2026-08-04"
       }
     ],
-    "lastUpdated": "2026-07-05",
+    "lastUpdated": "2026-08-04",
     "energy": {
       "source": "mixed",
       "utility": "We Energies (WEC Energy Group)",
@@ -41668,9 +41893,30 @@
         "publisher": "Hoodline",
         "retrievedAt": "2026-07-18",
         "kind": "press"
+      },
+      {
+        "url": "https://www.dailyherald.com/20260608/news/despite-village-approvals-legal-action-expected-against-grayslake-data-center/",
+        "kind": "press",
+        "label": "Despite village approvals, legal action expected against Grayslake data center",
+        "publisher": "Daily Herald",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.govtech.com/artificial-intelligence/data-center-could-be-largest-lake-county-ill-development",
+        "kind": "press",
+        "label": "Data Center Could Be Largest Lake County, Ill., Development",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.villageofgrayslake.com/DocumentCenter/View/15282",
+        "kind": "other",
+        "label": "Approved T5 Data Center Campus FAQ (updated June 5, 2026)",
+        "publisher": "Village of Grayslake",
+        "retrievedAt": "2026-08-03"
       }
     ],
-    "lastUpdated": "2026-06-08",
+    "lastUpdated": "2026-08-03",
     "notes": "CHI IV in Grayslake, Lake County (~40 mi north of Chicago): up to 1.2 GW IT capacity with 1.6 GW secured ComEd power; envisions 20 × 60 MW buildings, Phase 1 (3 × 60 MW) targeted Q4 2027. Recorded as proposed (announced; no groundbreaking confirmed). Distinct from T5's Palmetto, GA campus. Coordinates are the Grayslake area centroid.",
     "energy": {
       "source": "grid",
@@ -41678,7 +41924,13 @@
       "notes": "1.6 GW of secured ComEd utility power via an on-site substation."
     },
     "facilityType": "data_center",
-    "aiClassification": "confirmed"
+    "aiClassification": "confirmed",
+    "community": {
+      "notes": "Village land-use approvals granted; legal action expected; ongoing water and energy concerns.",
+      "status": "contested",
+      "sourceIndex": 3
+    },
+    "landAcres": 400
   },
   {
     "id": "t5-cleveland-oh",
@@ -42755,9 +43007,16 @@
         "publisher": "Inside INdiana Business",
         "retrievedAt": "2026-07-20",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/terra-hosting-targets-ai-and-hpc-growth-from-repurposed-indiana-military-site/",
+        "kind": "press",
+        "label": "Terra Hosting targets AI and HPC growth from repurposed Indiana military site",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-05"
       }
     ],
-    "lastUpdated": "2026-07-20",
+    "lastUpdated": "2026-08-05",
     "notes": "ASIC crypto-mining hosting operation at the 7,000-acre Vermillion Rise Mega Park (former Newport Chemical Depot). Commenced operations around late 2025; 1,600+ ASIC miners active by March 2026 at ~$0.0825/kWh. Operator has stated plans to expand into AI/HPC. Powered from Duke Energy grid service. Coordinates approximate (large multi-parcel park, pending precise siting).",
     "energy": {
       "source": "grid",
@@ -42767,7 +43026,8 @@
     "facilityType": "crypto_mining",
     "mining": {
       "powerArrangement": "grid"
-    }
+    },
+    "aiClassification": "mixed_use"
   },
   {
     "id": "tesla-cortex-2-giga-texas-austin-tx",
@@ -49644,6 +49904,20 @@
         "publisher": "Baxtel (data center directory)",
         "retrievedAt": "2026-08-03",
         "kind": "other"
+      },
+      {
+        "url": "https://poweredbywho.com/projects/hut-8-batavia-data-center-22915976",
+        "kind": "press",
+        "label": "Hut 8 Batavia Data Center, Illinois",
+        "publisher": "PoweredByWho",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://baxtel.com/data-center/hut-8-batavia-il",
+        "kind": "other",
+        "label": "Hut 8: Batavia, IL Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03"
       }
     ],
     "lastUpdated": "2026-08-03",
@@ -53428,5 +53702,624 @@
     ],
     "notes": "Cango Inc. (NYSE: CANG) acquired this ~50 MW air-cooled bitcoin mining facility from LN Compute for $19.5M cash (agreement July 2025, closed August 2025); held via subsidiary GreenVolt Technology LLC, seller entity LN Energy 3, LLC. 30 MW self-mining / 20 MW third-party hosting; already operational and had previously hosted Cango's own miners. City/county (Soperton, Treutlen County) is NOT stated in Cango's SEC filings (the 20-F and 2025 6-Ks say only \"Georgia\"); it is corroborated by LN Compute's own announcement of the sale plus a Soperton, GA property listing — hence confidence \"reported\" and approximate coordinates (city center). Distinct from CleanSpark's separate 2024 acquisition of five LN Energy turnkey sites (a lease assumption, not this land + equipment sale).",
     "lastUpdated": "2026-08-05"
+  },
+  {
+    "id": "cloudhq-mount-prospect-ord-il",
+    "name": "CloudHQ Mount Prospect (ORD) Campus",
+    "notes": "$2.5B, ~1.5 million sq ft across three two-story hyperscale buildings (each >80 MW) on a 49.7-acre site; ComEd grid partnership.",
+    "energy": {
+      "source": "grid",
+      "utility": "ComEd"
+    },
+    "status": "under_construction",
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/cloudhq-breaks-ground-on-15-million-sq-ft-campus-in-mount-prospect-illinois/",
+        "kind": "press",
+        "label": "CloudHQ breaks ground on 1.5 million sq ft campus in Mount Prospect, Illinois",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/featured/article/11427128/cloudhq-breaks-ground-on-25-billion-chicago-data-center-campus",
+        "kind": "press",
+        "label": "CloudHQ Breaks Ground on $2.5 Billion Chicago Data Center Campus",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://dailyenergyinsider.com/innovation/36434-comed-joins-with-cloudhq-to-build-2-5b-data-center-in-northern-illinois/",
+        "kind": "press",
+        "label": "ComEd joins with CloudHQ to build $2.5B data center in northern Illinois",
+        "publisher": "Daily Energy Insider",
+        "retrievedAt": "2026-08-03"
+      }
+    ],
+    "location": {
+      "lat": 42.055,
+      "lon": -87.935,
+      "city": "Mount Prospect",
+      "state": "IL",
+      "county": "Cook",
+      "precision": "approximate"
+    },
+    "operator": "CloudHQ",
+    "landAcres": 49.7,
+    "confidence": "confirmed",
+    "lastUpdated": "2026-08-03",
+    "facilityType": "data_center",
+    "announcedDate": "2022",
+    "investmentUsd": 2500000000,
+    "statusHistory": [
+      {
+        "date": "2022-08",
+        "note": "Groundbreaking with ComEd on hyperscale campus",
+        "status": "under_construction",
+        "sourceIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "constellation-clinton-clean-energy-center-il",
+    "jobs": {
+      "permanent": 1100,
+      "sourceIndex": 0
+    },
+    "name": "Clinton Clean Energy Center",
+    "notes": "Existing ~1,080 MW single-unit nuclear station near Clinton, IL. Under the Meta agreement its full ~1,121 MW output (with a 30 MW uprate) is dedicated to Meta's clean-energy/AI operations from June 2027.",
+    "energy": {
+      "source": "nuclear"
+    },
+    "status": "operational",
+    "sources": [
+      {
+        "url": "https://www.constellationenergy.com/news/2025/constellation-meta-sign-20-year-deal-for-clean-reliable-nuclear-energy-in-illinois.html",
+        "kind": "press",
+        "label": "Constellation, Meta Sign 20-Year Deal for Clean, Reliable Nuclear Energy in Illinois",
+        "publisher": "Constellation Energy",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/meta-signs-20-year-ppa-with-constellation-for-entire-output-of-illinois-nuclear-power-plant/",
+        "kind": "press",
+        "label": "Meta signs 20-year PPA with Constellation for entire output of Illinois nuclear plant",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.ans.org/news/2025-06-03/article-7084/constellation-meta-sign-20year-deal-to-source-entire-illinois-nuclear-plants-power/",
+        "kind": "press",
+        "label": "Constellation, Meta sign 20-year deal to source entire Illinois nuclear plant's power",
+        "publisher": "American Nuclear Society",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.world-nuclear-news.org/articles/meta-constellation-sign-20-year-clean-power-deal",
+        "kind": "press",
+        "label": "Meta, Constellation sign 20-year clean power deal",
+        "publisher": "World Nuclear News",
+        "retrievedAt": "2026-08-03"
+      }
+    ],
+    "location": {
+      "lat": 40.1722,
+      "lon": -88.8342,
+      "city": "Clinton",
+      "state": "IL",
+      "county": "DeWitt",
+      "precision": "exact"
+    },
+    "operator": "Constellation Energy",
+    "community": {
+      "notes": "Deal preserves 1,100+ jobs and ~$13.5M in annual community tax revenue",
+      "status": "supported",
+      "sourceIndex": 0
+    },
+    "capacityMw": {
+      "planned": 1121,
+      "operational": 1080
+    },
+    "confidence": "confirmed",
+    "generation": {
+      "notes": "Entire plant output contracted to Meta under a 20-year PPA (announced June 2025) beginning June 2027; supports relicensing/continued operation for ~20 years after the ZEC program ends; +30 MW nuclear uprate planned.",
+      "offtaker": "Meta",
+      "unitCount": 1,
+      "technology": "nuclear"
+    },
+    "lastUpdated": "2026-08-03",
+    "facilityType": "power_generation",
+    "announcedDate": "2025-06",
+    "statusHistory": [
+      {
+        "date": "2025-06",
+        "note": "Meta 20-year PPA for full output announced; relicensing to ~2047",
+        "status": "operational",
+        "sourceIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "jefferson-proving-ground-data-center-jefferson-county-in",
+    "name": "Jefferson Proving Ground Data Center",
+    "notes": "Proposed hyperscale campus of nine buildings totaling ~7.1 million sq ft on 549 acres of the former Jefferson Proving Ground airfield, on land owned by the Ford family (Daniel Ford); the end-user/operator has not been publicly disclosed. Reported to draw hundreds of megawatts and be roughly 78% larger than Meta's Lebanon campus; projected 300-450 permanent jobs and ~$60M in annual county tax revenue. Coordinates are an approximate geocode of the former proving-ground airfield north of Madison.",
+    "status": "permitted",
+    "sources": [
+      {
+        "url": "https://www.whas11.com/article/news/local/indiana/commissioners-uphold-decision-data-center-550-acres-jefferson-proving-grounds/417-10524221-dc8a-4566-96db-ebcf4cf4bdc2",
+        "kind": "press",
+        "label": "Commissioners uphold decision to allow a data center on 550 acres at Jefferson Proving Grounds",
+        "publisher": "WHAS11",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.wdrb.com/news/zoning-board-allows-controversial-madison-data-center-project-to-move-forward/article_e55a1071-bbe7-425a-98b5-d88c7a94d2b4.html",
+        "kind": "press",
+        "label": "Zoning board allows controversial Madison data center project to move forward",
+        "publisher": "WDRB",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.madisoncourier.com/carroll_news_democrat/news/proposed-jpg-data-center-could-generate-60m-taxes-annually/article_2804a794-5c76-548f-be98-8975b84b2284.html",
+        "kind": "press",
+        "label": "Proposed JPG data center could generate $60M taxes annually",
+        "publisher": "The Madison Courier",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.whas11.com/article/news/investigations/focus/data-center-madison-indiana-power/417-938dcab5-08d5-46d1-9f6a-3100d94e6fa2",
+        "kind": "press",
+        "label": "Questions persist about who will power the massive data center near Madison, Indiana",
+        "publisher": "WHAS11",
+        "retrievedAt": "2026-08-05"
+      }
+    ],
+    "location": {
+      "lat": 38.82,
+      "lon": -85.4,
+      "city": "Madison",
+      "state": "IN",
+      "county": "Jefferson",
+      "precision": "approximate"
+    },
+    "operator": "Undisclosed",
+    "community": {
+      "notes": "A formal zoning appeal challenging the project was filed and denied (May 2026) after a ~5.5-hour hearing; opponents raised environmental concerns over proximity to the Big Oaks National Wildlife Refuge and local water/utility strain.",
+      "status": "opposed",
+      "sourceIndex": 1
+    },
+    "landAcres": 549,
+    "confidence": "reported",
+    "lastUpdated": "2026-08-05",
+    "facilityType": "data_center",
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "date": "2026-05",
+        "note": "Jefferson County Board of Zoning Appeals denied an appeal and county commissioners upheld the zoning approval, allowing the project to move forward.",
+        "status": "permitted",
+        "sourceIndex": 0
+      }
+    ],
+    "aiClassification": "likely"
+  },
+  {
+    "id": "meta-dekalb-data-center-il",
+    "jobs": {
+      "permanent": 200,
+      "sourceIndex": 0,
+      "construction": 1200
+    },
+    "name": "Meta DeKalb Data Center",
+    "notes": "~2.3 million sq ft hyperscale data center; broke ground 2020, brought online November 2023.",
+    "status": "operational",
+    "sources": [
+      {
+        "url": "https://datacenters.atmeta.com/asset/dekalb-data-center-info-sheet/",
+        "kind": "press",
+        "label": "Meta — DeKalb Data Center info sheet",
+        "publisher": "Meta",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/meta-launches-data-center-in-dekalb-illinois/",
+        "kind": "press",
+        "label": "Meta launches data center in DeKalb, Illinois",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.mystateline.com/news/local-news/meta-announces-dekalb-data-center-is-now-operational/",
+        "kind": "press",
+        "label": "Meta announces DeKalb Data Center is now operational",
+        "publisher": "WTVO/WQRF MyStateline",
+        "retrievedAt": "2026-08-03"
+      }
+    ],
+    "location": {
+      "lat": 41.909,
+      "lon": -88.792,
+      "city": "DeKalb",
+      "state": "IL",
+      "county": "DeKalb",
+      "street": "2050 Metaverse Way",
+      "precision": "approximate",
+      "postalCode": "60115"
+    },
+    "operator": "Meta",
+    "community": {
+      "notes": "200+ local grants and sponsorships since 2021; $1.2M+ direct funding to DeKalb County-area schools and nonprofits",
+      "status": "supported",
+      "sourceIndex": 0
+    },
+    "confidence": "confirmed",
+    "lastUpdated": "2026-08-03",
+    "facilityType": "data_center",
+    "announcedDate": "2020",
+    "investmentUsd": 1000000000,
+    "statusHistory": [
+      {
+        "date": "2023-11",
+        "note": "Meta announced DeKalb Data Center online",
+        "status": "operational",
+        "sourceIndex": 2
+      }
+    ],
+    "aiClassification": "likely"
+  },
+  {
+    "id": "microsoft-elk-grove-village-il",
+    "name": "Microsoft Elk Grove Data Center",
+    "notes": "37-acre site in the Elk Grove Technology Park near O'Hare; up to three buildings totaling ~400,000 sq ft. First building valued at $123M (land purchased for $52M in Jan 2020).",
+    "status": "under_construction",
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/microsoft-begins-construction-elk-grove-chicago/",
+        "kind": "press",
+        "label": "Microsoft begins data center construction in Elk Grove, Chicago",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://baxtel.com/data-center/microsoft-elk-grove",
+        "kind": "other",
+        "label": "Microsoft: Elk Grove Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03"
+      }
+    ],
+    "location": {
+      "lat": 42.005,
+      "lon": -87.96,
+      "city": "Elk Grove Village",
+      "state": "IL",
+      "county": "Cook",
+      "precision": "approximate"
+    },
+    "operator": "Microsoft",
+    "landAcres": 37,
+    "confidence": "confirmed",
+    "lastUpdated": "2026-08-03",
+    "facilityType": "data_center",
+    "announcedDate": "2021",
+    "investmentUsd": 123000000,
+    "statusHistory": [
+      {
+        "date": "2022",
+        "note": "Microsoft begins construction on first building",
+        "status": "under_construction",
+        "sourceIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "mlp-ventures-plymouth-township-conshohocken-pa",
+    "jobs": {
+      "permanent": 110,
+      "sourceIndex": 0
+    },
+    "name": "MLP Ventures Plymouth Township Data Center (former Cleveland-Cliffs Conshohocken plant)",
+    "notes": "Proposed ~2 million sq ft hyperscale data center converting the former Cleveland-Cliffs/Alan Wood steel mill at 900 Conshohocken Road in the Connaughtown section of Plymouth Township, Montgomery County. Roughly 66-acre heavy-industrial parcel; developer Brian O'Neill (MLP Ventures) cites ~$9B investment and ~110 permanent jobs (~55 per shift). Coordinates are an approximate geocode of the cited street address.",
+    "status": "proposed",
+    "sources": [
+      {
+        "url": "https://metrophiladelphia.com/stories/plymouth-township-data-center-proposal,145572",
+        "kind": "press",
+        "label": "Battle begins over proposed data center in Plymouth Township",
+        "publisher": "Metro Philadelphia",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://www.chestnuthilllocal.com/stories/developer-proposes-another-hyperscale-data-center-in-montco,40801",
+        "kind": "press",
+        "label": "Developer proposes another hyperscale data center in MontCo",
+        "publisher": "The Chestnut Hill Local",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://northpennnow.com/news/2025/oct/07/proposed-data-center-in-plymouth-township-faces-roadblocks/",
+        "kind": "press",
+        "label": "Proposed data center in Plymouth Township faces roadblocks",
+        "publisher": "North Penn Now",
+        "retrievedAt": "2026-08-02"
+      }
+    ],
+    "location": {
+      "lat": 40.086,
+      "lon": -75.312,
+      "city": "Conshohocken",
+      "state": "PA",
+      "county": "Montgomery",
+      "street": "900 Conshohocken Road",
+      "precision": "approximate"
+    },
+    "operator": "MLP Ventures",
+    "community": {
+      "notes": "Application drew heavy opposition from residents and business owners at the Plymouth Township Zoning Board hearing (June 2026).",
+      "status": "opposed",
+      "sourceIndex": 0
+    },
+    "landAcres": 66,
+    "confidence": "reported",
+    "lastUpdated": "2026-08-02",
+    "facilityType": "data_center",
+    "announcedDate": "2025",
+    "investmentUsd": 9000000000,
+    "statusHistory": [
+      {
+        "date": "2026-06",
+        "note": "Zoning application (special exception) before the Plymouth Township Zoning Board.",
+        "status": "proposed",
+        "sourceIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "nova-energy-cryptomine-frenchcreek-venango-county-pa",
+    "name": "Nova Energy Natural Gas-Powered Cryptomine (Frenchcreek Township)",
+    "notes": "DEP-permitted natural gas-powered cryptocurrency mine on a gas well pad in Frenchcreek Township, Venango County. Air-quality permit for three lean-burn gas engines received Aug 27, 2024 and issued Feb 14, 2025 (active until Aug 31, 2026). Coordinates are an approximate township-level point; the exact well pad is not publicly geolocated.",
+    "energy": {
+      "notes": "Three lean-burn natural gas-fired engines on a gas well pad drive on-site generators dedicated to cryptocurrency mining; DEP estimated ~28.56 tpy VOC, ~22.83 tpy NOx, ~6.45 tpy HAPs.",
+      "source": "on_site_gas"
+    },
+    "mining": {
+      "powerArrangement": "stranded_gas"
+    },
+    "status": "operational",
+    "sources": [
+      {
+        "url": "https://www.explorevenango.com/local/2025/03/12/crypto-mining-facility-tied-to-gas-well-quietly-sets-up-in-venango-county-604919/",
+        "kind": "press",
+        "label": "Crypto Mining Facility Tied to Gas Well Quietly Sets Up in Venango County",
+        "publisher": "exploreVenango",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/nova-energys-natural-gas-powered-cryptomine-in-pennsylvania-approved/",
+        "kind": "press",
+        "label": "Nova Energy's natural gas-powered cryptomine in Pennsylvania approved",
+        "publisher": "DataCenterDynamics",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "https://marcellusdrilling.com/2025/03/gas-fired-cryptocurrency-data-center-coming-to-venango-county-pa/",
+        "kind": "press",
+        "label": "Gas-Fired Cryptocurrency Data Center Coming to Venango County, PA",
+        "publisher": "Marcellus Drilling News",
+        "retrievedAt": "2026-08-02"
+      },
+      {
+        "url": "http://paenvironmentdaily.blogspot.com/2025/02/pa-oil-gas-industrial-facilities-permit_28.html",
+        "kind": "permit",
+        "label": "PA Oil & Gas Industrial Facilities: Permit Notices (Nova Energy data-mining air permit)",
+        "publisher": "PA Environment Digest",
+        "retrievedAt": "2026-08-02"
+      }
+    ],
+    "location": {
+      "lat": 41.44,
+      "lon": -79.82,
+      "state": "PA",
+      "county": "Venango",
+      "precision": "approximate"
+    },
+    "operator": "Nova Energy LLC",
+    "confidence": "reported",
+    "lastUpdated": "2026-08-02",
+    "facilityType": "crypto_mining",
+    "announcedDate": "2024-08",
+    "statusHistory": [
+      {
+        "date": "2025-03",
+        "note": "Facility reported set up and operating following DEP air-quality permit issuance.",
+        "status": "operational",
+        "sourceIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "outrigger-washington-daviess-county-in",
+    "name": "Outrigger Industrial Washington Data Center",
+    "notes": "Speculative build-to-suit data center proposed for the southeast corner of I-69 and US 50 near Washington in Daviess County on a ~120-acre site. Developer estimated a demand of 250-500 MW, $100-250M in buildings plus $500M-$1B in tenant equipment, ~$70M in tax revenue over 10 years, and 100-150 jobs. The Washington City Council voted unanimously in May 2026 to terminate dealings with the developer, effectively cancelling the proposal. Coordinates are an approximate geocode of the I-69/US 50 interchange east of Washington.",
+    "status": "cancelled",
+    "sources": [
+      {
+        "url": "https://www.ipm.org/news/2026-03-24/new-data-center-proposed-near-washington-ind",
+        "kind": "press",
+        "label": "New data center proposed near Washington, Ind.",
+        "publisher": "Indiana Public Media",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.ipm.org/news/2026-05-12/washington-city-council-cancels-data-center-development-will-explore-moratorium",
+        "kind": "press",
+        "label": "Washington city council cancels data center development, will explore moratorium",
+        "publisher": "Indiana Public Media",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.washtimesherald.com/news/local_news/washington-city-council-says-no-to-data-center/article_9e635735-d823-46b1-9c83-3c89b04934e5.html",
+        "kind": "press",
+        "label": "Washington City Council says no to data center",
+        "publisher": "Washington Times-Herald",
+        "retrievedAt": "2026-08-05"
+      },
+      {
+        "url": "https://www.vincennespbs.org/2026/03/24/data-center-proposal-presented-to-washington-council/",
+        "kind": "press",
+        "label": "Data center proposal presented to Washington council",
+        "publisher": "Vincennes PBS (WVUT)",
+        "retrievedAt": "2026-08-05"
+      }
+    ],
+    "location": {
+      "lat": 38.65,
+      "lon": -87.05,
+      "city": "Washington",
+      "state": "IN",
+      "county": "Daviess",
+      "precision": "approximate"
+    },
+    "operator": "Outrigger Industrial",
+    "community": {
+      "notes": "A local petition opposed the project on water/land grounds; the Washington City Council voted unanimously in May 2026 to cease all dealings with the developer and to explore a data-center moratorium.",
+      "status": "opposed",
+      "sourceIndex": 1
+    },
+    "landAcres": 120,
+    "confidence": "reported",
+    "lastUpdated": "2026-08-05",
+    "facilityType": "data_center",
+    "announcedDate": "2026-03",
+    "statusHistory": [
+      {
+        "date": "2026-03",
+        "note": "Outrigger Industrial presented preliminary plans for a build-to-suit data center to the Washington city council.",
+        "status": "proposed",
+        "sourceIndex": 0
+      },
+      {
+        "date": "2026-05",
+        "note": "Washington City Council voted unanimously to cease all business with the developer and explore a moratorium, ending the proposal.",
+        "status": "cancelled",
+        "sourceIndex": 1
+      }
+    ]
+  },
+  {
+    "id": "sangha-systems-hennepin-il",
+    "name": "Sangha Systems Hennepin (82 River North)",
+    "notes": "One of the Midwest's larger bitcoin mining sites, housed in a former boiler house at the Hennepin steel mill; 82 MW substation available.",
+    "energy": {
+      "notes": "82 MW substation at the former Hennepin (LTV) steel mill; 2–5 MW behind-the-meter solar array planned via an AEP OnSite Partners LOI (2021). Historical draw reported ~7 MW.",
+      "source": "grid"
+    },
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    },
+    "status": "operational",
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/82_River_North",
+        "kind": "other",
+        "label": "82 River North — Global Energy Monitor",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://baxtel.com/data-center/sangha-renewables-hennepin-il",
+        "kind": "other",
+        "label": "Sangha Renewables: Hennepin, IL Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://pantagraph.com/business/from-bitcoins-to-atms-illinois-is-positioning-itself-as-a-center-for-the-cryptocurrency-industry/article_3415fc2f-2e64-578e-b660-d07b9fa45269.html",
+        "kind": "press",
+        "label": "Illinois positioning itself as a center for the cryptocurrency industry",
+        "publisher": "The Pantagraph",
+        "retrievedAt": "2026-08-03"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/sangha-systems-signs-a-letter-of-intent-with-aep-onsite-partners-to-bring-the-first-behind-the-meter-solar-development-to-a-cryptocurrency-mining-campus-in-north-america-will-use-sunified-sensors-301305259.html",
+        "kind": "press",
+        "label": "Sangha Systems signs LOI with AEP OnSite Partners for behind-the-meter solar",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-03"
+      }
+    ],
+    "location": {
+      "lat": 41.2489,
+      "lon": -89.339,
+      "city": "Hennepin",
+      "state": "IL",
+      "county": "Putnam",
+      "precision": "approximate"
+    },
+    "operator": "Sangha Systems",
+    "capacityMw": {
+      "planned": 82
+    },
+    "confidence": "confirmed",
+    "lastUpdated": "2026-08-03",
+    "facilityType": "crypto_mining",
+    "announcedDate": "2019",
+    "statusHistory": [
+      {
+        "date": "2019-10",
+        "note": "Facility in operation at former steel mill boiler house",
+        "status": "operational",
+        "sourceIndex": 2
+      }
+    ]
+  },
+  {
+    "id": "stonebridge-pacific-columbia-county-wi",
+    "jobs": {
+      "permanent": 400,
+      "sourceIndex": 0
+    },
+    "name": "Stonebridge Pacific AI Data Center (Columbia County)",
+    "notes": "Proposed AI data center ~35 miles north of Madison in the Town of Pacific, Columbia County. At $10 billion it would have been among the largest data centers proposed in Wisconsin, with 400 permanent jobs and a planned 2027 opening. The proposal was dropped in 2026 after the developer declined a public review process. Coordinates are an approximate town-level centroid.",
+    "status": "cancelled",
+    "sources": [
+      {
+        "url": "https://wisconsinwatch.org/2026/08/wisconsin-10-billion-data-center-proposal-columbia-county-town-pacific-developer/",
+        "kind": "press",
+        "label": "A $10 billion data center proposal vanished after a local official told the developer the process would have to unfold in public",
+        "publisher": "Wisconsin Watch",
+        "retrievedAt": "2026-08-04"
+      },
+      {
+        "url": "https://urbanmilwaukee.com/2026/08/03/10-billion-data-center-proposal-in-central-wisconsin-dropped-to-avoid-public-process/",
+        "kind": "press",
+        "label": "$10 Billion Data Center Proposal in Central Wisconsin Dropped to Avoid Public Process",
+        "publisher": "Urban Milwaukee",
+        "retrievedAt": "2026-08-04"
+      }
+    ],
+    "location": {
+      "lat": 43.55,
+      "lon": -89.4,
+      "city": "Pacific",
+      "state": "WI",
+      "county": "Columbia",
+      "precision": "approximate"
+    },
+    "operator": "Stonebridge",
+    "confidence": "reported",
+    "lastUpdated": "2026-08-04",
+    "facilityType": "data_center",
+    "announcedDate": "2025-10",
+    "investmentUsd": 10000000000,
+    "statusHistory": [
+      {
+        "date": "2026-08",
+        "note": "Maryland-based developer Stonebridge stopped exploring the Town of Pacific site after the town chair required that any proposal be aired in a public meeting; no follow-up occurred.",
+        "status": "cancelled",
+        "sourceIndex": 0
+      }
+    ],
+    "aiClassification": "likely"
   }
 ]
