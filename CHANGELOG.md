@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0](https://github.com/ek33450505/compute-atlas/compare/v1.20.0...v1.21.0) (2026-08-05)
+
+
+### Features
+
+* **data:** crypto-mining wave — 22 second-tier facilities + American Bitcoin attribution ([#120](https://github.com/ek33450505/compute-atlas/issues/120)) ([e86b1b5](https://github.com/ek33450505/compute-atlas/commit/e86b1b506b1ca423dceffbb1020e85e3695af312))
+
 ## [1.20.0](https://github.com/ek33450505/compute-atlas/compare/v1.19.0...v1.20.0) (2026-08-05)
 
 
