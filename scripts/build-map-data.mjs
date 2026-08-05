@@ -855,6 +855,39 @@ async function computeSitingContext(facilities, powerCandidates) {
   return result;
 }
 
+/**
+ * Tally per-category facility counts for an ordinal environmental field
+ * (`waterStress` or `groundwaterDecline`) directly from the just-assembled
+ * siting-context result — never a hardcoded table, so it tracks the dataset
+ * as facilities are added/removed. Counts by the human-readable `label`
+ * (only labels that actually occur are included); `total` is the sum of the
+ * distribution (i.e. the number of facilities carrying that field). Entries
+ * are ordered most-severe-first using each label's numeric `cat` (WRI
+ * Aqueduct categories run low->high severity, with the "Arid and Low Water
+ * Use" special case at cat -1 sorting last, as intended).
+ */
+function computeDistribution(sitingContext, fieldName) {
+  const byLabel = new Map(); // label -> { count, cat }
+  for (const entry of Object.values(sitingContext)) {
+    const field = entry?.[fieldName];
+    if (!field || typeof field.label !== 'string') continue;
+    const existing = byLabel.get(field.label);
+    if (existing) {
+      existing.count++;
+    } else {
+      byLabel.set(field.label, { count: 1, cat: field.cat });
+    }
+  }
+  const sorted = [...byLabel.entries()].sort((a, b) => b[1].cat - a[1].cat);
+  const distribution = {};
+  let total = 0;
+  for (const [label, { count }] of sorted) {
+    distribution[label] = count;
+    total += count;
+  }
+  return { total, distribution };
+}
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
@@ -902,10 +935,23 @@ async function main() {
   mkdirSync(dirname(SITING_CONTEXT_OUT), { recursive: true });
   writeFileSync(SITING_CONTEXT_OUT, JSON.stringify(sitingContext, null, 2), 'utf8');
 
+  const waterStressDist = computeDistribution(sitingContext, 'waterStress');
+  const groundwaterDist = computeDistribution(sitingContext, 'groundwaterDecline');
+
   const manifest = {
     ...manifestBase,
-    waterStress: { attribution: ATTRIBUTIONS.waterStress, license: 'CC-BY-4.0' },
-    groundwaterDecline: { attribution: ATTRIBUTIONS.groundwaterDecline, license: 'CC-BY-4.0' },
+    waterStress: {
+      attribution: ATTRIBUTIONS.waterStress,
+      license: 'CC-BY-4.0',
+      total: waterStressDist.total,
+      distribution: waterStressDist.distribution,
+    },
+    groundwaterDecline: {
+      attribution: ATTRIBUTIONS.groundwaterDecline,
+      license: 'CC-BY-4.0',
+      total: groundwaterDist.total,
+      distribution: groundwaterDist.distribution,
+    },
     aquifers: { attribution: ATTRIBUTIONS.aquifers },
   };
   writeFileSync(MANIFEST_OUT, JSON.stringify(manifest, null, 2), 'utf8');
