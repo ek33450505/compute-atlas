@@ -54,7 +54,13 @@ gate. Still run `npm run typecheck && npm test` locally before opening a PR.
   water stress, groundwater decline, principal aquifers) are tinted,
   off-by-default, lazily-loaded layers grouped (Water · Power · Geology) behind
   the map's "Layers" control, each keyed by a color swatch. Ordinal overlays use
-  single-hue light→dark ramps so severity reads by luminance, not hue. Each
+  single-hue light→dark ramps so severity reads by luminance, not hue (ramps are
+  centralized in `lib/map-overlays.ts` so paint and legend never drift); when an
+  ordinal layer is active the control shows a legend with per-band facility
+  counts (built at build time into `map-layers.json`). Fill-only overlays are
+  hidden over satellite imagery, so their toggles are disabled in satellite mode.
+  The `/map` route is immersive full-bleed — `FooterGate` suppresses the global
+  footer there so the map fills exactly one viewport. Each
   facility page displays "Siting context" — straight-line proximity to nearest
   named surface water and ≥230 kV transmission line, plus the surrounding basin's
   water stress / groundwater trend (WRI Aqueduct 4.0) and underlying principal
