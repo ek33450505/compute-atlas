@@ -12098,7 +12098,7 @@
   {
     "id": "digihost-erie-county-ny",
     "name": "Digihost — Erie County (Buffalo)",
-    "operator": "Digihost",
+    "operator": "Digihost (Digi Power X)",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -25582,7 +25582,7 @@
   {
     "id": "marathon-digital-garden-city-tx",
     "name": "Marathon Digital Garden City Facility",
-    "operator": "Marathon Digital",
+    "operator": "MARA Holdings",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -48789,7 +48789,7 @@
   {
     "id": "core-scientific-auburn-al",
     "name": "Core Scientific Auburn Data Center (AUBix)",
-    "operator": "Core Scientific, Inc.",
+    "operator": "Core Scientific",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -48847,7 +48847,7 @@
   {
     "id": "core-scientific-calvert-city-ky",
     "name": "Core Scientific Calvert City Data Center (Calvert 1, 2 & 3)",
-    "operator": "Core Scientific, Inc.",
+    "operator": "Core Scientific",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -48915,7 +48915,7 @@
   {
     "id": "core-scientific-grand-forks-nd",
     "name": "Core Scientific Grand Forks Data Center (Grand Forks 1)",
-    "operator": "Core Scientific, Inc.",
+    "operator": "Core Scientific",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -48972,7 +48972,7 @@
   {
     "id": "core-scientific-denton-tx",
     "name": "Core Scientific Denton Data Center (Denton 1)",
-    "operator": "Core Scientific, Inc.",
+    "operator": "Core Scientific",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -49025,7 +49025,7 @@
   {
     "id": "core-scientific-austin-tx",
     "name": "Core Scientific Austin Data Center (Austin 1)",
-    "operator": "Core Scientific, Inc.",
+    "operator": "Core Scientific",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -49079,7 +49079,7 @@
   {
     "id": "mara-findlay-oh",
     "name": "MARA Findlay Data Center",
-    "operator": "MARA Holdings, Inc.",
+    "operator": "MARA Holdings",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -49519,7 +49519,7 @@
   {
     "id": "hut8-salt-creek-culberson-tx",
     "name": "Hut 8 Salt Creek Facility",
-    "operator": "Hut 8 Corp",
+    "operator": "Hut 8",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
