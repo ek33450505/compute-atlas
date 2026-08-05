@@ -21,12 +21,44 @@ export interface NearestTransmission {
 }
 
 /**
- * Pre-computed siting-context entry for one facility. Either field may be
+ * Baseline water-stress category for the surrounding hydrological basin.
+ * Source: WRI Aqueduct 4.0. Describes the basin, not this facility's
+ * measured water use.
+ */
+export interface WaterStress {
+  cat: number;
+  label: string;
+}
+
+/**
+ * Groundwater-level decline trend for the surrounding hydrological basin.
+ * Source: WRI Aqueduct 4.0. Same basin-not-facility caveat as WaterStress.
+ */
+export interface GroundwaterDecline {
+  cat: number;
+  label: string;
+}
+
+/**
+ * Principal aquifer system underlying the location, mapped at coarse
+ * (1:2,500,000) regional resolution. Source: USGS. Regional context, not
+ * site hydrogeology.
+ */
+export interface Aquifer {
+  name: string;
+  rock: string;
+}
+
+/**
+ * Pre-computed siting-context entry for one facility. Any field may be
  * absent even when the facility has an entry at all.
  */
 export interface SitingContext {
   nearestWater?: NearestWater;
   nearestTransmission?: NearestTransmission;
+  waterStress?: WaterStress;
+  groundwaterDecline?: GroundwaterDecline;
+  aquifer?: Aquifer;
 }
 
 /**
@@ -56,6 +88,22 @@ export function formatNearestTransmission(
       : `On a ${voltageKv} kV transmission line`;
   }
   return `≈ ${distanceMi.toFixed(1)} mi — ${voltageKv} kV line`;
+}
+
+/**
+ * Splits a risk label like "Extremely High (>80%)" into a prominent
+ * category word ("Extremely High") and a muted parenthetical detail
+ * (">80%"). Used by waterStress/groundwaterDecline rendering — the
+ * category carries the meaning (Ed is color-deficient; never rely on a
+ * severity tint alone). Labels without a parenthetical return no detail.
+ */
+export function splitRiskLabel(label: string): {
+  category: string;
+  detail?: string;
+} {
+  const match = label.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+  if (!match) return { category: label.trim() };
+  return { category: match[1].trim(), detail: match[2].trim() };
 }
 
 /**
