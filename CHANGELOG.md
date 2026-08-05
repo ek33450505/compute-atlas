@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.0](https://github.com/ek33450505/compute-atlas/compare/v1.22.0...v1.23.0) (2026-08-05)
+
+
+### Features
+
+* **opposition:** add defeated projects dimension with local-opposition cancellations ([#124](https://github.com/ek33450505/compute-atlas/issues/124)) ([0239a14](https://github.com/ek33450505/compute-atlas/commit/0239a14d80dd4a1a9ef0c2c26536229ba7fcdaa4))
+
 ## [1.22.0](https://github.com/ek33450505/compute-atlas/compare/v1.21.0...v1.22.0) (2026-08-05)
 
 
