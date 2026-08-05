@@ -5,6 +5,18 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.0](https://github.com/ek33450505/compute-atlas/compare/v1.24.0...v1.25.0) (2026-08-05)
+
+
+### Features
+
+* **map:** water & geology overlays, siting-context datums, and map-UX polish ([#133](https://github.com/ek33450505/compute-atlas/issues/133)) ([ca3fecf](https://github.com/ek33450505/compute-atlas/commit/ca3fecff54c3e3c75344043de2f6c323f8d012cd))
+
+
+### Bug Fixes
+
+* **a11y:** label table scroll region + add motion-reduce guards ([#135](https://github.com/ek33450505/compute-atlas/issues/135)) ([f14c405](https://github.com/ek33450505/compute-atlas/commit/f14c405b8e1adbc65074af71afd20921bfa20bcb))
+
 ## [1.24.0](https://github.com/ek33450505/compute-atlas/compare/v1.23.1...v1.24.0) (2026-08-05)
 
 
