@@ -14,17 +14,37 @@
  * live per facility — NHD has fine-grained streams/ponds essentially
  * everywhere, giving credible short distances.
  *
+ * Also builds two environmental context layers from live ArcGIS REST services
+ * (WRI Aqueduct 4.0 water risk basins + USGS Principal Aquifers) — no GDAL,
+ * no new deps, same paged-fetch/clip/simplify pattern as water/power/drought.
+ * Aqueduct is GLOBAL (68k+ basin polygons) so its fetch uses a server-side US
+ * envelope filter; both it and the aquifer layer feed per-facility fields in
+ * siting-context.json via point-in-polygon lookup against the unsimplified
+ * (pre-budget) US-clipped polygons.
+ *
  * BUILD-TIME ONLY: the large source downloads (full HIFLD transmission set,
- * drought monitor snapshot) and the per-facility NHD query responses are
- * never written to disk — only the small derived outputs below are committed:
+ * drought monitor snapshot, global Aqueduct basins, national aquifers) and
+ * the per-facility NHD query responses are never written to disk — only the
+ * small derived outputs below are committed:
  *
- *   public/data/water.geojson       (US-clipped 50m rivers + lakes overlay)
- *   public/data/power.geojson       (US-clipped >=230kV transmission overlay)
- *   public/data/drought.geojson     (simplified USDM snapshot overlay)
- *   public/data/map-layers.json     (attribution + asOf manifest)
- *   data/siting-context.json        (per-facility nearest-water/-transmission stats)
+ *   public/data/water.geojson               (US-clipped 50m rivers + lakes overlay)
+ *   public/data/power.geojson               (US-clipped >=230kV transmission overlay)
+ *   public/data/drought.geojson             (simplified USDM snapshot overlay)
+ *   public/data/water-stress.geojson        (WRI Aqueduct baseline water stress, US-clipped)
+ *   public/data/groundwater-decline.geojson (WRI Aqueduct groundwater table decline, US-clipped)
+ *   public/data/aquifers.geojson            (USGS Principal Aquifers, US-clipped)
+ *   public/data/map-layers.json             (attribution + asOf manifest)
+ *   data/siting-context.json                (per-facility nearest-water/-transmission +
+ *                                             waterStress/groundwaterDecline/aquifer stats)
  *
- * Usage: node scripts/build-map-data.mjs
+ * Usage: node scripts/build-map-data.mjs [--skip-nhd]
+ *   --skip-nhd  Skip the slow (~5min) live USGS NHD nearest-water pass and the
+ *               water/power/drought overlay rebuild. Reuses the EXISTING
+ *               data/siting-context.json's nearestWater/nearestTransmission
+ *               fields and existing public/data/map-layers.json water/power/
+ *               drought entries byte-for-byte, recomputing + merging in only
+ *               the Aqueduct/aquifer fields and overlays. Use this to refresh
+ *               environmental layers without re-running the full NHD pass.
  */
 
 import { writeFileSync, mkdirSync, readFileSync } from 'fs';
@@ -53,6 +73,23 @@ const SOURCES = {
 
 const HIFLD_TRANSMISSION_URL = 'https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/Electric_Power_Transmission_Lines/FeatureServer/0/query';
 const HIFLD_PAGE_SIZE = 2000;
+
+// WRI Aqueduct 4.0 — Baseline Water Stress + Groundwater Table Decline, one
+// shared HydroSHEDS PFAF6 basin-polygon layer (GLOBAL, 68,506 features), so
+// the fetch uses a server-side US-envelope spatial filter. maxRecordCount=750.
+const AQUEDUCT_URL = 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/aqueduct_water_risk/FeatureServer/1/query';
+const AQUEDUCT_PAGE_SIZE = 750;
+// HydroSHEDS PFAF6 basins carry heavy coastal/island fragmentation (measured:
+// avg ~13.5 disjoint MultiPolygon parts/feature, 90%+ of parts under ~12 km^2)
+// that Douglas-Peucker tolerance alone can't simplify away (every part still
+// needs its own minimum ~4-vertex ring) — dropTinyParts() trims those slivers
+// from the RENDERED overlay only, never the unsimplified PIP candidate index.
+const AQUEDUCT_MIN_PART_AREA_DEG2 = 0.06; // ~740 km^2 at the equator
+
+// USGS Principal Aquifers — national aquifer-system polygons (3,010 features,
+// public domain, 1:2,500,000 scale). maxRecordCount=2000.
+const AQUIFERS_URL = 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Aquifers_Feature_Layer_view/FeatureServer/0/query';
+const AQUIFERS_PAGE_SIZE = 2000;
 
 // USGS NHD (National Hydrography Dataset, public domain) — per-facility
 // nearest-water lookup. We use the SMALL-SCALE (generalized) layers and
@@ -86,12 +123,18 @@ const BUDGETS = {
   water: 1.5 * 1024 * 1024,
   power: 1.9 * 1024 * 1024, // stay comfortably under the ~2MB target
   drought: 1.5 * 1024 * 1024,
+  waterStress: 1.5 * 1024 * 1024,
+  groundwaterDecline: 1.5 * 1024 * 1024,
+  aquifers: 1.5 * 1024 * 1024,
 };
 
 const ATTRIBUTIONS = {
   water: 'Natural Earth',
   power: 'HIFLD (ORNL/LANL/INL/NGA HSIP Team)',
   drought: 'U.S. Drought Monitor (NDMC / USDA / NOAA)',
+  waterStress: 'WRI Aqueduct 4.0 (CC BY 4.0)',
+  groundwaterDecline: 'WRI Aqueduct 4.0 (CC BY 4.0)',
+  aquifers: 'USGS Principal Aquifers',
 };
 
 const NEAREST_CAP_MILES = 250;
@@ -100,6 +143,9 @@ const OUT_DIR = resolve(repoRoot, 'public', 'data');
 const WATER_OUT = resolve(OUT_DIR, 'water.geojson');
 const POWER_OUT = resolve(OUT_DIR, 'power.geojson');
 const DROUGHT_OUT = resolve(OUT_DIR, 'drought.geojson');
+const WATER_STRESS_OUT = resolve(OUT_DIR, 'water-stress.geojson');
+const GROUNDWATER_DECLINE_OUT = resolve(OUT_DIR, 'groundwater-decline.geojson');
+const AQUIFERS_OUT = resolve(OUT_DIR, 'aquifers.geojson');
 const MANIFEST_OUT = resolve(OUT_DIR, 'map-layers.json');
 const SITING_CONTEXT_OUT = resolve(repoRoot, 'data', 'siting-context.json');
 const FACILITIES_PATH = resolve(repoRoot, 'data', 'facilities.json');
@@ -122,11 +168,36 @@ async function fetchJSON(url, { label = url, retries = 1 } = {}) {
   throw new Error(`Failed to fetch ${label} after ${retries + 1} attempt(s): ${lastErr?.message}`);
 }
 
-async function fetchArcGISAll(baseUrl, whereClause, outFields, label) {
+/**
+ * Paged ArcGIS FeatureServer/query fetch.
+ *
+ * Back-compat form: fetchArcGISAll(baseUrl, whereClause, outFields, label)
+ * Options-object form: fetchArcGISAll(baseUrl, { where, outFields, label,
+ *   pageSize, geometryEnvelope }) — pageSize overrides HIFLD_PAGE_SIZE
+ *   (needed for Aqueduct's 750 maxRecordCount); geometryEnvelope is a plain
+ *   { xmin, ymin, xmax, ymax, spatialReference } object applied as a
+ *   server-side esriGeometryEnvelope spatial filter (needed to cut Aqueduct's
+ *   global 68,506 basins down to the US before paging).
+ */
+async function fetchArcGISAll(baseUrl, whereClauseOrOpts, outFieldsArg, labelArg) {
+  let where, outFields, label, pageSize, geometryEnvelope;
+  if (typeof whereClauseOrOpts === 'object' && whereClauseOrOpts !== null) {
+    ({ where, outFields, label, pageSize = HIFLD_PAGE_SIZE, geometryEnvelope = null } = whereClauseOrOpts);
+  } else {
+    where = whereClauseOrOpts;
+    outFields = outFieldsArg;
+    label = labelArg;
+    pageSize = HIFLD_PAGE_SIZE;
+    geometryEnvelope = null;
+  }
+
   let offset = 0;
   const allFeatures = [];
   for (;;) {
-    const url = `${baseUrl}?where=${encodeURIComponent(whereClause)}&outFields=${outFields}&resultRecordCount=${HIFLD_PAGE_SIZE}&resultOffset=${offset}&f=geojson`;
+    let url = `${baseUrl}?where=${encodeURIComponent(where)}&outFields=${outFields}&resultRecordCount=${pageSize}&resultOffset=${offset}&f=geojson`;
+    if (geometryEnvelope) {
+      url += `&geometry=${encodeURIComponent(JSON.stringify(geometryEnvelope))}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects`;
+    }
     const data = await fetchJSON(url, { label: `${label} offset=${offset}`, retries: 1 });
     const features = data.features || [];
     allFeatures.push(...features);
@@ -135,7 +206,7 @@ async function fetchArcGISAll(baseUrl, whereClause, outFields, label) {
     // f=geojson nests the paging flag under `properties`, not top-level.
     const exceededTransferLimit = data.exceededTransferLimit ?? data.properties?.exceededTransferLimit;
     if (!exceededTransferLimit) break;
-    offset += HIFLD_PAGE_SIZE;
+    offset += pageSize;
   }
   return allFeatures;
 }
@@ -250,6 +321,51 @@ function featureBBox(feature) {
 
 function bboxesIntersect(a, b) {
   return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
+
+/** Shoelace-formula ring area, in raw degree^2 units. A cheap, dependency-free
+ * relative-size measure — not a real-world area unit, and only meaningful as
+ * a same-CRS drop-tiny-parts filter (see dropTinyParts). */
+function ringAreaDeg2(ring) {
+  let area = 0;
+  for (let i = 0; i < ring.length - 1; i++) {
+    const [x1, y1] = ring[i];
+    const [x2, y2] = ring[i + 1];
+    area += x1 * y2 - x2 * y1;
+  }
+  return Math.abs(area / 2);
+}
+
+function polygonPartAreaDeg2(rings) {
+  if (!rings.length) return 0;
+  let area = ringAreaDeg2(rings[0]);
+  for (let h = 1; h < rings.length; h++) area -= ringAreaDeg2(rings[h]);
+  return Math.max(area, 0);
+}
+
+/**
+ * Drop MultiPolygon parts below minAreaDeg2 (Polygon/single-part features are
+ * untouched; a MultiPolygon feature is dropped entirely only if every part is
+ * negligible). Only ever applied to an overlay meant for rendering — never to
+ * an unsimplified candidate index used for per-facility point-in-polygon
+ * lookup, where every real part must stay queryable.
+ */
+function dropTinyParts(fc, minAreaDeg2) {
+  const out = [];
+  for (const f of fc.features) {
+    const g = f.geometry;
+    if (!g || g.type !== 'MultiPolygon') {
+      out.push(f);
+      continue;
+    }
+    const kept = g.coordinates.filter((rings) => polygonPartAreaDeg2(rings) >= minAreaDeg2);
+    if (kept.length === 0) continue; // every part was a negligible fragment — drop the feature
+    out.push({
+      ...f,
+      geometry: kept.length === 1 ? { type: 'Polygon', coordinates: kept[0] } : { type: 'MultiPolygon', coordinates: kept },
+    });
+  }
+  return { type: 'FeatureCollection', features: out };
 }
 
 /** Conservative bbox guaranteed to contain everything within capMiles of [lat,lon]. */
@@ -528,6 +644,164 @@ async function buildDrought() {
 }
 
 // ---------------------------------------------------------------------------
+// Water Stress + Groundwater Decline (WRI Aqueduct 4.0)
+// ---------------------------------------------------------------------------
+async function buildAqueduct() {
+  console.log('\n=== Water Stress + Groundwater Decline (WRI Aqueduct 4.0) ===');
+  const usEnvelope = {
+    xmin: US_BBOX[0],
+    ymin: US_BBOX[1],
+    xmax: US_BBOX[2],
+    ymax: US_BBOX[3],
+    spatialReference: { wkid: 4326 },
+  };
+  const rawFeatures = await fetchArcGISAll(AQUEDUCT_URL, {
+    where: '1=1',
+    outFields: 'bws_cat,bws_label,gtd_cat,gtd_label',
+    label: 'Aqueduct basins (US envelope)',
+    pageSize: AQUEDUCT_PAGE_SIZE,
+    geometryEnvelope: usEnvelope,
+  });
+  console.log(`  total Aqueduct basin features (US envelope): ${rawFeatures.length}`);
+
+  const usFeatures = clipCollection(rawFeatures, 'Aqueduct basins');
+
+  // Full-precision (unsimplified, US-clipped) candidates for per-facility
+  // point-in-polygon lookup — bbox-prefiltered before the exact PIP test.
+  const aqueductCandidates = usFeatures.map((f) => ({ bbox: featureBBox(f), feature: f }));
+
+  const waterStressFeatures = usFeatures
+    .map((f) => {
+      const cat = Number(f.properties?.bws_cat);
+      if (!Number.isFinite(cat)) return null;
+      return { ...f, properties: { bws_cat: cat } };
+    })
+    .filter(Boolean);
+  const waterStressFCRaw = dropTinyParts({ type: 'FeatureCollection', features: waterStressFeatures }, AQUEDUCT_MIN_PART_AREA_DEG2);
+  console.log(`  [water-stress overlay] dropped tiny parts: ${waterStressFeatures.length} -> ${waterStressFCRaw.features.length} features`);
+  // Basin polygons stay vertex-dense well past the default 0.5 deg ceiling
+  // (9k+ chunky basins), so raise maxTolerance for this coarse-zoom overlay.
+  const { fc: waterStressFCOut, tolerance: waterStressTolerance, size: waterStressSize } =
+    simplifyToBudget(waterStressFCRaw, BUDGETS.waterStress, 'water-stress overlay', 0.005, 5.0);
+  mkdirSync(OUT_DIR, { recursive: true });
+  writeFileSync(WATER_STRESS_OUT, JSON.stringify(waterStressFCOut), 'utf8');
+
+  const groundwaterFeatures = usFeatures
+    .map((f) => {
+      const cat = Number(f.properties?.gtd_cat);
+      if (!Number.isFinite(cat)) return null;
+      return { ...f, properties: { gtd_cat: cat } };
+    })
+    .filter(Boolean);
+  const groundwaterFCRaw = dropTinyParts({ type: 'FeatureCollection', features: groundwaterFeatures }, AQUEDUCT_MIN_PART_AREA_DEG2);
+  console.log(`  [groundwater-decline overlay] dropped tiny parts: ${groundwaterFeatures.length} -> ${groundwaterFCRaw.features.length} features`);
+  const { fc: groundwaterFCOut, tolerance: groundwaterTolerance, size: groundwaterSize } =
+    simplifyToBudget(groundwaterFCRaw, BUDGETS.groundwaterDecline, 'groundwater-decline overlay', 0.005, 5.0);
+  writeFileSync(GROUNDWATER_DECLINE_OUT, JSON.stringify(groundwaterFCOut), 'utf8');
+
+  return { waterStressTolerance, waterStressSize, groundwaterTolerance, groundwaterSize, aqueductCandidates };
+}
+
+// ---------------------------------------------------------------------------
+// USGS Principal Aquifers
+// ---------------------------------------------------------------------------
+async function buildAquifers() {
+  console.log('\n=== USGS Principal Aquifers ===');
+  const rawFeatures = await fetchArcGISAll(AQUIFERS_URL, {
+    where: '1=1',
+    outFields: 'AQ_NAME,ROCK_NAME,AQ_CODE',
+    label: 'USGS Principal Aquifers',
+    pageSize: AQUIFERS_PAGE_SIZE,
+  });
+  console.log(`  total aquifer features: ${rawFeatures.length}`);
+
+  const usFeatures = clipCollection(rawFeatures, 'aquifers');
+
+  // Full-precision candidates for per-facility point-in-polygon lookup.
+  const aquiferCandidates = usFeatures.map((f) => ({ bbox: featureBBox(f), feature: f }));
+
+  const overlayFeatures = usFeatures
+    .map((f) => {
+      const aqName = f.properties?.AQ_NAME;
+      if (!aqName) return null;
+      return { ...f, properties: { aqName } };
+    })
+    .filter(Boolean);
+  const overlayFC = { type: 'FeatureCollection', features: overlayFeatures };
+  const { fc: aquifersFCOut, tolerance: aquifersTolerance, size: aquifersSize } =
+    simplifyToBudget(overlayFC, BUDGETS.aquifers, 'aquifers overlay');
+  mkdirSync(OUT_DIR, { recursive: true });
+  writeFileSync(AQUIFERS_OUT, JSON.stringify(aquifersFCOut), 'utf8');
+
+  return { aquifersTolerance, aquifersSize, aquiferCandidates };
+}
+
+/**
+ * Per-facility environmental fields via bbox-prefiltered point-in-polygon
+ * lookup against the unsimplified, US-clipped Aqueduct + aquifer candidates.
+ * Honest omit: a field is left out entirely when the point falls outside
+ * every candidate polygon, or when the matched basin/label is a non-signal
+ * ("No Data" water stress, "Insignificant Trend" / -9999 groundwater decline)
+ * — never fabricated.
+ */
+function environmentalFieldsForPoint(lat, lon, aqueductCandidates, aquiferCandidates) {
+  const pt = [lon, lat];
+  const ptBBox = [lon, lat, lon, lat];
+  const fields = {};
+
+  for (const c of aqueductCandidates) {
+    if (fields.waterStress && fields.groundwaterDecline) break;
+    if (!bboxesIntersect(c.bbox, ptBBox)) continue;
+    if (!isPointInPolygonGeometry(pt, c.feature.geometry)) continue;
+    const props = c.feature.properties ?? {};
+
+    if (!fields.waterStress) {
+      const cat = Number(props.bws_cat);
+      const label = props.bws_label;
+      if (Number.isFinite(cat) && typeof label === 'string' && label !== 'No Data') {
+        fields.waterStress = { cat, label };
+      }
+    }
+    if (!fields.groundwaterDecline) {
+      const cat = Number(props.gtd_cat);
+      const label = props.gtd_label;
+      if (Number.isFinite(cat) && cat !== -9999 && typeof label === 'string' && label !== 'Insignificant Trend') {
+        fields.groundwaterDecline = { cat, label };
+      }
+    }
+  }
+
+  for (const c of aquiferCandidates) {
+    if (!bboxesIntersect(c.bbox, ptBBox)) continue;
+    if (!isPointInPolygonGeometry(pt, c.feature.geometry)) continue;
+    const props = c.feature.properties ?? {};
+    if (props.AQ_NAME) {
+      fields.aquifer = { name: props.AQ_NAME, rock: props.ROCK_NAME ?? null };
+      break;
+    }
+  }
+
+  return fields;
+}
+
+/** Compute waterStress/groundwaterDecline/aquifer fields for every facility. */
+function computeEnvironmentalContext(facilities, aqueductCandidates, aquiferCandidates) {
+  console.log('\n=== Siting context (environmental: water stress / groundwater decline / aquifers) ===');
+  const result = {};
+  let processed = 0;
+  for (const facility of facilities) {
+    const { lat, lon } = facility.location ?? {};
+    if (typeof lat !== 'number' || typeof lon !== 'number') continue;
+    const fields = environmentalFieldsForPoint(lat, lon, aqueductCandidates, aquiferCandidates);
+    if (Object.keys(fields).length > 0) result[facility.id] = fields;
+    processed++;
+    if (processed % 100 === 0) console.log(`  ... ${processed}/${facilities.length} facilities processed`);
+  }
+  console.log(`  computed environmental context for ${Object.keys(result).length}/${facilities.length} facilities`);
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Siting context (per-facility nearest water / transmission)
 // ---------------------------------------------------------------------------
 async function computeSitingContext(facilities, powerCandidates) {
@@ -585,28 +859,68 @@ async function computeSitingContext(facilities, powerCandidates) {
 // Main
 // ---------------------------------------------------------------------------
 async function main() {
+  const skipNHD = process.argv.slice(2).includes('--skip-nhd');
+
   const facilities = JSON.parse(readFileSync(FACILITIES_PATH, 'utf8'));
   console.log(`Loaded ${facilities.length} facilities from ${FACILITIES_PATH}`);
+  if (skipNHD) console.log('--skip-nhd: reusing existing siting-context.json + map-layers.json for water/power/drought');
 
-  const waterResult = await buildWater();
-  const powerResult = await buildPower();
-  const droughtResult = await buildDrought();
+  const aqueductResult = await buildAqueduct();
+  const aquifersResult = await buildAquifers();
+  const envContext = computeEnvironmentalContext(facilities, aqueductResult.aqueductCandidates, aquifersResult.aquiferCandidates);
 
-  const sitingContext = await computeSitingContext(facilities, powerResult.powerCandidates);
+  let sitingContext;
+  let manifestBase;
+  let waterResult = null;
+  let powerResult = null;
+  let droughtResult = null;
+
+  if (skipNHD) {
+    const existing = JSON.parse(readFileSync(SITING_CONTEXT_OUT, 'utf8'));
+    sitingContext = {};
+    for (const id of new Set([...Object.keys(existing), ...Object.keys(envContext)])) {
+      sitingContext[id] = { ...(existing[id] ?? {}), ...(envContext[id] ?? {}) };
+    }
+    manifestBase = JSON.parse(readFileSync(MANIFEST_OUT, 'utf8'));
+  } else {
+    waterResult = await buildWater();
+    powerResult = await buildPower();
+    droughtResult = await buildDrought();
+
+    const nhdContext = await computeSitingContext(facilities, powerResult.powerCandidates);
+    sitingContext = {};
+    for (const id of new Set([...Object.keys(nhdContext), ...Object.keys(envContext)])) {
+      sitingContext[id] = { ...(nhdContext[id] ?? {}), ...(envContext[id] ?? {}) };
+    }
+    manifestBase = {
+      water: { attribution: ATTRIBUTIONS.water },
+      power: { attribution: ATTRIBUTIONS.power },
+      drought: { attribution: ATTRIBUTIONS.drought, asOf: droughtResult.asOf },
+    };
+  }
+
   mkdirSync(dirname(SITING_CONTEXT_OUT), { recursive: true });
   writeFileSync(SITING_CONTEXT_OUT, JSON.stringify(sitingContext, null, 2), 'utf8');
 
   const manifest = {
-    water: { attribution: ATTRIBUTIONS.water },
-    power: { attribution: ATTRIBUTIONS.power },
-    drought: { attribution: ATTRIBUTIONS.drought, asOf: droughtResult.asOf },
+    ...manifestBase,
+    waterStress: { attribution: ATTRIBUTIONS.waterStress, license: 'CC-BY-4.0' },
+    groundwaterDecline: { attribution: ATTRIBUTIONS.groundwaterDecline, license: 'CC-BY-4.0' },
+    aquifers: { attribution: ATTRIBUTIONS.aquifers },
   };
   writeFileSync(MANIFEST_OUT, JSON.stringify(manifest, null, 2), 'utf8');
 
   console.log('\n--- Build Summary ---');
-  console.log(`water.geojson:   ${(waterResult.waterSize / 1024).toFixed(0)} KB (tolerance ${waterResult.waterTolerance})`);
-  console.log(`power.geojson:   ${(powerResult.powerSize / 1024).toFixed(0)} KB (tolerance ${powerResult.powerTolerance})`);
-  console.log(`drought.geojson: ${(droughtResult.droughtSize / 1024).toFixed(0)} KB (tolerance ${droughtResult.droughtTolerance}, asOf ${droughtResult.asOf})`);
+  if (!skipNHD) {
+    console.log(`water.geojson:   ${(waterResult.waterSize / 1024).toFixed(0)} KB (tolerance ${waterResult.waterTolerance})`);
+    console.log(`power.geojson:   ${(powerResult.powerSize / 1024).toFixed(0)} KB (tolerance ${powerResult.powerTolerance})`);
+    console.log(`drought.geojson: ${(droughtResult.droughtSize / 1024).toFixed(0)} KB (tolerance ${droughtResult.droughtTolerance}, asOf ${droughtResult.asOf})`);
+  } else {
+    console.log('water.geojson / power.geojson / drought.geojson: skipped (--skip-nhd, reused existing)');
+  }
+  console.log(`water-stress.geojson:        ${(aqueductResult.waterStressSize / 1024).toFixed(0)} KB (tolerance ${aqueductResult.waterStressTolerance})`);
+  console.log(`groundwater-decline.geojson: ${(aqueductResult.groundwaterSize / 1024).toFixed(0)} KB (tolerance ${aqueductResult.groundwaterTolerance})`);
+  console.log(`aquifers.geojson:            ${(aquifersResult.aquifersSize / 1024).toFixed(0)} KB (tolerance ${aquifersResult.aquifersTolerance})`);
   console.log(`map-layers.json: ${MANIFEST_OUT}`);
   console.log(`siting-context.json: ${SITING_CONTEXT_OUT} (${Object.keys(sitingContext).length} entries)`);
   console.log('\nDone.');

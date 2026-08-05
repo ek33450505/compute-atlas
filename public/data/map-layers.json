@@ -8,5 +8,16 @@
   "drought": {
     "attribution": "U.S. Drought Monitor (NDMC / USDA / NOAA)",
     "asOf": "2026-07-31"
+  },
+  "waterStress": {
+    "attribution": "WRI Aqueduct 4.0 (CC BY 4.0)",
+    "license": "CC-BY-4.0"
+  },
+  "groundwaterDecline": {
+    "attribution": "WRI Aqueduct 4.0 (CC BY 4.0)",
+    "license": "CC-BY-4.0"
+  },
+  "aquifers": {
+    "attribution": "USGS Principal Aquifers"
   }
 }
