@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0](https://github.com/ek33450505/compute-atlas/compare/v1.18.0...v1.19.0) (2026-08-05)
+
+
+### Features
+
+* **data:** power-generation wave — 11 compute-power facilities + operator cleanup ([#116](https://github.com/ek33450505/compute-atlas/issues/116)) ([8698d66](https://github.com/ek33450505/compute-atlas/commit/8698d66281869e689d62e2cbc3e0b412bc0c7092))
+
 ## [1.18.0](https://github.com/ek33450505/compute-atlas/compare/v1.17.0...v1.18.0) (2026-08-04)
 
 
