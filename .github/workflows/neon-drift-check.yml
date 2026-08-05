@@ -1,0 +1,38 @@
+# JSON↔Neon drift check on pull requests (non-blocking).
+#
+# This workflow runs on every PR to main and alerts if the published
+# data/facilities.json has drifted from the live Neon dataset. Drift is expected
+# (prod approvals write to Neon before the next db:export), so this check is
+# purely informational — it emits a warning annotation and does NOT fail CI.
+#
+# The intent is to flag stale-snapshot risk and remind the maintainer to
+# run `npm run db:export` and commit the result before each release.
+#
+# Requires: DATABASE_URL as a repo secret (Settings → Secrets and variables → Actions).
+# If not configured, the check gracefully skips.
+
+name: JSON↔Neon Drift Check
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift-check:
+    name: Check for JSON↔Neon drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Check JSON↔Neon drift
+        run: npx tsx scripts/check-neon-drift.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

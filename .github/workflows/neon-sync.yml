@@ -1,0 +1,91 @@
+# Scheduled Neon→JSON export (daily, auto-PR).
+#
+# This workflow runs daily (08:00 UTC) to export the live Neon dataset back to
+# data/facilities.json, keeping the published CC-BY snapshot in sync with prod
+# approvals. The workflow:
+#
+# 1. Runs `npm run db:export` to regenerate data/facilities.json (+ metadata)
+# 2. Checks if data/facilities.json has REAL content changes (ignores .meta.json)
+# 3. Opens a pull request ONLY if there's drift (no spam on identical runs)
+# 4. Branch: automated/neon-sync, base: main
+#
+# NOTE: The FIRST run after merge will produce a large one-time diff, as the
+# hand-maintained JSON is canonicalized into the sorted form db:export uses.
+# This is expected and accepted; subsequent runs will be incremental.
+#
+# Requires: DATABASE_URL as a repo secret (Settings → Secrets and variables → Actions).
+# If not configured, the workflow skips gracefully.
+#
+# CAVEAT: the auto-PR is opened with the default GITHUB_TOKEN, so it will NOT
+# trigger the CI / drift-check workflows on itself (GitHub loop-prevention). The
+# exported data is schema-valid by construction (scripts/export.ts validates the
+# full array against facilitiesSchema before writing), and a human reviews the PR
+# before merge. If CI on the auto-PR is ever wanted, swap GITHUB_TOKEN for a PAT.
+
+name: Neon→JSON Sync
+
+on:
+  schedule:
+    - cron: "0 8 * * *"  # Daily 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Never run two exports concurrently — avoids racing auto-PRs onto the same branch.
+concurrency:
+  group: neon-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Export Neon to JSON
+    runs-on: ubuntu-latest
+    # Map the secret to a job-level env var so it can be tested in step `if:`
+    # conditions — the `secrets` context is NOT available in `if:` expressions.
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - name: Run db:export
+        if: env.DATABASE_URL != ''
+        run: npx tsx scripts/export.ts
+
+      - name: Check for real changes (ignore .meta.json)
+        id: check-drift
+        run: |
+          if git diff --quiet -- data/facilities.json; then
+            echo "drift=false" >> $GITHUB_OUTPUT
+          else
+            echo "drift=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create PR if drift detected
+        if: steps.check-drift.outputs.drift == 'true'
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          branch: automated/neon-sync
+          base: main
+          title: "chore(data): sync facilities.json with Neon"
+          body: |
+            Automated sync of `data/facilities.json` from live Neon dataset.
+
+            This is a routine export triggered by the daily Neon→JSON sync workflow.
+            Facilities are created/edited on prod, and this PR brings the published
+            CC-BY snapshot back in sync.
+
+            **Checklist:**
+            - [ ] Review data changes for accuracy
+            - [ ] Merge when ready
+            - [ ] Post-merge, the next release can consume updated data
+          delete-branch: true
+          add-paths: |
+            data/facilities.json
+            data/facilities.meta.json
