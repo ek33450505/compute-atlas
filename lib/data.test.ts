@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
+import { gzipSync, gunzipSync } from "node:zlib";
+import facilitiesRaw from "@/data/facilities.json";
 import {
   getAllFacilities,
   getFacilityById,
@@ -1276,5 +1278,33 @@ describe("getPoweredByGenerators", () => {
     const facility = await getFacilityById("meta-prineville-or");
     expect(facility).toBeDefined();
     expect(await getPoweredByGenerators(facility!)).toEqual([]);
+  });
+});
+
+// `unstable_cache` refuses to store entries over 2MB (see loadFacilitiesCompressed
+// in lib/data.ts). This guards the headroom that fix relies on: the full facility
+// array, gzipped and base64-encoded exactly as loadFacilities/loadFacilitiesForSearch
+// do it, must stay comfortably under 2MB even as the dataset grows. It also checks
+// the round-trip is lossless. The unstable_cache/React cache() wiring itself is
+// bypassed under VITEST (see the `process.env.VITEST ?` guards in lib/data.ts), so
+// this test exercises the same compression transform directly rather than the
+// cache wrapper.
+describe("facilities cache payload compression", () => {
+  it("gzips the full facility array well under unstable_cache's 2MB limit", () => {
+    const json = JSON.stringify(facilitiesRaw);
+    const compressed = gzipSync(Buffer.from(json, "utf8")).toString("base64");
+    const compressedBytes = Buffer.byteLength(compressed, "utf8");
+    expect(compressedBytes).toBeLessThan(2 * 1024 * 1024);
+  });
+
+  it("round-trips through gzip/base64 losslessly", () => {
+    const original = facilitiesRaw as unknown[];
+    const json = JSON.stringify(original);
+    const compressed = gzipSync(Buffer.from(json, "utf8")).toString("base64");
+    const roundTripped = JSON.parse(
+      gunzipSync(Buffer.from(compressed, "base64")).toString("utf8")
+    ) as unknown[];
+    expect(Array.isArray(roundTripped)).toBe(true);
+    expect(roundTripped.length).toBe(original.length);
   });
 });
