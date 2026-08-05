@@ -45,16 +45,68 @@ function loadFromJson(): Facility[] {
 }
 
 /**
+ * Wraps a Neon-reading async function with a small retry-with-backoff, then
+ * falls back to the bundled JSON snapshot on final failure — instead of
+ * throwing. Neon's serverless-HTTP driver intermittently throws `fetch
+ * failed` under build-time prerender concurrency (hundreds of pages
+ * prerendering at once each issuing a DB read) even though the database is
+ * otherwise healthy; a short retry absorbs most of that transient burst, and
+ * the JSON fallback (already schema-validated, see `loadFromJson`) covers the
+ * rest so a Neon blip degrades a page's freshness instead of killing the
+ * build. Every fallback is logged (never silent) so a real Neon outage is
+ * still visible in build/runtime logs. Exported for direct unit testing
+ * (`lib/data.test.ts`) — the retry/fallback logic is intentionally a pure
+ * function of `fn`/`fallback` so a test can force a throw without needing to
+ * mock the module-scoped `getDb()` singleton.
+ */
+export async function withJsonFallback<T>(
+  fn: () => Promise<T>,
+  fallback: () => T,
+  maxAttempts = 3
+): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 150));
+      }
+    }
+  }
+  console.warn(
+    "[data] Neon read failed, falling back to bundled JSON snapshot:",
+    lastErr
+  );
+  return fallback();
+}
+
+/**
+ * Resilient full-table Neon read (retry + JSON fallback via
+ * `withJsonFallback`), shared by every reader below that needs the whole
+ * facility set from the DB branch (`loadFacilitiesUncached`,
+ * `fetchFacilitiesByStateUncached`, `loadPowerGenerationUncached`). Callers
+ * still gate on `hasDatabaseUrl()` themselves and call `loadFromJson()`
+ * directly (no retry) when it's false — this only wraps the DB branch.
+ */
+async function selectAllFacilitiesResilient(): Promise<Facility[]> {
+  return withJsonFallback(
+    async () => (await getDb().select().from(facilitiesTable)).map(rowToFacility),
+    loadFromJson
+  );
+}
+
+/**
  * Loads the full facility set from Neon when `DATABASE_URL` is configured,
  * falling back to the bundled JSON otherwise. DB-sourced docs are trusted
  * as-is (validated at write time via `docToRow`/the Facility schema) — no
  * re-parse on read. Both paths sort by `id` so the DB and fallback produce
- * byte-identical ordering.
+ * byte-identical ordering. The DB branch retries transient Neon read
+ * failures before degrading to the JSON snapshot (see `withJsonFallback`).
  */
 async function loadFacilitiesUncached(): Promise<Facility[]> {
-  const list = hasDatabaseUrl()
-    ? (await getDb().select().from(facilitiesTable)).map(rowToFacility)
-    : loadFromJson();
+  const list = hasDatabaseUrl() ? await selectAllFacilitiesResilient() : loadFromJson();
   return [...list].sort((a, b) => a.id.localeCompare(b.id));
 }
 
@@ -115,11 +167,20 @@ export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VI
 // mirrors the `process.env.VITEST` bypass so the test suite (no
 // DATABASE_URL) stays green.
 
-/** Uncached direct-row fetch backing `getFacilityByIdCached`. */
+/**
+ * Uncached direct-row fetch backing `getFacilityByIdCached`. The DB branch
+ * retries transient Neon read failures before degrading to the matching
+ * record in the JSON snapshot (see `withJsonFallback`).
+ */
 async function fetchFacilityByIdUncached(id: string): Promise<Facility | undefined> {
   if (hasDatabaseUrl()) {
-    const rows = await getDb().select().from(facilitiesTable).where(eq(facilitiesTable.id, id));
-    return rows[0] ? rowToFacility(rows[0]) : undefined;
+    return withJsonFallback(
+      async () => {
+        const rows = await getDb().select().from(facilitiesTable).where(eq(facilitiesTable.id, id));
+        return rows[0] ? rowToFacility(rows[0]) : undefined;
+      },
+      () => loadFromJson().find((f) => f.id === id)
+    );
   }
   return loadFromJson().find((f) => f.id === id);
 }
@@ -137,12 +198,14 @@ export const getFacilityByIdCached = (id: string): Promise<Facility | undefined>
         tags: [`facility:${id}`],
       })(id);
 
-/** Uncached direct-filtered fetch backing `getFacilitiesByStateCached`. */
+/**
+ * Uncached direct-filtered fetch backing `getFacilitiesByStateCached`. The DB
+ * branch retries transient Neon read failures before degrading to the JSON
+ * snapshot (see `withJsonFallback`/`selectAllFacilitiesResilient`).
+ */
 async function fetchFacilitiesByStateUncached(code: string): Promise<Facility[]> {
   const upper = code.toUpperCase();
-  const list = hasDatabaseUrl()
-    ? (await getDb().select().from(facilitiesTable)).map(rowToFacility)
-    : loadFromJson();
+  const list = hasDatabaseUrl() ? await selectAllFacilitiesResilient() : loadFromJson();
   return list
     .filter((f) => f.location.state === upper)
     .sort(
@@ -187,11 +250,14 @@ export const getStateSummaryCached = (code: string): Promise<StateSummary | null
       })(upper);
 };
 
-/** Uncached full power_generation-facility load backing `loadPowerGenerationCached`. */
+/**
+ * Uncached full power_generation-facility load backing
+ * `loadPowerGenerationCached`. The DB branch retries transient Neon read
+ * failures before degrading to the JSON snapshot (see
+ * `withJsonFallback`/`selectAllFacilitiesResilient`).
+ */
 async function loadPowerGenerationUncached(): Promise<PowerGenerationFacility[]> {
-  const list = hasDatabaseUrl()
-    ? (await getDb().select().from(facilitiesTable)).map(rowToFacility)
-    : loadFromJson();
+  const list = hasDatabaseUrl() ? await selectAllFacilitiesResilient() : loadFromJson();
   return list.filter(
     (f): f is PowerGenerationFacility => f.facilityType === "power_generation"
   );
