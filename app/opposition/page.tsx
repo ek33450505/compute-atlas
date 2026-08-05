@@ -5,9 +5,12 @@ import {
   getFacilitiesByCommunityStatus,
   getCommunityReceptionCounts,
   getNotableOppositionCases,
+  getDefeatedProjects,
 } from "@/lib/data";
 import { COMMUNITY_RECEPTION_META, type CommunityReception } from "@/lib/community";
 import { formatLocation } from "@/lib/format";
+import { itemListJsonLdString } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 
@@ -36,6 +39,7 @@ export const metadata: Metadata = {
 export default async function OppositionPage() {
   const counts = await getCommunityReceptionCounts();
   const notableCases = await getNotableOppositionCases();
+  const defeatedProjects = await getDefeatedProjects();
   const groups = await Promise.all(
     FRICTION_ORDER.map(async (status) => ({
       status,
@@ -46,12 +50,28 @@ export default async function OppositionPage() {
   const statesWithFriction = new Set(
     groups.flatMap((g) => g.facilities.map((f) => f.location.state))
   ).size;
+  const jsonLdFacilities = [
+    ...groups.flatMap((g) => g.facilities),
+    ...defeatedProjects,
+  ];
 
   return (
     <div
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: itemListJsonLdString(
+            jsonLdFacilities.map((f) => ({
+              name: f.name,
+              url: `${siteConfig.url}/facilities/${f.id}`,
+            }))
+          ),
+        }}
+      />
+
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Opposition" }]} />
 
       {/* ------------------------------------------------------------------ */}
@@ -181,7 +201,80 @@ export default async function OppositionPage() {
                 States
               </span>
             </div>
+            {defeatedProjects.length > 0 && (
+              <div className="flex flex-col items-center gap-1 text-center">
+                <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
+                  {defeatedProjects.length}
+                </span>
+                <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                  Withdrawn after opposition
+                </span>
+              </div>
+            )}
           </div>
+
+          {/* ------------------------------------------------------------------ */}
+          {/* § Withdrawn or defeated                                             */}
+          {/* ------------------------------------------------------------------ */}
+          {defeatedProjects.length > 0 && (
+            <section
+              aria-labelledby="defeated-heading"
+              className="space-y-6 border-t border-border pt-10"
+            >
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                § Withdrawn or defeated
+              </p>
+              <h2 id="defeated-heading" className="font-display text-2xl text-foreground">
+                Withdrawn or defeated
+              </h2>
+              <p className="max-w-2xl text-base text-muted-foreground">
+                {defeatedProjects.length} cancelled{" "}
+                {defeatedProjects.length === 1 ? "project" : "projects"} in Compute
+                Atlas&rsquo;s dataset faced documented local opposition before the
+                cancellation — a lawsuit, a moratorium, a referendum, or formal
+                objection on record. That is a correlation, not a causal claim:
+                Compute Atlas does not assert opposition stopped any of these
+                projects, since a cancellation can have economic or other causes
+                that go unstated publicly. Each entry below links to a
+                source-cited record. For background on why local pushback
+                happens, see{" "}
+                <Link
+                  href="/learn/why-do-communities-oppose-data-centers"
+                  className="text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                >
+                  why communities oppose data centers
+                </Link>
+                .
+              </p>
+              <ul className="divide-y divide-border">
+                {defeatedProjects.map((f) => (
+                  <li key={f.id}>
+                    <Link
+                      href={`/facilities/${f.id}`}
+                      className="flex min-h-11 flex-col gap-1 py-3 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                    >
+                      <span className="flex items-center justify-between gap-4">
+                        <span className="text-sm text-foreground truncate">
+                          {f.name}
+                        </span>
+                        <span className="shrink-0">
+                          <StatusBadge status={f.status} />
+                        </span>
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate">
+                        {f.operator} &middot; {formatLocation(f)}
+                      </span>
+                      {f.community?.notes && (
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {f.community.notes}
+                        </p>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* ------------------------------------------------------------------ */}
           {/* § By reception                                                      */}

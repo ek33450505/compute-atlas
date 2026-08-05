@@ -37,6 +37,7 @@ import {
   getCryptoMiningStats,
   getFacilitiesByCommunityStatus,
   getNotableOppositionCases,
+  getDefeatedProjects,
   getPoweredCampuses,
   getPoweredByGenerators,
   getRecentActivity,
@@ -1068,6 +1069,71 @@ describe("getNotableOppositionCases", () => {
 
     const limited = await getNotableOppositionCases(2);
     expect(limited.length).toBe(Math.min(2, expectedCount));
+  });
+});
+
+describe("getDefeatedProjects", () => {
+  it("returns exactly the cancelled + friction-status subset", async () => {
+    const frictionStatuses = ["contested", "opposed", "litigation"];
+    const expected = (await getAllFacilities()).filter(
+      (f) =>
+        f.status === "cancelled" &&
+        !!f.community?.status &&
+        frictionStatuses.includes(f.community.status)
+    );
+    const results = await getDefeatedProjects();
+    expect(results.length).toBe(expected.length);
+    expect(new Set(results.map((f) => f.id))).toEqual(
+      new Set(expected.map((f) => f.id))
+    );
+    for (const f of results) {
+      expect(f.status).toBe("cancelled");
+      expect(frictionStatuses).toContain(f.community?.status);
+    }
+  });
+
+  it("excludes a cancelled facility whose community.status is not a friction status", async () => {
+    const nonFrictionCancelled = (await getAllFacilities()).find(
+      (f) =>
+        f.status === "cancelled" &&
+        !!f.community?.status &&
+        !["contested", "opposed", "litigation"].includes(f.community.status)
+    );
+    // Sanity-check the fixture assumption: the seed dataset carries at least
+    // one cancelled facility with a non-friction community.status (e.g.
+    // "supported" or "mixed") to exercise this exclusion.
+    expect(nonFrictionCancelled).toBeDefined();
+
+    const results = await getDefeatedProjects();
+    expect(results.map((f) => f.id)).not.toContain(nonFrictionCancelled?.id);
+  });
+
+  it("excludes a non-cancelled facility even if it has a friction community.status", async () => {
+    const nonCancelledFriction = (await getAllFacilities()).find(
+      (f) =>
+        f.status !== "cancelled" &&
+        !!f.community?.status &&
+        ["contested", "opposed", "litigation"].includes(f.community.status)
+    );
+    expect(nonCancelledFriction).toBeDefined();
+
+    const results = await getDefeatedProjects();
+    expect(results.map((f) => f.id)).not.toContain(nonCancelledFriction?.id);
+  });
+
+  it("sorts by max capacity desc then name A→Z", async () => {
+    const results = await getDefeatedProjects();
+    expect(results.length).toBeGreaterThan(1);
+    for (let i = 1; i < results.length; i++) {
+      const prevMw = getFacilityMaxMw(results[i - 1]) ?? -1;
+      const curMw = getFacilityMaxMw(results[i]) ?? -1;
+      expect(prevMw).toBeGreaterThanOrEqual(curMw);
+      if (prevMw === curMw) {
+        expect(
+          results[i - 1].name.localeCompare(results[i].name)
+        ).toBeLessThanOrEqual(0);
+      }
+    }
   });
 });
 

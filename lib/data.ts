@@ -1108,6 +1108,29 @@ export async function getNotableOppositionCases(n = 6): Promise<Facility[]> {
     .slice(0, n);
 }
 
+/**
+ * Facilities that were CANCELLED after facing documented local opposition —
+ * top-level status "cancelled" AND a friction community.status
+ * (contested | opposed | litigation). This is the *outcome* dimension of the
+ * /opposition hub: projects that did not proceed and had sourced pushback on
+ * record. NOTE: this is a correlation (cancelled + opposed), NOT a causal
+ * claim that opposition stopped the project — a cancellation may have other
+ * causes. Excludes cancellations whose community.status is "supported"/"mixed"
+ * (not opposition-related). Sorted by max capacity desc then name A→Z.
+ */
+export async function getDefeatedProjects(): Promise<Facility[]> {
+  const facilities = await loadFacilities();
+  const frictionStatuses: CommunityReception[] = ["contested", "opposed", "litigation"];
+  return facilities
+    .filter(
+      (f) =>
+        f.status === "cancelled" &&
+        !!f.community?.status &&
+        frictionStatuses.includes(f.community.status)
+    )
+    .sort((a, b) => (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name));
+}
+
 // ============================================================
 // Per-metro helpers (used by /metros pages)
 // ============================================================
