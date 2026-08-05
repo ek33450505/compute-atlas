@@ -49706,7 +49706,7 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
-      "offtaker": "On-site AI/HPC data-center campus (Homer City Energy Campus)",
+      "offtaker": "Homer City Energy Campus",
       "poweredFacilityIds": [
         "homer-city-energy-campus-pa"
       ],
@@ -49867,7 +49867,7 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
-      "offtaker": "Crusoe Energy (on-site); compute tenant Oracle (OCI) serving OpenAI 'Stargate'",
+      "offtaker": "Oracle",
       "poweredFacilityIds": [
         "lancium-crusoe-abilene-tx"
       ],
@@ -50140,7 +50140,7 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "nuclear",
-      "offtaker": "Amazon Web Services (AWS)",
+      "offtaker": "Amazon (AWS)",
       "notes": "A 20-year, 1,200 MW PPA (of the ~2,400 MW two-unit plant) supports Amazon's adjacent 'Project Spectrum' data-center campus (~$5B, Amazon Data Services) advancing through Somervell County approvals. Project Spectrum is not yet a tracked Compute Atlas campus, so no poweredFacilityIds is set. Distinct from the separately-tracked 'Comanche Circle' (comanche-circle-sailfish-hood-county-tx), an unrelated project in the same corridor."
     },
     "sources": [
