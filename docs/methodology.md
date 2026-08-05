@@ -131,22 +131,32 @@ but volume never bypasses review.
 
 The optional map overlays and per-facility siting-context metrics are built from
 public, static sources via `scripts/build-map-data.mjs` (invoked as
-`npm run build:mapdata`). The script fetches several public datasets; three are
-simplified to GeoJSON and committed as static overlay assets in `public/data/`:
+`npm run build:mapdata`). The script fetches several public datasets; the
+overlays below are simplified to GeoJSON and committed as static assets in
+`public/data/` (each lazily loaded only when its layer is toggled on):
 
 - **Waterways** — Natural Earth generalized rivers/lakes geometry (public domain).
 - **Transmission lines** — HIFLD "Electric Power Transmission Lines" (public
   domain, U.S. Government Works).
 - **Drought** — U.S. Drought Monitor (NDMC / USDA / NOAA) point-in-time snapshot,
   with an "as of" date recorded in `public/data/map-layers.json`.
+- **Baseline water stress** and **groundwater decline** — WRI Aqueduct 4.0,
+  hydrological-basin polygons (licensed CC BY 4.0). Rendered with single-hue
+  light→dark ramps so severity reads by luminance, not hue.
+- **Principal aquifers** — USGS Principal Aquifers of the United States
+  (public domain), mapped at 1:2,500,000 — regional context, not site
+  hydrogeology.
 
 The script also pre-computes `data/siting-context.json`, which holds each
-facility's nearest named surface water (via USGS National Hydrography Dataset)
-and nearest ≥230 kV transmission line (via HIFLD). This siting context is shown
-as straight-line distances on the facility page and in the map popup. These
-distances denote **proximity only** — they are not stated water withdrawals or
-grid interconnections. All data is source-cited; no per-request geospatial API
-is used (cost: $0).
+facility's nearest named surface water (via USGS National Hydrography Dataset),
+nearest ≥230 kV transmission line (via HIFLD), the water stress / groundwater
+trend of its surrounding basin (WRI Aqueduct 4.0), and the underlying principal
+aquifer (USGS) — the latter three by point-in-polygon lookup. This siting
+context is shown on the facility page and in the map popup. Distances denote
+**proximity only** — not stated water withdrawals or grid interconnections; the
+basin and aquifer values are **regional context**, not the facility's measured
+water use. All data is source-cited; no per-request geospatial API is used
+(cost: $0).
 
 ## Zero fabrication
 

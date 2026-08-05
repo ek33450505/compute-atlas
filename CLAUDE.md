@@ -50,11 +50,16 @@ gate. Still run `npm run typecheck && npm test` locally before opening a PR.
   This is the single source of truth for a facility's shape; validate against it
   everywhere data enters the system.
 - **Map:** MapLibre GL (`components/map/*`), globe projection + vector/satellite
-  basemaps. Optional overlays (waterways, transmission lines, drought) are
-  tinted, off-by-default layers behind the map's "Layers" control. Each facility
-  page displays "Siting context" — straight-line proximity to nearest named
-  surface water and ≥230 kV transmission line. `data/facilities.json` is the
-  seed/export artifact, not the live source.
+  basemaps. Optional overlays (waterways, transmission lines, drought, baseline
+  water stress, groundwater decline, principal aquifers) are tinted,
+  off-by-default, lazily-loaded layers grouped (Water · Power · Geology) behind
+  the map's "Layers" control, each keyed by a color swatch. Ordinal overlays use
+  single-hue light→dark ramps so severity reads by luminance, not hue. Each
+  facility page displays "Siting context" — straight-line proximity to nearest
+  named surface water and ≥230 kV transmission line, plus the surrounding basin's
+  water stress / groundwater trend (WRI Aqueduct 4.0) and underlying principal
+  aquifer (USGS) — framed as regional context, not measured facility water use.
+  `data/facilities.json` is the seed/export artifact, not the live source.
 - **UI:** Tailwind v4, Base UI + shadcn primitives, a parchment/ink "atlas" design
   system in `app/globals.css :root`.
 - **SEO:** `lib/seo.ts` builds JSON-LD (`Dataset` on the homepage; `Place` +
