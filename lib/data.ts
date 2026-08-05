@@ -1,4 +1,6 @@
 import type { z } from "zod";
+import { gzipSync, gunzipSync } from "node:zlib";
+import { cache as reactCache } from "react";
 import { unstable_cache } from "next/cache";
 import {
   facilitiesSchema,
@@ -111,6 +113,43 @@ async function loadFacilitiesUncached(): Promise<Facility[]> {
 }
 
 /**
+ * `unstable_cache` refuses to store entries over 2MB. The full facility array
+ * now serializes to ~1.9MB of plain JSON, which pushes past that ceiling once
+ * wrapped in `unstable_cache`'s own storage envelope (~2.05MB) — it throws
+ * `Failed to set Next.js data cache ... items over 2MB can not be cached` as
+ * an unhandledRejection and silently disables caching for the entry. Since
+ * `loadFacilitiesForSearch` runs in the root layout on every route, that
+ * error fired page-to-page.
+ *
+ * Fix: cache a gzipped base64 blob (~400KB, years of headroom) instead of the
+ * raw array, and inflate on read. `reactCache` memoizes the inflate per
+ * request, so a page calling the loader multiple times only decompresses
+ * once. `loadFacilitiesUncached` already sorts deterministically and has
+ * `withJsonFallback`, so gzip output stays deterministic and the cache
+ * remains outage-resilient (serves the last good compressed blob if Neon is
+ * down). Shared by both `loadFacilities` and `loadFacilitiesForSearch` below
+ * so the compression logic lives in exactly one place.
+ */
+function loadFacilitiesCompressed(
+  keyParts: string[],
+  opts: { tags: string[]; revalidate: number }
+): () => Promise<Facility[]> {
+  const loadCompressedBlob = unstable_cache(
+    async () => {
+      const json = JSON.stringify(await loadFacilitiesUncached());
+      return gzipSync(Buffer.from(json, "utf8")).toString("base64");
+    },
+    keyParts,
+    opts
+  );
+  return reactCache(async () => {
+    const blob = await loadCompressedBlob();
+    const json = gunzipSync(Buffer.from(blob, "base64")).toString("utf8");
+    return JSON.parse(json) as Facility[];
+  });
+}
+
+/**
  * Cached, deterministically-ordered facility loader tagged `"facilities"`,
  * refreshed at most hourly. This is the **aggregate-only** reader now — it
  * backs the ~15 aggregate pages (home, map, table, stats, explore lenses,
@@ -128,11 +167,13 @@ async function loadFacilitiesUncached(): Promise<Facility[]> {
  * `unstable_cache` requires the Next.js request-scoped cache context, which
  * is absent under vitest — detect that environment and degrade to the
  * uncached loader directly so the 536-test suite (which runs with no
- * DATABASE_URL, exercising the JSON fallback) stays green.
+ * DATABASE_URL, exercising the JSON fallback) stays green. The underlying
+ * payload is stored gzip-compressed (see `loadFacilitiesCompressed` above)
+ * to stay well under `unstable_cache`'s 2MB entry limit.
  */
 export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
   ? loadFacilitiesUncached
-  : unstable_cache(loadFacilitiesUncached, ["facilities"], {
+  : loadFacilitiesCompressed(["facilities"], {
       tags: ["facilities"],
       revalidate: 3600,
     });
@@ -144,11 +185,12 @@ export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
  * does NOT pin every page to a 1h cycle. Aggregate pages read loadFacilities
  * (1h) directly and float above this floor; detail/state pages read scoped
  * tag-only caches and floor here at 24h. Same "facilities" tag (inert — nothing
- * calls revalidateTag("facilities") anymore).
+ * calls revalidateTag("facilities") anymore). Gzip-compressed for the same
+ * 2MB-ceiling reason as `loadFacilities` above.
  */
 export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VITEST
   ? loadFacilitiesUncached
-  : unstable_cache(loadFacilitiesUncached, ["facilities-search"], {
+  : loadFacilitiesCompressed(["facilities-search"], {
       tags: ["facilities"],
       revalidate: 86400,
     });
