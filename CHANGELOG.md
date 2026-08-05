@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.0](https://github.com/ek33450505/compute-atlas/compare/v1.21.0...v1.22.0) (2026-08-05)
+
+
+### Features
+
+* **data:** crypto-mining geographic expansion — 35 new facilities ([#122](https://github.com/ek33450505/compute-atlas/issues/122)) ([b54a1a0](https://github.com/ek33450505/compute-atlas/commit/b54a1a0e452ca3da2e17743ce3dc1c71b237e75e))
+
 ## [1.21.0](https://github.com/ek33450505/compute-atlas/compare/v1.20.0...v1.21.0) (2026-08-05)
 
 
