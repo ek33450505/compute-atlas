@@ -20,21 +20,22 @@ import { readFileSync } from "node:fs";
 import { facilitiesTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { rowToFacility } from "../lib/db/serialize";
-import { facilitySchema } from "../lib/schema";
+import { facilitySchema, type Facility } from "../lib/schema";
 
-function canon(x: any): any {
+function canon(x: unknown): unknown {
   if (Array.isArray(x)) return x.map(canon);
   if (x && typeof x === "object") {
-    return Object.keys(x)
+    const obj = x as Record<string, unknown>;
+    return Object.keys(obj)
       .sort()
-      .reduce((o: any, k) => ((o[k] = canon(x[k])), o), {});
+      .reduce((o: Record<string, unknown>, k) => ((o[k] = canon(obj[k])), o), {});
   }
   return x;
 }
 
-const canonStr = (x: any) => JSON.stringify(canon(x));
+const canonStr = (x: unknown) => JSON.stringify(canon(x));
 
-function changedKeys(a: any, b: any): string[] {
+function changedKeys(a: Record<string, unknown>, b: Record<string, unknown>): string[] {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
   const diff: string[] = [];
   for (const k of keys) if (canonStr(a[k]) !== canonStr(b[k])) diff.push(k);
@@ -51,7 +52,7 @@ async function main() {
   try {
     const json = JSON.parse(
       readFileSync("data/facilities.json", "utf8")
-    ) as any[];
+    ) as Facility[];
 
     // Parse each JSON record through facilitySchema so schema DEFAULTS are
     // materialized the same way Neon materialized them at write time.
@@ -61,7 +62,7 @@ async function main() {
 
     const db = getDb();
     const rows = await db.select().from(facilitiesTable);
-    const neon = rows.map(rowToFacility) as any[];
+    const neon = rows.map(rowToFacility);
     const neonById = new Map(neon.map((f) => [f.id, f]));
 
     const missing = neon.filter((f) => !jsonById.has(f.id));
@@ -71,7 +72,13 @@ async function main() {
     for (const f of neon) {
       const j = jsonById.get(f.id);
       if (j && canonStr(j) !== canonStr(f)) {
-        changed.push({ id: f.id, keys: changedKeys(j, f) });
+        changed.push({
+          id: f.id,
+          keys: changedKeys(
+            j as unknown as Record<string, unknown>,
+            f as unknown as Record<string, unknown>,
+          ),
+        });
       }
     }
 
@@ -84,9 +91,9 @@ async function main() {
 
       if (missing.length > 0) {
         console.log(`\nMISSING (in Neon, not JSON): ${missing.length}`);
-        for (const f of missing as any[]) {
+        for (const f of missing) {
           console.log(
-            `   + ${f.id}  [${f.facilityType}/${f.location?.state}/${f.status}]`
+            `   + ${f.id}  [${f.facilityType}/${f.location.state}/${f.status}]`
           );
         }
       }
