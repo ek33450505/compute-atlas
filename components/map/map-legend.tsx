@@ -26,6 +26,11 @@ export function MapLegend() {
     <div
       role="region"
       aria-label="Key to symbols — facility status and type"
+      // z-10: below the right-side Tools column (z-30, facility-map.tsx) so an
+      // expanded Tools panel can overlap this on short viewports without the
+      // legend punching through it. Matches the bottom-center coordinate
+      // readout's z-10 — the two never overlap spatially, so their relative
+      // order doesn't matter, only that both stay under the Tools column.
       className="pointer-events-auto absolute bottom-8 left-2 z-10 select-none text-foreground"
     >
       <div className="rounded-sm border border-border bg-popover p-[3px]">

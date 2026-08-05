@@ -13,7 +13,7 @@ import Map, {
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { circle } from "@turf/circle";
-import { Radius, SlidersHorizontal } from "lucide-react";
+import { Crosshair, Radius, SlidersHorizontal } from "lucide-react";
 import type { FeatureCollection, Polygon } from "geojson";
 
 import {
@@ -35,6 +35,15 @@ import { LocationSearch } from "@/components/map/location-search";
 import { ViewToggle3D } from "@/components/map/view-toggle-3d";
 import { BasemapToggle } from "@/components/map/basemap-toggle";
 import { MapLayerControl } from "@/components/map/map-layer-control";
+import {
+  AQUIFER_FILL_COLOR,
+  AQUIFER_OUTLINE_COLOR,
+  DROUGHT_RAMP,
+  GROUNDWATER_RAMP,
+  TRANSMISSION_COLOR,
+  WATERWAYS_COLOR,
+  WATER_STRESS_RAMP,
+} from "@/lib/map-overlays";
 import type { Facility } from "@/lib/schema";
 import type { GeocodeResult } from "@/lib/geocode";
 
@@ -86,11 +95,31 @@ export function FacilityMap({
   const [cursor, setCursor] = useState<{ lat: number; lon: number } | null>(
     null
   );
-  // Right-side control stack (compass/3D/basemap/layers/radius) is collapsed
-  // behind a single "Tools" disclosure toggle, default false, so the map
-  // canvas stays maximized until the visitor asks for the extra controls.
-  // NavigationControl (zoom +/-, top-right) is unaffected — always visible.
-  const [showTools, setShowTools] = useState<boolean>(false);
+  // Map-center coordinates, kept in sync on every move (mouse drag AND
+  // keyboard pan/zoom, since MapLibre's built-in keyboard handling fires the
+  // same onMoveEnd) — the keyboard-accessible counterpart to the hover-only
+  // `cursor` readout below, surfaced via the "lock coordinates" toggle.
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lon: number }>({
+    lat: INITIAL_VIEW_STATE.latitude,
+    lon: INITIAL_VIEW_STATE.longitude,
+  });
+  // "Lock coordinates" toggle: when on, a focusable/screen-reader-visible
+  // readout of the current map center is shown — the keyboard/SR-accessible
+  // path onto the coordinate readout, since the existing bottom-center
+  // hover readout is aria-hidden and mouse-only (unaffected by this).
+  const [coordsLocked, setCoordsLocked] = useState<boolean>(false);
+  // Right-side control stack (compass/3D/basemap/layers/radius) is behind a
+  // "Tools" disclosure toggle. Defaults OPEN on desktop so visitors discover
+  // the controls without hunting for the toggle, but collapsed on small
+  // viewports where screen space is scarcer. Lazy initializer (same pattern
+  // as `reducedMotion` below) is safe here: this component only renders
+  // client-side via the ssr:false dynamic wrapper, so window is always
+  // defined at init — no hydration mismatch, and no setState-in-effect
+  // cascading render. NavigationControl (zoom +/-, top-right) is unaffected —
+  // always visible regardless of this toggle.
+  const [showTools, setShowTools] = useState<boolean>(
+    () => !window.matchMedia("(max-width: 768px)").matches
+  );
   // Optional overlay layers (Layers control) — off by default, lazy-loaded:
   // each corresponding <Source> only mounts (and fetches its GeoJSON) once
   // its flag flips true, so the 1.9 MB power.geojson never loads unrequested.
@@ -148,6 +177,7 @@ export function FacilityMap({
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
+
 
   const handleSelectFacility = useCallback(
     (facility: Facility) => {
@@ -386,6 +416,7 @@ export function FacilityMap({
           onMoveEnd={(e) => {
             setBearing(e.viewState.bearing);
             setIs3D(e.viewState.pitch > 5);
+            setMapCenter({ lat: e.viewState.latitude, lon: e.viewState.longitude });
           }}
           onMouseMove={(e) =>
             setCursor({ lat: e.lngLat.lat, lon: e.lngLat.lng })
@@ -466,16 +497,16 @@ export function FacilityMap({
                     "match",
                     ["get", "dm"],
                     0,
-                    "#EBD9B0",
+                    DROUGHT_RAMP[0],
                     1,
-                    "#E3C489",
+                    DROUGHT_RAMP[1],
                     2,
-                    "#D69C5A",
+                    DROUGHT_RAMP[2],
                     3,
-                    "#B5702F",
+                    DROUGHT_RAMP[3],
                     4,
-                    "#8F4108",
-                    "#EBD9B0",
+                    DROUGHT_RAMP[4],
+                    DROUGHT_RAMP[0],
                   ],
                   "fill-opacity": 0.35,
                 }}
@@ -500,7 +531,7 @@ export function FacilityMap({
                 id="water-lake-outline-layer"
                 type="line"
                 filter={["==", ["get", "waterKind"], "lake"]}
-                paint={{ "line-color": "#5E7D8A", "line-width": 0.5 }}
+                paint={{ "line-color": WATERWAYS_COLOR, "line-width": 0.5 }}
               />
               <Layer
                 id="water-river-layer"
@@ -508,7 +539,7 @@ export function FacilityMap({
                 filter={["==", ["get", "waterKind"], "river"]}
                 layout={{ "line-join": "round" }}
                 paint={{
-                  "line-color": "#5E7D8A",
+                  "line-color": WATERWAYS_COLOR,
                   "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.6, 8, 1.6],
                   "line-opacity": 0.65,
                 }}
@@ -526,7 +557,7 @@ export function FacilityMap({
                 type="line"
                 layout={{ "line-join": "round" }}
                 paint={{
-                  "line-color": "#8F4108",
+                  "line-color": TRANSMISSION_COLOR,
                   "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.5, 8, 1.4],
                   "line-opacity": 0.55,
                 }}
@@ -550,16 +581,16 @@ export function FacilityMap({
                     "match",
                     ["get", "bws_cat"],
                     0,
-                    "#DCEAF2",
+                    WATER_STRESS_RAMP[0],
                     1,
-                    "#AFCBDC",
+                    WATER_STRESS_RAMP[1],
                     2,
-                    "#7CA9C0",
+                    WATER_STRESS_RAMP[2],
                     3,
-                    "#4A80A0",
+                    WATER_STRESS_RAMP[3],
                     4,
-                    "#1E4E6B",
-                    "#DCEAF2",
+                    WATER_STRESS_RAMP[4],
+                    WATER_STRESS_RAMP[0],
                   ],
                   "fill-opacity": 0.4,
                 }}
@@ -587,16 +618,16 @@ export function FacilityMap({
                     "match",
                     ["get", "gtd_cat"],
                     0,
-                    "#EDE3F0",
+                    GROUNDWATER_RAMP[0],
                     1,
-                    "#CDB3DA",
+                    GROUNDWATER_RAMP[1],
                     2,
-                    "#A87FC0",
+                    GROUNDWATER_RAMP[2],
                     3,
-                    "#7D4F9E",
+                    GROUNDWATER_RAMP[3],
                     4,
-                    "#4A2A66",
-                    "#EDE3F0",
+                    GROUNDWATER_RAMP[4],
+                    GROUNDWATER_RAMP[0],
                   ],
                   "fill-opacity": 0.4,
                 }}
@@ -615,12 +646,16 @@ export function FacilityMap({
                 id="aquifers-fill-layer"
                 type="fill"
                 layout={{ visibility: isSatellite ? "none" : "visible" }}
-                paint={{ "fill-color": "#C9B79C", "fill-opacity": 0.18 }}
+                paint={{ "fill-color": AQUIFER_FILL_COLOR, "fill-opacity": 0.18 }}
               />
               <Layer
                 id="aquifers-outline-layer"
                 type="line"
-                paint={{ "line-color": "#8A7A5C", "line-width": 0.6, "line-opacity": 0.6 }}
+                paint={{
+                  "line-color": AQUIFER_OUTLINE_COLOR,
+                  "line-width": 0.6,
+                  "line-opacity": 0.6,
+                }}
               />
             </Source>
           )}
@@ -715,7 +750,7 @@ export function FacilityMap({
          * Not a MapLibre control — a plain positioned element so it doesn't fight
          * MapLibre's ctrl-group z-index stacking.
          */}
-        <div className="absolute top-20 right-2 z-20 flex flex-col items-end gap-2">
+        <div className="absolute top-20 right-2 z-30 flex flex-col items-end gap-2">
           {/* Single disclosure toggle for the compass/3D/basemap/layers/radius
               stack below — collapsed by default to maximize the visible map.
               NavigationControl (zoom +/-, top-2) is separate and always shown.
@@ -754,7 +789,7 @@ export function FacilityMap({
           {showTools && (
             <div
               id={TOOLS_PANEL_ID}
-              className="flex flex-col items-end gap-2 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+              className="flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
             >
               <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
               <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
@@ -803,6 +838,39 @@ export function FacilityMap({
                 </p>
               )}
 
+              {/* Keyboard/SR-accessible counterpart to the bottom-center
+                  hover-only coordinate readout (which is aria-hidden and
+                  mouse-only — unaffected by this). Toggling this on shows a
+                  focusable, non-hidden live readout of the current map
+                  center, which updates on keyboard pan/zoom same as mouse
+                  drag (both fire onMoveEnd). */}
+              <button
+                type="button"
+                onClick={() => setCoordsLocked((s) => !s)}
+                aria-pressed={coordsLocked}
+                aria-label={
+                  coordsLocked ? "Hide map coordinates readout" : "Show map coordinates readout"
+                }
+                title="Lock coordinates"
+                className={[
+                  "flex h-11 w-11 items-center justify-center",
+                  "rounded-sm bg-popover border border-border",
+                  "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+                  "cursor-pointer transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  coordsLocked ? "ring-1 ring-primary/50" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <Crosshair
+                  aria-hidden="true"
+                  className={["size-4", coordsLocked ? "text-primary" : "text-foreground"].join(
+                    " "
+                  )}
+                />
+              </button>
+
               {/* Layers control is last in the stack — its own root
                   right-aligns itself independently (see map-layer-control.tsx),
                   so its position here doesn't depend on being narrowest. */}
@@ -819,6 +887,7 @@ export function FacilityMap({
                 onToggleGroundwater={() => setShowGroundwater((s) => !s)}
                 showAquifers={showAquifers}
                 onToggleAquifers={() => setShowAquifers((s) => !s)}
+                isSatellite={isSatellite}
               />
             </div>
           )}
@@ -831,12 +900,27 @@ export function FacilityMap({
             the "atlas being surveyed" conceit. Hover-only instrument — not
             meaningful to keyboard/SR users (they can't hover); the sr-only
             guidance above and the /table alternative cover them instead. */}
-        {cursor && (
+        {cursor && !coordsLocked && (
           <p
             aria-hidden="true"
             className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-10 rounded-sm px-2 py-0.5 font-mono text-[10px] leading-tight tabular-nums text-muted-foreground bg-background/85 backdrop-blur-sm"
           >
             {formatLatLon(cursor.lat, cursor.lon)}
+          </p>
+        )}
+
+        {/* Keyboard/SR-visible coordinate readout — shown instead of the
+            hover-only one above while "lock coordinates" (Crosshair toggle,
+            Tools column) is on. Not aria-hidden, so it's announced to screen
+            readers as the map center changes; role="status" + aria-live
+            keeps that announcement polite rather than interrupting. */}
+        {coordsLocked && (
+          <p
+            role="status"
+            aria-live="polite"
+            className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-10 rounded-sm px-2 py-0.5 font-mono text-[10px] leading-tight tabular-nums text-foreground bg-background/95 border border-border backdrop-blur-sm"
+          >
+            {formatLatLon(cursor?.lat ?? mapCenter.lat, cursor?.lon ?? mapCenter.lon)}
           </p>
         )}
 

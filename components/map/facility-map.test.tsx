@@ -492,37 +492,53 @@ describe("FacilityMap", () => {
       expect(screen.getByTestId("location-search")).toBeInTheDocument();
     });
 
-    it("keeps the compass, 3D, and basemap controls collapsed behind a Tools toggle by default", () => {
+    it("defaults the Tools column open on desktop (matchMedia reports no small-viewport match)", () => {
       render(<FacilityMap facilities={[]} />);
-      // Decluttered default: the instrument controls are hidden until the
-      // "Show map tools" disclosure is opened, so the map canvas stays clear.
+      // beforeEach mocks matchMedia to report no match for every query,
+      // simulating a desktop viewport — the Tools column should default
+      // open so desktop visitors discover the controls without hunting
+      // for the toggle.
+      expect(screen.getByTestId("compass-rose")).toBeInTheDocument();
+      expect(screen.getByTestId("view-toggle-3d")).toBeInTheDocument();
+      expect(screen.getByTestId("basemap-toggle")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /hide map tools/i })
+      ).toBeInTheDocument();
+    });
+
+    it("collapses the Tools column on mount when matchMedia reports a small viewport", () => {
+      Object.defineProperty(window, "matchMedia", {
+        writable: true,
+        configurable: true,
+        value: (query: string) => ({
+          matches: query === "(max-width: 768px)",
+          media: query,
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+          dispatchEvent: () => false,
+        }),
+      });
+
+      render(<FacilityMap facilities={[]} />);
+
       expect(screen.queryByTestId("compass-rose")).not.toBeInTheDocument();
-      expect(screen.queryByTestId("view-toggle-3d")).not.toBeInTheDocument();
-      expect(screen.queryByTestId("basemap-toggle")).not.toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /show map tools/i })
       ).toBeInTheDocument();
     });
 
-    it("reveals the compass rose control when the Tools toggle is opened", async () => {
+    it("still toggles the Tools column closed and back open via the disclosure button", async () => {
       const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
+
+      await user.click(screen.getByRole("button", { name: /hide map tools/i }));
+      expect(screen.queryByTestId("compass-rose")).not.toBeInTheDocument();
+
       await user.click(screen.getByRole("button", { name: /show map tools/i }));
       expect(screen.getByTestId("compass-rose")).toBeInTheDocument();
-    });
-
-    it("reveals the 3D view toggle when the Tools toggle is opened", async () => {
-      const user = userEvent.setup();
-      render(<FacilityMap facilities={[]} />);
-      await user.click(screen.getByRole("button", { name: /show map tools/i }));
-      expect(screen.getByTestId("view-toggle-3d")).toBeInTheDocument();
-    });
-
-    it("reveals the basemap toggle when the Tools toggle is opened", async () => {
-      const user = userEvent.setup();
-      render(<FacilityMap facilities={[]} />);
-      await user.click(screen.getByRole("button", { name: /show map tools/i }));
-      expect(screen.getByTestId("basemap-toggle")).toBeInTheDocument();
     });
   });
 
@@ -531,8 +547,7 @@ describe("FacilityMap", () => {
       const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
 
-      // The basemap toggle lives inside the collapsed Tools disclosure — open it first.
-      await user.click(screen.getByRole("button", { name: /show map tools/i }));
+      // Tools column defaults open on desktop (matchMedia mocked in beforeEach).
       const basemapToggle = screen.getByTestId("basemap-toggle");
 
       // Initial state: satellite layer should not be visible
@@ -582,8 +597,6 @@ describe("FacilityMap", () => {
       const user = userEvent.setup();
       render(<FacilityMap facilities={[]} />);
 
-      await user.click(screen.getByRole("button", { name: /show map tools/i }));
-
       const radiusToggle = screen.getByRole("button", { name: /radius rings/i });
       expect(radiusToggle).toHaveAttribute("aria-pressed", "false");
       expect(screen.queryByText(/rings: 5 · 10 · 25 mi/)).not.toBeInTheDocument();
@@ -613,13 +626,53 @@ describe("FacilityMap", () => {
 
       expect(globalThis.__layerPropsById["water-river-layer"]).toBeUndefined();
 
-      await user.click(screen.getByRole("button", { name: /show map tools/i }));
       await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
       await user.click(screen.getByLabelText("Waterways"));
 
       await waitFor(() => {
         expect(globalThis.__layerPropsById["water-river-layer"]).toBeDefined();
       });
+    });
+  });
+
+  describe("MapLayerControl isSatellite wiring", () => {
+    it("disables fill-only overlay toggles once satellite mode is active", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+      const waterStressToggle = screen.getByLabelText("Baseline water stress");
+      expect(waterStressToggle).not.toBeDisabled();
+
+      // BasemapToggle is mocked to a plain button whose onClick flips
+      // isSatellite — this exercises the real (unmocked) MapLayerControl's
+      // handling of the isSatellite prop now wired in from facility-map.tsx.
+      await user.click(screen.getByTestId("basemap-toggle"));
+
+      expect(waterStressToggle).toBeDisabled();
+    });
+  });
+
+  describe("Coordinate lock readout", () => {
+    it("is keyboard-operable and shows a screen-reader-visible readout of the map center once locked", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      const lockButton = screen.getByRole("button", { name: /show map coordinates readout/i });
+      expect(lockButton).toHaveAttribute("aria-pressed", "false");
+      expect(screen.queryByRole("status")).not.toBeInTheDocument();
+
+      lockButton.focus();
+      await user.keyboard("{Enter}");
+
+      expect(lockButton).toHaveAttribute("aria-pressed", "true");
+      expect(
+        screen.getByRole("button", { name: /hide map coordinates readout/i })
+      ).toBeInTheDocument();
+      // formatLatLon is mocked as `${lat}, ${lon}`; INITIAL_VIEW_STATE mock is
+      // latitude 38 / longitude -100, so that's the map-center readout before
+      // any move event fires.
+      expect(screen.getByRole("status")).toHaveTextContent("38, -100");
     });
   });
 

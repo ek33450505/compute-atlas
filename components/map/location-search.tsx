@@ -163,14 +163,22 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
         </button>
       </form>
 
-      {/* Results dropdown */}
+      {/* Results dropdown. The widget sits inside the map's overflow-hidden
+          container (facility-map.tsx), so a tall list can get visually
+          clipped by that ancestor before the list's own scrollbar would
+          kick in — capping max-height to a viewport-relative bound (not
+          just the fixed 14rem) keeps the whole dropdown within the visible
+          viewport on short/mobile screens. left-0/right-0 anchor the width
+          to the search widget itself, so it never exceeds the widget's own
+          (already viewport-constrained, see the max-w wrapper in
+          facility-map.tsx) footprint. */}
       {results.length > 0 && (
         <ul
           aria-label="Location search results"
           ref={resultsRef}
           className={[
             "absolute left-0 right-0 top-full z-30 mt-0.5",
-            "max-h-56 overflow-y-auto",
+            "max-h-[min(14rem,calc(100dvh-10rem))] overflow-y-auto overscroll-contain",
             "bg-background/95 backdrop-blur-sm border border-border rounded-sm",
             "shadow-[0_2px_8px_rgba(0,0,0,0.15)]",
           ].join(" ")}
