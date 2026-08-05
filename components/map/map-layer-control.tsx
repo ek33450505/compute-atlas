@@ -267,10 +267,7 @@ export function MapLayerControl({
   // static cap. Measure the panel's real top offset instead and cap the
   // scroll container to exactly what's left above the viewport bottom.
   useLayoutEffect(() => {
-    if (!expanded) {
-      setScrollMaxHeight(undefined);
-      return;
-    }
+    if (!expanded) return;
     const el = scrollRef.current;
     if (!el) return;
 
