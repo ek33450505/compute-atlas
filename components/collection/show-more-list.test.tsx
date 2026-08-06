@@ -55,7 +55,7 @@ describe("ShowMoreList", () => {
     expect(screen.getByRole("button", { name: "Show 2 more" })).toBeInTheDocument();
   });
 
-  it("reveals every item and removes the button when clicked", async () => {
+  it("reveals every item and toggles the button to Show less when clicked", async () => {
     const user = userEvent.setup();
     render(
       <ShowMoreList initialCount={3} itemLabel="facilities">
@@ -68,7 +68,19 @@ describe("ShowMoreList", () => {
     for (let i = 1; i <= 5; i++) {
       expect(screen.getByText(`Item ${i}`)).toBeVisible();
     }
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    // The button persists as a "Show less" toggle rather than disappearing.
+    const collapse = screen.getByRole("button", { name: "Show less" });
+    expect(collapse).toBeInTheDocument();
+    expect(collapse).toHaveAttribute("aria-expanded", "true");
+
+    // Clicking again re-collapses the overflow items.
+    await user.click(collapse);
+    for (let i = 4; i <= 5; i++) {
+      expect(screen.getByText(`Item ${i}`)).not.toBeVisible();
+    }
+    expect(
+      screen.getByRole("button", { name: "Show 2 more facilities" })
+    ).toHaveAttribute("aria-expanded", "false");
   });
 
   it("is a real, keyboard-activatable button", async () => {
