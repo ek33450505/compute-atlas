@@ -67,15 +67,15 @@ export function ShowMoreList({
         })}
       </div>
 
-      {hiddenCount > 0 && !expanded && (
+      {hiddenCount > 0 && (
         <div className="mt-6 flex justify-center">
           <Button
             type="button"
             variant="outline"
             aria-expanded={expanded}
-            onClick={() => setExpanded(true)}
+            onClick={() => setExpanded((v) => !v)}
           >
-            Show {hiddenCount} more{itemLabel ? ` ${itemLabel}` : ""}
+            {expanded ? "Show less" : `Show ${hiddenCount} more${itemLabel ? ` ${itemLabel}` : ""}`}
           </Button>
         </div>
       )}
