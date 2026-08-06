@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.26.0](https://github.com/ek33450505/compute-atlas/compare/v1.25.0...v1.26.0) (2026-08-06)
+
+
+### Features
+
+* **data:** Ohio deep-coverage pass + LN Compute Georgia crypto (+21 facilities) ([#136](https://github.com/ek33450505/compute-atlas/issues/136)) ([813d198](https://github.com/ek33450505/compute-atlas/commit/813d198554fa1a68a098b37d23a6715741534d54))
+
 ## [1.25.0](https://github.com/ek33450505/compute-atlas/compare/v1.24.0...v1.25.0) (2026-08-05)
 
 
