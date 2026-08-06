@@ -22,6 +22,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 import { aiClassificationEnum } from "@/lib/schema";
+import type { GenerationTechnology } from "@/lib/generation";
 import type { FacilityType } from "@/lib/facility-type";
 
 // ---------------------------------------------------------------------------
@@ -529,7 +530,7 @@ function CryptoMiningFields({
 // poweredFacilityIds/unitCount/notes}
 // ---------------------------------------------------------------------------
 
-const TECHNOLOGY_LABELS: Record<string, string> = {
+const TECHNOLOGY_LABELS: Record<GenerationTechnology, string> = {
   nuclear_smr: "Nuclear (SMR)",
   nuclear: "Nuclear",
   fusion: "Fusion",

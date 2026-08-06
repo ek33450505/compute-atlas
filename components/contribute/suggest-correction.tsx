@@ -273,7 +273,10 @@ export function SuggestCorrection({
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="correction-value">New value</Label>
+                <Label htmlFor="correction-value">
+                  New value
+                  <span aria-hidden="true" className="text-destructive"> *</span>
+                </Label>
                 {def.valueKind === "text" && (
                   <Input
                     id="correction-value"
@@ -282,6 +285,7 @@ export function SuggestCorrection({
                     value={state.value}
                     onChange={(e) => setState((prev) => ({ ...prev, value: e.target.value }))}
                     required
+                    aria-required="true"
                   />
                 )}
                 {def.valueKind === "number" && (
@@ -294,6 +298,7 @@ export function SuggestCorrection({
                     value={state.value}
                     onChange={(e) => setState((prev) => ({ ...prev, value: e.target.value }))}
                     required
+                    aria-required="true"
                   />
                 )}
                 {def.valueKind === "enum" && (
@@ -350,6 +355,7 @@ export function SuggestCorrection({
                   value={state.sourceUrl}
                   onChange={(e) => setState((prev) => ({ ...prev, sourceUrl: e.target.value }))}
                   required
+                  aria-required="true"
                   aria-describedby="correction-source-hint"
                 />
                 <p id="correction-source-hint" className="text-xs text-muted-foreground">
