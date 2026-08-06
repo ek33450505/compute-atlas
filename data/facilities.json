@@ -479,6 +479,92 @@
     "facilityType": "data_center"
   },
   {
+    "id": "agriforce-east-palestine-columbiana-oh",
+    "name": "AgriFORCE Bitcoin Mining Facility — East Palestine",
+    "operator": "AgriFORCE Growing Systems Ltd.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.8326,
+      "lon": -80.5432,
+      "city": "East Palestine",
+      "county": "Columbiana",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/05/14/3081168/0/en/AGRIForce-Announces-Completion-of-500-Miner-Delivery-for-Installation-at-East-Palestine-Ohio-Bitcoin-Mining-Site.html",
+        "label": "AgriFORCE (NASDAQ: AGRI) release (2025-05-14): East Palestine, Ohio site (+2 MW, 50 PH/s) plus a Westpoint, Ohio site (3 MW, 80 PH/s)",
+        "publisher": "GlobeNewswire / AgriFORCE",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/01/23/3014358/0/en/AgriFORCE-Growing-Systems-Secures-Acquisition-of-Bitcoin-Mining-Facility-in-Columbiana-County-Ohio.html",
+        "label": "AgriFORCE (2025-01-23): acquisition of a bitcoin-mining facility in Columbiana County, Ohio; 5 MW; powered by natural gas from flare operations; $4.5M",
+        "publisher": "GlobeNewswire / AgriFORCE",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Bitcoin-mining site in East Palestine (Columbiana County) operated by AgriFORCE Growing Systems (NASDAQ: AGRI), powered by natural gas from flare operations. Capacity figures are not reconciled across AgriFORCE releases: the May 2025 release cites ~2 MW / 50 PH/s for East Palestine, while a Jan 2025 acquisition release cites 5 MW for 'the Columbiana County facility' (which may aggregate both company sites); the site-specific 2 MW figure is recorded and the discrepancy flagged (hence 'reported' confidence). Coordinates approximate (East Palestine city-center).",
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hashRateThPerS": 50000,
+      "hardwareType": "asic",
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "agriforce-west-point-columbiana-oh",
+    "name": "AgriFORCE Bitcoin Mining Facility — West Point",
+    "operator": "AgriFORCE Growing Systems Ltd.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.662,
+      "lon": -80.702,
+      "city": "West Point",
+      "county": "Columbiana",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 3
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/05/14/3081168/0/en/AGRIForce-Announces-Completion-of-500-Miner-Delivery-for-Installation-at-East-Palestine-Ohio-Bitcoin-Mining-Site.html",
+        "label": "AgriFORCE (NASDAQ: AGRI) release (2025-05-14): 'Westpoint, Ohio' site at 3 MW / 80 PH/s (alongside the East Palestine site)",
+        "publisher": "GlobeNewswire / AgriFORCE",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/01/23/3014358/0/en/AgriFORCE-Growing-Systems-Secures-Acquisition-of-Bitcoin-Mining-Facility-in-Columbiana-County-Ohio.html",
+        "label": "AgriFORCE (2025-01-23): Columbiana County, Ohio bitcoin-mining acquisition; natural gas from flare operations",
+        "publisher": "GlobeNewswire / AgriFORCE",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Bitcoin-mining site at West Point (spelled 'Westpoint' in AgriFORCE's release), Columbiana County, operated by AgriFORCE Growing Systems (NASDAQ: AGRI) — ~3 MW / 80 PH/s, powered by natural gas from flare operations, part of the same 2025 Ohio operation as the East Palestine site. County (Columbiana) is from geographic record; the AgriFORCE release names the town but not the county. Confidence 'reported' (single-operator IR sourcing). Coordinates approximate.",
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hashRateThPerS": 80000,
+      "hardwareType": "asic",
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
     "id": "air-products-cetronia-road-upper-macungie-pa",
     "name": "Cetronia Road Data Center (former Air Products site)",
     "operator": "Air Products",
@@ -1007,6 +1093,50 @@
     "water": {
       "coolingType": "hybrid",
       "notes": "Delta Cube (Delta³) adiabatic, air-cooled modular cooling system (evaporative-assisted air)."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "aligned-pataskala-licking-oh",
+    "name": "Aligned Data Centers — Pataskala",
+    "operator": "Aligned Data Centers",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.9956,
+      "lon": -82.6743,
+      "city": "Pataskala",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://freepress.org/article/pataskala-ohio-zoning-votes-down-data-center-application",
+        "label": "Columbus Free Press: 80+ acres, Bloom Energy natural-gas fuel cells, 84 cooling units; Planning & Zoning voted the application down 2026-06-03",
+        "publisher": "The Columbus Free Press",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.aol.com/articles/pataskala-allow-data-center-industrial-180844000.html",
+        "label": "AOL/Newark Advocate: 89 acres, 200 MW, 3 buildings (down from 4), Broad St & Mink St; P&Z voted 5-2 to recommend rejection (staff recommended approval); Council hearing 2026-08-25",
+        "publisher": "AOL / Newark Advocate",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Proposed 200 MW campus (89 acres, 3 planned buildings, down from 4) at Broad St & Mink St in the Pataskala industrial park, powered by on-site Bloom Energy natural-gas fuel cells. Contested: the Planning & Zoning Commission voted 5–2 on 2026-06-03 to recommend City Council reject it (staff had recommended approval); Council's final vote is scheduled 2026-08-25, and a separate ballot measure to ban hyperscale (>25 MW) data centers is headed to the November 2026 ballot. Coordinates approximate (Pataskala city-center).",
+    "community": {
+      "status": "contested",
+      "notes": "P&Z recommended rejection 5–2; a citizen-driven November 2026 ballot measure would ban data centers over 25 MW in Pataskala.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -1786,6 +1916,58 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "amazon-perry-township-stark-oh",
+    "name": "Amazon Perry Township Data Center",
+    "operator": "Amazon Web Services (developer: Panattoni Development Co.)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.7517,
+      "lon": -81.4,
+      "city": "Canton",
+      "county": "Stark",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 240
+    },
+    "announcedDate": "2026-03",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.ideastream.org/environment-energy/2026-04-15/some-stark-county-residents-skeptical-of-developers-answers-on-data-center-project",
+        "label": "Ideastream: Perry Township data-center project; 240 MW, Panattoni developer, Clayco GC; residents skeptical",
+        "publisher": "Ideastream Public Media",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://bluewaterhealthyliving.com/news/national-news/ohio/open-house-for-perry-township-data-center-sheds-light-on-incoming-user/",
+        "label": "Open house sheds light on incoming user (cites Canton Repository confirmation of Amazon as end-user)",
+        "publisher": "Bluewater Healthy Living",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.news5cleveland.com/news/local-news/we-follow-through/as-data-center-proposals-spread-across-stark-county-neighbors-fear-whats-next",
+        "label": "News 5 Cleveland: data-center proposals across Stark County",
+        "publisher": "News 5 Cleveland",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "240 MW hyperscale campus on ~105 acres at Faircrest St SW & Kropf Ave SW, Perry Township (Canton). Panattoni bought the land Feb 2025 (Clayco GC); excavation underway; two 220,000 sq ft + two 154,000 sq ft buildings targeted for ~April 2028. Amazon was confirmed as the end-user by the Stark County commission president and Canton's mayor to the Canton Repository after Panattoni initially withheld the tenant. Perry Township approved a 30-year, 75% property-tax abatement in March 2026. Coordinates approximate (township-level).",
+    "community": {
+      "status": "mixed",
+      "notes": "Some Perry Township / Stark County residents publicly skeptical of the developer's answers (noise, water, growth); the township nonetheless approved the tax abatement.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "amazon-potomac-church-fredericksburg-va",
@@ -5002,6 +5184,43 @@
       "notes": "Jerome Township imposed a 9-month moratorium on new data-center development in September 2025 amid resident concerns; the existing AWS campuses continue operating.",
       "sourceIndex": 2
     },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "aws-jefferson-township-fayette-oh",
+    "name": "AWS Fayette County (Jefferson Township)",
+    "operator": "Amazon Web Services",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.6534,
+      "lon": -83.5677,
+      "city": "Jeffersonville",
+      "county": "Fayette",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-12",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://columbusconstruction.org/amazon-web-services-to-build-new-datacenter-campus-in-fayette-county/",
+        "label": "Columbus Construction: ~590 acres, I-71 & US-35, $5B, 30-yr 100% CRA exemption, construction slated early 2025",
+        "publisher": "Columbus Construction",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.recordherald.com/2024/12/24/aws-officials-confirm-plans-to-invest-5-billion-into-fayette-county-with-new-data-centers/",
+        "label": "Record-Herald (2024-12-24): AWS VP Roger Wehner names Jefferson Township as first confirmed locality; $5B by 2030 in a $10B Ohio expansion",
+        "publisher": "Washington Court House Record-Herald",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "AWS's first Ohio campus outside the central-Ohio cluster, in Jefferson Township near I-71 & US-35 (adjacent to the Honda/LG EV battery plant). ~590 acres; $5B AWS investment (part of a larger multi-billion Fayette-area / statewide AWS commitment through 2030), announced Dec 2024 by AWS VP Roger Wehner; 30-year 100% CRA tax exemption approved; construction slated to begin early 2025. Capacity MW is NOT disclosed — AWS explicitly withheld building count/MW citing security — so capacityMw is omitted (a third-party ~1,800 MW estimate is unverified and not recorded). Coordinates approximate (Jeffersonville / township-level).",
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -14337,6 +14556,45 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cyrusone-cin2-cincinnati-oh",
+    "name": "CyrusOne CIN2 (Cincinnati)",
+    "operator": "CyrusOne",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.1027886,
+      "lon": -84.5179229,
+      "city": "Cincinnati",
+      "county": "Hamilton",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 14
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/cincinnati-ohio",
+        "label": "CyrusOne Cincinnati facility page: address, 14 MW, 143,778 sq ft technical space, closed-loop chilled-water cooling",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/ohio/cincinnati/cyrusone-cincinnati/",
+        "label": "DataCenterMap listing corroborating CyrusOne CIN2 (7th Street carrier hotel)",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Cincinnati's primary carrier-hotel / switching facility (originally a Cincinnati Bell data-center carve-out), 143,778 sq ft of technical space, HPC-capable, closed-loop chilled-water cooling. Address and 14 MW confirmed on CyrusOne's own site; the building is independently tagged CyrusOne CIN2 in OpenStreetMap. Distinct from the already-tracked CyrusOne CIN3 in Mason (Warren County).",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "cyrusone-cin3-cincinnati-mason-oh",
     "name": "CyrusOne CIN3 (Cincinnati-Mason)",
     "operator": "CyrusOne",
@@ -15092,6 +15350,44 @@
     "aiClassification": "likely"
   },
   {
+    "id": "databank-cleveland-cle1-oh",
+    "name": "DataBank Cleveland (CLE1)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.4998,
+      "lon": -81.6829,
+      "city": "Cleveland",
+      "county": "Cuyahoga",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.4
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/cleveland/1255-euclid-ave/",
+        "label": "DataBank CLE1 page: 1255 Euclid Ave Suite 200, 7,440 sq ft raised floor, 0.4 MW critical IT load",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/ohio/cleveland/databank-cleveland/",
+        "label": "DataCenterMap DataBank Cleveland listing",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Colocation facility in the 1255 Euclid Avenue carrier-hotel building, downtown Cleveland — 7,440 sq ft raised floor, 0.4 MW critical IT load. Distinct from the already-tracked Lumen Cleveland 1 (4000 Chester Ave). The same building also houses 365 Data Centers (CL1) and BlueBridge Networks as separate colocation tenants; recorded here as one representative record rather than three near-duplicate pins at one address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "databank-indo-cartersville-ga",
     "name": "DataBank Project Indo",
     "operator": "DataBank",
@@ -15296,6 +15592,41 @@
     ],
     "lastUpdated": "2026-07-25",
     "notes": "Joint venture with Goodman Group; opening December 2026, phased through September 2027.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "datayard-dayton-oh",
+    "name": "DataYard Dayton Data Center",
+    "operator": "DataYard",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.7602255,
+      "lon": -84.1953733,
+      "city": "Dayton",
+      "county": "Montgomery",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.datayard.us/contact/",
+        "label": "DataYard official contact page: 130 W Second St, Suite 250, Dayton, OH 45402",
+        "publisher": "DataYard",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datayard.us/data-center-co-location/",
+        "label": "DataYard colocation page: downtown Dayton facility operating since 1995 (current is 'fourth iteration')",
+        "publisher": "DataYard",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Locally-owned downtown Dayton colocation provider, self-described as operating a Dayton data center continuously since 1995 (current facility is their 'fourth iteration'). Address confirmed on DataYard's own site; no MW/sq ft publicly disclosed, so capacity is omitted. Coordinates approximate. Included for Montgomery County coverage.",
     "facilityType": "data_center"
   },
   {
@@ -20676,6 +21007,41 @@
     "energy": {
       "utility": "BGE"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "expedient-cleveland-neo-oh",
+    "name": "Expedient Cleveland (NEO 151 / NEO 152)",
+    "operator": "Expedient",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.428,
+      "lon": -81.5733,
+      "city": "Garfield Heights",
+      "county": "Cuyahoga",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/datacenters/expedient-communications-cleveland-data-center-neo-151/",
+        "label": "NEO 151 facility page: 15166 Neo Parkway, 24,000+ sq ft, 900 kVA UPS, dual 2.5 MW generators, 600 tons cooling",
+        "publisher": "cloudandcolocation.com",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/business/expedient-completes-third-data-center-in-hometown-cleveland",
+        "label": "Data Center Knowledge: Expedient completes third Cleveland-market data center",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Two-building Expedient colocation campus at 15166 and 15248 Neo Parkway in Garfield Heights (Cleveland market), operating since ~2015. No clean total critical-IT-load MW figure is published (only backup-generator sizing), so capacity is omitted. Distinct from the tracked Lumen/Ark-Involta/T5 Cuyahoga sites.",
     "facilityType": "data_center"
   },
   {
@@ -28957,6 +29323,44 @@
     "facilityType": "data_center"
   },
   {
+    "id": "iron-mountain-miamisburg-oh",
+    "name": "Iron Mountain OHS-1 (Miamisburg)",
+    "operator": "Iron Mountain",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.6428362,
+      "lon": -84.2866083,
+      "city": "Miamisburg",
+      "county": "Montgomery",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1.4
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.ironmountain.com/data-centers/locations/ohio-data-center",
+        "label": "Iron Mountain Ohio data-center page: 3366 S Tech Blvd, Miamisburg; 1.4 MW; 44,000 sq ft; Tier III",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/lexisnexis-springboro",
+        "label": "Baxtel listing for the same street address under prior LexisNexis branding (confirms same building)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Tier III facility, 44,000 sq ft on a ~3.5-acre campus at 3366 S Tech Blvd, Miamisburg (~20 min from Dayton), acquired from / formerly operated by LexisNexis. Confirmed on Iron Mountain's own location page; cross-checked against a LexisNexis Springboro listing at the identical address (same building, prior branding). Coordinates are city-centroid (approximate).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "iron-mountain-va-2-va",
     "name": "Iron Mountain VA-2",
     "operator": "Iron Mountain",
@@ -30227,6 +30631,92 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "ln-compute-cuthbert-ga",
+    "name": "LN Compute Cuthbert Bitcoin Mine",
+    "operator": "LN Compute Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.77083,
+      "lon": -84.79361,
+      "city": "Cuthbert",
+      "county": "Randolph",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 7
+    },
+    "announcedDate": "2025-09",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.walb.com/2025/09/25/new-crypto-mine-could-pump-millions-into-south-georgia-community/",
+        "label": "WALB (Sept 25, 2025): a new crypto-mining facility has officially opened in Cuthbert's industrial park, Randolph County; consumes about 7 megawatts (WALB's 'equivalent of powering 5,000 homes'); on-site project manager Hao Chen; Atkinson County facility expected to break ground next",
+        "publisher": "WALB News 10",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/georgia/cuthbert/ln-compute-cuthbert/",
+        "label": "DataCenterMap listing: LN Compute Cuthbert, 50 Industrial Blvd, Cuthbert, GA — attributes the site to LN Compute",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "An operational bitcoin-mining facility in Cuthbert's industrial park (Randolph County), reported by WALB to have officially opened by September 2025 and to consume about 7 MW (WALB: 'the equivalent of powering 5,000 homes'). Attributed to LN Compute Inc. via a DataCenterMap listing (50 Industrial Blvd); WALB names only the on-site project manager (Hao Chen), not the operating company, so the operator is carried at 'reported' confidence and no specific LN Energy numbered-LLC entity is asserted (LN Compute's Georgia sites use several such LLCs). WALB notes the site was chosen partly for low-mineral city water — consistent with water/liquid cooling, but the cooling type is not explicitly stated, so it is omitted. Coordinates are Cuthbert city-center (approximate); the listing's 50 Industrial Blvd address was not parcel-confirmed. Distinct from LN Compute's former Soperton site (sold to Cango Inc., Aug 2025) and from the separate LN Energy Blackshear/Pierce County proposal whose permit was denied (id=ln-energy-blackshear-pierce-ga).",
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "ln-energy-blackshear-pierce-ga",
+    "name": "LN Energy Blackshear Bitcoin Mine",
+    "operator": "LN Energy",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.30518,
+      "lon": -82.24207,
+      "city": "Blackshear",
+      "county": "Pierce",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025-02",
+        "note": "Pierce County Commission unanimously denied the conditional-use permit.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://theenergymag.com/news/2025-02-19/georgia-bitcoin-mining-permit-den",
+        "label": "TheEnergyMag / TheMinerMag (Feb 19, 2025): Pierce County Commission unanimously denied LN Energy's conditional-use permit for a bitcoin mine at 1199 Cason Road, Blackshear (Rehobeth Church Community); 150+ residents attended, virtually all opposing over noise, energy consumption, and property-value concerns; notes LN Energy previously sold five turnkey GA mining sites (60 MW total) to CleanSpark for ~$26M",
+        "publisher": "TheEnergyMag (TheMinerMag)",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "A proposed LN Energy bitcoin-mining facility at 1199 Cason Road in the Rehobeth Church Community near Blackshear (Pierce County) whose conditional-use permit was unanimously denied by the Pierce County Commission in February 2025 after organized community opposition (150+ residents). No capacity was disclosed, so capacityMw is omitted (per the convention for cancelled sites). Recorded as a defeated project for the opposition lens. Coordinates are Blackshear city-center (approximate); the Cason Road site lies in a rural community outside the city. Single-source at intake (TheEnergyMag / TheMinerMag); a DatacenterDynamics report on the same denial exists but was inaccessible when this record was created. LN Energy is an affiliate of LN Compute Inc.; distinct from LN Compute's operational Cuthbert site (id=ln-compute-cuthbert-ga) and its former Soperton site (sold to Cango).",
+    "community": {
+      "status": "opposed",
+      "notes": "Over 150 residents attended the February 2025 Pierce County Commission meeting, with virtually everyone opposing the permit; stated concerns were noise, high energy consumption, and potential property-value declines. Pierce County hosts no other bitcoin-mining operations, so this would have been its first.",
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic"
+    }
+  },
+  {
     "id": "logistix-hamilton-innovation-center-butler-county-oh",
     "name": "Hamilton Innovation Center",
     "operator": "Logistix Property Group",
@@ -30590,6 +31080,41 @@
     "energy": {
       "utility": "BGE"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-cincinnati-1-oh",
+    "name": "Lumen Cincinnati 1 (400 Pike Street)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.1019019,
+      "lon": -84.5031833,
+      "city": "Cincinnati",
+      "county": "Hamilton",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.datacentermap.com/usa/ohio/cincinnati/level3-cincinnati/",
+        "label": "DataCenterMap: 400 Pike St, ~7,059 sq ft raised floor, lineage Global Crossing→TW Telecom→Level 3→CenturyLink→Lumen",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/lumen-cincinnati-1-400-pike",
+        "label": "Baxtel corroborating address/specs for Lumen Cincinnati 1",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Legacy carrier/network colocation site (~7,059 sq ft raised floor) in Cincinnati's CBD/Lytle Park area — a legacy Level 3 facility (Level 3→CenturyLink 2017→Lumen 2020). No MW figure is publicly disclosed, so capacity is omitted. Included for Hamilton County coverage (Cincinnati had zero tracked sites).",
     "facilityType": "data_center"
   },
   {
@@ -38974,6 +39499,50 @@
     }
   },
   {
+    "id": "oregon-industrial-park-data-center-lucas-oh",
+    "name": "Oregon Industrial Park Data Center Campus",
+    "operator": "Capacity LLC (Vantage Data Centers named as prospective developer)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.649,
+      "lon": -83.4614,
+      "city": "Oregon",
+      "county": "Lucas",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://oregonohio.org/oregon-industrial-park-information-on-data-centers/",
+        "label": "City of Oregon official Q&A: ~168 acres at Wynn/Corduroy Rds, up to 8 buildings, ~500 MW at build-out, $2–3B, developer Capacity LLC",
+        "publisher": "City of Oregon, OH",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.13abc.com/2026/07/29/oregon-officials-eye-vantage-data-centers-proposed-development-near-wynn-corduroy-roads/",
+        "label": "13abc (2026-07-29): Oregon officials name Vantage Data Centers as prospective developer; no decision finalized; citizen referendum petition underway",
+        "publisher": "13abc WTVG",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Proposed ~168-acre, up-to-8-building data-center campus at Wynn Rd & Corduroy Rd in the Oregon Industrial Park (Toledo area) — Lucas County's first tracked site. The city assembled parcels for site developer Capacity LLC (~$2–3B, ~500 MW at build-out); in late July 2026 officials publicly named Vantage Data Centers as the prospective operator, but the city administrator said no decisions are finalized and a citizen group ('United Neighbors of Oregon') is petitioning for a November 2026 referendum. Confidence 'reported' given operator-in-transition and unbuilt status; coordinates approximate.",
+    "community": {
+      "status": "contested",
+      "notes": "A citizen group ('United Neighbors of Oregon') is petitioning to force a November 2026 public referendum on the project.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "outrigger-washington-daviess-county-in",
     "name": "Outrigger Industrial Washington Data Center",
     "operator": "Outrigger Industrial",
@@ -39699,6 +40268,78 @@
     "landAcres": 568,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "powerconnex-i-new-albany-oh",
+    "name": "PowerConneX I New Albany Energy Center",
+    "operator": "EdgeConneX (PowerConneX)",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.064,
+      "lon": -82.756,
+      "city": "New Albany",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 120
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
+        "label": "Farm and Dairy: 'PowerConneX I, a 120 MW plant ... that will power a nearby data center' (EdgeConneX)",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "On-site natural-gas generation (120 MW) built by EdgeConneX's PowerConneX arm to power a nearby New Albany data center. Farm and Dairy names PowerConneX I (120 MW) among the New Albany-area gas plants; the co-located customer is EdgeConneX's own New Albany (MCN) campus. Coordinates approximate.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "EdgeConneX",
+      "notes": "On-site generation for a nearby New Albany data center (EdgeConneX's co-located MCN New Albany campus, edgeconnex-mcn-new-albany-licking-county-oh)."
+    }
+  },
+  {
+    "id": "powerconnex-ii-new-albany-oh",
+    "name": "PowerConneX II New Albany Energy Center",
+    "operator": "EdgeConneX (PowerConneX)",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.062,
+      "lon": -82.754,
+      "city": "New Albany",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 216
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
+        "label": "Farm and Dairy: 'PowerConneX II, a 216 MW plant — that will power a nearby data center' (EdgeConneX)",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "A second EdgeConneX PowerConneX on-site gas plant (216 MW) for a nearby New Albany data center (EdgeConneX's co-located MCN campus). Coordinates approximate. (Farm and Dairy also names a pre-application PowerConneX III at 430 MW, not included here.)",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "EdgeConneX",
+      "notes": "Second on-site generation phase for a nearby New Albany data center (EdgeConneX's co-located MCN New Albany campus, edgeconnex-mcn-new-albany-licking-county-oh)."
+    }
   },
   {
     "id": "powerhouse-95-spotsylvania-va",
@@ -46081,6 +46722,142 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "socrates-north-new-albany-oh",
+    "name": "Socrates North Generation Facility",
+    "operator": "Will-Power OH, LLC (Williams Companies)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.07,
+      "lon": -82.76,
+      "city": "New Albany",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.williams.com/expansion-project/socrates-power-solution-facilities/",
+        "label": "Williams Socrates Power Solution Facilities project page (New Albany-area on-site natural-gas generation serving a Meta affiliate)",
+        "publisher": "Williams Companies",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
+        "label": "Farm and Dairy: 'Socrates North and Socrates South, both 200 MW power plants, are under construction'; offtaker Sidecat LLC (Meta)",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "On-site natural-gas generation (200 MW) built by Will-Power OH, LLC (a Williams Companies entity) to serve Meta's New Albany operations under offtaker Sidecat LLC (a Meta affiliate); under construction. One of the paired Socrates North/South plants. Coordinates approximate (New Albany / Licking-side cluster).",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Meta",
+      "notes": "Behind-the-meter gas generation for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh). Offtaker of record is Sidecat LLC, a Meta affiliate."
+    }
+  },
+  {
+    "id": "socrates-south-new-albany-oh",
+    "name": "Socrates South Generation Facility",
+    "operator": "Will-Power OH, LLC (Williams Companies)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.068,
+      "lon": -82.762,
+      "city": "New Albany",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.williams.com/expansion-project/socrates-power-solution-facilities/",
+        "label": "Williams Socrates Power Solution Facilities project page",
+        "publisher": "Williams Companies",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
+        "label": "Farm and Dairy: Socrates South, 200 MW, under construction; offtaker Sidecat LLC (Meta)",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "On-site natural-gas generation (200 MW) built by Will-Power OH, LLC (Williams) to serve Meta's New Albany operations (offtaker Sidecat LLC); under construction. Paired with Socrates North. Coordinates approximate.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Meta",
+      "notes": "Gas generation for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh). Offtaker of record Sidecat LLC (Meta affiliate)."
+    }
+  },
+  {
+    "id": "socrates-the-younger-new-albany-oh",
+    "name": "Socrates the Younger (STY) Generation Facility",
+    "operator": "Will-Power OH, LLC (Williams Companies)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.066,
+      "lon": -82.764,
+      "city": "New Albany",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 250
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-06",
+        "note": "OPSB Case 26-0169-EL-BLN (approved).",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.williams.com/expansion-project/socrates-power-solution-facilities/",
+        "label": "Williams Socrates Power Solution Facilities project page",
+        "publisher": "Williams Companies",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
+        "label": "Farm and Dairy: Socrates the Younger (STY), 250 MW, Will-Power OH, offtaker Sidecat LLC (Meta), OPSB Case 26-0169-EL-BLN, 'behind-the-meter' for an adjacent data center",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "A third Williams (Will-Power OH) on-site gas plant, 250 MW, serving Meta's New Albany operations (offtaker Sidecat LLC), approved by the Ohio Power Siting Board (Case 26-0169-EL-BLN) and operating behind-the-meter for an adjacent data center. Coordinates approximate.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Meta",
+      "notes": "Third Socrates plant (250 MW) for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh); OPSB Case 26-0169-EL-BLN. Offtaker Sidecat LLC (Meta affiliate)."
+    }
+  },
+  {
     "id": "solis-arx-progress-park-wythe-va",
     "name": "Solis Arx Progress Park Data Center Campus",
     "operator": "Solis Arx",
@@ -46826,6 +47603,38 @@
       "notes": "Advocacy groups (1000 Friends of Oregon, Oregon Education Association, Tax Fairness Oregon, Tualatin Riverkeepers) sued Hillsboro and Washington County (June 2026) to block enterprise-zone tax breaks granted to 17 proposed data centers in the jurisdiction where this campus sits; the suit does not name this project specifically.",
       "sourceIndex": 2
     },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "stack-nal01-new-albany-oh",
+    "name": "STACK Infrastructure NAL01 (New Albany)",
+    "operator": "STACK Infrastructure",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.07,
+      "lon": -82.8,
+      "city": "New Albany",
+      "county": "Franklin",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 60
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.stackinfra.com/locations/americas/new-albany/",
+        "label": "STACK Infrastructure New Albany page: facility NAL01, 40 acres, 60 MW of scalability, operational",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "STACK's New Albany wholesale data center (NAL01), 40 acres, 60 MW, operational — an established site missing from the tracked New Albany operator list. Confirmed on STACK's own New Albany location page (which does not state a street address, so no street is recorded). Coordinates approximate (New Albany). County recorded as Franklin (New Albany's core incorporated county), but note the New Albany cluster straddles the Franklin/Licking line and STACK's page does not state the county.",
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -53027,6 +53836,45 @@
     "aiClassification": "likely"
   },
   {
+    "id": "vantage-oh2-millersport-fairfield-oh",
+    "name": "Vantage Data Centers OH2 (Millersport Campus)",
+    "operator": "Vantage Data Centers",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.902,
+      "lon": -82.5324,
+      "city": "Millersport",
+      "county": "Fairfield",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 696
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://vantagemillersportcampus.com/",
+        "label": "Vantage Millersport Campus official site: 352 acres, 696 MW IT capacity, 7 structures (up to 4 data centers), Lancaster-Newark Rd & Blacklick Rd, adjacent natural-gas power, $2.1B+",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://poweredbywho.com/projects/vantage-millersport-data-center-campus-oh2-ad8f96ad",
+        "label": "Powered By Who dossier: ~39.90N/-82.53W city-center pin (no exact address), 500 acres / 800 MW figures, 'under construction' as of 2026-06",
+        "publisher": "Powered By Who",
+        "retrievedAt": "2026-08-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-05",
+    "notes": "Vantage's second Ohio campus (distinct from the tracked OH1 in Johnstown), at Lancaster-Newark Rd & Blacklick Rd near Millersport — up to 7 structures incl. 4 data-center buildings, $2.1B, powered by an adjacent natural-gas generation facility; under construction as of mid-2026. Capacity figures diverge: 696 MW on Vantage's own site (used here) vs ~800 MW / 500 acres on a project aggregator — the operator figure is used and the discrepancy flagged. Coordinates approximate (Millersport city-center, not parcel-verified).",
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "vantage-phoenix-campus-goodyear-az-az",
     "name": "Vantage Phoenix Campus (Goodyear, AZ)",
     "operator": "Vantage",
@@ -54348,854 +55196,6 @@
       "status": "supported",
       "notes": "Chaves County Commission approved the special-use permit for the project on August 22, 2025; no organized opposition or dissent is reported across multiple independent news accounts of the approval.",
       "sourceIndex": 2
-    },
-    "facilityType": "data_center"
-  },
-  {
-    "id": "ln-compute-cuthbert-ga",
-    "name": "LN Compute Cuthbert Bitcoin Mine",
-    "operator": "LN Compute Inc.",
-    "status": "operational",
-    "confidence": "reported",
-    "location": {
-      "lat": 31.77083,
-      "lon": -84.79361,
-      "city": "Cuthbert",
-      "county": "Randolph",
-      "state": "GA",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "operational": 7
-    },
-    "announcedDate": "2025-09",
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.walb.com/2025/09/25/new-crypto-mine-could-pump-millions-into-south-georgia-community/",
-        "label": "WALB (Sept 25, 2025): a new crypto-mining facility has officially opened in Cuthbert's industrial park, Randolph County; consumes about 7 megawatts (WALB's 'equivalent of powering 5,000 homes'); on-site project manager Hao Chen; Atkinson County facility expected to break ground next",
-        "publisher": "WALB News 10",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.datacentermap.com/usa/georgia/cuthbert/ln-compute-cuthbert/",
-        "label": "DataCenterMap listing: LN Compute Cuthbert, 50 Industrial Blvd, Cuthbert, GA — attributes the site to LN Compute",
-        "publisher": "DataCenterMap",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "An operational bitcoin-mining facility in Cuthbert's industrial park (Randolph County), reported by WALB to have officially opened by September 2025 and to consume about 7 MW (WALB: 'the equivalent of powering 5,000 homes'). Attributed to LN Compute Inc. via a DataCenterMap listing (50 Industrial Blvd); WALB names only the on-site project manager (Hao Chen), not the operating company, so the operator is carried at 'reported' confidence and no specific LN Energy numbered-LLC entity is asserted (LN Compute's Georgia sites use several such LLCs). WALB notes the site was chosen partly for low-mineral city water — consistent with water/liquid cooling, but the cooling type is not explicitly stated, so it is omitted. Coordinates are Cuthbert city-center (approximate); the listing's 50 Industrial Blvd address was not parcel-confirmed. Distinct from LN Compute's former Soperton site (sold to Cango Inc., Aug 2025) and from the separate LN Energy Blackshear/Pierce County proposal whose permit was denied (id=ln-energy-blackshear-pierce-ga).",
-    "facilityType": "crypto_mining",
-    "mining": {
-      "hardwareType": "asic",
-      "powerArrangement": "grid"
-    }
-  },
-  {
-    "id": "ln-energy-blackshear-pierce-ga",
-    "name": "LN Energy Blackshear Bitcoin Mine",
-    "operator": "LN Energy",
-    "status": "cancelled",
-    "confidence": "reported",
-    "location": {
-      "lat": 31.30518,
-      "lon": -82.24207,
-      "city": "Blackshear",
-      "county": "Pierce",
-      "state": "GA",
-      "precision": "approximate"
-    },
-    "statusHistory": [
-      {
-        "status": "cancelled",
-        "date": "2025-02",
-        "note": "Pierce County Commission unanimously denied the conditional-use permit.",
-        "sourceIndex": 0
-      }
-    ],
-    "sources": [
-      {
-        "url": "https://theenergymag.com/news/2025-02-19/georgia-bitcoin-mining-permit-den",
-        "label": "TheEnergyMag / TheMinerMag (Feb 19, 2025): Pierce County Commission unanimously denied LN Energy's conditional-use permit for a bitcoin mine at 1199 Cason Road, Blackshear (Rehobeth Church Community); 150+ residents attended, virtually all opposing over noise, energy consumption, and property-value concerns; notes LN Energy previously sold five turnkey GA mining sites (60 MW total) to CleanSpark for ~$26M",
-        "publisher": "TheEnergyMag (TheMinerMag)",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "A proposed LN Energy bitcoin-mining facility at 1199 Cason Road in the Rehobeth Church Community near Blackshear (Pierce County) whose conditional-use permit was unanimously denied by the Pierce County Commission in February 2025 after organized community opposition (150+ residents). No capacity was disclosed, so capacityMw is omitted (per the convention for cancelled sites). Recorded as a defeated project for the opposition lens. Coordinates are Blackshear city-center (approximate); the Cason Road site lies in a rural community outside the city. Single-source at intake (TheEnergyMag / TheMinerMag); a DatacenterDynamics report on the same denial exists but was inaccessible when this record was created. LN Energy is an affiliate of LN Compute Inc.; distinct from LN Compute's operational Cuthbert site (id=ln-compute-cuthbert-ga) and its former Soperton site (sold to Cango).",
-    "community": {
-      "status": "opposed",
-      "notes": "Over 150 residents attended the February 2025 Pierce County Commission meeting, with virtually everyone opposing the permit; stated concerns were noise, high energy consumption, and potential property-value declines. Pierce County hosts no other bitcoin-mining operations, so this would have been its first.",
-      "sourceIndex": 0
-    },
-    "facilityType": "crypto_mining",
-    "mining": {
-      "hardwareType": "asic"
-    }
-  },
-  {
-    "id": "cyrusone-cin2-cincinnati-oh",
-    "name": "CyrusOne CIN2 (Cincinnati)",
-    "operator": "CyrusOne",
-    "status": "operational",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 39.1027886,
-      "lon": -84.5179229,
-      "city": "Cincinnati",
-      "county": "Hamilton",
-      "state": "OH",
-      "precision": "exact"
-    },
-    "capacityMw": {
-      "operational": 14
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.cyrusone.com/data-centers/north-america/cincinnati-ohio",
-        "label": "CyrusOne Cincinnati facility page: address, 14 MW, 143,778 sq ft technical space, closed-loop chilled-water cooling",
-        "publisher": "CyrusOne",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.datacentermap.com/usa/ohio/cincinnati/cyrusone-cincinnati/",
-        "label": "DataCenterMap listing corroborating CyrusOne CIN2 (7th Street carrier hotel)",
-        "publisher": "DataCenterMap",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "aiClassification": "mixed_use",
-    "notes": "Cincinnati's primary carrier-hotel / switching facility (originally a Cincinnati Bell data-center carve-out), 143,778 sq ft of technical space, HPC-capable, closed-loop chilled-water cooling. Address and 14 MW confirmed on CyrusOne's own site; the building is independently tagged CyrusOne CIN2 in OpenStreetMap. Distinct from the already-tracked CyrusOne CIN3 in Mason (Warren County).",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "iron-mountain-miamisburg-oh",
-    "name": "Iron Mountain OHS-1 (Miamisburg)",
-    "operator": "Iron Mountain",
-    "status": "operational",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 39.6428362,
-      "lon": -84.2866083,
-      "city": "Miamisburg",
-      "county": "Montgomery",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "operational": 1.4
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.ironmountain.com/data-centers/locations/ohio-data-center",
-        "label": "Iron Mountain Ohio data-center page: 3366 S Tech Blvd, Miamisburg; 1.4 MW; 44,000 sq ft; Tier III",
-        "publisher": "Iron Mountain",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://baxtel.com/data-center/lexisnexis-springboro",
-        "label": "Baxtel listing for the same street address under prior LexisNexis branding (confirms same building)",
-        "publisher": "Baxtel",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "Tier III facility, 44,000 sq ft on a ~3.5-acre campus at 3366 S Tech Blvd, Miamisburg (~20 min from Dayton), acquired from / formerly operated by LexisNexis. Confirmed on Iron Mountain's own location page; cross-checked against a LexisNexis Springboro listing at the identical address (same building, prior branding). Coordinates are city-centroid (approximate).",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "lumen-cincinnati-1-oh",
-    "name": "Lumen Cincinnati 1 (400 Pike Street)",
-    "operator": "Lumen Technologies",
-    "status": "operational",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 39.1019019,
-      "lon": -84.5031833,
-      "city": "Cincinnati",
-      "county": "Hamilton",
-      "state": "OH",
-      "precision": "exact"
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.datacentermap.com/usa/ohio/cincinnati/level3-cincinnati/",
-        "label": "DataCenterMap: 400 Pike St, ~7,059 sq ft raised floor, lineage Global Crossing→TW Telecom→Level 3→CenturyLink→Lumen",
-        "publisher": "DataCenterMap",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://baxtel.com/data-center/lumen-cincinnati-1-400-pike",
-        "label": "Baxtel corroborating address/specs for Lumen Cincinnati 1",
-        "publisher": "Baxtel",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "Legacy carrier/network colocation site (~7,059 sq ft raised floor) in Cincinnati's CBD/Lytle Park area — a legacy Level 3 facility (Level 3→CenturyLink 2017→Lumen 2020). No MW figure is publicly disclosed, so capacity is omitted. Included for Hamilton County coverage (Cincinnati had zero tracked sites).",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "datayard-dayton-oh",
-    "name": "DataYard Dayton Data Center",
-    "operator": "DataYard",
-    "status": "operational",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 39.7602255,
-      "lon": -84.1953733,
-      "city": "Dayton",
-      "county": "Montgomery",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.datayard.us/contact/",
-        "label": "DataYard official contact page: 130 W Second St, Suite 250, Dayton, OH 45402",
-        "publisher": "DataYard",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.datayard.us/data-center-co-location/",
-        "label": "DataYard colocation page: downtown Dayton facility operating since 1995 (current is 'fourth iteration')",
-        "publisher": "DataYard",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "Locally-owned downtown Dayton colocation provider, self-described as operating a Dayton data center continuously since 1995 (current facility is their 'fourth iteration'). Address confirmed on DataYard's own site; no MW/sq ft publicly disclosed, so capacity is omitted. Coordinates approximate. Included for Montgomery County coverage.",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "databank-cleveland-cle1-oh",
-    "name": "DataBank Cleveland (CLE1)",
-    "operator": "DataBank",
-    "status": "operational",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 41.4998,
-      "lon": -81.6829,
-      "city": "Cleveland",
-      "county": "Cuyahoga",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "operational": 0.4
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.databank.com/data-centers/cleveland/1255-euclid-ave/",
-        "label": "DataBank CLE1 page: 1255 Euclid Ave Suite 200, 7,440 sq ft raised floor, 0.4 MW critical IT load",
-        "publisher": "DataBank",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.datacentermap.com/usa/ohio/cleveland/databank-cleveland/",
-        "label": "DataCenterMap DataBank Cleveland listing",
-        "publisher": "DataCenterMap",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "Colocation facility in the 1255 Euclid Avenue carrier-hotel building, downtown Cleveland — 7,440 sq ft raised floor, 0.4 MW critical IT load. Distinct from the already-tracked Lumen Cleveland 1 (4000 Chester Ave). The same building also houses 365 Data Centers (CL1) and BlueBridge Networks as separate colocation tenants; recorded here as one representative record rather than three near-duplicate pins at one address.",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "expedient-cleveland-neo-oh",
-    "name": "Expedient Cleveland (NEO 151 / NEO 152)",
-    "operator": "Expedient",
-    "status": "operational",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 41.428,
-      "lon": -81.5733,
-      "city": "Garfield Heights",
-      "county": "Cuyahoga",
-      "state": "OH",
-      "precision": "exact"
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://cloudandcolocation.com/datacenters/expedient-communications-cleveland-data-center-neo-151/",
-        "label": "NEO 151 facility page: 15166 Neo Parkway, 24,000+ sq ft, 900 kVA UPS, dual 2.5 MW generators, 600 tons cooling",
-        "publisher": "cloudandcolocation.com",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.datacenterknowledge.com/business/expedient-completes-third-data-center-in-hometown-cleveland",
-        "label": "Data Center Knowledge: Expedient completes third Cleveland-market data center",
-        "publisher": "Data Center Knowledge",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "Two-building Expedient colocation campus at 15166 and 15248 Neo Parkway in Garfield Heights (Cleveland market), operating since ~2015. No clean total critical-IT-load MW figure is published (only backup-generator sizing), so capacity is omitted. Distinct from the tracked Lumen/Ark-Involta/T5 Cuyahoga sites.",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "amazon-perry-township-stark-oh",
-    "name": "Amazon Perry Township Data Center",
-    "operator": "Amazon Web Services (developer: Panattoni Development Co.)",
-    "status": "under_construction",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 40.7517,
-      "lon": -81.4,
-      "city": "Canton",
-      "county": "Stark",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 240
-    },
-    "announcedDate": "2026-03",
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.ideastream.org/environment-energy/2026-04-15/some-stark-county-residents-skeptical-of-developers-answers-on-data-center-project",
-        "label": "Ideastream: Perry Township data-center project; 240 MW, Panattoni developer, Clayco GC; residents skeptical",
-        "publisher": "Ideastream Public Media",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://bluewaterhealthyliving.com/news/national-news/ohio/open-house-for-perry-township-data-center-sheds-light-on-incoming-user/",
-        "label": "Open house sheds light on incoming user (cites Canton Repository confirmation of Amazon as end-user)",
-        "publisher": "Bluewater Healthy Living",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.news5cleveland.com/news/local-news/we-follow-through/as-data-center-proposals-spread-across-stark-county-neighbors-fear-whats-next",
-        "label": "News 5 Cleveland: data-center proposals across Stark County",
-        "publisher": "News 5 Cleveland",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "aiClassification": "likely",
-    "notes": "240 MW hyperscale campus on ~105 acres at Faircrest St SW & Kropf Ave SW, Perry Township (Canton). Panattoni bought the land Feb 2025 (Clayco GC); excavation underway; two 220,000 sq ft + two 154,000 sq ft buildings targeted for ~April 2028. Amazon was confirmed as the end-user by the Stark County commission president and Canton's mayor to the Canton Repository after Panattoni initially withheld the tenant. Perry Township approved a 30-year, 75% property-tax abatement in March 2026. Coordinates approximate (township-level).",
-    "community": {
-      "status": "mixed",
-      "notes": "Some Perry Township / Stark County residents publicly skeptical of the developer's answers (noise, water, growth); the township nonetheless approved the tax abatement.",
-      "sourceIndex": 0
-    },
-    "facilityType": "data_center"
-  },
-  {
-    "id": "aligned-pataskala-licking-oh",
-    "name": "Aligned Data Centers — Pataskala",
-    "operator": "Aligned Data Centers",
-    "status": "proposed",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 39.9956,
-      "lon": -82.6743,
-      "city": "Pataskala",
-      "county": "Licking",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 200
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://freepress.org/article/pataskala-ohio-zoning-votes-down-data-center-application",
-        "label": "Columbus Free Press: 80+ acres, Bloom Energy natural-gas fuel cells, 84 cooling units; Planning & Zoning voted the application down 2026-06-03",
-        "publisher": "The Columbus Free Press",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.aol.com/articles/pataskala-allow-data-center-industrial-180844000.html",
-        "label": "AOL/Newark Advocate: 89 acres, 200 MW, 3 buildings (down from 4), Broad St & Mink St; P&Z voted 5-2 to recommend rejection (staff recommended approval); Council hearing 2026-08-25",
-        "publisher": "AOL / Newark Advocate",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "aiClassification": "likely",
-    "notes": "Proposed 200 MW campus (89 acres, 3 planned buildings, down from 4) at Broad St & Mink St in the Pataskala industrial park, powered by on-site Bloom Energy natural-gas fuel cells. Contested: the Planning & Zoning Commission voted 5–2 on 2026-06-03 to recommend City Council reject it (staff had recommended approval); Council's final vote is scheduled 2026-08-25, and a separate ballot measure to ban hyperscale (>25 MW) data centers is headed to the November 2026 ballot. Coordinates approximate (Pataskala city-center).",
-    "community": {
-      "status": "contested",
-      "notes": "P&Z recommended rejection 5–2; a citizen-driven November 2026 ballot measure would ban data centers over 25 MW in Pataskala.",
-      "sourceIndex": 0
-    },
-    "facilityType": "data_center"
-  },
-  {
-    "id": "vantage-oh2-millersport-fairfield-oh",
-    "name": "Vantage Data Centers OH2 (Millersport Campus)",
-    "operator": "Vantage Data Centers",
-    "status": "under_construction",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 39.902,
-      "lon": -82.5324,
-      "city": "Millersport",
-      "county": "Fairfield",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 696
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://vantagemillersportcampus.com/",
-        "label": "Vantage Millersport Campus official site: 352 acres, 696 MW IT capacity, 7 structures (up to 4 data centers), Lancaster-Newark Rd & Blacklick Rd, adjacent natural-gas power, $2.1B+",
-        "publisher": "Vantage Data Centers",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://poweredbywho.com/projects/vantage-millersport-data-center-campus-oh2-ad8f96ad",
-        "label": "Powered By Who dossier: ~39.90N/-82.53W city-center pin (no exact address), 500 acres / 800 MW figures, 'under construction' as of 2026-06",
-        "publisher": "Powered By Who",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "aiClassification": "likely",
-    "notes": "Vantage's second Ohio campus (distinct from the tracked OH1 in Johnstown), at Lancaster-Newark Rd & Blacklick Rd near Millersport — up to 7 structures incl. 4 data-center buildings, $2.1B, powered by an adjacent natural-gas generation facility; under construction as of mid-2026. Capacity figures diverge: 696 MW on Vantage's own site (used here) vs ~800 MW / 500 acres on a project aggregator — the operator figure is used and the discrepancy flagged. Coordinates approximate (Millersport city-center, not parcel-verified).",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "aws-jefferson-township-fayette-oh",
-    "name": "AWS Fayette County (Jefferson Township)",
-    "operator": "Amazon Web Services",
-    "status": "under_construction",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 39.6534,
-      "lon": -83.5677,
-      "city": "Jeffersonville",
-      "county": "Fayette",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "announcedDate": "2024-12",
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://columbusconstruction.org/amazon-web-services-to-build-new-datacenter-campus-in-fayette-county/",
-        "label": "Columbus Construction: ~590 acres, I-71 & US-35, $5B, 30-yr 100% CRA exemption, construction slated early 2025",
-        "publisher": "Columbus Construction",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.recordherald.com/2024/12/24/aws-officials-confirm-plans-to-invest-5-billion-into-fayette-county-with-new-data-centers/",
-        "label": "Record-Herald (2024-12-24): AWS VP Roger Wehner names Jefferson Township as first confirmed locality; $5B by 2030 in a $10B Ohio expansion",
-        "publisher": "Washington Court House Record-Herald",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "aiClassification": "likely",
-    "notes": "AWS's first Ohio campus outside the central-Ohio cluster, in Jefferson Township near I-71 & US-35 (adjacent to the Honda/LG EV battery plant). ~590 acres; $5B AWS investment (part of a larger multi-billion Fayette-area / statewide AWS commitment through 2030), announced Dec 2024 by AWS VP Roger Wehner; 30-year 100% CRA tax exemption approved; construction slated to begin early 2025. Capacity MW is NOT disclosed — AWS explicitly withheld building count/MW citing security — so capacityMw is omitted (a third-party ~1,800 MW estimate is unverified and not recorded). Coordinates approximate (Jeffersonville / township-level).",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "stack-nal01-new-albany-oh",
-    "name": "STACK Infrastructure NAL01 (New Albany)",
-    "operator": "STACK Infrastructure",
-    "status": "operational",
-    "confidence": "reported",
-    "location": {
-      "lat": 40.07,
-      "lon": -82.8,
-      "city": "New Albany",
-      "county": "Franklin",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "operational": 60
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.stackinfra.com/locations/americas/new-albany/",
-        "label": "STACK Infrastructure New Albany page: facility NAL01, 40 acres, 60 MW of scalability, operational",
-        "publisher": "STACK Infrastructure",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "aiClassification": "likely",
-    "notes": "STACK's New Albany wholesale data center (NAL01), 40 acres, 60 MW, operational — an established site missing from the tracked New Albany operator list. Confirmed on STACK's own New Albany location page (which does not state a street address, so no street is recorded). Coordinates approximate (New Albany). County recorded as Franklin (New Albany's core incorporated county), but note the New Albany cluster straddles the Franklin/Licking line and STACK's page does not state the county.",
-    "facilityType": "data_center"
-  },
-  {
-    "id": "agriforce-east-palestine-columbiana-oh",
-    "name": "AgriFORCE Bitcoin Mining Facility — East Palestine",
-    "operator": "AgriFORCE Growing Systems Ltd.",
-    "status": "operational",
-    "confidence": "reported",
-    "location": {
-      "lat": 40.8326,
-      "lon": -80.5432,
-      "city": "East Palestine",
-      "county": "Columbiana",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "operational": 2
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.globenewswire.com/news-release/2025/05/14/3081168/0/en/AGRIForce-Announces-Completion-of-500-Miner-Delivery-for-Installation-at-East-Palestine-Ohio-Bitcoin-Mining-Site.html",
-        "label": "AgriFORCE (NASDAQ: AGRI) release (2025-05-14): East Palestine, Ohio site (+2 MW, 50 PH/s) plus a Westpoint, Ohio site (3 MW, 80 PH/s)",
-        "publisher": "GlobeNewswire / AgriFORCE",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.globenewswire.com/news-release/2025/01/23/3014358/0/en/AgriFORCE-Growing-Systems-Secures-Acquisition-of-Bitcoin-Mining-Facility-in-Columbiana-County-Ohio.html",
-        "label": "AgriFORCE (2025-01-23): acquisition of a bitcoin-mining facility in Columbiana County, Ohio; 5 MW; powered by natural gas from flare operations; $4.5M",
-        "publisher": "GlobeNewswire / AgriFORCE",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "Bitcoin-mining site in East Palestine (Columbiana County) operated by AgriFORCE Growing Systems (NASDAQ: AGRI), powered by natural gas from flare operations. Capacity figures are not reconciled across AgriFORCE releases: the May 2025 release cites ~2 MW / 50 PH/s for East Palestine, while a Jan 2025 acquisition release cites 5 MW for 'the Columbiana County facility' (which may aggregate both company sites); the site-specific 2 MW figure is recorded and the discrepancy flagged (hence 'reported' confidence). Coordinates approximate (East Palestine city-center).",
-    "facilityType": "crypto_mining",
-    "mining": {
-      "hardwareType": "asic",
-      "powerArrangement": "flared_gas",
-      "hashRateThPerS": 50000
-    }
-  },
-  {
-    "id": "agriforce-west-point-columbiana-oh",
-    "name": "AgriFORCE Bitcoin Mining Facility — West Point",
-    "operator": "AgriFORCE Growing Systems Ltd.",
-    "status": "operational",
-    "confidence": "reported",
-    "location": {
-      "lat": 40.662,
-      "lon": -80.702,
-      "city": "West Point",
-      "county": "Columbiana",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "operational": 3
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.globenewswire.com/news-release/2025/05/14/3081168/0/en/AGRIForce-Announces-Completion-of-500-Miner-Delivery-for-Installation-at-East-Palestine-Ohio-Bitcoin-Mining-Site.html",
-        "label": "AgriFORCE (NASDAQ: AGRI) release (2025-05-14): 'Westpoint, Ohio' site at 3 MW / 80 PH/s (alongside the East Palestine site)",
-        "publisher": "GlobeNewswire / AgriFORCE",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.globenewswire.com/news-release/2025/01/23/3014358/0/en/AgriFORCE-Growing-Systems-Secures-Acquisition-of-Bitcoin-Mining-Facility-in-Columbiana-County-Ohio.html",
-        "label": "AgriFORCE (2025-01-23): Columbiana County, Ohio bitcoin-mining acquisition; natural gas from flare operations",
-        "publisher": "GlobeNewswire / AgriFORCE",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "Bitcoin-mining site at West Point (spelled 'Westpoint' in AgriFORCE's release), Columbiana County, operated by AgriFORCE Growing Systems (NASDAQ: AGRI) — ~3 MW / 80 PH/s, powered by natural gas from flare operations, part of the same 2025 Ohio operation as the East Palestine site. County (Columbiana) is from geographic record; the AgriFORCE release names the town but not the county. Confidence 'reported' (single-operator IR sourcing). Coordinates approximate.",
-    "facilityType": "crypto_mining",
-    "mining": {
-      "hardwareType": "asic",
-      "powerArrangement": "flared_gas",
-      "hashRateThPerS": 80000
-    }
-  },
-  {
-    "id": "socrates-north-new-albany-oh",
-    "name": "Socrates North Generation Facility",
-    "operator": "Will-Power OH, LLC (Williams Companies)",
-    "status": "under_construction",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 40.07,
-      "lon": -82.76,
-      "city": "New Albany",
-      "county": "Licking",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 200
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.williams.com/expansion-project/socrates-power-solution-facilities/",
-        "label": "Williams Socrates Power Solution Facilities project page (New Albany-area on-site natural-gas generation serving a Meta affiliate)",
-        "publisher": "Williams Companies",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
-        "label": "Farm and Dairy: 'Socrates North and Socrates South, both 200 MW power plants, are under construction'; offtaker Sidecat LLC (Meta)",
-        "publisher": "Farm and Dairy",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "On-site natural-gas generation (200 MW) built by Will-Power OH, LLC (a Williams Companies entity) to serve Meta's New Albany operations under offtaker Sidecat LLC (a Meta affiliate); under construction. One of the paired Socrates North/South plants. Coordinates approximate (New Albany / Licking-side cluster).",
-    "facilityType": "power_generation",
-    "generation": {
-      "technology": "natural_gas",
-      "offtaker": "Meta",
-      "notes": "Behind-the-meter gas generation for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh). Offtaker of record is Sidecat LLC, a Meta affiliate."
-    }
-  },
-  {
-    "id": "socrates-south-new-albany-oh",
-    "name": "Socrates South Generation Facility",
-    "operator": "Will-Power OH, LLC (Williams Companies)",
-    "status": "under_construction",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 40.068,
-      "lon": -82.762,
-      "city": "New Albany",
-      "county": "Licking",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 200
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.williams.com/expansion-project/socrates-power-solution-facilities/",
-        "label": "Williams Socrates Power Solution Facilities project page",
-        "publisher": "Williams Companies",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
-        "label": "Farm and Dairy: Socrates South, 200 MW, under construction; offtaker Sidecat LLC (Meta)",
-        "publisher": "Farm and Dairy",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "On-site natural-gas generation (200 MW) built by Will-Power OH, LLC (Williams) to serve Meta's New Albany operations (offtaker Sidecat LLC); under construction. Paired with Socrates North. Coordinates approximate.",
-    "facilityType": "power_generation",
-    "generation": {
-      "technology": "natural_gas",
-      "offtaker": "Meta",
-      "notes": "Gas generation for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh). Offtaker of record Sidecat LLC (Meta affiliate)."
-    }
-  },
-  {
-    "id": "socrates-the-younger-new-albany-oh",
-    "name": "Socrates the Younger (STY) Generation Facility",
-    "operator": "Will-Power OH, LLC (Williams Companies)",
-    "status": "permitted",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 40.066,
-      "lon": -82.764,
-      "city": "New Albany",
-      "county": "Licking",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 250
-    },
-    "statusHistory": [
-      {
-        "status": "permitted",
-        "date": "2026-06",
-        "note": "OPSB Case 26-0169-EL-BLN (approved).",
-        "sourceIndex": 1
-      }
-    ],
-    "sources": [
-      {
-        "url": "https://www.williams.com/expansion-project/socrates-power-solution-facilities/",
-        "label": "Williams Socrates Power Solution Facilities project page",
-        "publisher": "Williams Companies",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
-        "label": "Farm and Dairy: Socrates the Younger (STY), 250 MW, Will-Power OH, offtaker Sidecat LLC (Meta), OPSB Case 26-0169-EL-BLN, 'behind-the-meter' for an adjacent data center",
-        "publisher": "Farm and Dairy",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "A third Williams (Will-Power OH) on-site gas plant, 250 MW, serving Meta's New Albany operations (offtaker Sidecat LLC), approved by the Ohio Power Siting Board (Case 26-0169-EL-BLN) and operating behind-the-meter for an adjacent data center. Coordinates approximate.",
-    "facilityType": "power_generation",
-    "generation": {
-      "technology": "natural_gas",
-      "offtaker": "Meta",
-      "notes": "Third Socrates plant (250 MW) for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh); OPSB Case 26-0169-EL-BLN. Offtaker Sidecat LLC (Meta affiliate)."
-    }
-  },
-  {
-    "id": "powerconnex-i-new-albany-oh",
-    "name": "PowerConneX I New Albany Energy Center",
-    "operator": "EdgeConneX (PowerConneX)",
-    "status": "under_construction",
-    "confidence": "reported",
-    "location": {
-      "lat": 40.064,
-      "lon": -82.756,
-      "city": "New Albany",
-      "county": "Licking",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 120
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
-        "label": "Farm and Dairy: 'PowerConneX I, a 120 MW plant ... that will power a nearby data center' (EdgeConneX)",
-        "publisher": "Farm and Dairy",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "On-site natural-gas generation (120 MW) built by EdgeConneX's PowerConneX arm to power a nearby New Albany data center. Farm and Dairy names PowerConneX I (120 MW) among the New Albany-area gas plants; the co-located customer is EdgeConneX's own New Albany (MCN) campus. Coordinates approximate.",
-    "facilityType": "power_generation",
-    "generation": {
-      "technology": "natural_gas",
-      "offtaker": "EdgeConneX",
-      "notes": "On-site generation for a nearby New Albany data center (EdgeConneX's co-located MCN New Albany campus, edgeconnex-mcn-new-albany-licking-county-oh)."
-    }
-  },
-  {
-    "id": "powerconnex-ii-new-albany-oh",
-    "name": "PowerConneX II New Albany Energy Center",
-    "operator": "EdgeConneX (PowerConneX)",
-    "status": "under_construction",
-    "confidence": "reported",
-    "location": {
-      "lat": 40.062,
-      "lon": -82.754,
-      "city": "New Albany",
-      "county": "Licking",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 216
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://www.farmanddairy.com/news/ohio-power-siting-board-approves-sixth-natural-gas-power-plant-in-new-albany/919826.html",
-        "label": "Farm and Dairy: 'PowerConneX II, a 216 MW plant — that will power a nearby data center' (EdgeConneX)",
-        "publisher": "Farm and Dairy",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "notes": "A second EdgeConneX PowerConneX on-site gas plant (216 MW) for a nearby New Albany data center (EdgeConneX's co-located MCN campus). Coordinates approximate. (Farm and Dairy also names a pre-application PowerConneX III at 430 MW, not included here.)",
-    "facilityType": "power_generation",
-    "generation": {
-      "technology": "natural_gas",
-      "offtaker": "EdgeConneX",
-      "notes": "Second on-site generation phase for a nearby New Albany data center (EdgeConneX's co-located MCN New Albany campus, edgeconnex-mcn-new-albany-licking-county-oh)."
-    }
-  },
-  {
-    "id": "oregon-industrial-park-data-center-lucas-oh",
-    "name": "Oregon Industrial Park Data Center Campus",
-    "operator": "Capacity LLC (Vantage Data Centers named as prospective developer)",
-    "status": "proposed",
-    "confidence": "reported",
-    "location": {
-      "lat": 41.649,
-      "lon": -83.4614,
-      "city": "Oregon",
-      "county": "Lucas",
-      "state": "OH",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 500
-    },
-    "statusHistory": [],
-    "sources": [
-      {
-        "url": "https://oregonohio.org/oregon-industrial-park-information-on-data-centers/",
-        "label": "City of Oregon official Q&A: ~168 acres at Wynn/Corduroy Rds, up to 8 buildings, ~500 MW at build-out, $2–3B, developer Capacity LLC",
-        "publisher": "City of Oregon, OH",
-        "retrievedAt": "2026-08-05",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.13abc.com/2026/07/29/oregon-officials-eye-vantage-data-centers-proposed-development-near-wynn-corduroy-roads/",
-        "label": "13abc (2026-07-29): Oregon officials name Vantage Data Centers as prospective developer; no decision finalized; citizen referendum petition underway",
-        "publisher": "13abc WTVG",
-        "retrievedAt": "2026-08-05",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-08-05",
-    "aiClassification": "likely",
-    "notes": "Proposed ~168-acre, up-to-8-building data-center campus at Wynn Rd & Corduroy Rd in the Oregon Industrial Park (Toledo area) — Lucas County's first tracked site. The city assembled parcels for site developer Capacity LLC (~$2–3B, ~500 MW at build-out); in late July 2026 officials publicly named Vantage Data Centers as the prospective operator, but the city administrator said no decisions are finalized and a citizen group ('United Neighbors of Oregon') is petitioning for a November 2026 referendum. Confidence 'reported' given operator-in-transition and unbuilt status; coordinates approximate.",
-    "community": {
-      "status": "contested",
-      "notes": "A citizen group ('United Neighbors of Oregon') is petitioning to force a November 2026 public referendum on the project.",
-      "sourceIndex": 1
     },
     "facilityType": "data_center"
   }
