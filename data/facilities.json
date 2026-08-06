@@ -54987,9 +54987,6 @@
     "generation": {
       "technology": "natural_gas",
       "offtaker": "Meta",
-      "poweredFacilityIds": [
-        "meta-prometheus-new-albany-oh"
-      ],
       "notes": "Behind-the-meter gas generation for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh). Offtaker of record is Sidecat LLC, a Meta affiliate."
     }
   },
@@ -55033,9 +55030,6 @@
     "generation": {
       "technology": "natural_gas",
       "offtaker": "Meta",
-      "poweredFacilityIds": [
-        "meta-prometheus-new-albany-oh"
-      ],
       "notes": "Gas generation for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh). Offtaker of record Sidecat LLC (Meta affiliate)."
     }
   },
@@ -55086,9 +55080,6 @@
     "generation": {
       "technology": "natural_gas",
       "offtaker": "Meta",
-      "poweredFacilityIds": [
-        "meta-prometheus-new-albany-oh"
-      ],
       "notes": "Third Socrates plant (250 MW) for Meta's New Albany 'Prometheus' campus (meta-prometheus-new-albany-oh); OPSB Case 26-0169-EL-BLN. Offtaker Sidecat LLC (Meta affiliate)."
     }
   },
@@ -55125,9 +55116,6 @@
     "generation": {
       "technology": "natural_gas",
       "offtaker": "EdgeConneX",
-      "poweredFacilityIds": [
-        "edgeconnex-mcn-new-albany-licking-county-oh"
-      ],
       "notes": "On-site generation for a nearby New Albany data center (EdgeConneX's co-located MCN New Albany campus, edgeconnex-mcn-new-albany-licking-county-oh)."
     }
   },
@@ -55164,9 +55152,6 @@
     "generation": {
       "technology": "natural_gas",
       "offtaker": "EdgeConneX",
-      "poweredFacilityIds": [
-        "edgeconnex-mcn-new-albany-licking-county-oh"
-      ],
       "notes": "Second on-site generation phase for a nearby New Albany data center (EdgeConneX's co-located MCN New Albany campus, edgeconnex-mcn-new-albany-licking-county-oh)."
     }
   },
