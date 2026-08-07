@@ -10807,10 +10807,28 @@
         "publisher": "Oklahoma Watch",
         "retrievedAt": "2026-07-11",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/powered-land-company-cloverleaf-proposing-633-acre-data-center-in-canadian-county-oklahoma/",
+        "label": "Powered land company Cloverleaf proposing 633-acre data center in Canadian County, Oklahoma",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/cloverleaf-piedmont-campus-project-open-sky-ok--0430ed6d-6b23-4a03-adc5-c1b5b9b66391",
+        "label": "Cloverleaf Piedmont Campus (Project Open Sky) — Data Center Tracker",
+        "publisher": "More Than Just Parks Data Center Tracker",
+        "retrievedAt": "2026-08-06",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-11",
+    "lastUpdated": "2026-08-06",
     "notes": "630-acre proposed data campus near the Mathewson Substation, NW 248th Street, Piedmont (Canadian/Kingfisher county line) — part of a transmission corridor drawing multiple competing proposals; see beltline-piedmont-kingfisher-county-ok (this same batch), a separate, distinct 321-acre Beltline Energy site nearby — do not conflate despite both being in Piedmont. Closed-loop cooling planned. Cloverleaf recently withdrew from two Wisconsin data center projects after local opposition (context, not this project). Reported as 'over $1 billion taxable investment' (DCD) — read as a tax-abatement eligibility threshold rather than a confirmed capex figure, so not populated as investmentUsd.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Project Open Sky is planned to use a closed-loop cooling system to greatly reduce water use."
+    },
     "landAcres": 630,
     "community": {
       "status": "contested",
@@ -12373,9 +12391,23 @@
         "label": "Core Scientific and Port Muskogee Break Ground on 100 MW HPC Data Center (investor press release)",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businesswire.com/news/home/20260506005927/en/Core-Scientific-Plans-Expansion-to-1.5-Gigawatts-of-Gross-Power-at-Muskogee-Oklahoma-Campus",
+        "label": "Core Scientific Plans Expansion to 1.5 Gigawatts of Gross Power at Muskogee, Oklahoma Campus",
+        "publisher": "Business Wire",
+        "retrievedAt": "2026-08-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://blockspace.media/insight/core-scientific-jumps-7-in-morning-markets-as-data-center-firm-announces-440-mw-expansion-at-oklahoma-site/",
+        "label": "Core Scientific announces 440 MW expansion at Oklahoma site",
+        "publisher": "Blockspace",
+        "retrievedAt": "2026-08-06",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-06",
     "notes": "1525 W Smith Ferry Rd, Port Muskogee Industrial Park. Distinct from the existing tracked Google Muskogee County campuses - same county, different developer/site. Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -12383,6 +12415,11 @@
       "notes": "Grid power via OG&E is the defining arrangement. Core Scientific's Muskogee campus (the 100MW CoreWeave-anchor HPC facility, ~70MW critical IT load) and the adjacent Polaris DS acquisition are both served by OG&E electric service agreements totaling up to 440MW gross power under contract. Core Scientific's own 1.5GW-ex"
     },
     "investmentUsd": 4000000000,
+    "landAcres": 250,
+    "jobs": {
+      "permanent": 150,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -32608,6 +32645,7 @@
       "lon": -95.88,
       "city": "Tulsa",
       "county": "Tulsa County",
+      "street": "Near East 11th Street & 193rd East Avenue (Fair Oaks industrial park, East Tulsa)",
       "state": "OK",
       "precision": "exact"
     },
@@ -32675,9 +32713,23 @@
         "publisher": "NewsOn6",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.okcommerce.gov/meta-breaks-ground-on-data-center-in-tulsa/",
+        "label": "Meta Breaks Ground on New $1 Billion Data Center in Tulsa",
+        "publisher": "Oklahoma Department of Commerce",
+        "retrievedAt": "2026-08-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox23.com/news/meta-confirmed-as-company-behind-project-anthem-amid-resident-concerns/article_33f131fe-fc26-466a-b6c8-774dd2b2a415.html",
+        "label": "Meta confirmed as company behind Project Anthem",
+        "publisher": "FOX23 News",
+        "retrievedAt": "2026-08-06",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-06",
     "notes": "Codename: Project Anthem (used in TMAPC filings; Meta confirmed publicly April 21, 2026). Meta's 28th US data center and 32nd globally; first in Oklahoma and first built within Tulsa city limits. Anchor tenant at Fair Oaks Innovation Park (a 2,000-acre campus) near 11th Street and Creek Turnpike, East Tulsa. Investment stated as 'more than $1 billion' by Meta — a floor figure only; PartnerTulsa estimates construction costs at ~$800M. investmentUsd omitted: no firm single confirmed figure. Facility size: 2+ million sq ft; completion targeted 2028; general contractor Fortis Construction. No facility-specific MW capacity disclosed; Meta separately adding 1,500+ MW of clean energy to the Oklahoma grid statewide. Jobs: Meta states 'more than 1,000 construction workers at peak' and 'approximately 100 permanent jobs' — approximations from press release, not firm figures; omitted from numeric fields. Phase 2 expansion (375 additional acres west of original parcel, developer Atmoss LLC) proposed but withdrawn March 2026 before city council vote. Coordinates approximate (near 11th St & Creek Turnpike, East Tulsa).",
     "energy": {
       "source": "mixed",
@@ -40188,12 +40240,43 @@
         "publisher": "Yahoo Finance",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://theconstructionbroadsheet.com/polaris-building-m-oklahoma-data-center-p1700-174.htm",
+        "label": "Polaris building $100M Oklahoma data center",
+        "publisher": "The Construction Broadsheet",
+        "retrievedAt": "2026-08-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/crypto-firm-polaris-technology-to-build-200mw-data-center-in-muskogee-oklahoma/",
+        "label": "Crypto firm Polaris Technology to build 200MW data center in Muskogee, Oklahoma",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://streetlightnews.org/data-centers/",
+        "label": "A Muskogee Bitcoin mining facility that received OSHA fines is part of the data center race in Oklahoma",
+        "publisher": "Streetlight News",
+        "retrievedAt": "2026-08-06",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-06",
     "notes": "Bitcoin mining data center (\"Project Bifrost\") on a 42-acre site at Port Muskogee's John T. Griffin Industrial Park, south of Tulsa; ~$100M initial investment (Feb 2024 announcement), since doubled. Operational with ~40,000 miners across shipping containers at ~200MW drawn from OG&E, expanding toward 400MW / 400,000-home-equivalent load. OSHA cited the facility for 6 safety violations (~$68K initial penalty, late 2024: coolant on floors, work around energized circuits without PPE, untrained staff); Oklahoma DEQ found stormwater/sediment violations affecting Sam Creek. Polaris sued the City of Muskogee in 2025 over annexation and a proposed 3% utility franchise fee. Core Scientific has a PENDING (not yet closed) agreement to acquire Polaris Technologies, expected to close Q3 2026 as part of a much larger planned 1.5GW AI campus at the same industrial park — operator of record here remains Polaris Technologies pending that close.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Oklahoma Gas & Electric (OG&E)",
+      "notes": "Power supplied from a nearby OG&E substation reported to have about 1 GW of capacity."
+    },
+    "water": {
+      "notes": "Reported to use millions of gallons of municipal water per day."
+    },
+    "investmentUsd": 100000000,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 6
     },
     "community": {
       "status": "mixed"
