@@ -121,6 +121,20 @@ tool, not part of the deployed app.
 
 - **`.env.local` quoting:** `vercel env add` keeps surrounding quotes; a quoted
   `DATABASE_URL` is invalid and fails *silently* (no fallback). Strip quotes.
+- **Preview builds are gated, production is not.** `vercel.json` runs
+  `scripts/vercel-ignore-build.sh` as Vercel's Ignored Build Step: previews whose
+  diff touches only `data/`, `docs/`, `*.md` are skipped, everything else builds,
+  and **production always builds** so the `withJsonFallback` JSON snapshot in
+  `lib/data.ts` stays current. Note Vercel builds *every push to every branch,
+  PR or not* — batching commits on a long-lived branch saves nothing on its own.
+  Two traps if you touch this script: Vercel's build container has a
+  **single-branch shallow clone** (no `origin/main`, and `git fetch origin main`
+  fails), so it diffs `VERCEL_GIT_PREVIOUS_SHA` — the last *built* commit, which
+  correctly accumulates across skipped pushes and may sit well behind `HEAD^`
+  after a merge. And it **fails open**: any uncertainty builds, which means a
+  broken gate looks identical to a working one. Verify changes by reading the
+  real build log (`npx vercel inspect --logs <url> | grep vercel-ignore`), never
+  by local probes alone.
 - **Prod cache & bulk go-live:** aggregate pages (home/map/table/stats/explore) read
   `loadFacilities` with a **1h ISR timer** (`revalidate: 3600`) — they self-heal within
   the hour. Scoped pages (facility detail, state landing) are **tag-only, no timer** —
