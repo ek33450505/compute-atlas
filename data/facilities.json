@@ -315,12 +315,14 @@
     "status": "proposed",
     "confidence": "reported",
     "location": {
-      "lat": 39.05,
-      "lon": -87.55,
+      "lat": 39.067889,
+      "lon": -87.513056,
       "city": "Merom",
       "county": "Sullivan",
       "state": "IN",
-      "precision": "approximate"
+      "precision": "approximate",
+      "street": "5500 W County Rd 200 S",
+      "postalCode": "47882"
     },
     "capacityMw": {
       "planned": 115
@@ -355,10 +357,17 @@
         "publisher": "REJournals",
         "retrievedAt": "2026-07-20",
         "kind": "press"
+      },
+      {
+        "url": "http://web.archive.org/web/20250122044833/https://www.gem.wiki/AboutBit_Sullivan_County_facility",
+        "label": "Global Energy Monitor / FracTracker Cryptomining Tracker — “AboutBit Sullivan County facility is a proposed 115 MW cryptocurrency mine” (2025-01-22 snapshot)",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-20",
-    "notes": "Proposed 115 MW crypto mine adjacent to the coal-fired Merom Generating Station in Sullivan County. Announced May 2022 ($50M, up to 15 jobs, liquid cooling, 115 MW from WIN Energy). Powering-up was reported in 2023, but in December 2023 AboutBit's CEO walked back the 2022 timeline and denied a link to the plant's continued operation; current operational status is unconfirmed. Staged as proposed pending a fresh primary source. Coordinates approximate.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Proposed 115 MW crypto mine adjacent to the coal-fired Merom Generating Station in Sullivan County. Announced May 2022 ($50M, up to 15 jobs, liquid cooling, 115 MW from WIN Energy). Powering-up was reported in 2023, but in December 2023 AboutBit's CEO walked back the 2022 timeline and denied a link to the plant's continued operation; current operational status is unconfirmed. Staged as proposed pending a fresh primary source. Coordinates approximate. SOURCE CONFLICT RESOLVED 2026-08-08: two claims contradicted this record — Earthjustice (Oct 2023) described the site as operating since 2022, and a Baxtel listing tagged it \"withdrawn before construction\". Neither is supported. Global Energy Monitor's Cryptomining Tracker entry, the most rigorous of the three, still read \"is a proposed 115 MW cryptocurrency mine\" in its 2025-01-22 snapshot (gem.wiki serves 403 to fetchers, so the archived copy is cited). The status stays \"proposed\" and no evidence was found that the mine was ever energized. Location upgraded from a Merom town-level guess to GEM's plotted address.",
     "energy": {
       "source": "grid",
       "utility": "WIN Energy",
@@ -51232,7 +51241,7 @@
     "id": "thor-equities-augusta-township-mi",
     "name": "Thor Equities Augusta Township Data Center (Form8tion)",
     "operator": "Thor Equities",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 42.163,
@@ -51268,6 +51277,12 @@
         "date": "2025-08",
         "note": "Residents collect 957 signatures for ballot initiative (threshold was 561); question set for 2026 ballot (May or August primary election) to overturn rezoning",
         "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-08-04",
+        "note": "Augusta Township voters overturned the rezoning at the August primary — about 90% voted to overturn — returning the seven parcels to agricultural residential and removing the zoning the project depended on. Results were still unofficial as of 2026-08-05.",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -51298,10 +51313,24 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://planetdetroit.org/2026/07/augusta-data-center-battle-ballot/",
+        "label": "Augusta Township data center battle reaches the ballot — 522 acres, agricultural residential to general industrial, vote set for 2026-08-04",
+        "publisher": "Planet Detroit",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wemu.org/wemu-news/2026-08-05/augusta-township-voters-overturn-data-center-rezoning",
+        "label": "Augusta Township voters overturn data center rezoning — “about 90% of voters chose to overturn”",
+        "publisher": "WEMU-FM",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
-    "notes": "Site north of Milan-Oakville Road, east of Hitchingham Road, Augusta Township, Washtenaw County MI (between Ann Arbor and Monroe). No end user announced; planners cited Google and Microsoft as typical users of this facility type. Form8tion is Thor's digital infrastructure arm (founded March 2023). Capacity not disclosed; at least five large buildings planned. Voter referendum outcome will determine project viability. Coordinates are approximate Augusta Township centroid.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Site north of Milan-Oakville Road, east of Hitchingham Road, Augusta Township, Washtenaw County MI (between Ann Arbor and Monroe). No end user announced; planners cited Google and Microsoft as typical users of this facility type. Form8tion is Thor's digital infrastructure arm (founded March 2023). Capacity not disclosed; at least five large buildings planned. Voter referendum outcome will determine project viability. Coordinates are approximate Augusta Township centroid. SOURCE CONFLICT RESOLVED 2026-08-08: the earlier \"rejected by voters\" claim in an article predating the election was a pre-election piece describing the UPCOMING vote — the dates now reconcile because the referendum has since been held. Augusta Township voters overturned the 522-acre rezoning on 2026-08-04 (about 90% to overturn), so the parcels revert to agricultural residential. Recorded as \"cancelled\" because the project's enabling rezoning is gone; note that Thor Equities has NOT publicly withdrawn, and the results were unofficial as of 2026-08-05 — revisit if the developer re-applies or the count is certified differently.",
     "energy": {
       "source": "grid",
       "utility": "DTE Energy"
@@ -51309,9 +51338,9 @@
     "investmentUsd": 1000000000,
     "landAcres": 810,
     "community": {
-      "status": "contested",
-      "notes": "Protect Augusta Charter Township (PACT) organized referendum drive; 957 signatures collected (threshold 561). Residents cite water use (~1 million gallons/day), noise, light pollution, loss of rural farmland character. Board approved rezoning; voter referendum pending in 2026. No end user announced as of July 2026.",
-      "sourceIndex": 2
+      "status": "opposed",
+      "notes": "Opposition ran the full course: the Planning Commission recommended denial 5-1 (2025-06), the Board of Trustees approved the rezoning anyway (2025-07), residents gathered 957 signatures to force a referendum (2025-08), and the rezoning was overturned at the ballot on 2026-08-04 by roughly 90% of voters. A recall effort against the township board followed.",
+      "sourceIndex": 5
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
