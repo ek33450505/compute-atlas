@@ -16081,9 +16081,6 @@
       "state": "VA",
       "precision": "exact"
     },
-    "capacityMw": {
-      "operational": 36.4
-    },
     "statusHistory": [],
     "sources": [
       {
@@ -16108,8 +16105,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "44520 Hastings, Ashburn VA, part of the legacy DuPont Fabros Ashburn campus acquired by DLR in Sept 2017. 36.4MW critical power capacity.",
+    "lastUpdated": "2026-08-08",
+    "notes": "44520 Hastings, Ashburn VA, part of the legacy DuPont Fabros Ashburn campus acquired by DLR in Sept 2017. 36.4MW critical power capacity. Capacity removed 2026-08-08: the 36.4 MW figure rested solely on a Baxtel listing (an aggregator this project does not treat as a citation). Digital Realty has no ACC3 page — archive.org holds no snapshot of that URL at all — and no other citable source was found.",
     "energy": {
       "utility": "Dominion Energy Virginia"
     },
@@ -16852,9 +16849,6 @@
       "state": "CA",
       "precision": "exact"
     },
-    "capacityMw": {
-      "operational": 18
-    },
     "statusHistory": [],
     "sources": [
       {
@@ -16879,8 +16873,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "132,000 sqft building, 18MW total power, Tier 3.",
+    "lastUpdated": "2026-08-08",
+    "notes": "132,000 sqft building, 18MW total power, Tier 3. Capacity removed 2026-08-08: the record carried 18 MW cited to the Digital Realty LAX12 page, but that page publishes no MW figure — and archived snapshots from 2023-06 and 2025-10 show it never did. The figure was mis-cited; no citable replacement was found.",
     "energy": {
       "utility": "Southern California Edison (SCE)"
     },
@@ -28789,10 +28783,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://iren.com/data-centers/oklahoma",
+        "label": "IREN Oklahoma data center — 1,600 MW, 2,000 acres, 2028 substation energization",
+        "publisher": "IREN",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-25",
-    "notes": "~2,000-acre land bank near Alva, Woods County, with a secured 1.6 GW power allocation on the Southwest Power Pool grid; initial power ramp scheduled for 2028. IREN's land-bank expansion beyond its operational Texas campuses (Childress, Sweetwater). Single-tracker source → confidence reported. Coordinates are the Alva area centroid.",
+    "lastUpdated": "2026-08-08",
+    "notes": "~2,000-acre land bank near Alva, Woods County, with a secured 1.6 GW power allocation on the Southwest Power Pool grid; initial power ramp scheduled for 2028. IREN's land-bank expansion beyond its operational Texas campuses (Childress, Sweetwater). Single-tracker source → confidence reported. Coordinates are the Alva area centroid. Capacity re-sourced 2026-08-08: IREN's own Oklahoma page states \"1,600 MW\", \"2,000 Acres\" and \"2028 Substation Energization\", status \"IN DEVELOPMENT\" — replacing an aggregator listing as the basis for the figure.",
     "energy": {
       "source": "grid",
       "utility": "OG&E",
@@ -30670,9 +30671,6 @@
       "state": "TX",
       "precision": "exact"
     },
-    "capacityMw": {
-      "operational": 12
-    },
     "statusHistory": [],
     "sources": [
       {
@@ -30690,8 +30688,8 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "3180 Irving Blvd, Dallas — 80,000 sqft, 12MW, matches OSM name/address exactly.",
+    "lastUpdated": "2026-08-08",
+    "notes": "3180 Irving Blvd, Dallas — 80,000 sqft, 12MW, matches OSM name/address exactly. Capacity removed 2026-08-08: the 12 MW figure appears only in colocation-marketplace directories (Baxtel, datacenters.com, datacentermap), which are the same class of aggregator source this project rejects. Lumen publishes no per-facility MW.",
     "facilityType": "data_center"
   },
   {
@@ -38437,9 +38435,6 @@
       "state": "WA",
       "precision": "exact"
     },
-    "capacityMw": {
-      "operational": 14
-    },
     "statusHistory": [],
     "sources": [
       {
@@ -38464,8 +38459,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "14MW, 180,000 sqft, purpose-built 2012, hydro-powered; sold to GI Partners in a 2019 sale-leaseback but remains NTT DATA-operated under long-term lease.",
+    "lastUpdated": "2026-08-08",
+    "notes": "14MW, 180,000 sqft, purpose-built 2012, hydro-powered; sold to GI Partners in a 2019 sale-leaseback but remains NTT DATA-operated under long-term lease. Capacity removed 2026-08-08: the 14 MW figure rested solely on a Baxtel listing; NTT publishes no per-facility MW for this site and no other citable source was found.",
     "energy": {
       "utility": "PUD No 2 of Grant County"
     },
@@ -39479,10 +39474,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://rowan.digital/portfolio/percheron/",
+        "label": "Rowan Digital Infrastructure — Percheron: 300 MW, 275 acres",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
-    "notes": "Rowan Digital Infrastructure (formerly Rowan Green Data, a Quinbrook/Birch Infrastructure JV) is developing a single unified campus on a 275-acre parcel in Morrow County, OR: four buildings totaling 1.125M sq ft, 300MW planned capacity by mid-2027. County approved rezoning Sept 2023 (East Oregonian, DCD). This is the canonical record for the campus; osm_ids 1501824327/328/329 are near-identical coordinates (within ~0.2km) almost certainly representing OSM nodes for the same single campus/buildings and are dropped as duplicates.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Rowan Digital Infrastructure (formerly Rowan Green Data, a Quinbrook/Birch Infrastructure JV) is developing a single unified campus on a 275-acre parcel in Morrow County, OR: four buildings totaling 1.125M sq ft, 300MW planned capacity by mid-2027. County approved rezoning Sept 2023 (East Oregonian, DCD). This is the canonical record for the campus; osm_ids 1501824327/328/329 are near-identical coordinates (within ~0.2km) almost certainly representing OSM nodes for the same single campus/buildings and are dropped as duplicates. Capacity re-sourced 2026-08-08: Rowan's own portfolio page states \"300 MW\" on \"275AC\" with phased buildout completing by 2030.",
     "energy": {
       "utility": "PacifiCorp"
     },
@@ -49646,8 +49648,8 @@
   },
   {
     "id": "t5-atlanta-i-ga",
-    "name": "T5@Atlanta I",
-    "operator": "T5 Data Centers",
+    "name": "STACK ATL01 (formerly T5@Atlanta)",
+    "operator": "STACK Infrastructure",
     "status": "operational",
     "confidence": "reported",
     "location": {
@@ -49661,7 +49663,7 @@
       "precision": "exact"
     },
     "capacityMw": {
-      "operational": 14
+      "operational": 20
     },
     "statusHistory": [],
     "sources": [
@@ -49685,10 +49687,24 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.stackinfra.com/locations/americas/atlanta/atl01/",
+        "label": "STACK Infrastructure ATL01 — 2 buildings, 20MW of critical capacity",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/colocation/ipi-combines-infomart-some-t5-assets-to-form-new-data-center-provider",
+        "label": "IPI combines Infomart and some T5 assets to form STACK Infrastructure (“Atlanta, Chicago, and Dallas are T5”)",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "T5@Atlanta I at 3200 Webb Bridge Road, Alpharetta, GA — T5's original metro-Atlanta facility, established 2011, 105,000 SF / 14MW N+1. Confirmed via baxtel, Inflect, and gotcolo listings. t5datacenters.com/locations/t5-atlanta-i/ direct fetch 404'd (likely JS-routed slug) but facility is corroborated by 3+ independent reputable colo directories.",
+    "lastUpdated": "2026-08-08",
+    "notes": "3200 Webb Bridge Road, Alpharetta GA. Originally T5@Atlanta I; the site passed to STACK Infrastructure when IPI Partners combined the Infomart data centers with selected T5 assets to launch STACK on 2019-01-15 — Data Center Knowledge names Atlanta among the T5 contributions. STACK's own ATL01 page describes 2 buildings (ATL01A 105,000 sq ft, ATL01B 133,000 sq ft) and “20MW of critical capacity”; the record is therefore campus-level. The prior 14 MW single-building figure came from an aggregator directory and is not carried. The record id is unchanged to preserve its URL and history.",
     "energy": {
       "utility": "Georgia Power"
     },
@@ -49834,9 +49850,6 @@
       "state": "IL",
       "precision": "exact"
     },
-    "capacityMw": {
-      "operational": 17.5
-    },
     "statusHistory": [],
     "sources": [
       {
@@ -49861,8 +49874,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "T5 Chicago II at 200 Innovation Drive, Elk Grove Village, IL 60007 (commissioned by Forsythe 2014, acquired by T5 in 2016, 17.5MW). Confirmed via baxtel and Inflect colo directories; T5's own /locations/ page structure loaded but is client-side rendered so facility list could not be extracted directly from it.",
+    "lastUpdated": "2026-08-08",
+    "notes": "T5 Chicago II at 200 Innovation Drive, Elk Grove Village, IL 60007 (commissioned by Forsythe 2014, acquired by T5 in 2016, 17.5MW). Confirmed via baxtel and Inflect colo directories; T5's own /locations/ page structure loaded but is client-side rendered so facility list could not be extracted directly from it. Capacity removed 2026-08-08: the 17.5 MW figure rested solely on a Baxtel listing, and other aggregators give a conflicting ~30 MW for the same address. OPERATOR ALSO UNVERIFIED: Data Center Knowledge reports Chicago among the T5 assets folded into STACK Infrastructure in Jan 2019, so “T5 Data Centers” may be stale here — but no source confirms whether THIS building (200 Innovation Drive, acquired by T5 from Forsythe in 2016) was among them, so it is left unchanged rather than guessed.",
     "energy": {
       "utility": "ComEd"
     },
