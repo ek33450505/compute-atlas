@@ -7,16 +7,34 @@
 #   exit 0  => SKIP the build
 #
 # Policy:
-#   1. Production ALWAYS builds. `lib/data.ts` imports `data/facilities.json`
-#      as the Neon-outage fallback snapshot (`withJsonFallback`), so the
-#      deployed bundle must keep a current copy even when a merge is data-only.
-#   2. Preview builds are skipped when the diff touches ONLY data/docs. The
-#      site renders from Neon, so a data-only preview is byte-for-byte the
-#      same site as production — the JSON diff on the PR is the real review.
+#   1. ANY deployment — preview or production — is skipped when the diff
+#      touches ONLY data, docs, or GitHub config. The site renders from Neon
+#      LIVE, so none of those change a single byte a visitor can see.
+#   2. Everything else builds.
+#
+# ## Why production is no longer unconditional (reversed 2026-08-08)
+#
+# It used to be, and the reason was sound at the time: data reached production
+# THROUGH the build, so skipping a data-only merge would have withheld that
+# data from the site.
+#
+# That is no longer how data ships. `npm run db:sync` writes Neon directly and
+# busts the affected cache tags, so a data change is already live *before* the
+# commit that records it is even merged — the commit is bookkeeping for the
+# CC-BY snapshot, not a deploy.
+#
+# The one thing a production build still refreshes on a data-only merge is the
+# `withJsonFallback` snapshot in `lib/data.ts`: `data/facilities.json` is
+# bundled as the fallback used only when a Neon read FAILS. That snapshot now
+# rides the next code deploy instead. Serving slightly older data during an
+# outage is a far smaller cost than one production build per data commit, and
+# it can be refreshed on demand at any time:
+#     npx vercel redeploy --target production
 #
 # Fail-open by design: any uncertainty about the diff (no base ref, empty
 # diff, git error) proceeds with the build. A wasted build is cheap; a
-# silently skipped code deploy is not.
+# silently skipped code deploy is not. That matters more now that this script
+# can skip production — every uncertain path below must build.
 #
 # Wired via vercel.json -> "ignoreCommand".
 
@@ -27,12 +45,7 @@ log() { printf '[vercel-ignore] %s\n' "$*" >&2; }
 build() { log "BUILD — $*"; exit 1; }
 skip() { log "SKIP — $*"; exit 0; }
 
-# 1. Production is never skipped.
-if [[ "${VERCEL_ENV:-}" == "production" ]]; then
-  build "production deployment"
-fi
-
-# 1b. release-please's PR branch. By construction it only ever bumps a version
+# 1. release-please's PR branch. By construction it only ever bumps a version
 #     string — .release-please-manifest.json, CHANGELOG.md, and the `version`
 #     field of package.json / package-lock.json — so its preview renders a site
 #     byte-identical to the one already deployed. It cannot be handled by the
@@ -44,6 +57,12 @@ if [[ "${VERCEL_GIT_COMMIT_REF:-}" == release-please--* ]]; then
 fi
 
 # 2. Resolve a base commit to diff against.
+#
+#    On production, VERCEL_GIT_PREVIOUS_SHA is the last commit actually
+#    DEPLOYED to production — so it correctly accumulates across skipped
+#    production deployments, exactly as it does for previews. A run of
+#    data-only merges followed by a code merge diffs the whole span and
+#    builds.
 #
 #    Vercel clones SINGLE-BRANCH and SHALLOW. `origin/main` does not exist in
 #    the build container and `git fetch origin main` fails there, so the
@@ -90,14 +109,17 @@ if [[ -z "$changed" ]]; then
   build "empty diff (fail-open)"
 fi
 
-# 3. Allowlist of skippable paths. Anything unrecognized triggers a build,
-#    so new source directories are safe by default.
+# 3. Allowlist of skippable paths. Anything unrecognized triggers a build, so
+#    new source directories are safe by default.
+#
+#    .github/* is here because CI/Actions config cannot influence the built
+#    site — it is not read by `next build` and ships in no bundle.
 while IFS= read -r file; do
   [[ -z "$file" ]] && continue
   case "$file" in
-    data/* | docs/* | *.md | LICENSE | LICENSE-DATA) continue ;;
+    data/* | docs/* | .github/* | *.md | LICENSE | LICENSE-DATA) continue ;;
     *) build "code change: ${file}" ;;
   esac
 done <<<"$changed"
 
-skip "data/docs-only preview ($(printf '%s' "$changed" | grep -c .) file(s))"
+skip "${VERCEL_ENV:-preview}: data/docs/config-only ($(printf '%s' "$changed" | grep -c .) file(s))"
