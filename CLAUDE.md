@@ -21,9 +21,12 @@ bats tests/discovery/run.bats   # shell tests for the discovery harness
 # Database (Neon Postgres + Drizzle) — all read .env.local
 npm run db:generate    # generate a migration from schema changes
 npm run db:migrate     # apply migrations
-npm run db:seed        # insert NEW facilities into Neon (existing rows untouched)
-npm run db:seed -- --force   # ALSO overwrite existing Neon rows from the JSON
+npm run db:sync        # DRY RUN: diff data/facilities.json against Neon, print the plan
+npm run db:sync -- --apply   # publish adds + updates, write history, bust cache tags
 npm run db:export      # export live facilities back to data/facilities.json (Neon → JSON)
+npm run check:drift    # report JSON↔Neon drift (read-only, non-blocking)
+npm run db:seed        # BOOTSTRAP ONLY: insert NEW facilities into an empty DB
+npm run db:seed -- --force   # legacy bulk overwrite — writes NO history, busts NO tags
 
 # Map data
 npm run build:mapdata                 # build static map overlays and siting-context from public sources
@@ -81,12 +84,24 @@ gate. Still run `npm run typecheck && npm test` locally before opening a PR.
   `[state]`/`[operator]`/`[status]`/`[metro]` hubs) · `app/facilities/[slug]` ·
   `app/contribute` · `app/activity` · `app/admin/*` · `app/api/*`.
 
-## Core invariant: writes are staged and human-gated
+## Core invariant: no unreviewed write ever becomes a live facility
 
-Nothing becomes a live facility automatically. Every change — whether from the
-discovery pipeline or a public contributor — lands as a `pending` row in the
-`submissions` table and requires an explicit human `approve` (`lib/submissions.ts`,
-the `submissions` CLI, or the admin UI). Preserve this:
+The gate is **human review**, not any particular mechanism. There are exactly two
+ways data goes live, and both put a person in front of it:
+
+1. **Unreviewed intake is staged.** Anything arriving from the discovery pipeline
+   or a public contributor lands as a `pending` row in the `submissions` table and
+   requires an explicit human `approve` (`lib/submissions.ts`, the `submissions`
+   CLI, or the admin UI). Nothing promotes itself. Never relax this.
+2. **Maintainer-reviewed data publishes directly** via `npm run db:sync -- --apply`
+   (`scripts/sync-to-neon.ts`). A maintainer publishing records they have already
+   reviewed *is* the human gate — staging their own work for their own approval
+   would be ceremony, not safety. The gate lives in the explicit `--apply`
+   (dry run is the default), the fail-closed drift guard, and the fact that only
+   the maintainer holds `DATABASE_URL`.
+
+⚠️ Do not "fix" `db:sync` into routing through `submissions` — that reading of this
+section is what this wording exists to prevent (Ed, 2026-08-08).
 
 - **Public intake** (`POST /api/contribute`) is anonymous + moderated: it hard-pins
   `status=pending`, validates with Zod, and ignores privileged fields. Never relax it.
@@ -96,6 +111,22 @@ the `submissions` CLI, or the admin UI). Preserve this:
 - **Data rigor:** every fact is traceable to a real, citable source. Do not
   fabricate coordinates, capacity, operators, or dates — omit unknown fields. See
   `CONTRIBUTING.md` and the data model in `lib/schema.ts`.
+
+## Data waves: the DB is the source of truth, the JSON is generated
+
+Research → **`npm run db:sync`** (dry run, review the plan) → `-- --apply` →
+`npm run db:export` → commit the regenerated JSON. `data/facilities.json` is never
+hand-edited as the *publish* step; it is an artifact of the DB.
+
+Why it matters: the site reads Neon live, so data never needed a build. Editing the
+file and shipping it through git made every correction a Vercel deploy, and left
+drift (`check:drift`, the `neon-sync` workflow) to be detected and repaired
+afterwards. Syncing first makes drift structurally impossible instead, and
+`check:drift` becomes a true invariant that should always pass.
+
+`db:sync` writes `facility_history` for every change (so `/activity` sees it) and
+busts exactly the cache tags it touched. `db:seed --force` does neither — it is
+bootstrap-only, kept for filling an empty database.
 
 ## Discovery pipeline
 
@@ -138,15 +169,21 @@ tool, not part of the deployed app.
 - **Prod cache & bulk go-live:** aggregate pages (home/map/table/stats/explore) read
   `loadFacilities` with a **1h ISR timer** (`revalidate: 3600`) — they self-heal within
   the hour. Scoped pages (facility detail, state landing) are **tag-only, no timer** —
-  they refresh only when a write busts their tag via `lib/facility-write.ts`. A **direct
-  Neon write** (`db:seed`, or a bulk-upsert script) does NOT bust any tag, so after one
-  hit the admin-bearer `POST /api/revalidate` with the affected tags (e.g.
-  `{"tags":["facilities","state:CA"]}`) to surface scoped pages immediately; brand-new
-  facility ids need no bust (cache-miss populates them). The normal approve-on-prod path
-  busts tags for you — this is only for out-of-band bulk writes.
-- **JSON ↔ Neon — Neon is truth.** `data/facilities.json` can drift behind Neon
-  (records approved but not yet re-exported). `db:seed` is insert-new-safe by default
-  (never reverts a drifted row without `--force`); `db:export` pulls Neon→JSON to reconcile.
+  they refresh only when a write busts their tag. The tag vocabulary is centralized in
+  `lib/cache-tags.ts` (`tagsForFacility` + the route's allowlist), shared by
+  `lib/facility-write.ts` and `POST /api/revalidate` so producer and validator can't
+  drift apart. `db:sync --apply` and the approve-on-prod path both bust tags for you.
+  Only a **raw** Neon write (`db:seed --force`, an ad-hoc upsert) leaves them un-busted
+  — then hit the admin-bearer `POST /api/revalidate` yourself with the affected tags
+  (e.g. `{"tags":["facilities","state:CA"]}`); brand-new facility ids need no bust
+  (cache-miss populates them).
+- **JSON ↔ Neon — Neon is truth, and `db:sync` is the only bulk write path.**
+  `db:sync` applies adds *and* updates, writes history, busts tags, and refuses to
+  overwrite a Neon row that moved ahead of the JSON's basis (`facilities.meta.json`'s
+  `asOf`) — so it can't clobber a prod approval. `db:seed --force` publishes adds but
+  **silently drops every correction to an existing row, writes no history, and busts
+  no tags** — it is bootstrap-only. After syncing, `db:export` regenerates the JSON
+  from Neon so `check:drift` is clean.
 - **Local-only docs:** `docs/NEXT-SESSION.md` and `docs/track-c-candidate-ledger.md`
   are gitignored maintainer notes — never commit them.
 - **Dev server:** don't run `next build`/`start` while `next dev` is live (it
