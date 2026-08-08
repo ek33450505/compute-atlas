@@ -3889,8 +3889,8 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-18",
-    "notes": "AWS's Licking-side New Albany expansion: a $3.5B, five-building, ~1.25M sq ft campus (announced Sept 2023, targeted through 2030) on the Amazon Data Services Beech Rd NW / Miller Rd NW parcel cluster (~458 ac). Two buildings were completed and staffed as of Aug 2025; the remainder are under construction. Adjacent to (but distinct from) AWS's pre-existing 2570 Beech Rd \"Ridge Two\" campus (operational since ~2017, a separate parcel not in this record). No site-specific IT-load MW is disclosed (a widely-repeated 500 MW figure is an AWS us-east-2 regional aggregate, not this campus). Amazon's 2023 Ohio Job Creation Tax Credit is a multi-site umbrella (17 facilities across Franklin/Licking/Union counties), not specific to this parcel. Distinct from tracked aws-cosgray-hilliard-oh and aws-scioto-darby-hilliard-oh (Hilliard, Franklin County, west of Columbus).",
+    "lastUpdated": "2026-08-08",
+    "notes": "AWS's Licking-side New Albany expansion: a $3.5B, five-building, ~1.25M sq ft campus (announced Sept 2023, targeted through 2030) on the Amazon Data Services Beech Rd NW / Miller Rd NW parcel cluster (~458 ac). Two buildings were completed and staffed as of Aug 2025; the remainder are under construction. Adjacent to (but distinct from) AWS's pre-existing 2570 Beech Rd \"Ridge Two\" campus (operational since ~2017, a separate parcel not in this record). No site-specific IT-load MW is disclosed (a widely-repeated 500 MW figure is an AWS us-east-2 regional aggregate, not this campus). Amazon's 2023 Ohio Job Creation Tax Credit is a multi-site umbrella (17 facilities across Franklin/Licking/Union counties), not specific to this parcel. Distinct from tracked aws-cosgray-hilliard-oh and aws-scioto-darby-hilliard-oh (Hilliard, Franklin County, west of Columbus). Status refresh 2026-08-08: the completion target has PASSED without confirmation. As of the city's 2025-08-07 update, two campus buildings were finished and staffed (tracked separately as the 2550 and 3180 Beech Road records) with the remainder \"expected to be operational by the end of the year\" — i.e. end-2025. No fetched source confirms that happened, so this record stays under_construction rather than being promoted on an expectation. Worth re-checking with a Licking County occupancy or AWS regional announcement.",
     "subsidies": [
       {
         "program": "New Albany data-center property-tax abatement (100% for 15 years, then 75% for 15 years)",
@@ -36070,8 +36070,8 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
-    "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. 288 MW figure from secondary aggregator Cleanview only; primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; original statusHistory incorrectly dated under_construction to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway. A Building-1 permit cites ~72 peak-shift staff (a single-building figure, not a facility employment total); no confirmed total campus capital-expenditure figure is public.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. 288 MW figure from secondary aggregator Cleanview only; primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; original statusHistory incorrectly dated under_construction to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway. A Building-1 permit cites ~72 peak-shift staff (a single-building figure, not a facility employment total); no confirmed total campus capital-expenditure figure is public. Go-live check 2026-08-08: NO citable operational date exists. Microsoft's own Malaga project page gives a first-phase construction window concluding in early 2026 but states plainly that \"Completion of construction does not indicate datacenter operation/availability\", and publishes no energization or service date. Secondary reporting that the first building would be \"powered in August and fully operational by late 2026\" is forward-looking and was not used to move the status. Remains under_construction.",
     "energy": {
       "source": "hydro",
       "utility": "Chelan County PUD",
@@ -38539,6 +38539,12 @@
         "date": "2026-05",
         "note": "Mesa Planning Commission voted unanimously to recommend rezoning; council vote was pending summer 2026",
         "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "Mesa's Planning and Zoning Board voted 4-0 to recommend that City Council approve NTT's rezoning, council use permit and major site plan modification for the 170-acre site at Pecos and Crismon roads. A recommendation only — the Council decision had not been taken.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -38555,10 +38561,17 @@
         "publisher": "Copper Courier",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.themesatribune.com/news/big-data-center-in-se-mesa-passes-first-review/article_91081b9b-d2d1-47f6-91d2-b600115e4a55.html",
+        "label": "Big data center in SE Mesa passes first review — Planning & Zoning Board recommends approval 4-0 for the 170-acre site at Pecos and Crismon",
+        "publisher": "Mesa Tribune",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
-    "notes": "investmentUsd is $300M land purchase only; total buildout investment is substantially higher. NE corner of Pecos and Crismon roads, far SE Mesa. Seven two-story buildings totaling 1.7M sq ft + warehouse + office. NTT's second Phoenix-area campus (existing 102-acre, 240MW campus is ~4 miles north on Elliot Road). Phase 1 targeted November 2028. Coordinates approximate for Pecos/Crismon intersection.",
+    "lastUpdated": "2026-08-08",
+    "notes": "investmentUsd is $300M land purchase only; total buildout investment is substantially higher. NE corner of Pecos and Crismon roads, far SE Mesa. Seven two-story buildings totaling 1.7M sq ft + warehouse + office. NTT's second Phoenix-area campus (existing 102-acre, 240MW campus is ~4 miles north on Elliot Road). Phase 1 targeted November 2028. Coordinates approximate for Pecos/Crismon intersection. Status refresh 2026-08-08: the Planning & Zoning Board recommended approval 4-0 in mid-May 2026; the article (updated 2026-06-08) said the proposal \"will likely be heard in late July or mid-August by council\". No fetched source records a Council vote, so the status stays \"proposed\" — the 2026-07-20 date carried in earlier notes was an expected hearing date, not a decision.",
     "energy": {
       "source": "grid",
       "utility": "Salt River Project (SRP)",
