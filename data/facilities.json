@@ -56801,5 +56801,97 @@
     "lastUpdated": "2026-08-08",
     "notes": "Listed by Google among its US data centers under development. Google has not published a dedicated location page, capacity, investment figure, or timeline for this site — it appears only on Google's US locations index, so this record is intentionally thin. Coordinates are the Hermantown city centroid (approximate).",
     "facilityType": "data_center"
+  },
+  {
+    "id": "revolve-labs-moose-lake-mn",
+    "name": "Revolve Labs Moose Lake (withdrawn)",
+    "operator": "Revolve Labs",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 46.4543725,
+      "lon": -92.761976,
+      "city": "Moose Lake",
+      "county": "Carlton",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-24",
+        "note": "The Moose Lake Planning Commission postponed a recommendation on the application for further review, after commissioners and residents raised concerns at public hearings about cooling-fan noise and the electricity use of the facility.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-03-11",
+        "note": "Revolve Labs withdrew its application; the city administrator informed the City Council. The company said “the current timeline for power availability at the site does not align with several near-term initiatives we are advancing elsewhere.”",
+        "sourceIndex": 0
+      }
+    ],
+    "community": {
+      "status": "opposed",
+      "notes": "Residents objected at public hearings on two main grounds: noise from the fans used to cool the computing equipment, and the environmental impact of the facility's electricity use. The Planning Commission postponed its recommendation on 2026-02-24 rather than advancing the application.",
+      "sourceIndex": 0
+    },
+    "sources": [
+      {
+        "url": "https://www.pinejournal.com/news/local/crypto-mining-company-withdraws-moose-lake-proposal",
+        "label": "Crypto-mining company withdraws Moose Lake proposal",
+        "publisher": "Cloquet Pine Journal",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Proposed as a modular computing complex on about 2 acres next to the municipal power station off Highway 73. Withdrawn 2026-03-11. The company's STATED reason was power-availability timing, not the opposition — the local objections (cooling-fan noise, electricity use) and the withdrawal are both documented, but the source does not establish that the former caused the latter. No megawatt figure was published. Coordinates are the Moose Lake city centroid (approximate); the record has no parcel-level confirmation.",
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "revolve-labs-windom-mn",
+    "name": "Revolve Labs Windom (withdrawn)",
+    "operator": "Revolve Labs",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.8663464,
+      "lon": -95.1169366,
+      "city": "Windom",
+      "county": "Cottonwood",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-08",
+        "note": "About 100 residents voiced concerns at an August public hearing, citing potential noise pollution and negative effects on home property values.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2024-09",
+        "note": "Revolve Labs withdrew its conditional-use application for the site, citing feedback received from the community.",
+        "sourceIndex": 0
+      }
+    ],
+    "community": {
+      "status": "opposed",
+      "notes": "Roughly 100 residents attended an August 2024 public hearing to object, most commonly over noise pollution and effects on home property values. The company pulled the conditional-use application the following month, citing community feedback.",
+      "sourceIndex": 0
+    },
+    "sources": [
+      {
+        "url": "https://theenergymag.com/news/2024-09-25/revolve-bitcoin-mining-windom",
+        "label": "Revolve Labs withdraws Windom bitcoin-mining proposal",
+        "publisher": "The Energy Magazine",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Conditional-use application for a crypto-mining facility outside Windom, withdrawn in September 2024 after community opposition. The project was projected to generate about $35,000 a month in service fees for the city. No megawatt figure was published for this site. The exact withdrawal day is not established by the fetched source (it reports the Star Tribune broke the news “on Wednesday”), so the cancellation is dated to the month only. Coordinates are the Windom city centroid (approximate).",
+    "facilityType": "crypto_mining"
   }
 ]
