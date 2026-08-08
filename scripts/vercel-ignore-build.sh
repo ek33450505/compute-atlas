@@ -32,32 +32,51 @@ if [[ "${VERCEL_ENV:-}" == "production" ]]; then
   build "production deployment"
 fi
 
-# 2. Resolve a base ref to diff against. Vercel clones shallowly, so
-#    origin/main is usually absent and has to be fetched.
-base=""
-if git rev-parse --verify --quiet origin/main >/dev/null 2>&1; then
-  base="origin/main"
-elif git fetch --quiet --depth=50 origin main >/dev/null 2>&1 &&
-  git rev-parse --verify --quiet FETCH_HEAD >/dev/null 2>&1; then
-  base="FETCH_HEAD"
-elif git rev-parse --verify --quiet main >/dev/null 2>&1; then
-  base="main"
+# 2. Resolve a base commit to diff against.
+#
+#    Vercel clones SINGLE-BRANCH and SHALLOW. `origin/main` does not exist in
+#    the build container and `git fetch origin main` fails there, so the
+#    original merge-base approach fell through to fail-open on EVERY run — it
+#    was safe but never skipped anything. Confirmed in a real build log:
+#      [vercel-ignore] BUILD — no base ref to diff against (fail-open)
+#
+#    What IS available: VERCEL_GIT_PREVIOUS_SHA (the commit of this branch's
+#    previous deployment — the right base, and it spans a multi-commit push),
+#    and HEAD^ once the shallow clone is deepened.
+range_base=""
+how=""
+
+if [[ -n "${VERCEL_GIT_PREVIOUS_SHA:-}" ]] &&
+  git cat-file -e "${VERCEL_GIT_PREVIOUS_SHA}^{commit}" 2>/dev/null; then
+  range_base="$VERCEL_GIT_PREVIOUS_SHA"
+  how="VERCEL_GIT_PREVIOUS_SHA"
 fi
 
-if [[ -z "$base" ]]; then
-  build "no base ref to diff against (fail-open)"
+# A merge commit pulls in whatever the other branch carried, which a
+# single-parent diff misrepresents. Always build — merges are rare.
+if [[ -z "$range_base" ]] && git rev-parse --verify --quiet "HEAD^2" >/dev/null 2>&1; then
+  build "merge commit — not summarisable by a single-parent diff"
 fi
 
-# Prefer the merge-base so the whole branch is considered, not just the tip
-# commit — a branch whose LAST commit is data-only may still carry code.
-range_base="$(git merge-base "$base" HEAD 2>/dev/null)"
 if [[ -z "$range_base" ]]; then
-  build "no merge-base with ${base} (fail-open)"
+  # Deepen the shallow clone just enough to see the parent commit.
+  if ! git rev-parse --verify --quiet "HEAD^" >/dev/null 2>&1; then
+    git fetch --quiet --deepen=10 >/dev/null 2>&1 || true
+  fi
+  if git rev-parse --verify --quiet "HEAD^" >/dev/null 2>&1; then
+    range_base="$(git rev-parse HEAD^)"
+    how="HEAD^"
+  fi
 fi
+
+if [[ -z "$range_base" ]]; then
+  build "no base commit available (fail-open)"
+fi
+log "base=${how} (${range_base})"
 
 changed="$(git diff --name-only "$range_base" HEAD 2>/dev/null)"
 if [[ -z "$changed" ]]; then
-  build "empty diff vs ${range_base} (fail-open)"
+  build "empty diff (fail-open)"
 fi
 
 # 3. Allowlist of skippable paths. Anything unrecognized triggers a build,
