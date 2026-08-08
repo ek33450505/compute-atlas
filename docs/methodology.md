@@ -82,6 +82,20 @@ enter the dataset without one.
 - **Corroboration for consequential claims.** Extraordinary figures — a
   multi-gigawatt campus, a multi-billion-dollar investment, a contested status —
   are checked against a second source before they are recorded.
+- **Colocation marketplaces are leads, not citations.** Listing directories and
+  colo marketplaces aggregate specifications without publishing where they came
+  from, and they go stale silently — a facility sold to another operator years
+  ago can still carry its former owner's name. They are useful for finding
+  candidates and worthless for establishing facts. A figure that appears only in
+  such a directory is omitted rather than recorded.
+- **A citation names who published it.** The `publisher` on a source is the
+  organization that actually put the page up. An aggregator's page about an
+  operator is credited to the aggregator, never to the operator — otherwise a
+  record looks corroborated by a company that never said the thing.
+- **Capacity is omitted when it cannot be sourced.** Roughly half of the records
+  carry no `capacityMw`, because most operators simply do not publish per-site
+  megawatts. That gap is deliberate. An absent figure is a fact about the public
+  record; an invented one would be a fact about nothing.
 - **A source is not an endorsement.** Citing a source means the claim traces to
   the public record, not that the underlying fact has been independently audited.
   Readers can, and should, follow the source.
