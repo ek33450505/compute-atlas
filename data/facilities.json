@@ -18966,7 +18966,7 @@
     "id": "edgecore-mesa-az",
     "name": "EdgeCore Mesa Data Center Campus",
     "operator": "EdgeCore Digital Infrastructure",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 33.375,
@@ -18978,7 +18978,7 @@
     },
     "capacityMw": {
       "planned": 450,
-      "operational": 200
+      "operational": 206
     },
     "announcedDate": "2022-01",
     "statusHistory": [
@@ -18992,6 +18992,12 @@
         "date": "2025-05",
         "note": "43.87-acre expansion adds three buildings, raising planned total to 450MW and 3.1M sq ft; PH02 topped out December 2024, expected fully operational 2026",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026",
+        "note": "Campus returned to fully-operational status after the 2025 expansion phase: EdgeCore states it has \"worked quickly to construct and commission 206 MW at the site\" of a campus now planned for over 450 MW. The 206 MW is cumulative commissioned capacity across phases (the first building has been operational since 2023), not a single phase; remaining expansion buildings are still under construction.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -19008,9 +19014,16 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://azbigmedia.com/real-estate/edgecore-expands-mesa-data-center-campus-to-over-450-mw/",
+        "label": "EdgeCore expands Mesa data center campus to over 450 MW",
+        "publisher": "AZ Big Media",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-08",
     "notes": "Elliot Road Technology Corridor, Mesa. CEO stated 'Greater Phoenix is fast becoming the AI center of the West.' Expansion land purchase adds 43.87 acres to 40-acre original site. EdgeCore raised $2B equity and $2B debt in 2024. Coordinates approximate for Elliot Road corridor. Arizona's data-center sales/use-tax exemption (A.R.S. Sec. 41-1519) applies by statute, but no campus-specific certified award was publicly verifiable (eligibility != confirmed award); the $150M cited is first-building capex and the $2B equity + $2B debt EdgeCore raised in 2024 is corporate financing, not Mesa-campus capex.",
     "energy": {
       "source": "grid",
@@ -26009,7 +26022,7 @@
     "id": "google-redhawk-mesa-az",
     "name": "Google Redhawk Mesa Data Center Campus",
     "operator": "Google",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 33.3764,
@@ -26031,16 +26044,16 @@
         "note": "Google filed plans as 'Stone Applications LLC' for 187 acres at NW corner of Elliot and Sossaman roads"
       },
       {
-        "status": "operational",
-        "date": "2025-07",
-        "note": "Phase 1 (288,530 sq ft data hall, Redhawk 1) went operational July 2025 for core cloud and AI services",
-        "sourceIndex": 0
-      },
-      {
         "status": "under_construction",
         "date": "2025-01",
         "note": "Phase 2 (280,000 sq ft, 185 acres) under construction targeting 2027; Phase 3 (283,500 sq ft) under Mesa Design Review Board review",
         "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2025-07",
+        "note": "Phase 1 (288,530 sq ft data hall, Redhawk 1) went operational July 2025 for core cloud and AI services",
+        "sourceIndex": 0
       }
     ],
     "sources": [
@@ -26066,8 +26079,8 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
-    "notes": "Three-phase campus through 2030; originally filed anonymously as Project Red Hawk via LLC Stone Applications. Phase 1 operational July 2025. Phase 2 under construction. Coordinates at Elliot and Sossaman roads, SE Mesa. 2019 development agreement requires >=$600M capex by 2025, >=$1B by 2029, 750,000 sq ft built by 2030, and a >=$65,000 average full-time data-center salary; construction workforce has been cited around 1,200 (an estimate, not a permanent-jobs count).",
+    "lastUpdated": "2026-08-08",
+    "notes": "Three-phase campus through 2030; originally filed anonymously as Project Red Hawk via LLC Stone Applications. Phase 1 operational July 2025. Phase 2 under construction. Coordinates at Elliot and Sossaman roads, SE Mesa. 2019 development agreement requires >=$600M capex by 2025, >=$1B by 2029, 750,000 sq ft built by 2030, and a >=$65,000 average full-time data-center salary; construction workforce has been cited around 1,200 (an estimate, not a permanent-jobs count). Status reflects Phase 1 (Redhawk 1), operational since July 2025; Phases 2 and 3 remain under construction, which is why Google's own US locations index still lists Mesa under sites in development.",
     "energy": {
       "source": "solar",
       "utility": "Salt River Project (SRP)",
@@ -29368,9 +29381,16 @@
         "publisher": "Norfolk NE Radio",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://flatwaterfreepress.org/a-nebraska-crypto-company-wants-to-get-bigger-landowners-decry-nppds-use-of-eminent-domain-that-will-help-it-grow/",
+        "label": "A Nebraska crypto company wants to get bigger; landowners decry NPPD's use of eminent domain",
+        "publisher": "Flatwater Free Press",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-08",
     "notes": "Lincoln-based Jigowatt began installing shipping-container-housed mining rigs (a mix of air-cooled and immersion-cooled containers) on Stanton Public Power District's (SPPD) grid near Stanton starting in 2023; SPPD created a discounted \"interruptible\" large-load electric rate to recruit/retain the customer. Jigowatt is now Stanton County's largest electricity customer by far and is seeking to roughly triple its allowed load, backed by a ~$20M ratepayer-funded distribution upgrade and an NPPD transmission project that has drawn eminent-domain objections from area landowners (reported June/July 2025). Neighbors half a mile or more away (e.g., the Wortmanns) report a persistent low-frequency hum/vibration and resulting health/property concerns; one neighbor abandoned plans to build a new home nearby. MW capacity not publicly disclosed in the coverage reviewed.",
     "energy": {
       "source": "grid"
@@ -29382,6 +29402,10 @@
     "mining": {
       "coolingType": "hybrid",
       "powerArrangement": "grid"
+    },
+    "capacityMw": {
+      "operational": 20,
+      "planned": 70
     }
   },
   {
@@ -31399,11 +31423,21 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-17",
         "kind": "other"
+      },
+      {
+        "url": "https://bitcoinmagazine.com/business/compute-north-announces-nebraska-colocation-center-for-bitcoin-mining",
+        "label": "Compute North announces Nebraska colocation center for bitcoin mining",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-18",
-    "notes": "Operational bitcoin mining site in Kearney, Buffalo County, NE. Acquired by MARA in the GC Data Center Acquisition (closed Jan 12 2024) alongside the Granbury, TX site — the two totaled ~390 MW of nameplate capacity combined; the individual Kearney capacity is not separately disclosed, so capacityMw is omitted. Coordinates are Kearney-area approximate.",
-    "facilityType": "crypto_mining"
+    "lastUpdated": "2026-08-08",
+    "notes": "Operational bitcoin mining site in Kearney, Buffalo County, NE. Acquired by MARA in the GC Data Center Acquisition (closed Jan 12 2024) alongside the Granbury, TX site — the two totaled ~390 MW of nameplate capacity combined; the individual Kearney capacity is not separately disclosed by MARA. Coordinates are Kearney-area approximate. Site power capacity (100 MW) is sourced to the facility's original announcement by its prior operator, Compute North; MARA subsequently acquired the site, and no post-acquisition capacity figure has been published.",
+    "facilityType": "crypto_mining",
+    "capacityMw": {
+      "operational": 100
+    }
   },
   {
     "id": "mara-site-mat-1177-matagorda-tx",
@@ -34906,7 +34940,7 @@
     "id": "microsoft-el-mirage-az",
     "name": "Microsoft El Mirage Data Center Campus",
     "operator": "Microsoft",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 33.5695,
@@ -34929,6 +34963,12 @@
         "date": "2024-12",
         "note": "Fifth data center building (PHX-83, 245,500 sq ft, 5 data halls) received planning approval at El Mirage City Council December 2024",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Microsoft's own Greater Phoenix community page describes El Mirage as an operating datacenter (\"Microsoft operates datacenters in El Mirage and Goodyear\"); the source does not disclose an in-service date, so this event is dated to confirmation.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -34952,9 +34992,16 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://local.microsoft.com/communities/americas/greater-phoenix/",
+        "label": "Microsoft — Greater Phoenix, Arizona datacenter community",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-08",
     "notes": "investmentUsd is land-purchase cost only; total campus investment is higher. PHX-83 is the fifth building on existing El Mirage campus. Coordinates are El Mirage city centroid; site is at SE corner of Dysart Rd and Olive Ave. Arizona's Sec. 41-1519 sales/use-tax exemption applies by statute but no campus-specific certified award was found; published job figures cover the combined West Valley (El Mirage/Goodyear) campus, not El Mirage alone.",
     "energy": {
       "source": "grid",
@@ -35392,7 +35439,7 @@
     "id": "microsoft-goodyear-az",
     "name": "Microsoft Goodyear Data Center Campus",
     "operator": "Microsoft",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 33.4353,
@@ -35420,6 +35467,12 @@
         "date": "2025-01",
         "note": "Additional 100 acres acquired for $131M from First Industrial Realty Trust; third 250,000 sq ft building planned; total footprint 550+ acres",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Microsoft's own Greater Phoenix community page describes Goodyear as an operating datacenter (\"Microsoft operates datacenters in El Mirage and Goodyear\"); the source does not disclose an in-service date, so this event is dated to confirmation.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -35443,9 +35496,16 @@
         "publisher": "AZBEX",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://local.microsoft.com/communities/americas/greater-phoenix/",
+        "label": "Microsoft — Greater Phoenix, Arizona datacenter community",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-08",
     "notes": "Near Citrus and Indian School roads, Goodyear (address: 3785 Citrus Rd per industry sources). Two-million sq ft of existing or under-construction data centers. investmentUsd is reported campus value; land-only spend is additional. Coordinates approximate; exact site is west Goodyear near airport. First land purchase corrected to April 2019 / 150 acres / $37.11M per DCD primary source; intermediate purchases brought pre-2025 footprint to approximately 450 acres before the 100-acre 2025 expansion to 550+ total.",
     "energy": {
       "source": "grid",
@@ -40808,9 +40868,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://vbtmi.gov/departments/municipal_services/data_center_faq.php",
+        "label": "Van Buren Township — Data Center FAQ",
+        "publisher": "Charter Township of Van Buren, Michigan",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-08",
     "notes": "Google confirmed evaluating the site. Coordinates are approximate.",
     "energy": {
       "source": "mixed",
@@ -40827,7 +40894,10 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center",
-    "aiClassification": "likely"
+    "aiClassification": "likely",
+    "capacityMw": {
+      "planned": 1000
+    }
   },
   {
     "id": "project-cardinal-yorkville-il",
@@ -44925,7 +44995,7 @@
       "precision": "exact"
     },
     "capacityMw": {
-      "planned": 100
+      "planned": 150
     },
     "poweredBy": "Oregon grid (40% renewable); net-zero by 2029",
     "announcedDate": "2023-09",
@@ -44985,10 +45055,24 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://eastoregonian.com/2026/07/15/714000-square-foot-data-center-construction-under-way-in-umatilla/",
+        "label": "714,000-square-foot data center construction under way in Umatilla",
+        "publisher": "East Oregonian",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://sabeydatacenters.com/locations/sdc-umatilla",
+        "label": "SDC Umatilla",
+        "publisher": "Sabey Data Centers",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "Two-building, 714,540 sq ft multi-tenant campus. Groundbreaking originally Q1 2025, revised to 2024 per DCD; construction start as of July 2026 not independently confirmed. Investment figures conflicting across sources ($520M in one report, ~$950M in another); investmentUsd omitted. Coordinates are Umatilla city centroid.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Two-building, 714,540 sq ft multi-tenant campus. Groundbreaking originally Q1 2025, revised to 2024 per DCD; construction start as of July 2026 not independently confirmed. Investment figures conflicting across sources ($520M in one report, ~$950M in another); investmentUsd omitted. Coordinates are Umatilla city centroid. Planned capacity revised from 100 MW to 150 MW: the campus is described as designed to support more than 150 megawatts. Sabey's own materials give a more conservative \"120 MW+\", which is consistent rather than contradictory.",
     "energy": {
       "source": "mixed",
       "utility": "PacifiCorp",
@@ -55197,6 +55281,1525 @@
       "notes": "A citizen group ('United Neighbors of Oregon') is petitioning to force a November 2026 public referendum on the project.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tract-farmington-technology-park-mn",
+    "name": "Farmington Technology Park (Tract)",
+    "operator": "Tract (MNLCO Farmington LLC / MNLCO Farmington Two LLC)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.606,
+      "lon": -93.152,
+      "city": "Farmington",
+      "county": "Dakota",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 708
+    },
+    "announcedDate": "2024-11",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cbsnews.com/minnesota/news/farmington-hyperscale-data-center-pushback/",
+        "label": "Farmington residents push back against massive data center projected to double city's water use",
+        "publisher": "CBS Minnesota",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.hometownsource.com/sun_thisweek/community/dakota_county/tract-speaks-about-updated-farmington-technology-park/article_43acd923-b4d8-42ee-a192-b34612835e02.html",
+        "label": "Tract speaks about updated Farmington Technology Park",
+        "publisher": "Sun Thisweek / Dakota County Tribune (hometownsource.com)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.hometownsource.com/sun_thisweek/community/dakota_county/mayor-breaks-silence-on-data-center-litigation/article_a768aecf-31bc-4f8c-b81c-8fc1fe7ece22.html",
+        "label": "Mayor breaks silence on data center, litigation",
+        "publisher": "Sun Thisweek / Dakota County Tribune (hometownsource.com)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.farmingtonmn.gov/473/Data-Center-Farmington-Technology-Park",
+        "label": "Data Center (Farmington Technology Park)",
+        "publisher": "City of Farmington, MN (official)",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Denver-based land developer Tract's speculative hyperscale campus at the former Fountain Valley Golf Club (2830 220th St W) plus adjacent Farmington school-district land, Dakota County. Final plat/PUD unanimously approved by Planning Commission Nov 12, 2024; City Council approved final plat/PUD Nov 18, 2024 and a development contract Dec 2, 2024. Tract closed on the golf-course land purchase Feb 10, 2026 ($18M, per a Tract exec, injecting ~$3,000/student into the school district). City Council split the Technology Park into two phases in April 2026; recording deadline for the final plat extended to May 18, 2026. END USER NOT PUBLICLY DISCLOSED as of source dates — Tract builds speculative 'powered shell' campuses for undisclosed hyperscale tenants, so treat operator as the developer, not a confirmed end-user. Two lawsuits pending (Castle Rock Township + Farmington residents) over water use, noise, and setbacks; judge denied the city's motion to dismiss in November 2025/2026. Facility scope: up to 12 buildings, 2.5M+ sq ft, plus 2 admin buildings. Coordinates are an approximate estimate for 220th St W south of downtown Farmington — not geocoded this session, verify before publish.",
+    "landAcres": 340,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-brooklyn-park-mn",
+    "name": "DataBank Brooklyn Park Campus",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.116,
+      "lon": -93.386,
+      "city": "Brooklyn Park",
+      "county": "Hennepin",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 9
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/minneapolis/brooklyn-park-campus/",
+        "label": "Brooklyn Park Campus Data Center",
+        "publisher": "DataBank (official)",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "8111 Oxbow Creek N, Brooklyn Park, MN 55445. Anchored by DataBank's 'MSP3' data hall. Some third-party aggregators (datacentermap.com, datacenterjournal.com) attribute a DataBank facility at '10300 6th Ave N' to 'Plymouth' — that appears to be an older/alternate address or aggregator error for the same Brooklyn Park campus (DataBank's own current site only lists the Oxbow Creek N address for its Minneapolis-market campus); went with the address on DataBank's own official page. Coordinates approximate (Brooklyn Park city-area estimate, not parcel-geocoded this session).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lightedge-chaska-mn",
+    "name": "LightEdge Chaska (fka Stream Data Centers Minneapolis I)",
+    "operator": "LightEdge (GI Partners)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.828,
+      "lon": -93.635,
+      "city": "Chaska",
+      "county": "Carver",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 3.6
+    },
+    "announcedDate": "2024-01-17",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/lightedge-acquires-top-tier-high-density-data-center-in-minneapolis-302037017.html",
+        "label": "LightEdge Acquires Top-Tier High Density Data Center in Minneapolis",
+        "publisher": "PR Newswire / LightEdge (official)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/gi-partners-lightedge-acquires-stream-dc-data-center-in-minneapolis-minnesota/",
+        "label": "GI Partners' LightEdge acquires Stream DC data center in Minneapolis, Minnesota",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "1708 West Creek Lane, Chaska, MN — built by Stream Data Centers in 2013 as 'Minneapolis I'; acquired by LightEdge (owned by GI Partners) Jan 17, 2024, LightEdge's entry into the MN market. DISTINCT site from the already-tracked flexential-minneapolis-chaska-msp01-mn (3500 Lyman Boulevard, ~5.4 mi away, different owner) — not a duplicate. Uptime Tier III Design Certified, 76,000 sq ft total / 30,000 sq ft data hall across 3 suites.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "centersquare-shakopee-mn",
+    "name": "Centersquare Shakopee (MSP1 Campus)",
+    "operator": "Centersquare (fka Cyxtera / Evoque; site originally built by Compass Datacenters)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.7965,
+      "lon": -93.482,
+      "city": "Shakopee",
+      "county": "Scott",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 19.1
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/data-centers/minneapolis",
+        "label": "Top Minneapolis Colocation Data Centers | Power Available | Csquare",
+        "publisher": "Centersquare / Csquare (official)",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "4450 Dean Lakes Boulevard, Shakopee, MN 55379. Built by Compass Datacenters (Phase 1, 1.2MW, opened 2014, originally for Savvis/CenturyLink, ~$26M). Passed to Cyxtera (2017, via $2.8B CenturyLink data-center-portfolio deal), then to Evoque, then rebranded Centersquare in April 2024 after Evoque closed its acquisition of Cyxtera's portfolio. Own site (csquare.com) states 'Utility power: 19.1MW' with separate, smaller UPS (2.4MW) and generator (3.6MW) figures listed — those smaller numbers likely describe currently-installed backup for built-out suites, not total site capacity; used the 19.1MW utility-power figure as capacityMw.operational but flagging the discrepancy for a human sanity-check. 29,800 sq ft raised floor (~28,900–30,000 sq ft consistently reported). Compass's original master plan included 3 more 25,000 sq ft buildings (~$90M) — unclear if built out; not counted here.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "h5-data-centers-st-paul-mn",
+    "name": "H5 Data Centers St. Paul",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.974,
+      "lon": -93.167,
+      "city": "St. Paul",
+      "county": "Ramsey",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/minneapolis-data-center.html",
+        "label": "Minneapolis Center - Minnesota Data Center",
+        "publisher": "H5 Data Centers (official)",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "1125 Energy Park Dr., Suite 100, St. Paul, MN 55108, 17,000 SF. Single-sourced to H5's own dedicated marketing page (no independent MW figure could be verified — aggregator sites gave conflicting, non-primary 5/8/15 MW guesses, none fetched/quotable, so capacityMw omitted rather than guessed). 'Suite 100' in the address raises a flag: could this be a suite within a larger shared building rather than a facility H5 solely owns/operates? H5's own 'about' page lists its core markets (Ashburn, Atlanta, Charlotte, Cleveland, Cincinnati, Denver, Phoenix, San Jose, San Luis Obispo, Seattle) and does NOT mention Minnesota, which is inconsistent with the dedicated St. Paul subpage. Recommend a human double-check ownership/tenancy before promoting — flagged as the weakest of this batch's net-new candidates, not dropped outright since I did successfully fetch a dedicated H5-branded page for this address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "revolve-labs-glencoe-mn",
+    "name": "Revolve Labs Glencoe",
+    "operator": "Revolve Labs",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.7691,
+      "lon": -94.1497,
+      "city": "Glencoe",
+      "county": "McLeod",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/revolve-labs-minnesota-mining",
+        "label": "Revolve Labs: Minnesota Mining Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.glencoenews.com/articles/featured-mcc/revolve-labs-announces-new-high-performance-data-center-in-glencoe/",
+        "label": "Revolve Labs announces new high-performance data center in Glencoe",
+        "publisher": "Glencoe News",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://crypto.news/bitcoin-miner-revolve-labs-proposes-60m-data-center-in-minnesota/",
+        "label": "Bitcoin miner Revolve Labs proposes $60m data center in Minnesota",
+        "publisher": "crypto.news",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.glencoenews.com/articles/featured-mcc/glencoe-approves-rezoning-request-for-site-of-revolve-labs-planned-ai-data-center/",
+        "label": "Glencoe approves rezoning request for site of Revolve Labs' planned AI data center",
+        "publisher": "Glencoe News",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Revolve Labs has operated a bitcoin-mining facility in Glencoe's industrial area since 2021. Separately, the Glencoe City Council approved a rezoning on Nov. 6, 2025 for a new first-phase 20 MW AI/HPC data center (reported $40-60M, ~6.2 acres, requiring a new substation); it is not independently confirmed whether the new build occupies the same parcel as the existing mine, so both are represented here as one site record. The 20 MW figure is the announced first phase of the new build, not current operating capacity.",
+    "landAcres": 6.2,
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "aaim-data-centers-blue-earth-mn",
+    "name": "AAIM Data Centers — Blue Earth (Minnesota 1)",
+    "operator": "AAIM Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.635,
+      "lon": -94.098,
+      "city": "Blue Earth",
+      "county": "Faribault",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 15
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.aaimdc.com/data-centers/minnesota/",
+        "label": "Minnesota 1 - AAIM Data Centers",
+        "publisher": "AAIM Data Centers (official)",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.aaimdc.com/aaim-to-launch-cutting-edge-data-center-in-blue-earth-minnesota/",
+        "label": "AAIM to Launch Cutting-Edge Data Center in Blue Earth, Minnesota",
+        "publisher": "AAIM Data Centers (official)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "On Highway 169 in Blue Earth, MN (county seat of FARIBAULT County — note this is NOT 'Blue Earth County', which is a separate county to the east whose seat is Mankato; classic MN city/county name trap, verified via Wikipedia/Data Commons before writing this). AAIM's own site lists this as 'Minnesota 1', 15MW, in-service June 2025, described elsewhere (DCD, 2024) as an 'HPC/cryptomine' facility; AAIM's own copy says it serves 'high-performance computing, enterprise data, and crypto mining needs' — classified facilityType=data_center/aiClassification=mixed_use rather than crypto_mining because AAIM operates it as multi-tenant colocation (landlord model) rather than mining for itself, unlike Revolve Labs. 10,000 sq ft facility. AAIM's CEO (Levesque) is also CTO of crypto-mining-hardware firm Hash House Tech — noted for context, not fact-changing.",
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "edged-energy-ankeny-ia",
+    "name": "Edged Ankeny (Des Moines) Data Center",
+    "operator": "Edged Energy",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.7297,
+      "lon": -93.6058,
+      "city": "Ankeny",
+      "county": "Polk",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 13.2
+    },
+    "announcedDate": "2025-05-06",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://edged.us/news/des-moines-iowa",
+        "label": "Edged Breaks Ground on Data Center in Des Moines, Iowa Optimized for Next-Generation AI Training and Inference",
+        "publisher": "Edged Energy",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "AI-focused colocation developer (not a Big-5 hyperscaler) building a waterless-cooled, high-density facility at 9100 SE Four Mile Drive, Ankeny (address confirmed via secondary aggregators; coordinates are city-level, not parcel-geocoded — mark approximate). Design PUE 1.15 portfolio-wide; ThermalWorks closed-loop cooling claims >52M gal/yr water savings vs conventional. Third-party trade press (Site Selection Magazine, via search only — not independently fetched) cited a $187M investment and a 105,000 sq ft building; not included here since I couldn't confirm those two figures on a page I fetched myself. Also be aware: a 2024 DCD article (403'd on fetch, so NOT used as a source) described a much larger 'I-80 Commerce Center' two-building proposal (~535K + ~775K sq ft) at what looks like the same general site/intersection under 'Commerce Center LLC' — possibly an earlier or future-phase master plan for the same park. Could not verify, so this record covers ONLY the confirmed Edged 13.2MW project. Worth a follow-up pass to see if the 13.2MW figure has grown, since news headlines referenced the building having since 'topped out.'",
+    "landAcres": 17.5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cologix-des-moines-ia",
+    "name": "Cologix DSM1 (Financial Center)",
+    "operator": "Cologix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.5868,
+      "lon": -93.625,
+      "city": "Des Moines",
+      "county": "Polk",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.6
+    },
+    "announcedDate": "2024-06-05",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cologix.com/news/cologix-expands-footprint-acquisition-two-data-centers-iowa-including-des-moines-carrier-hotel/",
+        "label": "Cologix Expands U.S. Footprint with Acquisition of Two Data Centers in Iowa, Including Des Moines Carrier Hotel",
+        "publisher": "Cologix",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Carrier-hotel / interconnection facility inside the downtown Financial Center building at 666 Walnut Street; Cologix acquired it (and DSM2, see separate record) from Connect Des Moines in June 2024 — Cologix owns/operates the space, this is not a colo tenancy. Small (4,000 sq ft) and telecom/peering-focused (25+ networks, DesMoinesIX exchange) rather than AI-compute-oriented — flagging for the human moderator to judge fit against the dataset's AI/crypto/power focus. Has a confirmed additional 10,000 sq ft / 1.0 MW expansion shell not yet built out, so I left capacityMw.operational at the currently-live 0.6MW rather than guess a combined 'planned' total.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cologix-cedar-falls-ia",
+    "name": "Cologix DSM2 (Cedar Falls)",
+    "operator": "Cologix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.5347,
+      "lon": -92.4453,
+      "city": "Cedar Falls",
+      "county": "Black Hawk",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1
+    },
+    "announcedDate": "2024-06-05",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cologix.com/data-centers/des-moines/dsm2/",
+        "label": "Colocation in Des Moines: DSM2 Digital Edge Data Center",
+        "publisher": "Cologix",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Edge colocation facility at 1205 Technology Parkway, Cedar Falls; acquired from Connect Des Moines June 2024 alongside DSM1. Owned/operated by Cologix (not a tenancy). Confirmed via Cologix's own DSM2 facility page: 24,000 sq ft facility with 6,000 sq ft colocation currently built out, 1MW site capacity via (3) 750kW generator+UPS, with room to add another 10,000 sq ft / 1MW later (not counted here — reporting live capacity only).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ark-data-centers-marion-ia",
+    "name": "Ark Data Centers Marion (Cedar Rapids)",
+    "operator": "Ark Data Centers (formerly Involta)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.0341,
+      "lon": -91.5871,
+      "city": "Marion",
+      "county": "Linn",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.81
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.arkdna.com/data-centers/iowa/",
+        "label": "Visit Our Cedar Rapids, Iowa Data Center | ark data centers",
+        "publisher": "Ark Data Centers",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Enterprise colocation facility at 5055 Rec Drive, Marion (Cedar Rapids metro); rebranded from Involta to Ark Data Centers in May 2024 (Involta acquired by Carlyle Group funds Feb 2022). Owns/operates the building — not a tenancy. IMPORTANT DISCREPANCY: the operator's own site (fetched directly) states 810kW total facility capacity ('750 kW Diesel Generator (N+1)'), which is what I used for capacityMw. Third-party aggregator listings (datacenters.com, baxtel, dchub — not independently fetched with numeric confirmation) variously describe this same site as a '12 MW' or '20 MW enterprise center' — a >10x discrepancy from the primary source. Flagging for human review rather than picking a number I can't verify; recommend treating 0.81MW as current/critical load and the larger figures as unconfirmed campus/enterprise-park branding.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lightedge-solutions-altoona-ia",
+    "name": "LightEdge Altoona Data Center Campus",
+    "operator": "LightEdge Solutions",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.6433,
+      "lon": -93.4627,
+      "city": "Altoona",
+      "county": "Polk",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://lightedge.com/data-centers/des-moines-data-center/",
+        "label": "Des Moines, IA Colocation Data Centers | Lightedge",
+        "publisher": "LightEdge Solutions",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Two-building purpose-built colocation campus on Northridge Circle, Altoona (Des Moines metro): 1435 Northridge Circle and 1401 Northridge Circle, both confirmed on LightEdge's own site. Owns/operates the buildings — not a tenancy. Could NOT confirm an MW or exact sq-ft figure on any page I fetched directly (the LightEdge page references 'critical IT capacity'/'total square feet' fields without rendering values, and a linked PDF spec sheet exceeded fetchable size). Third-party listings (not independently confirmed) cite ~73,000 SF total and N+1 cooling redundancy — omitted capacityMw rather than guess. Worth a follow-up with a direct call/site-visit-grade source, or a successful fetch of the spec-sheet PDF, to pin capacity.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "copt-defense-properties-van-meter-ia",
+    "name": "COPT Defense Van Meter Data Center Shell Site",
+    "operator": "COPT Defense Properties",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5031,
+      "lon": -93.9469,
+      "city": "Van Meter",
+      "county": "Dallas",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "announcedDate": "2024-09",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://investors.copt.com/news-events/press-releases/detail/516/copt-defense-acquires-land-for-data-center-shell",
+        "label": "COPT Defense Acquires Land for Data Center Shell Development near Des Moines, IA",
+        "publisher": "COPT Defense Properties (investor relations)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/copt-des-moines",
+        "label": "COPT: Des Moines Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Speculative 'shell' land development (REIT-style developer building generic zoned/powered capacity for a future, not-yet-named tenant) — same non-hyperscale-operator category as QTS's already-tracked Iowa campuses. Existing zoning already permits data-center use; site could support ~3.3M sq ft across up to 15 buildings and two substations per COPT's own release. Street address (28004 340th Trail) and 'Van Meter area' / 2027 planned-year framing came from a secondary aggregator (baxtel.com, fetched directly) corroborating the primary COPT press release, which itself doesn't name the town explicitly (says only 'near Des Moines'). Van Meter is in Dallas County, Iowa (general geography, not sourced to a specific citation). No construction start confirmed as of this research.",
+    "investmentUsd": 32000000,
+    "landAcres": 365,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "simple-mining-manchester-ia",
+    "name": "Simple Mining Manchester",
+    "operator": "Simple Mining",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.4842,
+      "lon": -91.4515,
+      "city": "Manchester",
+      "county": "Delaware",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-01",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.radioiowa.com/2025/01/17/manchester-official-tries-to-calm-fears-over-incoming-crypto-mining-operation/",
+        "label": "Manchester official tries to calm fears over incoming crypto-mining operation",
+        "publisher": "Radio Iowa",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.telegraphherald.com/news/tri-state/article_efb5a5f4-c946-11ef-bf6a-8f5650901c78.html",
+        "label": "Mining in Manchester?: Crypto-currency biz eyes development at city industrial park",
+        "publisher": "Telegraph Herald",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Manchester City Council approved the site plan for what company owner Adam Haynes called the company's 'largest facility yet': 50 modular ~8x20-ft container units (each paired with cooling units), a new electrical substation, and a small office building, in Manchester's industrial park. Draws power from a separate electrical grid per the company; air-cooled, minimal water use. Six to eight full-time jobs. Construction was reported (as of Jan 2025) scheduled to start 'later this spring' [2025] — that's the last independently-confirmed checkpoint I could source; by now (Aug 2026, ~19 months later) it has very likely advanced to under_construction or operational, but I could not independently reconfirm current status, so left it at the last-verified 'permitted' (site-plan-approved) stage. RECOMMEND A STATUS RECHECK before publishing. Exact street address (widely reported elsewhere as 1016 Grant Street) is NOT included here because I only ever saw it in WebSearch AI-summaries of manchesterpress.com/telegraphherald.com, never on a page I successfully fetched (manchesterpress.com 429'd twice) — used Manchester city-seat coordinates instead per the approximate-precision fallback rule. No MW capacity figure found anywhere.",
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "simple-mining-cascade-ia",
+    "name": "Simple Mining Cascade (Dubuque County)",
+    "operator": "Simple Mining",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.2997,
+      "lon": -91.0143,
+      "city": "Cascade",
+      "county": "Dubuque",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.telegraphherald.com/news/tri-state/article_cf05b214-4a5f-4120-9dcb-79073ce015a1.html",
+        "label": "Cascade mayor, economic development leader disagree on crypto mining facility's impact",
+        "publisher": "Telegraph Herald",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://eagle1023fm.com/cascade-bitcoin-mining-project/",
+        "label": "Cascade Residents Weigh Pros and Cons of Bitcoin Mining Project",
+        "publisher": "Eagle 102.3FM",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Proposed crypto-mining buildout in Cascade's industrial park (east of Industrial St SE / north of Industrial Ct SE), Oak Hill neighborhood. Simple Mining purchased 15 acres; ~5 acres would host the mining facility itself. Backed by Cascade Economic Development Corporation; city would receive $40,000/yr per the proposed agreement. Still required city council approval of a building permit as of the most recent reporting I could fetch — status kept at 'proposed', not 'permitted'. Targeted construction 'late spring or early summer' [2026] with an operations goal of Dec 31, 2026. Two independently-fetched local outlets DISAGREE on scale (30 containers @150 sq ft per Telegraph Herald vs. 40 containers @160 sq ft per Eagle 102.3FM) and neither gives a company-confirmed MW figure — one outlet offered its own estimate of '10 and 40 megawatts based on industry standards,' which I'm treating as a reporter's inference, not a sourced fact, so capacityMw is omitted. Used 'reported' rather than 'confirmed' confidence given the factual inconsistency between the two outlets and the still-pending approval. ~6-8 jobs expected.",
+    "landAcres": 15,
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "simple-mining-cedar-falls-ia",
+    "name": "Simple Mining Cedar Falls (rezoning defeated)",
+    "operator": "Simple Mining",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.5347,
+      "lon": -92.4453,
+      "city": "Cedar Falls",
+      "county": "Black Hawk",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.iowapublicradio.org/ipr-news/2026-03-26/cedar-falls-rezoning-proposal-cryptocurrency-mining-site",
+        "label": "Cedar Falls residents object to proposed crypto mining site at rezoning meeting",
+        "publisher": "Iowa Public Radio",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kcrg.com/2026/05/19/cedar-falls-unanimously-rejects-cryptocurrency-mining-ordinance-changes-discussion-expected-continue/",
+        "label": "Cedar Falls unanimously rejects cryptocurrency mining ordinance changes, discussion expected to continue",
+        "publisher": "KCRG",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Proposed 38+ acre crypto-mining site near the West Viking Road Industrial Park, Cedar Falls — a SEPARATE, larger proposal from the company's existing operational Cedar Falls sites. DEFEATED: fits the site's opposition/'withdrawn or defeated' lens. Per the rules, capacityMw is omitted for cancelled records. Simple Mining CEO Adam Haynes argued for jobs/tax revenue and said water use would equal roughly 7 homes/year; residents and the council disagreed. Both sides indicated discussion may continue, so a revised proposal is plausible.",
+    "landAcres": 38,
+    "community": {
+      "status": "opposed",
+      "notes": "Cedar Falls City Council unanimously rejected the zoning-code changes needed for this project on 2026-05-18, after sustained resident opposition over noise, water, and energy-consumption concerns tied to a paired proposal (Cedar Falls Utilities' 'Viking Energy Center' natural-gas plant, not itself a Compute Atlas facility type)."
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "microsoft-mountain-west-des-moines-ia",
+    "name": "Microsoft Project Mountain Data Center",
+    "operator": "Microsoft",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5385054,
+      "lon": -93.8253005,
+      "city": "West Des Moines",
+      "county": "Dallas",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://wdmchamber.org/economic-development/microsoft-data-centers/",
+        "label": "Microsoft Data Centers - West Des Moines Chamber of Commerce",
+        "publisher": "West Des Moines Chamber of Commerce",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=8855+Grand+Ave+West+Des+Moines+IA&format=json",
+        "label": "OpenStreetMap Nominatim geocode: 8855 Grand Ave",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Microsoft's FIRST Iowa data center campus (planned since 2008, construction from 2010, expanded 2011/2013) - a two-building campus at/near 8855 Grand Ave, distinct from the already-tracked 'Ginger West' campus (11100 Booneville Rd). Address sourced from a secondary aggregator search summary (not independently fetched this session) but independently geocode-verified as a real West Des Moines / Dallas County address via OSM Nominatim. Annual property tax ~$1.6M and $10M public infrastructure investment per WDM Chamber page (not campus construction cost).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-alluvion-west-des-moines-ia",
+    "name": "Microsoft Project Alluvion Data Center",
+    "operator": "Microsoft",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5143718,
+      "lon": -93.7083034,
+      "city": "West Des Moines",
+      "county": "Polk",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://wdmchamber.org/economic-development/microsoft-data-centers/",
+        "label": "Microsoft Data Centers - West Des Moines Chamber of Commerce",
+        "publisher": "West Des Moines Chamber of Commerce",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=White+Crane+Road+West+Des+Moines+IA&format=json",
+        "label": "OpenStreetMap Nominatim geocode: SE White Crane Road",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Announced April 2014. 8-building campus on SE White Crane Rd / 3590 SE Soteria Ave, south of the Ginger East site. Distinct parcel/campus from all currently-tracked Microsoft IA records. Annual property tax ~$8.1M, $45M public infrastructure investment per WDM Chamber (not campus construction cost — other reporting citing ~$1.1B total investment was not independently fetched this session and is omitted).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-osmium-west-des-moines-ia",
+    "name": "Microsoft Project Osmium Data Center",
+    "operator": "Microsoft",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.500537,
+      "lon": -93.7755662,
+      "city": "West Des Moines",
+      "county": "Warren",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://gowestdesmoines.com/portfolio-works/microsoft-osmium-data-center/",
+        "label": "Microsoft Osmium Data Center - Go West Des Moines",
+        "publisher": "Go West Des Moines (city economic development)",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://wdmchamber.org/economic-development/microsoft-data-centers/",
+        "label": "Microsoft Data Centers - West Des Moines Chamber of Commerce",
+        "publisher": "West Des Moines Chamber of Commerce",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=50061+Iowa&format=json&limit=1&addressdetails=1",
+        "label": "OpenStreetMap Nominatim geocode: ZIP 50061",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Announced 2016; Microsoft's largest Iowa campus (1.7M sq ft once built out), at 5855 SW Kerry St. Distinct parcel/campus from all currently-tracked Microsoft IA records. Other reporting (not independently fetched this session) says the site spans 160 acres in Warren County + 40 in Madison County, and totals $1.5-2B investment; only the Warren County / building-address / sqft facts below are independently confirmed via direct fetch.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-ginger-east-ia",
+    "name": "Microsoft Project Ginger East Data Center",
+    "operator": "Microsoft",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5193146,
+      "lon": -93.7362003,
+      "city": "West Des Moines",
+      "county": "Polk",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/microsoft-project-ginger-east",
+        "label": "Microsoft: Project Ginger East Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Maffitt+Lake+Road+West+Des+Moines+IA&format=json",
+        "label": "OpenStreetMap Nominatim geocode: Maffitt Lake Road",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "1475 SE Maffitt Lake Road - a distinct 146-acre campus from the already-tracked 'Ginger West' (11100 Booneville Rd, different parcel). Building 1 (250,000 sq ft) came online 2023; up to 5 buildings / ~1.8M sq ft planned campus-wide (Microsoft's own naming convention pairs Ginger East/West as siblings but they are separate parcels/addresses). investmentUsd is the value of ONE building permit, not full campus capex.",
+    "investmentUsd": 358000000,
+    "landAcres": 146,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-ruthenium-west-des-moines-ia",
+    "name": "Microsoft Project Ruthenium Data Center",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.4999095,
+      "lon": -93.8098423,
+      "city": "West Des Moines",
+      "county": "Madison",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://gowestdesmoines.com/portfolio-works/microsoft-ruthenium-data-center/",
+        "label": "Microsoft Ruthenium Data Center - Go West Des Moines",
+        "publisher": "Go West Des Moines (city economic development)",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/microsoft-wants-bring-sixth-data-120422896.html",
+        "label": "Microsoft wants to bring a sixth data center, called Ruthenium, to West Des Moines",
+        "publisher": "Yahoo News (via Des Moines Register)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Woodland+Avenue+Madison+County+Iowa&format=json&addressdetails=1",
+        "label": "OpenStreetMap Nominatim geocode: Woodland Avenue, Madison County",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Planned 6th Microsoft hyperscale campus in the WDM area - along Veterans Parkway at Woodland Ave, 'just west of Osmium.' Would be Microsoft's first Madison County site (4th distinct county for Microsoft in the WDM area, after Polk/Dallas/Warren). Widely-reported $210M phase-1 investment / 113 MW / 245,000 sq ft first building figures (businessrecord.com, AOL/Yahoo condensed versions) could NOT be independently confirmed via direct fetch this session (businessrecord.com and DCD both 403'd repeatedly) — omitted per source-integrity rule rather than included on trust.",
+    "landAcres": 132,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-van-meter-ia",
+    "name": "Microsoft Van Meter Data Center (Vision Park)",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5332166,
+      "lon": -93.9548406,
+      "city": "Van Meter",
+      "county": "Dallas",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.aol.com/microsofts-van-meter-data-center-120442101.html",
+        "label": "Microsoft's Van Meter data center signals expansion beyond West Des Moines",
+        "publisher": "AOL (via Des Moines Register)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Van+Meter+IA&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Van Meter, IA",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Microsoft's FIRST data center site outside the West Des Moines cluster - farmland acquired in Van Meter's Vision Park (a state-certified shovel-ready site since 2014). investmentUsd of $40M is the LAND purchase only, not construction capex. Status is early planning per the only source independently fetched this session (no confirmed site plan / construction start as of that article). Other reporting suggests up to 10 buildings and a much larger eventual campus, and a March 2026 Van Meter city council packet referenced an active 'Project Approvals' process, but neither was independently fetched/verified this session - flagging for a future pass to check current status.",
+    "investmentUsd": 40000000,
+    "landAcres": 414,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-omaha-ne",
+    "name": "Google Omaha Data Center",
+    "operator": "Google",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.334,
+      "lon": -96.145,
+      "city": "Omaha",
+      "county": "Douglas",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/nebraska/",
+        "label": "Nebraska, USA -- Google Data Center Location",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.idc-a.org/news/Google-Has-Filed-Plans-to-Expand-Its-Data-Center-Site-in-Omaha-Nebraska",
+        "label": "Google Has Filed Plans to Expand Its Data Center Site in Omaha Nebraska",
+        "publisher": "International Data Center Authority (IDC-A)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Google's THIRD, genuinely distinct Nebraska campus (not the same site as google-papillion-ne). Located north of 114th Street & State Street / along the west side of Blair High Road (NE Hwy 133) in far northwest Omaha, Douglas County -- Papillion is in Sarpy County, a separate site ~20 miles southeast. Filed under the shell entity 'Westwood Solutions, LLC'. Original phase: 270 acres, 4 buildings, 1.4M+ sq ft, ~$750M, 18-24 month construction timeline (filed/reported Jan 2023). Google separately sought to rezone an additional 187 adjacent acres (would bring the total site to ~457 acres / 2.2M+ sq ft if built) -- that expansion's approval/completion status was NOT independently confirmed this session, so landAcres is reported as the original 270-acre confirmed figure only. Google's own official Nebraska locations page (fetched this session) lists Omaha as a distinct, separate site from Papillion and Lincoln, status 'Constructed in 2022'. Coordinates are a rough estimate from the named intersection (114th & State St), NOT a parcel-level geocode -- a GIS/assessor pass could sharpen this to exact.",
+    "investmentUsd": 750000000,
+    "landAcres": 270,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-lincoln-ne",
+    "name": "Google Lincoln Data Center",
+    "operator": "Google",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.81,
+      "lon": -96.675,
+      "city": "Lincoln",
+      "county": "Lancaster",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/nebraska/",
+        "label": "Nebraska, USA -- Google Data Center Location",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.klkntv.com/google-shares-update-on-lincoln-data-center/",
+        "label": "Google shares update on Lincoln data center",
+        "publisher": "KLKN-TV (Lincoln)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Google's FOURTH Nebraska site by official count and genuinely distinct from both Papillion (Sarpy Co.) and Omaha (Douglas Co.) -- also DISTINCT from the separate proposed Google/Tenaska gas-plant mega-campus already tracked as google-nebraska-ai-campus-proposed (that one is a ~4-county, still-undeveloped 1,000-3,000MW proposal; this one is Google's confirmed, currently-building third/fourth site in north Lincoln). Google's own Nebraska locations page (fetched) confirms Lincoln as a distinct site, 'development announced in 2023', part of a $1.2B investment announced that year across all three then-existing NE locations. A local TV station (KLKN, fetched) confirms the site is 'currently operational with ongoing construction phases' with roughly 200 on-site personnel, and that Google has committed to work with the city on water infrastructure; the city says it is not currently approving additional data centers beyond this one. IMPORTANT CAVEAT: widely-repeated secondary figures for this project (codename 'Agate', ~580 acres, ~$600M, sited northwest of N. 56th St & I-80) come from outlets that 403'd or paywalled on direct fetch this session (Lincoln Journal Star/tollbit, Nebraska Examiner) -- those specific numbers are NOT independently verified here and are omitted from the structured fields (capacityMw/investmentUsd/landAcres) rather than risk propagating an unverified figure; coordinates are Lincoln-city-center-level only. Recommend a follow-up pass to re-fetch a non-paywalled primary source for the acreage/investment/MW specifics.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "fortitude-aurora-ne",
+    "name": "Fortitude Aurora Nebraska Facility",
+    "operator": "Fortitude",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.86472,
+      "lon": -98.0075,
+      "city": "Aurora",
+      "county": "Hamilton",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 15,
+      "operational": 5
+    },
+    "announcedDate": "2023-12",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.auroranewsregister.com/news/data-center-be-built-mission-critical",
+        "label": "Data center to be built in Mission Critical",
+        "publisher": "Aurora News-Register",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.investing.com/news/company-news/fortitude-mining-acquires-125-mw-nebraska-facility-for-625m-93CH-4833967",
+        "label": "Fortitude Mining acquires 12.5 MW Nebraska facility for $6.25M",
+        "publisher": "Investing.com",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Originally developed by AAIM Data Centers (CEO Anthony Levesque) as 'AAIM Nebraska 1' on a 2.5-acre parcel in the Mission Critical subdivision along East 11 Road / a future Kremer Avenue address, Aurora, Hamilton County -- groundbreaking Dec 2023, targeted operational spring/Q2 2024. Initial capacity 5MW with a first-year target of 15MW (AAIM's own stated plan, per the Aurora News-Register, fetched). Fortitude Mining Holdings (Zcash-mining subsidiary of Digital Currency Group / Barry Silbert) now lists Aurora as one of its OWN three Nebraska sites (confirmed via a directly-fetched Investing.com article: 'The Prosser facility is the company's third Nebraska location, joining sites in Grand Island and Aurora') -- i.e. operator has changed from AAIM to Fortitude at some point between the 2024 launch and August 2026, though no fetched source explicitly narrates an AAIM-to-Fortitude sale for Aurora specifically (unlike Prosser, where the AAIM-built specs match a later Fortitude acquisition almost exactly). A secondary aggregator figure (not independently fetched this session) cites a ~$7.65M Fortitude acquisition of the Aurora site in Oct 2025 -- plausible and consistent with the timeline, but omitted from structured fields since it wasn't confirmed via direct fetch. capacityMw reflects AAIM's pre-sale plan, not an independently-confirmed current Fortitude-era figure.",
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "fortitude-grand-island-ne",
+    "name": "Fortitude Grand Island Nebraska Facility",
+    "operator": "Fortitude",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.92167,
+      "lon": -98.35861,
+      "city": "Grand Island",
+      "county": "Hall",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 12
+    },
+    "announcedDate": "2026-07-28",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.theblock.co/post/409899/barry-silbert-zcash-miner-fortitude-nebraska-facility-online-cut-zec-mining-costs",
+        "label": "Barry Silbert-backed Zcash miner Fortitude brings Nebraska facility online to cut its ZEC production costs",
+        "publisher": "The Block",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Fortitude Mining Holdings (Zcash-mining subsidiary of Digital Currency Group / Barry Silbert) energized this 12MW facility in east Grand Island, Hall County on/around July 28, 2026 -- described as Fortitude's first SELF-DEVELOPED (greenfield) Nebraska site, sited 'between two solar power facilities' and 'next to a substation with excess capacity', with an estimated power cost of ~$0.045/kWh. Raised Fortitude's total owned-and-operated power portfolio past 60MW across seven sites in four states (SD, NE, TX, NY). Single-outlet sourcing (The Block, a reputable crypto-trade publication reporting the company's own announcement) -> confidence=reported rather than confirmed. Exact parcel/address not given in the source; coordinates are Grand-Island-city-level only.",
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "fortitude-prosser-ne",
+    "name": "Fortitude Prosser Nebraska Facility",
+    "operator": "Fortitude",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.6875,
+      "lon": -98.57806,
+      "city": "Prosser",
+      "county": "Adams",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 12.5
+    },
+    "announcedDate": "2024-01",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.theblock.co/post/410565/dcgs-fortitude-acquires-nebraska-facility-zcash-mining",
+        "label": "DCG's Fortitude acquires 12.5 MW Nebraska facility for net $4.7 million, expanding Zcash mining portfolio",
+        "publisher": "The Block",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.hastingstribune.com/news/adams-county-planning-and-zoning-commission-recommends-conditional-use-permit-for-countys-first-data-center/article_b39985d2-ab6e-11ee-9c27-832166c0311a.html",
+        "label": "Adams County Planning and Zoning Commission recommends conditional use permit for county's first data center",
+        "publisher": "Hastings Tribune",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.investing.com/news/company-news/fortitude-mining-acquires-125-mw-nebraska-facility-for-625m-93CH-4833967",
+        "label": "Fortitude Mining acquires 12.5 MW Nebraska facility for $6.25M",
+        "publisher": "Investing.com",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Fortitude Mining Holdings (DCG/Barry Silbert) closed its acquisition of this 12.5MW facility near Prosser, Adams County on Aug 4, 2026 for $6.25M gross / ~$4.7M net (after a $985K hosting-deposit credit and $465.5K from selling ~1,400 T21 miners); the site was 'already listed as an operating asset that was generating revenue at close', with full ownership of land, building, and an on-site 67kV substation, ~$0.045/kWh power cost. Fortitude's own reporting calls this its THIRD Nebraska location (joining Grand Island and Aurora). VERY LIKELY the same site originally developed by AAIM Data Centers / A-NE Data Centers Inc. as 'AAIM Nebraska 2': the Hastings Tribune (fetched) describes a 12.5MW substation project on 2.64 acres along 82nd Street near the Union Pacific railroad, half a mile west of the CPI Hayland elevator near Prosser, approved by the Adams County Planning & Zoning Commission in Jan 2024 -- identical capacity (12.5MW) and identical tiny town. No fetched source explicitly states 'Fortitude bought this from AAIM', so this linkage is reported as a strong probable match, not an asserted fact. NOTE: a low-quality aggregator (not independently fetched) separately describes a '$6.25M Juniata, Nebraska' Fortitude acquisition in July 2026 -- given the identical $6.25M gross price and Juniata's proximity to Prosser (both tiny Adams-County-area communities), this is almost certainly the SAME transaction mislabeled by that aggregator, not a fourth Fortitude site; not tracked separately (see honestZero).",
+    "investmentUsd": 6250000,
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "metrobloks-southfield-mi",
+    "name": "Metrobloks Southfield Data Center",
+    "operator": "Metrobloks",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.474,
+      "lon": -83.293,
+      "city": "Southfield",
+      "county": "Oakland",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cityofsouthfield.com/news/city-southfield-statement-regarding-proposed-data-center",
+        "label": "City of Southfield Statement Regarding Proposed Data Center",
+        "publisher": "City of Southfield, Michigan",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://planetdetroit.org/2025/12/southfield-data-center-approval/",
+        "label": "Southfield City Council greenlights divisive data center plan: 'Too many unknowns'",
+        "publisher": "Planet Detroit",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "217,030-230,000 sq ft, two-story building on ~12.19 acres of vacant land along Inkster Road north of 11 Mile Road, Southfield's northwest corner. Los Angeles-based developer Metrobloks (already tracked elsewhere in MO/IN/FL) has not completed a data center build anywhere yet per reporting. City of Southfield's own statement explicitly says the facility is NOT intended as 'an artificial intelligence repository' -- omitting aiClassification here rather than defaulting to 'likely'. City Council approved the site plan 5-2 on Dec 16, 2025; the city notes 'Approval of the proposal does not remove City oversight' -- still subject to further permitting. A named IT-engineer public commenter said the real target may be closer to 150 MW by groundbreaking; unconfirmed beyond that public comment. Closed-loop cooling planned, city says 'minimal long-term water use.' Coordinates are an approximate Inkster/11 Mile intersection estimate, not parcel-geocoded.",
+    "landAcres": 12.19,
+    "community": {
+      "status": "contested",
+      "notes": "Majority of public speakers opposed at the Dec 16, 2025 council hearing ('too many unknowns' -- Council President Charles Hicks); approved anyway 5-2."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "oakland-university-computing-auburn-hills-mi",
+    "name": "Oakland University Campus Computing Facility",
+    "operator": "Fairmount Properties (with Oakland University)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.675,
+      "lon": -83.215,
+      "city": "Auburn Hills",
+      "county": "Oakland",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 26
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "http://oakland.edu/data-infrastructure/",
+        "label": "Data Infrastructure Project - Oakland University",
+        "publisher": "Oakland University",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Proposed shared university/industry colocation facility on OU's campus (Auburn Hills/Rochester border); site shifted from Parking Lot 35 to Parking Lot 37 to increase distance from a campus hall, a nature preserve, and a Native American heritage site. Cleveland-based Fairmount Properties funds construction, operations, and eventual decommissioning; OU pays nothing and gains an 8x expansion of its own computing capacity. Board of Trustees voted 7-0-1 to proceed into due diligence, design, and construction phases (June 2026); published timeline has due diligence running Oct 2026-June 2027, design July 2027-Fall 2028. Coordinates are an approximate campus-area estimate, not parcel-geocoded.",
+    "community": {
+      "status": "mixed",
+      "notes": "Trustees approved 7-0-1, but some faculty and students remain opposed over environmental impact and the adjacent Native American heritage site."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "alterra-development-marshall-mi",
+    "name": "Alterra Marshall Technology & Energy Center",
+    "operator": "Alterra Development",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.276,
+      "lon": -84.955,
+      "city": "Marshall",
+      "county": "Calhoun",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://wwmt.com/news/local/data-center-gas-generation-plant-proposed-in-marshall-alterra-development-calhoun-county-energy-electricity-water",
+        "label": "Data center, gas generation plant proposed in Marshall",
+        "publisher": "WWMT",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://marshalladvisor.com/articles/news/data-center-being-proposed-in-marshall-begins-due-dilligence-period-with-city/",
+        "label": "Data center being proposed in Marshall begins 'due-diligence' period with city",
+        "publisher": "Ad-Visor & Chronicle (Marshall Advisor)",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Proposed data center (MTEC) plus a co-located natural-gas electric generation facility within Brooks Industrial Park, Marshall. Marshall Advisor (local outlet) reports the electric generation facility at 1 GW capacity -- recorded here via energy.onSiteGenerationMw rather than capacityMw since it is unclear how much of that 1 GW is data-center IT load vs. grid-export; no separate data-center-only MW figure has been disclosed by any source fetched this pass. ~270 acres (112 buildable). Alterra estimates 300-500 direct high-skill jobs and 'several million dollars' in annual tax revenue. Mayor Wolfersberger: project is 'at the very beginning' -- due diligence 6-12 months, then 'probably 18 months to two years away from any construction starting' if approved. Land already zoned heavy industrial, so no public referendum is required (unlike Augusta Township). Planned closed-loop liquid cooling. Coordinates are an approximate Marshall-area estimate, not parcel-geocoded; the LDFA purchase agreement price ($1.12M) is for the land only, not a total project investment figure.",
+    "landAcres": 270,
+    "community": {
+      "status": "contested",
+      "notes": "City of Marshall reworking noise ordinances ahead of the project; public concern over noise, emissions, and impact on Stuart Lake and an adjacent city-owned nature preserve."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cloverleaf-cherry-blossom-frenchtown-mi",
+    "name": "Project Cherry Blossom",
+    "operator": "Cloverleaf Infrastructure",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.988,
+      "lon": -83.386,
+      "city": "Frenchtown Township",
+      "county": "Monroe",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cherryblossomdatacenter.com/faqs/",
+        "label": "FAQs - Project Cherry Blossom",
+        "publisher": "Cloverleaf Infrastructure",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://cherryblossomdatacenter.com/",
+        "label": "Project Cherry Blossom - home",
+        "publisher": "Cloverleaf Infrastructure",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Proposed on the former ProMedica Hospital site off I-75 and North Dixie Highway, Frenchtown Township; site is zoned Planned Unit Development, allowing industrial use. ~200 acres; preliminary plans include a pedestrian/bike path and landscaped berms/tree buffers along North Dixie Highway. Cloverleaf's own FAQ describes it as still 'in the development phase' with a taxable investment of 'more than $1B' but does not disclose a MW capacity figure. Cloverleaf is already tracked elsewhere (MO, OK) as a data-center developer. Note: Cloverleaf's own FAQ page refers to the project once as 'Project Ironwood' -- unclear whether this is the same project under an earlier working name or a distinct nearby Cloverleaf site (a 'Project Ironwood' near Dundee/Milan Townships in the same county has been reported separately elsewhere); treated as one record here pending disambiguation in a future pass. Coordinates are an approximate Frenchtown Township / former-hospital-site estimate, not parcel-geocoded.",
+    "investmentUsd": 1000000000,
+    "landAcres": 200,
+    "community": {
+      "status": "mixed",
+      "notes": "Cloverleaf held a public informational meeting with Frenchtown Township; broader community reception not independently confirmed this session."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "hyperscale-data-dowagiac-mi",
+    "name": "Hyperscale Data Dowagiac Campus",
+    "operator": "Hyperscale Data, Inc.",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.984,
+      "lon": -86.109,
+      "city": "Dowagiac",
+      "county": "Cass",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 340,
+      "operational": 30
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.dbusiness.com/daily-news/hyperscale-datas-michigan-ai-data-center-doubles-its-land-holdings",
+        "label": "Hyperscale Data's Michigan AI Data Center Doubles its Land Holdings",
+        "publisher": "DBusiness",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://wwmt.com/news/local/ai-data-center-expansion-dowagiac-loud-noise-complaints-residents-southwest-michigan-hyperscale-megawatt-bitcoin-wwmt",
+        "label": "'Nothing but a noise trap': Dowagiac residents push back against AI data center expansion",
+        "publisher": "WWMT",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Former manufacturing site at 415 East Prairie Ronde Street, Dowagiac; converting from Bitcoin-mining infrastructure toward AI/HPC colocation use, branded by the company as its 'Michigan AI Data Center.' Currently ~30 MW operational (still includes legacy bitcoin mining), targeting 340 MW -- hence aiClassification 'mixed_use' rather than 'confirmed'. Recently completed a 48.5-acre acquisition, bringing the campus to ~83 acres total. Publicly traded company (Hyperscale Data, Inc.) sold ~100 BTC and opened a bitcoin-backed credit facility to fund construction, per its own reporting. Cass County passed a resolution urging more development transparency after resident noise complaints. Coordinates are an approximate Dowagiac city estimate, not parcel-geocoded.",
+    "landAcres": 83,
+    "community": {
+      "status": "contested",
+      "notes": "Nearby residents have raised noise and environmental concerns ('nothing but a noise trap'); Cass County adopted a transparency resolution in response."
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "microsoft-gaines-township-mi",
+    "name": "Microsoft Gaines Township Data Center",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.802,
+      "lon": -85.571,
+      "city": "Gaines Township",
+      "county": "Kent",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://wwmt.com/news/local/data-center-microsoft-rezoning-approval-new-data-center-gaines-township-kent-county-electricity-artificial-intelligence-patterson-avenue",
+        "label": "Microsoft seeks rezoning approval for new data center in Gaines Township",
+        "publisher": "WWMT",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wgvunews.org/news/2025-12-16/gaines-township-to-consider-rezoning-for-future-microsoft-data-center",
+        "label": "Gaines Township to consider rezoning for future Microsoft data center",
+        "publisher": "WGVU News",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Microsoft's SECOND data center site within Gaines Township -- distinct from the unrelated, already-operational Switch Pyramid Campus (also in Gaines Township, tracked separately as switch-pyramid-campus-grand-rapids-mi). Microsoft bought a ~300-316-acre former Steelcase parcel on/near Patterson Avenue for ~$45-45.3M in October 2024 and is seeking to rezone a 40.5-acre portion from large-scale PUD to light industrial; Gaines Charter Township Planning Commission held a public hearing Dec 18, 2025. Township Community Development Director, Dec 2025: no specific plans provided yet beyond general intent. No capacity or total project-investment figure disclosed as of this pass. Coordinates are an approximate Patterson Avenue / Gaines Township estimate (deliberately offset from the existing Switch record's East Paris Avenue coordinates), not parcel-geocoded.",
+    "landAcres": 316,
+    "community": {
+      "status": "contested"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-dorr-township-mi",
+    "name": "Microsoft Dorr Township Data Center",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.64,
+      "lon": -85.652,
+      "city": "Dorr Township",
+      "county": "Allegan",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://wwmt.com/news/local/microsoft-land-farmland-purchase-allegan-kent-dorr-township-gaines-charter-technology-acres",
+        "label": "Reactions mixed as Microsoft purchases farmland in Allegan, Kent counties",
+        "publisher": "WWMT",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wmuk.org/wmuk-news/2025-12-22/microsoft-plans-a-data-center-in-allegan-county",
+        "label": "Microsoft plans a data center in Allegan County",
+        "publisher": "WMUK",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Land next to US-131 in Dorr Township, ~20 miles from Microsoft's separate Gaines Township site (microsoft-gaines-township-kent-county-mi). Acreage reported inconsistently across outlets: 'more than 200 acres' per one report, 'nearly 270 acres' per county property maps per another; purchased in 2024. Microsoft's own statement: project plans, capital investment, and employee numbers are not yet finalized. Township Supervisor (Dec 2025): officials still waiting on Microsoft to submit a development plan; company had hoped to start construction spring 2026. Community concern centers on water and electricity use. Coordinates are an approximate Dorr Township / US-131 estimate, not parcel-geocoded.",
+    "community": {
+      "status": "contested"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-lowell-township-mi",
+    "name": "Microsoft Lowell Township Data Center",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.93,
+      "lon": -85.352,
+      "city": "Lowell Township",
+      "county": "Kent",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.michiganpublic.org/politics-government/2026-05-20/why-one-michigan-township-just-rejected-data-centers-while-another-stays-open-to-them",
+        "label": "Why one Michigan township just rejected data centers, while another stays open to them",
+        "publisher": "Michigan Public",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Proposed ~$1B hyperscale campus at Covenant Business Park, Lowell Township, outside Grand Rapids. Originally filed under Franklin Lowell LLC / Franklin Partners (that application was withdrawn in Dec 2025 amid opposition); Microsoft has since publicly identified itself as the developer (named itself Jan 2026 per secondary reporting, not independently re-confirmed this session) and is pursuing a revamped proposal. Lowell Township's board rejected a proposed moratorium 2-5 and instead formed a committee to draft a data-center-specific ordinance -- i.e. the township itself stayed open to the project even as public reaction has been heavily negative at open houses. Only one independent outlet directly verified this session (WoodTV and Crain's Detroit coverage exist but returned 403 on fetch) -- kept at 'reported' rather than 'confirmed' pending a second direct source. Coordinates are an approximate Lowell Township estimate, not parcel-geocoded.",
+    "investmentUsd": 1000000000,
+    "community": {
+      "status": "mixed",
+      "notes": "Two public open houses drew large, largely critical crowds; the township board itself voted against a moratorium and is drafting an ordinance rather than blocking the project outright."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-douglas-county-ga",
+    "name": "Google Douglasville Data Center",
+    "operator": "Google",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.7514966,
+      "lon": -84.7477136,
+      "city": "Douglasville",
+      "county": "Douglas",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/",
+        "label": "Google Data Centers — US locations",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenters.google/locations/georgia/",
+        "label": "Google Data Centers — Georgia",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Google's first data center campus, and its longest-running. Google began its Douglas County presence in 2003 and opened the data center in 2007; a further $300 million expansion was announced in 2015. Google began using recycled industrial water for cooling here in 2012. Coordinates are the Douglasville city centroid (approximate) — Google does not publish a campus address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-lagrange-ga",
+    "name": "Google LaGrange Data Center",
+    "operator": "Google",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.039291,
+      "lon": -85.0313269,
+      "city": "LaGrange",
+      "county": "Troup",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/",
+        "label": "Google Data Centers — US locations",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenters.google/locations/georgia/",
+        "label": "Google Data Centers — Georgia",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Announced by Google in 2026 as a planned new Georgia data center. No capacity, investment figure, or construction timeline has been published. Coordinates are the LaGrange city centroid (approximate).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-columbia-county-ga",
+    "name": "Google Evans Data Center",
+    "operator": "Google",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.5313102,
+      "lon": -82.2563979,
+      "city": "Evans",
+      "county": "Columbia",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/",
+        "label": "Google Data Centers — US locations",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenters.google/locations/georgia/",
+        "label": "Google Data Centers — Georgia",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Announced by Google in 2026 as a planned new Georgia data center. Google names only the county; the coordinate is the Columbia County centroid (approximate) and no city has been disclosed. No capacity or investment figure published.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-storey-county-nv",
+    "name": "Google  Data Center",
+    "operator": "Google",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.4572167,
+      "lon": -119.5157991,
+      "county": "Storey",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/",
+        "label": "Google Data Centers — US locations",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenters.google/locations/storey-county-nevada",
+        "label": "Google Data Centers — Storey County, Nevada",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Built in 2021 in the Tahoe Reno Industrial Center area; Google began powering the campus with geothermal energy in 2023. Google reports more than $6 billion invested in Nevada since this campus was built. Google publishes no street address — the coordinate is the Storey County centroid (approximate).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-michigan-city-in",
+    "name": "Google Michigan City Data Center",
+    "operator": "Google",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.7075394,
+      "lon": -86.8950297,
+      "city": "Michigan City",
+      "county": "LaPorte",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/",
+        "label": "Google Data Centers — US locations",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenters.google/locations/indiana/",
+        "label": "Google Data Centers — Indiana",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Announced by Google in 2026 as a planned Indiana data center, distinct from Google's operational Fort Wayne site and its Morgan County (Monrovia) development. No capacity or investment figure published. Coordinates are the Michigan City centroid (approximate).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-hermantown-mn",
+    "name": "Google Hermantown Data Center",
+    "operator": "Google",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 46.8068852,
+      "lon": -92.2382464,
+      "city": "Hermantown",
+      "county": "St. Louis",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/",
+        "label": "Google Data Centers — US locations",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Listed by Google among its US data centers under development. Google has not published a dedicated location page, capacity, investment figure, or timeline for this site — it appears only on Google's US locations index, so this record is intentionally thin. Coordinates are the Hermantown city centroid (approximate).",
     "facilityType": "data_center"
   }
 ]
