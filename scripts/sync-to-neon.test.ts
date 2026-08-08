@@ -333,6 +333,33 @@ describe("applySync", () => {
     );
   });
 
+  it("records only the keys that genuinely changed — a nested object whose key ORDER differs (jsonb vs file) must not pollute the audit row", async () => {
+    // Postgres hands `location` back in jsonb key order; the JSON file carries
+    // the order it was authored in. A raw stringify compare calls that a change.
+    const stored = makeDoc({
+      id: "ordering-noise",
+      location: { lat: 33.4, lon: -84.4, state: "GA", precision: "exact" },
+      notes: "Original note",
+    });
+    await seedFacility(tdb.db, stored);
+    await setUpdatedAt("ordering-noise", OLD);
+
+    const fromFile = makeDoc({
+      id: "ordering-noise",
+      location: { precision: "exact", state: "GA", lon: -84.4, lat: 33.4 },
+      notes: "Corrected note",
+    });
+    expect(Object.keys(fromFile.location)).not.toEqual(Object.keys(stored.location));
+
+    const plan = planSync([fromFile], await snapshot(), { basis: BASIS });
+    expect(plan.updates[0].changedKeys).toEqual(["notes"]);
+
+    await applySync(plan);
+
+    const history = await historyFor("ordering-noise");
+    expect(history[0].diff.map((d) => d.key)).toEqual(["notes"]);
+  });
+
   it("skips a row that Neon changed between planning and writing, leaving it and its history untouched", async () => {
     const before = makeDoc({ id: "raced", name: "Old Name" });
     await seedFacility(tdb.db, before);

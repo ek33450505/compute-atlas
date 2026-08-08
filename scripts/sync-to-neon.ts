@@ -67,7 +67,7 @@ import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { docToRow } from "../lib/db/serialize";
 import { computeDocDiff, type DiffEntry } from "../lib/doc-diff";
-import { canonicalStringify, changedTopLevelKeys } from "../lib/canonical-json";
+import { canonicalize, canonicalStringify, changedTopLevelKeys } from "../lib/canonical-json";
 import { tagsForFacility, isValidCacheTag, MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
 
 /**
@@ -288,7 +288,7 @@ export async function applySync(
       }
 
       result.created.push(change);
-      if (!(await recordHistory(change.id, "create", computeDocDiff(null, change.doc), source))) {
+      if (!(await recordHistory(change.id, "create", canonicalDocDiff(null, change.doc), source))) {
         result.historyFailures.push(change.id);
       }
     } catch (err) {
@@ -318,7 +318,7 @@ export async function applySync(
       }
 
       result.updated.push(change);
-      const diff = computeDocDiff(change.prevDoc ?? null, change.doc);
+      const diff = canonicalDocDiff(change.prevDoc ?? null, change.doc);
       if (!(await recordHistory(change.id, "update", diff, source))) {
         result.historyFailures.push(change.id);
       }
@@ -352,6 +352,26 @@ async function recordHistory(
     console.error("facility_history insert failed for %s (%s):", facilityId, changeType, err);
     return false;
   }
+}
+
+/**
+ * `computeDocDiff` compares with a raw `JSON.stringify`, which is correct for
+ * the app's own writes — there both sides originate from the same jsonb
+ * ordering, so only real edits differ. It is wrong for this tool: `prevDoc`
+ * comes back from Postgres in jsonb key order while `doc` carries the order it
+ * was authored in, so untouched objects like `location` register as changed
+ * and the audit row lists keys nobody edited (and stores two values that look
+ * identical, since jsonb re-normalizes them on the way in).
+ *
+ * Canonicalizing both sides first makes the recorded diff list exactly the
+ * keys the dry-run plan listed — what the maintainer reviewed is what the
+ * audit trail says.
+ */
+function canonicalDocDiff(before: Facility | null, after: Facility): DiffEntry[] {
+  return computeDocDiff(
+    before ? (canonicalize(before) as Record<string, unknown>) : null,
+    canonicalize(after) as Record<string, unknown>
+  );
 }
 
 function errorMessage(err: unknown): string {
