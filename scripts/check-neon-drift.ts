@@ -21,26 +21,7 @@ import { facilitiesTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { rowToFacility } from "../lib/db/serialize";
 import { facilitySchema, type Facility } from "../lib/schema";
-
-function canon(x: unknown): unknown {
-  if (Array.isArray(x)) return x.map(canon);
-  if (x && typeof x === "object") {
-    const obj = x as Record<string, unknown>;
-    return Object.keys(obj)
-      .sort()
-      .reduce((o: Record<string, unknown>, k) => ((o[k] = canon(obj[k])), o), {});
-  }
-  return x;
-}
-
-const canonStr = (x: unknown) => JSON.stringify(canon(x));
-
-function changedKeys(a: Record<string, unknown>, b: Record<string, unknown>): string[] {
-  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
-  const diff: string[] = [];
-  for (const k of keys) if (canonStr(a[k]) !== canonStr(b[k])) diff.push(k);
-  return diff.sort();
-}
+import { canonicalStringify as canonStr, changedTopLevelKeys } from "../lib/canonical-json";
 
 async function main() {
   // Graceful no-op if DATABASE_URL not configured
@@ -74,7 +55,7 @@ async function main() {
       if (j && canonStr(j) !== canonStr(f)) {
         changed.push({
           id: f.id,
-          keys: changedKeys(
+          keys: changedTopLevelKeys(
             j as unknown as Record<string, unknown>,
             f as unknown as Record<string, unknown>,
           ),
