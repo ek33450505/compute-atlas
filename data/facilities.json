@@ -56441,16 +56441,41 @@
         "publisher": "Ad-Visor & Chronicle (Marshall Advisor)",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://wwmt.com/news/local/data-centers-michigan-dowagiac-marshall-proposals-track-questions-answers-microsoft-hyperscale-alterra-ai-water-resources-noise-meetings-wwmt",
+        "label": "From Dowagiac to Marshall: communities want answers about data centers — “up to 1,400 megawatts”, on-site gas “around 1,000 megawatts”, “up to 400 megawatts from the grid at peak use”",
+        "publisher": "WWMT",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://arcwestmichigan.com/news/local/marshall-data-center-proposal-stuart-lake-brooks-nature-area-gas-generation-plant-energy-scott-wolfersberger-calhoun-county-west-michigan",
+        "label": "Marshall mayor answers questions on the data center proposal — names the Marshall Technology and Energy Center",
+        "publisher": "ARC West Michigan",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-08-08",
-    "notes": "Proposed data center (MTEC) plus a co-located natural-gas electric generation facility within Brooks Industrial Park, Marshall. Marshall Advisor (local outlet) reports the electric generation facility at 1 GW capacity -- recorded here via energy.onSiteGenerationMw rather than capacityMw since it is unclear how much of that 1 GW is data-center IT load vs. grid-export; no separate data-center-only MW figure has been disclosed by any source fetched this pass. ~270 acres (112 buildable). Alterra estimates 300-500 direct high-skill jobs and 'several million dollars' in annual tax revenue. Mayor Wolfersberger: project is 'at the very beginning' -- due diligence 6-12 months, then 'probably 18 months to two years away from any construction starting' if approved. Land already zoned heavy industrial, so no public referendum is required (unlike Augusta Township). Planned closed-loop liquid cooling. Coordinates are an approximate Marshall-area estimate, not parcel-geocoded; the LDFA purchase agreement price ($1.12M) is for the land only, not a total project investment figure.",
+    "notes": "Proposed data center (Marshall Technology & Energy Center, MTEC) plus a co-located natural-gas electric generation facility within Brooks Industrial Park, Marshall. WWMT (2026-04) resolves the load split that earlier reporting left open: up to 1,400 MW required at full buildout, around 1,000 MW of that from on-site gas turbines and up to 400 MW imported from the grid at peak — so capacityMw.planned is the campus power requirement and the 1 GW plant is carried both in energy.onSiteGenerationMw and as its own power_generation record. ~270 acres (112 buildable), roughly half wetlands. Alterra (Toronto-based) estimates 300-500 direct high-skill jobs. Mayor Wolfersberger (2026-01) called it \"just a concept\" with \"no site plans or utility agreements yet\"; due diligence runs into Q3 2026, then construction is \"probably 18 months to two years away\" if approved. Land is already zoned heavy industrial, so no public referendum is required (unlike Augusta Township). Planned closed-loop liquid cooling. Coordinates are an approximate Marshall-area estimate, not parcel-geocoded; the LDFA purchase price ($1.12M) is for land only, not a project investment figure.",
     "landAcres": 270,
     "community": {
       "status": "contested",
       "notes": "City of Marshall reworking noise ordinances ahead of the project; public concern over noise, emissions, and impact on Stuart Lake and an adjacent city-owned nature preserve."
     },
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "capacityMw": {
+      "planned": 1400
+    },
+    "energy": {
+      "source": "mixed",
+      "onSiteGenerationMw": 1000,
+      "notes": "At full buildout the campus could require up to 1,400 MW: roughly 1,000 MW from a co-located natural-gas turbine plant on site, plus up to 400 MW imported from the grid at peak. The generation plant is tracked separately as alterra-marshall-technology-energy-center-gas-mi."
+    },
+    "water": {
+      "coolingType": "closed_loop"
+    }
   },
   {
     "id": "cloverleaf-cherry-blossom-frenchtown-mi",
@@ -56940,5 +56965,58 @@
     "lastUpdated": "2026-08-08",
     "notes": "Conditional-use application for a crypto-mining facility outside Windom, withdrawn in September 2024 after community opposition. The project was projected to generate about $35,000 a month in service fees for the city. No megawatt figure was published for this site. The exact withdrawal day is not established by the fetched source (it reports the Star Tribune broke the news “on Wednesday”), so the cancellation is dated to the month only. Coordinates are the Windom city centroid (approximate).",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "alterra-marshall-technology-energy-center-gas-mi",
+    "name": "Marshall Technology & Energy Center Gas Generation",
+    "operator": "Alterra Development",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.276,
+      "lon": -84.955,
+      "city": "Marshall",
+      "county": "Calhoun",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10",
+        "note": "Alterra Development entered a purchase agreement with the City of Marshall for 270 acres in Brooks Industrial Park, proposing a data center alongside a co-located natural-gas generation plant.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wwmt.com/news/local/data-centers-michigan-dowagiac-marshall-proposals-track-questions-answers-microsoft-hyperscale-alterra-ai-water-resources-noise-meetings-wwmt",
+        "label": "From Dowagiac to Marshall: communities want answers about data centers — “up to 1,400 megawatts”, on-site gas “around 1,000 megawatts”, “up to 400 megawatts from the grid at peak use”",
+        "publisher": "WWMT",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://arcwestmichigan.com/news/local/marshall-data-center-proposal-stuart-lake-brooks-nature-area-gas-generation-plant-energy-scott-wolfersberger-calhoun-county-west-michigan",
+        "label": "Marshall mayor answers questions on the data center proposal — names the Marshall Technology and Energy Center",
+        "publisher": "ARC West Michigan",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Natural-gas turbine generation proposed on the same Brooks Industrial Park site as the Alterra Marshall data center, sized at “around 1,000 megawatts” to carry most of the campus load, with up to 400 MW imported from the grid at peak. Split into its own record per the project's same-site power+compute convention. Still conceptual as of 2026-01 — no site plans or utility agreements — and subject to Michigan air-permitting and local review that no fetched source shows as begun. Coordinates mirror the compute record's approximate Marshall-area point, not a siting-confirmed location.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Alterra Development",
+      "poweredFacilityIds": [
+        "alterra-development-marshall-mi"
+      ],
+      "notes": "Behind-the-meter generation intended to serve the co-located Marshall Technology & Energy Center data center campus; the developer has also said the plant would contribute to the grid."
+    }
   }
 ]
