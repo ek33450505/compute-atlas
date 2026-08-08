@@ -357,10 +357,10 @@
       "lon": -87.513056,
       "city": "Merom",
       "county": "Sullivan",
-      "state": "IN",
-      "precision": "approximate",
       "street": "5500 W County Rd 200 S",
-      "postalCode": "47882"
+      "postalCode": "47882",
+      "state": "IN",
+      "precision": "approximate"
     },
     "capacityMw": {
       "planned": 115
@@ -812,9 +812,9 @@
       {
         "url": "https://baxtel.com/data-center/aligned-plano",
         "label": "baxtel — Aligned Plano Data Center",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-24",
-        "kind": "other",
-        "publisher": "Baxtel"
+        "kind": "other"
       },
       {
         "url": "https://www.electricchoice.com/utilities/oncor/",
@@ -1605,6 +1605,9 @@
       "state": "MI",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 1400
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -1638,15 +1641,6 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "Proposed data center (Marshall Technology & Energy Center, MTEC) plus a co-located natural-gas electric generation facility within Brooks Industrial Park, Marshall. WWMT (2026-04) resolves the load split that earlier reporting left open: up to 1,400 MW required at full buildout, around 1,000 MW of that from on-site gas turbines and up to 400 MW imported from the grid at peak — so capacityMw.planned is the campus power requirement and the 1 GW plant is carried both in energy.onSiteGenerationMw and as its own power_generation record. ~270 acres (112 buildable), roughly half wetlands. Alterra (Toronto-based) estimates 300-500 direct high-skill jobs. Mayor Wolfersberger (2026-01) called it \"just a concept\" with \"no site plans or utility agreements yet\"; due diligence runs into Q3 2026, then construction is \"probably 18 months to two years away\" if approved. Land is already zoned heavy industrial, so no public referendum is required (unlike Augusta Township). Planned closed-loop liquid cooling. Coordinates are an approximate Marshall-area estimate, not parcel-geocoded; the LDFA purchase price ($1.12M) is for land only, not a project investment figure.",
-    "landAcres": 270,
-    "community": {
-      "status": "contested",
-      "notes": "City of Marshall reworking noise ordinances ahead of the project; public concern over noise, emissions, and impact on Stuart Lake and an adjacent city-owned nature preserve."
-    },
-    "facilityType": "data_center",
-    "capacityMw": {
-      "planned": 1400
-    },
     "energy": {
       "source": "mixed",
       "onSiteGenerationMw": 1000,
@@ -1654,7 +1648,13 @@
     },
     "water": {
       "coolingType": "closed_loop"
-    }
+    },
+    "landAcres": 270,
+    "community": {
+      "status": "contested",
+      "notes": "City of Marshall reworking noise ordinances ahead of the project; public concern over noise, emissions, and impact on Stuart Lake and an adjacent city-owned nature preserve."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "alterra-marshall-technology-energy-center-gas-mi",
@@ -4184,9 +4184,9 @@
       {
         "url": "https://baxtel.com/data-center/amazon-3180-beech-rd-campus",
         "label": "Amazon: 3180 Beech Rd Campus Data Center (Baxtel)",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-24",
-        "kind": "other",
-        "publisher": "Baxtel"
+        "kind": "other"
       },
       {
         "url": "https://aws.amazon.com/blogs/aws/more-amazon-wind-and-solar-farms-are-live/",
@@ -9791,13 +9791,29 @@
         "publisher": "CleanSpark, Inc.",
         "retrievedAt": "2026-08-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-executes-75-mw-of-power-contracts-and-completes-acquisition-of-bitcoin-mining-site-in-wyoming-302212200.html",
+        "label": "CleanSpark Executes 75 MW of Power Contracts and Completes Acquisition of Bitcoin Mining Site in Wyoming",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://investors.cleanspark.com/news/news-details/2024/CleanSpark-to-Acquire-75-MW-of-Bitcoin-Mining-Sites-in-Wyoming-for-18.75-Million/default.aspx",
+        "label": "CleanSpark to Acquire 75 MW of Bitcoin Mining Sites in Wyoming for $18.75 Million",
+        "publisher": "CleanSpark, Inc. (Investor Relations)",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-07",
     "notes": "Two-parcel buildout totaling 75 MW contracted power (30 MW site 1 + 45 MW site 2), combined target of 5+ EH/s using all-new S21 immersion XPs. Site 1 (30 MW) is confirmed as Cheyenne, Laramie County via the primary SEC 8-K; site 2 (45 MW) is described only as 'Wyoming' in the 8-K, with secondary/aggregator sources placing it in the 'Cheyenne market' — coordinates and city are therefore approximate for the combined record. Current operational status has not been independently reverified since the 2024 announcement. Pure bitcoin ASIC mining — no AI/HPC evidence found for this site (a later, unrelated CNBC report on CleanSpark pursuing a Wyoming AI data center was not tied to this facility and is not reflected here).",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "notes": "75 MW of executed power contracts across two Cheyenne sites (initial 30 MW plus a second 45 MW site)."
     },
+    "investmentUsd": 18750000,
     "facilityType": "crypto_mining",
     "mining": {
       "hardwareType": "asic",
@@ -28058,9 +28074,9 @@
       {
         "url": "https://baxtel.com/data-center/google-winding-woods",
         "label": "Baxtel — Google: Winding Woods Data Center",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-25",
-        "kind": "press",
-        "publisher": "Baxtel"
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-07-25",
@@ -30700,6 +30716,10 @@
       "state": "NE",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 70,
+      "operational": 20
+    },
     "announcedDate": "2023",
     "statusHistory": [],
     "sources": [
@@ -30751,10 +30771,6 @@
     "mining": {
       "coolingType": "hybrid",
       "powerArrangement": "grid"
-    },
-    "capacityMw": {
-      "operational": 20,
-      "planned": 70
     }
   },
   {
@@ -32935,6 +32951,9 @@
       "state": "NE",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 100
+    },
     "statusHistory": [
       {
         "status": "operational",
@@ -32968,10 +32987,7 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "Operational bitcoin mining site in Kearney, Buffalo County, NE. Acquired by MARA in the GC Data Center Acquisition (closed Jan 12 2024) alongside the Granbury, TX site — the two totaled ~390 MW of nameplate capacity combined; the individual Kearney capacity is not separately disclosed by MARA. Coordinates are Kearney-area approximate. Site power capacity (100 MW) is sourced to the facility's original announcement by its prior operator, Compute North; MARA subsequently acquired the site, and no post-acquisition capacity figure has been published.",
-    "facilityType": "crypto_mining",
-    "capacityMw": {
-      "operational": 100
-    }
+    "facilityType": "crypto_mining"
   },
   {
     "id": "mara-site-mat-1177-matagorda-tx",
@@ -33871,6 +33887,9 @@
       "state": "WY",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 109
+    },
     "poweredBy": "Black Hills Energy grid with planned renewable additions",
     "announcedDate": "2024-07",
     "statusHistory": [
@@ -33901,9 +33920,23 @@
         "publisher": "Cheyenne LEADS",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://www.ewweb.com/news/project-watch/article/55124842/meta-facebook-announces-plans-for-800-million-data-center-in-cheyenne-wy",
+        "label": "Meta/Facebook Announces Plans for $800-Million Data Center in Cheyenne, WY",
+        "publisher": "Electrical Wholesaling",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/wyoming/3137/meta-cheyenne---building-1",
+        "label": "Meta Cheyenne — Building 1 (109 MW)",
+        "publisher": "CleanView",
+        "retrievedAt": "2026-08-07",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-07",
     "notes": "715,000 sq ft campus at High Plains Business Park, Meta's 25th global data center. Originally Project Cosmo. Optimized for AI workloads with new H-departed design. Expected operational 2027. Coordinates approximate for High Plains Business Park in SE Cheyenne. Energy.notes corrected: removed on-site nuclear claim (Meta-TerraPower PPA is portfolio-wide grid delivery, not an on-site Cheyenne plant) and removed unverified $1.2B solar claim. jobs.sourceIndex corrected from 0 to 1 (Cheyenne LEADS is the source for the 1,000 construction jobs figure).",
     "energy": {
       "source": "grid",
@@ -36378,9 +36411,16 @@
         "publisher": "County 17",
         "retrievedAt": "2026-07-22",
         "kind": "press"
+      },
+      {
+        "url": "https://news.microsoft.com/source/2026/04/14/microsoft-announces-intent-to-expand-datacenter-operations-in-cheyenne-accelerating-innovation-and-economic-growth/",
+        "label": "Microsoft announces intent to expand datacenter operations in Cheyenne",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-22",
+    "lastUpdated": "2026-08-07",
     "notes": "Described by Microsoft as a 'multi-gigawatt multi-decade ecosystem.' The 400 MW initial-target figure that appeared in the prior record was NOT found in either cited source and has been removed pending a citable source (neither the Microsoft newsroom announcement nor Cowboy State Daily mentions a specific MW figure). Separate from existing Cheyenne campus (since 2012) and the HR Ranch Road construction underway 2025-2026. Coordinates approximate for Bison Business Park / SE Cheyenne area.",
     "energy": {
       "source": "grid",
@@ -42493,9 +42533,9 @@
       {
         "url": "https://baxtel.com/news/500-acre-texas-data-center-project-eyed-by-powerhouse",
         "label": "500-Acre Texas Data Center Project Eyed by PowerHouse (Baxtel)",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-24",
-        "kind": "press",
-        "publisher": "Baxtel"
+        "kind": "press"
       },
       {
         "url": "https://centexdatacenters.org/projects/tract-caldwell-county",
@@ -42984,6 +43024,9 @@
       "state": "MI",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 1000
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -43025,10 +43068,7 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center",
-    "aiClassification": "likely",
-    "capacityMw": {
-      "planned": 1000
-    }
+    "aiClassification": "likely"
   },
   {
     "id": "project-cardinal-yorkville-il",
@@ -43898,19 +43938,37 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/prometheus-hyperscale-works-with-carbon-capture-firms-on-new-data-center-campus-in-wyoming/",
+        "label": "Prometheus Hyperscale works with carbon capture firms on new data center campus in Wyoming (Falls Ranch, Casper; up to 1.5 GW)",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/prometheus-hyperscale-spiritus-and-casper-carbon-capture-announce-strategic-partnership-to-build-carbon-negative-data-halls-and-energy-infrastructure-in-wyoming-302576579.html",
+        "label": "Prometheus Hyperscale, Spiritus, and Casper Carbon Capture Announce Strategic Partnership to Build Carbon-Negative Data Halls and Energy Infrastructure in Wyoming",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-07",
     "notes": "1.5GW campus proposed on the Falls Ranch property spanning the Natrona/Converse county line near I-25, roughly 10 miles east of Casper. Site plan still in flux as of July 2026, with developers weighing an alternate parcel south of I-25; targeted operational by 2028.",
     "energy": {
-      "utility": "PacifiCorp"
+      "source": "mixed",
+      "utility": "PacifiCorp",
+      "notes": "On-site generation with a minimum $500M initial investment; carbon-negative operations via partnership with Spiritus and Casper Carbon Capture, combining natural gas with proprietary geothermal systems and carbon capture."
     },
+    "investmentUsd": 500000000,
     "community": {
       "status": "contested",
       "notes": "Neighboring landowners mounted \"fierce pushback\" over noise, heat, fumes, and traffic concerns, prompting developers to weigh relocating to an alternate parcel as of July 2026 (no denial or lawsuit yet).",
       "sourceIndex": 2
     },
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "prometheus-hyperscale-evanston-wy",
@@ -43966,12 +44024,28 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.kpcw.org/state-regional/2026-06-19/1-25gw-data-center-approved-on-ranchland-near-evanston-wyoming",
+        "label": "1.25GW data center approved on ranchland near Evanston, Wyoming",
+        "publisher": "KPCW",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/prometheus-hyperscale-secures-planning-approval-for-gigawatt-data-center-campus-in-wyoming/",
+        "label": "Prometheus Hyperscale secures planning approval for gigawatt data center campus in Wyoming",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-07",
     "notes": "506-acre 'Atlas Industrial Park' campus about 8-12 miles east of Evanston near the Silver Eagle refinery on County Road 180, south side of I-80 (Section 13, T15N R119W). Approved for 1.25GW initial IT capacity with a stated development path to 5GW; only the confirmed initial figure is recorded here.",
     "energy": {
-      "utility": "PacifiCorp"
+      "source": "on_site_gas",
+      "utility": "PacifiCorp",
+      "notes": "Fully islanded on-site microgrid generating power through natural gas engines and turbines, avoiding interconnection-queue exposure and ratepayer impact."
     },
     "landAcres": 506,
     "community": {
@@ -43979,7 +44053,8 @@
       "notes": "Uinta County Commissioners unanimously approved the conditional-use permit but attached 15 conditions after hearing both resident opposition (an 8-signed-page petition citing environmental and tourism-visibility concerns) and resident support at the hearing.",
       "sourceIndex": 2
     },
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "qts-ashburn-1-va",
@@ -46243,11 +46318,6 @@
         "sourceIndex": 0
       }
     ],
-    "community": {
-      "status": "opposed",
-      "notes": "Residents objected at public hearings on two main grounds: noise from the fans used to cool the computing equipment, and the environmental impact of the facility's electricity use. The Planning Commission postponed its recommendation on 2026-02-24 rather than advancing the application.",
-      "sourceIndex": 0
-    },
     "sources": [
       {
         "url": "https://www.pinejournal.com/news/local/crypto-mining-company-withdraws-moose-lake-proposal",
@@ -46259,6 +46329,11 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "Proposed as a modular computing complex on about 2 acres next to the municipal power station off Highway 73. Withdrawn 2026-03-11. The company's STATED reason was power-availability timing, not the opposition — the local objections (cooling-fan noise, electricity use) and the withdrawal are both documented, but the source does not establish that the former caused the latter. No megawatt figure was published. Coordinates are the Moose Lake city centroid (approximate); the record has no parcel-level confirmation.",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents objected at public hearings on two main grounds: noise from the fans used to cool the computing equipment, and the environmental impact of the facility's electricity use. The Planning Commission postponed its recommendation on 2026-02-24 rather than advancing the application.",
+      "sourceIndex": 0
+    },
     "facilityType": "crypto_mining"
   },
   {
@@ -46289,11 +46364,6 @@
         "sourceIndex": 0
       }
     ],
-    "community": {
-      "status": "opposed",
-      "notes": "Roughly 100 residents attended an August 2024 public hearing to object, most commonly over noise pollution and effects on home property values. The company pulled the conditional-use application the following month, citing community feedback.",
-      "sourceIndex": 0
-    },
     "sources": [
       {
         "url": "https://theenergymag.com/news/2024-09-25/revolve-bitcoin-mining-windom",
@@ -46305,6 +46375,11 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "Conditional-use application for a crypto-mining facility outside Windom, withdrawn in September 2024 after community opposition. The project was projected to generate about $35,000 a month in service fees for the city. No megawatt figure was published for this site. The exact withdrawal day is not established by the fetched source (it reports the Star Tribune broke the news “on Wednesday”), so the cancellation is dated to the month only. Coordinates are the Windom city centroid (approximate).",
+    "community": {
+      "status": "opposed",
+      "notes": "Roughly 100 residents attended an August 2024 public hearing to object, most commonly over noise pollution and effects on home property values. The company pulled the conditional-use application the following month, citing community feedback.",
+      "sourceIndex": 0
+    },
     "facilityType": "crypto_mining"
   },
   {
@@ -48536,9 +48611,9 @@
       {
         "url": "https://baxtel.com/data-center/skybox-houston-one",
         "label": "Baxtel — Skybox Houston One Data Center (substation/power infrastructure specs)",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-24",
-        "kind": "other",
-        "publisher": "Baxtel"
+        "kind": "other"
       }
     ],
     "lastUpdated": "2026-07-26",
@@ -52883,10 +52958,28 @@
         "publisher": "Wyoming Tribune Eagle",
         "retrievedAt": "2026-07-22",
         "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/wyoming-approves-data-center-campus-that-includes-2-7-gw-of-new-natural-gas-fired-generation/",
+        "label": "Wyoming Approves Data Center Campus That Includes 2.7 GW of New Natural Gas-Fired Generation",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/BFC_Power_and_Cheyenne_Power_Hub",
+        "label": "BFC Power and Cheyenne Power Hub",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-08-07",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-22",
+    "lastUpdated": "2026-08-07",
     "notes": "Dedicated natural-gas power hub built by Tallgrass to supply the Crusoe/Google 'Project Tembo' campus (tracked separately as tallgrass-project-jade-cheyenne-wy). Laramie County approved the Switchgrass Industrial Park site plan in January 2026; over $7 billion in planned investment.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural gas-fired generation to serve the adjacent data center campus: a fuel cell yard, two combined-cycle natural gas turbines, and both temporary and permanent aeroderivative/light-duty simple-cycle turbines."
+    },
     "investmentUsd": 7000000000,
     "landAcres": 659,
     "facilityType": "power_generation",
@@ -52953,9 +53046,23 @@
         "publisher": "Cowboy State Daily",
         "retrievedAt": "2026-07-09",
         "kind": "press"
+      },
+      {
+        "url": "https://cowboystatedaily.com/2026/07/08/google-revealed-as-owner-of-wyomings-largest-data-center-now-project-tembo/",
+        "label": "Say Hello To Google, The Mystery Owner Behind Wyoming's Largest Data Center Project",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/wyoming-approves-data-center-campus-that-includes-2-7-gw-of-new-natural-gas-fired-generation/",
+        "label": "Wyoming Approves Data Center Campus That Includes 2.7 GW of New Natural Gas-Fired Generation",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-08-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-07",
     "notes": "Switchgrass Industrial Park, Hwy 85 south of Cheyenne, Laramie County - geographically distinct from Meta (Project Cosmo) and Microsoft's Cheyenne campuses. 716-acre campus. Originally announced at 1.8GW as 'Project Jade' with an undisclosed hyperscale client (Crusoe Energy as builder); Crusoe exited June 2026. On 2026-07-08, Google was publicly revealed as owner/operator via subsidiary Jupiter Star Holdings, and the project was renamed 'Project Tembo'; capacity confirmed at 2.7GW with an ultimate ceiling of up to 10GW. The Cheyenne Power Hub on-site natural-gas plant supplies power (Tallgrass Energy; Black Hills Energy co-invested). ~$50B total project figure remains a projection. Completion targeted 2031.",
     "energy": {
       "source": "on_site_gas",
