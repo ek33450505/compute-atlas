@@ -680,7 +680,8 @@
         "url": "https://baxtel.com/data-center/aligned-plano",
         "label": "baxtel — Aligned Plano Data Center",
         "retrievedAt": "2026-07-24",
-        "kind": "other"
+        "kind": "other",
+        "publisher": "Baxtel"
       },
       {
         "url": "https://www.electricchoice.com/utilities/oncor/",
@@ -3806,7 +3807,8 @@
         "url": "https://baxtel.com/data-center/amazon-3180-beech-rd-campus",
         "label": "Amazon: 3180 Beech Rd Campus Data Center (Baxtel)",
         "retrievedAt": "2026-07-24",
-        "kind": "other"
+        "kind": "other",
+        "publisher": "Baxtel"
       },
       {
         "url": "https://aws.amazon.com/blogs/aws/more-amazon-wind-and-solar-farms-are-live/",
@@ -15993,7 +15995,7 @@
       {
         "url": "https://baxtel.com/data-center/8100-boone-digital-realty",
         "label": "Baxtel facility profile (small legacy DLR site, not on current DLR NoVA directory page)",
-        "publisher": "Digital Realty",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -16039,7 +16041,7 @@
       {
         "url": "https://baxtel.com/data-center/21744-sir-timothy-drive-acc10",
         "label": "Baxtel facility page — ACC10, 21744 Sir Timothy Drive, former DuPont Fabros expansion completed 2018",
-        "publisher": "Digital Realty",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -16087,7 +16089,7 @@
       {
         "url": "https://baxtel.com/data-center/44520-hastings-acc3-digital-realty",
         "label": "Baxtel facility profile (not on current digitalrealty.com NoVA directory table, corroborated by DCD/Data Center Frontier",
-        "publisher": "Digital Realty",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -16133,7 +16135,7 @@
       {
         "url": "https://baxtel.com/data-center/21745-sir-timothy-acc9-digital-realty",
         "label": "Baxtel facility page — ACC9, 21745 Sir Timothy Drive, part of former DuPont Fabros Ashburn campus (acquired by Digital R",
-        "publisher": "Digital Realty",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -16611,7 +16613,7 @@
       {
         "url": "https://baxtel.com/data-center/digital-realty-iad43",
         "label": "Baxtel facility page — IAD43 (Building S)",
-        "publisher": "Digital Realty",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -16694,7 +16696,7 @@
       {
         "url": "https://baxtel.com/data-center/digital-realty-iad43",
         "label": "Baxtel/marketplace listings confirming IAD55 as an active Digital Realty Ashburn/Sterling-area building code",
-        "publisher": "Digital Realty",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -26828,7 +26830,8 @@
         "url": "https://baxtel.com/data-center/google-winding-woods",
         "label": "Baxtel — Google: Winding Woods Data Center",
         "retrievedAt": "2026-07-25",
-        "kind": "press"
+        "kind": "press",
+        "publisher": "Baxtel"
       }
     ],
     "lastUpdated": "2026-07-25",
@@ -30473,8 +30476,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/lumen-ashburn",
-        "label": "Lumen Technologies facility directory",
-        "publisher": "Lumen Technologies",
+        "label": "Baxtel facility profile — Lumen Ashburn",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -30554,8 +30557,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/lumen-austin-3-500-chicon",
-        "label": "Lumen Technologies facility directory",
-        "publisher": "Lumen Technologies",
+        "label": "Baxtel facility profile — Lumen Austin 3",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -30674,8 +30677,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/lumen-dallas-1",
-        "label": "Lumen Technologies facility directory",
-        "publisher": "Lumen Technologies",
+        "label": "Baxtel facility profile — Lumen Dallas 1",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -30710,8 +30713,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/lumen-dallas-6",
-        "label": "Lumen Technologies facility directory",
-        "publisher": "Lumen Technologies",
+        "label": "Baxtel facility profile — Lumen Dallas 6",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -30745,8 +30748,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/lumen-madison-1",
-        "label": "Lumen Technologies facility directory",
-        "publisher": "Lumen Technologies",
+        "label": "Baxtel facility profile — Lumen Madison 1",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -30872,8 +30875,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/lumen-norristown",
-        "label": "Lumen Technologies facility directory",
-        "publisher": "Lumen Technologies",
+        "label": "Baxtel facility profile — Lumen Norristown",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -30953,8 +30956,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/lumen-san-antonio-2",
-        "label": "Lumen Technologies facility directory",
-        "publisher": "Lumen Technologies",
+        "label": "Baxtel facility profile — Lumen San Antonio 2",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -36934,7 +36937,7 @@
       {
         "url": "https://baxtel.com/data-center/talen-nautilus-cryptomine",
         "label": "Baxtel data center directory + DCD reporting on Talen's full acquisition of Nautilus Cryptomine (Oct 2024)",
-        "publisher": "Talen Energy",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -38441,8 +38444,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/ntt-data-quincy",
-        "label": "NTT DATA facility directory",
-        "publisher": "NTT DATA",
+        "label": "Baxtel facility profile — NTT Data Quincy Data Center",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -39459,7 +39462,7 @@
       {
         "url": "https://baxtel.com/data-center/rowan-percheron",
         "label": "Baxtel facility profile: Rowan Percheron Data Center",
-        "publisher": "Rowan Green Data (DBA Rowan Digital Infrastructure)",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -40364,7 +40367,8 @@
         "url": "https://baxtel.com/news/500-acre-texas-data-center-project-eyed-by-powerhouse",
         "label": "500-Acre Texas Data Center Project Eyed by PowerHouse (Baxtel)",
         "retrievedAt": "2026-07-24",
-        "kind": "press"
+        "kind": "press",
+        "publisher": "Baxtel"
       },
       {
         "url": "https://centexdatacenters.org/projects/tract-caldwell-county",
@@ -44767,8 +44771,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/sabey-intergate-columbia",
-        "label": "Sabey Data Centers facility directory",
-        "publisher": "Sabey Data Centers",
+        "label": "Baxtel facility profile — Sabey Intergate.Columbia Building A",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -46150,7 +46154,8 @@
         "url": "https://baxtel.com/data-center/skybox-houston-one",
         "label": "Baxtel — Skybox Houston One Data Center (substation/power infrastructure specs)",
         "retrievedAt": "2026-07-24",
-        "kind": "other"
+        "kind": "other",
+        "publisher": "Baxtel"
       }
     ],
     "lastUpdated": "2026-07-26",
@@ -48888,8 +48893,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-centers/switch",
-        "label": "Switch facility directory",
-        "publisher": "Switch",
+        "label": "Baxtel facility profile — Switch Edge 1",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -48943,8 +48948,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-centers/switch",
-        "label": "Switch facility directory",
-        "publisher": "Switch",
+        "label": "Baxtel facility profile — Switch Las Vegas 10",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -48998,8 +49003,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-centers/switch",
-        "label": "Switch facility directory",
-        "publisher": "Switch",
+        "label": "Baxtel facility profile — Switch Las Vegas 11",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -49114,8 +49119,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-centers/switch",
-        "label": "Switch facility directory",
-        "publisher": "Switch",
+        "label": "Baxtel facility profile — Switch Las Vegas 5",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -49169,8 +49174,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-centers/switch",
-        "label": "Switch facility directory",
-        "publisher": "Switch",
+        "label": "Baxtel facility profile — Switch Las Vegas 7",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -49224,8 +49229,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-centers/switch",
-        "label": "Switch facility directory",
-        "publisher": "Switch",
+        "label": "Baxtel facility profile — Switch Las Vegas 9",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -49471,8 +49476,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-centers/switch",
-        "label": "Switch facility directory",
-        "publisher": "Switch",
+        "label": "Baxtel facility profile — Switch Tahoe Reno 2 (The Citadel Campus)",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -49662,8 +49667,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/t5-atlanta-i",
-        "label": "T5 Data Centers facility directory",
-        "publisher": "T5 Data Centers",
+        "label": "Baxtel facility profile — T5@Atlanta I",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -49836,8 +49841,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/t5-chicago-ii",
-        "label": "T5 Data Centers facility directory",
-        "publisher": "T5 Data Centers",
+        "label": "Baxtel facility profile — T5 Chicago II",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
@@ -53213,8 +53218,8 @@
     "sources": [
       {
         "url": "https://baxtel.com/data-center/vantage-san-antonio-tx11",
-        "label": "Vantage facility directory",
-        "publisher": "Vantage",
+        "label": "Baxtel facility profile — Vantage San Antonio TX11",
+        "publisher": "Baxtel",
         "retrievedAt": "2026-07-22",
         "kind": "other"
       },
