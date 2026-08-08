@@ -53,3 +53,5 @@ jobs:
         run: bats tests/discovery/run.bats
       - name: seo-runner BATS
         run: bats tests/seo-runner/run.bats
+      - name: vercel ignore-gate BATS
+        run: bats tests/vercel/run.bats
