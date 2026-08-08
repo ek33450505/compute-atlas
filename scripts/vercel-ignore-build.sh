@@ -32,6 +32,17 @@ if [[ "${VERCEL_ENV:-}" == "production" ]]; then
   build "production deployment"
 fi
 
+# 1b. release-please's PR branch. By construction it only ever bumps a version
+#     string — .release-please-manifest.json, CHANGELOG.md, and the `version`
+#     field of package.json / package-lock.json — so its preview renders a site
+#     byte-identical to the one already deployed. It cannot be handled by the
+#     path allowlist below, because package.json / package-lock.json must
+#     otherwise always build: that is exactly what makes dependabot's PRs build,
+#     which is the behaviour we want. Merging still triggers a production build.
+if [[ "${VERCEL_GIT_COMMIT_REF:-}" == release-please--* ]]; then
+  skip "release-please version bump (production still builds on merge)"
+fi
+
 # 2. Resolve a base commit to diff against.
 #
 #    Vercel clones SINGLE-BRANCH and SHALLOW. `origin/main` does not exist in
