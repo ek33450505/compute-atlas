@@ -36,6 +36,10 @@ export interface ExportMeta {
 /**
  * Pure builder for the facilities.meta.json shape — kept separate from disk
  * I/O so it's testable without a DB or a package.json read (see export.test.ts).
+ *
+ * `now` should be the instant the DB read STARTED, not when the file was
+ * written — see the comment at its call site in `main()`. The default exists
+ * for tests and ad-hoc use; the CLI always passes an explicit value.
  */
 export function buildExportMeta(
   recordCount: number,
@@ -71,6 +75,24 @@ async function main() {
   }
 
   const db = getDb();
+
+  // Stamped BEFORE the read, deliberately. `asOf` is not decoration: it is the
+  // basis `scripts/sync-to-neon.ts` compares each Neon row's `updatedAt`
+  // against to decide whether that row has moved ahead of this snapshot and
+  // must not be overwritten.
+  //
+  // Stamping it after the read (as this used to) opened a window: a row edited
+  // between the SELECT's MVCC snapshot and the timestamp is absent from the
+  // exported JSON, yet carries `updatedAt < asOf` — so a later sync would read
+  // it as safely overwritable and silently revert it. Exactly the clobber the
+  // guard exists to prevent.
+  //
+  // Taking the timestamp first makes the basis conservative BY CONSTRUCTION:
+  // anything written after this instant sorts newer than the basis and gets
+  // blocked. Erring early costs at most a spurious block (which prints an
+  // explanation and is cleared by re-running `db:export`); erring late costs
+  // someone's approval.
+  const readAt = new Date();
   const rows = await db.select().from(facilitiesTable);
 
   const facilities = rows
@@ -84,7 +106,7 @@ async function main() {
   const outPath = parseOutPath();
   writeFileSync(outPath, JSON.stringify(validated, null, 2) + "\n", "utf-8");
 
-  const meta = buildExportMeta(validated.length, readPackageVersion());
+  const meta = buildExportMeta(validated.length, readPackageVersion(), readAt);
   const metaOutPath = path.join(path.dirname(outPath), "facilities.meta.json");
   writeFileSync(metaOutPath, JSON.stringify(meta, null, 2) + "\n", "utf-8");
 

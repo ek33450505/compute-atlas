@@ -158,6 +158,30 @@ describe("planSync", () => {
       expect(plan.blocked[0].changedKeys).toEqual(["name"]);
     });
 
+    it("blocks a row edited DURING the export window — the reason facilities.meta.json's asOf is stamped before the read, not after", () => {
+      // The race this guards: `db:export` takes its MVCC snapshot at T0, and
+      // a maintainer approves a row on the admin portal at T0+1s. That edit is
+      // absent from the exported JSON. If `asOf` were stamped when the export
+      // FINISHED (T0+2s), the row's updatedAt would sort older than the basis
+      // and this sync would silently revert a live approval.
+      //
+      // With asOf = read-start (scripts/export.ts), the edit sorts newer and
+      // is refused. If anyone moves that timestamp back after the read, this
+      // is the property they break.
+      const exportReadStart = new Date("2026-02-01T00:00:00.000Z");
+      const editedMidExport = new Date("2026-02-01T00:00:01.000Z");
+
+      const inSnapshot = makeDoc({ id: "edited-mid-export", name: "Old" });
+      const liveInNeon = makeDoc({ id: "edited-mid-export", name: "Approved On Prod" });
+
+      const plan = planSync([inSnapshot], [row(liveInNeon, editedMidExport)], {
+        basis: exportReadStart,
+      });
+
+      expect(plan.updates).toHaveLength(0);
+      expect(plan.blocked).toMatchObject([{ id: "edited-mid-export", reason: "neon-newer" }]);
+    });
+
     it("does NOT block an unchanged row even when Neon is newer — there is nothing to clobber", () => {
       const doc = makeDoc({ id: "same-but-newer" });
 
