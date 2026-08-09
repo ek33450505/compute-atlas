@@ -506,6 +506,16 @@ export function readBasis(metaPath: string): BasisResult {
 // CLI
 // ---------------------------------------------------------------------------
 
+/**
+ * `forceOverDrift` is broader than its name suggests, deliberately noted here
+ * because it is the destructive one: it disables the guard for BOTH blocked
+ * reasons — `"neon-newer"` (we detected a row that moved ahead) and
+ * `"unknown-basis"` (we could not establish a basis at all, so nothing can be
+ * proven safe). Reaching for it because you have reviewed a specific drift
+ * also opts you into overwriting blind if `facilities.meta.json` is missing or
+ * malformed. `printPlan` states the guard is DISABLED before any write, and
+ * dry run is still the default, so this cannot fire unnoticed.
+ */
 export interface CliOptions {
   apply: boolean;
   forceOverDrift: boolean;
