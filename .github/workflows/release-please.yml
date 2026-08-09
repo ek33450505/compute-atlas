@@ -1,9 +1,27 @@
 name: Release Please
 
+# Cadence changed 2026-08-08. This used to run on every push to main, which
+# opened 15 release PRs in 6 days — and every one of those, when merged,
+# triggered a production Vercel build. The release-please PR's own preview is
+# already skipped (scripts/vercel-ignore-build.sh, branch-prefix rule), so the
+# merge is where the cost lands.
+#
+# Weekly cron batches the week into ONE release PR — cheaper AND a more
+# meaningful changelog than 15 point releases.
+#
+# The push trigger is kept but narrowed to .release-please-manifest.json. That
+# file changes only when a release PR merges, which is exactly the moment
+# release-please needs to run again to cut the tag and GitHub Release. So
+# tagging stays immediate; only the PR-opening cadence slows down.
 on:
+  schedule:
+    - cron: "0 9 * * 1" # Mondays 09:00 UTC
   push:
     branches:
       - main
+    paths:
+      - ".release-please-manifest.json"
+  workflow_dispatch:
 
 permissions:
   contents: write

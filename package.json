@@ -21,6 +21,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
+    "db:sync": "tsx --env-file=.env.local scripts/sync-to-neon.ts",
     "db:export": "tsx --env-file=.env.local scripts/export.ts",
     "db:backfill-history": "tsx --env-file=.env.local scripts/backfill-facility-history.ts",
     "submissions": "tsx --env-file=.env.local scripts/submissions.ts",

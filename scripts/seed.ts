@@ -1,6 +1,13 @@
 /**
  * Seeds Neon Postgres from the canonical data/facilities.json snapshot.
  *
+ * ⚠️ BOOTSTRAP TOOL. For publishing a data wave to a LIVE database use
+ * `npm run db:sync` (scripts/sync-to-neon.ts) instead: this script's `--force`
+ * mode overwrites existing rows but writes NO `facility_history` and busts NO
+ * cache tags, so corrections land invisibly to /activity and behind a stale
+ * cache. `db:sync` applies adds and updates, records both, and busts exactly
+ * the tags it touched. `db:seed` is kept for filling an empty database.
+ *
  * Insert-new-safe by default: ids present in the JSON but absent from the DB
  * are always inserted. Ids that already exist in Neon are left untouched
  * unless `--force` is passed, in which case they're upserted from the JSON

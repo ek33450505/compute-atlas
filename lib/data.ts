@@ -1430,13 +1430,16 @@ export interface ActivityEntry {
 /**
  * Returns a reverse-chronological feed of facility creates/updates, driven
  * entirely off `facility_history` — the single source of truth for change
- * events. History rows come from two paths: `lib/facility-write.ts` writes
+ * events. History rows come from three paths: `lib/facility-write.ts` writes
  * exactly one row per admin-direct write or submission approval (see
  * `createFacility`/`updateFacility` and `approveSubmission` in
- * lib/submissions.ts, source `"admin-direct"` or a submission id), and
- * `scripts/seed.ts` (the `db:seed` CLI) writes a `create` row for each
- * genuinely-new facility inserted by a bulk data wave (source `"db-seed"`) —
- * so bulk-seeded facilities show up in the feed too. Reading from history
+ * lib/submissions.ts, source `"admin-direct"` or a submission id);
+ * `scripts/sync-to-neon.ts` (the `db:sync` CLI) writes one row per record a
+ * maintainer publishes in a data wave, create OR update (source
+ * `"maintainer-sync"`); and `scripts/seed.ts` (the bootstrap `db:seed` CLI)
+ * writes a `create` row for each genuinely-new facility it inserts (source
+ * `"db-seed"`) — so bulk-published facilities show up in the feed too.
+ * Reading from history
  * instead of merging `facilitiesTable` (by `updatedAt`) with
  * `submissionsTable` (by `reviewedAt`) eliminates a double-entry bug: both of
  * those sources could capture the *same* create, showing it once as "new

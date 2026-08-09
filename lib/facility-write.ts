@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 
 import { facilitySchema, type Facility } from "@/lib/schema";
+import { tagsForFacility } from "@/lib/cache-tags";
 import { getDb } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
 import { docToRow } from "@/lib/db/serialize";
@@ -15,39 +16,19 @@ export type WriteResult =
 
 /**
  * Busts only the scoped `unstable_cache` tags that could have changed for
- * this write, instead of the old global `"facilities"` nuke — shrinking a
- * write's blast radius from the whole ~700-page surface to ~2-3 scoped
- * pages. The global `"facilities"` tag is deliberately NOT busted here
- * anymore: aggregate pages (home, map, table, stats, ...) now refresh on
- * their own cheap `revalidate: 3600` timer (see `loadFacilities` in
- * `lib/data.ts`) — approved ~1h freshness tolerance (Ed, 2026-07-22
- * ISR-write-blowout fix). `revalidatePath("/", "layout")` is also dropped:
- * it was redundant with (and broader than) the tag nuke it accompanied.
- *
- * - Always busts `facility:${doc.id}` (the detail page) and
- *   `state:${doc.location.state}` (the new/current state's landing page).
- * - If `prevDoc` is given and its state differs from `doc`'s, also busts
- *   the *old* state's tag — otherwise a facility that moved states would
- *   leave a stale entry on its old state's landing page.
- * - If either `doc` or `prevDoc` is a `power_generation` facility, also
- *   busts `power-generation` — the shared tag backing the facility detail
- *   page's "Powered by"/"Powers" cross-reference (`loadPowerGenerationCached`
- *   in `lib/data.ts`), on either side of a `poweredFacilityIds` link.
+ * this write, instead of the old global `"facilities"` nuke. Which tags
+ * those are lives in `lib/cache-tags.ts` — shared with `POST /api/revalidate`
+ * so the app's own busting and an out-of-band bulk CLI's can't drift apart.
+ * `revalidatePath("/", "layout")` is also dropped: it was redundant with
+ * (and broader than) the tag nuke it accompanied.
  *
  * Next 16's `revalidateTag` takes a mandatory cache-life `profile` — "max"
  * fully expires the tag immediately (no stale window), which is what a write
  * needs (contrast with a timed profile like "hours" that permits staleness).
  */
 function revalidateForFacility(doc: Facility, prevDoc?: Facility): void {
-  revalidateTag(`facility:${doc.id}`, "max");
-  revalidateTag(`state:${doc.location.state.toUpperCase()}`, "max");
-
-  if (prevDoc && prevDoc.location.state !== doc.location.state) {
-    revalidateTag(`state:${prevDoc.location.state.toUpperCase()}`, "max");
-  }
-
-  if (doc.facilityType === "power_generation" || prevDoc?.facilityType === "power_generation") {
-    revalidateTag("power-generation", "max");
+  for (const tag of tagsForFacility(doc, prevDoc)) {
+    revalidateTag(tag, "max");
   }
 }
 
