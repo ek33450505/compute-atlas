@@ -66,6 +66,29 @@ export function metroCountyKey(state: string, county: string): string {
   return `${state.toUpperCase()}|${normalizeCounty(county).toLowerCase()}`;
 }
 
+/**
+ * Renders a county for display with exactly one civil-division word.
+ *
+ * The live `location.county` field mixes suffixed ("Loudoun County") and
+ * bare ("Loudoun") forms (see the file doc comment above), so display sites
+ * that hardcode " County" onto the raw value render "Loudoun County County"
+ * for the ~1/3 of records that already carry a suffix — and the wrong word
+ * ("... County" instead of "... Parish"/"... Borough") for Louisiana and
+ * Alaska. Normalize first, then append the correct word for the state so
+ * this is idempotent regardless of which form the record stores. Never
+ * re-hardcode " County" at a call site — use this instead.
+ */
+export function formatCountyLabel(raw: string, state: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  if (/\s+city$/i.test(trimmed)) return trimmed;
+
+  const bare = normalizeCounty(trimmed);
+  const upperState = state.toUpperCase();
+  const word = upperState === "LA" ? "Parish" : upperState === "AK" ? "Borough" : "County";
+  return `${bare} ${word}`;
+}
+
 export function getMetroBySlug(slug: string): Metro | undefined {
   return METROS.find((m) => m.slug === slug);
 }

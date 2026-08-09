@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { METROS, normalizeCounty, getMetroBySlug, metroCountyKey } from "@/lib/metros";
+import {
+  METROS,
+  normalizeCounty,
+  getMetroBySlug,
+  metroCountyKey,
+  formatCountyLabel,
+} from "@/lib/metros";
 
 describe("normalizeCounty", () => {
   it("strips a trailing ' County' suffix", () => {
@@ -70,5 +76,46 @@ describe("metroCountyKey", () => {
 
   it("differs for the same bare county name in different states", () => {
     expect(metroCountyKey("OR", "Washington")).not.toBe(metroCountyKey("TX", "Washington"));
+  });
+});
+
+describe("formatCountyLabel", () => {
+  it("appends ' County' to a bare county name", () => {
+    expect(formatCountyLabel("Loudoun", "VA")).toBe("Loudoun County");
+  });
+
+  it("is idempotent for an already-suffixed ' County' value", () => {
+    expect(formatCountyLabel("Loudoun County", "VA")).toBe("Loudoun County");
+  });
+
+  it("renders Louisiana as 'Parish' from a bare name", () => {
+    expect(formatCountyLabel("Richland", "LA")).toBe("Richland Parish");
+  });
+
+  it("renders Louisiana as 'Parish' idempotently from an already-suffixed value", () => {
+    expect(formatCountyLabel("Richland Parish", "LA")).toBe("Richland Parish");
+  });
+
+  it("renders Alaska as 'Borough' from a bare name", () => {
+    expect(formatCountyLabel("North Slope", "AK")).toBe("North Slope Borough");
+  });
+
+  it("renders Alaska as 'Borough' idempotently from an already-suffixed value", () => {
+    expect(formatCountyLabel("North Slope Borough", "AK")).toBe("North Slope Borough");
+  });
+
+  it("passes a Virginia independent-city value through unchanged", () => {
+    expect(formatCountyLabel("Manassas city", "VA")).toBe("Manassas city");
+    expect(formatCountyLabel("Richmond City", "VA")).toBe("Richmond City");
+  });
+
+  it("is case-insensitive on state code and existing suffix", () => {
+    expect(formatCountyLabel("Orleans Parish", "la")).toBe("Orleans Parish");
+    expect(formatCountyLabel("Orleans PARISH", "LA")).toBe("Orleans Parish");
+  });
+
+  it("returns an empty string for empty or whitespace-only input", () => {
+    expect(formatCountyLabel("", "VA")).toBe("");
+    expect(formatCountyLabel("   ", "VA")).toBe("");
   });
 });
