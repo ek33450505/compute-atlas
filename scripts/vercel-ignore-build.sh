@@ -8,8 +8,11 @@
 #
 # Policy:
 #   1. ANY deployment — preview or production — is skipped when the diff
-#      touches ONLY data, docs, or GitHub config. The site renders from Neon
-#      LIVE, so none of those change a single byte a visitor can see.
+#      touches ONLY the Neon-generated data snapshot, docs, or GitHub config.
+#      The site renders from Neon LIVE, so none of those change a byte a
+#      visitor can see. Note "data" here means two NAMED files, not all of
+#      data/ — see the allowlist comment below for why that distinction is
+#      load-bearing.
 #   2. Everything else builds.
 #
 # ## Why production is no longer unconditional (reversed 2026-08-08)
@@ -112,12 +115,26 @@ fi
 # 3. Allowlist of skippable paths. Anything unrecognized triggers a build, so
 #    new source directories are safe by default.
 #
+#    The two data files are named INDIVIDUALLY, not globbed as `data/*`. Not
+#    everything under data/ is Neon-backed:
+#      - facilities.json / facilities.meta.json ARE. The site reads Neon live;
+#        the bundled copy is only `withJsonFallback`'s outage snapshot, so
+#        letting it age until the next code deploy is the accepted tradeoff.
+#      - data/siting-context.json is NOT. It is a static precompute from
+#        `npm run build:mapdata`, imported directly into the bundle by
+#        lib/siting-context.ts and rendered on every facility page. Skipping a
+#        commit that regenerates it would ship stale siting context to users
+#        with no Neon path to self-heal — so it must fall through to `build`.
+#    Listing files instead of globbing keeps that distinction from silently
+#    swallowing the next file someone drops into data/.
+#
 #    .github/* is here because CI/Actions config cannot influence the built
 #    site — it is not read by `next build` and ships in no bundle.
 while IFS= read -r file; do
   [[ -z "$file" ]] && continue
   case "$file" in
-    data/* | docs/* | .github/* | *.md | LICENSE | LICENSE-DATA) continue ;;
+    data/facilities.json | data/facilities.meta.json) continue ;;
+    docs/* | .github/* | *.md | LICENSE | LICENSE-DATA) continue ;;
     *) build "code change: ${file}" ;;
   esac
 done <<<"$changed"

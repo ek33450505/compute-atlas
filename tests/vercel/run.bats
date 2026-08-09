@@ -124,6 +124,29 @@ assert_skip() {
 	assert_skip
 }
 
+@test "data/siting-context.json BUILDS — it is bundled into the app, not read from Neon" {
+	# lib/siting-context.ts imports this file directly and every facility page
+	# renders it. Unlike facilities.json (which is only withJsonFallback's
+	# outage snapshot), skipping a commit that regenerates this ships stale
+	# content with no Neon path to self-heal.
+	export VERCEL_ENV="production"
+	export VERCEL_GIT_COMMIT_REF="main"
+	commit_change "data/siting-context.json"
+
+	run bash "$SCRIPT"
+	assert_build
+	[[ "$output" == *"siting-context.json"* ]]
+}
+
+@test "an UNKNOWN file under data/ BUILDS — the allowlist names files, it does not glob the directory" {
+	# The general property behind the test above: the next asset someone drops
+	# into data/ must fail toward building, not be silently swallowed.
+	commit_change "data/some-future-precompute.json"
+
+	run bash "$SCRIPT"
+	assert_build
+}
+
 @test "preview: docs-only diff is SKIPPED" {
 	commit_change "docs/methodology.md"
 
