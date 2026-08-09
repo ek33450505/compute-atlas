@@ -115,8 +115,16 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
 ## Data waves: the DB is the source of truth, the JSON is generated
 
 Research → **`npm run db:sync`** (dry run, review the plan) → `-- --apply` →
-`npm run db:export` → commit the regenerated JSON. `data/facilities.json` is never
-hand-edited as the *publish* step; it is an artifact of the DB.
+`npm run db:export` → **`npm run build:mapdata`** → commit the regenerated JSON.
+`data/facilities.json` is never hand-edited as the *publish* step; it is an artifact of the DB.
+
+⚠️ **`build:mapdata` is part of the wave, not an optional extra.** New facilities have no entry
+in `data/siting-context.json` until it runs, so their pages silently render without the
+"Siting context" panel — no error, just a missing section. Skipping it let that gap reach 65 of
+934 records before anyone noticed (2026-08-08). Use the full run, not `--skip-nhd`: that flag
+reuses existing nearestWater/nearestTransmission values, which is precisely what new records
+lack. Diff-read the result — it should be additive (fills and new entries), and any
+`value → null` is data loss, not a refresh.
 
 Why it matters: the site reads Neon live, so data never needed a build. Editing the
 file and shipping it through git made every correction a Vercel deploy, and left
