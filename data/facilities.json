@@ -1467,10 +1467,10 @@
     "location": {
       "lat": 39.263,
       "lon": -77.387,
+      "city": "Adamstown",
       "county": "Frederick",
       "state": "MD",
-      "precision": "exact",
-      "city": "Adamstown"
+      "precision": "exact"
     },
     "capacityMw": {
       "planned": 72
@@ -29001,6 +29001,7 @@
       }
     ],
     "lastUpdated": "2026-08-02",
+    "notes": "EPC contractor: Kiewit.",
     "energy": {
       "source": "on_site_gas",
       "utility": "PJM (via FirstEnergy Pennsylvania Electric)",
@@ -29027,8 +29028,7 @@
       "sourceIndex": 5
     },
     "facilityType": "data_center",
-    "aiClassification": "confirmed",
-    "notes": "EPC contractor: Kiewit."
+    "aiClassification": "confirmed"
   },
   {
     "id": "hostdime-eatonville-fl",
@@ -46857,10 +46857,10 @@
     "location": {
       "lat": 39.265,
       "lon": -77.394,
+      "city": "Adamstown",
       "county": "Frederick",
       "state": "MD",
-      "precision": "exact",
-      "city": "Adamstown"
+      "precision": "exact"
     },
     "capacityMw": {
       "planned": 300
