@@ -13,6 +13,7 @@ import {
   CONFIDENCE_LABELS,
 } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
+import { formatCountyLabel } from "@/lib/metros";
 import { facilityJsonLdString, breadcrumbJsonLdString } from "@/lib/seo";
 import type { Facility } from "@/lib/schema";
 import { StatusBadge } from "@/components/status-badge";
@@ -145,7 +146,9 @@ export default async function FacilityPage({
       <header className="space-y-3">
         <p className="font-mono text-xs uppercase tracking-widest text-primary">
           {location}
-          {facility.location.county ? ` · ${facility.location.county} County` : ""}
+          {facility.location.county
+            ? ` · ${formatCountyLabel(facility.location.county, facility.location.state)}`
+            : ""}
           {" · "}
           <span
             aria-label={`Coordinates: ${facility.location.lat.toFixed(3)} degrees north, ${Math.abs(facility.location.lon).toFixed(3)} degrees west`}
@@ -238,7 +241,9 @@ export default async function FacilityPage({
               ) : null}
               {location}
               {facility.location.postalCode ? ` ${facility.location.postalCode}` : ""}
-              {facility.location.county ? ` · ${facility.location.county} County` : ""}
+              {facility.location.county
+                ? ` · ${formatCountyLabel(facility.location.county, facility.location.state)}`
+                : ""}
             </dd>
           </div>
 

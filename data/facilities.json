@@ -687,7 +687,7 @@
       "lat": 40.27,
       "lon": -81.83,
       "city": "Conesville",
-      "county": "Coshocton County",
+      "county": "Coshocton",
       "state": "OH",
       "precision": "exact"
     },
@@ -781,14 +781,14 @@
   {
     "id": "aligned-dfw-01-tx",
     "name": "Aligned DFW-01",
-    "operator": "Aligned",
+    "operator": "Aligned Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 33.0093142,
       "lon": -96.6765617,
       "city": "Plano",
-      "county": "Collin County",
+      "county": "Collin",
       "state": "TX",
       "precision": "exact"
     },
@@ -836,14 +836,14 @@
   {
     "id": "aligned-dfw-03-tx",
     "name": "Aligned DFW-03",
-    "operator": "Aligned",
+    "operator": "Aligned Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 32.5498227,
       "lon": -97.0748553,
       "city": "Mansfield",
-      "county": "Tarrant County",
+      "county": "Tarrant",
       "state": "TX",
       "precision": "exact"
     },
@@ -891,14 +891,14 @@
   {
     "id": "aligned-iad-01-va",
     "name": "Aligned IAD-01",
-    "operator": "Aligned",
+    "operator": "Aligned Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 39.0136079,
       "lon": -77.4705563,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -949,14 +949,14 @@
   {
     "id": "aligned-iad-03-va",
     "name": "Aligned IAD-03",
-    "operator": "Aligned",
+    "operator": "Aligned Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 38.9886354,
       "lon": -77.4407776,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -1011,14 +1011,14 @@
   {
     "id": "aligned-neo-01-oh",
     "name": "Aligned NEO-01",
-    "operator": "Aligned",
+    "operator": "Aligned Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 41.4321977,
       "lon": -82.7189574,
       "city": "Sandusky (Perkins Township)",
-      "county": "Erie County",
+      "county": "Erie",
       "state": "OH",
       "precision": "exact"
     },
@@ -1069,14 +1069,14 @@
   {
     "id": "aligned-ord-01-il",
     "name": "Aligned ORD-01",
-    "operator": "Aligned",
+    "operator": "Aligned Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 41.9140034,
       "lon": -87.9175163,
       "city": "Northlake",
-      "county": "Cook County",
+      "county": "Cook",
       "state": "IL",
       "precision": "exact"
     },
@@ -1192,14 +1192,14 @@
   {
     "id": "aligned-pdx-01-or",
     "name": "Aligned PDX-01",
-    "operator": "Aligned",
+    "operator": "Aligned Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 45.5540594,
       "lon": -122.9492507,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "state": "OR",
       "precision": "exact"
     },
@@ -1254,14 +1254,14 @@
   {
     "id": "aligned-phx-01-02-03-az",
     "name": "Aligned PHX-01/02/03",
-    "operator": "Aligned",
+    "operator": "Aligned Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 33.6590546,
       "lon": -112.1111595,
       "city": "Phoenix",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "state": "AZ",
       "precision": "exact"
     },
@@ -1467,6 +1467,7 @@
     "location": {
       "lat": 39.263,
       "lon": -77.387,
+      "city": "Adamstown",
       "county": "Frederick",
       "state": "MD",
       "precision": "exact"
@@ -1524,10 +1525,17 @@
         "publisher": "Maryland Dept. of Commerce",
         "retrievedAt": "2026-07-06",
         "kind": "filing"
+      },
+      {
+        "url": "https://finance.yahoo.com/news/quantum-frederick-data-center-campus-001700328.html",
+        "label": "Quantum Frederick data center campus",
+        "publisher": "Frederick News-Post via Yahoo Finance",
+        "retrievedAt": "2025-11-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
-    "notes": "Part of TPG Real Estate / Catellus Development's 2,100-acre Quantum Frederick campus on former Alcoa Eastalco aluminum plant (closed 2010, demolished 2017) in Frederick County MD. Coordinates are approximate for campus area near Buckeystown/Adamstown.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Part of TPG Real Estate / Catellus Development's 2,100-acre Quantum Frederick campus on former Alcoa Eastalco aluminum plant (closed 2010, demolished 2017) in Frederick County MD. Coordinates are approximate for campus area near Buckeystown/Adamstown. Location.city set to Adamstown per the more recent, project-specific Frederick News-Post coverage (2025-11-11, via Yahoo Finance); the 2021 Maryland Dept. of Commerce announcement had said \"near Buckeystown\" — recorded here so the choice is auditable rather than looking arbitrary.",
     "energy": {
       "source": "grid",
       "utility": "Potomac Edison / FirstEnergy",
@@ -1719,7 +1727,7 @@
       "lat": 45.397,
       "lon": -93.876,
       "city": "Becker",
-      "county": "Sherburne County",
+      "county": "Sherburne",
       "state": "MN",
       "precision": "exact"
     },
@@ -1797,7 +1805,7 @@
       "lat": 38.72948224074257,
       "lon": -77.78753470617198,
       "city": "Warrenton",
-      "county": "Fauquier County",
+      "county": "Fauquier",
       "state": "VA",
       "precision": "exact"
     },
@@ -2086,7 +2094,7 @@
   {
     "id": "amazon-perry-township-stark-oh",
     "name": "Amazon Perry Township Data Center",
-    "operator": "Amazon Web Services (developer: Panattoni Development Co.)",
+    "operator": "Amazon Web Services",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -2126,7 +2134,7 @@
       }
     ],
     "lastUpdated": "2026-08-05",
-    "notes": "240 MW hyperscale campus on ~105 acres at Faircrest St SW & Kropf Ave SW, Perry Township (Canton). Panattoni bought the land Feb 2025 (Clayco GC); excavation underway; two 220,000 sq ft + two 154,000 sq ft buildings targeted for ~April 2028. Amazon was confirmed as the end-user by the Stark County commission president and Canton's mayor to the Canton Repository after Panattoni initially withheld the tenant. Perry Township approved a 30-year, 75% property-tax abatement in March 2026. Coordinates approximate (township-level).",
+    "notes": "240 MW hyperscale campus on ~105 acres at Faircrest St SW & Kropf Ave SW, Perry Township (Canton). Panattoni bought the land Feb 2025 (Clayco GC); excavation underway; two 220,000 sq ft + two 154,000 sq ft buildings targeted for ~April 2028. Amazon was confirmed as the end-user by the Stark County commission president and Canton's mayor to the Canton Repository after Panattoni initially withheld the tenant. Perry Township approved a 30-year, 75% property-tax abatement in March 2026. Coordinates approximate (township-level). Developer: Panattoni Development Co.",
     "community": {
       "status": "mixed",
       "notes": "Some Perry Township / Stark County residents publicly skeptical of the developer's answers (noise, water, growth); the township nonetheless approved the tax abatement.",
@@ -2145,7 +2153,7 @@
       "lat": 38.411322338680904,
       "lon": -77.4042471172777,
       "city": "Fredericksburg",
-      "county": "Stafford County",
+      "county": "Stafford",
       "state": "VA",
       "precision": "approximate"
     },
@@ -2517,7 +2525,7 @@
       "lat": 35.588607,
       "lon": -81.256686,
       "city": "Maiden",
-      "county": "Catawba County",
+      "county": "Catawba",
       "state": "NC",
       "precision": "approximate"
     },
@@ -2581,7 +2589,7 @@
       "lat": 33.3615205,
       "lon": -111.6012177,
       "city": "Mesa",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "state": "AZ",
       "precision": "approximate"
     },
@@ -2644,7 +2652,7 @@
       "lat": 39.563085,
       "lon": -119.554805,
       "city": "Sparks",
-      "county": "Washoe County",
+      "county": "Washoe",
       "state": "NV",
       "precision": "approximate"
     },
@@ -2714,7 +2722,7 @@
       "lat": 41.6193799,
       "lon": -93.9258365,
       "city": "Waukee",
-      "county": "Dallas County",
+      "county": "Dallas",
       "state": "IA",
       "precision": "approximate"
     },
@@ -2932,7 +2940,7 @@
       "lat": 47.029587,
       "lon": -98.679092,
       "city": "Jamestown",
-      "county": "Stutsman County",
+      "county": "Stutsman",
       "state": "ND",
       "precision": "approximate"
     },
@@ -2970,7 +2978,7 @@
       "lat": 46.003,
       "lon": -98.509,
       "city": "Ellendale",
-      "county": "Dickey County",
+      "county": "Dickey",
       "state": "ND",
       "precision": "exact"
     },
@@ -3064,7 +3072,7 @@
       "lat": 47.02,
       "lon": -97.025,
       "city": "Harwood",
-      "county": "Cass County",
+      "county": "Cass",
       "state": "ND",
       "precision": "exact"
     },
@@ -3830,7 +3838,7 @@
     "location": {
       "lat": 34.68,
       "lon": -92.296,
-      "county": "Pulaski County",
+      "county": "Pulaski",
       "state": "AR",
       "precision": "exact"
     },
@@ -3998,7 +4006,7 @@
       "lat": 32.27,
       "lon": -89.99,
       "city": "Brandon",
-      "county": "Rankin County",
+      "county": "Rankin",
       "state": "MS",
       "precision": "exact"
     },
@@ -4104,7 +4112,7 @@
       "lat": 40.094442,
       "lon": -82.750086,
       "city": "New Albany",
-      "county": "Licking County",
+      "county": "Licking",
       "state": "OH",
       "precision": "exact"
     },
@@ -4154,7 +4162,7 @@
       "lat": 40.104129,
       "lon": -82.750939,
       "city": "New Albany",
-      "county": "Licking County",
+      "county": "Licking",
       "state": "OH",
       "precision": "exact"
     },
@@ -4215,7 +4223,7 @@
       "lat": 40.11593,
       "lon": -82.75731,
       "city": "New Albany",
-      "county": "Licking County",
+      "county": "Licking",
       "state": "OH",
       "precision": "exact"
     },
@@ -4275,14 +4283,14 @@
   {
     "id": "aws-birchwood-data-campus-king-george-va",
     "name": "Birchwood Data Campus",
-    "operator": "Amazon Web Services (via Birchwood Power Partners)",
+    "operator": "Amazon Web Services",
     "status": "permitted",
     "confidence": "confirmed",
     "location": {
       "lat": 38.25934134516552,
       "lon": -77.32191549954541,
       "city": "King George",
-      "county": "King George County",
+      "county": "King George",
       "state": "VA",
       "precision": "approximate"
     },
@@ -4304,7 +4312,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "869 acres (former power-plant site), 19 buildings, 7.5M sq ft; rezoning approved Sept 2023; contested vested-rights case in circuit court.",
+    "notes": "869 acres (former power-plant site), 19 buildings, 7.5M sq ft; rezoning approved Sept 2023; contested vested-rights case in circuit court. Via Birchwood Power Partners.",
     "investmentUsd": 6000000000,
     "landAcres": 869,
     "community": {
@@ -4593,7 +4601,7 @@
       "lat": 38.204738259414135,
       "lon": -77.47623258858057,
       "city": "Massaponax",
-      "county": "Spotsylvania County",
+      "county": "Spotsylvania",
       "state": "VA",
       "precision": "approximate"
     },
@@ -4918,7 +4926,7 @@
       "lat": 40.29,
       "lon": -84.16,
       "city": "Sidney",
-      "county": "Shelby County",
+      "county": "Shelby",
       "state": "OH",
       "precision": "exact"
     },
@@ -5020,7 +5028,7 @@
       "lat": 38.852,
       "lon": -91.52,
       "city": "New Florence",
-      "county": "Montgomery County",
+      "county": "Montgomery",
       "state": "MO",
       "precision": "exact"
     },
@@ -5425,7 +5433,7 @@
   {
     "id": "aws-lake-anna-technology-campus-louisa-va",
     "name": "Lake Anna Technology Campus (LATC)",
-    "operator": "Amazon Web Services (with REB Investment Company, LLC as landowner)",
+    "operator": "Amazon Web Services",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -5484,7 +5492,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "One of two AWS campuses in Louisa's Technology Overlay District (approved by BOS April 2023, ~$11B combined investment across both). Up to seven data center buildings (~1.7M sq ft), two 300MW substations. First DC targeted online late 2025/early 2026. A third AWS Louisa campus proposal (1,370 acres near Northeast Creek Reservoir) was withdrawn/cancelled by AWS in July 2025 — not included per do-not-fabricate rule (cancelled, not net-new). Capacity corrected to 600 MW (two 300 MW substations per Louisa County reporting; a prior 420 MW figure was unsourced). Land-disturbance + VA DEQ stormwater permits issued; grading underway.",
+    "notes": "One of two AWS campuses in Louisa's Technology Overlay District (approved by BOS April 2023, ~$11B combined investment across both). Up to seven data center buildings (~1.7M sq ft), two 300MW substations. First DC targeted online late 2025/early 2026. A third AWS Louisa campus proposal (1,370 acres near Northeast Creek Reservoir) was withdrawn/cancelled by AWS in July 2025 — not included per do-not-fabricate rule (cancelled, not net-new). Capacity corrected to 600 MW (two 300 MW substations per Louisa County reporting; a prior 420 MW figure was unsourced). Land-disturbance + VA DEQ stormwater permits issued; grading underway. Landowner: REB Investment Company, LLC.",
     "energy": {
       "utility": "Rappahannock Electric Co-op"
     },
@@ -5623,7 +5631,7 @@
       "lat": 40.093702,
       "lon": -82.72994,
       "city": "New Albany",
-      "county": "Licking County",
+      "county": "Licking",
       "state": "OH",
       "precision": "exact"
     },
@@ -5737,7 +5745,7 @@
       "lat": 32.6121,
       "lon": -90.039,
       "city": "Canton",
-      "county": "Madison County",
+      "county": "Madison",
       "state": "MS",
       "precision": "exact"
     },
@@ -5902,7 +5910,7 @@
       "lat": 34.9445,
       "lon": -79.775,
       "city": "Rockingham",
-      "county": "Richmond County",
+      "county": "Richmond",
       "state": "NC",
       "precision": "exact"
     },
@@ -6515,7 +6523,7 @@
   {
     "id": "beale-project-blue-pima-county-az",
     "name": "Project Blue",
-    "operator": "Beale Infrastructure (AWS confirmed end-customer)",
+    "operator": "Beale Infrastructure",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -6561,7 +6569,7 @@
   {
     "id": "beale-project-clydesdale-tulsa-county-ok",
     "name": "Project Clydesdale",
-    "operator": "Beale Infrastructure (end-user unnamed)",
+    "operator": "Beale Infrastructure",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -6597,7 +6605,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "Unincorporated Tulsa County near Owasso (Whirlpool Dr & E 76th St N, adjacent to Cherokee Industrial Park). Formerly known as 'Project Clydesbank.' 4 phases; electric service via PSO. End-tenant ('major data center operator' per a Quartz Mountain Properties LLC affiliate) unnamed. Coordinates are approximate.",
+    "notes": "Unincorporated Tulsa County near Owasso (Whirlpool Dr & E 76th St N, adjacent to Cherokee Industrial Park). Formerly known as 'Project Clydesbank.' 4 phases; electric service via PSO. End-tenant ('major data center operator' per a Quartz Mountain Properties LLC affiliate) unnamed. Coordinates are approximate. End-user unnamed.",
     "energy": {
       "utility": "Public Service Company of Oklahoma (PSO)"
     },
@@ -6658,7 +6666,7 @@
       "lat": 38.966,
       "lon": -94.967,
       "city": "De Soto",
-      "county": "Johnson County",
+      "county": "Johnson",
       "state": "KS",
       "precision": "exact"
     },
@@ -7201,7 +7209,7 @@
   {
     "id": "bitdeer-knoxville-tn",
     "name": "Bitdeer Knoxville AI Datacenter (5101 S. National Drive)",
-    "operator": "Bitdeer Technologies Group",
+    "operator": "Bitdeer",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
@@ -7383,7 +7391,7 @@
   {
     "id": "bitdeer-shalersville-portage-county-oh",
     "name": "Bitdeer Shalersville Data Center Campus",
-    "operator": "Bitdeer (development partner: Geis Development)",
+    "operator": "Bitdeer",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -7449,7 +7457,7 @@
       }
     ],
     "lastUpdated": "2026-07-24",
-    "notes": "Turnpike Commerce Center, Shalersville Township, Portage County. Not yet approved — blocked by the township's active data-center moratorium (see community field). Distinct from Bitdeer's other tracked Ohio sites (Clarington, Whitetail Creek/Niles, and Massillon). Tax revenue projections ($2.17M annual increase at phase-1 completion) are Bitdeer's own company projections, not independently confirmed. Coordinates are an approximate geocode of Shalersville Township, not a confirmed parcel pin — no source gave exact site coordinates.",
+    "notes": "Turnpike Commerce Center, Shalersville Township, Portage County. Not yet approved — blocked by the township's active data-center moratorium (see community field). Distinct from Bitdeer's other tracked Ohio sites (Clarington, Whitetail Creek/Niles, and Massillon). Tax revenue projections ($2.17M annual increase at phase-1 completion) are Bitdeer's own company projections, not independently confirmed. Coordinates are an approximate geocode of Shalersville Township, not a confirmed parcel pin — no source gave exact site coordinates. Development partner: Geis Development.",
     "energy": {
       "source": "grid",
       "utility": "Ohio Edison (FirstEnergy)",
@@ -7472,7 +7480,7 @@
   {
     "id": "bitdeer-wenatchee-pangborn-wa",
     "name": "Bitdeer Wenatchee (Pangborn) Data Center",
-    "operator": "Bitdeer Technologies Group",
+    "operator": "Bitdeer",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -7533,7 +7541,7 @@
   {
     "id": "bitdeer-whitetail-creek-trumbull-county-oh",
     "name": "Whitetail Creek Data Center",
-    "operator": "Bitdeer (via subsidiary Whitetail Creek LLC)",
+    "operator": "Bitdeer",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -7567,7 +7575,7 @@
       }
     ],
     "lastUpdated": "2026-07-24",
-    "notes": "1047 Belmont Ave, former Ohio Edison power plant site, straddling Weathersfield Township and Niles. Bitdeer's own business is described as 'cryptocurrency and AI cloud infrastructure.' Distinct from Bitdeer's existing tracked Clarington, OH facility. Coordinates are approximate.",
+    "notes": "1047 Belmont Ave, former Ohio Edison power plant site, straddling Weathersfield Township and Niles. Bitdeer's own business is described as 'cryptocurrency and AI cloud infrastructure.' Distinct from Bitdeer's existing tracked Clarington, OH facility. Coordinates are approximate. Operated via subsidiary Whitetail Creek LLC.",
     "energy": {
       "source": "grid",
       "utility": "Ohio Edison (FirstEnergy)",
@@ -8499,7 +8507,7 @@
       "lat": 42.716,
       "lon": -91.007,
       "city": "Cassville",
-      "county": "Grant County",
+      "county": "Grant",
       "state": "WI",
       "precision": "exact"
     },
@@ -8751,7 +8759,7 @@
       "lat": 35.4676,
       "lon": -97.5164,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "state": "OK",
       "precision": "exact"
     },
@@ -9019,7 +9027,7 @@
   {
     "id": "cipher-barber-lake-colorado-city-tx",
     "name": "Cipher Barber Lake Campus",
-    "operator": "Cipher Mining",
+    "operator": "Cipher Digital",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -9057,7 +9065,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "587-acre Barber Lake site near Colorado City, Mitchell County; ~300 MW HPC/AI under a Fluidstack/Google lease; Phase I targeted Sept 2026. Coordinates are the Colorado City area centroid.",
+    "notes": "587-acre Barber Lake site near Colorado City, Mitchell County; ~300 MW HPC/AI under a Fluidstack/Google lease; Phase I targeted Sept 2026. Coordinates are the Colorado City area centroid. Cipher Mining was renamed Cipher Digital.",
     "energy": {
       "source": "grid"
     },
@@ -9069,7 +9077,7 @@
   {
     "id": "cipher-black-pearl-wink-tx",
     "name": "Cipher Black Pearl Campus",
-    "operator": "Cipher Mining",
+    "operator": "Cipher Digital",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -9129,7 +9137,7 @@
       }
     ],
     "lastUpdated": "2026-07-25",
-    "notes": "~300 gross MW HPC/AI campus near Wink, Winkler County, under a 15-year AWS lease; Phase I targeted Q4 2026. Cipher transitioning crypto → HPC/AI. Coordinates are the Wink area centroid. Cipher Mining (Nasdaq: CIFR) financed Black Pearl via ~$2.0B senior secured notes (Black Pearl Compute LLC, Feb 2026) plus a ~$232.5M equity reimbursement (~$2.23B implied total, inferred across two instruments) -> investmentUsd omitted; the ~$9.3-9.8B AWS figure is 15-year lease revenue, not capex. No jobs figures disclosed -> jobs honest-zero. Mining-era cooling was ~250 MW air-cooled + ~50 MW liquid-cooled; the HPC/AI cooling architecture is undisclosed -> water honest-zero. No confirmed public subsidy surfaced.",
+    "notes": "~300 gross MW HPC/AI campus near Wink, Winkler County, under a 15-year AWS lease; Phase I targeted Q4 2026. Cipher transitioning crypto → HPC/AI. Coordinates are the Wink area centroid. Cipher Mining (Nasdaq: CIFR) financed Black Pearl via ~$2.0B senior secured notes (Black Pearl Compute LLC, Feb 2026) plus a ~$232.5M equity reimbursement (~$2.23B implied total, inferred across two instruments) -> investmentUsd omitted; the ~$9.3-9.8B AWS figure is 15-year lease revenue, not capex. No jobs figures disclosed -> jobs honest-zero. Mining-era cooling was ~250 MW air-cooled + ~50 MW liquid-cooled; the HPC/AI cooling architecture is undisclosed -> water honest-zero. No confirmed public subsidy surfaced. Cipher Mining was renamed Cipher Digital.",
     "energy": {
       "source": "grid",
       "utility": "Oncor",
@@ -9146,7 +9154,7 @@
   {
     "id": "cipher-colchis-tom-green-tx",
     "name": "Cipher Colchis Campus",
-    "operator": "Cipher Mining",
+    "operator": "Cipher Digital",
     "status": "proposed",
     "confidence": "confirmed",
     "location": {
@@ -9199,7 +9207,7 @@
       }
     ],
     "lastUpdated": "2026-07-25",
-    "notes": "1-GW HPC/AI development site in Tom Green County, northeast of San Angelo near AEP's Red Creek 345-kV substation (~2,500 ft east of the Skybox San Angelo campus). In November 2025 Cipher purchased a majority interest in a JV (Colchis LLC) to develop the site, with options to buy ~620 acres of land adjacent to the existing substation; Cipher expects ~95% equity subject to final lease/development terms. Coordinates are the NE-San-Angelo / Red Creek substation area centroid (approximate) pending a parcel-level GIS lookup. Investment and jobs figures undisclosed -> omitted. County pinned via local press (San Angelo LIVE); the SEC 10-K discloses only \"West Texas.\"",
+    "notes": "1-GW HPC/AI development site in Tom Green County, northeast of San Angelo near AEP's Red Creek 345-kV substation (~2,500 ft east of the Skybox San Angelo campus). In November 2025 Cipher purchased a majority interest in a JV (Colchis LLC) to develop the site, with options to buy ~620 acres of land adjacent to the existing substation; Cipher expects ~95% equity subject to final lease/development terms. Coordinates are the NE-San-Angelo / Red Creek substation area centroid (approximate) pending a parcel-level GIS lookup. Investment and jobs figures undisclosed -> omitted. County pinned via local press (San Angelo LIVE); the SEC 10-K discloses only \"West Texas.\". Cipher Mining was renamed Cipher Digital.",
     "energy": {
       "source": "grid",
       "notes": "Fully executed 1-GW Direct Connect Agreement with American Electric Power (AEP) for a dual interconnection facility at the AEP Red Creek 345-kV substation; targeted energization 2028; advanced ERCOT studies per Cipher's Q3 2025 update."
@@ -9263,7 +9271,7 @@
   {
     "id": "cipher-mclennan-county-tx",
     "name": "Cipher McLennan HPC Data Center",
-    "operator": "Cipher Digital (formerly Cipher Mining)",
+    "operator": "Cipher Digital",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -9304,7 +9312,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "Cipher's McLennan HPC/AI data center site in central Texas (McLennan County, the Waco area). Targeted capacity up to 500 MW; estimated energization 2028. Cipher entered an option agreement in October 2024 and exercised the option to acquire the special-purpose entity in February 2026. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (McLennan County / Waco geocode; specific parcel not disclosed).",
+    "notes": "Cipher's McLennan HPC/AI data center site in central Texas (McLennan County, the Waco area). Targeted capacity up to 500 MW; estimated energization 2028. Cipher entered an option agreement in October 2024 and exercised the option to acquire the special-purpose entity in February 2026. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (McLennan County / Waco geocode; specific parcel not disclosed). Cipher Mining was renamed Cipher Digital.",
     "landAcres": 300,
     "community": {
       "status": "contested",
@@ -9316,7 +9324,7 @@
   {
     "id": "cipher-mikeska-mcculloch-county-tx",
     "name": "Cipher Mikeska HPC Data Center",
-    "operator": "Cipher Digital (formerly Cipher Mining)",
+    "operator": "Cipher Digital",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -9351,13 +9359,13 @@
       }
     ],
     "lastUpdated": "2026-07-17",
-    "notes": "Cipher's Mikeska HPC/AI data center site, in West Texas outside Brady (McCulloch County). Targeted capacity up to 500 MW; estimated energization 2027-2028. Cipher exercised its option to acquire the ground lease/purchase rights in February 2026. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (Brady, TX geocode).",
+    "notes": "Cipher's Mikeska HPC/AI data center site, in West Texas outside Brady (McCulloch County). Targeted capacity up to 500 MW; estimated energization 2027-2028. Cipher exercised its option to acquire the ground lease/purchase rights in February 2026. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (Brady, TX geocode). Cipher Mining was renamed Cipher Digital.",
     "facilityType": "data_center"
   },
   {
     "id": "cipher-milsing-huntsville-walker-tx",
     "name": "Cipher Milsing HPC Data Center",
-    "operator": "Cipher Digital (formerly Cipher Mining)",
+    "operator": "Cipher Digital",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -9392,14 +9400,14 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "Cipher's Milsing HPC/AI data center site near Huntsville, Texas (Walker County, northeast of Houston); ~187 acres. Targeted capacity up to 500 MW; estimated energization 2028-2029 (aggregators list a 2027 target). Cipher entered an option agreement in October 2024 and exercised the option in December 2025. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (Huntsville, TX geocode).",
+    "notes": "Cipher's Milsing HPC/AI data center site near Huntsville, Texas (Walker County, northeast of Houston); ~187 acres. Targeted capacity up to 500 MW; estimated energization 2028-2029 (aggregators list a 2027 target). Cipher entered an option agreement in October 2024 and exercised the option in December 2025. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (Huntsville, TX geocode). Cipher Mining was renamed Cipher Digital.",
     "landAcres": 187,
     "facilityType": "data_center"
   },
   {
     "id": "cipher-reveille-cotulla-la-salle-tx",
     "name": "Cipher Reveille HPC Data Center",
-    "operator": "Cipher Digital (formerly Cipher Mining)",
+    "operator": "Cipher Digital",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -9437,13 +9445,13 @@
       }
     ],
     "lastUpdated": "2026-07-17",
-    "notes": "Cipher's Reveille HPC/AI data center site in Cotulla, Texas (La Salle County). ERCOT interconnection approval up to 70 MW with room for expansion; targeted energization 2027. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (Cotulla, TX geocode).",
+    "notes": "Cipher's Reveille HPC/AI data center site in Cotulla, Texas (La Salle County). ERCOT interconnection approval up to 70 MW with room for expansion; targeted energization 2027. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (Cotulla, TX geocode). Cipher Mining was renamed Cipher Digital.",
     "facilityType": "data_center"
   },
   {
     "id": "cipher-stingray-andrews-county-tx",
     "name": "Cipher Stingray HPC Data Center",
-    "operator": "Cipher Digital (formerly Cipher Mining)",
+    "operator": "Cipher Digital",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
@@ -9488,7 +9496,7 @@
       }
     ],
     "lastUpdated": "2026-07-25",
-    "notes": "Cipher's Stingray HPC/AI data center site, ~250 acres in Andrews County, Texas (west of the city of Andrews). Conditional ERCOT interconnection approval up to 100 MW; targeted energization H1/Q2 2026. Part of Cipher's ~3.4 GW / 8-site HPC pipeline. Cipher rebranded from Cipher Mining to Cipher Digital during its pivot to hyperscale HPC/AI hosting. Coordinates approximate (Andrews, TX geocode; exact parcel not confirmed).",
+    "notes": "Cipher's Stingray HPC/AI data center site, ~250 acres in Andrews County, Texas (west of the city of Andrews). Conditional ERCOT interconnection approval up to 100 MW; targeted energization H1/Q2 2026. Part of Cipher's ~3.4 GW / 8-site HPC pipeline. Cipher rebranded from Cipher Mining to Cipher Digital during its pivot to hyperscale HPC/AI hosting. Coordinates approximate (Andrews, TX geocode; exact parcel not confirmed). Cipher Mining was renamed Cipher Digital.",
     "landAcres": 250,
     "facilityType": "data_center"
   },
@@ -10795,7 +10803,7 @@
       "lat": 39.0102471,
       "lon": -77.4626713,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -10840,7 +10848,7 @@
       "lat": 39.0112123,
       "lon": -77.4604251,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -10978,6 +10986,18 @@
         "date": "2022-08",
         "note": "Groundbreaking with ComEd on hyperscale campus",
         "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025-10",
+        "note": "Village board approved a revised plan consolidating the original three two-story buildings into two three-story buildings plus a second electrical substation. First building targeted for 2027, second for end of 2030.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-07",
+        "note": "Mid-permitting the revised design (~3,700 drawing sheets, 1,500+ pages of structural calcs); village hired outside firm HR Green to review it. Cranes active on the fenced 50-acre site as of January 2026.",
+        "sourceIndex": 4
       }
     ],
     "sources": [
@@ -11001,10 +11021,24 @@
         "publisher": "Daily Energy Insider",
         "retrievedAt": "2026-08-03",
         "kind": "press"
+      },
+      {
+        "url": "https://www.dailyherald.com/20251117/news/mount-prospect-data-center-developer-prepared-to-donate-3-million-for-recreation-street-upgrades/",
+        "label": "Mount Prospect data center developer prepared to donate $3 million for recreation, street upgrades",
+        "publisher": "Daily Herald",
+        "retrievedAt": "2025-11-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.dailyherald.com/20260716/news/mount-prospect-hires-outside-firm-to-handle-data-center-permitting/",
+        "label": "Mount Prospect hires outside firm to handle data center permitting",
+        "publisher": "Daily Herald",
+        "retrievedAt": "2026-07-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-03",
-    "notes": "$2.5B, ~1.5 million sq ft across three two-story hyperscale buildings (each >80 MW) on a 49.7-acre site; ComEd grid partnership.",
+    "lastUpdated": "2026-08-08",
+    "notes": "$2.5B, ~1.5 million sq ft across three two-story hyperscale buildings (each >80 MW) on a 49.7-acre site; ComEd grid partnership. Update: the village board approved a revised plan (~Oct 2025) consolidating the original three two-story buildings into two three-story buildings plus a second electrical substation, superseding the building-count description above; confirmed delivery targets are the first building in 2027 and the second by end of 2030. As of July 2026, CloudHQ was mid-permitting the revised design (~3,700 drawing sheets, 1,500+ pages of structural calcs); the village hired outside firm HR Green to review it. Construction is active, with cranes on the fenced 50-acre site as of January 2026.",
     "energy": {
       "source": "grid",
       "utility": "ComEd"
@@ -11448,7 +11482,7 @@
       "lat": 39.0179257,
       "lon": -77.4595164,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "21745 Beaumeade Circle",
       "postalCode": "20147",
       "state": "VA",
@@ -11644,7 +11678,7 @@
       "lat": 30.3314298,
       "lon": -81.6624257,
       "city": "Jacksonville",
-      "county": "Duval County",
+      "county": "Duval",
       "state": "FL",
       "precision": "exact"
     },
@@ -11777,7 +11811,7 @@
       "lat": 37.3654018,
       "lon": -121.9616726,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "2050 Martin Avenue",
       "state": "CA",
       "precision": "exact"
@@ -11871,7 +11905,7 @@
   {
     "id": "comanche-peak-nuclear-somervell-county-tx",
     "name": "Comanche Peak Nuclear Power Plant (AWS PPA)",
-    "operator": "Vistra (Luminant)",
+    "operator": "Vistra",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -11924,7 +11958,7 @@
       }
     ],
     "lastUpdated": "2026-08-04",
-    "notes": "The two-unit Comanche Peak nuclear station near Glen Rose, TX, whose 1,200 MW 20-year PPA to Amazon (announced 2025, customer confirmed Feb 2026) underpins AWS's adjacent 'Project Spectrum' campus — one of a wave of hyperscaler nuclear PPAs alongside Microsoft/Crane and AWS/Susquehanna. Delivery to AWS targets Q4 2027.",
+    "notes": "The two-unit Comanche Peak nuclear station near Glen Rose, TX, whose 1,200 MW 20-year PPA to Amazon (announced 2025, customer confirmed Feb 2026) underpins AWS's adjacent 'Project Spectrum' campus — one of a wave of hyperscaler nuclear PPAs alongside Microsoft/Crane and AWS/Susquehanna. Delivery to AWS targets Q4 2027. Operates under subsidiary brand Luminant.",
     "energy": {
       "source": "nuclear",
       "notes": "Existing two-unit pressurized-water reactor station (~2,400 MW), operating since the 1990s and delivering into ERCOT. 1,200 MW is contracted to AWS under a 20-year PPA."
@@ -11983,7 +12017,7 @@
       "lat": 32.3644,
       "lon": -88.7037,
       "city": "Meridian",
-      "county": "Lauderdale County",
+      "county": "Lauderdale",
       "state": "MS",
       "precision": "exact"
     },
@@ -12740,7 +12774,7 @@
   {
     "id": "core-scientific-muskogee-ok",
     "name": "Core Scientific Muskogee Campus",
-    "operator": "Core Scientific (CoreWeave is anchor customer)",
+    "operator": "Core Scientific",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -12799,7 +12833,7 @@
       }
     ],
     "lastUpdated": "2026-08-06",
-    "notes": "1525 W Smith Ferry Rd, Port Muskogee Industrial Park. Distinct from the existing tracked Google Muskogee County campuses - same county, different developer/site. Coordinates are approximate.",
+    "notes": "1525 W Smith Ferry Rd, Port Muskogee Industrial Park. Distinct from the existing tracked Google Muskogee County campuses - same county, different developer/site. Coordinates are approximate. CoreWeave is the anchor customer.",
     "energy": {
       "source": "grid",
       "utility": "OG&E (Oklahoma Gas & Electric)",
@@ -12886,7 +12920,7 @@
       "lat": 32.911,
       "lon": -96.138,
       "city": "Quinlan",
-      "county": "Hunt County",
+      "county": "Hunt",
       "state": "TX",
       "precision": "approximate"
     },
@@ -12947,7 +12981,7 @@
       "lat": 33.7559857,
       "lon": -84.3911712,
       "city": "Atlanta",
-      "county": "Fulton County",
+      "county": "Fulton",
       "street": "55 Marietta Street",
       "postalCode": "30303",
       "state": "GA",
@@ -12994,7 +13028,7 @@
       "lat": 33.9255145,
       "lon": -84.4816338,
       "city": "Marietta",
-      "county": "Cobb County",
+      "county": "Cobb",
       "street": "1130 Powers Ferry Place Southeast",
       "postalCode": "30067",
       "state": "GA",
@@ -13031,7 +13065,7 @@
       "lat": 42.3767059,
       "lon": -71.0797577,
       "city": "Somerville",
-      "county": "Middlesex County",
+      "county": "Middlesex",
       "state": "MA",
       "precision": "exact"
     },
@@ -13190,7 +13224,7 @@
   {
     "id": "coresite-de3-denver-co",
     "name": "CoreSite DE3",
-    "operator": "CoreSite (American Tower)",
+    "operator": "CoreSite",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -13230,7 +13264,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "DE3 Denver campus expansion: ~600,000 sq ft, 60 critical MW. CoreSite is a colocation/interconnection operator hosting AI/cloud tenants → mixed_use. Coordinates are the Denver centroid.",
+    "notes": "DE3 Denver campus expansion: ~600,000 sq ft, 60 critical MW. CoreSite is a colocation/interconnection operator hosting AI/cloud tenants → mixed_use. Coordinates are the Denver centroid. Owned by American Tower.",
     "energy": {
       "source": "grid",
       "utility": "Xcel Energy"
@@ -13299,7 +13333,7 @@
       "lat": 34.0584789,
       "lon": -118.2359144,
       "city": "Los Angeles",
-      "county": "Los Angeles County",
+      "county": "Los Angeles",
       "state": "CA",
       "precision": "approximate"
     },
@@ -13347,7 +13381,7 @@
       "lat": 40.7842844,
       "lon": -74.0652426,
       "city": "Secaucus",
-      "county": "Hudson County",
+      "county": "Hudson",
       "state": "NJ",
       "precision": "exact"
     },
@@ -13435,7 +13469,7 @@
       "lat": 37.3341181,
       "lon": -121.891646,
       "city": "San Jose",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "55 South Market Street",
       "postalCode": "95113",
       "state": "CA",
@@ -13482,7 +13516,7 @@
       "lat": 38.9506059,
       "lon": -77.3645496,
       "city": "Reston",
-      "county": "Fairfax County",
+      "county": "Fairfax",
       "state": "VA",
       "precision": "exact"
     },
@@ -13537,7 +13571,7 @@
       "lat": 38.9483343,
       "lon": -77.3724298,
       "city": "Reston",
-      "county": "Fairfax County",
+      "county": "Fairfax",
       "state": "VA",
       "precision": "exact"
     },
@@ -13585,7 +13619,7 @@
   {
     "id": "coreweave-dalton-ii-old-tilton-road-whitfield-ga",
     "name": "CoreWeave Dalton II / Core Scientific Old Tilton Road Data Center",
-    "operator": "Core Scientific (site owner); CoreWeave Dalton II, LLC (sublessee/operator)",
+    "operator": "Core Scientific",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -13641,7 +13675,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "Whitfield County BOC rezoning (3-2, tie broken by Chairman Jevin Jensen) approved March 2025 for 'heavy manufacturing' use (AI data center per contemporaneous reporting), conditioned on Enterprise Drive access. A June 2026 Whitfield Superior Court validated a $1.2B Integra SPV equipment-bond package tied to this ~167-173 acre site, naming CoreWeave Dalton II LLC as sublessee/operator. Same June 2026 hearing validated much larger CoreWeave Dalton / CoreWeave Dalton II bond series ($900M + $6.4B + $6.7B) that likely cover Core Scientific's OTHER Whitfield campus sites (Industrial South Road, Enterprise Drive) — those are separate parcels/rezonings and were not pursued as additional candidates this pass to avoid parcel-level double-counting; flagged for a future lane pass with GIS/parcel-level dedup once individual site addresses for those bond packages are confirmed.",
+    "notes": "Whitfield County BOC rezoning (3-2, tie broken by Chairman Jevin Jensen) approved March 2025 for 'heavy manufacturing' use (AI data center per contemporaneous reporting), conditioned on Enterprise Drive access. A June 2026 Whitfield Superior Court validated a $1.2B Integra SPV equipment-bond package tied to this ~167-173 acre site, naming CoreWeave Dalton II LLC as sublessee/operator. Same June 2026 hearing validated much larger CoreWeave Dalton / CoreWeave Dalton II bond series ($900M + $6.4B + $6.7B) that likely cover Core Scientific's OTHER Whitfield campus sites (Industrial South Road, Enterprise Drive) — those are separate parcels/rezonings and were not pursued as additional candidates this pass to avoid parcel-level double-counting; flagged for a future lane pass with GIS/parcel-level dedup once individual site addresses for those bond packages are confirmed. Core Scientific is site owner; CoreWeave Dalton II, LLC is sublessee/operator.",
     "investmentUsd": 1200000000,
     "landAcres": 173.3,
     "community": {
@@ -14331,7 +14365,7 @@
   {
     "id": "crusoe-abilene-onsite-generation-tx",
     "name": "Crusoe Abilene on-site gas generation (Project Ludicrous)",
-    "operator": "Crusoe Energy Systems",
+    "operator": "Crusoe",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -14410,7 +14444,7 @@
   {
     "id": "crusoe-blue-energy-victoria-tx",
     "name": "Crusoe Victoria AI Factory",
-    "operator": "Crusoe (with Blue Energy)",
+    "operator": "Crusoe",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -14525,7 +14559,7 @@
       "lat": 38.8125,
       "lon": -91.1432,
       "city": "Warrenton",
-      "county": "Warren County",
+      "county": "Warren",
       "state": "MO",
       "precision": "exact"
     },
@@ -14678,7 +14712,7 @@
       "lat": 37.3714713,
       "lon": -121.9696826,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "2401 Walsh Avenue",
       "postalCode": "95051",
       "state": "CA",
@@ -14725,7 +14759,7 @@
       "lat": 37.397572,
       "lon": -121.980963,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "4700 Old Ironsides Drive",
       "postalCode": "95054",
       "state": "CA",
@@ -14772,7 +14806,7 @@
       "lat": 37.3720542,
       "lon": -121.9860407,
       "city": "Sunnyvale",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "1400 Kifer Road",
       "postalCode": "94086",
       "state": "CA",
@@ -14819,7 +14853,7 @@
       "lat": 37.3757986,
       "lon": -121.9551844,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "1500 Space Park Drive",
       "postalCode": "95054",
       "state": "CA",
@@ -14932,7 +14966,7 @@
       "lat": 41.7966077,
       "lon": -88.2438232,
       "city": "Aurora",
-      "county": "Kane County",
+      "county": "Kane",
       "state": "IL",
       "precision": "exact"
     },
@@ -15032,7 +15066,7 @@
       "lat": 39.3038941,
       "lon": -84.3116127,
       "city": "Mason",
-      "county": "Warren County",
+      "county": "Warren",
       "state": "OH",
       "precision": "exact"
     },
@@ -15077,7 +15111,7 @@
       "lat": 33.1385206,
       "lon": -96.6599516,
       "city": "Allen",
-      "county": "Collin County",
+      "county": "Collin",
       "state": "TX",
       "precision": "exact"
     },
@@ -15135,7 +15169,7 @@
   {
     "id": "cyrusone-dugway-proving-ground-tooele-county-ut",
     "name": "CyrusOne Dugway Proving Ground Data Center",
-    "operator": "CyrusOne (in exclusive negotiations with the US Army)",
+    "operator": "CyrusOne",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -15171,7 +15205,7 @@
       }
     ],
     "lastUpdated": "2026-07-24",
-    "notes": "Conditionally selected, currently in exclusive negotiations with the US Army (not finalized); expected completion ~2029. Would be CyrusOne's first Utah facility, developed in partnership with Carlyle. Framed as AI-driven Army infrastructure ('AI is a strategic asset... force multiplier' per the Army Secretary) rather than marketed as a standalone AI-brand product. Coordinates are approximate.",
+    "notes": "Conditionally selected, currently in exclusive negotiations with the US Army (not finalized); expected completion ~2029. Would be CyrusOne's first Utah facility, developed in partnership with Carlyle. Framed as AI-driven Army infrastructure ('AI is a strategic asset... force multiplier' per the Army Secretary) rather than marketed as a standalone AI-brand product. Coordinates are approximate. In exclusive negotiations with the US Army as of the cited source.",
     "energy": {
       "source": "grid",
       "utility": "PacifiCorp"
@@ -15324,7 +15358,7 @@
       "lat": 39.0259023,
       "lon": -77.4144697,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "21111 Ridgetop Circle",
       "postalCode": "20166",
       "state": "VA",
@@ -15372,7 +15406,7 @@
       "lat": 39.024356,
       "lon": -77.4341,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "21350 Pacific Boulevard",
       "postalCode": "20166",
       "state": "VA",
@@ -15419,7 +15453,7 @@
       "lat": 39.0263152,
       "lon": -77.4340194,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "21350 Pacific Boulevard",
       "postalCode": "20166",
       "state": "VA",
@@ -15466,7 +15500,7 @@
       "lat": 39.0211789,
       "lon": -77.4132443,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "45905 Maries Road",
       "postalCode": "20166",
       "state": "VA",
@@ -15513,7 +15547,7 @@
       "lat": 40.5379623,
       "lon": -74.5457225,
       "city": "Somerset",
-      "county": "Somerset County",
+      "county": "Somerset",
       "state": "NJ",
       "precision": "exact"
     },
@@ -15574,7 +15608,7 @@
       "lat": 41.1130924,
       "lon": -73.3886495,
       "city": "Norwalk",
-      "county": "Fairfield County",
+      "county": "Fairfield",
       "state": "CT",
       "precision": "exact"
     },
@@ -15609,7 +15643,7 @@
       "lat": 29.4666098,
       "lon": -98.6880869,
       "city": "San Antonio",
-      "county": "Bexar County",
+      "county": "Bexar",
       "street": "9999 Westover Hills Boulevard",
       "postalCode": "78251",
       "state": "TX",
@@ -15646,7 +15680,7 @@
       "lat": 29.4708878,
       "lon": -98.6730474,
       "city": "San Antonio",
-      "county": "Bexar County",
+      "county": "Bexar",
       "state": "TX",
       "precision": "exact"
     },
@@ -15700,7 +15734,7 @@
       "lat": 38.752287510948115,
       "lon": -77.67347422456572,
       "city": "Vint Hill",
-      "county": "Fauquier County",
+      "county": "Fauquier",
       "state": "VA",
       "precision": "approximate"
     },
@@ -16168,7 +16202,7 @@
       "lat": 33.7882,
       "lon": -84.6608,
       "city": "Lithia Springs",
-      "county": "Douglas County",
+      "county": "Douglas",
       "state": "GA",
       "precision": "exact"
     },
@@ -16387,7 +16421,7 @@
       "lat": 33.66,
       "lon": -84.02,
       "city": "Conyers",
-      "county": "Rockdale County",
+      "county": "Rockdale",
       "state": "GA",
       "precision": "exact"
     },
@@ -16773,7 +16807,7 @@
       "lat": 38.9137236,
       "lon": -77.2258825,
       "city": "Vienna",
-      "county": "Fairfax County",
+      "county": "Fairfax",
       "street": "8100 Boone Boulevard",
       "state": "VA",
       "precision": "approximate"
@@ -16864,7 +16898,7 @@
       "lat": 39.01988,
       "lon": -77.4598033,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "44520 Hastings Drive",
       "state": "VA",
       "precision": "exact"
@@ -16955,7 +16989,7 @@
       "lat": 33.7465605,
       "lon": -84.5797407,
       "city": "Austell",
-      "county": "Cobb County",
+      "county": "Cobb",
       "street": "101 Aquila Way",
       "postalCode": "30122",
       "state": "GA",
@@ -16992,7 +17026,7 @@
       "lat": 33.7555186,
       "lon": -84.3914814,
       "city": "Atlanta",
-      "county": "Fulton County",
+      "county": "Fulton",
       "street": "56 Marietta Street",
       "postalCode": "30303",
       "state": "GA",
@@ -17039,7 +17073,7 @@
       "lat": 30.212156,
       "lon": -97.6957555,
       "city": "Austin",
-      "county": "Travis County",
+      "county": "Travis",
       "street": "7500 Metro Center Drive",
       "postalCode": "78744",
       "state": "TX",
@@ -17076,7 +17110,7 @@
       "lat": 41.9945332,
       "lon": -87.9577513,
       "city": "Elk Grove Village",
-      "county": "Cook County",
+      "county": "Cook",
       "street": "2299 Busse Road",
       "postalCode": "60007",
       "state": "IL",
@@ -17123,7 +17157,7 @@
       "lat": 35.2422,
       "lon": -80.9562,
       "city": "Charlotte",
-      "county": "Mecklenburg County",
+      "county": "Mecklenburg",
       "state": "NC",
       "precision": "exact"
     },
@@ -17203,7 +17237,7 @@
       "lat": 41.9942413,
       "lon": -87.961935,
       "city": "Elk Grove Village",
-      "county": "Cook County",
+      "county": "Cook",
       "street": "2200 Busse Road",
       "postalCode": "60007",
       "state": "IL",
@@ -17433,7 +17467,7 @@
       "lat": 38.9608537,
       "lon": -77.4913983,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "43704 Efficiency Drive",
       "postalCode": "20166",
       "state": "VA",
@@ -17722,7 +17756,7 @@
       "lat": 40.7618178,
       "lon": -74.0250281,
       "city": "Weehawken",
-      "county": "Hudson County",
+      "county": "Hudson",
       "street": "300 John F. Kennedy Boulevard East",
       "postalCode": "07086",
       "state": "NJ",
@@ -17769,7 +17803,7 @@
       "lat": 40.5537931,
       "lon": -74.4571024,
       "city": "Piscataway Township",
-      "county": "Middlesex County",
+      "county": "Middlesex",
       "street": "3 Corporate Place",
       "postalCode": "08854",
       "state": "NJ",
@@ -17816,7 +17850,7 @@
       "lat": 40.5529283,
       "lon": -74.4592038,
       "city": "Piscataway Township",
-      "county": "Middlesex County",
+      "county": "Middlesex",
       "street": "365 South Randolphville Road",
       "postalCode": "08854",
       "state": "NJ",
@@ -17863,7 +17897,7 @@
       "lat": 39.0178592,
       "lon": -77.4624708,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "44480 Hastings Drive",
       "postalCode": "20147",
       "state": "VA",
@@ -17910,7 +17944,7 @@
       "lat": 39.0201584,
       "lon": -77.4631033,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "44521 Hastings Drive",
       "postalCode": "20147",
       "state": "VA",
@@ -17957,7 +17991,7 @@
       "lat": 39.0033364,
       "lon": -77.4870935,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "43791 Devin Shafron Drive",
       "postalCode": "20147",
       "state": "VA",
@@ -18052,7 +18086,7 @@
       "lat": 41.8533507,
       "lon": -87.6183067,
       "city": "Chicago",
-      "county": "Cook County",
+      "county": "Cook",
       "street": "350 East Cermak Road",
       "postalCode": "60616",
       "state": "IL",
@@ -18089,7 +18123,7 @@
       "lat": 41.8743036,
       "lon": -87.6299404,
       "city": "Chicago",
-      "county": "Cook County",
+      "county": "Cook",
       "street": "600 South Federal Street",
       "postalCode": "60605",
       "state": "IL",
@@ -18182,7 +18216,7 @@
       "lat": 33.3446197,
       "lon": -111.8992189,
       "city": "Tempe",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "street": "2055 East Technology Circle",
       "postalCode": "85284",
       "state": "AZ",
@@ -18306,7 +18340,7 @@
       "lat": 47.4934032,
       "lon": -122.2888803,
       "city": "Tukwila",
-      "county": "King County",
+      "county": "King",
       "street": "3433 South 120th Place",
       "postalCode": "98168",
       "state": "WA",
@@ -18353,7 +18387,7 @@
       "lat": 37.7236272,
       "lon": -122.3979543,
       "city": "San Francisco",
-      "county": "San Francisco County",
+      "county": "San Francisco",
       "street": "200 Paul Avenue",
       "state": "CA",
       "precision": "exact"
@@ -18425,7 +18459,7 @@
       "lat": 37.375822,
       "lon": -121.9533359,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "1100 Space Park Drive",
       "postalCode": "95054",
       "state": "CA",
@@ -18472,7 +18506,7 @@
       "lat": 37.3763668,
       "lon": -121.9485649,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "3011 Lafayette Street",
       "postalCode": "95054",
       "state": "CA",
@@ -18519,7 +18553,7 @@
       "lat": 37.3749324,
       "lon": -121.9559987,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "1525 Comstock Street",
       "postalCode": "95054",
       "state": "CA",
@@ -18566,7 +18600,7 @@
       "lat": 37.3782874,
       "lon": -121.9581107,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "3105 Alfred Street",
       "state": "CA",
       "precision": "exact"
@@ -18612,7 +18646,7 @@
       "lat": 37.3722213,
       "lon": -121.9482625,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "2805 Lafayette Street",
       "postalCode": "95050",
       "state": "CA",
@@ -18659,7 +18693,7 @@
       "lat": 37.3724077,
       "lon": -121.973647,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "2820 Northwestern Parkway",
       "state": "CA",
       "precision": "exact"
@@ -18750,7 +18784,7 @@
       "lat": 38.9484941,
       "lon": -77.3273071,
       "city": "Reston",
-      "county": "Fairfax County",
+      "county": "Fairfax",
       "street": "1780 Business Center Drive",
       "postalCode": "20190",
       "state": "VA",
@@ -18804,7 +18838,7 @@
       "lat": 38.7780614,
       "lon": -77.594905,
       "city": "Bristow",
-      "county": "Prince William County",
+      "county": "Prince William",
       "street": "8217 Linton Hall Road",
       "postalCode": "20136",
       "state": "VA",
@@ -19170,7 +19204,7 @@
   {
     "id": "eagle-rock-pairmont-data-center-campus-spotsylvania-va",
     "name": "Pairmont Data Center Campus",
-    "operator": "Eagle Rock Partners, LLC",
+    "operator": "Eagle Rock Partners",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -19317,10 +19351,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://opsb.ohio.gov/events/public-info-meeting-1-ashville-energy-center",
+        "label": "Public Info Meeting #1 — Ashville Energy Center",
+        "publisher": "Ohio Power Siting Board",
+        "retrievedAt": "2026",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-26",
-    "notes": "680 acres north of SR-752; 1.8GW substation plus a 200MW gas turbine energy center planned. Facing local opposition/criticism.",
+    "lastUpdated": "2026-08-08",
+    "notes": "680 acres north of SR-752; 1.8GW substation plus a 200MW gas turbine energy center planned. Facing local opposition/criticism. The adjacent Ashville Energy Center (PowerConneX) OPSB filing now specifies up to 800 MW of generating capacity on ~110 acres, up from the 200 MW gas-turbine figure previously noted here — this is the power plant's nameplate generation, not a confirmed data-center IT load; at least one press aggregator miscalls this \"the data center's capacity,\" but the primary OPSB filing does not support that reading.",
     "energy": {
       "utility": "South Central Power Company"
     },
@@ -19391,7 +19432,7 @@
       "lat": 42.0014952,
       "lon": -87.9525624,
       "city": "Elk Grove Village",
-      "county": "Cook County",
+      "county": "Cook",
       "street": "2021 Lunt Avenue",
       "postalCode": "60007",
       "state": "IL",
@@ -19463,7 +19504,7 @@
       "lat": 42.4476693,
       "lon": -83.2626336,
       "city": "Detroit (Oakland County)",
-      "county": "Oakland County",
+      "county": "Oakland",
       "state": "MI",
       "precision": "exact"
     },
@@ -19508,7 +19549,7 @@
       "lat": 40.08878,
       "lon": -82.72274,
       "city": "New Albany",
-      "county": "Licking County",
+      "county": "Licking",
       "state": "OH",
       "precision": "exact"
     },
@@ -19578,7 +19619,7 @@
       "lat": 33.3520091,
       "lon": -111.6475291,
       "city": "Mesa",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "street": "8604 East Elliot Road",
       "postalCode": "85212",
       "state": "AZ",
@@ -19615,7 +19656,7 @@
       "lat": 45.5564226,
       "lon": -122.9122077,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "6501 Northeast Bennett Street",
       "postalCode": "97124",
       "state": "OR",
@@ -19662,7 +19703,7 @@
       "lat": 38.5922987,
       "lon": -121.27744,
       "city": "Rancho Cordova",
-      "county": "Sacramento County",
+      "county": "Sacramento",
       "street": "10980 Gold Center Drive",
       "postalCode": "95670",
       "state": "CA",
@@ -19709,7 +19750,7 @@
       "lat": 32.8423554,
       "lon": -117.1694226,
       "city": "San Diego",
-      "county": "San Diego County",
+      "county": "San Diego",
       "street": "5761 Copley Drive",
       "postalCode": "92111",
       "state": "CA",
@@ -19836,7 +19877,7 @@
     "location": {
       "lat": 37.836,
       "lon": -77.988,
-      "county": "Louisa County",
+      "county": "Louisa",
       "state": "VA",
       "precision": "approximate"
     },
@@ -19914,7 +19955,7 @@
       "lat": 41.79,
       "lon": -88.284,
       "city": "Aurora",
-      "county": "DuPage County",
+      "county": "DuPage",
       "state": "IL",
       "precision": "exact"
     },
@@ -19988,7 +20029,7 @@
       "lat": 40.10608,
       "lon": -82.81578,
       "city": "New Albany",
-      "county": "Franklin County",
+      "county": "Franklin",
       "state": "OH",
       "precision": "exact"
     },
@@ -20081,7 +20122,7 @@
       "lat": 30.3428035,
       "lon": -97.6961735,
       "city": "Austin",
-      "county": "Travis County",
+      "county": "Travis",
       "street": "8025 North Interstate Highway 35 Service Road",
       "state": "TX",
       "precision": "exact"
@@ -20120,7 +20161,7 @@
       "lat": 41.9757324,
       "lon": -87.9646913,
       "city": "Wood Dale",
-      "county": "DuPage County",
+      "county": "DuPage",
       "street": "711 North Edgewood Avenue",
       "postalCode": "60191",
       "state": "IL",
@@ -20167,7 +20208,7 @@
       "lat": 41.9742269,
       "lon": -87.9671756,
       "city": "Wood Dale",
-      "county": "DuPage County",
+      "county": "DuPage",
       "street": "341 Haynes Drive",
       "postalCode": "60191",
       "state": "IL",
@@ -20431,7 +20472,7 @@
       "lat": 32.477149,
       "lon": -91.632333,
       "city": "Holly Ridge",
-      "county": "Richland Parish",
+      "county": "Richland",
       "state": "LA",
       "precision": "approximate"
     },
@@ -20510,7 +20551,7 @@
       "lat": 29.99528,
       "lon": -90.47111,
       "city": "Killona",
-      "county": "St. Charles Parish",
+      "county": "St. Charles",
       "state": "LA",
       "precision": "approximate"
     },
@@ -20669,7 +20710,7 @@
       "lat": 41.8535578,
       "lon": -87.6180475,
       "city": "Chicago",
-      "county": "Cook County",
+      "county": "Cook",
       "street": "350 East Cermak Road",
       "postalCode": "60616",
       "state": "IL",
@@ -20706,7 +20747,7 @@
       "lat": 41.8125627,
       "lon": -87.9728504,
       "city": "Westmont",
-      "county": "DuPage County",
+      "county": "DuPage",
       "state": "IL",
       "precision": "exact"
     },
@@ -20799,7 +20840,7 @@
       "lat": 39.0163894,
       "lon": -77.4590691,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "21715 Filigree Court",
       "postalCode": "20147",
       "state": "VA",
@@ -20846,7 +20887,7 @@
       "lat": 39.0220154,
       "lon": -77.460235,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "44470 Chilum Place",
       "postalCode": "20147",
       "state": "VA",
@@ -21046,7 +21087,7 @@
       "lat": 40.7785845,
       "lon": -74.0723242,
       "city": "Secaucus",
-      "county": "Hudson County",
+      "county": "Hudson",
       "state": "NJ",
       "precision": "exact"
     },
@@ -21101,7 +21142,7 @@
       "lat": 40.7968626,
       "lon": -74.0311403,
       "city": "North Bergen",
-      "county": "Hudson County",
+      "county": "Hudson",
       "street": "5851 West Side Avenue",
       "postalCode": "07047",
       "state": "NJ",
@@ -21148,7 +21189,7 @@
       "lat": 37.2415975,
       "lon": -121.7833277,
       "city": "San Jose",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "11 Great Oaks Boulevard",
       "postalCode": "95119",
       "state": "CA",
@@ -21195,7 +21236,7 @@
       "lat": 37.3754952,
       "lon": -121.9884063,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "2970 Corvin Drive",
       "postalCode": "95051",
       "state": "CA",
@@ -21242,7 +21283,7 @@
       "lat": 37.3784704,
       "lon": -121.9549839,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "1350 Duane Avenue",
       "state": "CA",
       "precision": "exact"
@@ -21288,7 +21329,7 @@
       "lat": 37.4145109,
       "lon": -122.0145563,
       "city": "Sunnyvale",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "255 Caspian Drive",
       "postalCode": "94089",
       "state": "CA",
@@ -21335,7 +21376,7 @@
       "lat": 37.4458951,
       "lon": -122.160786,
       "city": "Palo Alto",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "529 Bryant Street",
       "postalCode": "94301",
       "state": "CA",
@@ -21471,7 +21512,7 @@
       "lat": 39.4273178,
       "lon": -76.8115503,
       "city": "Owings Mills",
-      "county": "Baltimore County",
+      "county": "Baltimore",
       "street": "11155 Red Run Boulevard",
       "postalCode": "21117",
       "state": "MD",
@@ -21553,7 +21594,7 @@
       "lat": 42.8631424,
       "lon": -87.9778759,
       "city": "Franklin",
-      "county": "Milwaukee County",
+      "county": "Milwaukee",
       "street": "4777 West Ironwood Drive",
       "postalCode": "53132",
       "state": "WI",
@@ -21603,7 +21644,7 @@
       "lat": 40.427371,
       "lon": -80.0425212,
       "city": "Pittsburgh",
-      "county": "Allegheny County",
+      "county": "Allegheny",
       "street": "810 Parish Street",
       "postalCode": "15220",
       "state": "PA",
@@ -21643,7 +21684,7 @@
       "lat": 35.396,
       "lon": -101.543,
       "city": "Amarillo",
-      "county": "Carson County",
+      "county": "Carson",
       "state": "TX",
       "precision": "exact"
     },
@@ -21980,7 +22021,7 @@
       "lat": 40.6356953,
       "lon": -75.4575733,
       "city": "Allentown",
-      "county": "Lehigh County",
+      "county": "Lehigh",
       "street": "744 Roble Road",
       "postalCode": "18109",
       "state": "PA",
@@ -22027,7 +22068,7 @@
       "lat": 34.0869864,
       "lon": -84.2518184,
       "city": "Alpharetta",
-      "county": "Fulton County",
+      "county": "Fulton",
       "street": "12655 Edison Drive",
       "postalCode": "30022",
       "state": "GA",
@@ -22074,7 +22115,7 @@
       "lat": 33.7310574,
       "lon": -84.6160809,
       "city": "Douglasville",
-      "county": "Douglas County",
+      "county": "Douglas",
       "state": "GA",
       "precision": "exact"
     },
@@ -22131,7 +22172,7 @@
       "lat": 33.7307027,
       "lon": -84.6112398,
       "city": "Douglasville",
-      "county": "Douglas County",
+      "county": "Douglas",
       "street": "1750 N River Rd",
       "postalCode": "30122",
       "state": "GA",
@@ -22168,7 +22209,7 @@
       "lat": 33.9547396,
       "lon": -84.1985246,
       "city": "Norcross",
-      "county": "Gwinnett County",
+      "county": "Gwinnett",
       "street": "2775 Northwoods Parkway",
       "postalCode": "30071",
       "state": "GA",
@@ -22215,7 +22256,7 @@
       "lat": 35.329773,
       "lon": -80.7657588,
       "city": "Charlotte",
-      "county": "Mecklenburg County",
+      "county": "Mecklenburg",
       "street": "10105 David Taylor Drive",
       "postalCode": "28262",
       "state": "NC",
@@ -22262,7 +22303,7 @@
       "lat": 35.1354147,
       "lon": -80.9368313,
       "city": "Charlotte",
-      "county": "Mecklenburg County",
+      "county": "Mecklenburg",
       "street": "8910 Lenox Pointe Drive",
       "postalCode": "28272",
       "state": "NC",
@@ -22312,7 +22353,7 @@
       "lat": 39.3159313,
       "lon": -84.4494638,
       "city": "West Chester Township",
-      "county": "Butler County",
+      "county": "Butler",
       "street": "5307 Muhlhauser Road",
       "postalCode": "45011",
       "state": "OH",
@@ -22359,7 +22400,7 @@
       "lat": 32.8004101,
       "lon": -96.8193707,
       "city": "Dallas",
-      "county": "Dallas County",
+      "county": "Dallas",
       "street": "1950 North Stemmons Freeway",
       "postalCode": "75207",
       "state": "TX",
@@ -22396,7 +22437,7 @@
       "lat": 33.007033,
       "lon": -96.6663507,
       "city": "Plano",
-      "county": "Collin County",
+      "county": "Collin",
       "state": "TX",
       "precision": "exact"
     },
@@ -22459,7 +22500,7 @@
       "lat": 32.9948122,
       "lon": -96.7524974,
       "city": "Richardson",
-      "county": "Dallas County",
+      "county": "Dallas",
       "street": "3010 Waterview Parkway",
       "postalCode": "75080",
       "state": "TX",
@@ -22496,7 +22537,7 @@
       "lat": 39.6610488,
       "lon": -104.8488321,
       "city": "Aurora",
-      "county": "Arapahoe County",
+      "county": "Arapahoe",
       "street": "11900 East Cornell Avenue",
       "postalCode": "80014",
       "state": "CO",
@@ -22543,7 +22584,7 @@
       "lat": 39.5938733,
       "lon": -104.8431597,
       "city": "Centennial",
-      "county": "Arapahoe County",
+      "county": "Arapahoe",
       "street": "12500 East Arapahoe Road",
       "postalCode": "80112",
       "state": "CO",
@@ -22580,7 +22621,7 @@
       "lat": 39.7459702,
       "lon": -104.9941589,
       "city": "Denver",
-      "county": "Denver County",
+      "county": "Denver",
       "street": "1500 Champa Street",
       "postalCode": "80202",
       "state": "CO",
@@ -22627,7 +22668,7 @@
       "lat": 39.558994,
       "lon": -104.8375559,
       "city": "Englewood",
-      "county": "Arapahoe County",
+      "county": "Arapahoe",
       "street": "8636 South Peoria Street",
       "postalCode": "80112",
       "state": "CO",
@@ -22677,7 +22718,7 @@
       "lat": 26.1900857,
       "lon": -80.1932967,
       "city": "Fort Lauderdale",
-      "county": "Broward County",
+      "county": "Broward",
       "street": "5301 Northwest 33rd Avenue",
       "postalCode": "33309",
       "state": "FL",
@@ -22724,7 +22765,7 @@
       "lat": 30.2457482,
       "lon": -81.5817226,
       "city": "Jacksonville",
-      "county": "Duval County",
+      "county": "Duval",
       "street": "4905 Belfort Road",
       "postalCode": "32256",
       "state": "FL",
@@ -22761,7 +22802,7 @@
       "lat": 36.1686438,
       "lon": -115.1431445,
       "city": "Las Vegas",
-      "county": "Clark County",
+      "county": "Clark",
       "street": "304 East Carson Avenue",
       "postalCode": "89101",
       "state": "NV",
@@ -22798,7 +22839,7 @@
       "lat": 36.2481633,
       "lon": -115.1012553,
       "city": "North Las Vegas",
-      "county": "Clark County",
+      "county": "Clark",
       "street": "3330 East Lone Mountain Road",
       "postalCode": "89081",
       "state": "NV",
@@ -22838,7 +22879,7 @@
       "lat": 38.242501,
       "lon": -85.733336,
       "city": "Louisville",
-      "county": "Jefferson County",
+      "county": "Jefferson",
       "street": "752 Barret Avenue",
       "postalCode": "40204",
       "state": "KY",
@@ -22885,7 +22926,7 @@
       "lat": 38.2771906,
       "lon": -85.5072402,
       "city": "Louisville",
-      "county": "Jefferson County",
+      "county": "Jefferson",
       "street": "2101 Nelson Miller Parkway",
       "postalCode": "40223",
       "state": "KY",
@@ -22932,7 +22973,7 @@
       "lat": 44.8516116,
       "lon": -93.5988964,
       "city": "Chaska",
-      "county": "Carver County",
+      "county": "Carver",
       "street": "3500 Lyman Boulevard",
       "postalCode": "55318",
       "state": "MN",
@@ -22982,7 +23023,7 @@
       "lat": 35.9727294,
       "lon": -86.8084949,
       "city": "Brentwood",
-      "county": "Williamson County",
+      "county": "Williamson",
       "street": "7100 Commerce Way",
       "postalCode": "37027",
       "state": "TN",
@@ -23019,7 +23060,7 @@
       "lat": 35.951045,
       "lon": -86.833406,
       "city": "Franklin",
-      "county": "Williamson County",
+      "county": "Williamson",
       "street": "425 Duke Drive",
       "postalCode": "37067",
       "state": "TN",
@@ -23069,7 +23110,7 @@
       "lat": 35.9204203,
       "lon": -86.8155401,
       "city": "Franklin",
-      "county": "Williamson County",
+      "county": "Williamson",
       "street": "4600 Carothers Parkway",
       "postalCode": "37067",
       "state": "TN",
@@ -23119,7 +23160,7 @@
       "lat": 40.1522366,
       "lon": -75.4776181,
       "city": "Collegeville",
-      "county": "Montgomery County",
+      "county": "Montgomery",
       "street": "101 Troutman Road",
       "postalCode": "19426",
       "state": "PA",
@@ -23175,7 +23216,7 @@
       "lat": 33.6846775,
       "lon": -112.0983398,
       "city": "Phoenix",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "street": "1850 West Deer Valley Road",
       "postalCode": "85027",
       "state": "AZ",
@@ -23215,7 +23256,7 @@
       "lat": 45.5498253,
       "lon": -122.8908454,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "3935 NE Aloclek Drive",
       "postalCode": "97124",
       "state": "OR",
@@ -23265,7 +23306,7 @@
       "lat": 45.558302,
       "lon": -122.9171647,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "5737 Northeast Huffman Street",
       "postalCode": "97124",
       "state": "OR",
@@ -23315,7 +23356,7 @@
       "lat": 45.5594805,
       "lon": -122.9382011,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "5419 Northeast Starr Boulevard",
       "postalCode": "97124",
       "state": "OR",
@@ -23365,7 +23406,7 @@
       "lat": 45.5553133,
       "lon": -122.9401317,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "4915 Northeast Starr Boulevard",
       "postalCode": "97124",
       "state": "OR",
@@ -23424,7 +23465,7 @@
       "lat": 35.8505281,
       "lon": -78.8291431,
       "city": "Morrisville",
-      "county": "Wake County",
+      "county": "Wake",
       "street": "5150 McCrimmon Parkway",
       "postalCode": "27560",
       "state": "NC",
@@ -23461,7 +23502,7 @@
       "lat": 37.6468902,
       "lon": -77.4386952,
       "city": "Richmond",
-      "county": "Henrico County",
+      "county": "Henrico",
       "street": "8851 Park Central Drive",
       "postalCode": "23227",
       "state": "VA",
@@ -23508,7 +23549,7 @@
       "lat": 40.7563065,
       "lon": -111.9548375,
       "city": "Salt Lake City",
-      "county": "Salt Lake County",
+      "county": "Salt Lake",
       "street": "572 South Delong Street",
       "postalCode": "84104",
       "state": "UT",
@@ -23558,7 +23599,7 @@
       "lat": 40.7667963,
       "lon": -111.9202947,
       "city": "Salt Lake City",
-      "county": "Salt Lake County",
+      "county": "Salt Lake",
       "street": "118 South 1000 West",
       "postalCode": "84104",
       "state": "UT",
@@ -23605,7 +23646,7 @@
       "lat": 40.332648,
       "lon": -111.7278754,
       "city": "Lindon",
-      "county": "Utah County",
+      "county": "Utah",
       "street": "333 South 520 West",
       "postalCode": "84042",
       "state": "UT",
@@ -23652,7 +23693,7 @@
       "lat": 40.685569,
       "lon": -111.8850505,
       "city": "Salt Lake City",
-      "county": "Salt Lake County",
+      "county": "Salt Lake",
       "street": "3949 South 200 East",
       "postalCode": "84107",
       "state": "UT",
@@ -23699,7 +23740,7 @@
       "lat": 40.6203519,
       "lon": -111.986047,
       "city": "West Jordan",
-      "county": "Salt Lake County",
+      "county": "Salt Lake",
       "street": "3949 South Campus View Drive",
       "postalCode": "84084",
       "state": "UT",
@@ -23746,7 +23787,7 @@
       "lat": 28.0738698,
       "lon": -82.3683619,
       "city": "Tampa",
-      "county": "Hillsborough County",
+      "county": "Hillsborough",
       "street": "8350 Parkedge Drive",
       "postalCode": "33637",
       "state": "FL",
@@ -23783,7 +23824,7 @@
       "lat": 28.0372991,
       "lon": -82.5399781,
       "city": "Tampa",
-      "county": "Hillsborough County",
+      "county": "Hillsborough",
       "street": "9417 Corporate Lake Drive",
       "postalCode": "33634",
       "state": "FL",
@@ -24301,7 +24342,7 @@
   {
     "id": "galaxy-helios-dickens-tx",
     "name": "Helios (Galaxy Digital / CoreWeave)",
-    "operator": "Galaxy Digital Holdings",
+    "operator": "Galaxy Digital",
     "status": "operational",
     "confidence": "reported",
     "location": {
@@ -24674,7 +24715,7 @@
       "lat": 38.9432462,
       "lon": -77.5253232,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "approximate"
     },
@@ -24731,7 +24772,7 @@
       "lat": 34.973,
       "lon": -101.367,
       "city": "Claude",
-      "county": "Armstrong County",
+      "county": "Armstrong",
       "state": "TX",
       "precision": "exact"
     },
@@ -24800,10 +24841,17 @@
         "publisher": "Armstrong County, Texas",
         "retrievedAt": "2026-07-07",
         "kind": "filing"
+      },
+      {
+        "url": "https://theenergymag.com/news/2026-07-31/crusoe-texas-ai-data-center-goodnight",
+        "label": "Crusoe Plans $1B Texas AI Data Center Expansion, Pursues Nuclear Power",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-07-31",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
-    "notes": "Campus name: Goodnight, near the town of Claude, TX (known address: 10001 Lima Rd, Claude, TX 79019). Coordinates approximate (based on dispatch seed; county parcel area). Developed by Crusoe Energy via entity GN DC1, LLC (Delaware LLC, 255 Filmore St., Denver, CO 80206); Google is the hyperscale tenant/customer, confirmed publicly November 2025. Tax abatement agreement was signed with GN DC1, LLC in late 2024 without publicly naming the tenant. Google confirmed the Crusoe partnership but had not signed an offtake agreement for the on-site gas plant as of early 2026; negotiations on power amounts still ongoing per Google spokesperson. Planned IT capacity: Phase 1 described in tax abatement agreement as 'anticipated to consume up to 530 MW,' 4 buildings each with 4 x 25 MW data halls, on approximately 350 acres; Phase 2 (possible additional 3+ buildings) reported at up to ~500 MW additional; combined full build-out reported as 1 GW+ — all capacity figures are 'up to' ceilings from permit and abatement documents, not firm contracted amounts. Project was scaled back from an original 7-building plan (October 2025 local reporting); 4 buildings with construction permits from TDLR as of early 2026; Crusoe described 3-4 buildings as likely; grading on additional parcels suggests total program may reach 5+ buildings. First phase expected online 2026; initial county PILOT payment expected June/July 2026. The $40B Google Texas investment is a statewide commitment through 2027 covering multiple sites (Armstrong County, Haskell County, Ellis County) with no site-specific investment figure disclosed by Google. A $29B campus investment figure appeared in Aterio/Crusoe reporting — this is a projected ceiling, not a firm committed amount; omitted from investmentUsd per data-rigor policy. Distinct from Google's separate Haskell County TX site and Red Oak (Ellis County) TX sites — do not conflate.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Campus name: Goodnight, near the town of Claude, TX (known address: 10001 Lima Rd, Claude, TX 79019). Coordinates approximate (based on dispatch seed; county parcel area). Developed by Crusoe Energy via entity GN DC1, LLC (Delaware LLC, 255 Filmore St., Denver, CO 80206); Google is the hyperscale tenant/customer, confirmed publicly November 2025. Tax abatement agreement was signed with GN DC1, LLC in late 2024 without publicly naming the tenant. Google confirmed the Crusoe partnership but had not signed an offtake agreement for the on-site gas plant as of early 2026; negotiations on power amounts still ongoing per Google spokesperson. Planned IT capacity: Phase 1 described in tax abatement agreement as 'anticipated to consume up to 530 MW,' 4 buildings each with 4 x 25 MW data halls, on approximately 350 acres; Phase 2 (possible additional 3+ buildings) reported at up to ~500 MW additional; combined full build-out reported as 1 GW+ — all capacity figures are 'up to' ceilings from permit and abatement documents, not firm contracted amounts. Project was scaled back from an original 7-building plan (October 2025 local reporting); 4 buildings with construction permits from TDLR as of early 2026; Crusoe described 3-4 buildings as likely; grading on additional parcels suggests total program may reach 5+ buildings. First phase expected online 2026; initial county PILOT payment expected June/July 2026. The $40B Google Texas investment is a statewide commitment through 2027 covering multiple sites (Armstrong County, Haskell County, Ellis County) with no site-specific investment figure disclosed by Google. A $29B campus investment figure appeared in Aterio/Crusoe reporting — this is a projected ceiling, not a firm committed amount; omitted from investmentUsd per data-rigor policy. Distinct from Google's separate Haskell County TX site and Red Oak (Ellis County) TX sites — do not conflate. Building 3 is scheduled for completion 2026-08-01; Building 4 is due March 2027. Nothing at the campus is yet described as operational.",
     "energy": {
       "source": "mixed",
       "onSiteGenerationMw": 933,
@@ -24938,7 +24986,7 @@
       "lat": 41.936,
       "lon": -91.723,
       "city": "Cedar Rapids",
-      "county": "Linn County",
+      "county": "Linn",
       "state": "IA",
       "precision": "exact"
     },
@@ -25087,7 +25135,7 @@
       "lat": 41.167368,
       "lon": -95.792975,
       "city": "Council Bluffs",
-      "county": "Pottawattamie County",
+      "county": "Pottawattamie",
       "state": "IA",
       "precision": "approximate"
     },
@@ -25289,7 +25337,7 @@
       "lat": 33.1576,
       "lon": -99.7337,
       "city": "Haskell",
-      "county": "Haskell County",
+      "county": "Haskell",
       "state": "TX",
       "precision": "exact"
     },
@@ -25377,7 +25425,7 @@
       "lat": 36.056187,
       "lon": -115.042545,
       "city": "Henderson",
-      "county": "Clark County",
+      "county": "Clark",
       "state": "NV",
       "precision": "approximate"
     },
@@ -25482,7 +25530,7 @@
       "lat": 34.8842,
       "lon": -85.755,
       "city": "Stevenson",
-      "county": "Jackson County",
+      "county": "Jackson",
       "state": "AL",
       "precision": "exact"
     },
@@ -25712,7 +25760,7 @@
       "lat": 35.900163,
       "lon": -81.546892,
       "city": "Lenoir",
-      "county": "Caldwell County",
+      "county": "Caldwell",
       "state": "NC",
       "precision": "approximate"
     },
@@ -25804,7 +25852,7 @@
       "lat": 37.454,
       "lon": -77.71,
       "city": "Midlothian",
-      "county": "Chesterfield County",
+      "county": "Chesterfield",
       "state": "VA",
       "precision": "exact"
     },
@@ -25898,7 +25946,7 @@
   {
     "id": "google-meitner-pampa-tx",
     "name": "Google Meitner Energy Center",
-    "operator": "Google (with Intersect Power)",
+    "operator": "Google",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -26020,7 +26068,7 @@
       "lat": 33.072101,
       "lon": -80.039105,
       "city": "Moncks Corner",
-      "county": "Berkeley County",
+      "county": "Berkeley",
       "state": "SC",
       "precision": "approximate"
     },
@@ -26082,7 +26130,7 @@
       "lat": 36.5288,
       "lon": -87.3636,
       "city": "Clarksville",
-      "county": "Montgomery County",
+      "county": "Montgomery",
       "state": "TN",
       "precision": "exact"
     },
@@ -26241,7 +26289,7 @@
     "location": {
       "lat": 40.474,
       "lon": -96.371,
-      "county": "Otoe / Gage County",
+      "county": "Otoe",
       "state": "NE",
       "precision": "exact"
     },
@@ -26308,7 +26356,7 @@
   {
     "id": "google-new-albany-oh",
     "name": "Google New Albany Data Center",
-    "operator": "Google (Montauk Innovations LLC)",
+    "operator": "Google",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -26418,7 +26466,7 @@
       "lat": 41.13257,
       "lon": -96.143728,
       "city": "Papillion",
-      "county": "Sarpy County",
+      "county": "Sarpy",
       "state": "NE",
       "precision": "approximate"
     },
@@ -26475,7 +26523,7 @@
   {
     "id": "google-port-of-little-rock-data-center-ar",
     "name": "Port of Little Rock Data Center",
-    "operator": "Google (via Willowbend Capital LLC)",
+    "operator": "Google",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -26511,7 +26559,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "380 acres, 5 industrial buildings totaling 1.43M sq ft at the Port of Little Rock. Distinct from the separately tracked Google West Memphis (Crittenden County) site roughly 130 miles away. 30-year tax abatement.",
+    "notes": "380 acres, 5 industrial buildings totaling 1.43M sq ft at the Port of Little Rock. Distinct from the separately tracked Google West Memphis (Crittenden County) site roughly 130 miles away. 30-year tax abatement. Via Willowbend Capital LLC.",
     "investmentUsd": 1000000000,
     "landAcres": 380,
     "facilityType": "data_center"
@@ -26591,7 +26639,7 @@
       "lat": 39.57,
       "lon": -86.35,
       "city": "Monrovia",
-      "county": "Morgan County",
+      "county": "Morgan",
       "state": "IN",
       "precision": "exact"
     },
@@ -26761,7 +26809,7 @@
       "lat": 39.274,
       "lon": -94.651,
       "city": "Kansas City",
-      "county": "Clay County",
+      "county": "Clay",
       "state": "MO",
       "precision": "exact"
     },
@@ -27331,7 +27379,7 @@
       "lat": 33.096,
       "lon": -80.3239,
       "city": "Ridgeville",
-      "county": "Dorchester County",
+      "county": "Dorchester",
       "state": "SC",
       "precision": "exact"
     },
@@ -27456,7 +27504,7 @@
       "lat": 38.791,
       "lon": -91.508,
       "city": "New Florence",
-      "county": "Montgomery County",
+      "county": "Montgomery",
       "state": "MO",
       "precision": "exact"
     },
@@ -27927,7 +27975,7 @@
       "lat": 35.156,
       "lon": -90.175,
       "city": "West Memphis",
-      "county": "Crittenden County",
+      "county": "Crittenden",
       "state": "AR",
       "precision": "exact"
     },
@@ -27999,7 +28047,7 @@
   {
     "id": "google-wilbarger-vernon-tx",
     "name": "Google Wilbarger County Campus",
-    "operator": "Google (with AES)",
+    "operator": "Google",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -28144,7 +28192,7 @@
       "lat": 38.250254083928,
       "lon": -77.29011580291154,
       "city": "King George",
-      "county": "King George County",
+      "county": "King George",
       "state": "VA",
       "precision": "exact"
     },
@@ -28391,7 +28439,7 @@
   {
     "id": "gw-ranch-pacifico-energy-pecos-county-tx",
     "name": "GW Ranch",
-    "operator": "Pacifico Energy (data center tenant unidentified)",
+    "operator": "Pacifico Energy",
     "status": "proposed",
     "confidence": "rumored",
     "location": {
@@ -28419,7 +28467,7 @@
       }
     ],
     "lastUpdated": "2026-07-09",
-    "notes": "~17 miles north of Fort Stockton. This is fundamentally a power-generation project 'purpose-built to support hyperscale data center operators' (per Data Center Dynamics), but no data center tenant/operator has been named - classified 'rumored' confidence on the data-center use specifically. Distinct from the existing tracked Microsoft/Core Scientific 'Pecos' entries (those are in Reeves County, not Pecos County). Coordinates are approximate.",
+    "notes": "~17 miles north of Fort Stockton. This is fundamentally a power-generation project 'purpose-built to support hyperscale data center operators' (per Data Center Dynamics), but no data center tenant/operator has been named - classified 'rumored' confidence on the data-center use specifically. Distinct from the existing tracked Microsoft/Core Scientific 'Pecos' entries (those are in Reeves County, not Pecos County). Coordinates are approximate. Data center tenant unidentified.",
     "energy": {
       "source": "on_site_gas",
       "notes": "TCEQ air permit secured (Jan 2026) for up to 7.65GW gas-fired generation - the largest such permit in the US. Includes 1.8GW battery storage + up to 750MWac solar. Off-grid/private-network design, not ERCOT-interconnected. Developer timeline: 1GW online 2028, 5+GW by 2030-31."
@@ -28860,7 +28908,7 @@
   {
     "id": "homer-city-energy-campus-pa",
     "name": "Homer City Energy Campus",
-    "operator": "Homer City Redevelopment / Kiewit",
+    "operator": "Homer City Redevelopment",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
@@ -28953,6 +29001,7 @@
       }
     ],
     "lastUpdated": "2026-08-02",
+    "notes": "EPC contractor: Kiewit.",
     "energy": {
       "source": "on_site_gas",
       "utility": "PJM (via FirstEnergy Pennsylvania Electric)",
@@ -29290,7 +29339,7 @@
       "lat": 31.2547925,
       "lon": -102.244163,
       "city": "McCamey",
-      "county": "Upton County",
+      "county": "Upton",
       "state": "TX",
       "precision": "approximate"
     },
@@ -29487,7 +29536,7 @@
       "lat": 35.207,
       "lon": -101.834,
       "city": "Amarillo",
-      "county": "Potter County",
+      "county": "Potter",
       "state": "TX",
       "precision": "approximate"
     },
@@ -29808,7 +29857,7 @@
       "lat": 34.4276,
       "lon": -100.2046,
       "city": "Childress",
-      "county": "Childress County",
+      "county": "Childress",
       "state": "TX",
       "precision": "exact"
     },
@@ -29925,7 +29974,7 @@
       "lat": 32.4707,
       "lon": -100.4059,
       "city": "Sweetwater",
-      "county": "Nolan County",
+      "county": "Nolan",
       "state": "TX",
       "precision": "exact"
     },
@@ -30783,7 +30832,7 @@
       "lat": 41.432,
       "lon": -88.128,
       "city": "Joliet",
-      "county": "Will County",
+      "county": "Will",
       "state": "IL",
       "precision": "exact"
     },
@@ -31296,7 +31345,7 @@
   {
     "id": "lancium-crusoe-abilene-tx",
     "name": "Lancium Clean Campus (Crusoe / Stargate Site 1)",
-    "operator": "Crusoe Energy (Lancium Clean Campus)",
+    "operator": "Crusoe",
     "status": "operational",
     "confidence": "reported",
     "location": {
@@ -31371,7 +31420,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "Originally proposed Dec 2021 as Lancium's \"Project Artemis\" — a Bitcoin-mining and grid-demand-response campus using stranded/curtailed West Texas wind and solar power, with Lancium throttling load during ERCOT peak demand. Crusoe Energy has since built and operates AI/HPC data-center buildings on the site (publicly branded \"Stargate Site 1\"), with Oracle Cloud Infrastructure as the tenant hosting NVIDIA GPU clusters for OpenAI's Stargate project — Oracle sits contractually between Crusoe and OpenAI; no confirmed direct OpenAI-Crusoe lease. Lancium retains land/electrical-infrastructure ownership; Crusoe leases and operates part of an approximately 800-1,000-acre campus. First 2 of 8 planned buildings (~200+ MW) were operational by mid-2025; remaining 6 are under construction, with a full 1.2 GW build-out targeted for completion in 2026-2027 (dates vary by source). Construction-workforce and total AI-era investment figures conflict significantly across sources (reported range: 2,000-9,000 workers; an unverified ~$11.6B raise) and are not repeated here as fact. Coordinates are approximate (geocoded from a listed street address, not parcel-confirmed — the ~800-1,000-acre campus could place any specific building up to ~1-2 miles from this point).",
+    "notes": "Originally proposed Dec 2021 as Lancium's \"Project Artemis\" — a Bitcoin-mining and grid-demand-response campus using stranded/curtailed West Texas wind and solar power, with Lancium throttling load during ERCOT peak demand. Crusoe Energy has since built and operates AI/HPC data-center buildings on the site (publicly branded \"Stargate Site 1\"), with Oracle Cloud Infrastructure as the tenant hosting NVIDIA GPU clusters for OpenAI's Stargate project — Oracle sits contractually between Crusoe and OpenAI; no confirmed direct OpenAI-Crusoe lease. Lancium retains land/electrical-infrastructure ownership; Crusoe leases and operates part of an approximately 800-1,000-acre campus. First 2 of 8 planned buildings (~200+ MW) were operational by mid-2025; remaining 6 are under construction, with a full 1.2 GW build-out targeted for completion in 2026-2027 (dates vary by source). Construction-workforce and total AI-era investment figures conflict significantly across sources (reported range: 2,000-9,000 workers; an unverified ~$11.6B raise) and are not repeated here as fact. Coordinates are approximate (geocoded from a listed street address, not parcel-confirmed — the ~800-1,000-acre campus could place any specific building up to ~1-2 miles from this point). Also known as the Lancium Clean Campus.",
     "energy": {
       "source": "grid",
       "notes": "Originally designed as an ERCOT-integrated demand-response/curtailable load site. On-site behind-the-meter natural-gas generation for this campus IS now confirmed via TCEQ Standard Permit Reg. 177263 — 10 turbines totaling 360.5 MW, 'for onsite use only for data centers and computing,' with a large expansion proposed — tracked separately as the power_generation record crusoe-abilene-onsite-generation-tx."
@@ -31936,7 +31985,7 @@
       "lat": 42.7356308,
       "lon": -73.818665,
       "city": "Albany",
-      "county": "Albany County",
+      "county": "Albany",
       "street": "10 Airline Drive",
       "postalCode": "12205",
       "state": "NY",
@@ -31983,7 +32032,7 @@
       "lat": 39.022182,
       "lon": -77.4576094,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -32021,7 +32070,7 @@
   {
     "id": "lumen-austin-1-tx",
     "name": "Lumen Austin 1",
-    "operator": "Lumen",
+    "operator": "Lumen Technologies",
     "status": "operational",
     "confidence": "reported",
     "location": {
@@ -32064,7 +32113,7 @@
       "lat": 30.261396,
       "lon": -97.7235975,
       "city": "Austin",
-      "county": "Travis County",
+      "county": "Travis",
       "state": "TX",
       "precision": "exact"
     },
@@ -32172,7 +32221,7 @@
   {
     "id": "lumen-cleveland-1-oh",
     "name": "Lumen Cleveland 1",
-    "operator": "Lumen",
+    "operator": "Lumen Technologies",
     "status": "operational",
     "confidence": "reported",
     "location": {
@@ -32214,7 +32263,7 @@
       "lat": 32.8069549,
       "lon": -96.8685888,
       "city": "Dallas",
-      "county": "Dallas County",
+      "county": "Dallas",
       "street": "3180 Irving Boulevard",
       "postalCode": "75247",
       "state": "TX",
@@ -32251,7 +32300,7 @@
       "lat": 32.827998,
       "lon": -96.8843787,
       "city": "Dallas",
-      "county": "Dallas County",
+      "county": "Dallas",
       "street": "1150 Regal Row",
       "state": "TX",
       "precision": "exact"
@@ -32287,7 +32336,7 @@
       "lat": 43.0677161,
       "lon": -89.3922794,
       "city": "Madison",
-      "county": "Dane County",
+      "county": "Dane",
       "state": "WI",
       "precision": "approximate"
     },
@@ -32322,7 +32371,7 @@
       "lat": 38.9208538,
       "lon": -77.2115713,
       "city": "McLean",
-      "county": "Fairfax County",
+      "county": "Fairfax",
       "street": "1755 Old Meadow Road",
       "postalCode": "22102",
       "state": "VA",
@@ -32369,7 +32418,7 @@
       "lat": 44.9887662,
       "lon": -93.2766103,
       "city": "Minneapolis",
-      "county": "Hennepin County",
+      "county": "Hennepin",
       "state": "MN",
       "precision": "exact"
     },
@@ -32414,7 +32463,7 @@
       "lat": 40.127067,
       "lon": -75.4086586,
       "city": "Norristown",
-      "county": "Montgomery County",
+      "county": "Montgomery",
       "state": "PA",
       "precision": "exact"
     },
@@ -32459,7 +32508,7 @@
       "lat": 33.494309,
       "lon": -112.0707916,
       "city": "Phoenix",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "street": "215 East Indian School Road",
       "state": "AZ",
       "precision": "exact"
@@ -32495,7 +32544,7 @@
       "lat": 29.4382791,
       "lon": -98.5065217,
       "city": "San Antonio",
-      "county": "Bexar County",
+      "county": "Bexar",
       "state": "TX",
       "precision": "exact"
     },
@@ -32530,7 +32579,7 @@
       "lat": 37.3770332,
       "lon": -121.952059,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "3045 Raymond Street",
       "state": "CA",
       "precision": "exact"
@@ -32576,7 +32625,7 @@
       "lat": 47.6542257,
       "lon": -117.4200007,
       "city": "Spokane",
-      "county": "Spokane County",
+      "county": "Spokane",
       "street": "501 West 2nd Avenue",
       "postalCode": "99201",
       "state": "WA",
@@ -32623,7 +32672,7 @@
       "lat": 37.3734695,
       "lon": -121.9878002,
       "city": "Sunnyvale",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "1380 Kifer Road",
       "postalCode": "94086",
       "state": "CA",
@@ -33467,7 +33516,7 @@
       "lat": 33.5629,
       "lon": -81.8287,
       "city": "Graniteville",
-      "county": "Aiken County",
+      "county": "Aiken",
       "state": "SC",
       "precision": "exact"
     },
@@ -33666,7 +33715,7 @@
       "lat": 36.14,
       "lon": -95.88,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "Near East 11th Street & 193rd East Avenue (Fair Oaks industrial park, East Tulsa)",
       "state": "OK",
       "precision": "exact"
@@ -33795,7 +33844,7 @@
       "lat": 43.457,
       "lon": -88.837,
       "city": "Beaver Dam",
-      "county": "Dodge County",
+      "county": "Dodge",
       "state": "WI",
       "precision": "exact"
     },
@@ -34227,7 +34276,7 @@
       "lat": 35.317,
       "lon": -81.826,
       "city": "Forest City",
-      "county": "Rutherford County",
+      "county": "Rutherford",
       "state": "NC",
       "precision": "approximate"
     },
@@ -34316,7 +34365,7 @@
       "lat": 32.9844048,
       "lon": -97.2617581,
       "city": "Fort Worth",
-      "county": "Tarrant County",
+      "county": "Tarrant",
       "state": "TX",
       "precision": "approximate"
     },
@@ -34400,7 +34449,7 @@
       "lat": 36.3884,
       "lon": -86.4369,
       "city": "Gallatin",
-      "county": "Sumner County",
+      "county": "Sumner",
       "state": "TN",
       "precision": "exact"
     },
@@ -34515,7 +34564,7 @@
       "lat": 34.726,
       "lon": -86.647,
       "city": "Huntsville",
-      "county": "Madison County",
+      "county": "Madison",
       "state": "AL",
       "precision": "exact"
     },
@@ -34816,7 +34865,7 @@
       "lat": 39.247,
       "lon": -94.705,
       "city": "Kansas City",
-      "county": "Clay County",
+      "county": "Clay",
       "state": "MO",
       "precision": "exact"
     },
@@ -34942,10 +34991,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.deseret.com/magazine/2026/03/04/idaho-data-centers-agriculture-water-future/",
+        "label": "How data centers are reshaping Idaho's farm country",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-03-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "960,000 sq ft campus (Meta's 15th US data center). Originally Project Peregrine. Construction paused December 2022, restarted October 2023 with AI-optimized architecture; new design 31% cheaper and half the build time. Peak construction employed 1,400 workers. Expected operational end of 2026. Water infrastructure cost sourced to CEG ($70M) but Idaho Business Review cites $100M — discrepancy unresolved; use CEG figure as primary. Coordinates are Kuna city centroid; exact site is west of city center.",
+    "lastUpdated": "2026-08-08",
+    "notes": "960,000 sq ft campus (Meta's 15th US data center). Originally Project Peregrine. Construction paused December 2022, restarted October 2023 with AI-optimized architecture; new design 31% cheaper and half the build time. Peak construction employed 1,400 workers. Expected operational end of 2026. Water infrastructure cost sourced to CEG ($70M) but Idaho Business Review cites $100M — discrepancy unresolved; use CEG figure as primary. Coordinates are Kuna city centroid; exact site is west of city center. As of December 2025, the campus was in the \"final stages\" of construction; local reporting notes power demand will not be clear until the site comes online.",
     "energy": {
       "source": "mixed",
       "utility": "Idaho Power",
@@ -35065,7 +35121,7 @@
   {
     "id": "meta-los-lunas-ai-nm",
     "name": "Meta Los Lunas AI Expansion",
-    "operator": "Meta (Greater Kudu LLC)",
+    "operator": "Meta",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -35113,7 +35169,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "Reported as the first Meta facilities explicitly dedicated to AI/ML workloads. Existing campus is 750 acres. IRBs authorize tax-exempt bond financing for construction materials — the $7.5B per series is the authorized principal ceiling, not a direct cash subsidy. Meta required to invest $350M into expansion by year 10 under agreement.",
+    "notes": "Reported as the first Meta facilities explicitly dedicated to AI/ML workloads. Existing campus is 750 acres. IRBs authorize tax-exempt bond financing for construction materials — the $7.5B per series is the authorized principal ceiling, not a direct cash subsidy. Meta required to invest $350M into expansion by year 10 under agreement. Operating entity: Greater Kudu LLC.",
     "energy": {
       "source": "solar",
       "utility": "Public Service Company of New Mexico (PNM)",
@@ -35150,7 +35206,7 @@
       "lat": 33.3375358,
       "lon": -111.6355386,
       "city": "Mesa",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "state": "AZ",
       "precision": "approximate"
     },
@@ -35315,7 +35371,7 @@
       "lat": 32.185,
       "lon": -86.273,
       "city": "Montgomery",
-      "county": "Montgomery County",
+      "county": "Montgomery",
       "state": "AL",
       "precision": "exact"
     },
@@ -35486,7 +35542,7 @@
   {
     "id": "meta-project-klondike-piqua-oh",
     "name": "Project Klondike",
-    "operator": "Meta (via shell J5 LLC)",
+    "operator": "Meta",
     "status": "permitted",
     "confidence": "confirmed",
     "location": {
@@ -35529,7 +35585,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "Two 350,000 sq ft buildings on 607 acres, approved November 2025 under NDA via emergency resolution. Meta's identity confirmed by a Hunterbrook investigation (Nevada filing traced to Meta HQ address and an ex-Meta counsel as manager). Drew a petition with over 2,500 signatures in opposition.",
+    "notes": "Two 350,000 sq ft buildings on 607 acres, approved November 2025 under NDA via emergency resolution. Meta's identity confirmed by a Hunterbrook investigation (Nevada filing traced to Meta HQ address and an ex-Meta counsel as manager). Drew a petition with over 2,500 signatures in opposition. Via shell entity J5 LLC.",
     "energy": {
       "utility": "AES Ohio"
     },
@@ -35596,10 +35652,17 @@
         "publisher": "Signal Ohio",
         "retrievedAt": "2026-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sciotopost.com/ohio-regulators-approve-250-megawatt-power-plant-to-fuel-new-albany-meta-data-center/",
+        "label": "Ohio regulators approve 250-megawatt power plant to fuel New Albany Meta data center",
+        "publisher": "Scioto Post",
+        "retrievedAt": "2025-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
-    "notes": "Baxtel reports campus as partially operational in 2026 with future phases planned; overall 1 GW build-out still in progress. Site address 1500 Beech Rd NW cited in permit filings but not confirmed from independently accessible sources this session. Nuclear PPA claims partially corroborated (Vistra/Oklo via SEC filings and news; TerraPower unconfirmed). On-site gas generation capacity removed pending accessible source confirmation. County listed as Licking — consistent with Beech Road corridor at Licking/Franklin county boundary per stopohiodatacenters.org.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Baxtel reports campus as partially operational in 2026 with future phases planned; overall 1 GW build-out still in progress. Site address 1500 Beech Rd NW cited in permit filings but not confirmed from independently accessible sources this session. Nuclear PPA claims partially corroborated (Vistra/Oklo via SEC filings and news; TerraPower unconfirmed). On-site gas generation capacity removed pending accessible source confirmation. County listed as Licking — consistent with Beech Road corridor at Licking/Franklin county boundary per stopohiodatacenters.org. OPSB approved a 250 MW behind-the-meter gas plant (\"Socrates the Younger,\" Will-Power OH, LLC) on 109 acres at Clover Valley Rd & Harrison Rd NW, New Albany, with the primary consumer named as Sidecat LLC, a Meta affiliate — corroborating the on-site generation previously removed pending an accessible source, and revising the figure from an unconfirmed 200 MW to 250 MW. This is the plant's nameplate generation, not IT load; the record's capacityMw (1,000 MW planned) is unchanged.",
     "energy": {
       "source": "mixed",
       "notes": "Nuclear PPAs with Vistra (Ohio nuclear plants) and Oklo (1.2 GW Pike County campus) reported and partially corroborated by SEC filings and news; TerraPower PPA referenced in NBC4i (403 on access this session) but not found in any independently accessible source — treat as unconfirmed. On-site gas generation mentioned in state permit filings per record notes; 200 MW figure and 20-acre power yard not independently confirmed from accessible public sources and removed from this record."
@@ -35631,7 +35694,7 @@
       "lat": 44.74,
       "lon": -93.115,
       "city": "Rosemount",
-      "county": "Dakota County",
+      "county": "Dakota",
       "state": "MN",
       "precision": "exact"
     },
@@ -35723,7 +35786,7 @@
       "lat": 41.052,
       "lon": -96.148,
       "city": "Springfield",
-      "county": "Sarpy County",
+      "county": "Sarpy",
       "state": "NE",
       "precision": "exact"
     },
@@ -35784,7 +35847,7 @@
   {
     "id": "metrobloks-liberty-mo",
     "name": "Metrobloks Liberty Campus",
-    "operator": "Metrobloks (Lincoln Property Company)",
+    "operator": "Metrobloks",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -35823,7 +35886,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "$1.4B, 150 MW AI-ready campus in Liberty, Clay County. Coordinates are the Liberty area centroid.",
+    "notes": "$1.4B, 150 MW AI-ready campus in Liberty, Clay County. Coordinates are the Liberty area centroid. Partner: Lincoln Property Company.",
     "energy": {
       "source": "grid"
     },
@@ -36484,7 +36547,7 @@
       "lat": 33.7547,
       "lon": -84.7427,
       "city": "Douglasville",
-      "county": "Douglas County",
+      "county": "Douglas",
       "state": "GA",
       "precision": "exact"
     },
@@ -36591,7 +36654,7 @@
       "lat": 47.407837,
       "lon": -120.207723,
       "city": "East Wenatchee",
-      "county": "Douglas County",
+      "county": "Douglas",
       "state": "WA",
       "precision": "approximate"
     },
@@ -36957,7 +37020,7 @@
       "lat": 34.27,
       "lon": -85.16,
       "city": "Rome",
-      "county": "Floyd County",
+      "county": "Floyd",
       "state": "GA",
       "precision": "exact"
     },
@@ -37139,7 +37202,7 @@
       "lat": 41.551,
       "lon": -93.782,
       "city": "West Des Moines",
-      "county": "Polk County",
+      "county": "Polk",
       "state": "IA",
       "precision": "exact"
     },
@@ -37624,7 +37687,7 @@
       "lat": 42.537,
       "lon": -87.89,
       "city": "Kenosha",
-      "county": "Kenosha County",
+      "county": "Kenosha",
       "state": "WI",
       "precision": "exact"
     },
@@ -37872,10 +37935,17 @@
         "publisher": "Chelan County PUD",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://local.microsoft.com/communities/americas/quincy/",
+        "label": "Quincy Community — Microsoft Local",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-08-08",
+        "kind": "other"
       }
     ],
     "lastUpdated": "2026-08-08",
-    "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. 288 MW figure from secondary aggregator Cleanview only; primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; original statusHistory incorrectly dated under_construction to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway. A Building-1 permit cites ~72 peak-shift staff (a single-building figure, not a facility employment total); no confirmed total campus capital-expenditure figure is public. Go-live check 2026-08-08: NO citable operational date exists. Microsoft's own Malaga project page gives a first-phase construction window concluding in early 2026 but states plainly that \"Completion of construction does not indicate datacenter operation/availability\", and publishes no energization or service date. Secondary reporting that the first building would be \"powered in August and fully operational by late 2026\" is forward-looking and was not used to move the status. Remains under_construction.",
+    "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. 288 MW figure from secondary aggregator Cleanview only; primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; original statusHistory incorrectly dated under_construction to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway. A Building-1 permit cites ~72 peak-shift staff (a single-building figure, not a facility employment total); no confirmed total campus capital-expenditure figure is public. Go-live check 2026-08-08: NO citable operational date exists. Microsoft's own Malaga project page gives a first-phase construction window concluding in early 2026 but states plainly that \"Completion of construction does not indicate datacenter operation/availability\", and publishes no energization or service date. Secondary reporting that the first building would be \"powered in August and fully operational by late 2026\" is forward-looking and was not used to move the status. Remains under_construction. Microsoft's own Quincy/Central Washington community page states it \"operates datacenters in Quincy and is developing new datacenters in Malaga and East Wenatchee\" — positively confirming the site is not yet operational.",
     "energy": {
       "source": "hydro",
       "utility": "Chelan County PUD",
@@ -38478,7 +38548,7 @@
       "lat": 33.494,
       "lon": -84.588,
       "city": "Tyrone",
-      "county": "Fayette County",
+      "county": "Fayette",
       "state": "GA",
       "precision": "exact"
     },
@@ -38896,7 +38966,7 @@
       "lat": 41.0826255,
       "lon": -76.1514194,
       "city": "Berwick (Salem Township)",
-      "county": "Luzerne County",
+      "county": "Luzerne",
       "state": "PA",
       "precision": "exact"
     },
@@ -39001,7 +39071,7 @@
       "lat": 33.4556,
       "lon": -86.8131,
       "city": "Birmingham",
-      "county": "Jefferson County",
+      "county": "Jefferson",
       "state": "AL",
       "precision": "exact"
     },
@@ -39106,7 +39176,7 @@
       "lat": 39.089,
       "lon": -94.342,
       "city": "Independence",
-      "county": "Jackson County",
+      "county": "Jackson",
       "state": "MO",
       "precision": "exact"
     },
@@ -39197,7 +39267,7 @@
       "lat": 39.4862,
       "lon": -74.992,
       "city": "Vineland",
-      "county": "Cumberland County",
+      "county": "Cumberland",
       "state": "NJ",
       "precision": "exact"
     },
@@ -39911,7 +39981,7 @@
       "lat": 39.53,
       "lon": -119.44,
       "city": "McCarran",
-      "county": "Storey County",
+      "county": "Storey",
       "state": "NV",
       "precision": "approximate"
     },
@@ -40042,14 +40112,14 @@
   {
     "id": "ntt-ashburn-va1-data-center-va",
     "name": "NTT Ashburn VA1 Data Center",
-    "operator": "NTT",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 39.0227436,
       "lon": -77.4548911,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "44664 Guilford Drive",
       "postalCode": "20147",
       "state": "VA",
@@ -40092,14 +40162,14 @@
   {
     "id": "ntt-ashburn-va2-data-center-va",
     "name": "NTT Ashburn VA2 Data Center",
-    "operator": "NTT",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 39.0250127,
       "lon": -77.4576402,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "44610 Guilford Drive",
       "postalCode": "20147",
       "state": "VA",
@@ -40149,14 +40219,14 @@
   {
     "id": "ntt-ashburn-va5-data-center-va",
     "name": "NTT Ashburn VA5 Data Center",
-    "operator": "NTT",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 39.0183033,
       "lon": -77.472611,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "21583 Megawatt Drive",
       "postalCode": "20147",
       "state": "VA",
@@ -40199,14 +40269,14 @@
   {
     "id": "ntt-ashburn-va7-data-center-va",
     "name": "NTT Ashburn VA7 Data Center",
-    "operator": "NTT",
+    "operator": "NTT Global Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 39.0160142,
       "lon": -77.471954,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "44371 Gigabit Plaza",
       "postalCode": "20147",
       "state": "VA",
@@ -40246,14 +40316,14 @@
   {
     "id": "ntt-ashburn-va8-data-center-va",
     "name": "NTT Ashburn VA8 Data Center",
-    "operator": "NTT Global Data Centers Americas",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 39.0201893,
       "lon": -77.475509,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "44710 Gigabit Plaza",
       "state": "VA",
       "precision": "exact"
@@ -40293,14 +40363,14 @@
   {
     "id": "ntt-chicago-ch1-data-center-il",
     "name": "NTT Chicago CH1 Data Center",
-    "operator": "NTT",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 41.9879619,
       "lon": -88.0072217,
       "city": "Itasca",
-      "county": "DuPage County",
+      "county": "DuPage",
       "street": "255 Pierce Road",
       "postalCode": "60143",
       "state": "IL",
@@ -40343,14 +40413,14 @@
   {
     "id": "ntt-chicago-ch2-data-center-il",
     "name": "NTT Chicago CH2 Data Center",
-    "operator": "NTT Global Data Centers Americas",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 41.9890149,
       "lon": -88.0072131,
       "city": "Itasca",
-      "county": "DuPage County",
+      "county": "DuPage",
       "state": "IL",
       "precision": "exact"
     },
@@ -40401,7 +40471,7 @@
       "lat": 47.2435798,
       "lon": -119.8657481,
       "city": "Quincy",
-      "county": "Grant County",
+      "county": "Grant",
       "state": "WA",
       "precision": "exact"
     },
@@ -40439,14 +40509,14 @@
   {
     "id": "ntt-global-data-centers-dallas-tx1-tx",
     "name": "NTT Global Data Centers Dallas TX1",
-    "operator": "NTT Global Data Centers Americas",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 32.9810371,
       "lon": -96.6563775,
       "city": "Garland",
-      "county": "Dallas County",
+      "county": "Dallas",
       "state": "TX",
       "precision": "exact"
     },
@@ -40555,14 +40625,14 @@
   {
     "id": "ntt-hillsboro-hi1-data-center-or",
     "name": "NTT Hillsboro HI1 Data Center",
-    "operator": "NTT (RagingWire)",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 45.5496803,
       "lon": -122.9373872,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "4050 Northeast Evergreen Road",
       "postalCode": "97124",
       "state": "OR",
@@ -40596,7 +40666,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "4050 NE Evergreen Rd; 36MW, first of a planned 5-building/126MW campus; building acquired from SunPower in 2019.",
+    "notes": "4050 NE Evergreen Rd; 36MW, first of a planned 5-building/126MW campus; building acquired from SunPower in 2019. Previously operated under NTT's legacy US brand, RagingWire (now retired).",
     "energy": {
       "utility": "Portland General Electric (PGE)"
     },
@@ -40605,14 +40675,14 @@
   {
     "id": "ntt-phoenix-ph1-data-center-az",
     "name": "NTT Phoenix PH1 Data Center",
-    "operator": "NTT",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 33.3536663,
       "lon": -111.6124114,
       "city": "Mesa",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "street": "10256 East Elliot Road",
       "postalCode": "85212",
       "state": "AZ",
@@ -40645,14 +40715,14 @@
   {
     "id": "ntt-sacramento-ca1-data-center-ca",
     "name": "NTT Sacramento CA1 Data Center",
-    "operator": "NTT (RagingWire)",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 38.6504319,
       "lon": -121.4891868,
       "city": "Sacramento",
-      "county": "Sacramento County",
+      "county": "Sacramento",
       "state": "CA",
       "precision": "exact"
     },
@@ -40684,7 +40754,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "12.6MW, 1625 West National Dr, Sacramento.",
+    "notes": "12.6MW, 1625 West National Dr, Sacramento. Previously operated under NTT's legacy US brand, RagingWire (now retired).",
     "energy": {
       "utility": "SMUD"
     },
@@ -40693,14 +40763,14 @@
   {
     "id": "ntt-sacramento-ca2-data-center-ca",
     "name": "NTT Sacramento CA2 Data Center",
-    "operator": "NTT (RagingWire)",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 38.6504002,
       "lon": -121.4919461,
       "city": "Sacramento",
-      "county": "Sacramento County",
+      "county": "Sacramento",
       "state": "CA",
       "precision": "exact"
     },
@@ -40729,7 +40799,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "Part of the 3-building, 52.7MW combined Sacramento campus at 1625 West National Dr.",
+    "notes": "Part of the 3-building, 52.7MW combined Sacramento campus at 1625 West National Dr. Previously operated under NTT's legacy US brand, RagingWire (now retired).",
     "energy": {
       "utility": "SMUD"
     },
@@ -40738,14 +40808,14 @@
   {
     "id": "ntt-sacramento-ca3-data-center-ca",
     "name": "NTT Sacramento CA3 Data Center",
-    "operator": "NTT (RagingWire)",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 38.6442393,
       "lon": -121.4987627,
       "city": "Sacramento",
-      "county": "Sacramento County",
+      "county": "Sacramento",
       "street": "1625 National Driveq",
       "postalCode": "95834",
       "state": "CA",
@@ -40776,7 +40846,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "180,000 sqft building on the integrated NTT Sacramento campus alongside CA1/CA2.",
+    "notes": "180,000 sqft building on the integrated NTT Sacramento campus alongside CA1/CA2. Previously operated under NTT's legacy US brand, RagingWire (now retired).",
     "energy": {
       "utility": "SMUD"
     },
@@ -40785,14 +40855,14 @@
   {
     "id": "ntt-silicon-valley-sv1-data-center-ca",
     "name": "NTT Silicon Valley SV1 Data Center",
-    "operator": "NTT",
+    "operator": "NTT Global Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 37.3690532,
       "lon": -121.9553378,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "1160 Walsh Avenue",
       "postalCode": "95050",
       "state": "CA",
@@ -41507,7 +41577,7 @@
       "lat": 45.7113177,
       "lon": -119.8262349,
       "city": "Boardman area (Tower Road)",
-      "county": "Morrow County",
+      "county": "Morrow",
       "state": "OR",
       "precision": "exact"
     },
@@ -41861,7 +41931,7 @@
   {
     "id": "powerconnex-i-new-albany-oh",
     "name": "PowerConneX I New Albany Energy Center",
-    "operator": "EdgeConneX (PowerConneX)",
+    "operator": "EdgeConneX",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
@@ -41886,7 +41956,7 @@
       }
     ],
     "lastUpdated": "2026-08-05",
-    "notes": "On-site natural-gas generation (120 MW) built by EdgeConneX's PowerConneX arm to power a nearby New Albany data center. Farm and Dairy names PowerConneX I (120 MW) among the New Albany-area gas plants; the co-located customer is EdgeConneX's own New Albany (MCN) campus. Coordinates approximate.",
+    "notes": "On-site natural-gas generation (120 MW) built by EdgeConneX's PowerConneX arm to power a nearby New Albany data center. Farm and Dairy names PowerConneX I (120 MW) among the New Albany-area gas plants; the co-located customer is EdgeConneX's own New Albany (MCN) campus. Coordinates approximate. Operates under power arm PowerConneX.",
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -41897,7 +41967,7 @@
   {
     "id": "powerconnex-ii-new-albany-oh",
     "name": "PowerConneX II New Albany Energy Center",
-    "operator": "EdgeConneX (PowerConneX)",
+    "operator": "EdgeConneX",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
@@ -41922,7 +41992,7 @@
       }
     ],
     "lastUpdated": "2026-08-05",
-    "notes": "A second EdgeConneX PowerConneX on-site gas plant (216 MW) for a nearby New Albany data center (EdgeConneX's co-located MCN campus). Coordinates approximate. (Farm and Dairy also names a pre-application PowerConneX III at 430 MW, not included here.)",
+    "notes": "A second EdgeConneX PowerConneX on-site gas plant (216 MW) for a nearby New Albany data center (EdgeConneX's co-located MCN campus). Coordinates approximate. (Farm and Dairy also names a pre-application PowerConneX III at 430 MW, not included here.). Operates under power arm PowerConneX.",
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -41933,14 +42003,14 @@
   {
     "id": "powerhouse-95-spotsylvania-va",
     "name": "PowerHouse 95",
-    "operator": "PowerHouse Data Centers (American Real Estate Partners / AREP, joint venture with Harrison Street)",
+    "operator": "PowerHouse Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 38.17,
       "lon": -77.66,
       "city": "Spotsylvania",
-      "county": "Spotsylvania County",
+      "county": "Spotsylvania",
       "state": "VA",
       "precision": "exact"
     },
@@ -42028,7 +42098,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "Campus located at approximately 4189 Turner Ct, Spotsylvania County, VA along the I-95/Hwy 17 corridor; coordinates are approximate. Three 300 MW substations planned (800 MW total); first substation delivering 150 MW targeted for Q4 2025. Up to 8 buildings, 3.5 million sq ft. Phased delivery Q3 2025–Q4 2027. Joint venture between PowerHouse/AREP and Harrison Street. Harrison Street managing director explicitly cited 'high-powered computing, AI, and other advancements' as the demand driver for this campus class, supporting likely AI classification. Named tenant not disclosed. Dominion Energy utility attribution is inferred from service territory: Dominion's Tributary 230 kV project was approved by Virginia SCC (June 30, 2024) specifically to serve growing Spotsylvania data center demand; PH95 press materials do not name the utility directly. Investment amount, job figures, and water draw not disclosed in any sourced press materials.",
+    "notes": "Campus located at approximately 4189 Turner Ct, Spotsylvania County, VA along the I-95/Hwy 17 corridor; coordinates are approximate. Three 300 MW substations planned (800 MW total); first substation delivering 150 MW targeted for Q4 2025. Up to 8 buildings, 3.5 million sq ft. Phased delivery Q3 2025–Q4 2027. Joint venture between PowerHouse/AREP and Harrison Street. Harrison Street managing director explicitly cited 'high-powered computing, AI, and other advancements' as the demand driver for this campus class, supporting likely AI classification. Named tenant not disclosed. Dominion Energy utility attribution is inferred from service territory: Dominion's Tributary 230 kV project was approved by Virginia SCC (June 30, 2024) specifically to serve growing Spotsylvania data center demand; PH95 press materials do not name the utility directly. Investment amount, job figures, and water draw not disclosed in any sourced press materials. Joint venture: American Real Estate Partners (AREP) and Harrison Street.",
     "energy": {
       "source": "grid",
       "utility": "Rappahannock Electric Co-op",
@@ -42057,7 +42127,7 @@
       "lat": 39.0195992,
       "lon": -77.4504568,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -42095,7 +42165,7 @@
   {
     "id": "powerhouse-charlotte-nc",
     "name": "PowerHouse Charlotte Campus",
-    "operator": "PowerHouse Data Centers (AREP)",
+    "operator": "PowerHouse Data Centers",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -42134,7 +42204,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "120-acre, ~300 MW campus in Charlotte, Mecklenburg County. Distinct operator/parcel from the separately-tracked Digital Realty Charlotte site. Coordinates are the Charlotte centroid.",
+    "notes": "120-acre, ~300 MW campus in Charlotte, Mecklenburg County. Distinct operator/parcel from the separately-tracked Digital Realty Charlotte site. Coordinates are the Charlotte centroid. Partner: American Real Estate Partners (AREP).",
     "energy": {
       "source": "grid",
       "utility": "Duke Energy Carolinas"
@@ -42146,7 +42216,7 @@
   {
     "id": "powerhouse-chirisa-chester-va",
     "name": "Chirisa Technology Park — Richmond (Chester)",
-    "operator": "PowerHouse Data Centers / Chirisa (Blue Owl JV)",
+    "operator": "PowerHouse Data Centers",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -42192,7 +42262,7 @@
       }
     ],
     "lastUpdated": "2026-07-08",
-    "notes": "Chester, Chesterfield County — first phase of a Blue Owl / Chirisa / PowerHouse JV: initial 50 MW (2025) → 120 MW facility, with a ~1 GW eventual plan (in notes). $600M construction loan closed. Distinct parcel from Google's Midlothian (Chesterfield) campus. Coordinates are the Chester area centroid. The $600M is a construction loan (financing) and the $5B is the multi-site JV total - neither is this campus's capex -> investmentUsd omitted. 800-1,200 jobs projected over 5-7 years spanning construction and operations -> jobs honest-zero. Virginia law bars per-company data-center subsidy disclosure -> subsidy honest-zero.",
+    "notes": "Chester, Chesterfield County — first phase of a Blue Owl / Chirisa / PowerHouse JV: initial 50 MW (2025) → 120 MW facility, with a ~1 GW eventual plan (in notes). $600M construction loan closed. Distinct parcel from Google's Midlothian (Chesterfield) campus. Coordinates are the Chester area centroid. The $600M is a construction loan (financing) and the $5B is the multi-site JV total - neither is this campus's capex -> investmentUsd omitted. 800-1,200 jobs projected over 5-7 years spanning construction and operations -> jobs honest-zero. Virginia law bars per-company data-center subsidy disclosure -> subsidy honest-zero. Joint venture with Chirisa Technology Parks and Blue Owl Real Estate.",
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy",
@@ -42213,14 +42283,14 @@
   {
     "id": "powerhouse-ctp-02-va",
     "name": "PowerHouse CTP-02",
-    "operator": "PowerHouse Data Centers (JV with Chirisa Technology Parks and Blue Owl Real Estate)",
+    "operator": "PowerHouse Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 37.360586,
       "lon": -77.3256869,
       "city": "Chester",
-      "county": "Chesterfield County",
+      "county": "Chesterfield",
       "state": "VA",
       "precision": "exact"
     },
@@ -42252,7 +42322,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "50MW build-to-suit at Chirisa Technology Parks' Meadowville Technology Parkway campus (Chesterfield County), JV of PowerHouse, Chirisa, and Blue Owl Real Estate; broke ground 2024/2025, CoreWeave is the confirmed GPU/AI-cloud tenant (28MW deal Sept 2023 plus this expansion). PowerHouse's own portfolio page lists 'CTP-02 and CTP-03' as a platform entry; baxtel independently corroborates PowerHouse CTP-02 as a named facility at this campus.",
+    "notes": "50MW build-to-suit at Chirisa Technology Parks' Meadowville Technology Parkway campus (Chesterfield County), JV of PowerHouse, Chirisa, and Blue Owl Real Estate; broke ground 2024/2025, CoreWeave is the confirmed GPU/AI-cloud tenant (28MW deal Sept 2023 plus this expansion). PowerHouse's own portfolio page lists 'CTP-02 and CTP-03' as a platform entry; baxtel independently corroborates PowerHouse CTP-02 as a named facility at this campus. Joint venture with Chirisa Technology Parks and Blue Owl Real Estate.",
     "energy": {
       "utility": "Dominion Energy Virginia"
     },
@@ -42269,7 +42339,7 @@
       "lat": 38.1953,
       "lon": -85.8485,
       "city": "Louisville",
-      "county": "Jefferson County",
+      "county": "Jefferson",
       "state": "KY",
       "precision": "exact"
     },
@@ -42340,7 +42410,7 @@
   {
     "id": "powerhouse-pax-carlisle-pa",
     "name": "PAX — Pennsylvania Digital I",
-    "operator": "PowerHouse Data Centers / Pennsylvania Data Center Partners",
+    "operator": "PowerHouse Data Centers",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -42415,7 +42485,7 @@
       }
     ],
     "lastUpdated": "2026-08-02",
-    "notes": "'Pennsylvania Digital I' (PAX) in Carlisle, Cumberland County: a ~700-acre, three-campus development delivering 1.35 GW (expandable to 1.8 GW — in notes), each campus with six buildings and a 450 MW substation. The $15B is the project value across all three campuses (in notes). Near-term 300 MW by Q2 2027. Coordinates are the Carlisle area centroid. The $15B figure is the three-campus JV total, not broken out per campus -> investmentUsd omitted. Pennsylvania's data-center sales-tax exemption eligibility is likely but no confirmed award or LERTA designation was found.",
+    "notes": "'Pennsylvania Digital I' (PAX) in Carlisle, Cumberland County: a ~700-acre, three-campus development delivering 1.35 GW (expandable to 1.8 GW — in notes), each campus with six buildings and a 450 MW substation. The $15B is the project value across all three campuses (in notes). Near-term 300 MW by Q2 2027. Coordinates are the Carlisle area centroid. The $15B figure is the three-campus JV total, not broken out per campus -> investmentUsd omitted. Pennsylvania's data-center sales-tax exemption eligibility is likely but no confirmed award or LERTA designation was found. Partner: Pennsylvania Data Center Partners.",
     "energy": {
       "source": "grid",
       "utility": "PPL Electric Utilities",
@@ -42440,7 +42510,7 @@
   {
     "id": "powerhouse-provident-grand-prairie-tx",
     "name": "PowerHouse Grand Prairie Campus",
-    "operator": "PowerHouse Data Centers / Provident",
+    "operator": "PowerHouse Data Centers",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -42656,7 +42726,7 @@
       "lat": 32.8379581,
       "lon": -96.8784007,
       "city": "Dallas",
-      "county": "Dallas County",
+      "county": "Dallas",
       "street": "1515 Round Table Drive",
       "postalCode": "75247",
       "state": "TX",
@@ -42786,7 +42856,7 @@
       "lat": 37.3666621,
       "lon": -121.9628653,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "2215 Martin Avenue",
       "state": "CA",
       "precision": "approximate"
@@ -43013,7 +43083,7 @@
   {
     "id": "project-cannoli-van-buren-township-wayne-county-mi",
     "name": "Project Cannoli",
-    "operator": "Google (via Panattoni Development Co.)",
+    "operator": "Google",
     "status": "proposed",
     "confidence": "confirmed",
     "location": {
@@ -43052,7 +43122,7 @@
       }
     ],
     "lastUpdated": "2026-08-08",
-    "notes": "Google confirmed evaluating the site. Coordinates are approximate.",
+    "notes": "Google confirmed evaluating the site. Coordinates are approximate. Developer: Panattoni Development Co.",
     "energy": {
       "source": "mixed",
       "utility": "DTE Energy",
@@ -43080,7 +43150,7 @@
       "lat": 41.7,
       "lon": -88.461,
       "city": "Yorkville",
-      "county": "Kendall County",
+      "county": "Kendall",
       "state": "IL",
       "precision": "exact"
     },
@@ -43190,7 +43260,7 @@
       "lat": 36.282,
       "lon": -80.1494,
       "city": "Walnut Cove",
-      "county": "Stokes County",
+      "county": "Stokes",
       "state": "NC",
       "precision": "exact"
     },
@@ -43469,7 +43539,7 @@
       "lat": 26.6284,
       "lon": -80.39,
       "city": "Loxahatchee",
-      "county": "Palm Beach County",
+      "county": "Palm Beach",
       "state": "FL",
       "precision": "exact"
     },
@@ -43641,7 +43711,7 @@
       "lat": 33.3807,
       "lon": -84.7974,
       "city": "Newnan",
-      "county": "Coweta County",
+      "county": "Coweta",
       "state": "GA",
       "precision": "exact"
     },
@@ -44059,14 +44129,14 @@
   {
     "id": "qts-ashburn-1-va",
     "name": "QTS Ashburn 1",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 38.9995277,
       "lon": -77.4501109,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "22271 Broderick Drive",
       "postalCode": "20166",
       "state": "VA",
@@ -44106,14 +44176,14 @@
   {
     "id": "qts-ashburn-2-ashburn-lockridge-va",
     "name": "QTS Ashburn 2 (Ashburn-Lockridge)",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 38.9959297,
       "lon": -77.4562445,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -44151,14 +44221,14 @@
   {
     "id": "qts-atlanta-1-atlanta-metro-dc1-ga",
     "name": "QTS Atlanta 1 (Atlanta-Metro DC1)",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 33.7776897,
       "lon": -84.4211544,
       "city": "Atlanta",
-      "county": "Fulton County",
+      "county": "Fulton",
       "street": "1033 Jefferson Street Northwest",
       "postalCode": "30318",
       "state": "GA",
@@ -44198,7 +44268,7 @@
   {
     "id": "qts-aurora-co",
     "name": "QTS Aurora-Denver Data Center Campus (DEN1)",
-    "operator": "QTS (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
@@ -44241,10 +44311,17 @@
         "publisher": "Mile High CRE",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cpr.org/2026/07/08/qts-aurora-data-center-diesel-generators/",
+        "label": "Colorado's biggest data center wants to add another 98 diesel backup generators",
+        "publisher": "Colorado Public Radio",
+        "retrievedAt": "2026-07-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
-    "notes": "1160 N. Gun Club Rd, Aurora, CO 80018; eastern Aurora near E-470. Former JPMorgan data center site. Four-building campus on 67 acres. Colorado's first hyperscale facility at this scale. Coordinates based on Gun Club Rd address. Investment amount and specific job counts (previously $1B, 500 construction, 77 permanent) removed — not confirmed by cited sources.",
+    "lastUpdated": "2026-08-08",
+    "notes": "1160 N. Gun Club Rd, Aurora, CO 80018; eastern Aurora near E-470. Former JPMorgan data center site. Four-building campus on 67 acres. Colorado's first hyperscale facility at this scale. Coordinates based on Gun Club Rd address. Investment amount and specific job counts (previously $1B, 500 construction, 77 permanent) removed — not confirmed by cited sources. QTS Data Centers is owned by Blackstone (2021 take-private). As of 2026-07-08, one of the campus's three buildings is complete, a second is nearly finished, and site work has begun on the third. A July 2025 permit application seeks 98 additional diesel backup generators on top of the existing 40.",
     "energy": {
       "source": "grid",
       "utility": "Xcel Energy (Public Service Company of Colorado)",
@@ -44266,7 +44343,7 @@
   {
     "id": "qts-blue-hole-blakely-ga",
     "name": "QTS Project Blue Hole",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "permitted",
     "confidence": "confirmed",
     "location": {
@@ -44304,7 +44381,7 @@
       }
     ],
     "lastUpdated": "2026-07-26",
-    "notes": "Project Blue Hole in Blakely, Early County; DRI filed 2026, ~12M sq ft at full buildout by ~2035. ~1 GW+ is an estimate of ultimate scale (in notes). Coordinates are the Blakely area centroid.",
+    "notes": "Project Blue Hole in Blakely, Early County; DRI filed 2026, ~12M sq ft at full buildout by ~2035. ~1 GW+ is an estimate of ultimate scale (in notes). Coordinates are the Blakely area centroid. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "energy": {
       "source": "grid"
     },
@@ -44319,14 +44396,14 @@
   {
     "id": "qts-cedar-rapids-ia",
     "name": "QTS Cedar Rapids Data Center Campus",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
       "lat": 41.932,
       "lon": -91.718,
       "city": "Cedar Rapids",
-      "county": "Linn County",
+      "county": "Linn",
       "state": "IA",
       "precision": "exact"
     },
@@ -44379,7 +44456,7 @@
       }
     ],
     "lastUpdated": "2026-07-18",
-    "notes": "Coordinates approximate for Big Cedar Industrial Center; parcel is adjacent to Google's campus in the same 1,391-acre industrial park. $10B investment is total planned across 7 phases over up to 25 years; minimum $250M per phase, each requiring a 300,000 sq ft building. 7 buildings planned at full build-out. Permanent jobs figure is minimum per phase. QTS Co-CEO Tag Greason stated the completed seven-building campus will ultimately draw about 1,050 MW of power from Alliant Energy (planned, full build-out).",
+    "notes": "Coordinates approximate for Big Cedar Industrial Center; parcel is adjacent to Google's campus in the same 1,391-acre industrial park. $10B investment is total planned across 7 phases over up to 25 years; minimum $250M per phase, each requiring a 300,000 sq ft building. 7 buildings planned at full build-out. Permanent jobs figure is minimum per phase. QTS Co-CEO Tag Greason stated the completed seven-building campus will ultimately draw about 1,050 MW of power from Alliant Energy (planned, full build-out). QTS Data Centers is owned by Blackstone (2021 take-private).",
     "energy": {
       "source": "grid",
       "utility": "Alliant Energy",
@@ -44462,7 +44539,7 @@
       "lat": 43.2428,
       "lon": -89.3401,
       "city": "DeForest",
-      "county": "Dane County",
+      "county": "Dane",
       "state": "WI",
       "precision": "exact"
     },
@@ -44632,9 +44709,17 @@
         "publisher": "Grist",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.utahbusiness.com/press-releases/2026/04/20/layton-construction-qts-data-centers-campus-eagle-mountain/",
+        "label": "Layton Construction, QTS Data Centers Break Ground on Eagle Mountain Campus",
+        "publisher": "Utah Business",
+        "retrievedAt": "2026-04-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-08",
+    "notes": "Groundbreaking was October 2025; the third of three initial buildings topped out (structural completion) on 2026-04-20. Not yet operational; no delivery date confirmed.",
     "energy": {
       "source": "grid",
       "utility": "Rocky Mountain Power (PacifiCorp)",
@@ -44670,7 +44755,7 @@
   {
     "id": "qts-eisenhower-augusta-ga",
     "name": "QTS Project Eisenhower",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -44726,7 +44811,7 @@
       }
     ],
     "lastUpdated": "2026-07-25",
-    "notes": "Project Eisenhower in Augusta, Richmond County — 6 buildings across ~170 acres, $2B+ project. Rezoned 2024-25 with preliminary grading underway. Estimated 300-500 MW (not officially disclosed — omitted from capacity). Coordinates are the Augusta area centroid. The ~$2B figure is a developer projection from a 2024 zoning hearing (building permits not yet issued) -> investmentUsd omitted. QTS projects ~1,000 construction and ~160-220 permanent jobs (projections) -> jobs honest-zero. Georgia's high-technology data-center sales-tax exemption and an Augusta EDA bond/PILOT are available programs, but no confirmed award for this campus was found -> subsidy honest-zero.",
+    "notes": "Project Eisenhower in Augusta, Richmond County — 6 buildings across ~170 acres, $2B+ project. Rezoned 2024-25 with preliminary grading underway. Estimated 300-500 MW (not officially disclosed — omitted from capacity). Coordinates are the Augusta area centroid. The ~$2B figure is a developer projection from a 2024 zoning hearing (building permits not yet issued) -> investmentUsd omitted. QTS projects ~1,000 construction and ~160-220 permanent jobs (projections) -> jobs honest-zero. Georgia's high-technology data-center sales-tax exemption and an Augusta EDA bond/PILOT are available programs, but no confirmed award for this campus was found -> subsidy honest-zero. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "energy": {
       "source": "grid",
       "utility": "Georgia Power",
@@ -44749,14 +44834,14 @@
   {
     "id": "qts-hillsboro-1-or",
     "name": "QTS Hillsboro 1",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 45.5588149,
       "lon": -122.9277661,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "4951 Northeast Huffman Street",
       "postalCode": "97124",
       "state": "OR",
@@ -44797,14 +44882,14 @@
   {
     "id": "qts-hillsboro-3-or",
     "name": "QTS Hillsboro 3",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 45.5719248,
       "lon": -122.918438,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "Northeast Pubols Street",
       "postalCode": "97124",
       "state": "OR",
@@ -44844,14 +44929,14 @@
   {
     "id": "qts-irving-1-tx",
     "name": "QTS Irving 1",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 32.8972479,
       "lon": -96.9826475,
       "city": "Irving",
-      "county": "Dallas County",
+      "county": "Dallas",
       "street": "6431 Longhorn Drive",
       "postalCode": "75063",
       "state": "TX",
@@ -44885,14 +44970,14 @@
   {
     "id": "qts-marvel-bessemer-al",
     "name": "QTS Bessemer (Project Marvel)",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "proposed",
     "confidence": "reported",
     "location": {
       "lat": 33.44,
       "lon": -86.97,
       "city": "Bessemer",
-      "county": "Jefferson County",
+      "county": "Jefferson",
       "state": "AL",
       "precision": "exact"
     },
@@ -44986,7 +45071,7 @@
       }
     ],
     "lastUpdated": "2026-07-18",
-    "notes": "Codename: Project Marvel. 18-building hyperscale campus on Red Ridge near I-459 and I-20/59 interchange in Bessemer (Jefferson County). Announced capacity: up to 1,200 MW at full build-out — reported as a planned ceiling, roughly 9% of Alabama Power's current generating capacity; recorded as capacityMw.planned = 1200 (an announced 'up to' full-build-out ceiling, consistent with how the dataset records other announced full-build-out figures). Investment: reported at $14–14.5B across sources (Logistics Land Investment anticipated 'close to $14.4B'; WBRC reported $14.5B at November 2025 rezoning; DCD reported ~$14B); no single firm company-confirmed figure exists — treated as a projected cost range and excluded from investmentUsd. Land: ~1,607.42 acres total after two rezoning rounds (initial ~700 acres November 2025 + 914-acre expansion April 2026). QTS affiliate purchased land from TPA Group affiliate for $431.73M. Chapter 9B statutory eligibility would have provided a 30-year abatement estimated at $500M+; QTS committed not to seek local property tax incentives (per WBRC July 2026) — subsidy excluded as eligibility does not equal award and QTS renounced pursuit. Full buildout timeline: 7+ years. Birmingham Business Alliance estimated ~$4B net benefit over 30 years; Bessemer City Schools projected ~$25M/year. AI framing not officially confirmed by QTS or the city as of July 2026 — size and scale (hyperscale, cloud/AI demand framing in QTS statement) support 'likely' classification. Coordinates are approximate for the Red Ridge parcel area. Jobs: ~1,000 construction and ~330 permanent are projected figures for the proposed (not-yet-built) campus (WBRC, Nov 2025) — recorded as projections in notes, not structured jobs fields, per data-rigor policy.",
+    "notes": "Codename: Project Marvel. 18-building hyperscale campus on Red Ridge near I-459 and I-20/59 interchange in Bessemer (Jefferson County). Announced capacity: up to 1,200 MW at full build-out — reported as a planned ceiling, roughly 9% of Alabama Power's current generating capacity; recorded as capacityMw.planned = 1200 (an announced 'up to' full-build-out ceiling, consistent with how the dataset records other announced full-build-out figures). Investment: reported at $14–14.5B across sources (Logistics Land Investment anticipated 'close to $14.4B'; WBRC reported $14.5B at November 2025 rezoning; DCD reported ~$14B); no single firm company-confirmed figure exists — treated as a projected cost range and excluded from investmentUsd. Land: ~1,607.42 acres total after two rezoning rounds (initial ~700 acres November 2025 + 914-acre expansion April 2026). QTS affiliate purchased land from TPA Group affiliate for $431.73M. Chapter 9B statutory eligibility would have provided a 30-year abatement estimated at $500M+; QTS committed not to seek local property tax incentives (per WBRC July 2026) — subsidy excluded as eligibility does not equal award and QTS renounced pursuit. Full buildout timeline: 7+ years. Birmingham Business Alliance estimated ~$4B net benefit over 30 years; Bessemer City Schools projected ~$25M/year. AI framing not officially confirmed by QTS or the city as of July 2026 — size and scale (hyperscale, cloud/AI demand framing in QTS statement) support 'likely' classification. Coordinates are approximate for the Red Ridge parcel area. Jobs: ~1,000 construction and ~330 permanent are projected figures for the proposed (not-yet-built) campus (WBRC, Nov 2025) — recorded as projections in notes, not structured jobs fields, per data-rigor policy. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "energy": {
       "source": "grid",
       "utility": "Alabama Power",
@@ -45008,14 +45093,14 @@
   {
     "id": "qts-mia1-sweetwater-fl",
     "name": "QTS Miami (MIA1)",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 25.7915329,
       "lon": -80.3795596,
       "city": "Sweetwater",
-      "county": "Miami-Dade County",
+      "county": "Miami-Dade",
       "street": "11234 NW 20th St",
       "postalCode": "33172",
       "state": "FL",
@@ -45063,14 +45148,14 @@
       }
     ],
     "lastUpdated": "2026-08-02",
-    "notes": "1-acre / ~37,000-38,000 sq ft legacy colocation facility positioned around South American/Caribbean connectivity. Address (11234 NW 20th St) is commonly listed as \"Miami\" per USPS mailing-city convention, but independently resolves to Sweetwater city, Miami-Dade County via both the US Census Bureau Geocoder and OpenStreetMap Nominatim (same building/parcel, ~90m agreement) -- corrected here per dataset precedent (cf. iron-mountain-mia-1-miami-fl, tracked under city Westview). DC OIX-2 certified per a March 2022 QTS press release. No AI/HPC/GPU-specific marketing found; owned by Blackstone (Infrastructure Partners + BREIT) since the 2021 QTS acquisition.",
+    "notes": "1-acre / ~37,000-38,000 sq ft legacy colocation facility positioned around South American/Caribbean connectivity. Address (11234 NW 20th St) is commonly listed as \"Miami\" per USPS mailing-city convention, but independently resolves to Sweetwater city, Miami-Dade County via both the US Census Bureau Geocoder and OpenStreetMap Nominatim (same building/parcel, ~90m agreement) -- corrected here per dataset precedent (cf. iron-mountain-mia-1-miami-fl, tracked under city Westview). DC OIX-2 certified per a March 2022 QTS press release. No AI/HPC/GPU-specific marketing found; owned by Blackstone (Infrastructure Partners + BREIT) since the 2021 QTS acquisition. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "landAcres": 1,
     "facilityType": "data_center"
   },
   {
     "id": "qts-new-albany-1-franklin-county-oh",
     "name": "QTS New Albany 1",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -45116,14 +45201,14 @@
       }
     ],
     "lastUpdated": "2026-07-18",
-    "notes": "1225-1235 Beech Road SW, New Albany — in the Licking County section of the New Albany Business Park, the same submarket as CyrusOne's and Vantage's Licking County sites nearby. First of two adjacent QTS buildings (see also QTS New Albany 2); 885,600 sq ft. Combined QTS New Albany 1+2 investment ~$1.5B, enabled by a New Albany City Council Community Reinvestment Area tax agreement. 144MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found — QTS materials describe generic hyperscale/enterprise colo (\"QTS Freedom Design\").",
+    "notes": "1225-1235 Beech Road SW, New Albany — in the Licking County section of the New Albany Business Park, the same submarket as CyrusOne's and Vantage's Licking County sites nearby. First of two adjacent QTS buildings (see also QTS New Albany 2); 885,600 sq ft. Combined QTS New Albany 1+2 investment ~$1.5B, enabled by a New Albany City Council Community Reinvestment Area tax agreement. 144MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found — QTS materials describe generic hyperscale/enterprise colo (\"QTS Freedom Design\"). QTS Data Centers is owned by Blackstone (2021 take-private).",
     "landAcres": 56,
     "facilityType": "data_center"
   },
   {
     "id": "qts-new-albany-2-franklin-county-oh",
     "name": "QTS New Albany 2",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -45162,21 +45247,21 @@
       }
     ],
     "lastUpdated": "2026-07-18",
-    "notes": "Beech Road SW, New Albany — second of two adjacent QTS buildings on the adjacent Licking County campus to QTS New Albany 1 (combined 93 acres, ~1.5M sq ft, ~$1.5B investment, 222MW planned total). 612,600 sq ft. 78MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found.",
+    "notes": "Beech Road SW, New Albany — second of two adjacent QTS buildings on the adjacent Licking County campus to QTS New Albany 1 (combined 93 acres, ~1.5M sq ft, ~$1.5B investment, 222MW planned total). 612,600 sq ft. 78MW is planned capacity; no operational MW disclosed. No AI/HPC-specific marketing found. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "landAcres": 37,
     "facilityType": "data_center"
   },
   {
     "id": "qts-new-albany-3-franklin-county-oh",
     "name": "QTS New Albany III",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 40.06965,
       "lon": -82.77165,
       "city": "New Albany",
-      "county": "Franklin County",
+      "county": "Franklin",
       "state": "OH",
       "precision": "exact"
     },
@@ -45213,7 +45298,7 @@
       }
     ],
     "lastUpdated": "2026-07-25",
-    "notes": "Third QTS campus in the New Albany International Business Park, on Babbitt Rd (Franklin County) — 3 buildings, ~1.1M sq ft on 78 acres, announced December 2023 alongside the Miller Rd (IV) site as part of QTS's ~$4.4B New Albany expansion (aggregate across III + IV; no reliable per-site investment split disclosed, so investmentUsd omitted). Franklin County auditor use-class is \"data center\" (an assessed data-center structure exists); construction status is not independently confirmed operational by press, so recorded conservatively as under_construction. Distinct from QTS New Albany I & II (Beech Rd SW). No site-specific IT-load MW disclosed.",
+    "notes": "Third QTS campus in the New Albany International Business Park, on Babbitt Rd (Franklin County) — 3 buildings, ~1.1M sq ft on 78 acres, announced December 2023 alongside the Miller Rd (IV) site as part of QTS's ~$4.4B New Albany expansion (aggregate across III + IV; no reliable per-site investment split disclosed, so investmentUsd omitted). Franklin County auditor use-class is \"data center\" (an assessed data-center structure exists); construction status is not independently confirmed operational by press, so recorded conservatively as under_construction. Distinct from QTS New Albany I & II (Beech Rd SW). No site-specific IT-load MW disclosed. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "subsidies": [
       {
         "program": "New Albany Community Reinvestment Area (CRA) property-tax agreement",
@@ -45228,14 +45313,14 @@
   {
     "id": "qts-new-albany-4-licking-county-oh",
     "name": "QTS New Albany IV",
-    "operator": "QTS Data Centers (Blackstone)",
+    "operator": "QTS Data Centers",
     "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 40.11064,
       "lon": -82.74301,
       "city": "New Albany",
-      "county": "Licking County",
+      "county": "Licking",
       "state": "OH",
       "precision": "exact"
     },
@@ -45265,7 +45350,7 @@
       }
     ],
     "lastUpdated": "2026-07-25",
-    "notes": "Fourth QTS campus in the New Albany International Business Park, on Miller Rd (Licking County) — 5 buildings, ~2.1M sq ft on 161 acres, announced December 2023 alongside the Babbitt Rd (III) site as part of QTS's ~$4.4B New Albany expansion (aggregate across III + IV; no reliable per-site investment split disclosed). Auditor use-class \"Industrial Vacant Land\" (no structure assessed yet) is consistent with a permitted/pre-construction stage. Distinct from QTS New Albany I & II (Beech Rd SW). No site-specific IT-load MW disclosed.",
+    "notes": "Fourth QTS campus in the New Albany International Business Park, on Miller Rd (Licking County) — 5 buildings, ~2.1M sq ft on 161 acres, announced December 2023 alongside the Babbitt Rd (III) site as part of QTS's ~$4.4B New Albany expansion (aggregate across III + IV; no reliable per-site investment split disclosed). Auditor use-class \"Industrial Vacant Land\" (no structure assessed yet) is consistent with a permitted/pre-construction stage. Distinct from QTS New Albany I & II (Beech Rd SW). No site-specific IT-load MW disclosed. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "subsidies": [
       {
         "program": "Ohio Data Center Sales-Tax Exemption (100%, 15-year)",
@@ -45286,14 +45371,14 @@
   {
     "id": "qts-piscataway-1-nj",
     "name": "QTS Piscataway 1",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 40.5569431,
       "lon": -74.4839173,
       "city": "Piscataway",
-      "county": "Middlesex County",
+      "county": "Middlesex",
       "street": "101 Possumtown Road",
       "postalCode": "08854",
       "state": "NJ",
@@ -45337,14 +45422,14 @@
   {
     "id": "qts-richmond-1-dc1-ric1-white-oak-technology-park-va",
     "name": "QTS Richmond 1 DC1 (RIC1, White Oak Technology Park)",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 37.4892338,
       "lon": -77.2474761,
       "city": "Sandston",
-      "county": "Henrico County",
+      "county": "Henrico",
       "state": "VA",
       "precision": "approximate"
     },
@@ -45382,14 +45467,14 @@
   {
     "id": "qts-sacramento-ca",
     "name": "QTS Sacramento",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 38.6463763,
       "lon": -121.4862686,
       "city": "Sacramento",
-      "county": "Sacramento County",
+      "county": "Sacramento",
       "street": "1100 North Market Boulevard",
       "postalCode": "95834",
       "state": "CA",
@@ -45433,14 +45518,14 @@
   {
     "id": "qts-santa-clara-1-ca",
     "name": "QTS Santa Clara 1",
-    "operator": "QTS",
+    "operator": "QTS Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 37.3939862,
       "lon": -121.9783207,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "2805 Mission College Boulevard",
       "postalCode": "95054",
       "state": "CA",
@@ -45688,7 +45773,7 @@
   {
     "id": "raeden-grand-crossing-south-city-of-industry-ca",
     "name": "Grand Crossing South - Building 10",
-    "operator": "Raeden (proposed tenant; developer Majestic Realty)",
+    "operator": "Raeden",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -45740,7 +45825,7 @@
       }
     ],
     "lastUpdated": "2026-08-02",
-    "notes": "December 2025: Raeden Inc. proposed leasing 'Building 10' (110 Marcellin Drive) within Majestic Realty's 290-acre Grand Crossing South business park for a data center, requesting up to 30 MVA (an apparent-power unit, not converted to a MW figure since no source discloses one). No lease is confirmed executed; City of Industry directed consultants to plan the site as a future data center 'whether with Raeden or another tenant.' aiClassification set to 'likely' on the strength of Raeden's company-wide AI/HPC/neocloud-focused business model (150kW+/rack, liquid cooling, GPU-cloud tenants), though no site-specific tenant or spec has been disclosed yet. Investment/acreage/jobs not disclosed for this specific building (Grand Crossing South's 290 acres covers the whole multi-building park, not this parcel alone) and are omitted. ZIP 91789 spans both City of Industry and Diamond Bar - jurisdiction resolved to City of Industry via the city government body actively considering this project, not postal city alone; recommend parcel/APN-level confirmation in a future pass. Distinct from the unrelated Puente Hills Mall/MARICI battery-storage project in the same city (rezoned for battery storage, not a data center, in Feb 2026). Coordinates are an approximate representative point within the Grand Crossing master-planned development (the specific private road 'Marcellin Drive' is not indexed in OpenStreetMap), not a parcel-confirmed point.",
+    "notes": "December 2025: Raeden Inc. proposed leasing 'Building 10' (110 Marcellin Drive) within Majestic Realty's 290-acre Grand Crossing South business park for a data center, requesting up to 30 MVA (an apparent-power unit, not converted to a MW figure since no source discloses one). No lease is confirmed executed; City of Industry directed consultants to plan the site as a future data center 'whether with Raeden or another tenant.' aiClassification set to 'likely' on the strength of Raeden's company-wide AI/HPC/neocloud-focused business model (150kW+/rack, liquid cooling, GPU-cloud tenants), though no site-specific tenant or spec has been disclosed yet. Investment/acreage/jobs not disclosed for this specific building (Grand Crossing South's 290 acres covers the whole multi-building park, not this parcel alone) and are omitted. ZIP 91789 spans both City of Industry and Diamond Bar - jurisdiction resolved to City of Industry via the city government body actively considering this project, not postal city alone; recommend parcel/APN-level confirmation in a future pass. Distinct from the unrelated Puente Hills Mall/MARICI battery-storage project in the same city (rezoned for battery storage, not a data center, in Feb 2026). Coordinates are an approximate representative point within the Grand Crossing master-planned development (the specific private road 'Marcellin Drive' is not indexed in OpenStreetMap), not a parcel-confirmed point. Proposed tenant; developer: Majestic Realty.",
     "community": {
       "status": "contested",
       "notes": "Organized, citywide opposition to City of Industry data-center development exists (an 18,000-signature 'No Data Centers SGV Coalition' petition per LA TACO, and a separate Action Network petition titled 'No Data Centers in City of Industry!'), but no source names Raeden or this specific building as the target of that opposition - the opposition is citywide/policy-level, not project-specific.",
@@ -46069,7 +46154,7 @@
       "lat": 38.474,
       "lon": -77.997,
       "city": "Culpeper",
-      "county": "Culpeper County",
+      "county": "Culpeper",
       "state": "VA",
       "precision": "approximate"
     },
@@ -46772,6 +46857,7 @@
     "location": {
       "lat": 39.265,
       "lon": -77.394,
+      "city": "Adamstown",
       "county": "Frederick",
       "state": "MD",
       "precision": "exact"
@@ -46815,10 +46901,17 @@
         "publisher": "Frederick News-Post",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/amazon-identified-tenant-bauxite-data-231600787.html",
+        "label": "Amazon identified as tenant of Bauxite data center",
+        "publisher": "Yahoo News",
+        "retrievedAt": "2025-04-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
-    "notes": "Rowan (Quinbrook Infrastructure Partners + Birch Infrastructure JV) serves as AWS hyperscale host at Quantum Frederick. Three campuses planned on-site total; Bauxite I is Phase 1 at 300MW. 777,150 sq ft total campus footprint. Coordinates approximate for same Quantum Frederick campus area as Aligned record.",
+    "lastUpdated": "2026-08-08",
+    "notes": "Rowan (Quinbrook Infrastructure Partners + Birch Infrastructure JV) serves as AWS hyperscale host at Quantum Frederick. Three campuses planned on-site total; Bauxite I is Phase 1 at 300MW. 777,150 sq ft total campus footprint. Coordinates approximate for same Quantum Frederick campus area as Aligned record. Location.city set to Adamstown per the more recent, project-specific Frederick News-Post coverage (2025-11-11, via Yahoo Finance); the 2021 Maryland Dept. of Commerce announcement had said \"near Buckeystown\" — recorded here so the choice is auditable rather than looking arbitrary. AWS is the confirmed tenant of Bauxite I on this former Alcoa Eastalco Works site — AWS's first Maryland data center; no source confirms go-live as of this pass.",
     "energy": {
       "source": "grid",
       "utility": "Potomac Edison (FirstEnergy)",
@@ -47047,7 +47140,7 @@
       "lat": 39.0144996,
       "lon": -77.4799874,
       "city": "Ashburn",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -47105,7 +47198,7 @@
       "lat": 47.4086205,
       "lon": -120.1893981,
       "city": "East Wenatchee",
-      "county": "Douglas County",
+      "county": "Douglas",
       "street": "4405 A Grant Road",
       "postalCode": "98802",
       "state": "WA",
@@ -47152,7 +47245,7 @@
       "lat": 47.4948597,
       "lon": -122.2881943,
       "city": "Tukwila",
-      "county": "King County",
+      "county": "King",
       "state": "WA",
       "precision": "exact"
     },
@@ -47197,7 +47290,7 @@
       "lat": 47.491986,
       "lon": -122.2896655,
       "city": "Tukwila",
-      "county": "King County",
+      "county": "King",
       "street": "3355 South 120th Place",
       "postalCode": "98168",
       "state": "WA",
@@ -47244,7 +47337,7 @@
       "lat": 47.4921833,
       "lon": -122.2933176,
       "city": "Tukwila",
-      "county": "King County",
+      "county": "King",
       "street": "12301 Tukwila International Boulevard",
       "postalCode": "98168",
       "state": "WA",
@@ -47291,7 +47384,7 @@
       "lat": 47.494123,
       "lon": -122.2943972,
       "city": "Tukwila",
-      "county": "King County",
+      "county": "King",
       "street": "12101 Tukwila International Boulevard",
       "postalCode": "98168",
       "state": "WA",
@@ -47962,7 +48055,7 @@
   {
     "id": "sentinel-jay-me",
     "name": "Sentinel Data Centers Androscoggin Mill Campus, Jay",
-    "operator": "Sentinel Data Centers / JGT2 Redevelopment",
+    "operator": "Sentinel Data Centers",
     "status": "cancelled",
     "confidence": "reported",
     "location": {
@@ -48529,7 +48622,7 @@
       "lat": 41.9936612,
       "lon": -87.973521,
       "city": "Elk Grove Village",
-      "county": "Cook County",
+      "county": "Cook",
       "street": "800 Devon Avenue",
       "postalCode": "60007",
       "state": "IL",
@@ -48579,7 +48672,7 @@
       "lat": 29.802893,
       "lon": -95.7553386,
       "city": "Katy",
-      "county": "Harris County",
+      "county": "Harris",
       "state": "TX",
       "precision": "exact"
     },
@@ -48773,7 +48866,7 @@
       "lat": 36.958,
       "lon": -80.899,
       "city": "Max Meadows",
-      "county": "Wythe County",
+      "county": "Wythe",
       "state": "VA",
       "precision": "approximate"
     },
@@ -48903,7 +48996,7 @@
       "lat": 34.391589,
       "lon": -101.318337,
       "city": "Silverton",
-      "county": "Briscoe County",
+      "county": "Briscoe",
       "state": "TX",
       "precision": "approximate"
     },
@@ -49153,7 +49246,7 @@
       "lat": 36.61,
       "lon": -88.315,
       "city": "Murray",
-      "county": "Calloway County",
+      "county": "Calloway",
       "state": "KY",
       "precision": "approximate"
     },
@@ -49413,7 +49506,7 @@
       "lat": 42.006856,
       "lon": -87.9651767,
       "city": "Elk Grove Village",
-      "county": "Cook County",
+      "county": "Cook",
       "state": "IL",
       "precision": "exact"
     },
@@ -49607,7 +49700,7 @@
       "lat": 39.0046933,
       "lon": -77.4417399,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "state": "VA",
       "precision": "exact"
     },
@@ -49655,7 +49748,7 @@
       "lat": 45.5493273,
       "lon": -122.9278183,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "3145 Northeast Brookwood Parkway",
       "postalCode": "97124",
       "state": "OR",
@@ -49705,7 +49798,7 @@
       "lat": 45.5473758,
       "lon": -122.8973869,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "8135 Northeast Evergreen Parkway",
       "postalCode": "97124",
       "state": "OR",
@@ -49752,7 +49845,7 @@
       "lat": 45.5541322,
       "lon": -122.9379069,
       "city": "Hillsboro",
-      "county": "Washington County",
+      "county": "Washington",
       "street": "4735 Northeast Starr Boulevard",
       "postalCode": "97124",
       "state": "OR",
@@ -49799,7 +49892,7 @@
       "lat": 38.365,
       "lon": -77.485,
       "city": "Falmouth",
-      "county": "Stafford County",
+      "county": "Stafford",
       "state": "VA",
       "precision": "approximate"
     },
@@ -49877,7 +49970,7 @@
       "lat": 37.4027449,
       "lon": -121.891051,
       "city": "San Jose",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "2150 Trade Zone Boulevard",
       "postalCode": "95131",
       "state": "CA",
@@ -49927,7 +50020,7 @@
       "lat": 37.3619343,
       "lon": -121.9537306,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "state": "CA",
       "precision": "exact"
     },
@@ -50443,7 +50536,7 @@
   {
     "id": "stargate-port-washington-wi",
     "name": "Stargate Lighthouse Campus",
-    "operator": "Vantage Data Centers (for OpenAI / Oracle)",
+    "operator": "Vantage Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
@@ -50861,7 +50954,7 @@
       "lat": 27.7525,
       "lon": -81.8024,
       "city": "Fort Meade",
-      "county": "Polk County",
+      "county": "Polk",
       "state": "FL",
       "precision": "exact"
     },
@@ -51201,7 +51294,7 @@
       "lat": 32.9836243,
       "lon": -96.6542632,
       "city": "Garland",
-      "county": "Dallas County",
+      "county": "Dallas",
       "state": "TX",
       "precision": "exact"
     },
@@ -51239,7 +51332,7 @@
       "lat": 33.4194907,
       "lon": -112.3599883,
       "city": "Goodyear",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "street": "2950 South Litchfield Road",
       "postalCode": "85338",
       "state": "AZ",
@@ -51298,7 +51391,7 @@
       "lat": 33.7550251,
       "lon": -84.5872685,
       "city": "Lithia Springs",
-      "county": "Douglas County",
+      "county": "Douglas",
       "state": "GA",
       "precision": "exact"
     },
@@ -51510,7 +51603,7 @@
       "lat": 36.0591345,
       "lon": -115.213688,
       "city": "Las Vegas",
-      "county": "Clark County",
+      "county": "Clark",
       "state": "NV",
       "precision": "exact"
     },
@@ -51565,7 +51658,7 @@
       "lat": 36.0555857,
       "lon": -115.2230608,
       "city": "Las Vegas",
-      "county": "Clark County",
+      "county": "Clark",
       "state": "NV",
       "precision": "exact"
     },
@@ -51620,7 +51713,7 @@
       "lat": 36.0558853,
       "lon": -115.2141369,
       "city": "Las Vegas",
-      "county": "Clark County",
+      "county": "Clark",
       "state": "NV",
       "precision": "exact"
     },
@@ -51675,7 +51768,7 @@
       "lat": 36.0617389,
       "lon": -115.2132922,
       "city": "Las Vegas",
-      "county": "Clark County",
+      "county": "Clark",
       "state": "NV",
       "precision": "exact"
     },
@@ -51736,7 +51829,7 @@
       "lat": 36.1427635,
       "lon": -115.0766965,
       "city": "Las Vegas",
-      "county": "Clark County",
+      "county": "Clark",
       "state": "NV",
       "precision": "exact"
     },
@@ -51791,7 +51884,7 @@
       "lat": 36.0599191,
       "lon": -115.210197,
       "city": "Enterprise",
-      "county": "Clark County",
+      "county": "Clark",
       "state": "NV",
       "precision": "exact"
     },
@@ -51846,7 +51939,7 @@
       "lat": 36.0557074,
       "lon": -115.2196277,
       "city": "Las Vegas",
-      "county": "Clark County",
+      "county": "Clark",
       "state": "NV",
       "precision": "exact"
     },
@@ -52027,7 +52120,7 @@
       "lat": 39.5140681,
       "lon": -119.4755145,
       "city": "McCarran",
-      "county": "Storey County",
+      "county": "Storey",
       "street": "1 Superloop Circle",
       "postalCode": "89434",
       "state": "NV",
@@ -52091,7 +52184,7 @@
       "lat": 39.5138706,
       "lon": -119.4848531,
       "city": "McCarran",
-      "county": "Storey County",
+      "county": "Storey",
       "street": "1 Superloop Circle",
       "postalCode": "89434",
       "state": "NV",
@@ -52155,7 +52248,7 @@
       "lat": 39.5115198,
       "lon": -119.4833058,
       "city": "McCarran",
-      "county": "Storey County",
+      "county": "Storey",
       "street": "1 Superloop Circle",
       "postalCode": "89434",
       "state": "NV",
@@ -52219,7 +52312,7 @@
       "lat": 30.4880189,
       "lon": -97.6725256,
       "city": "Round Rock",
-      "county": "Williamson County",
+      "county": "Williamson",
       "state": "TX",
       "precision": "exact"
     },
@@ -52280,7 +52373,7 @@
       "lat": 34.0757915,
       "lon": -84.264267,
       "city": "Alpharetta",
-      "county": "Fulton County",
+      "county": "Fulton",
       "street": "3200 Webb Bridge Road",
       "postalCode": "30005",
       "state": "GA",
@@ -52430,7 +52523,7 @@
       "lat": 35.2504249,
       "lon": -81.395039,
       "city": "Kings Mountain",
-      "county": "Cleveland County",
+      "county": "Cleveland",
       "street": "131 Riverside Court",
       "postalCode": "28086",
       "state": "NC",
@@ -52468,7 +52561,7 @@
       "lat": 42.0230424,
       "lon": -87.9755567,
       "city": "Elk Grove Village",
-      "county": "Cook County",
+      "county": "Cook",
       "street": "200 Innovation Drive",
       "postalCode": "60007",
       "state": "IL",
@@ -52608,7 +52701,7 @@
       "lat": 41.4430567,
       "lon": -81.803445,
       "city": "Cleveland",
-      "county": "Cuyahoga County",
+      "county": "Cuyahoga",
       "state": "OH",
       "precision": "exact"
     },
@@ -53210,7 +53303,7 @@
       "lat": 36.703,
       "lon": -86.591,
       "city": "Franklin",
-      "county": "Simpson County",
+      "county": "Simpson",
       "state": "KY",
       "precision": "exact"
     },
@@ -53288,7 +53381,7 @@
       "lat": 37.8999,
       "lon": -86.7569,
       "city": "Hawesville",
-      "county": "Hancock County",
+      "county": "Hancock",
       "state": "KY",
       "precision": "exact"
     },
@@ -53491,7 +53584,7 @@
   {
     "id": "terawulf-lansing-ny",
     "name": "TeraWulf AI Data Center Campus, Lansing",
-    "operator": "TeraWulf / Cayuga Operating Company",
+    "operator": "TeraWulf",
     "status": "proposed",
     "confidence": "confirmed",
     "location": {
@@ -53544,7 +53637,7 @@
       }
     ],
     "lastUpdated": "2026-07-06",
-    "notes": "Site is the former Cayuga Power Plant (coal-fired, retired). NYSDEC water permit application for Cayuga Lake withdrawal was originally filed in 2021 for 'unspecified future use.' Permit dates to 1955 without modern monitoring requirements per opposition. TeraWulf also has a separate cryptomining operation at the Susquehanna site in PA (Nautilus).",
+    "notes": "Site is the former Cayuga Power Plant (coal-fired, retired). NYSDEC water permit application for Cayuga Lake withdrawal was originally filed in 2021 for 'unspecified future use.' Permit dates to 1955 without modern monitoring requirements per opposition. TeraWulf also has a separate cryptomining operation at the Susquehanna site in PA (Nautilus). Operating entity: Cayuga Operating Company (acquired plant).",
     "energy": {
       "source": "grid",
       "utility": "New York State Electric & Gas (NYSEG)",
@@ -54165,7 +54258,7 @@
       "lat": 39.213455,
       "lon": -76.682834,
       "city": "Linthicum Heights",
-      "county": "Anne Arundel County",
+      "county": "Anne Arundel",
       "street": "813 Pinnacle Drive",
       "postalCode": "21090",
       "state": "MD",
@@ -54212,7 +54305,7 @@
       "lat": 42.6857078,
       "lon": -71.2086024,
       "city": "Andover",
-      "county": "Essex County",
+      "county": "Essex",
       "street": "15 Shattuck Road",
       "postalCode": "01810",
       "state": "MA",
@@ -54259,7 +54352,7 @@
       "lat": 35.1731955,
       "lon": -80.928121,
       "city": "Charlotte",
-      "county": "Mecklenburg County",
+      "county": "Mecklenburg",
       "state": "NC",
       "precision": "exact"
     },
@@ -54304,7 +54397,7 @@
       "lat": 33.1379102,
       "lon": -96.657329,
       "city": "Allen",
-      "county": "Collin County",
+      "county": "Collin",
       "street": "840 Allen Commerce Parkway",
       "state": "TX",
       "precision": "exact"
@@ -54340,7 +54433,7 @@
       "lat": 32.8079818,
       "lon": -96.8573889,
       "city": "Dallas",
-      "county": "Dallas County",
+      "county": "Dallas",
       "street": "3004 Irving Boulevard",
       "postalCode": "75247",
       "state": "TX",
@@ -54370,7 +54463,7 @@
   {
     "id": "tierpoint-hawthorne-westchester-ny",
     "name": "TierPoint Hawthorne (11 & 17 Skyline Drive)",
-    "operator": "TierPoint, LLC",
+    "operator": "TierPoint",
     "status": "operational",
     "confidence": "confirmed",
     "location": {
@@ -54429,7 +54522,7 @@
       "lat": 38.9406295,
       "lon": -94.7552326,
       "city": "Lenexa",
-      "county": "Johnson County",
+      "county": "Johnson",
       "state": "KS",
       "precision": "exact"
     },
@@ -54464,7 +54557,7 @@
       "lat": 34.7562396,
       "lon": -92.4447234,
       "city": "Little Rock",
-      "county": "Pulaski County",
+      "county": "Pulaski",
       "state": "AR",
       "precision": "exact"
     },
@@ -54509,7 +54602,7 @@
       "lat": 43.0097937,
       "lon": -87.9610932,
       "city": "Milwaukee",
-      "county": "Milwaukee County",
+      "county": "Milwaukee",
       "state": "WI",
       "precision": "approximate"
     },
@@ -54554,7 +54647,7 @@
       "lat": 35.9245097,
       "lon": -86.8556872,
       "city": "Franklin",
-      "county": "Williamson County",
+      "county": "Williamson",
       "state": "TN",
       "precision": "exact"
     },
@@ -54599,7 +54692,7 @@
       "lat": 43.6069708,
       "lon": -96.8091949,
       "city": "Sioux Falls",
-      "county": "Minnehaha County",
+      "county": "Minnehaha",
       "street": "5300 North La Mesa Drive",
       "postalCode": "57107",
       "state": "SD",
@@ -54636,7 +54729,7 @@
       "lat": 47.6719149,
       "lon": -117.0959323,
       "city": "Liberty Lake",
-      "county": "Spokane County",
+      "county": "Spokane",
       "state": "WA",
       "precision": "exact"
     },
@@ -54708,7 +54801,7 @@
       "lat": 36.1585898,
       "lon": -95.9886293,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "322 East Archer Street North",
       "state": "OK",
       "precision": "exact"
@@ -54744,7 +54837,7 @@
       "lat": 40.1218812,
       "lon": -75.4208776,
       "city": "Norristown",
-      "county": "Montgomery County",
+      "county": "Montgomery",
       "state": "PA",
       "precision": "exact"
     },
@@ -54789,7 +54882,7 @@
       "lat": 33.6562,
       "lon": -83.7182,
       "city": "Social Circle",
-      "county": "Newton County",
+      "county": "Newton",
       "state": "GA",
       "precision": "exact"
     },
@@ -55000,7 +55093,7 @@
   {
     "id": "tract-farmington-technology-park-mn",
     "name": "Farmington Technology Park (Tract)",
-    "operator": "Tract (MNLCO Farmington LLC / MNLCO Farmington Two LLC)",
+    "operator": "Tract",
     "status": "proposed",
     "confidence": "confirmed",
     "location": {
@@ -55047,7 +55140,7 @@
       }
     ],
     "lastUpdated": "2026-08-08",
-    "notes": "Denver-based land developer Tract's speculative hyperscale campus at the former Fountain Valley Golf Club (2830 220th St W) plus adjacent Farmington school-district land, Dakota County. Final plat/PUD unanimously approved by Planning Commission Nov 12, 2024; City Council approved final plat/PUD Nov 18, 2024 and a development contract Dec 2, 2024. Tract closed on the golf-course land purchase Feb 10, 2026 ($18M, per a Tract exec, injecting ~$3,000/student into the school district). City Council split the Technology Park into two phases in April 2026; recording deadline for the final plat extended to May 18, 2026. END USER NOT PUBLICLY DISCLOSED as of source dates — Tract builds speculative 'powered shell' campuses for undisclosed hyperscale tenants, so treat operator as the developer, not a confirmed end-user. Two lawsuits pending (Castle Rock Township + Farmington residents) over water use, noise, and setbacks; judge denied the city's motion to dismiss in November 2025/2026. Facility scope: up to 12 buildings, 2.5M+ sq ft, plus 2 admin buildings. Coordinates are an approximate estimate for 220th St W south of downtown Farmington — not geocoded this session, verify before publish.",
+    "notes": "Denver-based land developer Tract's speculative hyperscale campus at the former Fountain Valley Golf Club (2830 220th St W) plus adjacent Farmington school-district land, Dakota County. Final plat/PUD unanimously approved by Planning Commission Nov 12, 2024; City Council approved final plat/PUD Nov 18, 2024 and a development contract Dec 2, 2024. Tract closed on the golf-course land purchase Feb 10, 2026 ($18M, per a Tract exec, injecting ~$3,000/student into the school district). City Council split the Technology Park into two phases in April 2026; recording deadline for the final plat extended to May 18, 2026. END USER NOT PUBLICLY DISCLOSED as of source dates — Tract builds speculative 'powered shell' campuses for undisclosed hyperscale tenants, so treat operator as the developer, not a confirmed end-user. Two lawsuits pending (Castle Rock Township + Farmington residents) over water use, noise, and setbacks; judge denied the city's motion to dismiss in November 2025/2026. Facility scope: up to 12 buildings, 2.5M+ sq ft, plus 2 admin buildings. Coordinates are an approximate estimate for 220th St W south of downtown Farmington — not geocoded this session, verify before publish. Operating entities: MNLCO Farmington LLC / MNLCO Farmington Two LLC.",
     "landAcres": 340,
     "facilityType": "data_center"
   },
@@ -55574,14 +55667,14 @@
   {
     "id": "vantage-ashburn-ii-va2-va",
     "name": "Vantage Ashburn II (VA2)",
-    "operator": "Vantage",
+    "operator": "Vantage Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 38.997949,
       "lon": -77.4302306,
       "city": "Sterling",
-      "county": "Loudoun County",
+      "county": "Loudoun",
       "street": "22435 Glenn Drive",
       "postalCode": "20164",
       "state": "VA",
@@ -55624,7 +55717,7 @@
   {
     "id": "vantage-frontier-shackelford-county-tx",
     "name": "Vantage Frontier Campus",
-    "operator": "Vantage Data Centers (for OpenAI / Oracle)",
+    "operator": "Vantage Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
@@ -55900,14 +55993,14 @@
   {
     "id": "vantage-phoenix-campus-goodyear-az-az",
     "name": "Vantage Phoenix Campus (Goodyear, AZ)",
-    "operator": "Vantage",
+    "operator": "Vantage Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 33.4463027,
       "lon": -112.3738867,
       "city": "Goodyear",
-      "county": "Maricopa County",
+      "county": "Maricopa",
       "street": "45 South Bullard Avenue",
       "postalCode": "85338",
       "state": "AZ",
@@ -55940,14 +56033,14 @@
   {
     "id": "vantage-quincy-wa11-wa",
     "name": "Vantage Quincy WA11",
-    "operator": "Vantage",
+    "operator": "Vantage Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 47.2501646,
       "lon": -119.8144903,
       "city": "Quincy",
-      "county": "Grant County",
+      "county": "Grant",
       "state": "WA",
       "precision": "exact"
     },
@@ -55985,14 +56078,14 @@
   {
     "id": "vantage-san-antonio-tx11-tx",
     "name": "Vantage San Antonio TX11",
-    "operator": "Vantage",
+    "operator": "Vantage Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 29.4161404,
       "lon": -98.7892449,
       "city": "San Antonio",
-      "county": "Bexar County",
+      "county": "Bexar",
       "state": "TX",
       "precision": "exact"
     },
@@ -56020,14 +56113,14 @@
   {
     "id": "vantage-san-antonio-tx22-tx",
     "name": "Vantage San Antonio TX22",
-    "operator": "Vantage",
+    "operator": "Vantage Data Centers",
     "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 29.4790852,
       "lon": -98.6977011,
       "city": "San Antonio",
-      "county": "Bexar County",
+      "county": "Bexar",
       "street": "5207 Rogers Road",
       "postalCode": "78251",
       "state": "TX",
@@ -56057,14 +56150,14 @@
   {
     "id": "vantage-santa-clara-ii-ca2-ca",
     "name": "Vantage Santa Clara II (CA2)",
-    "operator": "Vantage",
+    "operator": "Vantage Data Centers",
     "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 37.3640012,
       "lon": -121.94689,
       "city": "Santa Clara",
-      "county": "Santa Clara County",
+      "county": "Santa Clara",
       "street": "737 Mathew Street",
       "postalCode": "95051",
       "state": "CA",
@@ -56178,7 +56271,7 @@
       "lat": 47.2539697,
       "lon": -119.8136985,
       "city": "Quincy",
-      "county": "Grant County",
+      "county": "Grant",
       "state": "WA",
       "precision": "exact"
     },
@@ -56224,7 +56317,7 @@
       "lat": 32.75,
       "lon": -111.55,
       "city": "Eloy",
-      "county": "Pinal County",
+      "county": "Pinal",
       "state": "AZ",
       "precision": "exact"
     },
@@ -56563,7 +56656,7 @@
       "lat": 47.6143555,
       "lon": -122.3388637,
       "city": "Seattle",
-      "county": "King County",
+      "county": "King",
       "street": "2001 6th Avenue",
       "postalCode": "98121",
       "state": "WA",
@@ -57078,7 +57171,7 @@
       "lat": 34.993,
       "lon": -89.974,
       "city": "Southaven",
-      "county": "DeSoto County",
+      "county": "DeSoto",
       "state": "MS",
       "precision": "exact"
     },

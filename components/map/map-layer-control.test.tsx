@@ -2,6 +2,17 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MapLayerControl } from "./map-layer-control";
+import mapLayers from "@/public/data/map-layers.json";
+
+// Legend counts are build-time output of `npm run build:mapdata`, so they shift
+// whenever the dataset changes. Derive them rather than hardcoding, or every
+// data wave re-breaks this file (it did: 126 -> 130 in 8c1f754).
+const WATER_STRESS_EXTREME = String(
+  mapLayers.waterStress.distribution["Extremely High (>80%)"]
+);
+const GROUNDWATER_HIGH = String(
+  mapLayers.groundwaterDecline.distribution["High (4-8 cm/y)"]
+);
 
 function makeSetters() {
   return {
@@ -191,7 +202,7 @@ describe("MapLayerControl", () => {
     await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
 
     expect(screen.getByText("Extremely High (>80%)")).toBeInTheDocument();
-    expect(screen.getByText("126")).toBeInTheDocument();
+    expect(screen.getByText(WATER_STRESS_EXTREME)).toBeInTheDocument();
   });
 
   it("renders the groundwater-decline legend with band labels and facility counts when the layer is on", async () => {
@@ -201,7 +212,7 @@ describe("MapLayerControl", () => {
     await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
 
     expect(screen.getByText("High (4-8 cm/y)")).toBeInTheDocument();
-    expect(screen.getByText("52")).toBeInTheDocument();
+    expect(screen.getByText(GROUNDWATER_HIGH)).toBeInTheDocument();
   });
 
   it("does not render legends when their layers are off", async () => {
@@ -223,7 +234,7 @@ describe("MapLayerControl", () => {
     expect(screen.getByText("D4 — Exceptional")).toBeInTheDocument();
     expect(screen.getByText("D0 — Abnormally Dry")).toBeInTheDocument();
     // Drought has no per-facility distribution counts anywhere in the panel.
-    expect(screen.queryByText("126")).not.toBeInTheDocument();
+    expect(screen.queryByText(WATER_STRESS_EXTREME)).not.toBeInTheDocument();
   });
 
   it("disables the three fill-only toggles and shows a hint when isSatellite is true, leaving the others enabled", async () => {
