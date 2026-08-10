@@ -5,6 +5,18 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.0](https://github.com/ek33450505/compute-atlas/compare/v1.26.1...v1.27.0) (2026-08-10)
+
+
+### Features
+
+* **data:** db:sync maintainer write path + heartland wave (890→934) ([#146](https://github.com/ek33450505/compute-atlas/issues/146)) ([aaee0ec](https://github.com/ek33450505/compute-atlas/commit/aaee0ecf3c46bb8ada68d0d61d31726650ba152a))
+
+
+### Bug Fixes
+
+* **data:** county rendering bug, operator canonicalization, and 10-record enrichment ([#147](https://github.com/ek33450505/compute-atlas/issues/147)) ([d306a55](https://github.com/ek33450505/compute-atlas/commit/d306a557692e1d709ade333d063c86240e9ba95e))
+
 ## [1.26.1](https://github.com/ek33450505/compute-atlas/compare/v1.26.0...v1.26.1) (2026-08-08)
 
 
