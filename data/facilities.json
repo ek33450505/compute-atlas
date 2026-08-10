@@ -3830,6 +3830,65 @@
     }
   },
   {
+    "id": "atterix-raton-digital-hub-nm",
+    "name": "Atterix Raton Advanced Digital Hub",
+    "operator": "Atterix LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.9033,
+      "lon": -104.4392,
+      "city": "Raton",
+      "county": "Colfax",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "Raton City Commission approved a memorandum of understanding with Denver-based Atterix LLC for a six-month feasibility study on an advanced digital hub; the MOU bars the city from soliciting a similar project during that window.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.santafenewmexican.com/news/business/ai-data-center-proposal-in-raton-draws-opposition/article_605c80c8-0a7f-4726-b790-3e2d96f882ed.html",
+        "label": "AI data center proposal in Raton draws opposition",
+        "publisher": "The Santa Fe New Mexican",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kob.com/news/top-news/raton-residents-push-back-on-proposed-data-center-plans/",
+        "label": "Raton residents push back on proposed data center plans",
+        "publisher": "KOB 4",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://sourcenm.com/2026/06/10/small-northern-new-mexico-city-postpones-decision-on-data-center-moratorium/",
+        "label": "Small northern New Mexico city postpones decision on data center moratorium",
+        "publisher": "Source New Mexico",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Three-phase proposal: Phase 1 would convert a former Kmart on the south side of Raton into a data center drawing up to 5 MW, with later phases at a nearby power station and the city airport over roughly five years, totalling up to 50 MW. Nothing is approved — the feasibility study period ran to early August 2026 and the City Commission must still authorize any development. Atterix was incorporated in Colorado in December 2025.",
+    "community": {
+      "status": "opposed",
+      "notes": "More than 100 residents organized as 'Protect Our Resources' to press city leaders to stop or slow the project, citing noise and light pollution and water and electricity use in a town of about 6,000; the City Commission has been weighing a temporary data center moratorium.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "avaio-digital-leo-little-rock-ar",
     "name": "AVAIO Digital Leo Campus",
     "operator": "AVAIO Digital Partners",
@@ -28137,6 +28196,131 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "green-data-socorro-county-nm",
+    "name": "Green Data Socorro Campus",
+    "operator": "Green Data (Green Data Centers)",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.0584,
+      "lon": -106.8914,
+      "city": "Socorro",
+      "county": "Socorro",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2000
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Green Data CEO Jason Bak pitched a 2 GW data center backed by a 10 GW solar array on New Mexico Tech land at a public Socorro Electric Cooperative board meeting.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-06-02",
+        "note": "New Mexico Tech President Michael Jackson said the university would not proceed and would not renew or extend its agreement with Green Data, citing insufficient contiguous acreage, renewable-integration challenges and community concerns.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/plans-for-10000-acre-data-center-scrapped-in-socorro-new-mexico/",
+        "label": "Plans for 10,000 acre data center scrapped in Socorro, New Mexico",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://sourcenm.com/2026/06/10/new-mexico-county-adopts-yearlong-data-center-moratorium/",
+        "label": "New Mexico county adopts yearlong data center moratorium",
+        "publisher": "Source New Mexico",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.abqjournal.com/news/developer-plans-worlds-largest-green-data-center-in-socorro/3023420",
+        "label": "Developer plans 'world's largest' green data center in Socorro",
+        "publisher": "El Defensor Chieftain / Albuquerque Journal",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Never permitted or built. New Mexico Tech declined to proceed on June 2, 2026 and the county imposed a moratorium a week later; the developer subsequently pursued a separate proposal at Spaceport America in Sierra County. Neither Green Data nor CEO Jason Bak has previously completed a data center.",
+    "energy": {
+      "source": "solar",
+      "onSiteGenerationMw": 10000,
+      "notes": "Developer proposed a 10 GW solar farm to power the 2 GW campus, pitched as a renewable-led development."
+    },
+    "water": {
+      "notes": "Developer proposed 'atmospheric water generation' to pull cooling water from humidity rather than local aquifers; residents contested whether the technology is proven at this scale."
+    },
+    "landAcres": 10000,
+    "community": {
+      "status": "opposed",
+      "notes": "Months of opposition from ranchers and environmentalists; petitions drew thousands of signatures and Socorro County commissioners unanimously adopted a one-year data center moratorium on June 9, 2026.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "green-data-spaceport-america-sierra-county-nm",
+    "name": "Green Data Spaceport America Data Center",
+    "operator": "Green Data / Aetherion Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.9903,
+      "lon": -106.9698,
+      "county": "Sierra",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-20",
+        "note": "Public records surfaced a State Land Office sublease application, signed by Spaceport America director Scott McLaughlin in February 2026, to rent land to Green Data developer Aetherion Inc. for $176,400 annually; the application remains under review by the Commissioner of Public Lands.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.dchieftain.com/news/spaceport-america-data-center-proposal-sparks-curiosity/3086213",
+        "label": "Spaceport America data center proposal sparks curiosity",
+        "publisher": "El Defensor Chieftain",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://sourcenm.com/2026/07/22/new-mexico-county-adopts-data-center-moratorium-as-residents-protest-spaceport-proposal/",
+        "label": "New Mexico county adopts data center moratorium as residents protest Spaceport proposal",
+        "publisher": "Source New Mexico",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-08",
+    "notes": "Sited on state trust land inside Spaceport America's 18,000-acre lease outside Truth or Consequences. Current plan would occupy 21 acres within the horizontal launch area, possibly plus 30 additional acres. Spaceport America says discussions with Green Data have been ongoing since 2021 and that the project 'is not a relocation of the Socorro proposal'; only 'limited planning agreements' are in effect. Capacity has not been disclosed.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Proposal pairs on-site solar generation and battery storage covering 'a substantial portion' of demand with a utility connection; the developer's stated objective is to offset annual grid purchases with on-site renewable generation."
+    },
+    "landAcres": 21,
+    "community": {
+      "status": "opposed",
+      "notes": "Residents organized as 'Project Consequences'; the Sierra County Commission unanimously converted a resolution into an 18-month data center moratorium on July 21, 2026. No lease, sublease, construction or development agreement has been executed.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "green-digital-harrison-ar",
     "name": "Green Digital Harrison Mine (proposed, withdrawn)",
     "operator": "Green Digital LLC",
@@ -35166,9 +35350,23 @@
         "publisher": "News-Bulletin (Valencia County)",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.energy-storage.news/new-mexico-utility-seeks-approval-of-hybrid-bess-offtake-contracts-to-power-meta-data-centres/",
+        "label": "New Mexico utility seeks approval of hybrid BESS offtake contracts to power Meta data centres",
+        "publisher": "Energy-Storage.news",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.santafenewmexican.com/news/local_news/similar-to-los-alamos-in-1940s-los-lunas-getting-transformed-by-tech/article_d2a3ca02-4f80-49b6-8af2-e2da8bc378e9.html",
+        "label": "Similar to Los Alamos in 1940s, Los Lunas getting transformed by tech",
+        "publisher": "The Santa Fe New Mexican",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-08",
     "notes": "Reported as the first Meta facilities explicitly dedicated to AI/ML workloads. Existing campus is 750 acres. IRBs authorize tax-exempt bond financing for construction materials — the $7.5B per series is the authorized principal ceiling, not a direct cash subsidy. Meta required to invest $350M into expansion by year 10 under agreement. Operating entity: Greater Kudu LLC.",
     "energy": {
       "source": "solar",
@@ -35192,6 +35390,11 @@
     "jobs": {
       "permanent": 30,
       "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Village officials credit the campus with $145 million in gross receipts tax revenue since construction began in 2016 and with 15% population growth between 2020 and 2024, and the Village Council approved industrial revenue bonds for the AI expansion; local scrutiny centres on the campus's electricity and water consumption.",
+      "sourceIndex": 3
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
@@ -39521,12 +39724,25 @@
         "publisher": "Albuquerque Journal",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/nuclear-natural-gas-power-generation-planned-for-massive-new-mexico-data-center-site/",
+        "label": "Nuclear, Natural Gas Power Generation Planned for Massive New Mexico Data Center Site",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-08",
     "notes": "Land-option signed for approximately 3,500 acres near Lovington. Gas (>2GW) plus nuclear (5GW+) powered. First power targeted 2028; still pre-construction.",
+    "energy": {
+      "source": "mixed",
+      "onSiteGenerationMw": 7000,
+      "notes": "Announced November 6, 2025: more than 2 GW of on-site natural gas-fired generation plus 5 GW or more of nuclear planned to energize the 3,500-acre Lea County site. First generation, likely from new gas-fired units, is expected in 2028; New Era says gas availability is confirmed and that it is in the final stages of technology selection for the nuclear component."
+    },
     "landAcres": 3500,
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "newrays-one-bono-ar",
@@ -50719,12 +50935,27 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.oracle.com/news/announcement/oracle-borderplex-and-bloom-energy-to-power-project-jupiter-with-fuel-cell-technology-2026-04-27/",
+        "label": "Oracle, BorderPlex, and Bloom Energy to Power Project Jupiter with Cleaner, Water-Efficient Fuel Cell Technology",
+        "publisher": "Oracle",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://sourcenm.com/2026/04/27/nm-project-jupiter-data-center-developers-announce-new-plans-for-generating-power/",
+        "label": "NM Project Jupiter data center developers announce new plans for generating power",
+        "publisher": "Source New Mexico",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-08",
     "energy": {
       "source": "on_site_gas",
       "utility": "El Paso Electric",
+      "onSiteGenerationMw": 2450,
       "notes": "Two simple-cycle natural gas microgrids (700-900 MW range per permit filings), independent of the El Paso Electric grid; NM Environment Dept weighing air-quality permits. Developer commits to 100% carbon-free energy by 2045 via solar and battery storage."
     },
     "water": {
@@ -57303,16 +57534,31 @@
         "label": "Chaves County (chavescounty.net)",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/zenith-obtains-planning-approval-for-124gw-data-center-project-in-roswell-new-mexico/",
+        "label": "Zenith obtains planning approval for 1.24GW data center project in Roswell, New Mexico",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-08-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-08",
     "notes": "Approximately 20 miles south of Roswell. Chaves County Commission approved; 300-acre initial footprint within an 8,500-acre approved site. On-site solar, gas, geothermal, and battery storage. Targets November 2027 operational; approximately 140 FTE jobs.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Chaves County-approved plan integrates on-site solar, natural gas generators for backup, modular solar-thermal hybrid systems and a 250-acre battery energy storage system across the wider 8,500-acre site. The capacity of each individual power element has not been disclosed."
+    },
+    "water": {
+      "notes": "Plan calls for geothermal cooling; no water-withdrawal figure has been disclosed."
+    },
     "landAcres": 300,
     "community": {
       "status": "supported",
       "notes": "Chaves County Commission approved the special-use permit for the project on August 22, 2025; no organized opposition or dissent is reported across multiple independent news accounts of the approval.",
       "sourceIndex": 2
     },
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   }
 ]
