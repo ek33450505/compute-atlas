@@ -15,6 +15,14 @@
  * + status refreshes) is processed ahead of enrichment against the shared
  * `--max` cap — see the `ordered` partition in `runSubmit`.
  *
+ * Before dedupe/cap, every candidate's cited sources also pass through an
+ * optional mechanical verification gate (`verifyCandidateSources`, composing
+ * verify-source.ts/fetch-page-text.ts/ollama-client.ts) that fetches and
+ * content-checks each URL against a local model — closing the project's
+ * documented fabricated-source-URL defect class. The gate can only ever
+ * REDUCE what reaches `pending`; see `RunSubmitDeps.verifyImpl`'s doc-comment
+ * for exactly when it runs and when it is skipped.
+ *
  * Run via: tsx scripts/discovery/submit-candidates.ts <candidates.json> [flags]
  * Requires API_ADMIN_TOKEN in the environment (e.g. via --env-file=.env.local).
  *
@@ -27,6 +35,9 @@ import path from "node:path";
 import { facilitySchema, type Facility } from "../../lib/schema";
 import { statusUpdateIntentSchema } from "../../lib/status-update";
 import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
+import { verifySource, type VerifyClaim, type VerificationResult } from "./verify-source";
+import { fetchPageText } from "./fetch-page-text";
+import { callOllama } from "./ollama-client";
 
 // --- types -----------------------------------------------------------------
 
@@ -75,6 +86,23 @@ export interface RunSubmitOptions {
 export interface RunSubmitDeps {
   fetchImpl: typeof fetch;
   existingFacilities: Facility[];
+  /**
+   * Optional source-verification gate: checks whether a candidate source URL
+   * genuinely supports a claim about `entityName` before the candidate that
+   * cites it is allowed to reach dedupe/submission (see `verifyCandidateSources`
+   * below). Deliberately never a module-level self-initializing import —
+   * `main()` builds the real implementation (composing verify-source.ts +
+   * fetch-page-text.ts + ollama-client.ts) lazily inside itself via
+   * `buildRealVerifyImpl()`, so importing this module for tests never opens a
+   * socket (tests/discovery/run.bats's retry-gate check really does execute
+   * this module's top-level scope for real, with no Ollama available in CI).
+   *
+   * When absent (test callers, or `VERIFY_SOURCES_ENABLED=false`), the gate is
+   * skipped entirely and candidates proceed unchanged — the gate can only
+   * ever REDUCE what reaches pending, so its absence is a strictly weaker
+   * state, never a silent promote path.
+   */
+  verifyImpl?: (url: string, claim: VerifyClaim) => Promise<VerificationResult>;
 }
 
 export interface RunSubmitSummary {
@@ -85,6 +113,11 @@ export interface RunSubmitSummary {
   skippedDuplicate: number;
   skippedInvalid: number;
   skippedOverCap: number;
+  /** Zero of the candidate's cited sources reached "verified" (and none
+   * reached "escalate" either) — kept distinct from `skippedInvalid` because
+   * this is a verification-gate failure, not a schema failure, and the two
+   * must not be blurred together in `run-<runId>.json`. */
+  skippedUnverified: number;
   errors: number;
   submittedIds: string[];
 }
@@ -141,30 +174,120 @@ function normKey(name: string, state: string, city: string): string {
 function buildExistingIndex(existing: Facility[]): {
   ids: Set<string>;
   nameStateCity: Set<string>;
+  byId: Map<string, Facility>;
 } {
   const ids = new Set<string>();
   const nameStateCity = new Set<string>();
+  const byId = new Map<string, Facility>();
   for (const f of existing) {
     ids.add(f.id);
     nameStateCity.add(normKey(f.name, f.location.state, f.location.city ?? ""));
+    byId.set(f.id, f);
   }
-  return { ids, nameStateCity };
+  return { ids, nameStateCity, byId };
 }
 
-/** Shared provenance assembly for both the facility and status_update POST paths. */
+/**
+ * Shared provenance assembly for the facility, status_update, and
+ * enrichment_update POST paths. `escalationNote` (from a verification-gate
+ * "escalate" verdict — see `verifyCandidateSources`) is appended to any
+ * existing `provenance.note` rather than replacing it, so a note the
+ * discovery pipeline already wrote is never silently dropped.
+ */
 function buildProvenance(
   provenance: CandidateProvenance,
   runId: string,
-  discoveredAt: string
+  discoveredAt: string,
+  escalationNote?: string
 ) {
+  const noteParts = [provenance.note, escalationNote].filter(
+    (part): part is string => typeof part === "string" && part.length > 0
+  );
   return {
     sources: provenance.sources ?? [],
     confidence: provenance.confidence,
     discoveredBy: provenance.discoveredBy ?? "discovery-pipeline",
     runId: provenance.runId ?? runId,
     discoveredAt: provenance.discoveredAt ?? discoveredAt,
-    note: provenance.note,
+    note: noteParts.length > 0 ? noteParts.join(" | ") : undefined,
   };
+}
+
+// --- verification gate --------------------------------------------------
+
+/**
+ * Thrown when a source's verdict is `"unavailable"` — the verification model
+ * itself could not be reached (Ollama down, model not pulled, network
+ * error), never a judgment that the source is bad (see verify-source.ts's
+ * `VerificationResult` doc-comment on why the two must never be conflated).
+ * Must propagate all the way out of `runSubmit` uncaught: catching it and
+ * continuing would risk a whole batch reading as "unverified", indistinguishable
+ * from a batch that was genuinely full of fabricated URLs — the same
+ * fail-open trap this project already got burned by once
+ * (`vercel-ignore-build.sh` #141, a broken gate that looks like a working
+ * one). The message is written to be diagnosable without reading code:
+ * `http_error_404` is the likeliest real-world trigger (OLLAMA_VERIFY_MODEL
+ * not pulled on a fresh machine).
+ */
+export class VerificationGateUnavailableError extends Error {
+  constructor(url: string, reason: string) {
+    super(
+      `source verification is UNAVAILABLE (could not check — this is not the same as "rejected") ` +
+        `for ${url}: ${reason}. This almost always means Ollama itself is unreachable or ` +
+        `OLLAMA_VERIFY_MODEL is not pulled locally (a "http_error_404" reason usually means the ` +
+        `model is not pulled) — check OLLAMA_BASE_URL/OLLAMA_VERIFY_MODEL. Aborting the entire run ` +
+        `rather than silently submitting candidates as unverified. Set VERIFY_SOURCES_ENABLED=false ` +
+        `to explicitly bypass the gate if that is intentional.`
+    );
+    this.name = "VerificationGateUnavailableError";
+  }
+}
+
+/**
+ * Runs the verification gate over every URL in `sources` for `claim`. Never
+ * called when `opts.dryRun` or `deps.verifyImpl` is absent — callers check
+ * that before invoking this.
+ *
+ * - Any source verdict of `"unavailable"` throws `VerificationGateUnavailableError`
+ *   immediately, stopping BEFORE checking the candidate's remaining sources —
+ *   if the model is unreachable for one URL it is unreachable for all of
+ *   them, so there is nothing to gain by continuing to ask.
+ * - >=1 `"verified"` source -> survives, no escalation note.
+ * - 0 `"verified"` but >=1 `"escalate"` -> survives, with an escalation note
+ *   summarizing the escalated URL(s)/reason(s) for the human reviewer (an
+ *   escalated source is never silently dropped nor silently accepted).
+ * - 0 `"verified"` and 0 `"escalate"` (every source rejected) -> does not
+ *   survive.
+ */
+async function verifyCandidateSources(
+  sources: string[],
+  claim: VerifyClaim,
+  verifyImpl: (url: string, claim: VerifyClaim) => Promise<VerificationResult>
+): Promise<{ survives: boolean; escalationNote?: string }> {
+  const results: VerificationResult[] = [];
+  for (const url of sources) {
+    const result = await verifyImpl(url, claim);
+    if (result.verdict === "unavailable") {
+      throw new VerificationGateUnavailableError(url, result.reason);
+    }
+    results.push(result);
+  }
+
+  if (results.some((r) => r.verdict === "verified")) {
+    return { survives: true };
+  }
+
+  const escalated = results.filter((r) => r.verdict === "escalate");
+  if (escalated.length > 0) {
+    return {
+      survives: true,
+      escalationNote: `Escalated for human review — source(s) could not be mechanically verified: ${escalated
+        .map((r) => `${r.sourceUrl} (${r.reason})`)
+        .join("; ")}`,
+    };
+  }
+
+  return { survives: false };
 }
 
 // --- core --------------------------------------------------------------------
@@ -188,12 +311,21 @@ export async function runSubmit(
     skippedDuplicate: 0,
     skippedInvalid: 0,
     skippedOverCap: 0,
+    skippedUnverified: 0,
     errors: 0,
     submittedIds: [],
   };
 
+  if (!opts.dryRun && !deps.verifyImpl) {
+    console.warn(
+      "WARN: source verification gate is not wired (deps.verifyImpl is absent) — candidates will be " +
+        "submitted WITHOUT mechanical source verification. Expected for test callers or an explicit " +
+        "VERIFY_SOURCES_ENABLED=false; unexpected in any other real run."
+    );
+  }
+
   const normalized = normalizeCandidates(candidates);
-  const { ids: existingIds, nameStateCity: existingNameStateCity } = buildExistingIndex(
+  const { ids: existingIds, nameStateCity: existingNameStateCity, byId: existingById } = buildExistingIndex(
     deps.existingFacilities
   );
 
@@ -240,6 +372,22 @@ export async function runSubmit(
         continue;
       }
 
+      let escalationNote: string | undefined;
+      if (!opts.dryRun && deps.verifyImpl) {
+        const entityName = existingById.get(targetFacilityId)?.name ?? targetFacilityId;
+        const gate = await verifyCandidateSources(
+          candidate.provenance.sources ?? [],
+          { entityName },
+          deps.verifyImpl
+        );
+        if (!gate.survives) {
+          console.log(`skip unverified: ${targetFacilityId} — no cited source could be mechanically verified`);
+          summary.skippedUnverified++;
+          continue;
+        }
+        escalationNote = gate.escalationNote;
+      }
+
       if (summary.submitted >= opts.max) {
         console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
         summary.skippedOverCap++;
@@ -250,7 +398,7 @@ export async function runSubmit(
         kind: "enrichment_update" as const,
         targetFacilityId,
         payload: parsedIntent.data,
-        provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt),
+        provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt, escalationNote),
       };
 
       if (opts.dryRun) {
@@ -308,6 +456,22 @@ export async function runSubmit(
         continue;
       }
 
+      let escalationNote: string | undefined;
+      if (!opts.dryRun && deps.verifyImpl) {
+        const entityName = existingById.get(targetFacilityId)?.name ?? targetFacilityId;
+        const gate = await verifyCandidateSources(
+          candidate.provenance.sources ?? [],
+          { entityName },
+          deps.verifyImpl
+        );
+        if (!gate.survives) {
+          console.log(`skip unverified: ${targetFacilityId} — no cited source could be mechanically verified`);
+          summary.skippedUnverified++;
+          continue;
+        }
+        escalationNote = gate.escalationNote;
+      }
+
       if (summary.submitted >= opts.max) {
         console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
         summary.skippedOverCap++;
@@ -318,7 +482,7 @@ export async function runSubmit(
         kind: "status_update" as const,
         targetFacilityId,
         payload: parsedIntent.data,
-        provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt),
+        provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt, escalationNote),
       };
 
       if (opts.dryRun) {
@@ -373,6 +537,17 @@ export async function runSubmit(
       continue;
     }
 
+    let escalationNote: string | undefined;
+    if (!opts.dryRun && deps.verifyImpl) {
+      const gate = await verifyCandidateSources(sources, { entityName: doc.name }, deps.verifyImpl);
+      if (!gate.survives) {
+        console.log(`skip unverified: ${doc.id} — no cited source could be mechanically verified`);
+        summary.skippedUnverified++;
+        continue;
+      }
+      escalationNote = gate.escalationNote;
+    }
+
     const isIdDuplicate = existingIds.has(doc.id);
     const isNameDuplicate = existingNameStateCity.has(
       normKey(doc.name, doc.location.state, doc.location.city ?? "")
@@ -398,7 +573,7 @@ export async function runSubmit(
       kind,
       targetFacilityId: isIdDuplicate ? doc.id : undefined,
       payload: doc,
-      provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt),
+      provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt, escalationNote),
     };
 
     if (opts.dryRun) {
@@ -527,6 +702,33 @@ function writeLog(summary: RunSubmitSummary): void {
   writeFileSync(logPath, JSON.stringify(summary, null, 2));
 }
 
+/**
+ * Constructs the real verification gate: verify-source.ts composed with
+ * fetch-page-text.ts and ollama-client.ts, both bound to the real global
+ * `fetch`. Called ONLY from inside `main()`, never at module scope —
+ * tests/discovery/run.bats's retry-gate check (`candidates_file_has_array()`)
+ * really does execute this module's top-level scope, via a real `tsx -e`
+ * with no Ollama available in CI (see run.bats:43-52 and its Task 7
+ * "import safety" regression tests). Importing `verifySource`/
+ * `fetchPageText`/`callOllama` at the top of this file is safe (function
+ * references only), and merely CALLING this function is also safe — it just
+ * returns a closure, it does not invoke `verifySource` itself. The actual
+ * risk is a step further: `main()` both builds AND passes this closure to
+ * `runSubmit`, which — if a candidate has sources — genuinely INVOKES it,
+ * reaching out over the network. Keeping construction confined to `main()`
+ * keeps that one path (guarded by the `isMain` check below) the only place
+ * this closure can ever be built or reached at all, rather than relying on
+ * "nothing calls it yet" being true at some other, less obviously-guarded
+ * call site.
+ */
+function buildRealVerifyImpl(): (url: string, claim: VerifyClaim) => Promise<VerificationResult> {
+  return (url, claim) =>
+    verifySource(url, claim, {
+      fetchPageTextImpl: (pageUrl) => fetchPageText(pageUrl, { fetchImpl: fetch }),
+      callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
+    });
+}
+
 async function main(): Promise<void> {
   if (!process.env.API_ADMIN_TOKEN) {
     console.error("API_ADMIN_TOKEN is not set. Configure it before running the discovery pipeline.");
@@ -547,6 +749,13 @@ async function main(): Promise<void> {
 
   const existingFacilities = await loadExistingFacilities(args.baseUrl);
 
+  // Default-ON: the real gate always runs unless explicitly disabled. This
+  // makes Ollama an operational dependency of a real (non-dry-run) discovery
+  // run — accepted per Open Question 3 (Ed). VERIFY_SOURCES_ENABLED must be
+  // the exact string "false" to opt out; any other value (including unset)
+  // keeps the gate on.
+  const verifyImpl = process.env.VERIFY_SOURCES_ENABLED === "false" ? undefined : buildRealVerifyImpl();
+
   const summary = await runSubmit(
     raw,
     {
@@ -557,7 +766,7 @@ async function main(): Promise<void> {
       state: args.state,
       discoveredAt: new Date().toISOString(),
     },
-    { fetchImpl: fetch, existingFacilities }
+    { fetchImpl: fetch, existingFacilities, verifyImpl }
   );
 
   writeLog(summary);
