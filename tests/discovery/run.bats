@@ -9,6 +9,29 @@ setup() {
 	REPO_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/../.." && pwd)"
 	RUN_SH="$REPO_ROOT/scripts/discovery/run.sh"
 
+	# Portable timeout resolution (macOS lacks GNU `timeout` unless a
+	# coreutils-providing formula is installed) + the shared "tsx -e"
+	# import-safety script, both used only by the Task 7 "verification-gate
+	# import safety" tests near the bottom of this file — mirrors run.sh's
+	# own TIMEOUT_BIN resolution (run.sh:103-107) and candidates_file_has_array()
+	# inline script (run.sh:133-144) exactly.
+	TIMEOUT_BIN=""
+	if command -v timeout >/dev/null 2>&1; then
+		TIMEOUT_BIN="timeout"
+	elif command -v gtimeout >/dev/null 2>&1; then
+		TIMEOUT_BIN="gtimeout"
+	fi
+	IMPORT_CHECK_SCRIPT='
+import { parseCandidatesJson } from "./scripts/discovery/submit-candidates.ts";
+import { readFileSync } from "node:fs";
+try {
+  const a = parseCandidatesJson(readFileSync(process.argv[1], "utf8"));
+  process.exit(Array.isArray(a) ? 0 : 1);
+} catch {
+  process.exit(1);
+}
+'
+
 	TEST_TMP="$(mktemp -d)"
 	HOME="$TEST_TMP/home"
 	mkdir -p "$HOME"
@@ -401,4 +424,74 @@ EOF
 	[ "$status" -eq 0 ]
 	[[ "$output" != *"unbound variable"* ]]
 	[[ "$output" == *"discovery run"*"complete"* ]]
+}
+
+# --- verification-gate import safety (Track 1 Task 7) -----------------------
+# submit-candidates.ts now imports verify-source.ts / fetch-page-text.ts /
+# ollama-client.ts at module scope (Task 6). The ONE place a BATS run
+# genuinely executes that module scope for REAL — not the shimmed `npx`
+# no-op at the `*submit-candidates.ts*` case in setup() above — is
+# candidates_file_has_array()'s "tsx -e" inline import (run.sh:133-144);
+# this file's npx shim deliberately delegates any "tsx -e" invocation to the
+# real npx/tsx (see the comment at the top of that case). The gate's real
+# verifyImpl is constructed only inside submit-candidates.ts's main() (see
+# its buildRealVerifyImpl doc-comment), and main() never runs in a "-e"
+# context because process.argv[1] there is not submit-candidates.ts's own
+# path — but that is a structural guarantee internal to the module, not
+# something visible from outside it, so it is pinned here as an explicit
+# regression rather than left implicit. VERIFY_SOURCES_ENABLED is
+# deliberately left UNSET in both tests below — the default (gate ON) config
+# is exactly the scenario that matters: safety here must not depend on the
+# opt-out being set.
+
+@test "importing submit-candidates.ts via tsx -e attempts no connection to localhost:11434 (valid array input)" {
+	cd "$REPO_ROOT"
+	CANDIDATES_FILE="$TEST_TMP/candidates-import-safety-ok.json"
+	echo '[{"name":"Import Safety Facility","facilityType":"data_center"}]' >"$CANDIDATES_FILE"
+
+	# `timeout` is a defensive backstop only, not the real assertion below —
+	# a refused connection to a closed localhost port fails near-instantly,
+	# it would not hang.
+	if [[ -n "$TIMEOUT_BIN" ]]; then
+		run "$TIMEOUT_BIN" 10 npx tsx -e "$IMPORT_CHECK_SCRIPT" "$CANDIDATES_FILE"
+	else
+		run npx tsx -e "$IMPORT_CHECK_SCRIPT" "$CANDIDATES_FILE"
+	fi
+
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"ECONNREFUSED"* ]]
+	[[ "$output" != *"11434"* ]]
+	[[ "$output" != *"fetch failed"* ]]
+	[[ "$output" != *"OLLAMA"* ]]
+	# Exit-code 1 alone is ambiguous — main()'s own early "API_ADMIN_TOKEN is
+	# not set" exit(1) coincides with the intentional invalid-array exit(1)
+	# below, so these are the sharper, structural signal: they can ONLY
+	# appear if `main()` ran in this "-e" context at all (a broken `isMain`
+	# guard), which is the actual regression this test exists to catch —
+	# confirmed by deliberately breaking `isMain` and re-running this file.
+	[[ "$output" != *"API_ADMIN_TOKEN"* ]]
+	[[ "$output" != *"Usage: submit-candidates.ts"* ]]
+}
+
+@test "importing submit-candidates.ts via tsx -e attempts no connection to localhost:11434 (unparseable input)" {
+	cd "$REPO_ROOT"
+	CANDIDATES_FILE="$TEST_TMP/candidates-import-safety-bad.json"
+	echo 'not an array at all' >"$CANDIDATES_FILE"
+
+	if [[ -n "$TIMEOUT_BIN" ]]; then
+		run "$TIMEOUT_BIN" 10 npx tsx -e "$IMPORT_CHECK_SCRIPT" "$CANDIDATES_FILE"
+	else
+		run npx tsx -e "$IMPORT_CHECK_SCRIPT" "$CANDIDATES_FILE"
+	fi
+
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"ECONNREFUSED"* ]]
+	[[ "$output" != *"11434"* ]]
+	[[ "$output" != *"fetch failed"* ]]
+	[[ "$output" != *"OLLAMA"* ]]
+	# See the sibling test above — exit(1) is ambiguous on its own between
+	# "correctly detected a non-array" and "main() crashed for an unrelated
+	# reason"; this is the assertion that actually discriminates the two.
+	[[ "$output" != *"API_ADMIN_TOKEN"* ]]
+	[[ "$output" != *"Usage: submit-candidates.ts"* ]]
 }
