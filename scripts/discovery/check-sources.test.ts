@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 
-import { checkSources, isBlockedHost, type SourceCheckDeps } from "./check-sources";
+import { checkSources, type SourceCheckDeps } from "./check-sources";
+import { isBlockedHost } from "./net-guard";
 import type { Facility } from "../../lib/schema";
 
 function makeFacility(overrides: Partial<Facility> = {}, urls: string[] = ["https://example.com/a"]): Facility {
