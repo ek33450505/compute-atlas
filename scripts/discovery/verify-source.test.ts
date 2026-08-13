@@ -309,6 +309,68 @@ describe("verifySource", () => {
       expect(result.verdict).toBe("rejected");
     });
 
+    it("🔴 verifies when the entity's full canonical name never appears verbatim, but its DISTINCTIVE tokens do (real-prose regression: source text drops/reorders generic descriptor words)", async () => {
+      // The real gem.wiki sentence behind a measured false rejection: the
+      // canonical record name "AboutBit Merom Cryptocurrency Mining
+      // Facility" never appears on the page verbatim — only its distinctive
+      // parts, "AboutBit" and "Merom", do, in the SAME sentence as the
+      // genuine 115 MW figure. A literal full-string entity check rejects
+      // this correct answer; token-based matching accepts it while still
+      // requiring same-fragment co-occurrence.
+      const pageText =
+        "AboutBit Sullivan County facility is a proposed 115 MW cryptocurrency mine, to be located at the coal-fired Merom Generating Station in Sullivan County, Indiana.";
+      const claim: VerifyClaim = {
+        entityName: "AboutBit Merom Cryptocurrency Mining Facility",
+        numericHints: [{ label: "capacity", value: 115 }],
+      };
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk(pageText)),
+        callOllamaImpl: vi.fn(async () => supports(pageText)),
+      });
+
+      const result = await verifySource("https://example.com/page", claim, deps);
+
+      expect(result.verdict).toBe("verified");
+    });
+
+    it("still rejects when the fragment containing the number has NONE of the entity's distinctive tokens (token-based misbinding guard)", async () => {
+      // "Ridgeline" is the only distinctive token in "Ridgeline Data
+      // Center" ("data"/"center" are generic and dropped) — it does not
+      // appear anywhere in this fragment, so the guard still fires even
+      // though the number is genuinely verbatim on the page.
+      const pageText = "Example Wind Farm reports a nameplate capacity of 1200 MW at its Nolan County site.";
+      const claim: VerifyClaim = { entityName: "Ridgeline Data Center", numericHints: [{ label: "capacity", value: 1200 }] };
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk(pageText)),
+        callOllamaImpl: vi.fn(async () => supports(pageText)),
+      });
+
+      const result = await verifySource("https://example.com/page", claim, deps);
+
+      expect(result.verdict).toBe("rejected");
+    });
+
+    it("🔴 falls back to full-string matching when the entity name tokenizes to ZERO distinctive tokens, and still rejects a fragment lacking it (no vacuous pass on an empty token set)", async () => {
+      // "Data Center" tokenizes to ["data", "center"] — BOTH are generic
+      // descriptor tokens, so zero distinctive tokens survive. If the
+      // fallback were removed and this were instead implemented as an
+      // unconditional pass on an empty token set (rather than the required
+      // literal full-string check), this would verify regardless of what
+      // the fragment says — the same "a check that isn't actually checking
+      // anything" shape of bug the zero-fragment guard elsewhere in this
+      // file already guards against, for a different empty set.
+      const pageText = "A regional grid report puts total nameplate capacity at 1200 MW across several unrelated sites.";
+      const claim: VerifyClaim = { entityName: "Data Center", numericHints: [{ label: "capacity", value: 1200 }] };
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk(pageText)),
+        callOllamaImpl: vi.fn(async () => supports(pageText)),
+      });
+
+      const result = await verifySource("https://example.com/page", claim, deps);
+
+      expect(result.verdict).toBe("rejected");
+    });
+
     it("verifies when the hinted number and entity name co-occur in the SAME fragment", async () => {
       const pageText = "Ridgeline Data Center plans a total capacity of 1200 MW once complete.";
       const claim: VerifyClaim = { entityName: "Ridgeline Data Center", numericHints: [{ label: "capacity", value: 1200 }] };
