@@ -215,6 +215,51 @@ const SENTENCE_SPLIT_RE = /(?<=[.!?])\s+/;
  * match is always the FULL contiguous digit run, never a substring of it). */
 const NUMBER_TOKEN_RE = /\d[\d,]*(?:\.\d+)?/g;
 
+/**
+ * Generic descriptor tokens stripped out of `claim.entityName` before
+ * checking a fragment for it — see `fragmentContainsEntity`'s doc-comment
+ * for the measured false-rejection this exists to fix. Case-insensitive;
+ * compared against already-lowercased tokens. Kept deliberately narrow
+ * (facility/company-descriptor words only) rather than a general stopword
+ * list, since the goal is dropping words that carry no IDENTIFYING power
+ * for a specific site, not words that are merely common.
+ */
+const GENERIC_ENTITY_NAME_TOKENS = new Set([
+  "data",
+  "center",
+  "centre",
+  "centers",
+  "facility",
+  "facilities",
+  "mining",
+  "cryptocurrency",
+  "campus",
+  "project",
+  "site",
+  "plant",
+  "station",
+  "the",
+  "and",
+  "llc",
+  "inc",
+  "corp",
+  "group",
+]);
+
+/**
+ * Splits `entityName` into lowercase alphanumeric tokens and drops the
+ * generic descriptor tokens in `GENERIC_ENTITY_NAME_TOKENS`, leaving only
+ * the tokens distinctive enough to identify THIS specific facility rather
+ * than facilities in general — e.g. "AboutBit Merom Cryptocurrency Mining
+ * Facility" reduces to `["aboutbit", "merom"]`.
+ */
+function distinctiveEntityTokens(entityName: string): string[] {
+  return entityName
+    .split(/[^a-zA-Z0-9]+/)
+    .map((token) => token.toLowerCase())
+    .filter((token) => token.length > 0 && !GENERIC_ENTITY_NAME_TOKENS.has(token));
+}
+
 function normalizeWhitespace(input: string): string {
   return input.replace(/\s+/g, " ").trim();
 }
@@ -244,8 +289,39 @@ function fragmentContainsNumber(fragment: string, value: number): boolean {
   });
 }
 
+/**
+ * True if `fragment` contains at least one DISTINCTIVE token from
+ * `entityName` (case-insensitive, whole-word) — not `entityName`'s full
+ * canonical string as a literal substring. Real source prose almost never
+ * repeats a facility's full canonical record name verbatim; it uses the
+ * distinctive part and drops or reorders generic descriptor words. Measured
+ * false rejection this fixes: entityName "AboutBit Merom Cryptocurrency
+ * Mining Facility" against the real gem.wiki sentence "AboutBit Sullivan
+ * County facility is a proposed 115 MW cryptocurrency mine, to be located
+ * at the coal-fired Merom Generating Station in Sullivan County, Indiana."
+ * — that sentence never contains the full canonical phrase verbatim, only
+ * "AboutBit" and "Merom" separately, alongside the genuine 115 MW figure a
+ * literal full-string check would have rejected.
+ *
+ * Falls back to a literal full-string containment check when `entityName`
+ * tokenizes to ZERO distinctive tokens (a record whose name is made
+ * entirely of generic words). This fallback is required explicitly, not
+ * left to fall through: `distinctiveTokens.some(...)` on an empty array
+ * already returns `false` on its own — without the fallback, a
+ * fully-generic entity name would be REJECTED unconditionally, never
+ * verified no matter how clearly the fragment names it. The fallback trades
+ * that failure mode for a real, literal check instead of either extreme
+ * (never-pass or always-pass) — the same "a check that isn't actually
+ * checking anything" risk the zero-fragment guard in
+ * `applyMechanicalChecks` guards against for a different empty set (there:
+ * zero surviving quote fragments; here: zero distinctive entity tokens).
+ */
 function fragmentContainsEntity(fragment: string, entityName: string): boolean {
-  return fragment.toLowerCase().includes(entityName.toLowerCase());
+  const distinctiveTokens = distinctiveEntityTokens(entityName);
+  if (distinctiveTokens.length === 0) {
+    return fragment.toLowerCase().includes(entityName.toLowerCase());
+  }
+  return distinctiveTokens.some((token) => new RegExp(`\\b${token}\\b`, "i").test(fragment));
 }
 
 interface MechanicalCheckOutcome {
