@@ -86,6 +86,19 @@ export interface VerificationResult {
   reason: string;
   viaWayback?: boolean;
   sourceUrl: string;
+  /**
+   * Set ONLY when the verdict came from a failure to fetch the page at all
+   * (the direct fetch failed AND the Wayback fallback did not rescue it) —
+   * never when a page was actually read and checked. Lets a caller separate
+   * "we could not read this source" from "we read it and the claim did not
+   * hold up", which `verdict` alone cannot express: `unrecoverableVerdict`
+   * maps most fetch failures to `"rejected"` because for an untrusted,
+   * model-proposed candidate URL a dead link IS strong fabrication evidence.
+   * For a curated source with a `retrievedAt` date, the same 403 means a
+   * bot-wall. Additive and optional: existing callers that switch on
+   * `verdict` are unaffected.
+   */
+  transportFailure?: { reason: Extract<FetchPageTextResult, { ok: false }>["reason"]; httpStatus?: number };
 }
 
 /** The model's own output shape — deliberately narrow (never the
@@ -253,7 +266,7 @@ const GENERIC_ENTITY_NAME_TOKENS = new Set([
  * than facilities in general — e.g. "AboutBit Merom Cryptocurrency Mining
  * Facility" reduces to `["aboutbit", "merom"]`.
  */
-function distinctiveEntityTokens(entityName: string): string[] {
+export function distinctiveEntityTokens(entityName: string): string[] {
   return entityName
     .split(/[^a-zA-Z0-9]+/)
     .map((token) => token.toLowerCase())
@@ -521,6 +534,18 @@ function describeFetchFailure(result: Extract<FetchPageTextResult, { ok: false }
   return result.httpStatus !== undefined ? `${result.reason} (http ${result.httpStatus})` : result.reason;
 }
 
+/** Builds `VerificationResult.transportFailure` from the ORIGINAL fetch
+ * failure — the same value `unrecoverableVerdict` keys on. `httpStatus` is
+ * omitted rather than set to `undefined` when the failure carried none (e.g.
+ * `network_error`), so the field's presence always means a real status. */
+function toTransportFailure(
+  result: Extract<FetchPageTextResult, { ok: false }>,
+): NonNullable<VerificationResult["transportFailure"]> {
+  return result.httpStatus !== undefined
+    ? { reason: result.reason, httpStatus: result.httpStatus }
+    : { reason: result.reason };
+}
+
 /**
  * A size-cap or content-type rejection means the source may genuinely exist
  * and be a real page — the fetcher simply cannot structurally ingest it — so
@@ -652,6 +677,7 @@ export async function verifySource(url: string, claim: VerifyClaim, deps: Verify
       verdict: unrecoverableVerdict(fetchResult.reason),
       reason: `original fetch failed (${originalFailure}); no Wayback snapshot available`,
       sourceUrl: url,
+      transportFailure: toTransportFailure(fetchResult),
     };
   }
 
@@ -661,6 +687,9 @@ export async function verifySource(url: string, claim: VerifyClaim, deps: Verify
       verdict: unrecoverableVerdict(fetchResult.reason),
       reason: `original fetch failed (${originalFailure}); Wayback snapshot fetch also failed (${describeFetchFailure(archivedFetch)})`,
       sourceUrl: url,
+      // The ORIGINAL failure, not the snapshot's — same value the verdict
+      // above keys on, and the one a caller is judging the source by.
+      transportFailure: toTransportFailure(fetchResult),
     };
   }
 
