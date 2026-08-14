@@ -989,7 +989,7 @@
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy Virginia",
-      "notes": "Aligned's Ashburn campus connects to the Dominion Energy Virginia grid; Dominion offers green-energy program options but no site-specific dedicated generation or PPA was found for IAD-03 specifically. Confidence is medium because search results centered on IAD-01/IAD-02 rather than IAD-03 by name — no evidence of a dif"
+      "notes": "Aligned's Ashburn campus connects to the Dominion Energy Virginia grid; Dominion offers green-energy program options but no site-specific dedicated generation or PPA was found for IAD-03 specifically."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -1122,7 +1122,7 @@
     "energy": {
       "source": "grid",
       "utility": "ComEd",
-      "notes": "Aligned's Chicagoland ORD-01 campus in Northlake draws redundant, critical power from two on-site substations (170 MW total capacity) fed by the Commonwealth Edison grid. No site-specific renewable PPA or dedicated generation was found — this is standard utility grid power with enhanced substation redundancy for reliab"
+      "notes": "Aligned's Chicagoland ORD-01 campus in Northlake draws redundant, critical power from two on-site substations (170 MW total capacity) fed by the Commonwealth Edison grid."
     },
     "water": {
       "coolingType": "hybrid",
@@ -1231,7 +1231,7 @@
     "energy": {
       "source": "grid",
       "utility": "Portland General Electric (PGE)",
-      "notes": "PDX-01 draws grid power from Portland General Electric. Aligned deployed a genuine site-specific 31 MW/62 MWh battery (BESS) across the street, built with storage specialist Calibrant Energy, as part of a PGE grid-flexibility program to speed interconnection of ~80 MW of new data center load — Canary Media's reporting "
+      "notes": "PDX-01 draws grid power from Portland General Electric."
     },
     "landAcres": 27,
     "facilityType": "data_center",
@@ -1287,7 +1287,7 @@
       "source": "on_site_gas",
       "utility": "Arizona Public Service (APS)",
       "onSiteGenerationMw": 63,
-      "notes": "Aligned's Phoenix campus (2500 W Union Hills — matches PHX-01/02/03) is powered by APS via a custom 69kV enhanced-capability substation, PLUS a genuine 63 MW on-site microgrid generation project built jointly with APS — allowing the campus to island itself from the grid during congestion. This is a defining site-specif"
+      "notes": "Aligned's Phoenix campus (2500 W Union Hills — matches PHX-01/02/03) is powered by APS via a custom 69kV enhanced-capability substation, PLUS a genuine 63 MW on-site microgrid generation project built jointly with APS — allowing the campus to island itself from the grid during congestion."
     },
     "landAcres": 55,
     "facilityType": "data_center",
@@ -2559,7 +2559,7 @@
       "source": "mixed",
       "utility": "Duke Energy",
       "onSiteGenerationMw": 10,
-      "notes": "Apple built roughly 50MW of dedicated clean generation to serve this campus — 40MW across two 20MW solar farms plus a ~10MW Bloom Energy fuel cell array running on landfill biogas, the largest non-utility fuel cell installation in the US at the time. State law bars direct-wire delivery, so the generation feeds Duke Ene"
+      "notes": "Apple built roughly 50MW of dedicated clean generation to serve this campus — 40MW across two 20MW solar farms plus a ~10MW Bloom Energy fuel cell array running on landfill biogas, the largest non-utility fuel cell installation in the US at the time."
     },
     "landAcres": 183,
     "facilityType": "data_center",
@@ -2622,7 +2622,7 @@
     "energy": {
       "source": "solar",
       "utility": "Salt River Project (SRP)",
-      "notes": "Apple partnered with SRP in 2014 to site the 282-acre, 50MW Bonnybrooke solar farm in Florence, AZ, operational December 2016. Apple sells the 50MW output to SRP at wholesale rates under a 25-year agreement and retains the environmental credits, effectively matching the Global Command Center's load with a dedicated, na"
+      "notes": "Apple partnered with SRP in 2014 to site the 282-acre, 50MW Bonnybrooke solar farm in Florence, AZ, operational December 2016."
     },
     "investmentUsd": 2000000000,
     "facilityType": "data_center",
@@ -2692,7 +2692,7 @@
     "energy": {
       "source": "solar",
       "utility": "NV Energy",
-      "notes": "Apple financed and built the Fort Churchill Solar project (Apple's first Nevada solar deal, ~20MW) and later the larger Turquoise Solar project (61MWdc, ~180 acres) sited directly inside the Reno Technology Park next to Apple's Sparks data center, connected via a shared substation developed with Apple. Power flows thro"
+      "notes": "Apple financed and built the Fort Churchill Solar project (Apple's first Nevada solar deal, ~20MW) and later the larger Turquoise Solar project (61MWdc, ~180 acres) sited directly inside the Reno Technology Park next to Apple's Sparks data center, connected via a shared substation developed with Apple."
     },
     "landAcres": 1700,
     "facilityType": "data_center",
@@ -2762,7 +2762,7 @@
     "energy": {
       "source": "grid",
       "utility": "MidAmerican Energy",
-      "notes": "Apple's 2017 announcement and subsequent coverage describe only a general intent to 'work with local partners to invest in renewable energy projects from wind and other sources' in Iowa, and MidAmerican Energy building a substation to serve the campus — no facility-specific named wind farm or PPA (comparable to Google'"
+      "notes": "Apple's 2017 announcement and subsequent coverage describe only a general intent to 'work with local partners to invest in renewable energy projects from wind and other sources' in Iowa, and MidAmerican Energy building a substation to serve the campus."
     },
     "investmentUsd": 1300000000,
     "landAcres": 2000,
@@ -3164,7 +3164,7 @@
     },
     "community": {
       "status": "contested",
-      "notes": "Oliver County commissioners enacted, then repealed, a 180-day countywide data-center moratorium (approved ~June 2026, repealed by July 10, 2026) amid resident concerns raised at public meetings; commission has since negotiated environmental/community conditions with Applied Digital and the rezoning vote remains pending",
+      "notes": "Oliver County commissioners enacted, then repealed, a 180-day countywide data-center moratorium (approved ~June 2026, repealed by July 10, 2026) amid resident concerns raised at public meetings.",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -4252,7 +4252,7 @@
     "notes": "Operational AWS data center on a ~106-acre Amazon Data Services Inc parcel on Beech Rd NW, New Albany — a second built AWS building on Beech Rd, physically distinct from the tracked '2550 Beech Road' building (aws-2550-beech-road-new-albany-oh, ~1.1 km south) and from the under-construction ~458-acre Beech/Miller five-building expansion (aws-beech-road-new-albany-oh). Data-center directories label it the 'North Hub'; the 112-acre parcel was bought April 2020 for $21.8M and the building is listed as built 2024 / fully operational. Licking County Auditor land-use class 305 ('Research/Chemical Labs' = built industrial, vs class 300 'Industrial Vacant Land' on the neighboring pre-construction parcels); owner Amazon Data Services Inc. No site-specific IT-load MW is disclosed. Coordinates are the Licking County Auditor parcel centroid (parcel 095-111618-04.000).",
     "energy": {
       "source": "grid",
-      "notes": "3180 Beech Rd is part of Amazon's New Albany 'Silicon Heartland' campus expansion (112 acres acquired 2020, adjacent to the original 68-acre campus). No site-specific renewable PPA or on-site generation was found; Amazon's Ohio wind/solar investments (Paulding County wind farm, 23 projects statewide) are documented as "
+      "notes": "3180 Beech Rd is part of Amazon's New Albany 'Silicon Heartland' campus expansion (112 acres acquired 2020, adjacent to the original 68-acre campus)."
     },
     "landAcres": 106.41,
     "facilityType": "data_center",
@@ -4443,7 +4443,7 @@
     "landAcres": 1300,
     "community": {
       "status": "mixed",
-      "notes": "Morrow County Planning Commission approved Amazon's 'PDX154' land-use application (816,000 sq ft / 4 buildings, part of the broader campus) on March 31, 2026 with conditions attached (stormwater/wastewater mitigation, airport-lighting restrictions), after opposition testimony from Oregon Rural Action raising waterfowl/",
+      "notes": "Morrow County Planning Commission approved Amazon's 'PDX154' land-use application (816,000 sq ft / 4 buildings, part of the broader campus) on March 31, 2026 with conditions attached (stormwater/wastewater mitigation, airport-lighting restrictions).",
       "sourceIndex": 4
     },
     "facilityType": "data_center",
@@ -4769,7 +4769,7 @@
     "energy": {
       "source": "grid",
       "utility": "AEP Ohio",
-      "notes": "AWS Crosby Court (Plain City area) is an AEP Ohio-served site. AEP Ohio is separately pursuing a PUCO-approved 73MW Bloom Energy fuel-cell project (228 SOFC units, docket 23-891-EL-AEC) for an AWS campus, but that project's confirmed address is 4120 Scioto Darby Creek Rd, Hilliard — a different, third Hilliard campus, "
+      "notes": "AWS Crosby Court (Plain City area) is an AEP Ohio-served site."
     },
     "landAcres": 66.82,
     "facilityType": "data_center",
@@ -5234,7 +5234,7 @@
     "notes": "AWS's first US East (Ohio) region data center — a ~55-acre Vadata Inc campus at 5109-5129 Hayden Run Rd, Hilliard. Broke ground 2015; first building completed ~2018; a multi-building campus that has continued expanding. Franklin County Auditor land-use class 'data center' with 768,498 sq ft of assessed building area (= built/operational); owner Vadata Inc (Amazon's data-center subsidiary). Data-center directories (DC Byte / baxtel) list several numbered Hayden Run buildings (5109/5113/5117/5121/5125) that correspond to buildings within this single county parcel, not separate sites. No site-specific IT-load MW is disclosed. Coordinates are the Franklin County Auditor parcel centroid. Distinct from the tracked AWS Cosgray Road and AWS Scioto Darby campuses (also Hilliard, Franklin County).",
     "energy": {
       "source": "grid",
-      "notes": "Hayden Run (5109 Hayden Run Rd, Hilliard) is AWS's original Hilliard campus (construction began 2015). The PUCO-approved 73MW Bloom Energy fuel-cell project (228 SOFC units) is confirmed sited at 4120 Scioto Darby Creek Rd — AWS's third, separate Hilliard campus at Scioto Darby Rd/I-270 — not at Hayden Run. No clean-en"
+      "notes": "Hayden Run (5109 Hayden Run Rd, Hilliard) is AWS's original Hilliard campus (construction began 2015). The PUCO-approved 73MW Bloom Energy fuel-cell project (228 SOFC units) is confirmed sited at 4120 Scioto Darby Creek Rd — AWS's third, separate Hilliard campus at Scioto Darby Rd/I-270 — not at Hayden Run."
     },
     "landAcres": 55.22,
     "facilityType": "data_center",
@@ -6287,7 +6287,7 @@
     "energy": {
       "source": "grid",
       "utility": "Union Rural Electric Coop, Inc",
-      "notes": "AWS Warner Road (8567 Warner Road, Plain City) is a us-east-2 operational building (43MW, Building 5 live 2025) served by Union Rural Electric Coop. No site-specific clean-energy deal or on-site generation was found tied to this address; Amazon's Ohio renewable investments are documented as company-wide portfolio match"
+      "notes": "AWS Warner Road (8567 Warner Road, Plain City) is a us-east-2 operational building (43MW, Building 5 live 2025) served by Union Rural Electric Coop."
     },
     "landAcres": 92.78,
     "community": {
@@ -7506,7 +7506,7 @@
     "energy": {
       "source": "grid",
       "utility": "Ohio Edison (FirstEnergy)",
-      "notes": "Coverage of the proposed 257-acre, up-to-750MW Turnpike Commerce Center campus (Bitdeer + Geis Development) confirms the site is attractive to Bitdeer for \"long-term power availability\" but no article reviewed (News5Cleveland town-hall coverage, The Portager, TheEnergyMag) discloses a specific interconnection MW figure"
+      "notes": "Coverage of the proposed 257-acre, up-to-750MW Turnpike Commerce Center campus (Bitdeer + Geis Development) confirms the site is attractive to Bitdeer for \"long-term power availability\" but no article reviewed (News5Cleveland town-hall coverage, The Portager, TheEnergyMag) discloses a specific interconnection MW figure."
     },
     "investmentUsd": 300000000,
     "landAcres": 257,
@@ -7624,7 +7624,7 @@
     "energy": {
       "source": "grid",
       "utility": "Ohio Edison (FirstEnergy)",
-      "notes": "Explicit grid interconnection agreement with FirstEnergy for 300 MW, sited on the former Ohio Edison/Niles Generating Station property (demolished 2013) specifically because it retains industrial zoning and an existing substation. FirstEnergy performed and approved a dynamic load study for the site; target energization"
+      "notes": "Explicit grid interconnection agreement with FirstEnergy for 300 MW, sited on the former Ohio Edison/Niles Generating Station property (demolished 2013) specifically because it retains industrial zoning and an existing substation."
     },
     "community": {
       "status": "contested",
@@ -11936,7 +11936,7 @@
     "notes": "Near Vistra's Comanche Peak Nuclear Plant. Developer states a 5GW total pipeline across 9 campuses; a later, scaled-back figure puts Comanche Circle plus two smaller Sailfish projects combined at 'up to 3 gigawatts' - given conflicting figures, no single capacityMw is recorded here. Conditional county approval Jan 2026; construction targeted late 2026. No hyperscaler tenant confirmed - speculative developer-led land assembly. Coordinates are approximate.",
     "energy": {
       "source": "grid",
-      "notes": "Sailfish Investors' Comanche Circle (2,100-2,600 acre, up to 5GW planned across nine campuses) originally planned a mixed gas + grid supply, anchored by a proposed 2GW on-site gas plant ('Tolar Power Center') developed by NRG that would have supplied the campus. However, NRG WITHDREW its TCEQ air permit application for"
+      "notes": "Sailfish Investors' Comanche Circle (2,100-2,600 acre, up to 5GW planned across nine campuses) originally planned a mixed gas + grid supply, anchored by a proposed 2GW on-site gas plant ('Tolar Power Center') developed by NRG that would have supplied the campus."
     },
     "landAcres": 2600,
     "community": {
@@ -12422,7 +12422,7 @@
     "landAcres": 140,
     "community": {
       "status": "contested",
-      "notes": "The Piedmont Environmental Council (PEC), a regional land-use advocacy group, has formally opposed this project since its original 2019 iteration and reiterated concerns in Oct 2024 about the site's proximity to the Town of Remington and flood-risk impact; the County accepted Convergent's resubmitted application Aug 20",
+      "notes": "The Piedmont Environmental Council (PEC), a regional land-use advocacy group, has formally opposed this project since its original 2019 iteration and reiterated concerns in Oct 2024 about the site's proximity to the Town of Remington and flood-risk impact.",
       "sourceIndex": 3
     },
     "facilityType": "data_center"
@@ -12882,7 +12882,7 @@
     "energy": {
       "source": "grid",
       "utility": "OG&E (Oklahoma Gas & Electric)",
-      "notes": "Grid power via OG&E is the defining arrangement. Core Scientific's Muskogee campus (the 100MW CoreWeave-anchor HPC facility, ~70MW critical IT load) and the adjacent Polaris DS acquisition are both served by OG&E electric service agreements totaling up to 440MW gross power under contract. Core Scientific's own 1.5GW-ex"
+      "notes": "Grid power via OG&E is the defining arrangement. Core Scientific's Muskogee campus (the 100MW CoreWeave-anchor HPC facility, ~70MW critical IT load) and the adjacent Polaris DS acquisition are both served by OG&E electric service agreements totaling up to 440MW gross power under contract."
     },
     "investmentUsd": 4000000000,
     "landAcres": 250,
@@ -13011,7 +13011,7 @@
     "landAcres": 260,
     "community": {
       "status": "contested",
-      "notes": "Core Scientific-hosted town halls and multiple protests over its Hunt County data-center plans (which include the ~260-acre Telios Quinlan One acquisition) drew organized resident opposition on water/noise/air-quality grounds; Hunt County Commissioners Court passed a resolution (Apr 15, 2026) asking the state for an im",
+      "notes": "Core Scientific-hosted town halls and multiple protests over its Hunt County data-center plans (which include the ~260-acre Telios Quinlan One acquisition) drew organized resident opposition on water/noise/air-quality grounds.",
       "sourceIndex": 2
     },
     "facilityType": "data_center"
@@ -14996,7 +14996,7 @@
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy",
-      "notes": "Grid-only proposal. County/PEC documents state Dominion Energy is obligated to supply power and would need a new large substation and 2-5 miles of new transmission line for the 700MW-1.8GW load. No on-site or dedicated generation is proposed; no REC (Rappahannock Electric Cooperative) role is mentioned. Project (426 ac"
+      "notes": "Grid-only proposal. County/PEC documents state Dominion Energy is obligated to supply power and would need a new large substation and 2-5 miles of new transmission line for the 700MW-1.8GW load. No on-site or dedicated generation is proposed; no REC (Rappahannock Electric Cooperative) role is mentioned."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -15205,7 +15205,7 @@
     "energy": {
       "source": "mixed",
       "utility": "Oncor",
-      "notes": "CyrusOne signed a 40MW wind+solar PPA with Gexa Energy (announced April 2022) explicitly covering its North Texas data centers, naming Allen, Carrollton, and Lewisville as the sites the purchase powers. This is a genuine site-specific (not merely fleet-wide) renewable procurement naming Allen directly, alongside contin"
+      "notes": "CyrusOne signed a 40MW wind+solar PPA with Gexa Energy (announced April 2022) explicitly covering its North Texas data centers, naming Allen, Carrollton, and Lewisville as the sites the purchase powers."
     },
     "landAcres": 90,
     "facilityType": "data_center",
@@ -15764,7 +15764,7 @@
     "energy": {
       "source": "grid",
       "utility": "CPS Energy",
-      "notes": "San Antonio campus (SAT1-SAT5) draws from CPS Energy substations. CPS Energy representatives attended the SAT5 groundbreaking as the utility partner, but no site-specific renewable PPA or dedicated generation project was found for SAT2-SAT4. Note: a separate CyrusOne/Calpine 'Thad Hill Energy Center' powered-land deal "
+      "notes": "San Antonio campus (SAT1-SAT5) draws from CPS Energy substations. CPS Energy representatives attended the SAT5 groundbreaking as the utility partner, but no site-specific renewable PPA or dedicated generation project was found for SAT2-SAT4."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -19534,7 +19534,7 @@
     "energy": {
       "source": "grid",
       "utility": "ComEd",
-      "notes": "EDCCHI02 is a specific, addressed EdgeConneX facility at 2021 Lunt Avenue, Elk Grove Village, IL — in ComEd territory, part of the Chicago-area cluster where ComEd has been actively expanding substation capacity (e.g., the Elk Grove substation expansion) to serve data-center load growth. The Lambda \"AI Factory\" announc"
+      "notes": "EDCCHI02 is a specific, addressed EdgeConneX facility at 2021 Lunt Avenue, Elk Grove Village, IL — in ComEd territory, part of the Chicago-area cluster where ComEd has been actively expanding substation capacity (e.g., the Elk Grove substation expansion) to serve data-center load growth."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -20502,7 +20502,7 @@
     "landAcres": 155,
     "community": {
       "status": "supported",
-      "notes": "Edgecombe County commissioners unanimously approved a zoning-ordinance amendment enabling the Kingsboro project (Nov 2025) with no opposition documented at that hearing; a separate, smaller ESS project at another Tarboro site had been rejected by the town council earlier in 2025 amid resident opposition, but that is a ",
+      "notes": "Edgecombe County commissioners unanimously approved a zoning-ordinance amendment enabling the Kingsboro project (Nov 2025) with no opposition documented at that hearing; a separate, smaller ESS project at another Tarboro site had been rejected by the town council earlier in 2025 amid resident opposition.",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -23495,7 +23495,7 @@
     "energy": {
       "source": "grid",
       "utility": "Portland General Electric (PGE)",
-      "notes": "Connected to PGE's Sunset Reliability Center grid with high-priority 24/7 diesel-fuel access under PGE's Dispatchable Standby Generation program. Flexential Oregon is described as a \"gold level partner\" in PGE's Clean Wind program across its Hillsboro portfolio, but this is a corporate energy-purchasing program (RECs/g"
+      "notes": "Connected to PGE's Sunset Reliability Center grid with high-priority 24/7 diesel-fuel access under PGE's Dispatchable Standby Generation program."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -23999,7 +23999,7 @@
     "notes": "862 acres, across the Brazos River from the Pecan Plantation community. Water draw up to 20,000 gal/day. Coordinates are approximate.",
     "energy": {
       "source": "grid",
-      "notes": "IMPORTANT CORRECTION: Pacifico Energy's famous 5-7.65GW off-grid gas project ('GW Ranch') is a DIFFERENT, DISTINCT project located in Pecos County, TX — not this site. This site, 'Fort Spunky,' is Pacifico's actual Hood County, TX project: an 862-acre data-center campus that requested to pull 100 MW from the grid, per "
+      "notes": "IMPORTANT CORRECTION: Pacifico Energy's famous 5-7.65GW off-grid gas project ('GW Ranch') is a DIFFERENT, DISTINCT project located in Pecos County, TX — not this site."
     },
     "landAcres": 862,
     "community": {
@@ -24639,7 +24639,7 @@
     "energy": {
       "source": "wind",
       "utility": "City of Worthington",
-      "notes": "Site-specific co-located wind (primary) plus solar is the defining, named story — Geronimo's own press release describes the project as 'a data center collocated with new local, clean power generation which will supply power to the data center,' explicitly citing the Plum Creek Wind, Plum Creek Wind II, Lime Creek Wind"
+      "notes": "Site-specific co-located wind (primary) plus solar is the defining, named story — Geronimo's own press release describes the project as 'a data center collocated with new local, clean power generation which will supply power to the data center,' explicitly citing the Plum Creek Wind, Plum Creek Wind II."
     },
     "community": {
       "status": "opposed",
@@ -24801,7 +24801,7 @@
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy",
-      "notes": "AES signed a 10-year deal to supply 90% carbon-free power (500 MW wind/solar/hydro/battery portfolio) to Google's Loudoun County data centers starting 2021, but coverage names the county-wide facility set (\"two major facilities... a third under construction\"), not Arcola specifically, and a DCD article on Arcola's Domi"
+      "notes": "AES signed a 10-year deal to supply 90% carbon-free power (500 MW wind/solar/hydro/battery portfolio) to Google's Loudoun County data centers starting 2021, but coverage names the county-wide facility set (\"two major facilities... a third under construction\"), not Arcola specifically."
     },
     "landAcres": 91,
     "facilityType": "data_center",
@@ -25233,7 +25233,7 @@
     "energy": {
       "source": "wind",
       "utility": "MidAmerican Energy",
-      "notes": "Google signed a contract with MidAmerican Energy for up to 407 MW of wind energy (tracked via RECs from MidAmerican's Wind VIII program) specifically to supply the Council Bluffs data center campus, one of Google's largest renewable commitments at the time. MidAmerican officials projected at least 18% of the site's con"
+      "notes": "Google signed a contract with MidAmerican Energy for up to 407 MW of wind energy (tracked via RECs from MidAmerican's Wind VIII program) specifically to supply the Council Bluffs data center campus, one of Google's largest renewable commitments at the time."
     },
     "subsidies": [
       {
@@ -25517,7 +25517,7 @@
     "energy": {
       "source": "solar",
       "utility": "NV Energy",
-      "notes": "Google and NV Energy struck what was described as the world's largest battery-backed solar deal for a corporate customer at the time, comprising roughly 350 MW of solar PV and 250-280 MW of battery storage, explicitly to power the $600M Henderson data center. Google has since layered in a Fervo Energy geothermal projec"
+      "notes": "Google and NV Energy struck what was described as the world's largest battery-backed solar deal for a corporate customer at the time, comprising roughly 350 MW of solar PV and 250-280 MW of battery storage, explicitly to power the $600M Henderson data center."
     },
     "subsidies": [
       {
@@ -25845,7 +25845,7 @@
     "energy": {
       "source": "solar",
       "utility": "Duke Energy Carolinas",
-      "notes": "Google was the first customer of Duke Energy's Green Source Rider program (which Google helped push Duke to create), signing a PPA for a dedicated 61 MW solar farm in Rutherford County, NC built by Rutherford Farms LLC explicitly to meet new energy demand from Google's expanded Lenoir data center. Duke Energy's release"
+      "notes": "Google was the first customer of Duke Energy's Green Source Rider program (which Google helped push Duke to create), signing a PPA for a dedicated 61 MW solar farm in Rutherford County, NC built by Rutherford Farms LLC explicitly to meet new energy demand from Google's expanded Lenoir data center."
     },
     "investmentUsd": 1200000000,
     "facilityType": "data_center",
@@ -26159,7 +26159,7 @@
     "energy": {
       "source": "solar",
       "utility": "Santee Cooper (local grid); Berkeley Electric Cooperative also serves the area",
-      "notes": "Google structured a PPA via Sol Systems for 225 MW of new solar (developed by Pine Gate Renewables) plus 18 MW of battery storage across North and South Carolina, explicitly framed as supporting Google's operations in the region and its 24/7 carbon-free energy goal. The Berkeley County/Moncks Corner campus is Google's "
+      "notes": "Google structured a PPA via Sol Systems for 225 MW of new solar (developed by Pine Gate Renewables) plus 18 MW of battery storage across North and South Carolina, explicitly framed as supporting Google's operations in the region and its 24/7 carbon-free energy goal."
     },
     "investmentUsd": 1300000000,
     "facilityType": "data_center",
@@ -26558,7 +26558,7 @@
     "energy": {
       "source": "solar",
       "utility": "Omaha Public Power District (OPPD)",
-      "notes": "Google and OPPD built a joint procurement framework enabling Google to supply carbon-free energy resources to OPPD in support of Google's 24/7 clean energy goal, anchored by the Pierce County Energy Center — a 420 MW solar system with 680 MWh of battery storage expected online in 2027. This is described as supporting G"
+      "notes": "Google and OPPD built a joint procurement framework enabling Google to supply carbon-free energy resources to OPPD in support of Google's 24/7 clean energy goal, anchored by the Pierce County Energy Center — a 420 MW solar system with 680 MWh of battery storage expected online in 2027."
     },
     "investmentUsd": 600000000,
     "landAcres": 275,
@@ -28394,7 +28394,7 @@
     "landAcres": 352,
     "community": {
       "status": "mixed",
-      "notes": "At a Dec. 10, 2024 Planning Commission meeting, commissioners withheld support pending more detail, saying they 'don't want to see GEV's application go the way of Amazon's,' and required specifics on diesel-generator/fuel-tank siting, traffic, and economic impact before advancing; as of the Jan. 14, 2025 agenda the cas",
+      "notes": "At a Dec. 10, 2024 Planning Commission meeting, commissioners withheld support pending more detail, saying they 'don't want to see GEV's application go the way of Amazon's,' and required specifics on diesel-generator/fuel-tank siting, traffic, and economic impact before advancing; as of the Jan.",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -34505,7 +34505,7 @@
     "energy": {
       "source": "solar",
       "utility": "Duke Energy",
-      "notes": "Multiple independent outlets describe the Forest City data center as running on 100% renewable solar energy backed by five separate NC solar PPAs arranged through Duke Energy, consistent with Meta's site-specific procurement pattern at its other campuses, but no individual project name/MW could be confirmed via a direc"
+      "notes": "Multiple independent outlets describe the Forest City data center as running on 100% renewable solar energy backed by five separate NC solar PPAs arranged through Duke Energy, consistent with Meta's site-specific procurement pattern at its other campuses."
     },
     "subsidies": [
       {
@@ -35448,7 +35448,7 @@
     "energy": {
       "source": "solar",
       "utility": "Salt River Project (SRP)",
-      "notes": "Meta partnered with SRP and Ørsted for a portfolio of solar-plus-battery projects to reach 100% renewable for the Mesa data center: majority offtake of the 300 MW Eleven Mile Solar Center (Pinal County), a 50 MW allocation from the 100 MW West Line Solar Facility (Eloy), and a share of the 200 MW Brittlebush Solar Faci"
+      "notes": "Meta partnered with SRP and Ørsted for a portfolio of solar-plus-battery projects to reach 100% renewable for the Mesa data center: majority offtake of the 300 MW Eleven Mile Solar Center (Pinal County), a 50 MW allocation from the 100 MW West Line Solar Facility (Eloy)."
     },
     "investmentUsd": 1000000000,
     "landAcres": 396,
@@ -37193,7 +37193,7 @@
     "landAcres": 300.7,
     "community": {
       "status": "contested",
-      "notes": "Lyon County commissioners approved a 6-month countywide moratorium (Resolution 12-26, effective through Jan 22, 2027) on July 23, 2026 that halts receipt/review/hearing/granting of new data-center applications, amid a wave of county data-center controversy; the moratorium isn't confirmed as targeting Microsoft's Fernle",
+      "notes": "Lyon County commissioners approved a 6-month countywide moratorium (Resolution 12-26, effective through Jan 22, 2027) on July 23, 2026 that halts receipt/review/hearing/granting of new data-center applications, amid a wave of county data-center controversy.",
       "sourceIndex": 3
     },
     "facilityType": "data_center",
@@ -38492,7 +38492,7 @@
     "landAcres": 1385,
     "community": {
       "status": "contested",
-      "notes": "Advocacy group Clean Water for NC organized a petition and community meeting (Sept 2025) after commissioners said Microsoft had shared no official plans; at a Microsoft-hosted community meeting in June 2026, a Roxboro city councilor and residents pressed on water/energy/noise impacts and voiced skepticism that Microsof",
+      "notes": "Advocacy group Clean Water for NC organized a petition and community meeting (Sept 2025) after commissioners said Microsoft had shared no official plans; at a Microsoft-hosted community meeting in June 2026.",
       "sourceIndex": 2
     },
     "facilityType": "data_center",
@@ -39904,7 +39904,7 @@
     "landAcres": 2000,
     "community": {
       "status": "contested",
-      "notes": "Residents raised property-value, transparency, and drought-era water-use concerns at a Feb 24, 2026 Hill County Commissioners Court tax-abatement hearing; Nexus subsequently withdrew its tax-abatement request. A separate countywide data-center moratorium (May-June 2026, later rescinded after a $100M federal suit) was t",
+      "notes": "Residents raised property-value, transparency, and drought-era water-use concerns at a Feb 24, 2026 Hill County Commissioners Court tax-abatement hearing; Nexus subsequently withdrew its tax-abatement request.",
       "sourceIndex": 5
     },
     "facilityType": "data_center",
@@ -42821,7 +42821,7 @@
     "energy": {
       "source": "grid",
       "utility": "Bluebonnet Electric Cooperative (via Tract's Caldwell Valley Technology Park interconnection; LCRA also named for the park)",
-      "notes": "PowerHouse's own power arrangement is not separately disclosed — the company has not published its power source for this site, and its site-plan filing with Uhland reportedly omitted power-usage specifications. What is confirmed is the landlord context: PowerHouse's 500-acre, 700MW-proposed campus sits within Tract's C"
+      "notes": "PowerHouse's own power arrangement is not separately disclosed — the company has not published its power source for this site, and its site-plan filing with Uhland reportedly omitted power-usage specifications."
     },
     "landAcres": 500,
     "community": {
@@ -42978,7 +42978,7 @@
     "energy": {
       "source": "grid",
       "utility": "Oncor",
-      "notes": "Standard ERCOT grid interconnection via Oncor, with an Oncor substation near the campus. Prime advertises a company-wide commitment to match 100% of operating data-center electricity with renewable energy by 2030, but this is a portfolio-level REC/matching commitment (per Prime's own sustainability page), not a site-sp"
+      "notes": "Standard ERCOT grid interconnection via Oncor, with an Oncor substation near the campus."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -43219,7 +43219,7 @@
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy / NOVEC",
-      "notes": "Grid-only. Data Center Frontier reporting states the project depends on Dominion Energy grid power, with Dominion planning new substations and a new 230kV transmission line (Dave's Store substation to a NOVEC substation near Wellington/Rollins Ford roads) to serve NOVEC's territory. No backup generators, solar, or dedi"
+      "notes": "Grid-only. Data Center Frontier reporting states the project depends on Dominion Energy grid power, with Dominion planning new substations and a new 230kV transmission line (Dave's Store substation to a NOVEC substation near Wellington/Rollins Ford roads) to serve NOVEC's territory."
     },
     "landAcres": 2100,
     "community": {
@@ -43271,7 +43271,7 @@
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy South Carolina",
-      "notes": "Grid-delivered, tied to a specific but unbuilt regional gas plant — not on-site/behind-the-meter generation. SC Daily Gazette / News From the States reporting: the proposed 1,000MW data center would draw nearly all of Santee Cooper's share of the jointly-developed (Dominion Energy + Santee Cooper) 2,200MW Canadys natur"
+      "notes": "Grid-delivered, tied to a specific but unbuilt regional gas plant — not on-site/behind-the-meter generation."
     },
     "landAcres": 860,
     "community": {
@@ -43595,7 +43595,7 @@
     "landAcres": 186,
     "community": {
       "status": "mixed",
-      "notes": "Swept into Archbald Borough's Nov 24, 2025 rezoning vote, which passed narrowly (4 for, 2 against, 1 abstain) amid audience opposition; separately drew sustained resident concern (tenant uncertainty, water/wetlands, emissions) from 100+ attendees at a Jan 2026 state DEP permit meeting, and the site purchase displaced V",
+      "notes": "Swept into Archbald Borough's Nov 24, 2025 rezoning vote, which passed narrowly (4 for, 2 against, 1 abstain) amid audience opposition; separately drew sustained resident concern (tenant uncertainty, water/wetlands, emissions) from 100+ attendees at a Jan 2026 state DEP permit meeting.",
       "sourceIndex": 3
     },
     "facilityType": "data_center",
@@ -43897,7 +43897,7 @@
     },
     "community": {
       "status": "contested",
-      "notes": "Trenton Planning Commission approved the site plan in a ~10-minute meeting (Mar 30, 2026) taking no public questions despite ~30 residents expecting a hearing; a 500+-member opposition group (W.A.T.E.R.) is petitioning for a Butler County charter amendment to ban data centers over 25MW, and council approved a 15-year t",
+      "notes": "Trenton Planning Commission approved the site plan in a ~10-minute meeting (Mar 30, 2026) taking no public questions despite ~30 residents expecting a hearing; a 500+-member opposition group (W.A.T.E.R.) is petitioning for a Butler County charter amendment to ban data centers over 25MW.",
       "sourceIndex": 3
     },
     "facilityType": "data_center",
@@ -44042,7 +44042,7 @@
     "landAcres": 17.4,
     "community": {
       "status": "supported",
-      "notes": "Approved by the City of San Jose Dec 10, 2025 via a streamlined CEQA Addendum to the existing Mitigated Negative Declaration (SCH #2022010266); the CEQAnet record shows only a routine Caltrans/DOT comment letter during the original 21-day public review (Jan 19-Feb 8, 2022) and documents no appeal or additional public c",
+      "notes": "Approved by the City of San Jose Dec 10, 2025 via a streamlined CEQA Addendum to the existing Mitigated Negative Declaration (SCH #2022010266).",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -46153,7 +46153,7 @@
     "landAcres": 120,
     "community": {
       "status": "opposed",
-      "notes": "Gov. Hochul's July 14, 2026 executive order imposes a one-year statewide freeze on hyperscale (>50MW) data-center permits and explicitly names the Lysander proposal as caught by it (its ~300MW interconnection request exceeds the threshold); this followed months of residents packing town meetings over electric demand, w",
+      "notes": "Gov. Hochul's July 14, 2026 executive order imposes a one-year statewide freeze on hyperscale (>50MW) data-center permits and explicitly names the Lysander proposal as caught by it (its ~300MW interconnection request exceeds the threshold); this followed months of residents packing town meetings over electric demand.",
       "sourceIndex": 2
     },
     "facilityType": "data_center",
@@ -46335,7 +46335,7 @@
     "energy": {
       "source": "grid",
       "utility": "Brazos Electric Power Cooperative / Hilco Electric Cooperative (via Lone Star Transmission and ERCOT interconnection)",
-      "notes": "RCM Hill LLC's Project Aquila is a planned 1,235 MW data center on 800+ contiguous acres in unincorporated Hill County, TX. ERCOT has designated RCM Hill as the Interconnecting Large Load Entity (ILLE) for the project; on May 12, 2026 ERCOT approved both the steady-state and stability studies, qualifying it as a 'Studi"
+      "notes": "RCM Hill LLC's Project Aquila is a planned 1,235 MW data center on 800+ contiguous acres in unincorporated Hill County, TX."
     },
     "landAcres": 800,
     "community": {
@@ -48648,7 +48648,7 @@
     },
     "community": {
       "status": "contested",
-      "notes": "Westfield City Council voted unanimously on July 6, 2026 to enact a 365-day citywide moratorium on new data-center permits/construction after residents packed hearings over water and power-strain concerns; the moratorium is framed as not formally targeting Servistar's existing 2021 approvals, but a councilor publicly q",
+      "notes": "Westfield City Council voted unanimously on July 6, 2026 to enact a 365-day citywide moratorium on new data-center permits/construction after residents packed hearings over water and power-strain concerns; the moratorium is framed as not formally targeting Servistar's existing 2021 approvals.",
       "sourceIndex": 5
     },
     "facilityType": "data_center"
@@ -48916,7 +48916,7 @@
     "energy": {
       "source": "grid",
       "utility": "CenterPoint Energy (ERCOT)",
-      "notes": "Grid-fed, no on-site generation found. Facility (20-acre private campus) is served by a loop-fed 300-400 MVA substation with dual A/B feeds via underground utility service (Premium Rollover Service) — a resiliency/distribution design, not a generation asset. Houston-market data centers, including Skybox, sit on the Cen"
+      "notes": "Grid-fed, no on-site generation found. Facility (20-acre private campus) is served by a loop-fed 300-400 MVA substation with dual A/B feeds via underground utility service (Premium Rollover Service) — a resiliency/distribution design, not a generation asset."
     },
     "landAcres": 20,
     "facilityType": "data_center",
@@ -51592,7 +51592,7 @@
     "energy": {
       "source": "grid",
       "utility": "APS (Arizona Public Service)",
-      "notes": "Stream's own announcement of the Goodyear campus commissioning states the site is served by an on-site APS substation Stream invested in (up to 350 MW, expandable toward 480 MW per secondary listings), explicitly calling APS \"the region's preferred utility provider\" and the substation the source of \"reliable, low-cost "
+      "notes": "Stream's own announcement of the Goodyear campus commissioning states the site is served by an on-site APS substation Stream invested in (up to 350 MW, expandable toward 480 MW per secondary listings)."
     },
     "landAcres": 157,
     "facilityType": "data_center",
@@ -51647,7 +51647,7 @@
     "energy": {
       "source": "grid",
       "utility": "Georgia Power",
-      "notes": "Switch markets The KEEP as running on '100% green energy,' echoing its fleet-wide pledge, but no Georgia-specific solar/wind PPA or on-site generation project tied to Switch was found (Georgia Power's general CARES CIR customer-solar program is not confirmed as a Switch-specific deal). Switch's own sustainability page "
+      "notes": "Switch markets The KEEP as running on '100% green energy,' echoing its fleet-wide pledge, but no Georgia-specific solar/wind PPA or on-site generation project tied to Switch was found (Georgia Power's general CARES CIR customer-solar program is not confirmed as a Switch-specific deal)."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -52031,7 +52031,7 @@
     "energy": {
       "source": "solar",
       "utility": "NV Energy",
-      "notes": "Las Vegas Core Campus (shared arrangement across LV5/7/9/10/11/12/Edge1) draws power from the Switch Solar project — two 179MW-combined solar plants (Switch Station 1 & 2) on ~1,600 acres in the BLM Dry Lake Solar Energy Zone, Clark County — delivered through a special NV Energy renewable tariff negotiated between Swit"
+      "notes": "Las Vegas Core Campus (shared arrangement across LV5/7/9/10/11/12/Edge1) draws power from the Switch Solar project — two 179MW-combined solar plants (Switch Station 1 & 2) on ~1,600 acres in the BLM Dry Lake Solar Energy Zone, Clark County."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -52386,7 +52386,7 @@
       "source": "solar",
       "utility": "NV Energy",
       "onSiteGenerationMw": 130,
-      "notes": "Tahoe Reno 1, the flagship building of the Citadel Campus, opened citing up to 130MW of renewable power. The campus draws from the 127MW behind-the-meter Gigawatt Nevada solar+storage plant (Storey County) plus the 179MW Switch Station 1 & 2 solar delivered via NV Energy's special renewable tariff; 100% renewable Nevad"
+      "notes": "Tahoe Reno 1, the flagship building of the Citadel Campus, opened citing up to 130MW of renewable power."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -52514,7 +52514,7 @@
       "source": "solar",
       "utility": "NV Energy",
       "onSiteGenerationMw": 127,
-      "notes": "The Citadel Campus (Tahoe Reno) is powered by Switch's Gigawatt Nevada program: a 127MW behind-the-meter solar+240MWh battery storage plant in Storey County built with Capital Dynamics, plus draw from the earlier 179MW Switch Station 1 & 2 solar plants (Apex, Clark County) delivered via a special NV Energy renewable ta"
+      "notes": "The Citadel Campus (Tahoe Reno) is powered by Switch's Gigawatt Nevada program: a 127MW behind-the-meter solar+240MWh battery storage plant in Storey County built with Capital Dynamics."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -52575,7 +52575,7 @@
     "energy": {
       "source": "grid",
       "utility": "Oncor",
-      "notes": "Switch markets a fleet-wide '100% renewable energy' commitment that press coverage repeats for The Rock, but no Texas-specific solar/wind PPA or on-site generation project was found (unlike Nevada's named Switch Station 1&2 / Gigawatt Nevada projects). The site connects to ERCOT via Oncor, with grid upgrades (Hutto-Rou"
+      "notes": "Switch markets a fleet-wide '100% renewable energy' commitment that press coverage repeats for The Rock, but no Texas-specific solar/wind PPA or on-site generation project was found (unlike Nevada's named Switch Station 1&2 / Gigawatt Nevada projects)."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -54189,7 +54189,7 @@
       "source": "mixed",
       "utility": "Bluebonnet Electric Cooperative",
       "onSiteGenerationMw": 30,
-      "notes": "Grid power from Bluebonnet Electric Cooperative (Giga Texas sits in unincorporated Travis County within Bluebonnet's — not Austin Energy's — service territory) is the primary supply, but Tesla has built genuine on-site generation and storage that make this a defining mixed story: a 30MW rooftop solar installation (Phas"
+      "notes": "Grid power from Bluebonnet Electric Cooperative (Giga Texas sits in unincorporated Travis County within Bluebonnet's — not Austin Energy's — service territory) is the primary supply, but Tesla has built genuine on-site generation and storage that make this a defining mixed story."
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
@@ -55239,7 +55239,7 @@
     "energy": {
       "source": "grid",
       "utility": "Arizona Public Service (APS)",
-      "notes": "Buckeye Tech Corridor is planned around a standard APS grid interconnect; APS is working to expand area power infrastructure to serve up to 1.8GW of demand. Buckeye Mayor Eric Orsborn said expansion 'might include bringing a new power plant online,' but this is speculative mayoral commentary about future grid capacity,"
+      "notes": "Buckeye Tech Corridor is planned around a standard APS grid interconnect; APS is working to expand area power infrastructure to serve up to 1.8GW of demand."
     },
     "investmentUsd": 20000000000,
     "landAcres": 2069,
@@ -55583,7 +55583,7 @@
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy Virginia",
-      "notes": "430-acre, ~900MW campus (per DCD planning-commission coverage) rejected by Hanover County Board of Supervisors 4-3 on May 29, 2026. Power plan was a standard Dominion Energy grid interconnection, with Dominion anticipating first electrical service in late 2029; no on-site generation or PPA disclosed. Project confirmed "
+      "notes": "430-acre, ~900MW campus (per DCD planning-commission coverage) rejected by Hanover County Board of Supervisors 4-3 on May 29, 2026. Power plan was a standard Dominion Energy grid interconnection, with Dominion anticipating first electrical service in late 2029; no on-site generation or PPA disclosed."
     },
     "water": {
       "reportedMgd": 2,
@@ -56161,7 +56161,7 @@
     "energy": {
       "source": "grid",
       "utility": "American Electric Power (AEP Ohio)",
-      "notes": "Grid-only. Data Center Frontier: power for the 70-acre, 192MW (3x64MW) OH1 campus comes from a dedicated local 300 MVA N+1 AEP substation (delivered ~Q4 2024), with 'renewable energy sources and their development credits available above the meter' — i.e., an optional REC/PPA-style overlay, not a defining dedicated clea"
+      "notes": "Grid-only. Data Center Frontier: power for the 70-acre, 192MW (3x64MW) OH1 campus comes from a dedicated local 300 MVA N+1 AEP substation (delivered ~Q4 2024), with 'renewable energy sources and their development credits available above the meter' — i.e., an optional REC/PPA-style overlay."
     },
     "investmentUsd": 2000000000,
     "landAcres": 70,
@@ -56665,7 +56665,7 @@
     "energy": {
       "source": "grid",
       "utility": "DTE Energy",
-      "notes": "Grid power via a new DTE Energy electrical substation is the defining arrangement. Project Flex (six buildings, ~1.8M sq ft, 172 acres) requires a dedicated DTE substation built for the site, with backup power from batteries and diesel generators — standard data-center redundancy, not a defining on-site generation stor"
+      "notes": "Grid power via a new DTE Energy electrical substation is the defining arrangement."
     },
     "landAcres": 180,
     "community": {
@@ -57093,7 +57093,7 @@
     "investmentUsd": 2100000000,
     "community": {
       "status": "contested",
-      "notes": "The Archbald Neighborhood Association submitted a draft ordinance amendment (Oct 2025) to restrict data centers to a single industrial-zoned site, and residents packed fall-2025 hearings demanding restrictions; the borough council approved the enabling zoning anyway on a divided Nov 24, 2025 vote, with conditional-use ",
+      "notes": "The Archbald Neighborhood Association submitted a draft ordinance amendment (Oct 2025) to restrict data centers to a single industrial-zoned site, and residents packed fall-2025 hearings demanding restrictions; the borough council approved the enabling zoning anyway on a divided Nov 24, 2025 vote.",
       "sourceIndex": 0
     },
     "facilityType": "data_center",
