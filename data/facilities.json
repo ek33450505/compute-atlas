@@ -792,7 +792,6 @@
       "state": "TX",
       "precision": "exact"
     },
-    "poweredBy": "Grid — Oncor Electric Delivery",
     "statusHistory": [],
     "sources": [
       {
@@ -815,20 +814,14 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-24",
         "kind": "other"
-      },
-      {
-        "url": "https://www.electricchoice.com/utilities/oncor/",
-        "label": "Electric Choice — Oncor service area",
-        "retrievedAt": "2026-07-24",
-        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-13",
     "notes": "Confirmed operational on Aligned's Dallas directory page; address 2800 Summit Ave, Plano, TX 75074. AI/HPC (likely): Dallas DFW-01: Aligned DeltaFlow/Delta3 high-density AI/HPC platform.",
     "energy": {
       "source": "grid",
       "utility": "Oncor Electric Delivery",
-      "notes": "Aligned's DFW-01/DFW-02 campus in Plano (28000 Summit Avenue, 46 MW at full build) sits within Oncor's T&D service territory covering central/eastern/southern Plano. No facility-specific statement names Oncor directly, and no dedicated on-site generation or renewable PPA was found. Confidence is medium (inferred from O"
+      "notes": "Aligned's DFW-01/DFW-02 campus in Plano (28000 Summit Avenue, 46 MW at full build) sits within Oncor's T&D service territory covering central/eastern/southern Plano. No facility-specific statement names Oncor directly, and no dedicated on-site generation or renewable PPA was found. The utility is inferred from service-territory geography — it is not a sourced claim about this facility."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -847,7 +840,6 @@
       "state": "TX",
       "precision": "exact"
     },
-    "poweredBy": "Grid — Oncor Electric Delivery",
     "statusHistory": [],
     "sources": [
       {
@@ -869,20 +861,14 @@
         "label": "Aligned — DFW-03 Mansfield press release",
         "retrievedAt": "2026-07-24",
         "kind": "press"
-      },
-      {
-        "url": "https://en.wikipedia.org/wiki/Oncor_Electric_Delivery",
-        "label": "Oncor Electric Delivery — Wikipedia (service territory)",
-        "retrievedAt": "2026-07-24",
-        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-13",
     "notes": "Confirmed operational; 3801 Britton Rd, Mansfield, TX; 27-acre campus. AI/HPC (likely): Mansfield DFW-03 on Aligned adaptive high-density AI/HPC platform.",
     "energy": {
       "source": "grid",
       "utility": "Oncor Electric Delivery",
-      "notes": "Aligned's DFW-03 campus in Mansfield (Tarrant County), TX, sits within Oncor's transmission and distribution service territory — Oncor is the dominant T&D utility across the DFW metro. No press coverage or filing explicitly names Oncor as DFW-03's interconnecting utility, and no dedicated on-site generation or renewabl"
+      "notes": "Aligned's DFW-03 campus in Mansfield (Tarrant County), TX, sits within Oncor's transmission and distribution service territory — Oncor is the dominant T&D utility across the DFW metro. No press coverage or filing explicitly names Oncor as DFW-03's interconnecting utility, and no dedicated on-site generation or renewable PPA was found. The utility is inferred from service-territory geography — it is not a sourced claim about this facility."
     },
     "landAcres": 27,
     "facilityType": "data_center",
