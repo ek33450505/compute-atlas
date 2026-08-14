@@ -32,6 +32,10 @@ run.sh (launchd, daily)
   also runs under a `timeout`/`gtimeout` wall-clock cap when one is available
   (macOS ships neither by default — in that case it runs uncapped and logs a
   WARN).
+- `scripts/discovery/verify-source.ts`, `ollama-client.ts`, `fetch-page-text.ts`,
+  `net-guard.ts` — the source verification gate. Before a candidate can be
+  staged, its source URLs are fetched and mechanically checked against the
+  claim using a local Ollama model. See "Source verification gate" below.
 - `scripts/discovery/discovery-prompt.txt` — the bounded, single-session
   research prompt template. Contains four responsibilities: (1) discover
   net-new facilities, (2) re-check existing facilities for genuine status changes,
@@ -129,6 +133,77 @@ re-sourcing for the same facility may be combined into one `enrichmentUpdate` el
 Never restate fields you cannot see from the projection or prior submissions.
 Omit a field if you have no new citable source for it.
 
+## Source verification gate (local Ollama)
+
+Every candidate source URL is fetched and mechanically checked against the claim
+it is cited for before that candidate can become a `pending` submission. The
+gate lives in `submit-candidates.ts` and is **on by default** — `verify-source.ts`
+runs the check, `ollama-client.ts` talks to a local Ollama instance, and
+`fetch-page-text.ts` (behind `net-guard.ts`) does the SSRF-guarded fetch.
+
+**Why a local model.** Measured beforehand: a local model is unreliable at
+*proposing* facts — 0/5 source URLs survived an open-ended discovery test, every
+one fabricated — but strong at *checking* a grounded claim against fetched page
+text (12/12). The gate only ever asks it to check a claim it has been handed,
+never to propose one. Verification runs entirely on the machine; it never calls
+a metered API.
+
+### Configuration
+
+All optional; defaults come from `ollama-client.ts`.
+
+| Variable | Default | Notes |
+|---|---|---|
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | |
+| `OLLAMA_VERIFY_MODEL` | `gpt-oss:20b` | must be pulled locally |
+| `OLLAMA_TIMEOUT_MS` | `120000` | per-call abort timeout; used when it parses as a positive finite number, otherwise the default |
+| `VERIFY_SOURCES_ENABLED` | gate is on | `false` is the only opt-out |
+
+### Setup
+
+```bash
+ollama pull gpt-oss:20b
+ollama ps                                  # a loaded model shows GPU in the PROCESSOR column
+curl -s http://127.0.0.1:11434/api/tags    # confirm the daemon is reachable
+```
+
+### When Ollama is unreachable
+
+If the daemon is down or the model is not pulled, the gate returns `unavailable`
+and the run **aborts rather than submitting unverified candidates**. This is
+deliberate: `unavailable` means "we could not check", never "the source is bad".
+Collapsing the two would make an Ollama outage indistinguishable from a run that
+caught a dozen fabrications. A `http_error_404` reason is the likeliest
+real-world trigger — the model is not pulled (fresh machine, pruned model, or a
+typo in `OLLAMA_VERIFY_MODEL`).
+
+### Performance
+
+Measured with `gpt-oss:20b` on Ollama 0.32.7, Apple Silicon:
+
+- **~8–13s per verification call** — 8.4s at ~12k chars of page text, 12.6s at
+  ~22.5k.
+- **Ollama does not parallelise on this setup:** 1.04× speedup at 5-way
+  concurrency (5 concurrent calls, 40.2s wall; 5 sequential, 42s). Requests
+  serialise on the GPU, so raising concurrency speeds up only the fetch-bound
+  work, never the model calls. Budget bulk verification runs accordingly.
+- Page text is capped at `MAX_PAGE_TEXT_CHARS` (60,000) in `verify-source.ts`,
+  coupled to the client's `num_ctx` of 32768 — **raising one requires revisiting
+  the other.** Not cosmetic: submitting ~11,572 tokens at `num_ctx=2048` was
+  measured to evict ~97% of the prompt, system prompt included, after which the
+  model followed an instruction injected at the end of the page text.
+
+### Known limitation: name matching, not entity resolution
+
+The model matches names near-literally. Same page, same gate, only the entity
+name changed: `springfieldohio.gov`'s "5C Data Center FAQs" page *verifies* the
+name `5C Data Center` but *rejects* `5C Group / Vultr Data Center (Prime Ohio)`,
+which is that facility's `name` in the dataset. A source that refers to a site by
+a different name — subsidiary, tenant, project codename, operator rather than
+site — can be rejected even though the citation is genuine. 241 of 937 records
+(26%) carry composite names of that shape. Read gate output with that in mind: a
+rejection is not proof that a citation is bad.
+
 ## Safety properties
 
 - **Staging-only:** the pipeline only ever calls `POST /api/submissions`. It
@@ -144,6 +219,14 @@ Omit a field if you have no new citable source for it.
   for the first 20 days from the burst-start date baked into `run.sh`, then
   automatically 5/day — no manual step to revert. `MAX_CANDIDATES` in the
   environment overrides the computed cap (escape hatch / tests).
+- **Fail-loud source verification:** every candidate's source URLs are fetched
+  and mechanically checked against the claim before staging (see the gate
+  above). If the local Ollama model is unreachable or not pulled, the check
+  returns `unavailable` and the run **aborts** — it never falls back to
+  submitting unverified candidates. `unavailable` means "we could not check",
+  not "the source is bad"; the two are deliberately kept distinct so an Ollama
+  outage can't look like a run that caught fabrications. The only opt-out is an
+  explicit `VERIFY_SOURCES_ENABLED=false`.
 - **No silent drops:** every skipped candidate (invalid schema, missing
   sources, duplicate, over cap, no genuine status change) is logged with a
   reason, both to stdout and to a JSON run summary in `discovery-logs/run-<runId>.json`.
@@ -205,6 +288,13 @@ npx vitest run scripts/discovery/*.test.ts
 bats tests/discovery/run.bats
 ```
 
+Any invocation that reaches the submit step — a real run, or the direct
+`submit-candidates.ts` call above — needs a local Ollama daemon with
+`OLLAMA_VERIFY_MODEL` pulled, or the source verification gate returns
+`unavailable` and aborts the run. See "Source verification gate" above for setup
+and the `VERIFY_SOURCES_ENABLED=false` opt-out. The dry run and the
+`existing-facilities.ts` / `check-sources.ts` utilities do not need it.
+
 ## Installing the launchd job
 
 ```bash
@@ -247,6 +337,11 @@ launchd context — a scheduled run reaches your subscription without an
 interactive shell. If it ever regresses, `discovery-logs/launchd.err` is where
 it surfaces; the fallbacks are a login-session launcher or the manual
 invocation above.
+
+**Ollama note:** the scheduled run submits candidates, so it needs the Ollama
+daemon reachable at `OLLAMA_BASE_URL` with `OLLAMA_VERIFY_MODEL` pulled at the
+time the job fires — a machine that is awake but has no Ollama running will
+abort the run at the verification gate rather than stage anything.
 
 To reload after editing the plist:
 `launchctl bootout gui/$(id -u)/com.compute-atlas.discovery && launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.compute-atlas.discovery.plist`

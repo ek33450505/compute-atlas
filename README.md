@@ -48,7 +48,7 @@ graph LR
     L --> D["Site · API · JSON export"]
 ```
 
-Nothing becomes a live facility without human approval—the core invariant of the project.
+Candidates from the scheduled discovery pipeline are checked before they are staged: each cited URL is fetched and mechanically compared against the claim it supports, using a local model on the maintainer's machine. Nothing becomes a live facility without human approval—the core invariant of the project.
 
 ## API
 
@@ -132,6 +132,7 @@ Contributions and corrections are welcome — every submission needs a public so
 - **Tailwind CSS v4** + **shadcn/ui** components
 - **Vitest** + **React Testing Library** for a comprehensive unit-test suite
 - **Playwright** for end-to-end tests
+- **Ollama** (local models, maintainer's machine only) for source verification in the discovery pipeline — not part of the deployed app
 
 ## Local development
 

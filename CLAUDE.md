@@ -140,8 +140,12 @@ bootstrap-only, kept for filling an empty database.
 
 A local, scheduled, subscription-powered pipeline (`scripts/discovery/`) that
 proposes new facilities and re-checks existing ones for status changes, staging
-both as `pending`. It never writes live facilities. Full docs:
-`docs/discovery-pipeline.md`. It uses the Claude Code subscription (not the metered
+both as `pending`. It never writes live facilities. Every candidate source URL is
+fetched and mechanically verified before staging, using a **local Ollama** model
+(`scripts/discovery/verify-source.ts`); the gate is on by default and, if Ollama is
+unreachable or `OLLAMA_VERIFY_MODEL` is not pulled, the run **aborts loudly** rather
+than staging unverified candidates (`VERIFY_SOURCES_ENABLED=false` is the only
+opt-out). Full docs: `docs/discovery-pipeline.md`. It uses the Claude Code subscription (not the metered
 API) and runs via `launchd` on the maintainer's machine — treat it as an operator
 tool, not part of the deployed app.
 
