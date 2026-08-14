@@ -26,6 +26,8 @@
     "db:backfill-history": "tsx --env-file=.env.local scripts/backfill-facility-history.ts",
     "submissions": "tsx --env-file=.env.local scripts/submissions.ts",
     "check-sources": "tsx --env-file=.env.local scripts/discovery/check-sources.ts",
+    "census-sources": "tsx --env-file=.env.local scripts/discovery/census-sources.ts",
+    "census-triage": "tsx --env-file=.env.local scripts/discovery/census-triage.ts",
     "existing-facilities": "tsx --env-file=.env.local scripts/discovery/existing-facilities.ts"
   },
   "dependencies": {

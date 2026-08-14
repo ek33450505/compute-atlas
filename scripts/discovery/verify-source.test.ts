@@ -845,4 +845,120 @@ describe("verifySource", () => {
       expect(result.verdict).toBe("verified");
     });
   });
+
+  // `transportFailure` exists so a caller can tell "we could not fetch the
+  // page at all" from "we fetched it and the claim did not hold up" —
+  // `verdict` alone cannot express that, since `unrecoverableVerdict` maps
+  // most fetch failures to "rejected". It is purely additive metadata: every
+  // verdict below is asserted UNCHANGED alongside it.
+  describe("transportFailure metadata", () => {
+    it("reports the transport failure on a 403 with no Wayback snapshot, while leaving the verdict 'rejected'", async () => {
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageFail("http_error", 403)),
+        fetchImpl: waybackUnavailable(),
+      });
+
+      const result = await verifySource("https://example.com/bot-walled", CLAIM, deps);
+
+      expect(result.verdict).toBe("rejected");
+      expect(result.transportFailure).toStrictEqual({ reason: "http_error", httpStatus: 403 });
+    });
+
+    it("reports the ORIGINAL failure, not the snapshot's, when the Wayback snapshot itself fails to fetch", async () => {
+      const snapshotUrl = "https://web.archive.org/web/20240101000000/https://example.com/page";
+      const fetchPageTextImpl = sequencedFetchPageText(pageFail("http_error", 429), pageFail("network_error"));
+      const deps = makeDeps({ fetchPageTextImpl, fetchImpl: waybackAvailable(snapshotUrl) });
+
+      const result = await verifySource("https://example.com/page", CLAIM, deps);
+
+      expect(result.verdict).toBe("rejected");
+      expect(result.transportFailure).toStrictEqual({ reason: "http_error", httpStatus: 429 });
+      expect(fetchPageTextImpl).toHaveBeenCalledTimes(2);
+    });
+
+    it("reports the transport failure on a size-cap rejection, while leaving the verdict 'escalate'", async () => {
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageFail("too_large")),
+        fetchImpl: waybackUnavailable(),
+      });
+
+      const result = await verifySource("https://example.com/huge-pdf", CLAIM, deps);
+
+      expect(result.verdict).toBe("escalate");
+      // `httpStatus` is OMITTED (not set to undefined) when the failure
+      // carried none — toStrictEqual is what proves that.
+      expect(result.transportFailure).toStrictEqual({ reason: "too_large" });
+    });
+
+    it("🔴 leaves transportFailure undefined on an ordinary model-level rejection — the page WAS read and checked", async () => {
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk("This page is about something else entirely.")),
+        callOllamaImpl: vi.fn(async () => notMentioned()),
+      });
+
+      const result = await verifySource("https://example.com/page", CLAIM, deps);
+
+      // The property that matters: `transportFailure` present must mean, with
+      // no exceptions, "no page text was ever checked". A rejection reached
+      // through `checkPageAgainstClaim` must never carry it.
+      expect(result.verdict).toBe("rejected");
+      expect(result.transportFailure).toBeUndefined();
+    });
+
+    it("leaves transportFailure undefined when Wayback rescues the fetch and the snapshot verifies", async () => {
+      const archivedText = "Ridgeline Data Center plans a total capacity of 1200 MW once complete.";
+      const claim: VerifyClaim = { entityName: "Ridgeline Data Center", numericHints: [{ label: "capacity", value: 1200 }] };
+      const snapshotUrl = "https://web.archive.org/web/20240101000000/https://example.com/page";
+      const deps = makeDeps({
+        fetchPageTextImpl: sequencedFetchPageText(pageFail("http_error", 403), pageOk(archivedText, snapshotUrl)),
+        callOllamaImpl: vi.fn(async () => supports(archivedText)),
+        fetchImpl: waybackAvailable(snapshotUrl),
+      });
+
+      const result = await verifySource("https://example.com/page", claim, deps);
+
+      expect(result.verdict).toBe("verified");
+      expect(result.viaWayback).toBe(true);
+      expect(result.transportFailure).toBeUndefined();
+    });
+
+    // The two cases below are the ones that make `transportFailure` safe to
+    // consume as authoritative. A failed MODEL call is "we could not check"
+    // (design rule 6) — it says nothing about whether the PAGE was readable,
+    // and on the Wayback path a page demonstrably WAS fetched. Setting
+    // `transportFailure` here would let an Ollama outage masquerade as a pile
+    // of unreadable sources: the census treats the field as "could not read
+    // this source", so real findings would be silently dropped with the suite
+    // still green — the exact class of failure this gate was built to stop.
+    it("🔴 leaves transportFailure undefined when the Wayback snapshot fetched fine but the MODEL call failed — a model outage is never laundered into a transport failure", async () => {
+      const archivedText = "Ridgeline Data Center plans a total capacity of 1200 MW once complete.";
+      const snapshotUrl = "https://web.archive.org/web/20240101000000/https://example.com/page";
+      const deps = makeDeps({
+        fetchPageTextImpl: sequencedFetchPageText(pageFail("http_error", 403), pageOk(archivedText, snapshotUrl)),
+        callOllamaImpl: vi.fn(async () => modelUnavailable("connection refused")),
+        fetchImpl: waybackAvailable(snapshotUrl),
+      });
+
+      const result = await verifySource("https://example.com/page", CLAIM, deps);
+
+      // The ORIGINAL 403 is real, but irrelevant here: the snapshot was
+      // fetched and handed to the model, so a page WAS read. Attaching the
+      // original failure to this outcome would be exactly that laundering.
+      expect(result.verdict).toBe("unavailable");
+      expect(result.viaWayback).toBe(true);
+      expect(result.transportFailure).toBeUndefined();
+    });
+
+    it("🔴 leaves transportFailure undefined when the direct fetch succeeded but the MODEL call failed", async () => {
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk("Ridgeline Data Center plans 1200 MW.")),
+        callOllamaImpl: vi.fn(async () => modelUnavailable("connection refused")),
+      });
+
+      const result = await verifySource("https://example.com/page", CLAIM, deps);
+
+      expect(result.verdict).toBe("unavailable");
+      expect(result.transportFailure).toBeUndefined();
+    });
+  });
 });
