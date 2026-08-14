@@ -95,6 +95,13 @@ EOF
 	export HOME LOG_DIR CLAUDE_CALL_LOG NPX_CALL_LOG
 	export PATH="$BIN_DIR:$PATH"
 	export DISCOVERY_LOG_DIR="$LOG_DIR"
+
+	# run.sh now defaults STATES_PER_RUN=2 (Unit 2, 2026-08-14). Every existing
+	# test in this file was written against the prior single-state-per-run
+	# behavior, so pin STATES_PER_RUN=1 here to preserve exactly what they
+	# assert (one claude call, one cursor advance, etc.) without weakening any
+	# assertion. The dedicated multi-state tests below override this per-test.
+	export STATES_PER_RUN=1
 }
 
 teardown() {
@@ -357,7 +364,7 @@ EOF
 
 # --- self-reverting review cap (Phase 2 Unit B) ------------------------------
 # BURST_START_DATE is a script constant (2026-07-30, 20-day burst window), not
-# injectable from the test — so exact --max=10 assertions are clock-fragile
+# injectable from the test — so exact --max=25 assertions are clock-fragile
 # once the real calendar passes 2026-08-19. The two tests below are the
 # durable coverage: the env-override always wins regardless of clock, and the
 # cap-computation block always emits a sane, parseable --max value.
@@ -399,9 +406,9 @@ EOF
 	# the compute_cap block ran and logged its decision
 	[[ "$output" == *"review cap for"* ]]
 
-	# the submit call's --max is one of the two sane values (10 during the
-	# burst window, 5 after) — never empty, never something else
-	run grep -Eo -- "submit-candidates.ts .*--max=(10|5)" "$NPX_CALL_LOG"
+	# the submit call's --max is one of the two sane values (25 during the
+	# burst window, 15 after) — never empty, never something else
+	run grep -Eo -- "submit-candidates.ts .*--max=(25|15)" "$NPX_CALL_LOG"
 	[ "$status" -eq 0 ]
 	[ -n "$output" ]
 }
@@ -471,6 +478,154 @@ EOF
 	# confirmed by deliberately breaking `isMain` and re-running this file.
 	[[ "$output" != *"API_ADMIN_TOKEN"* ]]
 	[[ "$output" != *"Usage: submit-candidates.ts"* ]]
+}
+
+# --- multi-state batch (Unit 2, 2026-08-14) ----------------------------------
+# STATES=(TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA) — starting at TX, a
+# 2-state batch is [TX VA] and the cursor should land on OH (advance-by-2).
+
+@test "STATES_PER_RUN=1 preserves today's single-state behavior" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	export STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# exactly one candidates file written (one state processed)
+	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
+	[ "$outfile_count" = "1" ]
+
+	# cursor advances by exactly 1: TX -> VA
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "VA" ]
+}
+
+@test "a 2-state batch processes both states and advances the cursor by 2" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[[ "$output" == *"states=TX VA"* ]]
+
+	# two distinct candidates files, one per state
+	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
+	[ "$outfile_count" = "2" ]
+	[ -n "$(find "$LOG_DIR" -name 'candidates-*-TX.json' -print -quit)" ]
+	[ -n "$(find "$LOG_DIR" -name 'candidates-*-VA.json' -print -quit)" ]
+
+	# TX VA -> next up is OH (index 0,1 consumed, cursor lands on index 2)
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "OH" ]
+}
+
+@test "a 2-state batch wraps the rotation correctly at the end of the list" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	export STATES_PER_RUN=2
+	# STATES=(TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA) — NM is index 13,
+	# LA is index 14 (the last). A batch starting at NM must wrap to TX.
+	echo "NM" >"$LOG_DIR/cursor.txt"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[[ "$output" == *"states=NM LA"* ]]
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "TX" ]
+}
+
+@test "one state's claude failure does not prevent the other state in the batch from completing" {
+	export DISCOVERY_ENABLED=true
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+
+	# Batch is [TX VA]. TX's primary AND retry attempt (calls 1-2) fail with a
+	# session-limit-style nonzero exit and no array; VA's primary attempt
+	# (call 3) succeeds with a valid array — proving TX's total failure does
+	# not stop VA from running to completion. A dedicated counter file (not
+	# wc -l on CLAUDE_CALL_LOG) tracks the call number, since the prompt text
+	# logged per call spans many lines on its own.
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+n=\$((n + 1))
+echo "\$n" >"$CLAUDE_COUNTER_FILE"
+if [ "\$n" -le 2 ]; then
+	echo "You've hit your session limit"
+	exit 1
+else
+	echo '[{"name":"Second State Facility","facilityType":"data_center"}]'
+	exit 0
+fi
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# three claude calls total: TX primary, TX retry, VA primary
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 3 ]
+
+	# both states reached completion despite TX's total claude failure
+	[[ "$output" == *"discovery batch complete"* ]]
+	[[ "$output" == *"skipping submit"* ]]
+
+	# only VA's candidates made it to submit (TX skipped — no parseable array)
+	run grep -c -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	[ "$status" -eq 0 ]
+	[ "${output//[[:space:]]/}" = "1" ]
+	run grep -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	[[ "$output" == *"--state=VA"* ]]
+}
+
+@test "batch heartbeat records one entry per state with per-state claudeStatus" {
+	export DISCOVERY_ENABLED=true
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+
+	# Same TX-fails-twice / VA-succeeds shape as the isolation test above, so
+	# the batch produces one no_array entry and one ok entry.
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+n=\$((n + 1))
+echo "\$n" >"$CLAUDE_COUNTER_FILE"
+if [ "\$n" -le 2 ]; then
+	echo "You've hit your session limit"
+	exit 1
+else
+	echo '[{"name":"Heartbeat Facility","facilityType":"data_center"}]'
+	exit 0
+fi
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[ -f "$LOG_DIR/heartbeat.json" ]
+	grep -q '"lastRunAt"' "$LOG_DIR/heartbeat.json"
+	grep -q '"state": "TX"' "$LOG_DIR/heartbeat.json"
+	grep -q '"state": "VA"' "$LOG_DIR/heartbeat.json"
+	grep -q '"claudeStatus": "no_array"' "$LOG_DIR/heartbeat.json"
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+
+	# must stay valid JSON
+	run node -e "JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8'))"
+	[ "$status" -eq 0 ]
 }
 
 @test "importing submit-candidates.ts via tsx -e attempts no connection to localhost:11434 (unparseable input)" {
