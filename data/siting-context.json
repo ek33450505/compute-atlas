@@ -1,4 +1,19 @@
 {
+  "1623-farnam-omaha-ne": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "32-avenue-of-the-americas-ny": {
     "nearestWater": {
       "name": "Hudson River",
@@ -493,6 +508,44 @@
       "rock": "Sandstone"
     }
   },
+  "aligned-west-jordan-ut": {
+    "nearestWater": {
+      "name": "Bingham Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "aligned-west-valley-city-ut": {
+    "nearestWater": {
+      "name": "Kennecott Tailings Pond Number One",
+      "kind": "lake",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "alterra-development-marshall-mi": {
     "nearestWater": {
       "name": "Rice Creek",
@@ -702,6 +755,25 @@
       "rock": "Carbonate-rock"
     }
   },
+  "american-tower-reedy-creek-charlotte-nc": {
+    "nearestWater": {
+      "name": "Back Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "anchorstone-58-east-data-campus-ringgold-va": {
     "nearestWater": {
       "name": "Tom Fork",
@@ -738,6 +810,29 @@
     "aquifer": {
       "name": "New York And New England Carbonate-rock Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "aphorio-carter-collierville-tn": {
+    "nearestWater": {
+      "name": "Nonconnah Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "apple-maiden-nc": {
@@ -779,6 +874,25 @@
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "apple-prineville-or": {
+    "nearestWater": {
+      "name": "Ochoco Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 1000,
+      "distanceMi": 4.8
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -1249,6 +1363,29 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "aws-arlington-gilliam-or": {
+    "nearestWater": {
+      "name": "China Ditch",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "aws-beech-road-new-albany-oh": {
     "nearestWater": {
       "name": "Blacklick Creek",
@@ -1520,6 +1657,29 @@
       "rock": "Carbonate-rock"
     }
   },
+  "aws-hermiston-or": {
+    "nearestWater": {
+      "name": "Hermiston Ditch",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "aws-hobart-in": {
     "nearestWater": {
       "name": "Sprout Ditch",
@@ -1676,6 +1836,29 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "aws-pdx154-boardman-airport-or": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "aws-project-atlas-madison-county-ms": {
     "nearestWater": {
       "name": "Batchelor Creek",
@@ -1773,6 +1956,29 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "aws-umatilla-city-or": {
+    "nearestWater": {
+      "name": "Umatilla River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "aws-wallula-gap-walla-walla-wa": {
@@ -2027,6 +2233,25 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "bginusa-york-ne": {
+    "nearestWater": {
+      "name": "Beaver Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 11.3
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "big-horn-data-hub-hardin-mt": {
@@ -2348,6 +2573,63 @@
       "rock": "Sandstone"
     }
   },
+  "bluebird-quad-cities-bettendorf-ia": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "blusky-ai-nephi-ut": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "bobcat-energy-center-ia": {
+    "nearestWater": {
+      "name": "Linn Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 29.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "bristolville-25-lordstown-oh": {
     "nearestWater": {
       "name": "Duck Creek",
@@ -2537,6 +2819,21 @@
     "nearestTransmission": {
       "voltageKv": 345,
       "distanceMi": 11.9
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "centersquare-gallatin-tn": {
+    "nearestWater": {
+      "name": "Town Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.7
     },
     "waterStress": {
       "cat": 0,
@@ -4433,6 +4730,21 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "crane-pdx02-forest-grove-or": {
+    "nearestWater": {
+      "name": "Gales Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "creekstone-delta-ut": {
     "nearestWater": {
       "name": "Sevier River",
@@ -4450,6 +4762,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "crosland-southeast-matthews-project-accelerate-nc": {
+    "nearestWater": {
+      "name": "Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "crusoe-abilene-onsite-generation-tx": {
@@ -4971,6 +5302,25 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "databank-granite-point-bluffdale-ut": {
+    "nearestWater": {
+      "name": "Jordan River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "databank-indo-cartersville-ga": {
     "nearestWater": {
       "name": "Pettit Creek",
@@ -4988,6 +5338,29 @@
     "aquifer": {
       "name": "Valley And Ridge Carbonate-rock Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "databank-mem1-memphis-tn": {
+    "nearestWater": {
+      "name": "Fletcher Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "databank-red-oak-tx": {
@@ -5018,6 +5391,29 @@
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
+    }
+  },
+  "databank-slc1-salt-lake-city-ut": {
+    "nearestWater": {
+      "name": "City Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "databank-vernon-la-ca": {
@@ -5151,6 +5547,25 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "dcblox-nashville-grassmere-tn": {
+    "nearestWater": {
+      "name": "East Fork Browns Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.8
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ordovician Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "digico-lax1-monterey-park-ca": {
@@ -5811,6 +6226,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "digital-realty-pdx12-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "digital-realty-phx-tempe-az": {
     "nearestWater": {
       "name": "Salt River",
@@ -6115,6 +6549,29 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "dmg-blockchain-boardman-or": {
+    "nearestWater": {
+      "name": "Lake Umatilla",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "dominion-chesterfield-energy-reliability-center-va": {
     "nearestWater": {
       "name": "James River",
@@ -6176,6 +6633,44 @@
       "rock": "Carbonate-rock"
     }
   },
+  "duke-energy-davidson-county-cc4-nc": {
+    "nearestWater": {
+      "name": "Sandy Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "duke-energy-person-county-energy-complex-cc-nc": {
+    "nearestWater": {
+      "name": "Hyco Lake",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "eagle-rock-meridian-technology-park-taylorville-il": {
     "nearestWater": {
       "name": "Brush Creek",
@@ -6212,6 +6707,25 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "ebay-topaz-south-jordan-ut": {
+    "nearestWater": {
+      "name": "Jordan River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "ecl-csc1-santa-clara-ca": {
@@ -6397,6 +6911,25 @@
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "edgeconnex-west-valley-city-ut": {
+    "nearestWater": {
+      "name": "Decker Lake",
+      "kind": "lake",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -7177,6 +7710,44 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "fibernet-orem-ut": {
+    "nearestWater": {
+      "name": "Provo River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "fiberstate-draper-ut": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "firstlight-portsmouth-nh-data-center-nh": {
     "nearestWater": {
       "name": "Great Bog",
@@ -7383,6 +7954,29 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "flexential-cottonwood-heights-ut": {
+    "nearestWater": {
+      "name": "Little Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "flexential-dallas-downtown-dallas-tx": {
@@ -7872,6 +8466,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "flexential-salisbury-henderson-grove-nc": {
+    "nearestWater": {
+      "name": "Town Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "flexential-salt-lake-city-downtown-ut": {
     "nearestWater": {
       "name": "Jordan River",
@@ -8102,6 +8715,25 @@
     "nearestTransmission": {
       "voltageKv": 230,
       "distanceMi": 10.3
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "foundry-minden-ne": {
+    "nearestWater": {
+      "name": "Sand Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
     },
     "waterStress": {
       "cat": 4,
@@ -8402,6 +9034,25 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "google-eagle-mountain-ut": {
+    "nearestWater": {
+      "name": "Utah Lake",
+      "kind": "lake",
+      "distanceMi": 5.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "google-fort-wayne-in": {
@@ -8742,6 +9393,25 @@
       "rock": "Sandstone"
     }
   },
+  "google-palo-ia": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.8
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "google-papillion-ne": {
     "nearestWater": {
       "name": "Springfield Creek",
@@ -9068,6 +9738,25 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "google-the-dalles-port-river-road-or": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "google-west-memphis-ar": {
     "nearestWater": {
       "name": "Tenmile Bayou",
@@ -9373,6 +10062,25 @@
       "rock": "Sandstone"
     }
   },
+  "h5-la-vista-ne": {
+    "nearestWater": {
+      "name": "Papillion Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "hanton-city-smithfield-ri": {
     "nearestWater": {
       "name": "Reaper Brook",
@@ -9411,6 +10119,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "hickory-grove-generating-station-ia": {
+    "nearestWater": {
+      "name": "Hickory Creek",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "highwire-evansville-wy": {
     "nearestWater": {
       "name": "Sage Creek",
@@ -9424,6 +10151,63 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "hixson-bloom-fuel-cells-mcminnville-tn": {
+    "nearestWater": {
+      "name": "Barren Fork",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 23.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "hixson-data-center-mcminnville-tn": {
+    "nearestWater": {
+      "name": "Barren Fork",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 23.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "holtec-brigham-city-smr-ut": {
+    "nearestWater": {
+      "name": "Black Slough",
+      "kind": "river",
+      "distanceMi": 2.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "homer-city-energy-campus-generation-pa": {
@@ -9714,6 +10498,25 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "intermountain-power-delta-ut": {
+    "nearestWater": {
+      "name": "North Sugarville Reservoir",
+      "kind": "lake",
+      "distanceMi": 4.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "interstate-holdings-blockchain-cabot-ar": {
@@ -10024,6 +10827,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "jailhouse-studios-chattanooga-tn": {
+    "nearestWater": {
+      "name": "Tennessee River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "jefferson-proving-ground-data-center-jefferson-county-in": {
     "nearestWater": {
       "name": "Harberts Creek",
@@ -10279,6 +11101,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "lightedge-ames-ia": {
+    "nearestWater": {
+      "name": "Ioway Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 15.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "lightedge-chaska-mn": {
     "nearestWater": {
       "name": "Lake Bavaria",
@@ -10292,6 +11133,21 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "lightedge-papillion-ne": {
+    "nearestWater": {
+      "name": "Papillion Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "lightedge-solutions-altoona-ia": {
@@ -10326,6 +11182,25 @@
     "aquifer": {
       "name": "New York And New England Carbonate-rock Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "litewire-mcminnville-tn": {
+    "nearestWater": {
+      "name": "Barren Fork",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 24.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "ln-compute-cuthbert-ga": {
@@ -10387,6 +11262,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "long-ferry-road-rowan-county-nc": {
+    "nearestWater": {
+      "name": "Town Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "lumen-akron-2-oh": {
@@ -10635,6 +11529,25 @@
       "rock": "Sandstone"
     }
   },
+  "lumen-ogden-ut": {
+    "nearestWater": {
+      "name": "Weber River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "lumen-phoenix-1-az": {
     "nearestWater": {
       "name": "Salt River",
@@ -10648,6 +11561,29 @@
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "lumen-salt-lake-city-ut": {
+    "nearestWater": {
+      "name": "City Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     },
     "groundwaterDecline": {
       "cat": 1,
@@ -11074,6 +12010,25 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "meta-davenport-ia": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "meta-dekalb-data-center-il": {
@@ -11657,6 +12612,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "microsoft-conover-catawba-county-nc": {
+    "nearestWater": {
+      "name": "McLin Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "microsoft-dorr-township-mi": {
     "nearestWater": {
       "name": "Buskirk Creek",
@@ -11942,6 +12916,25 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "microsoft-hickory-catawba-county-nc": {
+    "nearestWater": {
+      "name": "Cripple Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "microsoft-kenosha-wi": {
     "nearestWater": {
       "name": "Jerome Creek",
@@ -11993,6 +12986,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "microsoft-maiden-catawba-county-nc": {
+    "nearestWater": {
+      "name": "Pinch Gut Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "microsoft-malaga-wa": {
@@ -12215,6 +13227,21 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "miningstore-eldora-township-ia": {
+    "nearestWater": {
+      "name": "Iowa River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 41.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "miningstore-grundy-center-ia": {
     "nearestWater": {
       "name": "Holland Creek",
@@ -12228,6 +13255,44 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "miningstore-st-anthony-ia": {
+    "nearestWater": {
+      "name": "Middle Minerva Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 31.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "miningstore-union-township-hardin-ia": {
+    "nearestWater": {
+      "name": "Iowa River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 40.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     },
     "aquifer": {
       "name": "Mississippian Aquifers",
@@ -12250,6 +13315,25 @@
     },
     "aquifer": {
       "name": "Piedmont And Blue Ridge Carbonate-rock Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "morgan-valley-energy-center-ia": {
+    "nearestWater": {
+      "name": "Morgan Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
     }
   },
@@ -12481,6 +13565,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "newfold-digital-provo-ut": {
+    "nearestWater": {
+      "name": "Mill Race",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "newrays-one-bono-ar": {
     "nearestWater": {
       "name": "Jacks Fork",
@@ -12646,6 +13749,44 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "novva-west-jordan-power-ut": {
+    "nearestWater": {
+      "name": "Barneys Wash",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "novva-west-jordan-ut": {
+    "nearestWater": {
+      "name": "Barneys Wash",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "nscale-monarch-mason-county-wv": {
@@ -13052,6 +14193,97 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "oppd-pierce-county-energy-center-ne": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "oppd-turtle-creek-station-sarpy-ne": {
+    "nearestWater": {
+      "name": "Buffalo Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "oppidan-des-moines-ia": {
+    "nearestWater": {
+      "name": "Des Moines River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
+  "oracle-salt-lake-city-ut": {
+    "nearestWater": {
+      "name": "City Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "oracle-west-jordan-ut": {
+    "nearestWater": {
+      "name": "Bingham Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "oregon-industrial-park-data-center-lucas-oh": {
     "nearestWater": {
       "name": "Otter Creek",
@@ -13071,6 +14303,21 @@
       "rock": "Carbonate-rock"
     }
   },
+  "orient-energy-center-ia": {
+    "nearestWater": {
+      "name": "Lake Orient",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "outrigger-washington-daviess-county-in": {
     "nearestWater": {
       "name": "Veale Creek",
@@ -13084,6 +14331,21 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "pathone-hull-ia": {
+    "nearestWater": {
+      "name": "Burr Oak Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 13.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "patmos-kansas-city-mo": {
@@ -13602,6 +14864,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "primeblock-murphy-cherokee-county-nc": {
+    "nearestWater": {
+      "name": "Apalachia Lake",
+      "kind": "lake",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 36.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "prince-william-digital-gateway-va": {
     "nearestWater": {
       "name": "Broad Run",
@@ -13910,6 +15191,29 @@
       "rock": "Sandstone"
     }
   },
+  "prsm-group-cumberland-county-nc": {
+    "nearestWater": {
+      "name": "Cape Fear River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "qts-ashburn-1-va": {
     "nearestWater": {
       "name": "Broad Run",
@@ -14066,6 +15370,25 @@
       "rock": "Sandstone"
     }
   },
+  "qts-eagle-mountain-ii-fairfield-ut": {
+    "nearestWater": {
+      "name": "Mercur Creek",
+      "kind": "river",
+      "distanceMi": 7.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.9
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "qts-eagle-mountain-ut": {
     "nearestWater": {
       "name": "Utah Lake",
@@ -14117,6 +15440,25 @@
     "nearestTransmission": {
       "voltageKv": 230,
       "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "qts-hillsboro-2-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
     },
     "waterStress": {
       "cat": 0,
@@ -14401,6 +15743,25 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "radius-dc-raleigh-1-wake-county-nc": {
+    "nearestWater": {
+      "name": "Big Branch",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "radiusdc-miami-i-sweetwater-fl": {
     "nearestWater": {
       "name": "The Pocket",
@@ -14418,6 +15779,21 @@
     "aquifer": {
       "name": "Biscayne Aquifer",
       "rock": "Carbonate-rock"
+    }
+  },
+  "radiusdc-nashville-i-tn": {
+    "nearestWater": {
+      "name": "Little Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.2
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "raeden-grand-crossing-south-city-of-industry-ca": {
@@ -14467,6 +15843,21 @@
     "nearestTransmission": {
       "voltageKv": 345,
       "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "rattlesnake-creek-wind-dixon-ne": {
+    "nearestWater": {
+      "name": "Middle Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
     },
     "waterStress": {
       "cat": 0,
@@ -14585,6 +15976,29 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "regence-salt-lake-city-ut": {
+    "nearestWater": {
+      "name": "City Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "revolve-labs-glencoe-mn": {
@@ -14710,6 +16124,25 @@
     "aquifer": {
       "name": "Texas Coastal Uplands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "riverhawk-energy-center-ia": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 35.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "riverview-innovation-tech-campus-tonawanda-ny": {
@@ -15058,6 +16491,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "salix-data-center-site-ia": {
+    "nearestWater": {
+      "name": "Browns Lake",
+      "kind": "lake",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "samx-data-centers-remington-fauquier-va": {
     "nearestWater": {
       "name": "Tinpot Run",
@@ -15105,6 +16557,44 @@
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
+    }
+  },
+  "scott-data-center-omaha-ne": {
+    "nearestWater": {
+      "name": "Little Papillion Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "senawave-salt-lake-city-ut": {
+    "nearestWater": {
+      "name": "City Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "sentinel-east-whiteland-chester-county-pa": {
@@ -16111,6 +17601,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "summit-ridge-santaquin-ut": {
+    "nearestWater": {
+      "name": "Santaquin Debris Basin Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "switch-atlanta-the-keep-ga": {
     "nearestWater": {
       "name": "Lake Echo",
@@ -16423,6 +17932,25 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "syringa-networks-west-valley-city-ut": {
+    "nearestWater": {
+      "name": "Decker Lake",
+      "kind": "lake",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "t5-atlanta-i-ga": {
     "nearestWater": {
       "name": "Big Creek",
@@ -16690,6 +18218,21 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "tenaska-nebraska-ai-campus-power-plant-proposed": {
+    "nearestWater": {
+      "name": "Pratts Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "tenkey-franklin-ky": {
     "nearestWater": {
       "name": "Sharps Branch",
@@ -16809,6 +18352,29 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "terra-nexus-rockingham-richmond-county-nc": {
+    "nearestWater": {
+      "name": "Rocky Branch",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "tesla-cortex-2-giga-texas-austin-tx": {
@@ -17088,6 +18654,51 @@
       "rock": "Carbonate-rock"
     }
   },
+  "tierpoint-newton-ia": {
+    "nearestWater": {
+      "name": "Cardinal Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "tierpoint-omaha-bellevue-ne": {
+    "nearestWater": {
+      "name": "Mud Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "tierpoint-omaha-midlands-papillion-ne": {
+    "nearestWater": {
+      "name": "Walnut Creek",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "tierpoint-sioux-falls-west-sd": {
     "nearestWater": {
       "name": "Willow Creek",
@@ -17194,6 +18805,21 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "tract-altoona-ia": {
+    "nearestWater": {
+      "name": "Little Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "tract-buckeye-tech-corridor-az": {
     "nearestWater": {
       "name": "Hassayampa River",
@@ -17230,6 +18856,25 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "tract-eagle-mountain-ut": {
+    "nearestWater": {
+      "name": "Utah Lake",
+      "kind": "lake",
+      "distanceMi": 5.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "tract-farmington-technology-park-mn": {
@@ -17380,6 +19025,29 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "unisys-salt-lake-city-ut": {
+    "nearestWater": {
+      "name": "City Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "valley-oak-shinn-street-fremont-ca": {
     "nearestWater": {
       "name": "Alameda Creek",
@@ -17397,6 +19065,25 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "valorc3-st-george-ut": {
+    "nearestWater": {
+      "name": "City Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 0,
+      "label": "Low (<0 cm/y)"
     }
   },
   "vantage-ashburn-ii-va2-va": {
@@ -17650,6 +19337,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "verrus-oakline-mill-creek-salem-or": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "verrus-project-flex-lyon-township-oakland-county-mi": {
     "nearestWater": {
       "name": "Thornton Creek",
@@ -17663,6 +19369,25 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "viking-energy-center-cedar-falls-ia": {
+    "nearestWater": {
+      "name": "Dry Run",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "vint-hill-corners-fauquier-va": {
@@ -17701,6 +19426,25 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "voonami-orem-ut": {
+    "nearestWater": {
+      "name": "Provo River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "westblock-shiprock-nm": {
@@ -17796,6 +19540,25 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "williams-aquila-eagle-mountain-ut": {
+    "nearestWater": {
+      "name": "Utah Lake",
+      "kind": "lake",
+      "distanceMi": 5.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "wiscasset-proposed-me": {
