@@ -329,7 +329,7 @@ FAILURES=()
 note_overrun() {
   local label="$1" elapsed="$2"
   if (( elapsed > OVERRUN_LIMIT_SECS )); then
-    log "WARN: $label ran ${elapsed}s wall-clock against a ${DISCOVERY_TIMEOUT_SECS}s cap (+${DISCOVERY_KILL_AFTER_SECS}s kill-after, +${DISCOVERY_OVERRUN_GRACE_SECS}s grace = ${OVERRUN_LIMIT_SECS}s limit) — the wall-clock cap did NOT enforce; likely machine sleep pausing ITIMER_REAL"
+    log "WARN: $label ran ${elapsed}s wall-clock against a ${DISCOVERY_TIMEOUT_SECS}s cap (+${DISCOVERY_KILL_AFTER_SECS}s kill-after, +${DISCOVERY_OVERRUN_GRACE_SECS}s grace = ${OVERRUN_LIMIT_SECS}s limit) — the wall-clock cap did NOT enforce. CAUSE UNKNOWN: machine sleep was the leading hypothesis until 2026-08-15, when three overruns (6399s/4232s/5456s vs a 3000s cap) occurred with ZERO sleep events in \`pmset -g log\` for the window. \`timeout -k\` was also verified to enforce correctly against ordinary processes, bare and wrapped in \`caffeinate -i\`, under launchd's own PATH. Do not assume sleep; collect evidence."
     FAILURES+=("$label: cap did not enforce (${elapsed}s > ${OVERRUN_LIMIT_SECS}s)")
     return 0
   fi
