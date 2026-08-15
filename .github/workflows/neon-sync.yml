@@ -6,8 +6,33 @@
 #
 # 1. Runs `npm run db:export` to regenerate data/facilities.json (+ metadata)
 # 2. Checks if data/facilities.json has REAL content changes (ignores .meta.json)
-# 3. Opens a pull request ONLY if there's drift (no spam on identical runs)
-# 4. Branch: automated/neon-sync, base: main
+# 3. If (and ONLY if) there is drift, runs `npm run build:mapdata` so the new
+#    facilities get a data/siting-context.json entry — see below
+# 4. Opens a pull request ONLY if there's drift (no spam on identical runs)
+# 5. Branch: automated/neon-sync, base: main
+#
+# WHY build:mapdata IS PART OF THIS (added 2026-08-14):
+# This workflow used to export facilities.json and nothing else, so
+# data/siting-context.json was structurally outside the automation. A facility
+# approved on prod therefore went live with NO "Siting context" panel — silently,
+# no error — until a human happened to run build:mapdata by hand. That is the trap
+# CLAUDE.md warns about (it once reached 65 of 934 records), and it was still live:
+# atterix-raton-digital-hub-nm, green-data-socorro-county-nm and
+# green-data-spaceport-america-sierra-county-nm (approved after the 2026-08-08 NM
+# discovery run) sat SIX DAYS without siting context before a manual run backfilled
+# them. The daily export could never have fixed that on its own.
+#
+# It is GATED on drift, not run unconditionally, because build:mapdata rewrites
+# public/data/drought.geojson with a fresh `asOf` EVERY day. Ungated, this workflow
+# would open a PR every single morning with no facility change behind it, and a
+# daily noise PR is one you learn to ignore.
+#
+# It is FAIL-CLOSED: build:mapdata fetches external APIs (USGS NHD, HIFLD ArcGIS,
+# USDM, WRI Aqueduct). A mid-run failure can leave a PARTIALLY written
+# siting-context.json, which is worse than a stale one — it is exactly the
+# `value -> null` data loss CLAUDE.md tells you to diff-read for. So on failure the
+# generated artifacts are reverted and the PR opens with the facility files only,
+# rather than committing a half-built context file.
 #
 # NOTE: The FIRST run after merge will produce a large one-time diff, as the
 # hand-maintained JSON is canonicalized into the sorted form db:export uses.
@@ -62,10 +87,60 @@ jobs:
         id: check-drift
         run: |
           if git diff --quiet -- data/facilities.json; then
-            echo "drift=false" >> $GITHUB_OUTPUT
+            echo "drift=false" >> "$GITHUB_OUTPUT"
           else
-            echo "drift=true" >> $GITHUB_OUTPUT
+            echo "drift=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # Only on drift — see the header note on daily drought.geojson churn.
+      # continue-on-error so a flaky external API cannot block the facility sync.
+      - name: Build map data (siting context + overlays)
+        id: mapdata
+        if: steps.check-drift.outputs.drift == 'true'
+        continue-on-error: true
+        run: npm run build:mapdata
+
+      # FAIL-CLOSED: revert every build:mapdata output so a partially written
+      # siting-context.json can never reach the PR. Paths here MUST stay in sync
+      # with `add-paths` below — a path in one list but not the other reintroduces
+      # exactly the gap this change exists to close. Authoritative output list is
+      # the header of scripts/build-map-data.mjs.
+      - name: Discard partial map data on failure
+        if: steps.check-drift.outputs.drift == 'true' && steps.mapdata.outcome == 'failure'
+        run: |
+          echo "::error::build:mapdata FAILED — discarding partial artifacts. The PR will contain facility data only; data/siting-context.json will be STALE for any new facility until the next successful run or a manual 'npm run build:mapdata'."
+          git checkout -- \
+            data/siting-context.json \
+            public/data/water.geojson \
+            public/data/power.geojson \
+            public/data/drought.geojson \
+            public/data/water-stress.geojson \
+            public/data/groundwater-decline.geojson \
+            public/data/aquifers.geojson \
+            public/data/map-layers.json
+
+      # Heredoc form of $GITHUB_OUTPUT, not `key=value`: the note contains
+      # backticks, quotes and emoji, and key=value is single-line-only — a stray
+      # newline there would silently truncate the value or corrupt the output file.
+      # MAPDATA_OUTCOME goes through `env:` rather than being interpolated straight
+      # into the script, so the expression can never be parsed as shell.
+      - name: Note map-data status for the PR body
+        id: mapnote
+        if: steps.check-drift.outputs.drift == 'true'
+        env:
+          MAPDATA_OUTCOME: ${{ steps.mapdata.outcome }}
+        run: |
+          # shellcheck disable=SC2016  # single quotes are deliberate: the backticks
+          # below are literal markdown for the PR body, not command substitution.
+          {
+            echo "note<<MAPNOTE_EOF"
+            if [ "$MAPDATA_OUTCOME" = "failure" ]; then
+              echo '⚠️ **build:mapdata FAILED this run** — map artifacts were discarded and are NOT in this PR. Any new facility here will render without its "Siting context" panel until a successful run or a manual `npm run build:mapdata`.'
+            else
+              echo '✅ Map data regenerated — `data/siting-context.json` and the `public/data/` overlays are included, so new facilities have their "Siting context" panel.'
+            fi
+            echo "MAPNOTE_EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create PR if drift detected
         if: steps.check-drift.outputs.drift == 'true'
@@ -81,11 +156,22 @@ jobs:
             Facilities are created/edited on prod, and this PR brings the published
             CC-BY snapshot back in sync.
 
+            ${{ steps.mapnote.outputs.note }}
+
             **Checklist:**
             - [ ] Review data changes for accuracy
+            - [ ] Confirm `data/siting-context.json` changes are ADDITIVE (a `value → null` is data loss, not a refresh)
             - [ ] Merge when ready
             - [ ] Post-merge, the next release can consume updated data
           delete-branch: true
           add-paths: |
             data/facilities.json
             data/facilities.meta.json
+            data/siting-context.json
+            public/data/water.geojson
+            public/data/power.geojson
+            public/data/drought.geojson
+            public/data/water-stress.geojson
+            public/data/groundwater-decline.geojson
+            public/data/aquifers.geojson
+            public/data/map-layers.json
