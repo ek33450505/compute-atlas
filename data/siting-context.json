@@ -1135,6 +1135,25 @@
       "rock": "Sandstone"
     }
   },
+  "atterix-raton-digital-hub-nm": {
+    "nearestWater": {
+      "name": "Raton Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 13.7
+    },
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "avaio-digital-leo-little-rock-ar": {
     "nearestWater": {
       "name": "Little Fourche Creek",
@@ -7188,6 +7207,36 @@
       "label": "High (40-80%)"
     }
   },
+  "fleet-peru-ridge-self-generation-storey-county-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 2.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
+  "fleet-south-valley-self-generation-storey-county-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "flexential-allentown-data-center-abe01-pa": {
     "nearestWater": {
       "name": "Catasauqua Lake",
@@ -9081,6 +9130,44 @@
     },
     "aquifer": {
       "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "green-data-socorro-county-nm": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.4
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "green-data-spaceport-america-sierra-county-nm": {
+    "nearestWater": {
+      "name": "Antelope Tank",
+      "kind": "lake",
+      "distanceMi": 5.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -12498,6 +12585,29 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "novva-apex-industrial-park-north-las-vegas-nv": {
+    "nearestWater": {
+      "name": "Gypsum Wash",
+      "kind": "river",
+      "distanceMi": 3.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "novva-mesa-az": {
@@ -16063,6 +16173,29 @@
     "nearestTransmission": {
       "voltageKv": 230,
       "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "switch-las-19-enterprise-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
     },
     "waterStress": {
       "cat": 0,

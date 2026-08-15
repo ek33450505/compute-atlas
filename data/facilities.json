@@ -2685,15 +2685,38 @@
         "label": "61-MW solar project now supplying power to Apple data center in Nevada (Solar Power World)",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://lasvegassun.com/news/2012/jun/27/apple-comes-under-radar-granted-tax-abatement-deal/",
+        "label": "Stealthy team effort led to $89M in tax breaks, drew Apple to Reno-Sparks",
+        "publisher": "Las Vegas Sun",
+        "retrievedAt": "2026-08-14",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://thenevadaindependent.com/article/nevadans-get-few-details-into-data-centers-receiving-tax-breaks-and-it-might-be-illegal",
+        "label": "Nevadans get few details into data centers receiving tax breaks — and it might be illegal",
+        "publisher": "The Nevada Independent",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-14",
     "notes": "Apple data center at 21505 Reno Technology Parkway W, Sparks, Washoe County — the first data center built at the Reno Technology Park, opened December 2012. Per Apple's July 2024 letter in a Nevada GOED tax-abatement board packet, the campus had grown to four data-center buildings plus a power substation across 1,700 acres, with 200+ staff; Apple committed to further investment (a 2024 expansion capex of ~$742M over 5 years / ~$992M over 10 years is documented in the GOED filing). No site-specific IT-load MW is disclosed. Coordinates are an address-level geocode (ArcGIS, exact-address match); a county-parcel pass could upgrade precision to exact.",
     "energy": {
       "source": "solar",
       "utility": "NV Energy",
       "notes": "Apple financed and built the Fort Churchill Solar project (Apple's first Nevada solar deal, ~20MW) and later the larger Turquoise Solar project (61MWdc, ~180 acres) sited directly inside the Reno Technology Park next to Apple's Sparks data center, connected via a shared substation developed with Apple."
     },
+    "subsidies": [
+      {
+        "program": "Nevada data center sales and property tax abatements (Washoe County / State of Nevada)",
+        "amountUsd": 89000000,
+        "jurisdiction": "Nevada — Washoe County",
+        "year": "2012",
+        "sourceIndex": 5
+      }
+    ],
     "landAcres": 1700,
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -22048,13 +22071,163 @@
         "publisher": "KOLO 8 News Now",
         "retrievedAt": "2026-07-30",
         "kind": "press"
+      },
+      {
+        "url": "https://www.carsonnow.org/05/03/2026/why-a-northern-nevada-data-center-wants-to-build-its-own-temporary-natural-gas-power-plant",
+        "label": "Why a Northern Nevada data center wants to build its own temporary natural gas power plant",
+        "publisher": "Carson Now",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://thenevadaindependent.com/article/why-a-northern-nevada-data-center-wants-to-build-its-own-temporary-natural-gas-power-plant",
+        "label": "Why a Northern Nevada data center wants to build its own temporary natural gas power plant",
+        "publisher": "The Nevada Independent",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-30",
+    "lastUpdated": "2026-08-14",
     "notes": "Two adjacent TRIC campuses (South Valley and Peru Ridge) along USA Parkway in Storey County, dual two-story buildings each, ~769-acre combined footprint and a reported combined ~400MW of critical compute plus ~30MW/campus utility power. Fully leased to an unnamed AA-rated, investment-grade tenant (market cap >$3T) under a ~16.4-year triple-net lease; Fleet closed $4.6B in senior secured notes for a 230MW Storey County campus. Groundbreaking May 2026. Coordinates approximate to the TRIC/USA Parkway area.",
+    "energy": {
+      "source": "mixed",
+      "utility": "NV Energy",
+      "onSiteGenerationMw": 362,
+      "notes": "Fleet filed applications with Nevada state energy regulators on 20 April 2026 for temporary behind-the-meter generation — 144 MW at South Valley and 218 MW at Peru Ridge, about 362 MW combined — using natural gas and diesel engines fed by round-the-clock LNG/CNG deliveries. The plants are intended to run two to three years until NV Energy can scale permanent service to the campuses. Air-quality permit applications were submitted to the Nevada Division of Environmental Protection."
+    },
     "landAcres": 769,
+    "community": {
+      "status": "contested",
+      "notes": "The Sierra Club Toiyabe Chapter said behind-the-meter self-generation locks the public out of the regulatory process by reducing oversight; Storey County officials described the arrangement as a new development for industrial power generation at the Tahoe Reno Industrial Center.",
+      "sourceIndex": 4
+    },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "fleet-peru-ridge-self-generation-storey-county-nv",
+    "name": "Fleet Data Centers Peru Ridge Self-Generation Project",
+    "operator": "Fleet Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5312,
+      "lon": -119.4922,
+      "county": "Storey",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 218
+    },
+    "announcedDate": "2026-04-20",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-20",
+        "note": "Application filed with Nevada state energy regulators; air-quality permit application submitted to the Nevada Division of Environmental Protection.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.carsonnow.org/05/03/2026/why-a-northern-nevada-data-center-wants-to-build-its-own-temporary-natural-gas-power-plant",
+        "label": "Why a Northern Nevada data center wants to build its own temporary natural gas power plant",
+        "publisher": "Carson Now",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://thenevadaindependent.com/article/why-a-northern-nevada-data-center-wants-to-build-its-own-temporary-natural-gas-power-plant",
+        "label": "Why a Northern Nevada data center wants to build its own temporary natural gas power plant",
+        "publisher": "The Nevada Independent",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-14",
+    "notes": "Dedicated, temporary on-site generation proposed for Fleet's Peru Ridge data center campus on Peru Drive in the Tahoe Reno Industrial Center. Coordinates are an approximate geocode of Peru Drive in Storey County, not a parcel-confirmed point.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Behind-the-meter temporary generation using natural gas and diesel engines requiring round-the-clock deliveries of liquefied or compressed natural gas."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Environmental advocates, including the Sierra Club Toiyabe Chapter, objected that behind-the-meter generation reduces public regulatory oversight.",
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Fleet Data Centers",
+      "poweredFacilityIds": [
+        "fleet-data-centers-storey-county-nv"
+      ],
+      "notes": "Filed as the 'Peru Ridge Self-Generation Project'; together with the 144 MW South Valley project it accounts for about 362 MW of proposed temporary on-site generation at the Tahoe Reno Industrial Center, intended to run two to three years until NV Energy can serve the campuses."
+    }
+  },
+  {
+    "id": "fleet-south-valley-self-generation-storey-county-nv",
+    "name": "Fleet Data Centers South Valley Self-Generation Project",
+    "operator": "Fleet Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5101,
+      "lon": -119.4561,
+      "county": "Storey",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 144
+    },
+    "announcedDate": "2026-04-20",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-20",
+        "note": "Application filed with Nevada state energy regulators for temporary self-generation; air-quality permit application also submitted to the Nevada Division of Environmental Protection.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.carsonnow.org/05/03/2026/why-a-northern-nevada-data-center-wants-to-build-its-own-temporary-natural-gas-power-plant",
+        "label": "Why a Northern Nevada data center wants to build its own temporary natural gas power plant",
+        "publisher": "Carson Now",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://thenevadaindependent.com/article/why-a-northern-nevada-data-center-wants-to-build-its-own-temporary-natural-gas-power-plant",
+        "label": "Why a Northern Nevada data center wants to build its own temporary natural gas power plant",
+        "publisher": "The Nevada Independent",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-14",
+    "notes": "Dedicated, temporary on-site generation proposed to power Fleet's South Valley data center campus at the southern end of USA Parkway in the Tahoe Reno Industrial Center. Construction reported as early 2027 through end of 2027. Coordinates are an approximate geocode of USA Parkway in Storey County, not a parcel-confirmed point.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Behind-the-meter temporary generation using natural gas fueled reciprocating engines, supplied by round-the-clock deliveries of liquefied/compressed natural gas held in on-site tanks."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The Sierra Club Toiyabe Chapter criticized behind-the-meter generation as locking the public out of the regulatory process; county officials described it as a new development for industrial power generation at TRIC.",
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Fleet Data Centers",
+      "poweredFacilityIds": [
+        "fleet-data-centers-storey-county-nv"
+      ],
+      "unitCount": 90,
+      "notes": "Reported as roughly 90 natural gas fueled engines with about 40 LNG holding tanks, intended to run for two to three years until NV Energy can provide permanent service to the South Valley data center campus at the Tahoe Reno Industrial Center."
+    }
   },
   {
     "id": "flexential-allentown-data-center-abe01-pa",
@@ -27888,10 +28061,30 @@
         "publisher": "Google",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://datacenters.google/locations/storey-county-nevada/",
+        "label": "Storey County, Nevada — Google Data Center Location",
+        "publisher": "Google",
+        "retrievedAt": "2026-08-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://goed.nv.gov/newsroom/google-plans-to-invest-in-nevada-this-year/",
+        "label": "Google Plans to Invest in Nevada This Year",
+        "publisher": "Nevada Governor's Office of Economic Development",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-14",
     "notes": "Built in 2021 in the Tahoe Reno Industrial Center area; Google began powering the campus with geothermal energy in 2023. Google reports more than $6 billion invested in Nevada since this campus was built. Google publishes no street address — the coordinate is the Storey County centroid (approximate).",
+    "energy": {
+      "source": "other",
+      "utility": "NV Energy",
+      "notes": "Google states it began using geothermal energy to power the Storey County data center campus in 2023, supplied through NV Energy under its enhanced-geothermal arrangement with Fervo Energy."
+    },
+    "investmentUsd": 600000000,
     "facilityType": "data_center"
   },
   {
@@ -40106,6 +40299,50 @@
     }
   },
   {
+    "id": "novva-apex-industrial-park-north-las-vegas-nv",
+    "name": "Novva Apex Industrial Park Data Center",
+    "operator": "Novva Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.3291,
+      "lon": -114.9278,
+      "city": "North Las Vegas",
+      "county": "Clark",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-29",
+        "note": "Novva's purchase of roughly 205 acres in the Apex Industrial Park from VanTrust Real Estate was announced; the sale closed 8 August 2025. No building program has been detailed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/novva-data-centers-acquires-205-acres-of-land-in-las-vegas",
+        "label": "Novva Data Centers Acquires 205 Acres of Land in Las Vegas",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.reviewjournal.com/business/developer-sells-200-acres-in-apex-industrial-park-3431263/",
+        "label": "Big land sale near Las Vegas bags $181M",
+        "publisher": "Las Vegas Review-Journal",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-14",
+    "notes": "Novva Data Centers acquired roughly 205 acres in the Apex Industrial Park in North Las Vegas from VanTrust Real Estate for $181 million; the sale closed 8 August 2025. Only the land acquisition is confirmed — no capacity, building count, investment or timeline has been announced, so this record is a site rather than a specified facility. Coordinates are an approximate point for the Apex area, not a parcel-confirmed location.",
+    "landAcres": 205,
+    "facilityType": "data_center"
+  },
+  {
     "id": "novva-mesa-az",
     "name": "Novva Mesa Data Center Campus",
     "operator": "Novva Data Centers",
@@ -40221,9 +40458,16 @@
         "publisher": "Data Center Map",
         "retrievedAt": "2026-07-15",
         "kind": "other"
+      },
+      {
+        "url": "https://www.novva.com/media-center/launch-of-tahoe-reno-data-center/",
+        "label": "Novva Data Centers Tahoe Reno — launch of Tahoe Reno data center",
+        "publisher": "Novva Data Centers",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-15",
+    "lastUpdated": "2026-08-14",
     "notes": "300,000 sq ft, 60 MW data center on a 20-acre campus at 1 Astro Way in the Tahoe-Reno Industrial Center (McCarran / Storey County). Six 10 MW data halls served by an on-campus 100 MW NV Energy substation; water-free direct-to-chip cooling. Coordinates are an approximate TRIC-area geocode (exact parcel point not published).",
     "energy": {
       "source": "grid",
@@ -51781,9 +52025,16 @@
         "publisher": "Data Center Frontier",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/switch-tahoe-reno-now-open-largest-most-advanced-data-center-campus-in-the-world-300407648.html",
+        "label": "Switch TAHOE RENO Now Open: Largest, Most Advanced Data Center Campus in the World",
+        "publisher": "PR Newswire (Switch)",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-14",
     "energy": {
       "source": "solar",
       "utility": "NV Energy (grid interconnect)",
@@ -51864,6 +52115,54 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "switch-las-19-enterprise-nv",
+    "name": "Switch LAS 19",
+    "operator": "Switch",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0571,
+      "lon": -115.2125,
+      "city": "Enterprise",
+      "county": "Clark",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-06-17",
+        "note": "Clark County commissioners approved the zoning and use-permit items for the roughly 56,000 sq ft LAS 19 data center after Switch withdrew its landscaping waivers.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.fox5vegas.com/2026/06/18/clark-county-approves-switch-data-center-project-southwest-valley-after-public-opposition/",
+        "label": "Clark County approves Switch data center items in southwest Las Vegas after public pushback",
+        "publisher": "FOX5 Las Vegas",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://lasvegassun.com/news/2026/jun/23/switch-wins-las-vegas-expansion-approval-even-as-d/",
+        "label": "Switch wins Las Vegas expansion approval even as data center backlash sweeps across Nevada",
+        "publisher": "Las Vegas Sun",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-14",
+    "notes": "Approximately 56,000 sq ft data center building approved by Clark County commissioners on 17 June 2026, sited east of Edmond Street and north of Warm Springs Road in the Enterprise area of the southwest Las Vegas valley, adjacent to Switch's existing Las Vegas campus. No capacity (MW), investment or completion date has been published. Coordinates are an approximate geocode of the named intersection, not a parcel-confirmed point.",
+    "community": {
+      "status": "contested",
+      "notes": "The Enterprise Town Advisory Board recommended denial, and Sierra Club and environmental-justice advocates opposed the project at the June 2026 hearing, citing grid strain from AI-driven data center growth. Commissioners approved it after adding a condition that Switch help fund a Warm Springs Road sidewalk safety barrier.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "switch-las-vegas-10-nv",
@@ -55655,9 +55954,16 @@
         "publisher": "Data Center Map",
         "retrievedAt": "2026-07-30",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/news/tract-acquires-1-000-acres-in-nevada-for-1-6gw-data-center-park",
+        "label": "Tract Acquires 1,000 Acres in Nevada for 1.6GW Data Center Park",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-30",
+    "lastUpdated": "2026-08-14",
     "notes": "Master-planned data center park near Silver Springs, Lyon County (near the US-50/USA Parkway corridor east of Reno). ~1,060 acres acquired with approved rezoning and a Lyon County development agreement; buildout capacity up to 1.6GW with an initial 700MW under utility study, planned dry/air-cooled to minimize water use. Land/entitlement stage — proposed, not yet under construction. Coordinates approximate to Silver Springs.",
     "landAcres": 1060,
     "facilityType": "data_center",
@@ -56084,9 +56390,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/site-selection/article/55305086/nv1-and-the-nevada-hyperscale-boom-vantage-data-centers-bets-3b-on-the-ai-future",
+        "label": "NV1 and the Nevada Hyperscale Boom: Vantage Data Centers Bets $3B on the AI Future",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-14",
     "notes": "Located in Tahoe Reno Industrial Center (TRIC), Storey County, NV — same industrial park as Google, Apple, Microsoft, and Switch (CITADEL tracked separately). Four multi-story buildings, 1M+ sq ft. Designed for AI densities 360W–720W per sq ft. Vantage's eighth North American market. Coordinates are approximate TRIC centroid. Primary press release states more than 1,200 individuals employed 'across the construction and ongoing operations' — combined construction + permanent total; construction vs. permanent breakdown not separately disclosed.",
     "energy": {
       "source": "grid",
