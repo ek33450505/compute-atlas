@@ -32,10 +32,23 @@
  *   5. quoteVerbatim / quoteSupportsValue — mechanical quote gate; can only
  *                          ever downgrade a model "yes", never uphold one on
  *                          trust.
- *   5.5 isDuplicateOfRecordedSibling — drops an extracted `capacityMw.planned`/
- *                          `capacityMw.operational` that merely repeats the
- *                          OTHER capacityMw sub-field already recorded on the
- *                          facility (same fact re-read, not a new one).
+ *   5.5 semantic field-correctness guards (capacityMw only) — three checks
+ *                          that catch a number correctly grounded on the page
+ *                          (it passed the quote gate) but wrong for the FIELD
+ *                          it was assigned to:
+ *                            isOperationalStatusContradiction — rejects an
+ *                              extracted capacityMw.operational when the
+ *                              facility's own status isn't "operational".
+ *                            isDuplicateOfRecordedSibling — drops an extracted
+ *                              planned/operational value that merely repeats
+ *                              the OTHER capacityMw sub-field ALREADY
+ *                              RECORDED on the facility (same fact re-read,
+ *                              not a new one).
+ *                            detectSiblingValueCollision — drops BOTH
+ *                              sub-fields when they are extracted fresh, in
+ *                              the same run, and resolve to the same value —
+ *                              the case above has no recorded sibling to
+ *                              catch it against.
  *   6. toEnrichmentIntents — emits the `{ enrichmentUpdate, provenance }`
  *                          shape submit-candidates.ts already accepts.
  *
@@ -53,7 +66,11 @@
  * could be misfiled as `capacityMw.operational`). Mechanical grounding bounds
  * fabrication, never semantics. That gap is exactly what human review (the
  * `pending` queue) is for — a clean pass through this script's gates is not a
- * substitute for it.
+ * substitute for it. Stage 5.5's `isOperationalStatusContradiction` and
+ * `detectSiblingValueCollision` close two SPECIFIC, mechanically-detectable
+ * instances of this same limit (a status/field contradiction; the same
+ * number written into both capacity sub-fields) — they do not close the
+ * general gap.
  *
  * All side-effecting dependencies (fetch, the Ollama call, the clock) are
  * injected — see `RunExtractDeps` — following the `RunSubmitDeps` pattern in
@@ -630,8 +647,56 @@ export function quoteSupportsValue(quote: string | null, value: number | null | 
 }
 
 // ============================================================================
-// Stage 5.5 — duplicate-of-recorded-sibling guard (capacityMw only)
+// Stage 5.5 — semantic field-correctness guards (capacityMw only)
 // ============================================================================
+
+/**
+ * Guard 1 — the quote gate (Stage 5) proves a number+unit genuinely appears
+ * on the page; it never asks whether that number belongs in the FIELD it was
+ * assigned to. A facility whose own `status` is not itself `"operational"`
+ * cannot have `capacityMw.operational` — this is a contradiction in the data
+ * model (see lib/status.ts's STATUS_ORDER, which has exactly ONE
+ * operational-like value; there is no "partially_operational"), not a
+ * judgement call. The project already enforces the sharpest instance of this
+ * rule elsewhere (a `cancelled` facility omits `capacityMw` entirely); this
+ * generalizes it to every non-operational status.
+ *
+ * Keys off STATUS, never `facilityType` — a `power_generation` plant is
+ * exactly as capable of being operational or not as a `data_center` or
+ * `crypto_mining` site. comanche-peak-nuclear (status "operational",
+ * facilityType "power_generation", 1200 MW) is legitimate and does NOT need
+ * a facilityType special-case to pass — checking `status` alone already lets
+ * it through, since its status already reads "operational".
+ *
+ * Real examples (19 of 101 candidates, 2026-08-16 audit): iren-sweetwater-tx
+ * (status "under_construction") extracted operational: 1400;
+ * big-horn-data-hub-hardin-mt (status "cancelled", crypto_mining) extracted
+ * operational: 100.
+ *
+ * `capacityMw.planned` is deliberately NOT checked here — a proposed or
+ * cancelled facility can legitimately have HAD a planned figure before it
+ * stalled or was scrapped; only claiming it is currently ONLINE is the
+ * contradiction.
+ *
+ * DESIGN DECISION: rejects with the distinct `statusContradiction` outcome
+ * rather than keeping the value under a forced `REVIEW:` note. A `REVIEW:`
+ * note today means exactly one thing (`>=500MW` on a `data_center`, see
+ * `REVIEW_THRESHOLD_MW`) — "unusually large, double-check the source."
+ * Conflating that with "structurally contradicts this facility's own status
+ * field" under the same prefix would blur two different classes of concern a
+ * reviewer needs to tell apart. Unlike the sibling-collision guard below,
+ * this one is not ambiguous about WHICH field is wrong — the record's own
+ * status already says the facility is not operational, full stop — so there
+ * is nothing left for a human to adjudicate that the tool hasn't already
+ * resolved mechanically. Still fully VISIBLE, never silent: counted under
+ * `statusContradiction` and logged per-field by the caller — never silently
+ * dropped, and never silently rewritten to a different field/status (a
+ * silent rewrite would be a NEW instance of the exact class of bug this
+ * guard exists to catch).
+ */
+export function isOperationalStatusContradiction(facility: Facility, field: ExtractableField): boolean {
+  return field === "capacityMw.operational" && facility.status !== "operational";
+}
 
 /**
  * True when an extracted `capacityMw.planned`/`capacityMw.operational` value
@@ -670,6 +735,74 @@ export function isDuplicateOfRecordedSibling(
   if (recordedSibling === undefined) return false;
 
   return Math.abs(value - recordedSibling) / Math.max(Math.abs(value), Math.abs(recordedSibling), 1) < RECONCILE_TOLERANCE;
+}
+
+export interface SiblingValueCollisionResult {
+  /** `accepted`, with the colliding pair removed (unchanged if no collision). */
+  accepted: AcceptedExtraction[];
+  /** 0, or exactly `["capacityMw.operational", "capacityMw.planned"]` when a
+   * collision was found and removed. */
+  collidedFields: ExtractableField[];
+}
+
+/**
+ * Guard 2 — catches the SAME defect as `isDuplicateOfRecordedSibling`, one
+ * step earlier: that guard only fires when the OTHER sub-field is already
+ * RECORDED on the facility. When BOTH `capacityMw.operational` and
+ * `capacityMw.planned` are gaps in the SAME run (550 facilities have
+ * neither set), there is no recorded sibling to compare against — if the
+ * source states exactly one capacity figure, the model correctly returns
+ * "the value the page states" for BOTH fields it is separately asked about,
+ * filling both sub-fields with the SAME number from ONE quote. That is not
+ * two independent facts.
+ *
+ * Real examples (8 of 101 candidates, all from a single quote per facility):
+ * google-haskell-county-tx — quote "Capacity 640 MW PV + 1.3 GWh BESS" (a
+ * SOLAR FARM + battery spec, not data-centre IT load) filled BOTH
+ * operational and planned with 640; qts-ashburn-2 — "75 MW+ current planned
+ * capacity" (the source itself SAYS planned) filled both with 75;
+ * powerhouse-abx-1-va — "Max Utility MW Capacity: 60 MW" filled both with 60.
+ *
+ * DESIGN DECISION: drops BOTH fields, rather than keeping either one (even
+ * REVIEW-flagged). Three reasons: (1) symmetry — `isDuplicateOfRecordedSibling`
+ * already established, in this exact file, that "the same value in both
+ * capacity sub-fields is not two independent facts" is handled by DROPPING,
+ * not by flagging; treating the within-run case differently from the
+ * recorded-sibling case, for the identical underlying defect, would be an
+ * inconsistent rule. (2) the real examples above show BOTH numbers can be
+ * wrong at once (the google example is a solar-farm figure under either
+ * field name) — REVIEW-flagging would still ship exactly
+ * `capacityMw: { planned: 640, operational: 640 }` into the pending queue,
+ * the SAME shape as the defect this guard exists to prevent, betting a
+ * reviewer notices by inspection what a dedicated audit was needed to find
+ * in the first place. (3) this project's correctness-over-throughput
+ * priority favors making NO claim over shipping two claims neither of which
+ * has independent support. Still fully VISIBLE, never silent: counted under
+ * the distinct `siblingCollision` outcome (one per field, so 2 per
+ * collision) and logged by the caller with BOTH fields' value, quote, and
+ * source in one line — a dropped fact is only recoverable if the evidence
+ * that produced it survives in the log, not just the field name.
+ *
+ * Uses `RECONCILE_TOLERANCE` — not a second tolerance constant — the same
+ * "these two MW figures are the same fact" threshold every other reconciler
+ * in this file already shares.
+ */
+export function detectSiblingValueCollision(accepted: AcceptedExtraction[]): SiblingValueCollisionResult {
+  const operational = accepted.find((item) => item.field === "capacityMw.operational");
+  const planned = accepted.find((item) => item.field === "capacityMw.planned");
+  if (!operational || !planned || typeof operational.value !== "number" || typeof planned.value !== "number") {
+    return { accepted, collidedFields: [] };
+  }
+
+  const reconciles =
+    Math.abs(operational.value - planned.value) / Math.max(Math.abs(operational.value), Math.abs(planned.value), 1) <
+    RECONCILE_TOLERANCE;
+  if (!reconciles) return { accepted, collidedFields: [] };
+
+  return {
+    accepted: accepted.filter((item) => item.field !== "capacityMw.operational" && item.field !== "capacityMw.planned"),
+    collidedFields: ["capacityMw.operational", "capacityMw.planned"],
+  };
 }
 
 // ============================================================================
@@ -833,9 +966,10 @@ export interface RunExtractSummary {
   facilitiesConsidered: number;
   /** PER-FIELD count — every (facility, field) gap `selectGaps` produced.
    * `extracted + prefiltered + modelNulls + modelUnavailable + quoteRejected
-   * + duplicateOfSibling + schemaRejected + unreadable + fetchFailures +
-   * abortedUnprocessed` must always sum to this — on a normal (non-aborted)
-   * run `abortedUnprocessed` is simply 0. */
+   * + duplicateOfSibling + statusContradiction + siblingCollision +
+   * schemaRejected + unreadable + fetchFailures + abortedUnprocessed` must
+   * always sum to this — on a normal (non-aborted) run `abortedUnprocessed`
+   * is simply 0. */
   gapsConsidered: number;
   /** PER-FIELD, not per-facility: incremented once for every requested field
    * on a facility where NO cited source could be fetched as readable
@@ -871,6 +1005,22 @@ export interface RunExtractSummary {
    * structural false-positive never silently vanishes into `extracted` or
    * any other skip counter. */
   duplicateOfSibling: number;
+  /** An extracted `capacityMw.operational` was rejected because the
+   * facility's own `status` is not itself `"operational"` — see
+   * `isOperationalStatusContradiction`. Kept distinct for the same reason as
+   * `duplicateOfSibling`: a systematic, structural contradiction must never
+   * silently vanish into `extracted` or any other skip counter. */
+  statusContradiction: number;
+  /** Both `capacityMw.operational` and `capacityMw.planned` were extracted
+   * fresh in the SAME run and resolved to the same value (within
+   * `RECONCILE_TOLERANCE`) — see `detectSiblingValueCollision`. Distinct
+   * from `duplicateOfSibling`, which compares against an ALREADY-RECORDED
+   * sibling: this fires when NEITHER sub-field was previously recorded, so
+   * there was no recorded value for `duplicateOfSibling` to compare against
+   * and one quote silently filled both gaps. Counted PER FIELD like every
+   * other outcome here, so this counter increases by 2 (one for
+   * `operational`, one for `planned`) for every collision found. */
+  siblingCollision: number;
   schemaRejected: number;
   extracted: number;
   /** MUST always be 0 — including on an aborted run (see `aborted` below).
@@ -933,7 +1083,13 @@ const MIN_READABLE_CHARS = 400;
  * keys exactly (`"modelNulls"`, not `"modelNull"`) so a reason string can be
  * used directly as a `GapOutcome` tag with no translation step to drift out
  * of sync. */
-type FieldFailureReason = "prefiltered" | "modelUnavailable" | "modelNulls" | "quoteRejected" | "duplicateOfSibling";
+type FieldFailureReason =
+  | "prefiltered"
+  | "modelUnavailable"
+  | "modelNulls"
+  | "quoteRejected"
+  | "duplicateOfSibling"
+  | "statusContradiction";
 
 interface FacilitySourcesResult {
   accepted: AcceptedExtraction[];
@@ -1051,6 +1207,13 @@ async function processFacilitySources(
         fieldFailureReason.set(field, "quoteRejected");
         continue;
       }
+      if (isOperationalStatusContradiction(facility, field)) {
+        console.log(
+          `skip: ${facility.id} ${field} = ${JSON.stringify(outcome.value)} on ${source.url} — facility status is "${facility.status}", not "operational"; an operational-capacity figure contradicts the record`
+        );
+        fieldFailureReason.set(field, "statusContradiction");
+        continue;
+      }
       if (isDuplicateOfRecordedSibling(facility, field, outcome.value)) {
         console.log(
           `skip: ${facility.id} ${field} = ${JSON.stringify(outcome.value)} on ${source.url} — duplicates the recorded sibling capacityMw value (existing capacityMw on record: ${JSON.stringify(facility.capacityMw)}); same fact re-read, not a new one`
@@ -1081,6 +1244,7 @@ async function processFacilitySources(
 type GapOutcome =
   | "unclassified"
   | FieldFailureReason
+  | "siblingCollision"
   | "extracted"
   | "schemaRejected"
   | "unreadable"
@@ -1111,6 +1275,8 @@ const OUTCOME_TO_SUMMARY_KEY: Record<GapOutcome, NumericSummaryKey> = {
   modelNulls: "modelNulls",
   quoteRejected: "quoteRejected",
   duplicateOfSibling: "duplicateOfSibling",
+  statusContradiction: "statusContradiction",
+  siblingCollision: "siblingCollision",
   extracted: "extracted",
   schemaRejected: "schemaRejected",
   unreadable: "unreadable",
@@ -1214,6 +1380,8 @@ export async function runExtract(
     modelUnavailable: 0,
     quoteRejected: 0,
     duplicateOfSibling: 0,
+    statusContradiction: 0,
+    siblingCollision: 0,
     schemaRejected: 0,
     extracted: 0,
     unclassified: 0,
@@ -1313,6 +1481,42 @@ export async function runExtract(
 
     consecutiveTotalFetchFailures = 0;
 
+    // Guard 2 (siblingCollision): a facility whose capacityMw.operational AND
+    // capacityMw.planned were BOTH gaps this run, and BOTH resolved to the
+    // SAME value, cannot both be independent facts — see
+    // `detectSiblingValueCollision`'s doc-comment. Runs BEFORE candidate
+    // construction so a colliding pair never reaches `toEnrichmentIntents` in
+    // the first place — never `capacityMw: { planned: X, operational: X }`
+    // built from a single ambiguous quote.
+    const collision = detectSiblingValueCollision(result.accepted);
+    if (collision.collidedFields.length > 0) {
+      // A dropped fact is only RECOVERABLE if the value, quote, and source
+      // that produced it survive in the log — printing only the field name
+      // (as an earlier version of this line did) forces a human to re-run
+      // the extraction just to learn what was thrown away, at which point a
+      // genuinely correct value (e.g. a real `planned: 75` backed by its own
+      // quote) is gone for good. Bring this up to the same evidentiary
+      // standard as `isOperationalStatusContradiction`'s log line: id, field,
+      // value, and source, PLUS the verbatim quote (truncated defensively —
+      // nothing bounds a model quote's length) since the quote is what makes
+      // a rejection line checkable in seconds instead of requiring a re-run.
+      // Looked up from the PRE-filter `result.accepted` (not
+      // `collision.accepted`, which has already had them removed) — each
+      // field gets ITS OWN source/quote, never assumed shared, since the
+      // two can legitimately come from DIFFERENT cited pages (defect 4).
+      const truncateQuote = (quote: string, max = 200) => (quote.length > max ? `${quote.slice(0, max)}…` : quote);
+      const op = result.accepted.find((item) => item.field === "capacityMw.operational");
+      const pl = result.accepted.find((item) => item.field === "capacityMw.planned");
+      console.log(
+        `skip: ${facility.id} capacityMw.operational/capacityMw.planned — sibling collision: both resolved to the ` +
+          `same value, no recorded sibling to compare against (see detectSiblingValueCollision). ` +
+          `operational: value=${JSON.stringify(op?.value)} quote="${op ? truncateQuote(op.verbatimQuote) : "?"}" source=${op?.source.url ?? "?"}; ` +
+          `planned: value=${JSON.stringify(pl?.value)} quote="${pl ? truncateQuote(pl.verbatimQuote) : "?"}" source=${pl?.source.url ?? "?"}`
+      );
+    }
+    result.accepted = collision.accepted;
+    const collidedFields = new Set(collision.collidedFields);
+
     // Build + self-validate the candidate BEFORE the per-field tally below —
     // never emit a candidate submit-candidates.ts would itself reject.
     // targetFacilityId lives outside enrichmentUpdateIntentSchema (stripped
@@ -1365,6 +1569,10 @@ export async function runExtract(
       }
       if (schemaRejectedFields.has(field)) {
         outcomes.set(key, "schemaRejected");
+        continue;
+      }
+      if (collidedFields.has(field)) {
+        outcomes.set(key, "siblingCollision");
         continue;
       }
       const reason = result.fieldFailureReason.get(field);

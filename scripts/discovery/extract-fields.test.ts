@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import {
   selectGaps,
@@ -11,6 +11,8 @@ import {
   parseFieldsArg,
   runExtract,
   isDuplicateOfRecordedSibling,
+  isOperationalStatusContradiction,
+  detectSiblingValueCollision,
   EXTRACTABLE_FIELDS,
   CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD,
   type AcceptedExtraction,
@@ -23,12 +25,13 @@ function makeFacility(overrides: {
   id?: string;
   capacityMw?: Facility["capacityMw"];
   energy?: Facility["energy"];
+  status?: Facility["status"];
 } = {}): Facility {
   return {
     id: overrides.id ?? "test-facility",
     name: "Test Facility",
     operator: "Test Operator",
-    status: "operational",
+    status: overrides.status ?? "operational",
     facilityType: "data_center",
     confidence: "confirmed",
     location: { lat: 30, lon: -90, city: "Testville", state: "TX", precision: "exact" },
@@ -432,6 +435,390 @@ describe("runExtract — duplicate-of-recorded-sibling guard", () => {
 
     expect(summary.duplicateOfSibling).toBe(0);
     expect(summary.candidates).toHaveLength(1);
+  });
+});
+
+// Guard 1: a facility that is not itself "operational" cannot have an
+// operational-capacity figure — this is a contradiction in the record, not a
+// judgement call. Real 2026-08-16 audit examples: iren-sweetwater-tx
+// (status "under_construction") extracted operational: 1400;
+// big-horn-data-hub-hardin-mt (status "cancelled") extracted operational: 100.
+describe("isOperationalStatusContradiction", () => {
+  it("flags capacityMw.operational for every non-operational status", () => {
+    for (const status of ["under_construction", "permitted", "proposed", "cancelled"] as const) {
+      const facility = makeFacility({ status });
+      expect(isOperationalStatusContradiction(facility, "capacityMw.operational")).toBe(true);
+    }
+  });
+
+  it("does not flag capacityMw.operational for a genuinely operational facility", () => {
+    const facility = makeFacility({ status: "operational" });
+    expect(isOperationalStatusContradiction(facility, "capacityMw.operational")).toBe(false);
+  });
+
+  it("never flags capacityMw.planned, regardless of status — a proposed/cancelled facility can legitimately have HAD a planned figure", () => {
+    for (const status of ["under_construction", "permitted", "proposed", "cancelled", "operational"] as const) {
+      const facility = makeFacility({ status });
+      expect(isOperationalStatusContradiction(facility, "capacityMw.planned")).toBe(false);
+    }
+  });
+
+  it("never flags energy.* fields", () => {
+    const facility = makeFacility({ status: "cancelled" });
+    expect(isOperationalStatusContradiction(facility, "energy.onSiteGenerationMw")).toBe(false);
+    expect(isOperationalStatusContradiction(facility, "energy.utility")).toBe(false);
+  });
+});
+
+describe("runExtract — status/field contradiction guard (Guard 1)", () => {
+  function makeStatusDeps(extractedValue: number): RunExtractDeps {
+    const quote = `operational capacity of ${extractedValue} MW`;
+    const pageText = `The facility has an ${quote}. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
+    return {
+      fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: extractedValue, verbatimQuote: quote, reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+    };
+  }
+
+  it.each(["under_construction", "permitted", "proposed", "cancelled"] as const)(
+    "rejects an extracted capacityMw.operational when status is %s (statusContradiction, not extracted)",
+    async (status) => {
+      const facility = makeFacility({ id: `contradiction-${status}`, status });
+
+      const summary = await runExtract(
+        [facility],
+        { fields: ["capacityMw.operational"], runId: "test-run" },
+        makeStatusDeps(100)
+      );
+
+      expect(summary.statusContradiction).toBe(1);
+      expect(summary.extracted).toBe(0);
+      expect(summary.candidates).toEqual([]);
+    }
+  );
+
+  it("accepts an extracted capacityMw.operational when the facility is genuinely operational (must NOT fire)", async () => {
+    const facility = makeFacility({ id: "genuinely-operational", status: "operational" });
+
+    const summary = await runExtract(
+      [facility],
+      { fields: ["capacityMw.operational"], runId: "test-run" },
+      makeStatusDeps(100)
+    );
+
+    expect(summary.statusContradiction).toBe(0);
+    expect(summary.extracted).toBe(1);
+    expect(summary.candidates).toHaveLength(1);
+  });
+
+  it("does not fire on an operational power_generation facility (comanche-peak-nuclear shape — keys off status, not facilityType)", async () => {
+    const facility: Facility = {
+      id: "power-plant-operational",
+      name: "Test Nuclear Plant",
+      operator: "Test Utility",
+      status: "operational",
+      facilityType: "power_generation",
+      confidence: "confirmed",
+      location: { lat: 32, lon: -97, city: "Testville", state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [
+        { url: "https://example.com/plant-source", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+      ],
+      lastUpdated: "2026-01-01",
+      generation: undefined,
+    };
+
+    const summary = await runExtract(
+      [facility],
+      { fields: ["capacityMw.operational"], runId: "test-run" },
+      makeStatusDeps(1200)
+    );
+
+    expect(summary.statusContradiction).toBe(0);
+    expect(summary.extracted).toBe(1);
+    expect(summary.candidates).toHaveLength(1);
+  });
+
+  it("does not block a legitimate capacityMw.planned extraction on a non-operational facility (scoped to .operational only)", async () => {
+    const facility = makeFacility({ id: "cancelled-but-planned", status: "cancelled" });
+    const quote = "planned capacity of 100 MW";
+    const pageText = `The facility had a ${quote} before the project was cancelled. ${"Filler sentence about the site. ".repeat(20)}`;
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: quote, reasonIfNull: null } }),
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.planned"], runId: "test-run" }, deps);
+
+    expect(summary.statusContradiction).toBe(0);
+    expect(summary.extracted).toBe(1);
+  });
+});
+
+// Guard 2: within a SINGLE facility's extraction, capacityMw.operational and
+// capacityMw.planned resolving to the SAME value cannot both be independent
+// facts. Unlike isDuplicateOfRecordedSibling (which compares against an
+// ALREADY-RECORDED sibling), this fires when NEITHER sub-field was
+// previously recorded, so there was no recorded value for that guard to
+// compare against, and one ambiguous quote silently filled both gaps. Real
+// 2026-08-16 audit examples (8 of 101 candidates, all from a single quote):
+// google-haskell-county-tx — "Capacity 640 MW PV + 1.3 GWh BESS" (a solar
+// farm + battery spec, not data-centre IT load) filled BOTH fields with 640.
+describe("detectSiblingValueCollision", () => {
+  const source = {
+    url: "https://example.com/source",
+    label: "Press release",
+    retrievedAt: "2026-01-01",
+    kind: "press" as const,
+  };
+
+  it("drops both fields when operational and planned resolve to the same value", () => {
+    const accepted: AcceptedExtraction[] = [
+      { field: "capacityMw.operational", value: 640, verbatimQuote: "Capacity 640 MW PV + 1.3 GWh BESS", source },
+      { field: "capacityMw.planned", value: 640, verbatimQuote: "Capacity 640 MW PV + 1.3 GWh BESS", source },
+    ];
+
+    const result = detectSiblingValueCollision(accepted);
+
+    expect(result.accepted).toEqual([]);
+    expect(result.collidedFields).toEqual(["capacityMw.operational", "capacityMw.planned"]);
+  });
+
+  it("keeps both fields when the values genuinely differ (must NOT fire)", () => {
+    const accepted: AcceptedExtraction[] = [
+      { field: "capacityMw.operational", value: 40, verbatimQuote: "40 MW", source },
+      { field: "capacityMw.planned", value: 90, verbatimQuote: "90 MW", source },
+    ];
+
+    const result = detectSiblingValueCollision(accepted);
+
+    expect(result.accepted).toEqual(accepted);
+    expect(result.collidedFields).toEqual([]);
+  });
+
+  it("does not fire when only one of the two capacity fields was extracted", () => {
+    const accepted: AcceptedExtraction[] = [{ field: "capacityMw.operational", value: 40, verbatimQuote: "40 MW", source }];
+
+    const result = detectSiblingValueCollision(accepted);
+
+    expect(result.accepted).toEqual(accepted);
+    expect(result.collidedFields).toEqual([]);
+  });
+
+  it("leaves unrelated energy.* extractions untouched even when a collision fires", () => {
+    const accepted: AcceptedExtraction[] = [
+      { field: "capacityMw.operational", value: 60, verbatimQuote: "60 MW", source },
+      { field: "capacityMw.planned", value: 60, verbatimQuote: "60 MW", source },
+      { field: "energy.utility", value: "Xcel Energy", verbatimQuote: "served by Xcel Energy", source },
+    ];
+
+    const result = detectSiblingValueCollision(accepted);
+
+    expect(result.accepted).toEqual([
+      { field: "energy.utility", value: "Xcel Energy", verbatimQuote: "served by Xcel Energy", source },
+    ]);
+    expect(result.collidedFields).toEqual(["capacityMw.operational", "capacityMw.planned"]);
+  });
+});
+
+describe("runExtract — sibling value collision guard (Guard 2)", () => {
+  it("real-shape regression: a single solar+battery quote must not fill both operational and planned with 640", async () => {
+    const facility = makeFacility({ id: "google-haskell-county-tx" });
+    const quote = "Capacity 640 MW PV + 1.3 GWh BESS";
+    const pageText = `The site has a ${quote}. ${"Filler sentence about the site. ".repeat(20)}`;
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      callOllamaImpl: async () => ({ ok: true, data: { value: 640, verbatimQuote: quote, reasonIfNull: null } }),
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract(
+      [facility],
+      { fields: ["capacityMw.operational", "capacityMw.planned"], runId: "test-run" },
+      deps
+    );
+
+    expect(summary.siblingCollision).toBe(2); // one per field
+    expect(summary.extracted).toBe(0);
+    expect(summary.candidates).toEqual([]);
+  });
+
+  it("does not fire when operational and planned genuinely differ (must NOT fire)", async () => {
+    const facility = makeFacility({ id: "distinct-capacity-facility" });
+    const pageText = `The facility has an operational capacity of 40 MW and a planned capacity of 90 MW. ${"Filler sentence about the site. ".repeat(20)}`;
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      callOllamaImpl: async (opts) => {
+        if (opts.userPrompt.includes("CURRENTLY OPERATIONAL")) {
+          return { ok: true, data: { value: 40, verbatimQuote: "operational capacity of 40 MW", reasonIfNull: null } };
+        }
+        return { ok: true, data: { value: 90, verbatimQuote: "planned capacity of 90 MW", reasonIfNull: null } };
+      },
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract(
+      [facility],
+      { fields: ["capacityMw.operational", "capacityMw.planned"], runId: "test-run" },
+      deps
+    );
+
+    expect(summary.siblingCollision).toBe(0);
+    expect(summary.candidates).toHaveLength(1);
+    expect(summary.candidates[0]?.enrichmentUpdate.fields.capacityMw).toEqual({ operational: 40, planned: 90 });
+  });
+
+  // Regression (code-reviewer finding, 2026-08-16): an earlier version of this
+  // guard's log line printed only `facility.id` and `field` — a human could
+  // not tell WHAT value was dropped or WHICH source produced it without
+  // re-running the extraction, at which point a genuinely correct dropped
+  // value (e.g. qts-ashburn-2's real "planned: 75 MW") is unrecoverable. The
+  // log line must carry both fields' value, quote, and source — sourced from
+  // TWO DIFFERENT cited pages here, proving the guard never assumes a shared
+  // source (fields can legitimately be filled from different sources, see
+  // defect 4 / `processFacilitySources`).
+  it("logs both fields' value, quote, and source when a collision is dropped, even when the two fields came from DIFFERENT sources", async () => {
+    const facility: Facility = {
+      ...makeFacility({ id: "qts-ashburn-2" }),
+      sources: [
+        { url: "https://example.com/qts-ashburn-2-planned", label: "Filing", retrievedAt: "2026-01-01", kind: "filing" },
+        {
+          url: "https://example.com/qts-ashburn-2-operational",
+          label: "Press release",
+          retrievedAt: "2026-01-01",
+          kind: "press",
+        },
+      ],
+    };
+    const filler = "Filler sentence about the site and its operations. ".repeat(20);
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url.endsWith("planned")) {
+          return { ok: true, text: `The facility has a planned capacity of 75 MW. ${filler}`, finalUrl: url, httpStatus: 200 };
+        }
+        return { ok: true, text: `The facility has an operational capacity of 75 MW. ${filler}`, finalUrl: url, httpStatus: 200 };
+      },
+      callOllamaImpl: async (opts) => {
+        if (opts.userPrompt.includes("CURRENTLY OPERATIONAL")) {
+          return { ok: true, data: { value: 75, verbatimQuote: "operational capacity of 75 MW", reasonIfNull: null } };
+        }
+        return { ok: true, data: { value: 75, verbatimQuote: "planned capacity of 75 MW", reasonIfNull: null } };
+      },
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+    };
+
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const summary = await runExtract(
+        [facility],
+        { fields: ["capacityMw.operational", "capacityMw.planned"], runId: "test-run" },
+        deps
+      );
+      expect(summary.siblingCollision).toBe(2);
+
+      const collisionLine = logSpy.mock.calls.map((args) => String(args[0])).find((line) => line.includes("sibling collision"));
+      expect(collisionLine).toBeDefined();
+
+      // Recoverable evidence: facility id, both values, both (distinct) verbatim
+      // quotes, and both (distinct) source URLs — everything needed to judge
+      // the dropped fact by inspection, with no re-run required.
+      expect(collisionLine).toContain("qts-ashburn-2");
+      expect(collisionLine).toContain("value=75");
+      expect(collisionLine).toContain('quote="operational capacity of 75 MW"');
+      expect(collisionLine).toContain('quote="planned capacity of 75 MW"');
+      expect(collisionLine).toContain("source=https://example.com/qts-ashburn-2-operational");
+      expect(collisionLine).toContain("source=https://example.com/qts-ashburn-2-planned");
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
+  it("reconciliation identity holds across a run combining BOTH new guards plus ordinary outcomes", async () => {
+    // Each facility needs its OWN source URL — makeFacility() defaults every
+    // facility to the same "https://example.com/source", which would collapse
+    // the three branches below onto one fetch response. capacityMw.planned is
+    // pre-recorded on contradictionFacility so it has exactly ONE gap
+    // (operational) — isolates Guard 1's contribution from Guard 2's rather
+    // than needing the mock to distinguish fields for this facility.
+    const withOwnSource = (facility: Facility, url: string): Facility => ({
+      ...facility,
+      sources: [{ url, label: "Press release", retrievedAt: "2026-01-01", kind: "press" }],
+    });
+    const contradictionFacility = withOwnSource(
+      makeFacility({ id: "combo-contradiction", status: "under_construction", capacityMw: { planned: 999 } }),
+      "https://example.com/combo-contradiction"
+    );
+    const collisionFacility = withOwnSource(
+      makeFacility({ id: "combo-collision" }),
+      "https://example.com/combo-collision"
+    );
+    const cleanFacility = withOwnSource(makeFacility({ id: "combo-clean" }), "https://example.com/combo-clean");
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        const filler = "Filler sentence about the site and its operations. ".repeat(20);
+        if (url.includes("combo-contradiction")) {
+          return { ok: true, text: `The facility has an operational capacity of 100 MW. ${filler}`, finalUrl: url, httpStatus: 200 };
+        }
+        if (url.includes("combo-collision")) {
+          return { ok: true, text: `The site has a Capacity 200 MW total. ${filler}`, finalUrl: url, httpStatus: 200 };
+        }
+        return { ok: true, text: `The facility has a planned capacity of 55 MW. ${filler}`, finalUrl: url, httpStatus: 200 };
+      },
+      callOllamaImpl: async (opts) => {
+        if (opts.userPrompt.includes("Combo Contradiction")) {
+          return { ok: true, data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null } };
+        }
+        if (opts.userPrompt.includes("Combo Collision")) {
+          return { ok: true, data: { value: 200, verbatimQuote: "Capacity 200 MW", reasonIfNull: null } };
+        }
+        if (opts.userPrompt.includes("CURRENTLY OPERATIONAL")) {
+          return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "not stated for this facility" } };
+        }
+        return { ok: true, data: { value: 55, verbatimQuote: "planned capacity of 55 MW", reasonIfNull: null } };
+      },
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+    };
+
+    // Names must embed the branch key used above ("Combo Contradiction" /
+    // "Combo Collision") — buildUserPrompt includes facility.name verbatim.
+    const facilities: Facility[] = [
+      { ...contradictionFacility, name: "Combo Contradiction Corp" },
+      { ...collisionFacility, name: "Combo Collision Corp" },
+      { ...cleanFacility, name: "Combo Clean Corp" },
+    ];
+
+    const summary = await runExtract(
+      facilities,
+      { fields: ["capacityMw.operational", "capacityMw.planned"], runId: "test-run" },
+      deps
+    );
+
+    expect(summary.statusContradiction).toBe(1); // combo-contradiction's operational gap
+    expect(summary.siblingCollision).toBe(2); // combo-collision's operational + planned gaps
+    expect(summary.extracted).toBe(1); // combo-clean's planned gap
+    expect(summary.modelNulls).toBe(1); // combo-clean's operational gap (model returned null)
+    expect(summary.unclassified).toBe(0);
+
+    const reconciled =
+      summary.extracted +
+      summary.prefiltered +
+      summary.modelNulls +
+      summary.modelUnavailable +
+      summary.quoteRejected +
+      summary.duplicateOfSibling +
+      summary.statusContradiction +
+      summary.siblingCollision +
+      summary.schemaRejected +
+      summary.unreadable +
+      summary.fetchFailures +
+      summary.abortedUnprocessed;
+    expect(reconciled).toBe(summary.gapsConsidered);
   });
 });
 
