@@ -23,8 +23,78 @@ if [[ "${DISCOVERY_ENABLED:-false}" != "true" ]] || [[ -f "$LOG_DIR/DISABLED" ]]
   exit 0
 fi
 
+# --- alerting ----------------------------------------------------------------
+# 2026-08-14 open item #1: heartbeat.json recorded claudeStatus=no_array every
+# day for SIX consecutive days and nothing surfaced it. The instrument worked
+# perfectly; nobody read it. A silent instrument is not monitoring. So every
+# failure path below now does two things a human/launchd actually sees:
+#   1. fires a desktop notification (terminal-notifier, else osascript)
+#   2. makes this script exit NONZERO, so launchd records a failed run too
+# DISCOVERY_NOTIFY=false disables (1) for tests/CI. Notification is strictly
+# best-effort: it is wrapped in `|| true` and can never fail the pipeline.
+#
+# RESIDUAL GAP (deliberate, documented): this only fires when run.sh actually
+# RUNS. It cannot detect "launchd never fired at all" — that needs a separate
+# watchdog job. The stale-heartbeat check below is the partial mitigation: it
+# reports missed days on the next run that does happen.
+notify() {
+  local title="$1" message="$2" safe_title safe_message
+  [[ "${DISCOVERY_NOTIFY:-true}" == "true" ]] || return 0
+  # Strip quotes/backslashes/newlines — these strings are interpolated into an
+  # AppleScript string literal below, and state/run-id values reach them.
+  safe_title="$(printf '%s' "$title" | tr -d '"\\' | tr '\n' ' ')"
+  safe_message="$(printf '%s' "$message" | tr -d '"\\' | tr '\n' ' ')"
+  if command -v terminal-notifier >/dev/null 2>&1; then
+    terminal-notifier -title "$safe_title" -message "$safe_message" \
+      -group com.compute-atlas.discovery >/dev/null 2>&1 || true
+  elif command -v osascript >/dev/null 2>&1; then
+    osascript -e "display notification \"$safe_message\" with title \"$safe_title\"" \
+      >/dev/null 2>&1 || true
+  fi
+  return 0
+}
+
+# --- stale-heartbeat check ---------------------------------------------------
+# Reads the PREVIOUS run's heartbeat before this run overwrites it. A gap wider
+# than DISCOVERY_STALE_HOURS means scheduled runs were missed entirely (machine
+# asleep at 13:00, job unloaded, plist broken) — a different failure than "the
+# run happened and produced nothing", and invisible from claudeStatus alone.
+DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-36}"
+if [[ -f "$LOG_DIR/heartbeat.json" ]]; then
+  _prev_iso="$(sed -n 's/.*"lastRunAt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$LOG_DIR/heartbeat.json" | head -1)"
+  if [[ -n "$_prev_iso" ]]; then
+    # BSD (macOS) then GNU (Linux/CI); either failing leaves _prev_epoch empty
+    # and the check is skipped rather than guessed at.
+    _prev_epoch="$(date -j -f '%Y-%m-%dT%H:%M:%S%z' "$_prev_iso" '+%s' 2>/dev/null \
+      || date -d "$_prev_iso" '+%s' 2>/dev/null || echo '')"
+    if [[ -n "$_prev_epoch" ]]; then
+      _gap_hours=$(( ( $(date '+%s') - _prev_epoch ) / 3600 ))
+      if (( _gap_hours > DISCOVERY_STALE_HOURS )); then
+        log "WARN: previous discovery run was ${_gap_hours}h ago (> ${DISCOVERY_STALE_HOURS}h) — scheduled runs were MISSED, not merely unproductive"
+        notify "Compute Atlas discovery" "Missed runs: last completed run was ${_gap_hours}h ago"
+      fi
+    fi
+  fi
+fi
+
 # --- state rotation cursor ---------------------------------------------------
-STATES=(TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA)
+# Rebalanced 2026-08-14: the previous 15-state rotation held 555 of 941 live
+# facilities, leaving 386 in states the pipeline NEVER visited — never
+# re-checked, never enriched, never deepened. IA/NE/WA/OR/MN/MO/UT are major
+# hyperscaler markets sitting at 8-26 records with zero pipeline attention, so
+# they lead the rotation now. Nothing was REMOVED: dropping TX/VA would have
+# stopped re-checking their 216 facilities. 22 states at 2/run cycles in 11
+# days (was 7.5) — the cost of not losing re-check coverage.
+#
+# DISCOVERY_STATES overrides the list entirely (space-separated). That is the
+# supported way to drive a targeted manual run without editing this file:
+#   DISCOVERY_STATES="IA NE" STATES_PER_RUN=2 bash scripts/discovery/run.sh
+DEFAULT_STATES="IA NE WA OR MN MO UT TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA"
+read -r -a STATES <<< "${DISCOVERY_STATES:-$DEFAULT_STATES}"
+if (( ${#STATES[@]} == 0 )); then
+  log "WARN: DISCOVERY_STATES was set but empty — falling back to the default rotation"
+  read -r -a STATES <<< "$DEFAULT_STATES"
+fi
 CURSOR_FILE="$LOG_DIR/cursor.txt"
 
 # STATES_PER_RUN: how many states this invocation processes, each with its own
@@ -101,6 +171,29 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # Raised well above the observed ceiling so the same margin doesn't erode again.
   DISCOVERY_TIMEOUT_SECS="${DISCOVERY_TIMEOUT_SECS:-3000}"
 
+  # `timeout` alone is NOT a guarantee — MEASURED 2026-08-14. Against a process
+  # that ignores SIGTERM, `timeout 2` let it run the full 31s and STILL exited
+  # 124; with `-k 3` it died at 5s and exited 137. Two consequences encoded here:
+  #   1. -k/--kill-after escalates to SIGKILL, which is the actual enforcement.
+  #   2. Exit code 124 does NOT prove the cap enforced, so it cannot be used to
+  #      detect a cap that failed. Only wall-clock can — hence the elapsed
+  #      measurement below and the overrun check at the call site.
+  # This does NOT close the machine-sleep case: on macOS `timeout`'s ITIMER_REAL
+  # is paused across system sleep, so BOTH the initial timer and the kill-after
+  # timer stop counting. That is why the overrun check exists rather than being
+  # replaced by -k. (Observed 2026-08-11/12: runs of 106 min against a 600s cap,
+  # concurrent with check-sources reporting error=3258 — every source failing,
+  # i.e. no network, the sleep signature.)
+  DISCOVERY_KILL_AFTER_SECS="${DISCOVERY_KILL_AFTER_SECS:-120}"
+
+  # Wall-clock beyond which the cap demonstrably did not enforce: the cap, plus
+  # the kill-after escalation, plus process-teardown grace. The grace is
+  # env-overridable ONLY so the BATS suite can probe this detector in seconds
+  # instead of 60+ — a detector that cannot be exercised in a test is exactly
+  # the kind of instrument this whole change exists to stop trusting.
+  DISCOVERY_OVERRUN_GRACE_SECS="${DISCOVERY_OVERRUN_GRACE_SECS:-60}"
+  OVERRUN_LIMIT_SECS=$(( DISCOVERY_TIMEOUT_SECS + DISCOVERY_KILL_AFTER_SECS + DISCOVERY_OVERRUN_GRACE_SECS ))
+
   # caffeinate (macOS only) prevents idle sleep from suspending the claude
   # call mid-run (see the timeout-binary comment above re: "claude suspended
   # across a sleep"). Absent on Linux/CI — CAFFEINATE_PREFIX stays an empty
@@ -140,13 +233,22 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # element — never re-split this into a bare string.
   CLAUDE_TOOL_FLAGS=(--allowedTools "WebSearch WebFetch Read Glob Grep Bash(curl:*)" --disallowedTools "Write Edit NotebookEdit Agent Task")
 
+  # Sets LAST_INVOKE_ELAPSED (seconds of wall-clock) on every path, so the
+  # caller can tell an enforced cap from one that silently did nothing —
+  # exit status cannot (see the -k measurement above).
+  LAST_INVOKE_ELAPSED=0
   invoke_claude() {
+    local _t0 _t1 _status=0
+    _t0="$(date '+%s')"
     if [[ -n "$TIMEOUT_BIN" ]]; then
-      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" "$TIMEOUT_BIN" "$DISCOVERY_TIMEOUT_SECS" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE"
+      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" "$TIMEOUT_BIN" -k "$DISCOVERY_KILL_AFTER_SECS" "$DISCOVERY_TIMEOUT_SECS" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE" || _status=$?
     else
       log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
-      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE"
+      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE" || _status=$?
     fi
+    _t1="$(date '+%s')"
+    LAST_INVOKE_ELAPSED=$(( _t1 - _t0 ))
+    return "$_status"
   }
 
   # candidates_file_has_array: mirrors parseCandidatesJson's accept/reject
@@ -214,6 +316,25 @@ RUN_IDS=()
 HB_RUN_IDS=()
 HB_STATES=()
 HB_STATUSES=()
+HB_ELAPSED=()
+
+# Failure ledger for the alert + exit-status decision at the bottom. Populated
+# per state; a non-empty ledger means this run gets a notification AND a
+# nonzero exit (open item #1) rather than completing silently as before.
+FAILURES=()
+
+# note_overrun: the cap-did-not-enforce detector. Exit status cannot tell us
+# this (a SIGTERM-ignoring process yields 124 whether it was capped at 2s or
+# ran 31s — measured), so wall-clock is the only evidence.
+note_overrun() {
+  local label="$1" elapsed="$2"
+  if (( elapsed > OVERRUN_LIMIT_SECS )); then
+    log "WARN: $label ran ${elapsed}s wall-clock against a ${DISCOVERY_TIMEOUT_SECS}s cap (+${DISCOVERY_KILL_AFTER_SECS}s kill-after, +${DISCOVERY_OVERRUN_GRACE_SECS}s grace = ${OVERRUN_LIMIT_SECS}s limit) — the wall-clock cap did NOT enforce. CAUSE UNKNOWN: machine sleep was the leading hypothesis until 2026-08-15, when three overruns (6399s/4232s/5456s vs a 3000s cap) occurred with ZERO sleep events in \`pmset -g log\` for the window. \`timeout -k\` was also verified to enforce correctly against ordinary processes, bare and wrapped in \`caffeinate -i\`, under launchd's own PATH. Do not assume sleep; collect evidence."
+    FAILURES+=("$label: cap did not enforce (${elapsed}s > ${OVERRUN_LIMIT_SECS}s)")
+    return 0
+  fi
+  return 1
+}
 
 for STATE in "${BATCH_STATES[@]}"; do
   RUN_ID="$(date '+%Y%m%dT%H%M%S')-${STATE}"
@@ -234,6 +355,9 @@ for STATE in "${BATCH_STATES[@]}"; do
   OUTFILE="$LOG_DIR/candidates-${RUN_ID}.json"
 
   CLAUDE_ARRAY_OK=false
+  # Initialised here (not only in the live branch) so `set -u` cannot trip on
+  # it in the dry-run path, which skips invoke_claude entirely.
+  STATE_ELAPSED=0
 
   if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
     log "DISCOVERY_DRY_RUN=true — skipping claude call, using empty candidate set"
@@ -264,14 +388,20 @@ d
     # succeeded. Exit status 124 (GNU timeout's own timeout code) is called
     # out separately so a future wall-clock-cap regression is diagnosable
     # from launchd.out alone, without needing a live repro like the
-    # 2026-08-09 incident required.
+    # 2026-08-09 incident required. 137 (128+SIGKILL) is the -k escalation
+    # firing — i.e. the cap working as intended against a process that ignored
+    # SIGTERM — and is logged distinctly from a plain 124.
     INVOKE_STATUS=0
     invoke_claude || INVOKE_STATUS=$?
+    STATE_ELAPSED="$LAST_INVOKE_ELAPSED"
     if [[ "$INVOKE_STATUS" -eq 124 ]]; then
-      log "WARN: claude invocation for $RUN_ID timed out after DISCOVERY_TIMEOUT_SECS=${DISCOVERY_TIMEOUT_SECS}s — output may be empty or an error string; submit may be skipped"
+      log "WARN: claude invocation for $RUN_ID timed out after DISCOVERY_TIMEOUT_SECS=${DISCOVERY_TIMEOUT_SECS}s (${STATE_ELAPSED}s wall-clock) — output may be empty or an error string; submit may be skipped"
+    elif [[ "$INVOKE_STATUS" -eq 137 ]]; then
+      log "WARN: claude invocation for $RUN_ID ignored SIGTERM and was SIGKILLed by --kill-after=${DISCOVERY_KILL_AFTER_SECS}s (${STATE_ELAPSED}s wall-clock) — the cap enforced correctly"
     elif [[ "$INVOKE_STATUS" -ne 0 ]]; then
-      log "WARN: claude invocation for $RUN_ID exited nonzero (session limit / timeout / crash) — output may be empty or an error string; submit may be skipped"
+      log "WARN: claude invocation for $RUN_ID exited nonzero (session limit / timeout / crash, ${STATE_ELAPSED}s wall-clock) — output may be empty or an error string; submit may be skipped"
     fi
+    note_overrun "claude invocation for $RUN_ID" "$STATE_ELAPSED" || true
     CLAUDE_ARRAY_OK=$(candidates_file_has_array "$OUTFILE" && echo true || echo false)
 
     # Bounded single retry: on 2026-07-15 the AZ run inherited the maintainer's
@@ -285,11 +415,17 @@ d
       log "WARN: claude output for $RUN_ID had no parseable JSON array — retrying once"
       RETRY_STATUS=0
       invoke_claude || RETRY_STATUS=$?
+      # Both attempts count toward this state's wall-clock: an overrun on
+      # either one is the same "cap did not enforce" signal.
+      STATE_ELAPSED=$(( STATE_ELAPSED + LAST_INVOKE_ELAPSED ))
       if [[ "$RETRY_STATUS" -eq 124 ]]; then
-        log "WARN: retry claude invocation for $RUN_ID timed out after DISCOVERY_TIMEOUT_SECS=${DISCOVERY_TIMEOUT_SECS}s"
+        log "WARN: retry claude invocation for $RUN_ID timed out after DISCOVERY_TIMEOUT_SECS=${DISCOVERY_TIMEOUT_SECS}s (${LAST_INVOKE_ELAPSED}s wall-clock)"
+      elif [[ "$RETRY_STATUS" -eq 137 ]]; then
+        log "WARN: retry claude invocation for $RUN_ID ignored SIGTERM and was SIGKILLed by --kill-after=${DISCOVERY_KILL_AFTER_SECS}s (${LAST_INVOKE_ELAPSED}s wall-clock)"
       elif [[ "$RETRY_STATUS" -ne 0 ]]; then
-        log "WARN: retry claude invocation for $RUN_ID exited nonzero"
+        log "WARN: retry claude invocation for $RUN_ID exited nonzero (${LAST_INVOKE_ELAPSED}s wall-clock)"
       fi
+      note_overrun "retry claude invocation for $RUN_ID" "$LAST_INVOKE_ELAPSED" || true
       CLAUDE_ARRAY_OK=$(candidates_file_has_array "$OUTFILE" && echo true || echo false)
       if [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
         log "WARN: retry for $RUN_ID still had no parseable JSON array — skipping submit"
@@ -308,9 +444,14 @@ d
       --state="$STATE" \
       ${API_BASE_URL:+--base-url="$API_BASE_URL"}; then
       log "WARN: submit-candidates failed for $RUN_ID (state=$STATE) — continuing with remaining states"
+      FAILURES+=("$STATE: submit failed")
     fi
   else
     log "WARN: no parseable candidate array for $RUN_ID — skipping submit (nothing to stage)"
+    # Dry-run never reaches here (it forces CLAUDE_ARRAY_OK=true), so this is
+    # always a real no-array failure — exactly the state that went unnoticed
+    # for six days.
+    FAILURES+=("$STATE: no parseable candidate array")
   fi
 
   if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
@@ -319,6 +460,7 @@ d
     HB_RUN_IDS+=("$RUN_ID")
     HB_STATES+=("$STATE")
     HB_STATUSES+=("$HEARTBEAT_STATUS")
+    HB_ELAPSED+=("$STATE_ELAPSED")
   fi
 
   log "discovery run $RUN_ID complete"
@@ -346,7 +488,8 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
     _entry="    {
       \"runId\": \"${HB_RUN_IDS[$_h]}\",
       \"state\": \"${HB_STATES[$_h]}\",
-      \"claudeStatus\": \"${HB_STATUSES[$_h]}\"
+      \"claudeStatus\": \"${HB_STATUSES[$_h]}\",
+      \"elapsedSecs\": ${HB_ELAPSED[$_h]}
     }"
     if [[ -z "$HEARTBEAT_ENTRIES" ]]; then
       HEARTBEAT_ENTRIES="$_entry"
@@ -355,13 +498,39 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
 $_entry"
     fi
   done
+  _hb_status="ok"
+  if (( ${#FAILURES[@]} > 0 )); then
+    _hb_status="degraded"
+  fi
   cat >"$LOG_DIR/heartbeat.json" <<EOF
 {
   "lastRunAt": "$(date '+%Y-%m-%dT%H:%M:%S%z')",
+  "status": "$_hb_status",
+  "failureCount": ${#FAILURES[@]},
   "states": [
 $HEARTBEAT_ENTRIES
   ]
 }
 EOF
-  log "wrote heartbeat -> $LOG_DIR/heartbeat.json (states=${HB_STATES[*]} statuses=${HB_STATUSES[*]})"
+  log "wrote heartbeat -> $LOG_DIR/heartbeat.json (status=$_hb_status states=${HB_STATES[*]} statuses=${HB_STATUSES[*]})"
 fi
+
+# --- alert + exit status -----------------------------------------------------
+# Deliberately the LAST thing in the script: everything above (submit, source
+# liveness, heartbeat) must complete before a failure can change the exit code,
+# so alerting can never cost the run work it would otherwise have done.
+#
+# Before this existed, a totally failed run and a perfect one were
+# indistinguishable from outside: both logged, both wrote a heartbeat, both
+# exited 0. Six days of complete failure passed unnoticed as a result.
+if (( ${#FAILURES[@]} > 0 )); then
+  log "FAIL: discovery run finished with ${#FAILURES[@]} failure(s):"
+  for _f in "${FAILURES[@]}"; do
+    log "  - $_f"
+  done
+  notify "Compute Atlas discovery FAILED" "${#FAILURES[@]} failure(s): ${FAILURES[*]}"
+  exit 1
+fi
+
+log "discovery run OK — no failures"
+exit 0

@@ -214,11 +214,13 @@ rejection is not proof that a citation is bad.
   `DISCOVERY_ENABLED=true` is set in the environment, or if
   `discovery-logs/DISABLED` exists. The launchd plist deliberately does NOT
   set `DISCOVERY_ENABLED` — enabling it is a separate, deliberate step.
-- **Bounded per run:** one state per run (rotation cursor), `--max` candidates
-  (new + updated combined) submitted per run. The cap **self-reverts**: 10/day
-  for the first 20 days from the burst-start date baked into `run.sh`, then
-  automatically 5/day — no manual step to revert. `MAX_CANDIDATES` in the
-  environment overrides the computed cap (escape hatch / tests).
+- **Bounded per run:** `STATES_PER_RUN` states per run (default 2) from the
+  rotation cursor, each capped at `--max` candidates (new + updated combined).
+  The cap is **per state**, and it **self-reverts**: 25/day for the first 20
+  days from the burst-start date baked into `run.sh`, then automatically 15/day
+  — no manual step to revert. It is a ceiling, not a target: observed yield is
+  ~10 per state, so covering two states does not mean 50 rows. `MAX_CANDIDATES`
+  in the environment overrides the computed cap (escape hatch / tests).
 - **Fail-loud source verification:** every candidate's source URLs are fetched
   and mechanically checked against the claim before staging (see the gate
   above). If the local Ollama model is unreachable or not pulled, the check
@@ -236,12 +238,45 @@ rejection is not proof that a citation is bad.
   the submit step (nothing to stage), still runs the source-liveness check, and
   records the outcome in the heartbeat below.
 - **Heartbeat:** every real (non-dry-run) invocation writes
-  `discovery-logs/heartbeat.json` (`lastRunAt`, `runId`, `state`, `claudeStatus`)
-  as it completes. A stale `lastRunAt` means the daily job isn't running (a
-  launchd sleep-skip or crash); `claudeStatus: no_array` means the run reached
-  `claude` but got a session-limit/prose reply rather than candidates. A manual
-  dry-run deliberately does not write the heartbeat, so it never masks a real
-  launchd failure.
+  `discovery-logs/heartbeat.json` — top-level `lastRunAt`, `status`
+  (`ok` | `degraded`) and `failureCount`, plus a `states[]` array of
+  `{ runId, state, claudeStatus, elapsedSecs }`. A stale `lastRunAt` means the
+  daily job isn't running (a launchd sleep-skip or crash); `claudeStatus:
+  no_array` means the run reached `claude` but got a session-limit/prose reply
+  rather than candidates. A manual dry-run deliberately does not write the
+  heartbeat, so it never masks a real launchd failure.
+- **Alerting — the run tells you when it fails.** ⚠️ From 2026-08-08 to
+  2026-08-14 the heartbeat recorded `claudeStatus: no_array` — total failure —
+  **every day for six days and nothing surfaced it.** The instrument worked;
+  nobody read it. A failed run and a perfect one were indistinguishable from
+  outside: both logged, both wrote a heartbeat, both exited 0. Now any state
+  that produces no parseable array, fails to submit, or overruns the wall-clock
+  cap is recorded in a failure ledger, and at the very end of the run that
+  ledger (a) fires a desktop notification via `terminal-notifier` (falling back
+  to `osascript`) and (b) makes `run.sh` **exit 1**, so launchd records a failed
+  run too. `DISCOVERY_NOTIFY=false` suppresses only the notification.
+  The alert is deliberately the *last* thing in the script — after submit,
+  source-liveness and heartbeat — so it can never cost the run work it would
+  otherwise have completed. A clean run stays silent and exits 0; an alert that
+  fires on healthy runs would train you to ignore it, which is the original bug.
+  **Residual gap (known):** this only fires when `run.sh` actually runs. It
+  cannot detect "launchd never fired at all" — that needs a separate watchdog
+  job. The stale-heartbeat check is the partial mitigation: on startup, a
+  previous `lastRunAt` older than `DISCOVERY_STALE_HOURS` (default 36) is
+  reported and notified, so missed days surface on the next run that happens.
+- **The wall-clock cap is enforced, and its failure is detected.**
+  `DISCOVERY_TIMEOUT_SECS` (default 3000) is passed to `timeout` together with
+  `-k DISCOVERY_KILL_AFTER_SECS` (default 120), which escalates to SIGKILL.
+  This matters: **measured on macOS, `timeout 2` against a process that ignores
+  SIGTERM let it run the full 31s and still exited 124** — so `-k` is what
+  actually enforces, and exit status 124 can never prove the cap worked.
+  Because of that, every `claude` invocation is also timed, and a run whose
+  wall-clock exceeds `cap + kill-after + DISCOVERY_OVERRUN_GRACE_SECS`
+  (default 60) is flagged as a cap-enforcement failure. That is the only way to
+  catch the machine-sleep case, where macOS pauses `ITIMER_REAL` and *both*
+  timers stop counting — observed 2026-08-11/12 as 106-minute runs against a
+  600s cap. Note a run can produce perfectly valid candidates and *still* be
+  flagged: an overrun is a failure of the guard, not of the output.
 - **Source-liveness check:** read-only, never auto-edits. Runs unconditionally
   every daily invocation (even in dry-run) and reports classifications to
   `discovery-logs/source-health-<timestamp>.json`. Current implementation is
@@ -256,10 +291,27 @@ state, capped to `--max` submissions (new + updated combined, default 5).
 There is no fan-out, no multi-agent workflow, and no `/data-wave` invocation
 from this pipeline.
 
-**Cadence unchanged:** The combined-pass model runs on the same daily schedule
-as before — one state per 24-hour cycle, one state per launchd invocation, cursor
-rotation through 15 states for a roughly two-week full cycle. No new launchd
-units, no increase in claude cost.
+**Cadence:** The combined-pass model runs daily via launchd, processing
+`STATES_PER_RUN` states per invocation (default 2) from a rotation cursor.
+
+**Rotation (rebalanced 2026-08-14).** The rotation was 15 states holding 555 of
+941 live facilities — meaning **386 facilities lived in states the pipeline
+never visited**, and so were never re-checked, never enriched, never deepened.
+IA, NE, WA, OR, MN, MO and UT are major hyperscaler markets that were sitting at
+8–26 records with zero pipeline attention, so they now lead the rotation.
+Nothing was removed: dropping the saturated states (TX at 106, VA at 110) would
+have silently stopped re-checking their facilities for status changes. 22 states
+at 2 per run cycles in about 11 days, up from 7.5 — the deliberate cost of not
+losing re-check coverage.
+
+`DISCOVERY_STATES` overrides the rotation entirely (space-separated). That is
+the supported way to drive a targeted run without editing the script, and it is
+what the BATS suite pins so cursor tests survive the next rebalance:
+
+```bash
+DISCOVERY_ENABLED=true DISCOVERY_STATES="IA NE" STATES_PER_RUN=2 \
+  bash scripts/discovery/run.sh
+```
 
 ## Running manually
 

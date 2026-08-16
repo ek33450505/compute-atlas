@@ -92,9 +92,45 @@ esac
 EOF
 	chmod +x "$BIN_DIR/npx"
 
-	export HOME LOG_DIR CLAUDE_CALL_LOG NPX_CALL_LOG
+	# --- fake notification surfaces (HARD RULE: tests must produce ZERO real
+	# GUI side effects). run.sh's notify() prefers terminal-notifier and falls
+	# back to osascript; BOTH are shimmed so neither can fire a real banner on
+	# the maintainer's desktop, and the call log lets the alerting tests assert
+	# that notify() actually fired. DISCOVERY_NOTIFY is deliberately left at its
+	# default (true) so the tests exercise the REAL default path rather than a
+	# disabled one.
+	# `caffeinate` is a real macOS binary run.sh prefixes onto every claude
+	# invocation. Shimmed to a pass-through so the suite has zero effect on the
+	# host's power-assertion state — drop caffeinate's own flags, exec the rest.
+	cat >"$BIN_DIR/caffeinate" <<'EOF'
+#!/usr/bin/env bash
+while [[ "${1:-}" == -* ]]; do shift; done
+exec "$@"
+EOF
+	chmod +x "$BIN_DIR/caffeinate"
+
+	NOTIFY_CALL_LOG="$TEST_TMP/notify-calls.log"
+	for _surface in terminal-notifier osascript; do
+		cat >"$BIN_DIR/$_surface" <<EOF
+#!/usr/bin/env bash
+echo "$_surface \$*" >>"$NOTIFY_CALL_LOG"
+exit 0
+EOF
+		chmod +x "$BIN_DIR/$_surface"
+	done
+
+	export HOME LOG_DIR CLAUDE_CALL_LOG NPX_CALL_LOG NOTIFY_CALL_LOG
 	export PATH="$BIN_DIR:$PATH"
 	export DISCOVERY_LOG_DIR="$LOG_DIR"
+
+	# Pin the rotation. run.sh's DEFAULT rotation was rebalanced 2026-08-14
+	# (22 states, gap-states first); every rotation/cursor assertion in this
+	# file was written against the prior 15-state list, and they are testing
+	# CURSOR MECHANICS, not which states are in the list. Pinning the old list
+	# here keeps those assertions exact and makes them immune to the next
+	# rebalance. The default list's CONTENT is asserted separately, in the
+	# dedicated test near the bottom that unsets this.
+	export DISCOVERY_STATES="TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA"
 
 	# run.sh now defaults STATES_PER_RUN=2 (Unit 2, 2026-08-14). Every existing
 	# test in this file was written against the prior single-state-per-run
@@ -290,9 +326,16 @@ EOF
 	chmod +x "$BIN_DIR/claude"
 
 	run bash "$RUN_SH"
-	[ "$status" -eq 0 ]
+	# Exit status is now 1 (alerting, 2026-08-14) — a run that staged nothing
+	# must not look identical to a successful one from outside. The point of
+	# this test is unchanged and asserted below: the run still REACHES
+	# completion rather than aborting at the failure.
+	[ "$status" -eq 1 ]
 	[[ "$output" == *"discovery run"*"complete"* ]]
 	[[ "$output" == *"skipping submit"* ]]
+	# check-sources still ran after the failure — nothing was short-circuited
+	run grep -q "check-sources.ts" "$NPX_CALL_LOG"
+	[ "$status" -eq 0 ]
 }
 
 @test "no-array result skips the submit step" {
@@ -306,7 +349,7 @@ EOF
 	chmod +x "$BIN_DIR/claude"
 
 	run bash "$RUN_SH"
-	[ "$status" -eq 0 ]
+	[ "$status" -eq 1 ]
 
 	# The retry gate's candidates_file_has_array() call is a `tsx -e` inline
 	# script that itself imports from submit-candidates.ts, so a bare
@@ -348,10 +391,13 @@ EOF
 	chmod +x "$BIN_DIR/claude"
 
 	run bash "$RUN_SH"
-	[ "$status" -eq 0 ]
+	[ "$status" -eq 1 ]
 
 	[ -f "$LOG_DIR/heartbeat.json" ]
 	grep -q '"claudeStatus": "no_array"' "$LOG_DIR/heartbeat.json"
+	# the heartbeat must ALSO carry a top-level verdict, so a reader does not
+	# have to scan per-state entries to know the run was bad
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
 }
 
 @test "dry-run does not write a heartbeat" {
@@ -570,7 +616,9 @@ EOF
 	chmod +x "$BIN_DIR/claude"
 
 	run bash "$RUN_SH"
-	[ "$status" -eq 0 ]
+	# TX failed, so the batch exit status is 1 — but VA still ran to
+	# completion, which is what this test actually guards.
+	[ "$status" -eq 1 ]
 
 	# three claude calls total: TX primary, TX retry, VA primary
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
@@ -614,7 +662,7 @@ EOF
 	chmod +x "$BIN_DIR/claude"
 
 	run bash "$RUN_SH"
-	[ "$status" -eq 0 ]
+	[ "$status" -eq 1 ]
 
 	[ -f "$LOG_DIR/heartbeat.json" ]
 	grep -q '"lastRunAt"' "$LOG_DIR/heartbeat.json"
@@ -649,4 +697,272 @@ EOF
 	# reason"; this is the assertion that actually discriminates the two.
 	[[ "$output" != *"API_ADMIN_TOKEN"* ]]
 	[[ "$output" != *"Usage: submit-candidates.ts"* ]]
+}
+
+# --- alerting (open item #1, 2026-08-14) -------------------------------------
+# heartbeat.json recorded claudeStatus=no_array every day for SIX consecutive
+# days and nothing surfaced it: a totally failed run and a perfect one were
+# indistinguishable from outside — both logged, both wrote a heartbeat, both
+# exited 0. These tests pin the two halves of the fix (notification + nonzero
+# exit) AND the negative case, which is the one that matters most: an alert
+# that fires on healthy runs gets ignored and is worth nothing.
+
+@test "a run that stages nothing fires a desktop notification and exits nonzero" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ -s "$NOTIFY_CALL_LOG" ]
+	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
+	[[ "$output" == *"no parseable candidate array"* ]]
+}
+
+@test "a clean run fires NO notification and exits 0" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"Clean Run Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -s "$NOTIFY_CALL_LOG" ]
+	[[ "$output" == *"discovery run OK — no failures"* ]]
+	grep -q '"status": "ok"' "$LOG_DIR/heartbeat.json"
+	grep -q '"failureCount": 0' "$LOG_DIR/heartbeat.json"
+}
+
+@test "the alert and exit status come AFTER submit, source-liveness and heartbeat" {
+	export DISCOVERY_ENABLED=true
+	# A failing run must still do every piece of work a passing one does —
+	# alerting must never cost the pipeline output it would otherwise produce.
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	grep -q "check-sources.ts" "$NPX_CALL_LOG"
+	[ -f "$LOG_DIR/heartbeat.json" ]
+	run node -e "JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8'))"
+	[ "$status" -eq 0 ]
+}
+
+@test "a stale heartbeat surfaces missed runs on the next run that happens" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	# BSD (macOS) then GNU (Linux/CI) — this file must pass on both.
+	old="$(date -j -v-5d '+%Y-%m-%dT%H:%M:%S%z' 2>/dev/null \
+		|| date -d '5 days ago' '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$old" >"$LOG_DIR/heartbeat.json"
+
+	run bash "$RUN_SH"
+	# Missed PRIOR runs do not make THIS run a failure — it is reported, not
+	# punished. Exit stays 0 because this run itself was fine.
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"scheduled runs were MISSED"* ]]
+	[ -s "$NOTIFY_CALL_LOG" ]
+	grep -q "Missed runs" "$NOTIFY_CALL_LOG"
+}
+
+@test "a fresh heartbeat does not report missed runs" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	now="$(date '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$now" >"$LOG_DIR/heartbeat.json"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]]
+	[ ! -s "$NOTIFY_CALL_LOG" ]
+}
+
+# --- wall-clock cap enforcement (open item #2, 2026-08-14) -------------------
+# MEASURED: against a process that ignores SIGTERM, `timeout 2` let it run the
+# full 31s and STILL exited 124. So (a) -k is what actually enforces, and
+# (b) exit status can never detect a cap that failed — only wall-clock can.
+
+@test "the claude invocation passes --kill-after so SIGTERM-ignoring processes are SIGKILLed" {
+	export DISCOVERY_ENABLED=true
+	TIMEOUT_CALL_LOG="$TEST_TMP/timeout-calls.log"
+	# Shim `timeout` to record its own arguments (which the `claude` shim
+	# cannot see) and then pass through to the wrapped command.
+	cat >"$BIN_DIR/timeout" <<EOF
+#!/usr/bin/env bash
+echo "timeout \$*" >>"$TIMEOUT_CALL_LOG"
+shift 3   # -k <kill-after> <duration>
+exec "\$@"
+EOF
+	chmod +x "$BIN_DIR/timeout"
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"Kill After Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ -s "$TIMEOUT_CALL_LOG" ]
+	grep -q -- "-k " "$TIMEOUT_CALL_LOG"
+}
+
+@test "a claude call that outlives the cap is reported as a cap-enforcement failure" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_TIMEOUT_SECS=1
+	export DISCOVERY_KILL_AFTER_SECS=1
+	export DISCOVERY_OVERRUN_GRACE_SECS=1   # overrun limit = 3s
+	# Reproduces the 2026-08-11/12 signature: the machine slept, macOS paused
+	# ITIMER_REAL, and `timeout` never fired despite the cap elapsing (runs of
+	# 106 min against a 600s cap). Shimming `timeout` to pass straight through
+	# makes the cap provably do nothing, which is the condition under test.
+	cat >"$BIN_DIR/timeout" <<'EOF'
+#!/usr/bin/env bash
+shift 3
+exec "$@"
+EOF
+	chmod +x "$BIN_DIR/timeout"
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+sleep 5
+echo '[{"name":"Overrun Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	# NOTE the shape: this run produced a perfectly valid candidate array and
+	# submitted it, so claudeStatus is "ok" — and it STILL fails. An overrun is
+	# a failure of the guard, not of the output, and the old code could not see
+	# the difference at all.
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"the wall-clock cap did NOT enforce"* ]]
+	[ -s "$NOTIFY_CALL_LOG" ]
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "a claude call within the cap is NOT reported as an overrun" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_TIMEOUT_SECS=30
+	export DISCOVERY_KILL_AFTER_SECS=5
+	export DISCOVERY_OVERRUN_GRACE_SECS=5
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"Fast Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"did NOT enforce"* ]]
+	[ ! -s "$NOTIFY_CALL_LOG" ]
+}
+
+@test "per-state wall-clock lands in the heartbeat" {
+	export DISCOVERY_ENABLED=true
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"Elapsed Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q '"elapsedSecs"' "$LOG_DIR/heartbeat.json"
+	run node -e "
+		const hb = JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8'));
+		if (typeof hb.states[0].elapsedSecs !== 'number') process.exit(1);
+	"
+	[ "$status" -eq 0 ]
+}
+
+# --- rotation rebalance (2026-08-14) ----------------------------------------
+# The prior 15-state rotation held 555 of 941 live facilities; the other 386
+# lived in states the pipeline NEVER visited. Note every test above pins
+# DISCOVERY_STATES to the OLD list (see setup()) because they test cursor
+# MECHANICS; these two are the ones that assert list CONTENT.
+
+@test "the default rotation adds the unvisited hyperscaler states without dropping any" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	unset DISCOVERY_STATES
+	rm -f "$LOG_DIR/cursor.txt"
+	export STATES_PER_RUN=99   # clamped to the rotation length — visits all
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# newly added: the major hyperscaler markets that had zero attention
+	for s in IA NE WA OR MN MO UT; do
+		[[ "$output" == *"for state=$s"* ]] || {
+			echo "missing newly-added state: $s"
+			false
+		}
+	done
+	# and nothing was removed — dropping TX/VA would silently stop re-checking
+	# their 216 facilities for status changes
+	for s in TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA; do
+		[[ "$output" == *"for state=$s"* ]] || {
+			echo "default rotation dropped state: $s"
+			false
+		}
+	done
+}
+
+@test "DISCOVERY_STATES drives a targeted manual run without editing the script" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	export DISCOVERY_STATES="IA NE"
+	export STATES_PER_RUN=2
+	rm -f "$LOG_DIR/cursor.txt"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"states=IA NE"* ]]
+	[ -n "$(find "$LOG_DIR" -name 'candidates-*-IA.json' -print -quit)" ]
+	[ -n "$(find "$LOG_DIR" -name 'candidates-*-NE.json' -print -quit)" ]
+	# no state outside the override was touched
+	[ -z "$(find "$LOG_DIR" -name 'candidates-*-TX.json' -print -quit)" ]
+}
+
+@test "a whitespace-only DISCOVERY_STATES falls back to the default rotation instead of doing nothing" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	# Deliberately whitespace, not "" — `${DISCOVERY_STATES:-...}` already
+	# treats an empty value as unset, so "" can never reach the guard. A
+	# whitespace-only value DOES: it is non-empty to the shell but expands to
+	# zero array elements, which would otherwise make the run silently
+	# process no states at all.
+	export DISCOVERY_STATES="   "
+	export STATES_PER_RUN=1
+	rm -f "$LOG_DIR/cursor.txt"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"falling back to the default rotation"* ]]
+	# it actually processed a state rather than silently no-opping
+	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
+	[ "$outfile_count" = "1" ]
 }
