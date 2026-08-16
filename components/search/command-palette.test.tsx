@@ -35,9 +35,41 @@ let knownFacility: Facility;
 let searchIndex: SearchEntry[];
 
 beforeAll(async () => {
-  knownFacility = (await getAllFacilities())[0];
+  const all = await getAllFacilities();
+  // Deliberately NOT `all[0]`: that is an arbitrary pick that silently changes
+  // whenever the dataset changes, and the tests below look up an option by a
+  // regex built from this facility's name. The palette renders facility AND
+  // operator groups from one query, so a facility whose name equals its
+  // operator produces two matching options and `findByRole` throws "found
+  // multiple elements" — which is exactly what happened on 2026-08-15 when a
+  // data wave moved "1623 Farnam" (operator: "1623 Farnam") into position 0.
+  // Pick a facility whose name is unambiguous: different from its operator,
+  // and not a substring of any other facility's name.
+  const nameIsUnique = (f: Facility) =>
+    all.filter((g) => g.name.toLowerCase().includes(f.name.toLowerCase())).length === 1;
+  const picked = all.find((f) => f.name !== f.operator && nameIsUnique(f));
+  // Fail loudly rather than falling back to `all[0]`: a silent fallback would
+  // reintroduce exactly the ambiguity this selection exists to avoid, and the
+  // resulting failure would point at the assertion instead of the fixture.
+  if (!picked) {
+    throw new Error(
+      "command-palette.test: no facility has a name that both differs from its operator and is unique across the dataset — the fixture assumptions no longer hold"
+    );
+  }
+  knownFacility = picked;
   searchIndex = await buildSearchIndex();
 });
+
+/**
+ * Facility names are DATA, not patterns — 268 of the ~1023 eligible names
+ * contain regex metacharacters (parentheses, dots, slashes). Interpolating one
+ * straight into `new RegExp()` silently changes what is matched: "Foo (Bar)"
+ * would build /Foo (Bar)/i, which matches "Foo Bar" and NOT the literal name.
+ * Escape before matching so the assertion means what it says regardless of
+ * which facility the selection above lands on.
+ */
+const nameMatcher = (name: string) =>
+  new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -72,7 +104,7 @@ describe("CommandPalette — open + search", () => {
     await user.type(combobox, knownFacility.name);
 
     const option = await screen.findByRole("option", {
-      name: new RegExp(knownFacility.name, "i"),
+      name: nameMatcher(knownFacility.name),
     });
     expect(option).toBeInTheDocument();
 
@@ -90,7 +122,7 @@ describe("CommandPalette — open + search", () => {
     await user.type(combobox, knownFacility.name);
 
     const option = await screen.findByRole("option", {
-      name: new RegExp(knownFacility.name, "i"),
+      name: nameMatcher(knownFacility.name),
     });
     await user.click(option);
 
@@ -261,7 +293,7 @@ describe("CommandPalette — live DB search", () => {
 
     expect(
       await screen.findByRole("option", {
-        name: new RegExp(knownFacility.name, "i"),
+        name: nameMatcher(knownFacility.name),
       })
     ).toBeInTheDocument();
     expect(screen.queryByText(/no matches for/i)).not.toBeInTheDocument();
