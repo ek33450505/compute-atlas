@@ -89,6 +89,32 @@ describe("prefilter", () => {
     expect(prefilter('The facility is a 36—megawatt data center', 'energy.onSiteGenerationMw')).toBe(true);
   });
 
+  it('matches capacity with soft hyphen (U+00AD) separator', () => {
+    // Newly-covered gap: before the \p{Pd}-category fix, this silently
+    // skipped the prefilter (the model was never called) and the resulting
+    // gap read as "the page does not state a capacity" — indistinguishable
+    // from a page that genuinely never mentions one. U+00AD is category Cf
+    // (format), outside \p{Pd}, so it must stay an explicit addition.
+    expect(prefilter('The facility is a 36­megawatt data center', 'capacityMw.operational')).toBe(true);
+    expect(prefilter('The facility is a 36­megawatt data center', 'capacityMw.planned')).toBe(true);
+  });
+
+  it('matches capacity with fullwidth hyphen-minus (U+FF0D) separator', () => {
+    // Newly-covered gap: U+FF0D IS inside \p{Pd} (verified empirically in
+    // node), so this is picked up by the category escape with no explicit
+    // addition needed.
+    expect(prefilter('The facility is a 36－megawatt data center', 'capacityMw.operational')).toBe(true);
+    expect(prefilter('The facility is a 36－megawatt data center', 'energy.onSiteGenerationMw')).toBe(true);
+  });
+
+  it('matches capacity with hyphen bullet (U+2043) separator', () => {
+    // Newly-covered gap: U+2043 sits outside \p{Pd} (category Po, not Pd) —
+    // the one most likely to be missed since it visually reads as a dash.
+    // Must stay an explicit addition alongside the category escape.
+    expect(prefilter('The facility is a 36⁃megawatt data center', 'capacityMw.operational')).toBe(true);
+    expect(prefilter('The facility is a 36⁃megawatt data center', 'capacityMw.planned')).toBe(true);
+  });
+
   it('rejects text with no power unit mention even when it contains a number', () => {
     expect(prefilter('The facility covers 36 acres and was built in 2024', 'capacityMw.operational')).toBe(false);
   });

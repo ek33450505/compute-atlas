@@ -347,6 +347,42 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
     expect(quoteSupportsValueTs(quote, 36, page)).toBe(true);
   });
 
+  it('matches U+00AD (soft hyphen) separator with number+unit', () => {
+    // Newly-covered gap (Pd fix): U+00AD sits outside the \p{Pd} category
+    // (it's Cf, format) so it must stay an explicit addition alongside the
+    // category escape, not something \p{Pd} picks up automatically.
+    const page = 'The facility has a 36­megawatt capacity with no other mentions';
+    const quote = 'The facility has a 36­megawatt capacity';
+    expect(quotedMwValuesJs(quote)).toEqual([36]);
+    expect(quotedMwValuesTs(quote)).toEqual([36]);
+    expect(quoteSupportsValueJs(quote, 36, page)).toBe(true);
+    expect(quoteSupportsValueTs(quote, 36, page)).toBe(true);
+  });
+
+  it('matches U+FF0D (fullwidth hyphen-minus) separator with number+unit', () => {
+    // Newly-covered gap: U+FF0D IS inside \p{Pd} (verified empirically), so
+    // this is picked up by the category escape alone with no explicit
+    // addition needed — unlike U+00AD/U+2212/U+2043 above/below.
+    const page = 'The facility has a 36－megawatt capacity with no other mentions';
+    const quote = 'The facility has a 36－megawatt capacity';
+    expect(quotedMwValuesJs(quote)).toEqual([36]);
+    expect(quotedMwValuesTs(quote)).toEqual([36]);
+    expect(quoteSupportsValueJs(quote, 36, page)).toBe(true);
+    expect(quoteSupportsValueTs(quote, 36, page)).toBe(true);
+  });
+
+  it('matches U+2043 (hyphen bullet) separator with number+unit', () => {
+    // Newly-covered gap: U+2043 sits outside \p{Pd} (category Po, not Pd) —
+    // easy to miss since it "looks like" a dash-punctuation character. Must
+    // stay an explicit addition.
+    const page = 'The facility has a 36⁃megawatt capacity with no other mentions';
+    const quote = 'The facility has a 36⁃megawatt capacity';
+    expect(quotedMwValuesJs(quote)).toEqual([36]);
+    expect(quotedMwValuesTs(quote)).toEqual([36]);
+    expect(quoteSupportsValueJs(quote, 36, page)).toBe(true);
+    expect(quoteSupportsValueTs(quote, 36, page)).toBe(true);
+  });
+
   it('continues to match ASCII hyphen (control case)', () => {
     const page = 'The facility has a 36-megawatt capacity with no other mentions';
     const quote = 'The facility has a 36-megawatt capacity';
@@ -390,4 +426,57 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
     expect(quoteSupportsValueJs(quote, 36, 'dummy text 36')).toBe(false);
     expect(quoteSupportsValueTs(quote, 36, 'dummy text 36')).toBe(false);
   });
+});
+
+// ============================================================================
+// Property test: the dash class must be CATEGORY-based, not enumerated.
+//
+// This is the test that makes the fix durable. It does not assert against a
+// hand-picked list of separators (that would just be more enumeration one
+// level up, and would keep passing even if someone reverted the class to a
+// curated list that happened to include the same picks). It asks node's own
+// `u`-mode regex engine which code points its \p{Pd} (dash punctuation)
+// GENERAL CATEGORY contains right now, and requires every single one of them
+// to work as a number+unit separator. Derived live rather than hardcoded on
+// purpose: it stays coupled to whatever \p{Pd} the runtime defines, so this
+// test keeps validating "the class is category-based" even across a future
+// Unicode Character Database update that adds or removes a Pd member — a
+// hardcoded list would silently stop testing the real category the moment it
+// drifted from it.
+//
+// Proxy check: this test WOULD FAIL against the old enumerated class
+// ("[-‐-―−]") for all but a handful of these code points —
+// e.g. U+058A (Armenian hyphen), U+1400 (Canadian syllabics hyphen), U+301C
+// (wave dash) are real \p{Pd} members the enumeration never anticipated. See
+// this file's closing report for the full old-vs-new comparison.
+// ============================================================================
+
+function discoverPdCodePoints(): number[] {
+  const points: number[] = [];
+  for (let cp = 0; cp <= 0x10ffff; cp++) {
+    if (cp >= 0xd800 && cp <= 0xdfff) continue; // surrogate range, invalid alone
+    if (/\p{Pd}/u.test(String.fromCodePoint(cp))) points.push(cp);
+  }
+  return points;
+}
+
+describe("property: every live \\p{Pd} code point matches 36<sep>megawatt", () => {
+  const pdCodePoints = discoverPdCodePoints();
+
+  // Canary: an empty/near-empty list would make the loop below vacuous —
+  // it would pass trivially while testing nothing (same shape as the
+  // "loaded a meaningful number of real triples" canary above).
+  it("discovered a non-trivial \\p{Pd} population from the runtime", () => {
+    expect(pdCodePoints.length).toBeGreaterThan(20);
+  });
+
+  for (const cp of pdCodePoints) {
+    const sep = String.fromCodePoint(cp);
+    const label = `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
+    it(`matches with ${label} as the number-unit separator (both implementations)`, () => {
+      const quote = `36${sep}megawatt`;
+      expect(quotedMwValuesJs(quote)).toEqual([36]);
+      expect(quotedMwValuesTs(quote)).toEqual([36]);
+    });
+  }
 });

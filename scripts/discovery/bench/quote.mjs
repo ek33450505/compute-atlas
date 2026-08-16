@@ -52,17 +52,35 @@ const UNIT_MW = { kw: 0.001, kilowatt: 0.001, kilowatts: 0.001, mw: 1, megawatt:
 // this with U+2011 NON-BREAKING HYPHEN ("36‑megawatt"), not ASCII '-', and
 // en/em dashes ("36–megawatt") are ordinary published-prose punctuation, not
 // exotic — an ASCII-only `-?` silently missed all of them, turning a real,
-// grounded quote into zero MW values. Covers U+2010–U+2015 (hyphen,
-// non-breaking hyphen, figure dash, en dash, em dash, horizontal bar) and
-// U+2212 (minus sign) alongside the ASCII hyphen. Kept to a SINGLE optional
-// character (not a wildcard span) on purpose: prose where a dash is ordinary
-// clause punctuation rather than a compound-adjective joiner (e.g. "$36 — MW
-// capacity unknown") still requires the unit token immediately after it to
-// match — considered and rejected as a broadening risk.
-const DASH_CLASS = "[-\\u2010-\\u2015\\u2212]";
+// grounded quote into zero MW values.
+//
+// An earlier version of this class enumerated code points
+// (U+2010-U+2015, U+2212). Enumeration is itself the defect: every separator
+// nobody thought of becomes another silent false absence — three more were
+// found by inspection (U+00AD soft hyphen, U+FF0D fullwidth hyphen-minus,
+// U+2043 hyphen bullet). Replaced with `\p{Pd}`, Unicode's dash-punctuation
+// GENERAL CATEGORY, which is exhaustive by construction (27 code points as of
+// Unicode's current release, empirically enumerated with `\p{Pd}` under the
+// `u` flag — verified in node, NOT trusted from a written list) and already
+// covers U+2010-U+2015 and U+FF0D. Two of the three newly-found separators
+// sit OUTSIDE `Pd` under their real Unicode category and must stay explicit
+// additions: U+2212 (minus sign, category Sm) and U+00AD (soft hyphen,
+// category Cf) — confirmed by category lookup, not assumption. The third,
+// U+2043 (hyphen bullet), is ALSO outside `Pd` (category Po, punctuation-
+// other) and is easy to miss if you stop at "the two symbol/format
+// categories" — it must stay explicit too. Requires the `u` flag on every
+// regex that embeds this class (bare `\p{...}` is literal `p` without it).
+// Kept to a SINGLE optional character (not a wildcard span) on purpose:
+// prose where a dash is ordinary clause punctuation rather than a
+// compound-adjective joiner (e.g. "$36 — MW capacity unknown") still
+// requires the unit token immediately after it to match — considered and
+// rejected as a broadening risk. Shared (not redefined) at extract-fields.ts's
+// NUM_UNIT_DASH_CLASS, so both regexes stay in lockstep —
+// quote-parity.test.ts fails loudly if only one is fixed.
+const DASH_CLASS = "[\\p{Pd}\\u2212\\u00AD\\u2043]";
 const NUM_UNIT = new RegExp(
   `(\\d[\\d,.]*)\\s*${DASH_CLASS}?\\s*(kw|kilowatts?|mw|megawatts?|gw|gigawatts?)\\b`,
-  "gi"
+  "giu"
 );
 
 /** Every number in `quote` that carries a power unit, expressed in MW. */
