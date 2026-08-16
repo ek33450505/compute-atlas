@@ -235,7 +235,13 @@ describe("FacilityForm — create mode", () => {
   });
 
   it("resets the type-conditional state slice when facilityType changes", async () => {
-    const user = userEvent.setup();
+    // `delay: null` disables user-event's per-keystroke `setTimeout` round-trip
+    // (see fillRequiredFields below) — with the default `delay: 0`, each of the
+    // ~35 characters typed by this test still schedules a real macrotask via
+    // `setTimeout(resolve, 0)`, and under full-suite CPU contention those add up
+    // to multiple seconds, blowing the default 5000ms testTimeout with no
+    // functional failure (flaky under load, passes reliably in isolation).
+    const user = userEvent.setup({ delay: null });
     const state = emptyFacilityFormState();
     state.facilityType = "crypto_mining";
     state.mining = { hashRateThPerS: 500 };
@@ -287,7 +293,7 @@ describe("FacilityForm — create mode", () => {
   }
 
   it("surfaces field-level errors from a 400 response's issues array", async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     mockCreateFacilityAction.mockResolvedValue({
       ok: false,
       status: 400,
@@ -307,7 +313,7 @@ describe("FacilityForm — create mode", () => {
   });
 
   it("redirects to /admin/facilities and toasts on success", async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     mockCreateFacilityAction.mockResolvedValue({
       ok: true,
       facility: { id: "new-dc", name: "New DC" },
@@ -337,7 +343,7 @@ describe("FacilityForm — edit mode", () => {
   });
 
   it("calls updateFacilityAction with the id and a shape-complete payload", async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     mockUpdateFacilityAction.mockResolvedValue({
       ok: true,
       facility: { id: "test-facility", name: "Test Facility" },
