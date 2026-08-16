@@ -255,6 +255,53 @@ describe("fetchPageText", () => {
     expect(result.reason).toBe("network_error");
   });
 
+  // Regression (2026-08-16 sweep collapse): the thrown error was previously
+  // discarded entirely (`catch { return { ok:false, reason:"network_error" } }`)
+  // — 1455 fetch failures in one real sweep produced ZERO diagnostic signal
+  // about what actually threw, which is what let a systemic collapse hide
+  // behind ordinary-looking "fetchFailures" telemetry for ~900 facilities.
+  describe("network_error surfaces the underlying error's code/message", () => {
+    it("surfaces err.code directly when the thrown error carries one (no .cause)", async () => {
+      const fetchImpl = vi.fn<typeof fetch>(async () => {
+        throw Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:443"), { code: "ECONNREFUSED" });
+      });
+      const result = await fetchPageText("https://example.com/refused", baseDeps(fetchImpl));
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("expected ok:false");
+      expect(result.reason).toBe("network_error");
+      expect(result.errorCode).toBe("ECONNREFUSED");
+      expect(result.errorMessage).toContain("ECONNREFUSED");
+    });
+
+    it("prefers the wrapped .cause's code over the outer error's own — matches Node's real `TypeError: fetch failed` shape", async () => {
+      // Node's fetch() (undici) throws `TypeError: fetch failed` with the
+      // real errno nested in `.cause`, e.g. `.cause.code === "ENOTFOUND"`
+      // while the outer error itself has no `.code` at all.
+      const fetchImpl = vi.fn<typeof fetch>(async () => {
+        const cause = Object.assign(new Error("getaddrinfo ENOTFOUND dead-host.example.com"), { code: "ENOTFOUND" });
+        throw Object.assign(new TypeError("fetch failed"), { cause });
+      });
+      const result = await fetchPageText("https://dead-host.example.com/", baseDeps(fetchImpl));
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("expected ok:false");
+      expect(result.reason).toBe("network_error");
+      expect(result.errorCode).toBe("ENOTFOUND");
+      expect(result.errorMessage).toContain("ENOTFOUND");
+    });
+
+    it("still returns a diagnosable errorMessage for an error with neither .code nor .cause (e.g. AbortError)", async () => {
+      const fetchImpl = vi.fn<typeof fetch>(async () => {
+        throw new DOMException("The operation was aborted.", "AbortError");
+      });
+      const result = await fetchPageText("https://example.com/aborted", baseDeps(fetchImpl));
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("expected ok:false");
+      expect(result.reason).toBe("network_error");
+      expect(result.errorCode).toBeUndefined();
+      expect(result.errorMessage).toContain("aborted");
+    });
+  });
+
   it("refuses a non-http(s) scheme without ever calling fetchImpl", async () => {
     const fetchImpl = vi.fn<typeof fetch>(async () => {
       throw new Error("must not be called");

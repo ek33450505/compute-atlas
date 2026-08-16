@@ -165,10 +165,33 @@ export function selectGaps(facilities: Facility[], fields: ExtractableField[]): 
 // Stage 2 — prefilter: cheap regex gate, a COST saver not a correctness gate
 // ============================================================================
 
+// Separator that can join a number to its unit in compound-adjective prose
+// ("36-megawatt"). A real page (s97 bench, flexential-hillsboro-5-or) wrote
+// this with U+2011 NON-BREAKING HYPHEN ("36‑megawatt"), not ASCII '-', and
+// en/em dashes ("36–megawatt") are ordinary published-prose punctuation, not
+// exotic — an ASCII-only `-?` silently missed all of them. That silence is
+// most consequential HERE, in the prefilter: a page whose only capacity
+// figure uses a Unicode dash never even reaches the model, and the resulting
+// gap is indistinguishable from a page that genuinely never states capacity
+// (see the file header's "couldn't-fetch-vs-isn't-there" distinction — this
+// is the same conflation one level up). Covers U+2010-U+2015 (hyphen,
+// non-breaking hyphen, figure dash, en dash, em dash, horizontal bar) and
+// U+2212 (minus sign) alongside the ASCII hyphen. Kept to a SINGLE optional
+// character (not a wildcard span) on purpose: prose where a dash is ordinary
+// clause punctuation rather than a compound-adjective joiner (e.g. "$36 — MW
+// capacity unknown") still requires the unit token immediately after it to
+// match — considered and rejected as a broadening risk. Shared (not
+// redefined) at Stage 5's NUM_UNIT_RE below, so both regexes stay in
+// lockstep — quote-parity.test.ts fails loudly if only one is fixed.
+const NUM_UNIT_DASH_CLASS = "[-\\u2010-\\u2015\\u2212]";
+
 // Deliberately includes kW/kilowatt alongside MW/megawatt/GW/gigawatt — a
 // real page stated "Capacity 1,000 kW" and an MW-only regex would have
 // skipped it entirely, never even reaching the model.
-const POWER_UNIT_RE = /\d[\d,.]*\s*-?\s*(kw|kilowatts?|mw|megawatts?|gw|gigawatts?)\b/i;
+const POWER_UNIT_RE = new RegExp(
+  `\\d[\\d,.]*\\s*${NUM_UNIT_DASH_CLASS}?\\s*(kw|kilowatts?|mw|megawatts?|gw|gigawatts?)\\b`,
+  "i"
+);
 const ENERGY_SOURCE_HINT_RE =
   /\b(grid power|on-?site gas|natural gas|nuclear|solar|wind|hydro(?:electric)?|renewable|behind-the-meter|fuel cell|diesel generator|power source|energy source|electricity (?:comes|is drawn) from)\b/i;
 const ENERGY_UTILITY_HINT_RE =
@@ -191,7 +214,7 @@ export function prefilter(text: string, field: ExtractableField): boolean {
 // Stage 3 — windowText: entity-anchored windowing for long documents
 // ============================================================================
 
-// Ported from plans/ollama-bench/fetch-pages.mjs (s97) — see that file's
+// Ported from scripts/discovery/bench/fetch-pages.mjs (s97) — see that file's
 // header comment for the measured failure this exists to prevent: a 20k-char
 // HEAD slice of an 809k-char SEC filing contained zero MW figures and not
 // even the facility's name. Windows are anchored on the ENTITY, never the
@@ -481,7 +504,7 @@ export async function extractField(
 // Stage 5 — quote gate: mechanical, can only ever DOWNGRADE a model "yes"
 // ============================================================================
 
-// Ported from plans/ollama-bench/quote.mjs (s97). See that file's header for
+// Ported from scripts/discovery/bench/quote.mjs (s97). See that file's header for
 // why this is not a plain substring test: three stricter rules were tried and
 // each false-rejected genuinely correct answers (line-wrapped quotes,
 // sentence-stitched quotes, and short-but-real quotes like "Capacity 1,000
@@ -516,7 +539,13 @@ const UNIT_TO_MW: Record<string, number> = {
   gigawatt: 1000,
   gigawatts: 1000,
 };
-const NUM_UNIT_RE = /(\d[\d,.]*)\s*-?\s*(kw|kilowatts?|mw|megawatts?|gw|gigawatts?)\b/gi;
+// Shares NUM_UNIT_DASH_CLASS (defined at Stage 2's POWER_UNIT_RE, above) so
+// this regex and the prefilter's stay in lockstep rather than drifting apart
+// under two independent `-?`s.
+const NUM_UNIT_RE = new RegExp(
+  `(\\d[\\d,.]*)\\s*${NUM_UNIT_DASH_CLASS}?\\s*(kw|kilowatts?|mw|megawatts?|gw|gigawatts?)\\b`,
+  "gi"
+);
 
 /** Every number in `quote` that carries a power unit, converted to MW. */
 export function quotedMwValues(quote: string | null): number[] {
@@ -788,8 +817,9 @@ export interface RunExtractSummary {
   facilitiesConsidered: number;
   /** PER-FIELD count — every (facility, field) gap `selectGaps` produced.
    * `extracted + prefiltered + modelNulls + modelUnavailable + quoteRejected
-   * + duplicateOfSibling + schemaRejected + unreadable + fetchFailures` must
-   * always sum to this. */
+   * + duplicateOfSibling + schemaRejected + unreadable + fetchFailures +
+   * abortedUnprocessed` must always sum to this — on a normal (non-aborted)
+   * run `abortedUnprocessed` is simply 0. */
   gapsConsidered: number;
   /** PER-FIELD, not per-facility: incremented once for every requested field
    * on a facility where NO cited source could be fetched as readable
@@ -827,18 +857,37 @@ export interface RunExtractSummary {
   duplicateOfSibling: number;
   schemaRejected: number;
   extracted: number;
-  /** MUST always be 0. Every gap is tracked in a single `Map<gapKey,
-   * outcome>` (see `runExtract`) that starts every gap as `"unclassified"`
-   * and is required to be overwritten exactly once before the run ends — a
-   * gap that reaches the end of `runExtract` still `"unclassified"` is a
-   * genuine accounting bug (the SAME class as defects 5/6/7, which each
-   * independently broke the `gapsConsidered` reconciliation via a scattered
-   * per-branch `summary.x++` that missed a path). Rather than silently
-   * omitting such a gap from every bucket again, it is counted HERE, loudly,
-   * with the exact facility/field logged via `console.error` — so a future
-   * regression is visible in the summary itself instead of only showing up
-   * as an unexplained shortfall days later. */
+  /** MUST always be 0 — including on an aborted run (see `aborted` below).
+   * Every gap is tracked in a single `Map<gapKey, outcome>` (see
+   * `runExtract`) that starts every gap as `"unclassified"` and is required
+   * to be overwritten exactly once before the run ends — a gap that reaches
+   * the end of `runExtract` still `"unclassified"` is a genuine accounting
+   * bug (the SAME class as defects 5/6/7, which each independently broke the
+   * `gapsConsidered` reconciliation via a scattered per-branch
+   * `summary.x++` that missed a path). Rather than silently omitting such a
+   * gap from every bucket again, it is counted HERE, loudly, with the exact
+   * facility/field logged via `console.error` — so a future regression is
+   * visible in the summary itself instead of only showing up as an
+   * unexplained shortfall days later. An ABORTED run's genuinely-unprocessed
+   * gaps are deliberately reclassified into `abortedUnprocessed` instead of
+   * left here — conflating "the tool has a bug" with "the tool aborted on
+   * purpose" would destroy the one thing this field exists to signal. */
   unclassified: number;
+  /** PER-FIELD count of gaps that were never attempted at all because the
+   * run aborted (see `aborted`) before reaching their facility — distinct
+   * from `unclassified` (a real accounting bug) and from `fetchFailures` (a
+   * facility that WAS attempted and failed). 0 on a normal run. */
+  abortedUnprocessed: number;
+  /** True iff `CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD` tripped and the
+   * run stopped early (see `runExtract`'s doc-comment). A run can be
+   * `aborted` and still have found real `candidates` — those are legitimate
+   * and are never discarded; only the facilities never reached go into
+   * `abortedUnprocessed`. Callers (`main()`) must still write `--out` and
+   * print the summary on an aborted run, but must exit non-zero and must
+   * never let this be mistaken for a complete, healthy sweep. */
+  aborted: boolean;
+  /** Human-readable reason, set iff `aborted` is true; `null` otherwise. */
+  abortReason: string | null;
   reviewFlagged: number;
   candidates: Track5Candidate[];
 }
@@ -850,7 +899,7 @@ function isLikelyPdf(url: string): boolean {
 /**
  * Floor below which a successful fetch is NOT a usable page — matches the
  * bench harness's own "thin skip" threshold
- * (plans/ollama-bench/fetch-pages.mjs). A JS-rendered page (e.g. an ArcGIS
+ * (scripts/discovery/bench/fetch-pages.mjs). A JS-rendered page (e.g. an ArcGIS
  * embed) can resolve `fetchPageText`'s `{ ok: true }` while yielding almost
  * no server-rendered text — the fetch itself succeeded, but there is no real
  * content to check a claim against. Treating that as a normal "fetched fine,
@@ -911,8 +960,31 @@ async function processFacilitySources(
     if (unfilled.size === 0) break; // every requested field is already filled — stop reading further sources
     if (isLikelyPdf(source.url)) continue;
 
+    if (process.env.TRACK5_DEBUG_MEM) {
+      const mem = process.memoryUsage();
+      const activeResources =
+        typeof process.getActiveResourcesInfo === "function"
+          ? process.getActiveResourcesInfo().length
+          : ((process as unknown as { _getActiveHandles?: () => unknown[] })._getActiveHandles?.().length ?? -1);
+      console.error(
+        `[mem] before fetch rss=${(mem.rss / 1e6).toFixed(0)}MB heapUsed=${(mem.heapUsed / 1e6).toFixed(0)}MB activeResources=${activeResources} url=${source.url}`
+      );
+    }
+    const fetchAttemptStart = Date.now();
     const fetchResult = await deps.fetchPageTextImpl(source.url);
-    if (!fetchResult.ok) continue;
+    if (!fetchResult.ok) {
+      // Previously silent — a per-source fetch failure never printed
+      // anything at all, so `fetchPageText`'s (now-surfaced) errorCode/
+      // errorMessage had nowhere to go and a systemic collapse produced zero
+      // diagnostic trail. Log every failed attempt, not just the eventual
+      // facility-level rollup.
+      const detail =
+        fetchResult.reason === "network_error"
+          ? `network_error${fetchResult.errorCode ? `:${fetchResult.errorCode}` : ""}${fetchResult.errorMessage ? ` (${fetchResult.errorMessage})` : ""}`
+          : `${fetchResult.reason}${fetchResult.httpStatus ? ` (status ${fetchResult.httpStatus})` : ""}`;
+      console.log(`fetch-failed: ${facility.id} — ${source.url} — ${detail} — ${Date.now() - fetchAttemptStart}ms`);
+      continue;
+    }
     if (fetchResult.text.length < MIN_READABLE_CHARS) {
       console.log(
         `thin: ${source.url} — fetched ${fetchResult.text.length} chars, below MIN_READABLE_CHARS=${MIN_READABLE_CHARS}; trying next source`
@@ -990,7 +1062,14 @@ async function processFacilitySources(
  * drift risk a per-branch `summary.x++` at every exit point already caused
  * twice — defects 5 and 6).
  */
-type GapOutcome = "unclassified" | FieldFailureReason | "extracted" | "schemaRejected" | "unreadable" | "fetchFailures";
+type GapOutcome =
+  | "unclassified"
+  | FieldFailureReason
+  | "extracted"
+  | "schemaRejected"
+  | "unreadable"
+  | "fetchFailures"
+  | "abortedUnprocessed";
 
 /**
  * Maps every `GapOutcome` to the `RunExtractSummary` counter it increments.
@@ -1020,11 +1099,48 @@ const OUTCOME_TO_SUMMARY_KEY: Record<GapOutcome, NumericSummaryKey> = {
   schemaRejected: "schemaRejected",
   unreadable: "unreadable",
   fetchFailures: "fetchFailures",
+  abortedUnprocessed: "abortedUnprocessed",
 };
 
 function gapKey(facilityId: string, field: ExtractableField): string {
   return `${facilityId}::${field}`;
 }
+
+/**
+ * Abort threshold for CONSECUTIVE facilities whose sources ALL failed to
+ * fetch at all (the `fetchFailures` branch below — never `unreadable`,
+ * which means the fetch itself succeeded). Scattered link rot across a
+ * curated dataset is real and expected; a long unbroken RUN of total fetch
+ * failure across many different facilities/hosts is not — it is the
+ * signature of a tool-level fetch collapse (e.g. a leaked/exhausted
+ * connection pool or a broken network path), not a fact about the dataset.
+ * Tripping this does NOT throw and does NOT discard work already done — see
+ * `runExtract`'s doc-comment on `aborted`/`abortReason`/`abortedUnprocessed`.
+ *
+ * WHY 25 (evidence, not a round-number guess): facilities are processed
+ * ALPHABETICALLY, which clusters same-operator sites (every `aws-*`
+ * facility in a row, etc.) — a legitimate streak could in principle be
+ * longer than a naive "scattered link rot" intuition suggests, if one
+ * operator's domain is bot-walled or rate-limiting. Two real-data
+ * measurements bound this: (1) the 2026-08-16 collapse incident itself
+ * — 151 consecutive real facility fetches succeeded before the (still
+ * unexplained, believed transient/environmental — see
+ * scratchpad/track5/fetch-collapse.md) collapse, so ANY threshold at or
+ * below 151 fires strictly before that point; (2) a 2026-08-16 debugging
+ * session ran the REAL tool through 95 real, alphabetically-clustered
+ * facilities (including a long run of `aws-*` sites) without EVER
+ * observing a genuine all-sources-failed streak longer than 1 consecutive
+ * facility — every fetch failure was scattered among facilities that DID
+ * read at least one source. 25 is comfortably above the longest legitimate
+ * streak actually observed (1) and comfortably below the collapse's own
+ * scale (151+, in practice ~900), which is why it sits where it does; it is
+ * NOT validated against a large deliberately-adversarial same-operator
+ * bot-wall streak, so treat it as evidence-backed but not exhaustively
+ * proven — if a future run false-triggers on a genuinely long same-operator
+ * streak, that is new evidence to weigh, not a reason to reflexively raise
+ * the number without recording why.
+ */
+export const CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD = 25;
 
 /**
  * Runs the full Track 5 pipeline over `facilities`. Gaps are grouped by
@@ -1050,6 +1166,20 @@ function gapKey(facilityId: string, field: ExtractableField): string {
  * only by a human (or an invariant test) noticing the sum didn't match. This
  * makes the NEXT such omission self-evident in the summary itself instead of
  * requiring a fourth investigation.
+ *
+ * ABORT design (defect 2's fix, revised): if
+ * `CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD` trips, this function does NOT
+ * throw. It `break`s the facility loop, reclassifies every still-
+ * `"unclassified"` gap (i.e. every facility never reached) into
+ * `abortedUnprocessed`, sets `aborted`/`abortReason`, and returns a normal
+ * summary — with every `candidates` entry found before the abort still
+ * present. An earlier version of this guard threw, which silently discarded
+ * every candidate already found (caught in review before shipping — see
+ * scratchpad/track5/fetch-collapse.md). Throwing destroys legitimate work;
+ * "the run must not report success" and "the run must not destroy what it
+ * already accomplished" are separate requirements, and only the caller
+ * (`main()`) — which still writes `--out` and prints the summary, but exits
+ * non-zero — should decide what "not reporting success" means operationally.
  */
 export async function runExtract(
   facilities: Facility[],
@@ -1071,6 +1201,9 @@ export async function runExtract(
     schemaRejected: 0,
     extracted: 0,
     unclassified: 0,
+    abortedUnprocessed: 0,
+    aborted: false,
+    abortReason: null,
     reviewFlagged: 0,
     candidates: [],
   };
@@ -1104,6 +1237,22 @@ export async function runExtract(
   const isoNow = deps.now().toISOString();
   const dateOnly = isoNow.slice(0, 10);
 
+  // See CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD's doc-comment — counts
+  // consecutive facilities (not gaps) whose sources ALL failed to fetch.
+  // Reset to 0 on any facility that reads at least one source successfully
+  // (readable OR merely thin/unreadable — either proves the tool itself is
+  // still able to fetch).
+  let consecutiveTotalFetchFailures = 0;
+
+  // Set (not thrown) the moment CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD
+  // trips — see this function's doc-comment on why an abort RETURNS a
+  // flagged summary instead of throwing: candidates already found (and the
+  // work already spent producing them) must survive a systemic-collapse
+  // abort, not be discarded by it. `break`ing out of the loop below (rather
+  // than throwing) is what preserves everything accumulated in `summary`
+  // and `outcomes` so far.
+  let abortReason: string | null = null;
+
   for (const { facility, fields } of byFacility.values()) {
     const result = await processFacilitySources(facility, fields, deps);
     summary.sourcesRead += result.sourcesRead;
@@ -1118,16 +1267,35 @@ export async function runExtract(
         console.log(
           `skip: ${facility.id} — every cited source fetched but yielded < ${MIN_READABLE_CHARS} chars of text (likely a JS-rendered or empty page) — this is NOT the same as "field not mentioned" (${fields.length} field(s) affected)`
         );
+        consecutiveTotalFetchFailures = 0;
       } else {
         console.log(
           `skip: ${facility.id} — no cited source could be fetched as readable HTML/plain-text (${fields.length} field(s) affected)`
         );
+        consecutiveTotalFetchFailures++;
       }
+      // This facility's own gaps are real `fetchFailures`/`unreadable`
+      // outcomes — classify them BEFORE the threshold check below, so the
+      // triggering facility itself is counted correctly and only facilities
+      // never reached at all end up in `abortedUnprocessed`.
       for (const field of fields) {
         outcomes.set(gapKey(facility.id, field), outcome);
       }
+      if (!result.sawAnyUnreadable && consecutiveTotalFetchFailures >= CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD) {
+        abortReason =
+          `ABORTING: ${consecutiveTotalFetchFailures} consecutive facilities produced ZERO readable sources ` +
+          `(most recent: ${facility.id}). This pattern is symptomatic of a SYSTEMIC fetch failure (e.g. a ` +
+          `leaked/exhausted connection pool or a broken network path), not scattered link rot — a run that ` +
+          `cannot fetch has not measured anything about the dataset and must not report success. Check the ` +
+          `network_error errorCode/errorMessage fields fetchPageText now surfaces (scripts/discovery/fetch-page-text.ts) ` +
+          `to diagnose the underlying cause before re-running. Do not raise this threshold to make the symptom go away.`;
+        console.error(abortReason);
+        break;
+      }
       continue;
     }
+
+    consecutiveTotalFetchFailures = 0;
 
     // Build + self-validate the candidate BEFORE the per-field tally below —
     // never emit a candidate submit-candidates.ts would itself reject.
@@ -1201,10 +1369,30 @@ export async function runExtract(
     summary.candidates.push(candidate);
   }
 
+  if (abortReason !== null) {
+    summary.aborted = true;
+    summary.abortReason = abortReason;
+    // Every gap belonging to a facility the loop above never reached is
+    // still sitting at the map's initial "unclassified" sentinel. That is
+    // correct and expected on an abort — but `unclassified` in the summary
+    // must stay reserved EXCLUSIVELY for "the tool has a real accounting
+    // bug" (see its doc-comment), so reclassify every still-unclassified gap
+    // into `abortedUnprocessed` here, explicitly, before the tally below.
+    // Gaps belonging to facilities that WERE reached (including the
+    // triggering facility itself) were already written into `outcomes`
+    // above and are untouched by this loop.
+    for (const [key, outcome] of outcomes) {
+      if (outcome === "unclassified") outcomes.set(key, "abortedUnprocessed");
+    }
+  }
+
   // Single tally point: every gap's final entry in `outcomes` is counted
   // exactly once here. `"unclassified"` entries are counted (loudly, via the
   // console.error above) rather than thrown — a bookkeeping bug should never
-  // abort a real sweep, but it must never be silent either.
+  // abort a real sweep, but it must never be silent either. On an aborted
+  // run every genuinely-unprocessed gap was already reclassified into
+  // `abortedUnprocessed` just above, so `unclassified` staying 0 here is
+  // still a meaningful guarantee, not something the abort path weakens.
   for (const outcome of outcomes.values()) {
     summary[OUTCOME_TO_SUMMARY_KEY[outcome]]++;
   }
@@ -1336,17 +1524,34 @@ async function main(): Promise<void> {
     buildRealDeps()
   );
 
+  // Write (or report dry-run) UNCONDITIONALLY, whether or not the run
+  // aborted — an abort must not report success, but it must also not
+  // discard candidates legitimately found before it tripped. See
+  // `CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD`/`runExtract`'s "ABORT
+  // design" doc-comment.
   if (!args.outPath) {
     // Dry run is the DEFAULT: print a summary, write nothing.
     console.log("DRY RUN (no --out given) — nothing written.");
-    printSummary(summary);
-    return;
+  } else {
+    mkdirSync(path.dirname(path.resolve(args.outPath)), { recursive: true });
+    writeFileSync(args.outPath, JSON.stringify(summary.candidates, null, 2));
+    console.log(`wrote ${summary.candidates.length} candidate(s) to ${args.outPath}`);
   }
-
-  mkdirSync(path.dirname(path.resolve(args.outPath)), { recursive: true });
-  writeFileSync(args.outPath, JSON.stringify(summary.candidates, null, 2));
-  console.log(`wrote ${summary.candidates.length} candidate(s) to ${args.outPath}`);
   printSummary(summary);
+
+  if (summary.aborted) {
+    // Surface the abort prominently — the same reason is already inside the
+    // printed summary JSON (`abortReason`), but a reader skimming console
+    // output for a "wrote N candidates" line must not be able to mistake
+    // this for a complete, healthy sweep.
+    console.error(`\n${summary.abortReason}`);
+    // process.exitCode (not process.exit()) so the writes/console output
+    // above are guaranteed to flush before the process actually exits, and
+    // so this is still the single non-zero-exit codepath Defect 2 requires
+    // — no `return`/throw needed, Node exits with this code once main()'s
+    // promise settles.
+    process.exitCode = 1;
+  }
 }
 
 // Only run the CLI when this file is executed directly, not when its

@@ -42,7 +42,42 @@ export type FetchPageTextResult =
       ok: false;
       reason: "blocked" | "too_large" | "bad_content_type" | "http_error" | "network_error" | "redirect_limit";
       httpStatus?: number;
+      /** Only set for reason "network_error" — the underlying thrown error's
+       * `.code` (e.g. "ENOTFOUND", "ECONNRESET", "UND_ERR_SOCKET") if present,
+       * else its `.cause?.code` (Node's fetch wraps the real errno in
+       * `TypeError: fetch failed`'s `.cause`), else undefined. Surfaced so a
+       * caller-side collapse (many "network_error"s in a row) is diagnosable
+       * from the log instead of being an opaque, indistinguishable blob — see
+       * the file-level incident note below `MAX_REDIRECTS`. */
+      errorCode?: string;
+      /** Only set for reason "network_error" — `String(err)` (or
+       * `.cause`'s if present), truncated. Human-readable companion to
+       * `errorCode`, which is sometimes absent (e.g. AbortError has no
+       * `.code`). */
+      errorMessage?: string;
     };
+
+/** Extracts a diagnosable {errorCode, errorMessage} pair from a thrown fetch
+ * error without ever throwing itself. Node's `fetch()` (undici) wraps the
+ * real errno in `TypeError: fetch failed`'s `.cause` — e.g. `err.code` is
+ * undefined but `err.cause.code` is `"ECONNREFUSED"` — so both levels are
+ * checked, preferring the cause when present since it's the more specific
+ * signal. An AbortError (per-attempt timeout firing) has neither `.code` nor
+ * a `.cause`, so it falls through to just its message/name. */
+function describeNetworkError(err: unknown): { errorCode?: string; errorMessage?: string } {
+  const asRecord = (value: unknown): Record<string, unknown> | undefined =>
+    value && typeof value === "object" ? (value as Record<string, unknown>) : undefined;
+
+  const top = asRecord(err);
+  const cause = asRecord(top?.cause);
+
+  const code = (typeof cause?.code === "string" && cause.code) || (typeof top?.code === "string" && top.code) || undefined;
+
+  const rawMessage = (cause && String((cause as { message?: unknown }).message ?? cause)) || String(err);
+  const errorMessage = rawMessage.slice(0, 300);
+
+  return { errorCode: code, errorMessage };
+}
 
 export interface FetchPageTextDeps {
   fetchImpl: typeof fetch;
@@ -203,8 +238,8 @@ export async function fetchPageText(url: string, deps: FetchPageTextDeps): Promi
           signal: controller.signal,
           headers: BROWSER_HEADERS,
         });
-      } catch {
-        return { ok: false, reason: "network_error" };
+      } catch (err) {
+        return { ok: false, reason: "network_error", ...describeNetworkError(err) };
       }
 
       if (res.status >= 300 && res.status < 400) {
@@ -244,11 +279,11 @@ export async function fetchPageText(url: string, deps: FetchPageTextDeps): Promi
       let rawBody: string | null;
       try {
         rawBody = await readBodyWithCap(res, MAX_RESPONSE_BYTES);
-      } catch {
+      } catch (err) {
         // The timer above stays armed through this call, so a body that
         // sends headers immediately and then stalls mid-stream lands here
         // as an abort — not an unbounded hang and not an uncaught throw.
-        return { ok: false, reason: "network_error" };
+        return { ok: false, reason: "network_error", ...describeNetworkError(err) };
       }
       if (rawBody === null) {
         return { ok: false, reason: "too_large", httpStatus: res.status };

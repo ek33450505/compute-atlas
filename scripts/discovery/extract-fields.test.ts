@@ -12,6 +12,7 @@ import {
   runExtract,
   isDuplicateOfRecordedSibling,
   EXTRACTABLE_FIELDS,
+  CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD,
   type AcceptedExtraction,
   type RunExtractDeps,
 } from "./extract-fields";
@@ -71,6 +72,25 @@ describe("prefilter", () => {
     expect(prefilter("The facility broke ground in 2024 and created many jobs.", "energy.onSiteGenerationMw")).toBe(
       false
     );
+  });
+
+  it('matches capacity with en dash (U+2013) separator', () => {
+    // Comprehensive coverage for the prefilter regex (POWER_UNIT_RE). This case
+    // uses an en dash, a real published-prose punctuation mark, as the only
+    // capacity mention on a page. Before the dash-class fix (s97), the prefilter
+    // regex would silently reject this page, never reaching the model — making
+    // the resulting gap indistinguishable from "the page does not state capacity".
+    expect(prefilter('The facility is a 36–megawatt data center', 'capacityMw.operational')).toBe(true);
+    expect(prefilter('The facility is a 36–megawatt data center', 'capacityMw.planned')).toBe(true);
+  });
+
+  it('matches capacity with em dash (U+2014) separator', () => {
+    expect(prefilter('The facility is a 36—megawatt data center', 'capacityMw.operational')).toBe(true);
+    expect(prefilter('The facility is a 36—megawatt data center', 'energy.onSiteGenerationMw')).toBe(true);
+  });
+
+  it('rejects text with no power unit mention even when it contains a number', () => {
+    expect(prefilter('The facility covers 36 acres and was built in 2024', 'capacityMw.operational')).toBe(false);
   });
 });
 
@@ -701,6 +721,198 @@ describe("runExtract — unreadable/fetchFailures reconcile per field, not per f
       summary.unreadable +
       summary.fetchFailures;
     expect(reconciled).toBe(summary.gapsConsidered);
+  });
+});
+
+// Regression (2026-08-16 sweep collapse): a systemic fetch failure partway
+// through a real sweep made ~900 consecutive facilities report `fetchFailures`
+// and the run still exited 0 — indistinguishable from ordinary dataset link
+// rot to anyone reading the summary. `runExtract` must abort loudly (surfaced
+// via a RETURNED summary's `aborted`/`abortReason` — never a thrown error;
+// see `CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD` and `runExtract`'s "ABORT
+// design" doc-comments for why a throw is wrong here) once total fetch
+// failure runs unbroken across CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD
+// facilities.
+describe("runExtract — aborts loudly on a consecutive total-fetch-failure streak (systemic collapse guard)", () => {
+  function makeUnfetchableFacility(id: string): Facility {
+    return {
+      id,
+      name: `Facility ${id}`,
+      operator: "Test Operator",
+      status: "operational",
+      facilityType: "data_center",
+      confidence: "confirmed",
+      location: { lat: 30, lon: -90, city: "Testville", state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [{ url: `https://example.com/${id}`, label: "Press release", retrievedAt: "2026-01-01", kind: "press" }],
+      lastUpdated: "2026-01-01",
+    };
+  }
+
+  /** A facility whose single source fetches fine and yields a clean,
+   * extractable candidate — used to prove real work survives an abort. */
+  function makeGoodFacility(id: string): Facility {
+    return {
+      id,
+      name: `Good Facility ${id}`,
+      operator: "Test Operator",
+      status: "operational",
+      facilityType: "data_center",
+      confidence: "confirmed",
+      location: { lat: 30, lon: -90, city: "Testville", state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [{ url: `https://example.com/good-${id}`, label: "Press release", retrievedAt: "2026-01-01", kind: "press" }],
+      lastUpdated: "2026-01-01",
+    };
+  }
+
+  const alwaysFailDeps: RunExtractDeps = {
+    fetchPageTextImpl: async () => ({ ok: false, reason: "network_error", errorCode: "ECONNRESET" }),
+    callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "unused" } }),
+    now: () => new Date("2026-08-16T00:00:00.000Z"),
+  };
+
+  it("returns an ABORTED summary (never throws) once the streak reaches CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD", async () => {
+    const facilities = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD }, (_, i) =>
+      makeUnfetchableFacility(`unfetchable-${i}`)
+    );
+
+    const summary = await runExtract(facilities, { fields: ["capacityMw.operational"], runId: "collapse-test" }, alwaysFailDeps);
+
+    expect(summary.aborted).toBe(true);
+    expect(summary.abortReason).toMatch(/ABORTING.*consecutive facilities/i);
+    // The TRIGGERING facility's own gap is a real fetchFailures outcome, not
+    // an unprocessed one — only facilities never reached at all should ever
+    // land in abortedUnprocessed (none here: exactly THRESHOLD were given).
+    expect(summary.fetchFailures).toBe(CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD);
+    expect(summary.abortedUnprocessed).toBe(0);
+    expect(summary.unclassified).toBe(0);
+  });
+
+  it("preserves candidates found before the abort — an aborted run must not discard legitimate extracted work", async () => {
+    const goodFacilities = [makeGoodFacility("a"), makeGoodFacility("b")];
+    const badFacilities = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD }, (_, i) =>
+      makeUnfetchableFacility(`unfetchable-${i}`)
+    );
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url === "https://example.com/good-a") {
+          return { ok: true, text: `The facility has a planned capacity of 100 MW. ${"filler ".repeat(100)}`, finalUrl: url, httpStatus: 200 };
+        }
+        if (url === "https://example.com/good-b") {
+          return { ok: true, text: `The facility has a planned capacity of 200 MW. ${"filler ".repeat(100)}`, finalUrl: url, httpStatus: 200 };
+        }
+        return { ok: false, reason: "network_error", errorCode: "ECONNRESET" };
+      },
+      callOllamaImpl: async (opts) => {
+        if (opts.userPrompt.includes("Good Facility a")) {
+          return { ok: true, data: { value: 100, verbatimQuote: "planned capacity of 100 MW", reasonIfNull: null } };
+        }
+        if (opts.userPrompt.includes("Good Facility b")) {
+          return { ok: true, data: { value: 200, verbatimQuote: "planned capacity of 200 MW", reasonIfNull: null } };
+        }
+        return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "unused" } };
+      },
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract(
+      [...goodFacilities, ...badFacilities],
+      { fields: ["capacityMw.planned"], runId: "collapse-with-work-test" },
+      deps
+    );
+
+    expect(summary.aborted).toBe(true);
+    // The whole point of this test: the two candidates found BEFORE the
+    // abort tripped must still be here — an earlier version of this guard
+    // threw, which discarded them.
+    expect(summary.candidates).toHaveLength(2);
+    expect(summary.candidates.map((c) => c.enrichmentUpdate.targetFacilityId).sort()).toEqual(["a", "b"]);
+    expect(summary.extracted).toBe(2);
+  });
+
+  it("puts gaps from facilities never reached because of the abort into `abortedUnprocessed`, never `unclassified` — reconciliation identity still holds", async () => {
+    const badFacilities = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD }, (_, i) =>
+      makeUnfetchableFacility(`unfetchable-${i}`)
+    );
+    // These come AFTER the streak that trips the abort — the loop `break`s
+    // before ever reaching them, so their gaps must show up as
+    // abortedUnprocessed, not silently vanish or land in unclassified.
+    const neverReached = [makeGoodFacility("never-reached-1"), makeGoodFacility("never-reached-2")];
+
+    const summary = await runExtract(
+      [...badFacilities, ...neverReached],
+      { fields: ["capacityMw.planned"], runId: "collapse-with-tail-test" },
+      alwaysFailDeps
+    );
+
+    expect(summary.aborted).toBe(true);
+    expect(summary.fetchFailures).toBe(CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD);
+    expect(summary.abortedUnprocessed).toBe(2); // never-reached-1 and never-reached-2, one gap each
+    expect(summary.unclassified).toBe(0);
+
+    const reconciled =
+      summary.extracted +
+      summary.prefiltered +
+      summary.modelNulls +
+      summary.modelUnavailable +
+      summary.quoteRejected +
+      summary.duplicateOfSibling +
+      summary.schemaRejected +
+      summary.unreadable +
+      summary.fetchFailures +
+      summary.abortedUnprocessed;
+    expect(reconciled).toBe(summary.gapsConsidered);
+  });
+
+  it("does NOT throw for a streak one short of the threshold — proves the guard fires on the boundary, not eagerly", async () => {
+    const facilities = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
+      makeUnfetchableFacility(`unfetchable-${i}`)
+    );
+
+    const summary = await runExtract(
+      facilities,
+      { fields: ["capacityMw.operational"], runId: "near-collapse-test" },
+      alwaysFailDeps
+    );
+    expect(summary.fetchFailures).toBe(CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1);
+    expect(summary.aborted).toBe(false);
+    expect(summary.abortReason).toBeNull();
+  });
+
+  it("resets the streak on any facility that reads at least one source (even a merely thin/unreadable one)", async () => {
+    // THRESHOLD-1 failures, then one facility whose source fetches fine (just
+    // too thin to use), then THRESHOLD-1 more failures — never an unbroken
+    // run of THRESHOLD, so this must complete normally.
+    const before = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
+      makeUnfetchableFacility(`before-${i}`)
+    );
+    const resetFacility = makeUnfetchableFacility("reset-facility");
+    const after = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
+      makeUnfetchableFacility(`after-${i}`)
+    );
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url === "https://example.com/reset-facility") {
+          return { ok: true, text: "short", finalUrl: url, httpStatus: 200 }; // thin, but a real fetch
+        }
+        return { ok: false, reason: "network_error", errorCode: "ECONNRESET" };
+      },
+      callOllamaImpl: alwaysFailDeps.callOllamaImpl,
+      now: alwaysFailDeps.now,
+    };
+
+    const summary = await runExtract(
+      [...before, resetFacility, ...after],
+      { fields: ["capacityMw.operational"], runId: "reset-test" },
+      deps
+    );
+    expect(summary.fetchFailures).toBe(2 * (CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1));
+    expect(summary.unreadable).toBe(1);
+    expect(summary.aborted).toBe(false);
+    expect(summary.abortReason).toBeNull();
   });
 });
 
