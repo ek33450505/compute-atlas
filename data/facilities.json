@@ -15,6 +15,9 @@
       "state": "NE",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 8
+    },
     "statusHistory": [
       {
         "status": "operational",
@@ -39,7 +42,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-16",
     "notes": "Omaha's carrier hotel: a nine-story, ~75,000 sq ft facility with around 8 MW of capacity at 1623 Farnam Street downtown, home to the OmahaIX internet exchange and some 60 carriers. News Press & Gazette Co. subsidiary Berks Group acquired Nebraska Data Centers and the 1623 Farnam carrier hotel in 2018 and established 1623 Farnam LLC — so 'Nebraska Data Centers' as an operator name is HISTORICAL, not current. Build-out history: a $10 million expansion in 2019 built out the fifth floor, floors six through nine were added in 2021, and the final two data halls completed in June 2025 added 1.5 MW of IT capacity and space for 280 racks. CEO Bill Severn cites 'significant demand from AI workloads, edge deployments, content platforms, and broadband networks'. The company is separately planning an OMA2 campus expansion explicitly aimed at AI and edge infrastructure growth, with no site, size or date disclosed on its own page — a LEAD to re-check, not yet a proposable facility. DCD also reports the facility serves Trump Media & Technology Group; that is a tenant claim DCD attributes to other reporting and is deliberately NOT recorded as a structured field. capacityMw is the ~8 MW total, not the 1.5 MW increment; investmentUsd records ONLY the sourced $10M 2019 fifth-floor expansion, since no total site capex is published. Coordinates are a street-address approximation.",
     "investmentUsd": 10000000,
     "facilityType": "data_center",
@@ -312,6 +315,9 @@
       "state": "NJ",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 1400
+    },
     "poweredBy": "Grid — Atlantic City Electric",
     "statusHistory": [
       {
@@ -344,7 +350,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-16",
     "notes": "1300 Wheaton Ave. Advertised as a speculative 'ready for inquiry' project (2.9M sq ft, a 1.4GW power pathway, 15-yr tax abatement); no tenant was ever confirmed. Coordinates are approximate.",
     "energy": {
       "source": "grid",
