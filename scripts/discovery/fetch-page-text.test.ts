@@ -55,6 +55,17 @@ describe("htmlToText", () => {
     expect(htmlToText(html)).toBe("hello");
   });
 
+  it("drops script and style elements whose end tag carries whitespace before the bracket", () => {
+    // HTML permits `</script >`, and a strict `</script>` pattern misses it —
+    // the script body then survives into the "plain text" and is handed to the
+    // model as if it were prose. Flagged by CodeQL (js/bad-tag-filter) on the
+    // bench's copy of this regex, PR #158. Without the `\s*` in
+    // SCRIPT_OR_STYLE_RE this returns the script/style source instead of "hello".
+    expect(htmlToText("<script>track('x');</script ><p>hello</p>")).toBe("hello");
+    expect(htmlToText("<style>.a{color:red}</style\t>\n<p>hello</p>")).toBe("hello");
+    expect(htmlToText("<p>hello</p><script>secret()</script\n>")).toBe("hello");
+  });
+
   it("strips remaining tags", () => {
     expect(htmlToText("<div><h1>Title</h1><p>Body <b>text</b></p></div>")).toBe("Title Body text");
   });
