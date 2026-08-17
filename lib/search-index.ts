@@ -10,7 +10,7 @@
  * the client bundle shipped on every route via `SiteHeader` in the root
  * layout — a 748 KB brotli / 2.9 MB parsed JS chunk on every page.
  *
- * `buildSearchIndex` only ever runs server-side (called from `SiteHeader`,
+ * `buildNavSearchIndex` only ever runs server-side (called from `SiteHeader`,
  * a Server Component) and its result — a plain `SearchEntry[]` — is what
  * gets passed down as a prop to the client `CommandPalette`. So the data
  * read belongs here, not in `lib/search.ts`.
@@ -19,9 +19,30 @@
  * `@/lib/data` (or anything that transitively imports `@/data/facilities.json`)
  * from `lib/search.ts` — doing so silently reintroduces the full dataset into
  * every client bundle with no build error to catch it.
+ *
+ * A second, distinct cost survived that split: the built index was still
+ * SERIALIZED into the RSC payload of every route as a `CommandPalette` prop.
+ * Measured 2026-08-17 against the 1034-facility dataset, that was ~1430
+ * entries per route (1034 facilities + 346 operators + 50 states) on all
+ * ~1486 routes; the nav-only index below is ~396 (operators + states).
+ * (An earlier revision of this comment said "~1062 entries, 1034 of them
+ * facilities" — that 1062 was a count of the string `facilities/` in the
+ * rendered HTML, not the index size.) `SiteHeader`
+ * therefore calls `buildNavSearchIndex()` (operators + states only) and
+ * facility results come from `/api/search`, which prefix-matches as you type
+ * (`buildTsQuery` in lib/search-db.ts).
+ *
+ * There is deliberately NO facility-inclusive builder here any more. The one
+ * that existed (`buildSearchIndex`) had no callers left but the tests once
+ * `SiteHeader` switched over, and an exported-but-unused server-side index
+ * builder is precisely the thing that gets quietly re-wired into a client prop
+ * later — which is the defect this whole file exists to prevent. Facilities
+ * are served by `/api/search`, full stop; if you find yourself re-adding a
+ * builder that walks every facility into `SearchEntry[]`, that is the
+ * regression, not the fix.
  */
 import { loadFacilitiesForSearch, operatorSlug } from "@/lib/data";
-import { facilityToSearchEntry, type SearchEntry } from "@/lib/search";
+import { type SearchEntry } from "@/lib/search";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 
 function pluralize(n: number, singular: string, plural: string): string {
@@ -29,18 +50,14 @@ function pluralize(n: number, singular: string, plural: string): string {
 }
 
 /**
- * Builds the data-backed search index: one entry per facility, operator, and
- * state. Does NOT include "page" entries — those are UI config supplied by
- * the command palette component, not data.
+ * The nav index shipped to the client `CommandPalette`: operators and states
+ * derived from the facility dataset, with no per-facility entries. Does NOT
+ * include "page" entries either — those are UI config supplied by the command
+ * palette component, not data.
  */
-export async function buildSearchIndex(): Promise<SearchEntry[]> {
+export async function buildNavSearchIndex(): Promise<SearchEntry[]> {
   const facilities = await loadFacilitiesForSearch();
   const entries: SearchEntry[] = [];
-
-  // Facilities — one entry each.
-  for (const f of facilities) {
-    entries.push(facilityToSearchEntry(f));
-  }
 
   // Operators — count facilities per operator in one pass, and derive the
   // unique operator name list from the same `facilities` read (avoids a

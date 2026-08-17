@@ -25,6 +25,13 @@ interface CommandPaletteProps {
 const EMPTY_SEARCH_ENTRIES: SearchEntry[] = [];
 
 /**
+ * Keystroke-to-`/api/search` debounce. Exported so tests can wait past it
+ * rather than hardcoding a duplicate literal — a "did not fetch" assertion
+ * made before this window elapses cannot fail.
+ */
+export const SEARCH_DEBOUNCE_MS = 200;
+
+/**
  * Site-wide ⌘K / Ctrl+K command palette. Renders both the header trigger
  * button and the modal itself, sharing open/query state. Does content search
  * (facilities/operators/states) and page navigation in one place.
@@ -117,7 +124,7 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
       } finally {
         if (!controller.signal.aborted) setIsSearching(false);
       }
-    }, 200);
+    }, SEARCH_DEBOUNCE_MS);
     return () => {
       clearTimeout(timer);
       controller.abort();

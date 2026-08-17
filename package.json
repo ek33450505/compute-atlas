@@ -16,6 +16,7 @@
     "test:e2e": "playwright test",
     "build:basemap": "node scripts/build-parchment-style.mjs",
     "build:mapdata": "node scripts/build-map-data.mjs",
+    "build:heropoints": "node scripts/build-hero-points.mjs",
     "db:generate": "drizzle-kit generate",
     "check:drift": "tsx --env-file=.env.local scripts/check-neon-drift.ts",
     "db:migrate": "drizzle-kit migrate",

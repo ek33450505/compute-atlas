@@ -54,20 +54,6 @@ export default async function HomePage() {
   const dateModified =
     maxLastUpdatedMs > 0 ? new Date(maxLastUpdatedMs).toISOString() : undefined;
 
-  // Slim point set for the hero globe — just enough to plot + link each
-  // facility, filtered defensively in case a record ever has a bad geocode.
-  const heroPoints = allFacilities
-    .filter(
-      (f) =>
-        Number.isFinite(f.location.lat) && Number.isFinite(f.location.lon)
-    )
-    .map((f) => ({
-      id: f.id,
-      lat: f.location.lat,
-      lon: f.location.lon,
-      status: f.status,
-    }));
-
   const operatorCount = new Set(allFacilities.map((f) => f.operator)).size;
   const sourcesCited = allFacilities.reduce(
     (n, f) => n + (f.sources?.length ?? 0),
@@ -113,9 +99,16 @@ export default async function HomePage() {
          * the fully-accessible /map), not this canvas. `overflow-hidden`
          * above clips the absolutely-positioned globe to this box — it can
          * never bleed into the stats/links section below.
+         *
+         * The point set is deliberately NOT passed down from here: it is a
+         * static artifact (public/data/hero-points.json, built by
+         * scripts/build-hero-points.mjs) that the client wrapper fetches
+         * after mount, on sm+ only. Serializing ~1k points into this server
+         * payload instead cost every visitor — phones included — ~98 KB
+         * brotli for a surface phones never render.
          */}
         <div className="absolute inset-0">
-          <HeroGlobe points={heroPoints} heightClass="h-full" />
+          <HeroGlobe heightClass="h-full" />
         </div>
 
         {/*

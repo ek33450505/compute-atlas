@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Code2 } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
-import { buildSearchIndex } from "@/lib/search-index";
+import { buildNavSearchIndex } from "@/lib/search-index";
 import { Wordmark } from "@/components/wordmark";
 import { PrimaryNav } from "@/components/primary-nav";
 import { MobileNav } from "@/components/mobile-nav";
@@ -45,7 +45,10 @@ const MOBILE_NAV_GROUPS = [
 ] as const;
 
 export async function SiteHeader() {
-  const searchIndex = await buildSearchIndex();
+  // Operators + states only — facilities are searched live via /api/search,
+  // keeping 1034 facility entries out of every route's RSC payload
+  // (measured 2026-08-17 against the 1034-facility dataset).
+  const searchIndex = await buildNavSearchIndex();
 
   return (
     <header className="print:hidden sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
