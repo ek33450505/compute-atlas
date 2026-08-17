@@ -5,6 +5,24 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.28.0](https://github.com/ek33450505/compute-atlas/compare/v1.27.0...v1.28.0) (2026-08-17)
+
+
+### Features
+
+* **discovery:** mechanically verify candidate source URLs before staging ([#150](https://github.com/ek33450505/compute-atlas/issues/150)) ([a5b44e0](https://github.com/ek33450505/compute-atlas/commit/a5b44e0e2669478ee989ffac0eca110fd9faa822))
+* **discovery:** pipeline alerting, cap enforcement, rotation rebalance + 93-facility wave (941→1034) ([#156](https://github.com/ek33450505/compute-atlas/issues/156)) ([bc02aff](https://github.com/ek33450505/compute-atlas/commit/bc02aff3d8e8ce0bd8b9bebdebbee79f15803105))
+* **discovery:** source-verification census over the live dataset ([#152](https://github.com/ek33450505/compute-atlas/issues/152)) ([c572ca8](https://github.com/ek33450505/compute-atlas/commit/c572ca8acdea954e87d983c85e74a6fac19b4761))
+* **discovery:** Track 5 hardening — extraction guards, Unicode dashes, fetch instrumentation + 64-value capacity wave ([#158](https://github.com/ek33450505/compute-atlas/issues/158)) ([76f9ffe](https://github.com/ek33450505/compute-atlas/commit/76f9ffea882ce1bf0adde9d1d69beb352c4daab4))
+
+
+### Bug Fixes
+
+* **ci:** close the siting-context automation gap + resync 941-facility artifacts ([#155](https://github.com/ek33450505/compute-atlas/issues/155)) ([801ab25](https://github.com/ek33450505/compute-atlas/commit/801ab256017f5f486f68919c3470f57dffa6fdb6))
+* **data:** repair 320-char truncated energy and community notes ([c0ef32d](https://github.com/ek33450505/compute-atlas/commit/c0ef32d2d1261681ef68b07267de0df61e6cdec5))
+* **discovery:** match entity names by distinctive tokens, not exact canonical string ([#151](https://github.com/ek33450505/compute-atlas/issues/151)) ([acc500a](https://github.com/ek33450505/compute-atlas/commit/acc500a4e7d2375cc9746a6ba08466d34aac7d3a))
+* **discovery:** resolve launchd timeout and WebFetch permission blocking ([#154](https://github.com/ek33450505/compute-atlas/issues/154)) ([2d37dba](https://github.com/ek33450505/compute-atlas/commit/2d37dbac0a4838883ebdc1b34ec1af6fa98ac48f))
+
 ## [1.27.0](https://github.com/ek33450505/compute-atlas/compare/v1.26.1...v1.27.0) (2026-08-10)
 
 
