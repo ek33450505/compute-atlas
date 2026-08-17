@@ -1,0 +1,143 @@
+{
+  "summary": {
+    "model": "gemma3:12b",
+    "cases": 14,
+    "correctValue": 1,
+    "correctAbstain": 5,
+    "misses": 1,
+    "wrongValue": 4,
+    "hallucinations": 3,
+    "errors": 0,
+    "score": -8,
+    "avgMs": 5075,
+    "quoteGroundedPct": 88
+  },
+  "rows": [
+    {
+      "facility": "flexential-hillsboro-5-or",
+      "field": "capacityMw",
+      "kind": "recall",
+      "expected": 36,
+      "got": "36 megawatts",
+      "verdict": "WRONG-VALUE",
+      "ms": 4839
+    },
+    {
+      "facility": "flexential-hillsboro-5-or",
+      "field": "landAcresIfStated",
+      "kind": "abstention-probe",
+      "expected": null,
+      "got": "20 acres",
+      "verdict": "HALLUCINATION",
+      "ms": 8689
+    },
+    {
+      "facility": "qts-hillsboro-2-or",
+      "field": "capacityMw",
+      "kind": "recall",
+      "expected": 180,
+      "got": "180 MW+",
+      "verdict": "WRONG-VALUE",
+      "ms": 4694
+    },
+    {
+      "facility": "qts-hillsboro-2-or",
+      "field": "landAcresIfStated",
+      "kind": "abstention-probe",
+      "expected": null,
+      "got": "51 acre",
+      "verdict": "HALLUCINATION",
+      "ms": 4413
+    },
+    {
+      "facility": "crane-pdx02-forest-grove-or",
+      "field": "capacityMw",
+      "kind": "recall",
+      "expected": 48,
+      "got": "48 MW",
+      "verdict": "WRONG-VALUE",
+      "ms": 4899
+    },
+    {
+      "facility": "crane-pdx02-forest-grove-or",
+      "field": "landAcresIfStated",
+      "kind": "abstention-probe",
+      "expected": null,
+      "got": null,
+      "verdict": "abstain-ok",
+      "ms": 4981
+    },
+    {
+      "facility": "tract-altoona-ia",
+      "field": "capacityMw",
+      "kind": "recall",
+      "expected": 1000,
+      "got": "1GW+",
+      "verdict": "WRONG-VALUE",
+      "ms": 5927
+    },
+    {
+      "facility": "tract-altoona-ia",
+      "field": "landAcresIfStated",
+      "kind": "recall",
+      "expected": 453,
+      "got": "453",
+      "verdict": "value-ok",
+      "ms": 6493
+    },
+    {
+      "facility": "1623-farnam-omaha-ne",
+      "field": "capacityMw",
+      "kind": "abstention",
+      "expected": null,
+      "got": null,
+      "verdict": "abstain-ok",
+      "ms": 5945
+    },
+    {
+      "facility": "1623-farnam-omaha-ne",
+      "field": "landAcresIfStated",
+      "kind": "abstention-probe",
+      "expected": null,
+      "got": null,
+      "verdict": "abstain-ok",
+      "ms": 6107
+    },
+    {
+      "facility": "aligned-west-jordan-ut",
+      "field": "capacityMw",
+      "kind": "recall",
+      "expected": 162,
+      "got": null,
+      "verdict": "miss",
+      "ms": 6296
+    },
+    {
+      "facility": "aligned-west-jordan-ut",
+      "field": "landAcresIfStated",
+      "kind": "abstention-probe",
+      "expected": null,
+      "got": "55-acre",
+      "verdict": "HALLUCINATION",
+      "ms": 6478
+    },
+    {
+      "facility": "summit-ridge-santaquin-ut",
+      "field": "capacityMw",
+      "kind": "abstention",
+      "expected": null,
+      "got": null,
+      "verdict": "abstain-ok",
+      "ms": 646
+    },
+    {
+      "facility": "summit-ridge-santaquin-ut",
+      "field": "landAcresIfStated",
+      "kind": "abstention-probe",
+      "expected": null,
+      "got": null,
+      "verdict": "abstain-ok",
+      "ms": 648
+    }
+  ]
+}

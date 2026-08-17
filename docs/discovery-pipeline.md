@@ -183,10 +183,18 @@ Measured with `gpt-oss:20b` on Ollama 0.32.7, Apple Silicon:
 
 - **~8–13s per verification call** — 8.4s at ~12k chars of page text, 12.6s at
   ~22.5k.
-- **Ollama does not parallelise on this setup:** 1.04× speedup at 5-way
-  concurrency (5 concurrent calls, 40.2s wall; 5 sequential, 42s). Requests
-  serialise on the GPU, so raising concurrency speeds up only the fetch-bound
-  work, never the model calls. Budget bulk verification runs accordingly.
+- **Parallelisation (default vs. tuned):** At the default `OLLAMA_NUM_PARALLEL=1`,
+  Ollama serialises requests on the GPU, achieving only 1.04× speedup at 5-way
+  concurrency — the overhead barely recoups fetch-bound gains. Setting
+  `OLLAMA_NUM_PARALLEL=4` does raise throughput to ~1.25×–1.31×, but with a
+  critical tradeoff: determinism breaks. At `temperature: 0`, identical input
+  yields different answers when sharing a `-np 4` batch with other prompts —
+  one extraction (`crane-pdx02`, `capacityMw.operational`) returned `48`
+  consistently when run alone, but flipped to `null` roughly 1-in-6 in a
+  concurrent batch. This reproducibility loss invalidates any benchmark and
+  makes bulk runs unauditable. **Parallelism is not used for this reason.** If
+  throughput ever binds, the answer is more machines or a smaller model, not
+  higher concurrency.
 - Page text is capped at `MAX_PAGE_TEXT_CHARS` (60,000) in `verify-source.ts`,
   coupled to the client's `num_ctx` of 32768 — **raising one requires revisiting
   the other.** Not cosmetic: submitting ~11,572 tokens at `num_ctx=2048` was
@@ -432,3 +440,146 @@ Note that `bot_blocked` and `throttled` are transient/anti-bot signals, not
 "dead" sources. This is a flag/report-only tool — it never modifies facilities or
 submissions. A future enhancement may wire these reports into an admin dashboard
 or automated deprecation workflow.
+
+## Track 5: field extraction from existing sources
+
+`scripts/discovery/extract-fields.ts` fills missing structured fields on
+*existing* facilities by re-reading sources those facilities already cite,
+using a local Ollama model. This is an enrichment tool, not a discovery tool —
+it never proposes new facilities and it never overwrites a curated value.
+
+### What it does
+
+Fills these structured fields:
+
+- `capacityMw.planned`
+- `capacityMw.operational`
+- `energy.onSiteGenerationMw`
+- `energy.source`
+- `energy.utility`
+
+One field per model call (deliberately not batched — measuring batching at 2/7
+recall vs. 4/4 solo established that batching loses generalization on local
+models). It reads the facility's existing source URLs in order, stopping early
+the instant all requested fields are filled. Different fields can be sourced
+from different pages. Dry run (no `--out`) is the DEFAULT: it prints a summary
+and writes nothing.
+
+### Safety properties
+
+- **Staging-only:** never writes live data. The only side effect is a candidates
+  file (via `--out`), which is piped through `submit-candidates.ts` to stage
+  everything as `pending` for human review. Promotion to live requires an explicit
+  human `approve`.
+- **Reproducibility:** a locally-tuned Ollama setup (higher `OLLAMA_NUM_PARALLEL`)
+  breaks determinism; uses the default (serial) setting, where the model is
+  stable.
+- **Quote gate:** every extracted value must be backed by a verbatim span of the
+  page that also reconciles numerically with the value. Both halves are load-bearing:
+  a bare "60" is rejected because, while it is a real span of almost any document,
+  it carries no unit and so is evidence for nothing. Mechanical grounding bounds
+  fabrication, never semantics. **Known limit:** the gate cannot catch a genuine figure filed
+  under the WRONG field (e.g., a page reading "358,000-square-foot, 36-megawatt"
+  is real evidence for 36 MW, but the model may return it as `energy.onSiteGenerationMw`
+  instead of `capacityMw.operational`). Human review of the `pending` queue is
+  what covers that gap — a green gate is not a substitute for it.
+
+### Usage
+
+Dry run (prints a summary, writes nothing):
+
+```bash
+npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts
+npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
+  --fields capacityMw.operational,energy.source
+```
+
+Real run (stages candidates for review):
+
+```bash
+npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
+  --out /tmp/candidates.json --fields capacityMw.operational,capacityMw.planned
+npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts /tmp/candidates.json
+npm run submissions -- list pending
+npm run submissions -- approve <id> "reviewed and verified"
+```
+
+**Flags:**
+- `--out <path>` — write candidates to a file (omit for dry run)
+- `--fields <list>` — comma-separated field names; defaults to all five fields
+- `--limit N` — cap the run at N *gaps*, not N facilities. A gap is one
+  missing field on one facility, so `--limit 100` with two fields requested
+  covers roughly 50–67 facilities. Size runs accordingly.
+- `--facility <id>` — restrict the run to one facility. Composes with
+  `--limit` rather than overriding it: facilities are filtered first, then the
+  gap cap still applies to what remains.
+- `--run-id=<id>` — custom run ID (defaults to `track5-${timestamp}`)
+
+Unknown field names exit 1 and print the valid list.
+
+### Provenance and review workflow
+
+Every candidate carries `provenance.note` with the format:
+```
+field=value (quote: "…", source: <url>)
+```
+
+This metadata is what makes the `pending`-queue review fast enough to work —
+human reviewers see exactly which quote backed which value. The note must not
+be stripped; a real reviewed example shows the problem it solves: a candidate
+proposed `capacityMw.operational = 25` from a quote reading "permitted … up to
+75 MW, yet … as low as 25 MW" — a genuine figure, but the wrong field. That was
+caught in seconds only because the quote travelled with the value.
+
+### Screening rules
+
+- **`>= 500 MW` on a `data_center`** is flagged for human review (flag in
+  `provenance.note` as `REVIEW: ...`), not an alarm. Of 854 live data centers,
+  108 already exceed 500 MW, so this is a routine queue item, not a red flag.
+
+### Benchmark
+
+`scripts/discovery/bench/` holds 31 real cached pages × 4 fields with
+hand-verified ground truth. Current measured performance (re-run scoring with
+`node scripts/discovery/bench/rescore.mjs`):
+
+| Metric | Score |
+|---|---|
+| **PRECISION** | 90% |
+| **RECALL** | 84% |
+| **ABSTENTION-ACC** | 96% |
+| Correct extractions | 26 |
+| Correct abstentions | 80 |
+| Misses | 5 |
+| Wrong values | 0 |
+| Hallucinations | 3 |
+
+**Per field:**
+
+| Field | Precision | Recall | Notes |
+|---|---|---|---|
+| `capacityMw.operational` | 100% | 100% | Strongest; safe to ship |
+| `capacityMw.planned` | 75% | 67% | Weaker; review each |
+| `energy.onSiteGenerationMw` | 50% | 100% | Weak precision; review each |
+| `energy.source` | — | — | Enum (`grid`/`on_site_gas`/`nuclear`/…); not bench-scored |
+| `energy.utility` | — | — | Free-text string; not bench-scored |
+
+The bench deliberately duplicates the shipped quote-gate logic (see
+`scripts/discovery/bench/quote.mjs` vs. the gate in `extract-fields.ts`), and
+`bench/quote-parity.test.ts` enforces they don't drift.
+
+### Known limits and caveats
+
+- **Yield figures:** A prior 100-gap run measured ~9% fill rate and concluded
+  most remaining gaps are real absences rather than unmined data. This is
+  **provisional** — two defects found during shipping undermine that conclusion.
+  A Unicode-dash bug meant pages whose only capacity figure used an en/em dash
+  were silently skipped, and a separate fetch failure caused a full sweep to
+  report 1455 of 1545 gaps as unfetchable. Do not cite the older "5,650 field-gaps"
+  headline — it is retracted. Re-run a sweep before drawing yield conclusions.
+- **Enum fields** (`energy.source`, `energy.utility`): the bench covers only
+  numeric fields. Enum extraction is not measured and should be treated as alpha.
+- **No batching:** asking for several fields in one model call was measured at
+  2/7 recall against 4/4 for one-field-per-call. The reason is recall, not
+  determinism — do not conflate this with the `OLLAMA_NUM_PARALLEL`
+  reproducibility finding above, which is a separate result about concurrency.

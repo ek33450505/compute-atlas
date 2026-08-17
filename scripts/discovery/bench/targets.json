@@ -1,0 +1,715 @@
+[
+  {
+    "id": "flexential-hillsboro-5-or",
+    "name": "Flexential Hillsboro 5",
+    "city": "Hillsboro",
+    "state": "OR",
+    "facilityType": "data_center",
+    "status": "operating",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": 36,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://coloradobiz.com/flexential-acquires-two-hillsboro-data-center-properties/"
+    ]
+  },
+  {
+    "id": "qts-hillsboro-2-or",
+    "name": "QTS Hillsboro 2",
+    "city": "Hillsboro",
+    "state": "OR",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": 180,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": 51,
+      "investmentUsd": null
+    },
+    "sources": [
+      "http://q.com/data-centers/hillsboro-2/"
+    ]
+  },
+  {
+    "id": "crane-pdx02-forest-grove-or",
+    "name": "Crane PDX02",
+    "city": "Forest Grove",
+    "state": "OR",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 48,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.cranedc.com/data-centers/oregon-data-center"
+    ]
+  },
+  {
+    "id": "tract-altoona-ia",
+    "name": "Tract Altoona Technology Park",
+    "city": "Altoona",
+    "state": "IA",
+    "facilityType": "data_center",
+    "status": "permitted",
+    "truth": {
+      "capacityMwPlanned": 1000,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": 453,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.tract.com/news/tract-enters-the-des-moines-market-with-the-acquisition-of-453-acres-following-successful-collaboration-with-the-city-of-altoona-ia/",
+      "https://altoonanow.org/tract-brings-450-acre-data-center-campus-to-altoona-iowa/"
+    ]
+  },
+  {
+    "id": "1623-farnam-omaha-ne",
+    "name": "1623 Farnam",
+    "city": "Omaha",
+    "state": "NE",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": 10000000
+    },
+    "sources": [
+      "http://web.archive.org/web/20250830145932/https://www.datacenterdynamics.com/en/news/1623-farnam-adds-15mw-to-omaha-data-center-in-nebraska/",
+      "https://www.1623farnam.com/omaha-edge-data-center/"
+    ]
+  },
+  {
+    "id": "aligned-west-jordan-ut",
+    "name": "Aligned Salt Lake City Campus (SLC-01/02/03)",
+    "city": "West Jordan",
+    "state": "UT",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": 55,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://aligneddc.com/salt-lake-city-data-centers/",
+      "https://www.datacenterfrontier.com/cloud/article/11428310/aligned-continues-its-expansion-with-second-salt-lake-city-data-center"
+    ]
+  },
+  {
+    "id": "summit-ridge-santaquin-ut",
+    "name": "Summit Ridge Data Center",
+    "city": "Santaquin",
+    "state": "UT",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.ksl.com/article/51442989/some-santaquin-residents-raise-concerns-over-approval-of-future-data-center"
+    ]
+  },
+  {
+    "id": "applied-digital-polaris-forge-1-ellendale-nd",
+    "name": "Applied Digital Polaris Forge 1",
+    "city": "Ellendale",
+    "state": "ND",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 400,
+      "capacityMwOperational": 100,
+      "energySource": "grid",
+      "energyUtility": "Montana-Dakota Utilities",
+      "onSiteGenerationMw": null,
+      "landAcres": 320,
+      "investmentUsd": 5300000000
+    },
+    "sources": [
+      "https://ir.applieddigital.com/news-events/press-releases/detail/123/applied-digital-announces-250mw-ai-data-center-lease-with",
+      "https://www.datacenterdynamics.com/en/news/applied-digital-completes-first-data-center-building-at-north-dakota-campus/",
+      "https://northernsentry.com/2024/12/19/a-shot-in-the-arm-for-ellendale/",
+      "https://www.inforum.com/news/north-dakota/applied-digital-plans-to-expand-in-ellendale-nd"
+    ]
+  },
+  {
+    "id": "aws-cumulus-salem-township-pa",
+    "name": "AWS Cumulus Data Center Campus, Salem Township",
+    "city": "Salem Township",
+    "state": "PA",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 960,
+      "capacityMwOperational": 48,
+      "energySource": "nuclear",
+      "energyUtility": "Talen Energy",
+      "onSiteGenerationMw": null,
+      "landAcres": 1200,
+      "investmentUsd": 650000000
+    },
+    "sources": [
+      "https://www.datacenterdynamics.com/en/news/aws-acquires-talens-nuclear-data-center-campus-in-pennsylvania/",
+      "https://ir.talenenergy.com/news-releases/news-release-details/talen-energy-expands-nuclear-energy-relationship-amazon",
+      "https://technical.ly/civics/amazon-data-centers-tax-break/",
+      "https://blackchronicle.com/mid-atlantic/pennsylvania/big-money-enforced-silence-play-roles-in-pennsylvanias-data-center-push/"
+    ]
+  },
+  {
+    "id": "bitfarms-panther-creek-nesquehoning-pa",
+    "name": "Panther Creek Plant",
+    "city": "Nesquehoning",
+    "state": "PA",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": 350,
+      "capacityMwOperational": 60,
+      "energySource": "other",
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": 320,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.sec.gov/Archives/edgar/data/1812477/000121390026037514/ea0282809-10k_bitfarms.htm",
+      "https://www.sec.gov/Archives/edgar/data/1812477/000121390025097957/ea026090401ex99-1_bitfarms.htm",
+      "https://www.sec.gov/Archives/edgar/data/1812477/000121390026054167/ea028991401ex99-1.htm"
+    ]
+  },
+  {
+    "id": "big-watt-digital-onida-sd",
+    "name": "Big Watt Digital Sully Buttes Mining Facility",
+    "city": "Onida",
+    "state": "SD",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": 300,
+      "capacityMwOperational": 30,
+      "energySource": "wind",
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.onidawatchman.com/news/article_ce136784-8c57-11ed-a366-7ba7e3d8d91d.html",
+      "https://www.globenewswire.com/news-release/2023/07/25/2710263/0/en/Big-Watt-Digital-Forms-Joint-Venture-with-Consensus-Technology-Group.html",
+      "https://southdakotasearchlight.com/2026/01/30/sully-county-home-to-sds-largest-data-center-would-welcome-more-with-open-arms-official-says/"
+    ]
+  },
+  {
+    "id": "atlas-power-williston-nd",
+    "name": "Atlas Power Data Center (Williston)",
+    "city": "Williston",
+    "state": "ND",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": 700,
+      "capacityMwOperational": 240,
+      "energySource": "grid",
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://baxtel.com/data-center/atlas-power-williston-north-dakota",
+      "https://www.inforum.com/news/north-dakota/northwest-north-dakota-commission-directs-co-op-to-cut-power-to-crypto-data-center",
+      "https://www.yesenergy.com/blog/crypto-mining-power-consumption-atlas-power"
+    ]
+  },
+  {
+    "id": "aligned-iad-01-va",
+    "name": "Aligned IAD-01",
+    "city": "Ashburn",
+    "state": "VA",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": 60,
+      "energySource": "grid",
+      "energyUtility": "Dominion Energy Virginia",
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://aligneddc.com/northern-virginia-data-centers/",
+      "https://www.openstreetmap.org/way/793622740",
+      "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd",
+      "https://www.datacenters.com/aligned-energy-iad01-ashburn"
+    ]
+  },
+  {
+    "id": "aaim-data-centers-blue-earth-mn",
+    "name": "AAIM Data Centers — Blue Earth (Minnesota 1)",
+    "city": "Blue Earth",
+    "state": "MN",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": 15,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.aaimdc.com/data-centers/minnesota/",
+      "https://www.aaimdc.com/aaim-to-launch-cutting-edge-data-center-in-blue-earth-minnesota/"
+    ]
+  },
+  {
+    "id": "ark-data-centers-akron-i-summit-county-oh",
+    "name": "Ark Data Centers Akron I (fka Involta)",
+    "city": "Akron",
+    "state": "OH",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": 1,
+      "energySource": null,
+      "energyUtility": "Ohio Edison (FirstEnergy)",
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": 25000000
+    },
+    "sources": [
+      "https://www.involta.com/data-centers/data-center-locations/ohio/akron/",
+      "https://www.datacentermap.com/usa/ohio/akron/involta-akron/",
+      "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd",
+      "https://businessjournaldaily.com/involta-sees-tremendous-market-in-ohio/",
+      "https://www.prnewswire.com/news-releases/involta-llc-announces-plan-to-build-enterprise-data-center-in-akron-ohio-101806913.html",
+      "https://signalakron.org/4-5-million-tax-credit-will-help-data-center-expand-in-akron/"
+    ]
+  },
+  {
+    "id": "applied-digital-jamestown-nd",
+    "name": "Applied Digital Jamestown Facility",
+    "city": "Jamestown",
+    "state": "ND",
+    "facilityType": "crypto_mining",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": 106,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.sec.gov/Archives/edgar/data/1144879/000114487926000030/apld-20260228.htm"
+    ]
+  },
+  {
+    "id": "5c-group-vultr-prime-ohio-springfield-oh",
+    "name": "5C Group / Vultr Data Center (Prime Ohio)",
+    "city": "Springfield",
+    "state": "OH",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 150,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": "Ohio Edison / FirstEnergy",
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": 1300000000
+    },
+    "sources": [
+      "https://www.wyso.org/news/2025-12-09/new-1-3-billion-data-center-in-springfield-expected-to-open-in-early-2026",
+      "https://www.jobsohio.com/newsroom/news-press/vultr-announces-1-billion-data-center-investment-in-springfield",
+      "https://springfieldohio.gov/5c-data-center-faqs/",
+      "https://www.datacenterdynamics.com/en/news/hypertec-cloud-acquires-5c-data-centers-forms-5c-group/",
+      "https://www.springfieldnewssun.com/local/clark-county-approves-new-zoning-rules-for-data-centers/article_941ca03e-6407-53b8-85b4-e86901b4c0b4.html"
+    ]
+  },
+  {
+    "id": "aligned-project-caprock-hale-county-tx",
+    "name": "Aligned Data Centers Project Caprock",
+    "city": "Abernathy",
+    "state": "TX",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 540,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": "Xcel Energy",
+      "onSiteGenerationMw": null,
+      "landAcres": 313,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://aligneddc.com/press-release/aligned-breaks-ground-on-project-caprock/",
+      "https://www.globenewswire.com/news-release/2026/04/09/3271435/0/en/Aligned-Data-Centers-Breaks-Ground-on-Project-Caprock-a-Sustainable-540-MW-Next-Generation-Data-Center-Campus-in-Northwest-Texas.html"
+    ]
+  },
+  {
+    "id": "alterra-development-marshall-mi",
+    "name": "Alterra Marshall Technology & Energy Center",
+    "city": "Marshall",
+    "state": "MI",
+    "facilityType": "data_center",
+    "status": "proposed",
+    "truth": {
+      "capacityMwPlanned": 1400,
+      "capacityMwOperational": null,
+      "energySource": "mixed",
+      "energyUtility": null,
+      "onSiteGenerationMw": 1000,
+      "landAcres": 270,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://wwmt.com/news/local/data-center-gas-generation-plant-proposed-in-marshall-alterra-development-calhoun-county-energy-electricity-water",
+      "https://marshalladvisor.com/articles/news/data-center-being-proposed-in-marshall-begins-due-dilligence-period-with-city/",
+      "https://wwmt.com/news/local/data-centers-michigan-dowagiac-marshall-proposals-track-questions-answers-microsoft-hyperscale-alterra-ai-water-resources-noise-meetings-wwmt",
+      "https://arcwestmichigan.com/news/local/marshall-data-center-proposal-stuart-lake-brooks-nature-area-gas-generation-plant-energy-scott-wolfersberger-calhoun-county-west-michigan"
+    ]
+  },
+  {
+    "id": "aligned-neo-01-oh",
+    "name": "Aligned NEO-01",
+    "city": "Sandusky (Perkins Township)",
+    "state": "OH",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 96,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": "Ohio Edison (FirstEnergy)",
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://aligneddc.com/northeast-ohio-data-centers/",
+      "https://www.openstreetmap.org/way/383796776",
+      "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd",
+      "https://www.datacentermap.com/usa/ohio/cleveland/aligned-neo-01/"
+    ]
+  },
+  {
+    "id": "aligned-phx13-glendale-az",
+    "name": "Aligned PHX-13",
+    "city": "Glendale",
+    "state": "AZ",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 72,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": "Arizona Public Service (APS)",
+      "onSiteGenerationMw": null,
+      "landAcres": 100,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://news.constructconnect.com/aligned-data-centers-breaks-ground-on-glendale-expanding-arizona-infrastructure",
+      "https://dcnnmagazine.com/data-centres/aligned-data-centers-breaks-ground-on-glendale-facility/",
+      "https://www.glendalestar.com/news/aligned-data-centers-breaks-ground/article_4c7a2620-ccc3-4821-a236-dbfedb40ae85.html",
+      "https://www.datacenterdynamics.com/en/news/aligned-breaks-ground-on-data-center-in-phoenix-arizona/",
+      "https://www.constructconnect.com/construction-economic-news/aligned-data-centers-breaks-ground-on-phx-13-facility-expanding-arizona-infrastructure"
+    ]
+  },
+  {
+    "id": "google-nebraska-ai-campus-proposed",
+    "name": "Google Nebraska AI Campus (proposed)",
+    "state": "NE",
+    "facilityType": "data_center",
+    "status": "proposed",
+    "truth": {
+      "capacityMwPlanned": 1000,
+      "capacityMwOperational": null,
+      "energySource": "on_site_gas",
+      "energyUtility": null,
+      "onSiteGenerationMw": 2730,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://flatwaterfreepress.org/google-proposes-nebraska-data-center-requiring-more-power-than-all-of-lincoln/",
+      "https://grist.org/accountability/google-data-center-carbon-capture-nebraska/",
+      "https://nebraskapublicmedia.org/en/news/news-articles/gage-county-planning-and-zoning-commission-approves-18-month-moratorium-on-data-centers/",
+      "https://www.1011now.com/2026/05/20/otoe-county-commissioners-pass-moratorium-data-center-or-not/",
+      "https://flatwaterfreepress.org/google-proposes-nebraska-data-center-requiring-more-power-than-all-of-lincoln/",
+      "https://grist.org/accountability/google-data-center-carbon-capture-nebraska/"
+    ]
+  },
+  {
+    "id": "fleet-data-centers-storey-county-nv",
+    "name": "Fleet Data Centers Storey County Campus (South Valley & Peru Ridge)",
+    "city": "McCarran",
+    "state": "NV",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 400,
+      "capacityMwOperational": null,
+      "energySource": "mixed",
+      "energyUtility": "NV Energy",
+      "onSiteGenerationMw": 362,
+      "landAcres": 769,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.datacenterdynamics.com/en/news/fleet-data-centers-closes-46bn-in-senior-secured-notes-for-230mw-storey-county-campus/",
+      "https://www.nnbw.com/news/2026/jun/02/fleet-data-centers-breaks-ground-on-2-facilities/",
+      "https://www.nevadaappeal.com/news/2026/jun/09/nevada-data-center-firm-working-on-two-campuses-at-tahoe-reno-industrial-center/",
+      "https://www.kolotv.com/2026/05/20/gov-lombardo-construction-companies-break-ground-2-million-sq-ft-data-center-storey-co/",
+      "https://www.carsonnow.org/05/03/2026/why-a-northern-nevada-data-center-wants-to-build-its-own-temporary-natural-gas-power-plant",
+      "https://thenevadaindependent.com/article/why-a-northern-nevada-data-center-wants-to-build-its-own-temporary-natural-gas-power-plant"
+    ]
+  },
+  {
+    "id": "aligned-phx-01-02-03-az",
+    "name": "Aligned PHX-01/02/03",
+    "city": "Phoenix",
+    "state": "AZ",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": "on_site_gas",
+      "energyUtility": "Arizona Public Service (APS)",
+      "onSiteGenerationMw": 63,
+      "landAcres": 55,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://aligneddc.com/phoenix/",
+      "https://www.openstreetmap.org/way/155739337",
+      "https://www.datacenterdynamics.com/en/news/phoenix-data-center-will-have-63mw-on-site-generation/",
+      "https://aligneddc.com/power-reliability-is-a-big-driver-for-aligned-data-centers-in-phoenix/"
+    ]
+  },
+  {
+    "id": "apple-maiden-nc",
+    "name": "Apple Maiden Data Center (iCloud)",
+    "city": "Maiden",
+    "state": "NC",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": "mixed",
+      "energyUtility": "Duke Energy",
+      "onSiteGenerationMw": 10,
+      "landAcres": 183,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.apple.com/newsroom/2025/02/apple-will-spend-more-than-500-billion-usd-in-the-us-over-the-next-four-years/",
+      "https://www.catawbaedc.org/post/north-carolina-data-center-is-part-of-apple-s-500-billion-expansion-plan-across-the-us",
+      "https://9to5mac.com/2012/05/17/apples-20-megawatt-solar-farm-near-nc-data-center-gets-ncuc-approval/",
+      "https://www.imore.com/solar-farms-and-fuel-cells-apples-north-carolina-data-center-now-completely-operational"
+    ]
+  },
+  {
+    "id": "creekstone-delta-ut",
+    "name": "Creekstone Energy Delta Gigasite",
+    "city": "Delta",
+    "state": "UT",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": 10000,
+      "capacityMwOperational": null,
+      "energySource": "mixed",
+      "energyUtility": "PacifiCorp",
+      "onSiteGenerationMw": 300,
+      "landAcres": 1143,
+      "investmentUsd": 17000000000
+    },
+    "sources": [
+      "https://www.datacenterdynamics.com/en/news/zeo-energy-to-supply-280mw-of-power-for-creekstone-energys-up-to-10gw-data-center-campus-in-millard-county-utah/",
+      "https://business.utah.gov/tax-credits/creekstone-energy-llc-commits-17-billion-to-millard-county-data-center-project/",
+      "https://www.businesswire.com/news/home/20260310800142/en/Creekstone-Energy-Secures-Largest-Solar-Lease-in-Utahs-History-and-Receives-Millard-County-Zoning-Approval-for-Over-1-GW-of-Solar-Development",
+      "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd"
+    ]
+  },
+  {
+    "id": "a1-data-center-millville-nj",
+    "name": "A1 Data Center Campus",
+    "city": "Millville",
+    "state": "NJ",
+    "facilityType": "data_center",
+    "status": "cancelled",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": "Atlantic City Electric",
+      "onSiteGenerationMw": null,
+      "landAcres": 66,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.roi-nj.com/2026/05/20/tech/millville-bans-data-centers-rejecting-largest-proposed-facility-in-n-j/",
+      "https://www.a1datacenter.net/",
+      "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd"
+    ]
+  },
+  {
+    "id": "9ldg-niagara-falls-ny",
+    "name": "9LDG Niagara AI Data Center",
+    "city": "Niagara Falls",
+    "state": "NY",
+    "facilityType": "data_center",
+    "status": "proposed",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": "hydro",
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": 22,
+      "investmentUsd": 100000000
+    },
+    "sources": [
+      "https://www.datacenterdynamics.com/en/news/9ldg-plans-ai-data-center-at-niagara-falls/"
+    ]
+  },
+  {
+    "id": "air-products-cetronia-road-upper-macungie-pa",
+    "name": "Cetronia Road Data Center (former Air Products site)",
+    "city": "Trexlertown",
+    "state": "PA",
+    "facilityType": "data_center",
+    "status": "proposed",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": "PPL Electric",
+      "onSiteGenerationMw": null,
+      "landAcres": 194,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.datacenterdynamics.com/en/news/26-million-sq-ft-data-center-campus-proposed-in-pennsylvania/",
+      "https://www.lehighvalleynews.com/business/giant-data-center-proposal-in-upper-macungie-township-is-in-the-works",
+      "https://www.wfmz.com/news/area/lehighvalley/lehigh-county/western-lehigh-county/upper-macungie-zoners-reject-appeal-for-massive-data-center-campus-on-former-air-products-site/article_c531b72e-e928-4562-bcbf-3dbc7e9ce3e8.html",
+      "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd"
+    ]
+  },
+  {
+    "id": "adp-ladysmith-data-hub-caroline-va",
+    "name": "ADP Ladysmith Data Hub",
+    "city": "Ruther Glen",
+    "state": "VA",
+    "facilityType": "data_center",
+    "status": "proposed",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": "Rappahannock Electric Co-op",
+      "onSiteGenerationMw": null,
+      "landAcres": 140.38,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://co.caroline.va.us/1036/Special-Exceptions-and-Rezonings",
+      "https://www.fredericksburgfreepress.com/2024/08/28/community-meeting-thursday-in-ladysmith-to-discuss-data-center-project/",
+      "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd"
+    ]
+  },
+  {
+    "id": "aligned-conesville-oh",
+    "name": "Aligned Data Centers – Conesville Industrial Park",
+    "city": "Conesville",
+    "state": "OH",
+    "facilityType": "data_center",
+    "status": "under_construction",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": "AEP Ohio (PJM interconnect)",
+      "onSiteGenerationMw": null,
+      "landAcres": 197,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://aligneddc.com/press-release/aligned-data-centers-expands-in-ohio-with-new-mega-scale-ai-campus/",
+      "https://www.datacenterdynamics.com/en/news/aligned-to-develop-200-acre-data-center-campus-in-coshocton-ohio/",
+      "https://frontier-companies.com/aligned-data-centers-expands-with-new-mega-scale-ai-campus-at-conesville-industrial-park/",
+      "https://www.yourohionews.com/coshocton/ground-broken-for-new-aligned-data-centers-campus-in-conesville/975588",
+      "https://www.datacenterfrontier.com/site-selection/article/55306993/from-brownfield-to-breakthrough-aligned-data-centers-extends-its-ai-first-infrastructure-vision-from-ohio-to-the-edge-of-innovation",
+      "https://frontier-companies.com/coshocton-port-authority-secures-58-7-million-from-ohio-department-of-development-for-site-redevelopment-at-the-conesville-industrial-park/",
+      "https://egeneration.org/aligned-data-centers-expands-in-ohio-considering-nuclear-power-for-resilience"
+    ]
+  },
+  {
+    "id": "32-avenue-of-the-americas-ny",
+    "name": "32 Avenue of the Americas",
+    "city": "New York",
+    "state": "NY",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": "Con Edison",
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null
+    },
+    "sources": [
+      "https://www.digitalrealty.com/data-centers/americas/new-york/jfk13",
+      "https://www.coresite.com/data-center/ny1-new-york-ny",
+      "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/MAPPLUTO/FeatureServer/0/query?where=BBL%3D1001920001&outFields=*&f=json",
+      "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd"
+    ]
+  }
+]

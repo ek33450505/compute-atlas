@@ -1,0 +1,259 @@
+{
+  "_README": [
+    "GROUND TRUTH for the Track 5 extraction bench. s97.",
+    "",
+    "EVERY label below was assigned by READING THE SURROUNDING CONTEXT of the cached page,",
+    "never by grepping for a number and never by copying the DB record. Those two shortcuts",
+    "are what produced FOUR wrong labels in the s96 bench, each of which penalised a model",
+    "for being correct.",
+    "",
+    "The DB value is a HINT, NOT A LABEL. A facility's recorded capacity often comes from a",
+    "DIFFERENT source than the page under test -- apple-maiden-nc's cited page is Apple's $500B",
+    "US-investment release and never mentions Maiden at all, yet the record carries acreage,",
+    "utility and on-site generation. Labeling from the DB would score that page as three misses.",
+    "",
+    "FIELDS",
+    "  capacityAny         - any site-level electrical capacity stated for THIS facility",
+    "  capacityPlanned     - a planned/designed/entitled/future capacity for THIS facility",
+    "  capacityOperational - a built/current/in-service capacity for THIS facility",
+    "  onSiteGenerationMw  - on-site/behind-the-meter generation capacity for THIS facility",
+    "",
+    "VALUES",
+    "  <number>  the page states this, for this facility",
+    "  null      the page does not state it (correct answer is abstention)",
+    "  \"AMBIG\"   the page states a figure but genuinely does not resolve the distinction;",
+    "            EXCLUDED from scoring and reported separately. Marking these honestly is",
+    "            better than inventing a label -- and the AMBIG count is itself a finding:",
+    "            it measures how often a source even supports the planned/operational split.",
+    "  accept[]  set of defensible values (e.g. a stated RANGE); any member scores correct."
+  ],
+  "flexential-hillsboro-5-or": {
+    "capacityAny": 36,
+    "capacityPlanned": null,
+    "capacityOperational": 36,
+    "onSiteGenerationMw": null,
+    "note": "'Hillsboro 5 is 358,000 square feet with 36 megawatts capacity' - an existing facility being acquired. TRAP: 360 MW is company-wide across 40 data centers; 108 MW is a Dallas campus in a related-posts sidebar."
+  },
+  "qts-hillsboro-2-or": {
+    "capacityAny": 180,
+    "capacityPlanned": "AMBIG",
+    "capacityOperational": "AMBIG",
+    "onSiteGenerationMw": null,
+    "note": "'Powering the campus 180 MW+' / 'Critical campus capacity 180 MW+'. No tense marker anywhere, so built-vs-planned is genuinely unresolvable from this page."
+  },
+  "crane-pdx02-forest-grove-or": {
+    "capacityAny": 48,
+    "capacityPlanned": "AMBIG",
+    "capacityOperational": "AMBIG",
+    "onSiteGenerationMw": null,
+    "note": "'Data Center PDX02: ~48 MW and ~150,000 sf' in a site-spec list, no tense. TRAP: sibling PDX01 Phase 1 = 24 MW and Phase 2 = additional 24 MW."
+  },
+  "tract-altoona-ia": {
+    "capacityAny": 1000,
+    "capacityPlanned": 1000,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "'Fully entitled property can support a 1GW+ technology park' / 'over time, will be capable of supporting over 1GW'. Explicitly forward-looking => planned. GW->MW conversion required. TRAP: four further 1GW mentions in the sidebar belong to a different Tract site in Morris, ILLINOIS."
+  },
+  "1623-farnam-omaha-ne": {
+    "capacityAny": 8,
+    "capacityPlanned": null,
+    "capacityOperational": 8,
+    "onSiteGenerationMw": null,
+    "note": "'The nine-story facility offers around 8MW of capacity across 75,000 sq ft' - present tense, whole facility. TRAP: 1.5MW is the increment just added, not the total. NOTE: the s96 bench labeled this an abstention case (null); that was WRONG - the page states it plainly. Corroborates the carried-forward note that this record's 8 MW was stripped in error."
+  },
+  "aligned-west-jordan-ut": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "No capacity for the SLC campus. TRAP: 540 MW belongs to Project Caprock in TEXAS (site-wide nav banner); 3 MW back-up generators and 2 MW UPS line-ups are equipment specs, not site capacity."
+  },
+  "summit-ridge-santaquin-ut": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "KSL article on resident concerns. No capacity figure anywhere."
+  },
+  "applied-digital-polaris-forge-1-ellendale-nd": {
+    "capacityAny": 400,
+    "capacityPlanned": 400,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "'Applied Digital's Ellendale campus is designed to host 400 MW of critical IT load'. Operational is NOT stated: the 100 MW building is 'expected to be ready for service', future tense. TRAP-RICH: 250 MW lease, 150 MW option, 150 MW second building, 1 gigawatt scale-up, 1+ GW under load study."
+  },
+  "aws-cumulus-salem-township-pa": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "Talen/Amazon PPA release. TRAP: 1,920 MW is contracted nuclear POWER SUPPLY to Amazon, not this campus's capacity; 10.7 GW and 2.2 GW are Talen's whole fleet. The DB's 960/48 appear nowhere on this page."
+  },
+  "bitfarms-panther-creek-nesquehoning-pa": {
+    "capacityAny": 350,
+    "capacityPlanned": 350,
+    "capacityOperational": 60,
+    "onSiteGenerationMw": "AMBIG",
+    "note": "10-K: 'received a project feasibility report from PPL increasing the incremental power availability at Panther Creek from 250 MW to 350 MW ... resulting in 350 MW of contracted power capacity'. TRAP-RICH (12 distinct MW figures): 170 MW Quebec sites, 142 MW import / 165 MW generation (Stronghold at acquisition), 250 MW superseded. The DB's operational 60 is NOT in this document. onSite AMBIG: a waste-to-energy facility is described without a site-specific MW rating. CORRECTED s97: operational was wrongly labeled null. The 10-K carries a capacity TABLE - \"Panther Creek | Pennsylvania | 60 * | 350 | 350 | 150 | 500\" - so 60 (current) and 500 (Total Pipeline) are both real stated column values; capacityAny now accepts 350 or 500. My prose-window label aid could not render a pipe-delimited table, so I saw none of it. Matches the live DB's operational:60.",
+    "acceptCapacityAny": [
+      350,
+      500
+    ]
+  },
+  "big-watt-digital-onida-sd": {
+    "capacityAny": "AMBIG",
+    "capacityPlanned": "AMBIG",
+    "capacityOperational": "AMBIG",
+    "onSiteGenerationMw": null,
+    "note": "'expected to use 12.5 megawatts of electricity annually' is a CONSUMPTION figure; a reasonable extractor might or might not report it as capacity, so capacityAny is AMBIG. The DB's 300/30 are supported nowhere on this page. s97: planned/operational set AMBIG for the same reason capacityAny already was - \"expected to use 12.5 megawatts\" is a consumption figure with no tense marker, so any sub-field assignment is a guess."
+  },
+  "atlas-power-williston-nd": {
+    "capacityAny": 700,
+    "capacityPlanned": 700,
+    "capacityOperational": 240,
+    "onSiteGenerationMw": null,
+    "note": "BEST planned-vs-operational case: 'plans for a 700 MW capacity to be built in three phases. The Atlas facility currently consumes about 240 megawatts.' TRAP: 5MW/100MW (Applied Digital), 200MW (Bitzero), 0MW placeholder - all other operators' news items on the same page."
+  },
+  "aligned-iad-01-va": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "Same Aligned template as West Jordan. TRAP: 540 MW = Caprock, TEXAS; 3 MW / 2 MW are generator and UPS specs. The DB's operational 60 is not on this page."
+  },
+  "aaim-data-centers-blue-earth-mn": {
+    "capacityAny": 15,
+    "capacityPlanned": "AMBIG",
+    "capacityOperational": 15,
+    "onSiteGenerationMw": null,
+    "note": "'Minnesota 1 ... Building Size 15 MW ... In Service Date June 2025' and 'our 15 MW facility' (present tense). TRAP: 80 MW appears in a staff biography ('secured more than 80 MW of hosting space'), not as this site's capacity. s97: capacityPlanned set AMBIG - the page says both \"our 15 MW facility\" (present) and \"nearing the completion of a significant 15 MW expansion\" (forward-looking), so 15 is defensible under either sub-field."
+  },
+  "ark-data-centers-akron-i-summit-county-oh": {
+    "capacityAny": 1,
+    "capacityPlanned": null,
+    "capacityOperational": 1,
+    "onSiteGenerationMw": "AMBIG",
+    "note": "CORRECTED s97 (was null/null/null). The facility spec table states \"Capacity 1,000 kW\" for Akron I = 1 MW; the model found it and converted kW->MW while my label-aid regex (MW|GW only) never surfaced it. RETRACTION: the live DB's operational:1 is CORRECT, not a misread of the 1MW diesel generator as previously surfaced. The diesel genset remains a distractor for onSiteGenerationMw (standby, not generation) -> AMBIG."
+  },
+  "applied-digital-jamestown-nd": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "HALLUCINATION TRAP. The 10-Q extract is raw XBRL tagging noise with no prose and no MW token, yet the bare string '106' (the DB's recorded operational value) occurs incidentally. Any returned number here is ungrounded by construction."
+  },
+  "5c-group-vultr-prime-ohio-springfield-oh": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "WYSO article. Verified: no MW/GW token anywhere. The DB's planned 150 comes from another source. Matches the s90 probe, which correctly returned null for capacityMwPlanned on this same page."
+  },
+  "aligned-project-caprock-hale-county-tx": {
+    "capacityAny": 540,
+    "capacityPlanned": 540,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "'a new 540 MW, 313-acre data center campus, located in Hale County just outside of Abernathy, Texas' - breaking ground, so planned. Also the >=500 MW human-review trigger case."
+  },
+  "alterra-development-marshall-mi": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "Verified: no MW/GW token anywhere despite being a gas-generation story. The DB's 1400 planned / 1000 on-site come from other sources."
+  },
+  "aligned-neo-01-oh": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "Aligned template again. TRAP: 540 MW = Caprock TX nav banner; 3 MW / 2 MW equipment specs. The DB's planned 96 is not on this page."
+  },
+  "aligned-phx13-glendale-az": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "No capacity token. The DB's planned 72 comes from another source."
+  },
+  "google-nebraska-ai-campus-proposed": {
+    "capacityAny": 1000,
+    "capacityPlanned": 1000,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "acceptCapacityAny": [
+      1000,
+      3000
+    ],
+    "acceptCapacityPlanned": [
+      1000,
+      3000
+    ],
+    "note": "'The data center itself, which could require 1,000 to 3,000 megawatts of power' - a stated RANGE, so either endpoint is defensible. TRAP-RICH: 800 MW (utility's summer peak), 1,365 MW (Gerald Gentleman Station), 9,000 MW (Tenaska nationwide build), 423 MW (wind for a different Google DC in Lincoln). onSite is null on purpose: the DB's 2,730 was DERIVED as 2 x 1,365 from 'could produce more than twice the 1,365 megawatts' - never stated, so returning it would be arithmetic invention."
+  },
+  "fleet-data-centers-storey-county-nv": {
+    "capacityAny": 400,
+    "capacityPlanned": 400,
+    "capacityOperational": null,
+    "onSiteGenerationMw": 144,
+    "note": "'South Valley and Peru Ridge will have a combined 400 megawatts of critical compute power'. TRAP-RICH: 30 MW/campus utility computing, 50MW comparison, 1215MW developable at South Valley, 1,040MW Peru Shelf, 700MW Silver Springs, 2,500MW Virginia City Highlands - all potential, not this campus's stated capacity. CORRECTED s97: onSiteGenerationMw was wrongly labeled null. The page states a PUCN permit application for \"a temporary power facility at South Valley capable of generating 144MW\" using 90 natural-gas engines, described as \"turnkey behind-the-meter power generation\" - explicitly on-site generation. I missed it because my evidence dump truncated at the first 6 distinct MW figures."
+  },
+  "aligned-phx-01-02-03-az": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "Aligned template. TRAP: 540 MW Caprock nav; 3 MW / 2 MW equipment. The DB's on-site 63 MW is not on this page."
+  },
+  "apple-maiden-nc": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "KEY METHOD CASE: the cited page is Apple's $500B US-investment release and never mentions Maiden. The DB record carries onSite 10 MW, 183 acres and Duke Energy from OTHER sources. Labeling from the DB would have scored three false misses here."
+  },
+  "creekstone-delta-ut": {
+    "capacityAny": 10000,
+    "capacityPlanned": 10000,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "SECOND GW->MW case: 'the world's largest AI-optimized data center, with a capacity of 10 gigawatts'. Requires the same conversion as Altoona. The DB's on-site 300 MW is not stated here despite the 'behind-the-meter' language."
+  },
+  "a1-data-center-millville-nj": {
+    "capacityAny": 1400,
+    "capacityPlanned": 1400,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "THIRD GW->MW case: 'The proposed data center would have drawn 1.4 gigawatts from the grid'. Facility is cancelled, so planned. NOTE: the live record has NO capacity - this page supports adding one (surfaced, not fixed)."
+  },
+  "air-products-cetronia-road-upper-macungie-pa": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "No capacity token."
+  },
+  "adp-ladysmith-data-hub-caroline-va": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "County special-exception page. No capacity token."
+  },
+  "aligned-conesville-oh": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "Aligned template. Only MW present is the 540 MW Caprock TX nav banner."
+  },
+  "32-avenue-of-the-americas-ny": {
+    "capacityAny": null,
+    "capacityPlanned": null,
+    "capacityOperational": null,
+    "onSiteGenerationMw": null,
+    "note": "No capacity token."
+  }
+}

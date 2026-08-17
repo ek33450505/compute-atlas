@@ -844,6 +844,9 @@
       "state": "TX",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 60
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -866,9 +869,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/aligned-plano",
+        "label": "baxtel — Aligned Plano Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-13",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed operational on Aligned's Dallas directory page; address 2800 Summit Ave, Plano, TX 75074. AI/HPC (likely): Dallas DFW-01: Aligned DeltaFlow/Delta3 high-density AI/HPC platform.",
     "energy": {
       "source": "grid",
@@ -1651,6 +1661,10 @@
       "state": "UT",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 60,
+      "operational": 48
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -1673,9 +1687,16 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/cloud/article/11428310/aligned-continues-its-expansion-with-second-salt-lake-city-data-center",
+        "label": "Aligned Continues its Expansion With Second Salt Lake City Data Center",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-08-16",
     "energy": {
       "notes": "Data Center Frontier reports SLC-02 as 'The 240,000 square foot facility offers 48 megawatts of capacity, and can be expanded to 60 MW' and describes regional power available at 5.8 cents per kilowatt hour with free-air cooling viable 75-80 percent of the year. No campus-wide MW total was found on a source that was actually read, so capacityMw is omitted rather than assembled from third-party aggregator figures."
     },
@@ -2334,7 +2355,8 @@
       "precision": "exact"
     },
     "capacityMw": {
-      "planned": 2200
+      "planned": 2200,
+      "operational": 590
     },
     "poweredBy": "grid (Indiana Michigan Power) + natural gas",
     "announcedDate": "2024-04-25",
@@ -2414,9 +2436,16 @@
         "publisher": "CNBC",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://measuredai.substack.com/p/aws-new-carlisle-data-center-campus",
+        "label": "AWS New Carlisle Data Center Campus: Project Rainier",
+        "publisher": "Measured AI",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-16",
     "energy": {
       "source": "grid",
       "utility": "Indiana Michigan Power (AEP)",
@@ -3550,6 +3579,9 @@
       "state": "AZ",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 1500
+    },
     "announcedDate": "2025-12",
     "statusHistory": [
       {
@@ -3586,9 +3618,16 @@
         "label": "Maricopa County Assessor Parcel Viewer (GIS parcel data service)",
         "retrievedAt": "2026-07-18",
         "kind": "other"
+      },
+      {
+        "url": "https://fortune.com/2025/12/27/ai-data-centers-arizona-hassayampa-ranch/",
+        "label": "At the edges of the AI data center boom, rural America is up against Silicon Valley billions (Hassayampa Ranch)",
+        "publisher": "Fortune",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "~$25B proposed data center campus led by Arizona Land Consulting (Anita Verma-Lallian) with investor Chamath Palihapitiya, on ~2,000 acres of far-western Maricopa County near Tonopah (acquired in a ~$51M deal). Maricopa County approved industrial rezoning Dec 10, 2025; zoning applications pending. Coordinates are an approximate town-level geocode near Tonopah, not a parcel-confirmed point.",
     "investmentUsd": 25000000000,
     "landAcres": 2000,
@@ -4013,6 +4052,9 @@
       "state": "MT",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 300
+    },
     "announcedDate": "2018",
     "statusHistory": [],
     "sources": [
@@ -4050,9 +4092,16 @@
         "publisher": "Montana Standard",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Atlas_Power:_Butte",
+        "label": "Atlas Power: Butte",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-16",
     "notes": "Former Mike Mansfield Advanced Technology Center (MSE Technologies) campus at Basin Creek TEDD south of Butte. CryptoWatt LLC (subsidiary of The Burrell Group) launched bitcoin mining here in 2018; the site was later acquired/rebranded and now operates as Atlas Power (already the named operator by a Dec 2022 equipment-supplier lawsuit against BlockFills). Atlas mines crypto (ASIC/bitcoin, later pivoted partly to GPU/Ethereum) and offers ML/data-processing hosting. Reported capacity figures conflict across sources (permitted ~75MW; one listing shows 150MW; actual draw reported as low as 25MW during the ETH pivot) so capacity is left unset here pending a primary-source figure I could personally verify. NorthWestern Energy has agreed to supply Atlas 75MW of grid power beginning 2026 with a further ~75MW expected within 3-5 years (Datacenter Dynamics). A related 1,600-acre Basin Creek Solar Project expansion (intended to help power the site) was denied by the Butte Zoning Board in the face of strong public opposition.",
     "energy": {
       "source": "grid"
@@ -5664,6 +5713,9 @@
       "state": "IN",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 2400
+    },
     "poweredBy": "NIPSCO (GenCo subsidiary)",
     "announcedDate": "2025-11-24",
     "statusHistory": [
@@ -5744,9 +5796,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://wsbt.com/news/local/amazon-data-center-15-billion-data-center-jobs-ai-nipsco-electric-grid-governor-mike-braun-northern-indiana-hobart-lake-county-indiana",
+        "label": "Newly announced Amazon data center to be built in Hobart",
+        "publisher": "WSBT 22",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "One of AWS's Northwest Indiana campuses (part of a $15B NW Indiana / 2.4 GW umbrella; distinct from aws-project-rainier-new-carlisle-in and the separate Wheatfield IN campus). CAPACITY OMITTED: the 2.4 GW figure is the NW Indiana total, not Hobart-specific. INVESTMENT OMITTED: $15B is the NW Indiana total, no Hobart-specific figure. Up to 25 buildings on 725+ acres ('Hobart Tech Park'); shell entities include Hobart Devco, Hobart Owner LLC, TUHAUS LLC/Wylie Capital. ~400 permanent jobs ($37-44/hr) are projections (in notes, not jobs). $47M upfront community payment is city revenue, not facility capex. Coordinates estimated from 61st Ave/Colorado St; verify via Lake County GIS. Active litigation: 'No Data Centers Hobart Indiana' sought a TRO on the fill permit (unresolved).",
     "energy": {
       "source": "grid",
@@ -7616,9 +7675,16 @@
         "publisher": "Montana Environmental Information Center",
         "retrievedAt": "2026-08-05",
         "kind": "other"
+      },
+      {
+        "url": "https://www.ypradio.org/energy/2022-04-28/as-crypto-company-departs-hardin-whats-next-for-the-communities-it-leaves-behind",
+        "label": "As crypto company departs Hardin, what's next for the communities it leaves behind?",
+        "publisher": "Yellowstone Public Radio",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-16",
     "notes": "Marathon Digital (in a joint venture with plant owner Beowulf Energy) ran a 20-acre, 30,000+ Antminer S19 bitcoin-mining data center (up to ~57MW) behind-the-meter at the coal-fired Hardin Generating Station (119MW) from 2020. Marathon announced its exit in April 2022 to pursue carbon-neutral sites, leaving its infrastructure in place 'so another miner can come in.' As of the most recent reporting found (Daily Montanan, Nov 2025), the Big Horn Data Hub is still 'not currently operating,' though Beowulf Electricity & Data has stated it intends to expand/redevelop the site and local officials have expressed support. No confirmed new bitcoin-mining tenant/operator was found as of this check -- logged as cancelled (former operation ended) per the tracker's no-decommissioned-status convention; capacity omitted since nothing is currently producing. Note: a data-center aggregator (baxtel.com) attributes this site to 'TeraWulf,' but TeraWulf's own SEC 10-K lists only its Lake Mariner (NY) facility and a since-divested Nautilus JV stake (PA) -- no Montana facility appears in TeraWulf's own filings, so that attribution is treated as an unverified aggregator error, not used here.",
     "energy": {
       "source": "other"
@@ -7699,6 +7765,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 150,
       "operational": 83
     },
     "statusHistory": [],
@@ -7730,9 +7797,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-10",
         "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/bit-mining-increases-investment-in-ohio-cryptocurrency-mining-site-301402112.html",
+        "label": "BIT Mining Increases Investment in Ohio Cryptocurrency Mining Site",
+        "publisher": "PR Newswire / BIT Mining",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-18",
+    "lastUpdated": "2026-08-16",
     "notes": "428 Seiberling Street, Akron — a former Goodyear tire / Maxion Wheels manufacturing plant (380,000 sq ft building; 430,556 sq ft / 40,000 sqm per Baxtel). Joint venture with Viking Data Centers, LLC; BIT Mining holds majority equity (51% initially per a 2021 SEC 6-K exhibit, increased via a June 2022 buyout giving BIT Mining exclusive operational access to 82.5MW, recorded here as 83MW). Total site design capacity across the JV is larger (up to 150MW: 85MW original + 65MW addition) but BIT Mining's own operating allocation is the 83MW recorded. Bitcoin/ASIC mining; historically also used for ethereum/dogecoin mining. No AI/HPC marketing found for this site.",
     "facilityType": "crypto_mining",
     "mining": {
@@ -8347,6 +8421,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 1300,
       "operational": 63
     },
     "statusHistory": [
@@ -8377,9 +8452,16 @@
         "publisher": "exploreClarion.com",
         "retrievedAt": "2026-08-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.exploreclarion.com/local/2026/06/02/scrubgrass-could-become-areas-largest-ai-data-center-campus-866965/",
+        "label": "Scrubgrass Could Become Area's Largest AI Data Center Campus",
+        "publisher": "exploreClarion.com",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-16",
     "notes": "Originally the Scrubgrass Generating Plant, a waste-coal (culm) power plant; currently an operating Bitcoin-mining plus waste-to-energy site. 63 MW is the currently accessible/confirmed capacity -- an unconfirmed 85 MW upper bound appears in some secondary sources and is omitted here. Conceptual FirstEnergy load studies (250/500/750 MW scenarios, potential up to 1,363 MW) and a possible 550+ MW behind-the-meter natural-gas build plus a Tennessee Gas Pipeline connection are under evaluation for a future AI/HPC campus, but remain pre-permit/pre-site-plan; CEO Ben Gagnon puts the earliest realistic timeline around 2028 -- aiClassification is intentionally left unset pending real evidence of a committed AI/HPC buildout. A March 2025 settlement (Scrubgrass Reclamation Company) requires coal-ash pile removal by September 2026. Operator is Bitfarms Ltd. (now Keel Infrastructure Corp., NASDAQ/TSX: KEEL, effective 2026-03-31/April 2026), which acquired Stronghold Digital Mining, Inc. (the site's prior owner) via merger closed 2025-03-14 -- not to be confused with the unrelated 'Stronghold Power Systems' entity elsewhere in this dataset (Coachella, CA). The SEC 10-K citation for this site could not be independently verified this session (sec.gov returned 403 to automated fetches); facts here rest on dated local reporting with named authors and quotes.",
     "energy": {
       "source": "other",
@@ -8564,6 +8646,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 50,
       "operational": 4
     },
     "poweredBy": "Grid-connected",
@@ -8589,9 +8672,16 @@
         "publisher": "Rockland County Times",
         "retrievedAt": "2026-07-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/investing/bloomberg-plans-710-million-data-center-in-n-y-suburb",
+        "label": "Bloomberg Plans $710 Million Data Center in N.Y. Suburb",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-18",
+    "lastUpdated": "2026-08-16",
     "notes": "155 Corporate Drive, Orangeburg, NY (Town of Orangetown, Rockland County). 131,805 sq ft total, two data halls totaling 39,058 sq ft with 42\" raised floor and 26' clear height, 4.0 MW power system, 1,200-ton cooling capacity — all per an authoritative SEC EDGAR CMBS filing (2014). Construction cost was $123.2M ($935/sq ft) per that same filing, with Bloomberg contributing $39.0M toward construction; recorded here as investmentUsd rather than the frequently-cited $710M figure, which represents total lease payments over a 15-year term (expiring March 2029), not construction capital — those are not comparable numbers and conflating them would overstate the capital investment. Dedicated single-tenant enterprise facility built to Bloomberg's spec for its financial data/analytics terminals (not shared colocation), built/topped-off 2013-2014. No expansions since 2014 were found in this research pass, but absence of news is not proof of none. Coordinates are a town-level geocode, not a confirmed parcel pin.",
     "investmentUsd": 123200000,
     "community": {
@@ -10084,6 +10174,9 @@
       "state": "TX",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 500
+    },
     "announcedDate": "2024-10",
     "statusHistory": [
       {
@@ -10111,9 +10204,15 @@
         "label": "Cipher Mining — Announces Signing of Option Agreements to Acquire 1.5 GW of Data Center Sites in West and North Texas (GlobeNewswire, Oct 15, 2024)",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://wacobridge.org/2026/05/27/waco-data-center-cipher-riesel-mclennan-county/",
+        "label": "Waco Bridge — 'Second Waco-area data center proposal troubles residents' (citing McLennan County clerk records)",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "Cipher's McLennan HPC/AI data center site in central Texas (McLennan County, the Waco area). Targeted capacity up to 500 MW; estimated energization 2028. Cipher entered an option agreement in October 2024 and exercised the option to acquire the special-purpose entity in February 2026. Part of Cipher's ~3.4 GW / 8-site HPC pipeline (Cipher Digital, formerly Cipher Mining). Coordinates approximate (McLennan County / Waco geocode; specific parcel not disclosed). Cipher Mining was renamed Cipher Digital.",
     "landAcres": 300,
     "community": {
@@ -10645,6 +10744,10 @@
       "state": "GA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 50,
+      "operational": 9.6
+    },
     "announcedDate": "2020-12-10",
     "statusHistory": [
       {
@@ -10668,9 +10771,16 @@
         "publisher": "PR Newswire (CleanSpark, Inc.)",
         "retrievedAt": "2026-08-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-agrees-to-acquire-bitcoin-miner-atl-data-center-301190492.html",
+        "label": "CleanSpark Agrees to Acquire Bitcoin Miner ATL Data Center",
+        "publisher": "PR Newswire (CleanSpark, Inc.)",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-16",
     "notes": "Formerly ATL Data Center; acquired by CleanSpark on December 10, 2020 (up to $19.4M in CLSK stock) — correcting an aggregator-cited 2022 date, which describes a separate, unrelated CleanSpark Georgia deal. The 2020 acquisition announcement described a plan to expand from 9.6 MW to 50 MW using air-cooled pods, but the current (FY2025) 10-K instead states the site now mines bitcoin via immersion technology and discloses no site-specific MW figure — Georgia capacity is reported only in aggregate (620 MW / 27.02 EH/s across 15 locations in 10 GA cities as of 2025-09-30). capacityMw is therefore omitted rather than carrying forward the stale 2020-era planned figure. No AI/HPC evidence for this specific site — CleanSpark's 10-K frames Georgia/Mississippi/Tennessee as bitcoin-mining-only, distinct from its separate AI/HPC-pivot sites (e.g. Sandersville, GA; Austin County, TX).",
     "energy": {
       "source": "grid"
@@ -11327,6 +11437,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 86,
       "operational": 36
     },
     "announcedDate": "2022-08-09",
@@ -11345,9 +11456,16 @@
         "publisher": "CleanSpark, Inc. / SEC EDGAR",
         "retrievedAt": "2026-08-05",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2022/08/09/2494690/0/en/CleanSpark-Acquires-Plug-in-Ready-Bitcoin-Mining-Facility-Scalable-to-86-Megawatts-or-2-6-EH-s.html",
+        "label": "CleanSpark press release: acquisition of Washington, GA facility from Waha Technologies (36 MW built, scalable to 86 MW)",
+        "publisher": "CleanSpark, Inc.",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-16",
     "notes": "Acquired Aug 2022 from Waha Technologies Inc. for $16.2M (facility) + $8.9M (~3,400 miners) via subsidiary CSRE Properties Washington, LLC. 36 MW built at acquisition, site scalable to 86 MW; current build-out not separately disclosed in the FY2025 10-K (folded into the GA aggregate of 620 MW / 15 locations). Distinct from Sandersville, GA even though Sandersville sits in Washington County — confirmed as its own city/site via the 10-K's list of GA subsidiaries (CSRE Properties Washington, LLC vs. CSRE Properties Sandersville, LLC).",
     "facilityType": "crypto_mining",
     "mining": {
@@ -11745,9 +11863,16 @@
         "publisher": "WJLA ABC7",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/cloud/article/11430643/cloudhq-unveils-massive-new-manassas-data-center",
+        "label": "CloudHQ Unveils Massive New Manassas Data Center — Data Center Frontier",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-16",
     "notes": "Seven-building campus; 382 MW total planned critical IT load; 96 MW currently available. Coordinates sourced directly from CloudHQ website (38.71955, -77.49819). Connects via Manassas Fiber Highway to CloudHQ's MDC campus.",
     "energy": {
       "source": "grid",
@@ -12666,6 +12791,9 @@
       "state": "TX",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 2000
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -12687,9 +12815,15 @@
         "label": "KERA News: NRG withdraws permit for proposed Tolar gas plant amid community opposition (confirms June 18 2026 withdrawal, campus power plan now undefined)",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.keranews.org/energy-environment/2026-06-25/comanche-circle-paluxy-river-valley-data-center-hill-county-dinosaur-valley-state-park",
+        "label": "KERA News: NRG withdraws permit for proposed Tolar gas plant amid community opposition (confirms June 18 2026 withdrawal, campus power plan now undefined)",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-16",
     "notes": "Near Vistra's Comanche Peak Nuclear Plant. Developer states a 5GW total pipeline across 9 campuses; a later, scaled-back figure puts Comanche Circle plus two smaller Sailfish projects combined at 'up to 3 gigawatts' - given conflicting figures, no single capacityMw is recorded here. Conditional county approval Jan 2026; construction targeted late 2026. No hyperscaler tenant confirmed - speculative developer-led land assembly. Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -12719,6 +12853,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 1200,
       "operational": 2400
     },
     "announcedDate": "2025-09-29",
@@ -12757,9 +12892,16 @@
         "publisher": "Construction Review Online",
         "retrievedAt": "2026-08-04",
         "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/nuclear/vistra-secures-long-term-nuclear-ppa-from-comanche-peak-nuclear-plant/",
+        "label": "Vistra secures long-term nuclear PPA from Comanche Peak nuclear plant",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-04",
+    "lastUpdated": "2026-08-16",
     "notes": "The two-unit Comanche Peak nuclear station near Glen Rose, TX, whose 1,200 MW 20-year PPA to Amazon (announced 2025, customer confirmed Feb 2026) underpins AWS's adjacent 'Project Spectrum' campus — one of a wave of hyperscaler nuclear PPAs alongside Microsoft/Crane and AWS/Susquehanna. Delivery to AWS targets Q4 2027. Operates under subsidiary brand Luminant.",
     "energy": {
       "source": "nuclear",
@@ -13451,9 +13593,16 @@
         "publisher": "Core Scientific (operator site)",
         "retrievedAt": "2026-08-03",
         "kind": "other"
+      },
+      {
+        "url": "https://corescientific.com/high-density-data-centers/denton-texas/",
+        "label": "Denton, TX Data Center | High-Density at Scale",
+        "publisher": "Core Scientific (operator site)",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-03",
+    "lastUpdated": "2026-08-16",
     "investmentUsd": 1200000000,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
@@ -13530,6 +13679,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 65,
       "operational": 104
     },
     "statusHistory": [
@@ -13561,9 +13711,16 @@
         "publisher": "U.S. SEC / Core Scientific",
         "retrievedAt": "2026-07-16",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001839341/000119312526165121/d149019dex992.htm",
+        "label": "Core Scientific, Inc. Form 8-K (FY2026)",
+        "publisher": "U.S. SEC / Core Scientific",
+        "retrievedAt": "2026-08-16",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-16",
+    "lastUpdated": "2026-08-16",
     "notes": "Former American Thread plant at the intersection of Palmer Lane and Airport Road in Marble, Cherokee County; ~70-acre site with a 250,000 sq ft building and 104 MW power capacity. Operating crypto-mining facility now converting to AI/GPU workloads.",
     "landAcres": 70,
     "facilityType": "crypto_mining",
@@ -15213,6 +15370,9 @@
       "state": "NC",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 600
+    },
     "statusHistory": [
       {
         "status": "proposed",
@@ -15234,9 +15394,16 @@
         "publisher": "Charlotte Business Journal (via Yahoo News)",
         "retrievedAt": "2026-08-15",
         "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/matthews-data-center-project-withdrawn-132947026.html",
+        "label": "Matthews data center project withdrawn",
+        "publisher": "Charlotte Business Journal (via Yahoo News)",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-08-16",
     "notes": "Codenamed Project Accelerate; Engineered Land Solutions worked with Crosland Southeast on the filing. Capacity is omitted deliberately: the 'up to 600 MW' figure describes the withdrawn proposal's electricity request, not a built or permitted capacity.",
     "landAcres": 123,
     "community": {
@@ -15602,6 +15769,9 @@
       "state": "CA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 34.5
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -15624,9 +15794,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.csquare.com/data-centers/silicon-valley#santaclara-sfo1",
+        "label": "Csquare facility directory",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Csquare's own Silicon Valley directory confirms SFO1 as an operational facility at 2401 Walsh Avenue, Santa Clara, CA (per third-party listings corroborating address).",
     "energy": {
       "utility": "Silicon Valley Power"
@@ -15648,6 +15825,9 @@
       "postalCode": "95054",
       "state": "CA",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 43.2
     },
     "statusHistory": [],
     "sources": [
@@ -15671,9 +15851,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.csquare.com/data-centers/silicon-valley#santaclara-sfo2",
+        "label": "Csquare facility directory",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Csquare's own directory confirms SFO2 as an operational facility at 4700 Old Ironsides Drive, Santa Clara, CA 95054. Address/details cross-referenced via datacenters.com listings for SFO2.",
     "energy": {
       "utility": "Silicon Valley Power"
@@ -15695,6 +15882,9 @@
       "postalCode": "94086",
       "state": "CA",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 8.6
     },
     "statusHistory": [],
     "sources": [
@@ -15718,9 +15908,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.csquare.com/data-centers/silicon-valley#sunnyvale-sfo3",
+        "label": "Csquare facility directory",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Csquare's own directory confirms SFO3 as an operational facility at 1400 Kifer Rd, Sunnyvale, CA.",
     "energy": {
       "utility": "Pacific Gas & Electric (PG&E)"
@@ -15742,6 +15939,9 @@
       "postalCode": "95054",
       "state": "CA",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 43.1
     },
     "statusHistory": [],
     "sources": [
@@ -15765,9 +15965,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.csquare.com/data-centers/silicon-valley#santaclara-sfo4",
+        "label": "Csquare facility directory",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Csquare's own directory confirms SFO4 as an operational facility at 1500 Space Park Drive, Santa Clara, CA 95054.",
     "energy": {
       "utility": "Silicon Valley Power"
@@ -15854,6 +16061,9 @@
       "state": "IL",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 109
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -15889,9 +16099,16 @@
         "label": "CyrusOne Aurora IL back-up generator schedule (ComEd coordination)",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/aurora-il",
+        "label": "CyrusOne facility directory",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed at 2905 Diehl Road, Aurora, IL via aggregator cross-reference; operator directory page also lists Aurora IL: CHI1-CHI3. AI/HPC (likely): Aurora campus AI-optimized via CyrusOne Intelliscale high-density design.",
     "energy": {
       "source": "grid",
@@ -16248,6 +16465,9 @@
       "state": "VA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 48
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -16270,9 +16490,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/sterling-va-nva1-nva3",
+        "label": "CyrusOne facility directory",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed 14-acre enterprise-class campus.",
     "energy": {
       "utility": "Dominion Energy Virginia"
@@ -16296,6 +16523,9 @@
       "state": "VA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 81
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -16318,9 +16548,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/sterling-va-nva5-nva7",
+        "label": "CyrusOne facility directory",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Part of the NVA5-NVA7 campus per operator directory; distinct building from NVA7.",
     "energy": {
       "utility": "Dominion Energy Virginia"
@@ -16390,6 +16627,9 @@
       "state": "VA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 24
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -16412,9 +16652,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/sterling-virginia-nva8",
+        "label": "CyrusOne facility directory",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed at 45905 Maries Road, Sterling, VA; operator's given candidate URL had a stale slug (404) but the correct directory page confirms the facility.",
     "energy": {
       "utility": "Dominion Energy Virginia"
@@ -16434,6 +16681,9 @@
       "county": "Somerset",
       "state": "NJ",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 30
     },
     "statusHistory": [],
     "sources": [
@@ -16470,9 +16720,16 @@
         "label": "datacenterhawk NYM1 Phase 2 listing",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/somerset-nj",
+        "label": "CyrusOne facility directory",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed via WebSearch listing directly to operator's own Somerset NJ: NYM1 page. AI/HPC (likely): Named as an Intelliscale AI-infrastructure-available site.",
     "energy": {
       "source": "grid",
@@ -16976,6 +17233,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 3.2,
       "operational": 7.2
     },
     "statusHistory": [],
@@ -17000,9 +17258,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-08-02",
         "kind": "other"
+      },
+      {
+        "url": "https://www.databank.com/data-centers/san-diego/12270-world-trade-drive/",
+        "label": "DataBank San Diego (SAN1), 12270 World Trade Drive - facility page",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-16",
     "notes": "Capacity corrected/clarified: DataBank's current live product page states 7.2MW critical IT load / 55,239 IT sq ft (independently corroborated by a DataCenterMap aggregator listing); DataBank's own 2022-2023 expansion press materials instead cite a 7.5MW/60,000 sq ft total-capacity target, which is not a contradiction but an older total-capacity framing rather than the current critical-IT-load figure. aiClassification set to 'likely' on the strength of an 'HPC Capable' designation and '40kW+ Cab Density Air' cooling spec on DataBank's own page, though this is a general multi-tenant colo facility rather than a dedicated AI/GPU campus. Distinct from the already-tracked EdgeConneX SDG01 (5761 Copley Drive, Kearny Mesa) - different operator and neighborhood (this site is in Rancho Bernardo/Carmel Mountain Ranch). Coordinates are an approximate geocode, not a parcel-confirmed point.",
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -17952,6 +18217,9 @@
       "state": "VA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 36.4
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -17974,9 +18242,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/44520-hastings-acc3-digital-realty",
+        "label": "Baxtel facility profile (not on current digitalrealty.com NoVA directory table, corroborated by DCD/Data Center Frontier",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-16",
     "notes": "44520 Hastings, Ashburn VA, part of the legacy DuPont Fabros Ashburn campus acquired by DLR in Sept 2017. 36.4MW critical power capacity. Capacity removed 2026-08-08: the 36.4 MW figure rested solely on a Baxtel listing (an aggregator this project does not treat as a citation). Digital Realty has no ACC3 page — archive.org holds no snapshot of that URL at all — and no other citable source was found.",
     "energy": {
       "utility": "Dominion Energy Virginia"
@@ -20475,6 +20750,9 @@
       "state": "UT",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 7.2
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -20497,9 +20775,16 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/hyperscalers/ebay-utah-data-center-earns-leed-gold",
+        "label": "eBay Utah Data Center Earns LEED Gold",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-08-16",
     "energy": {
       "notes": "Data Center Knowledge reports '7.2 megawatts of capacity in phase 1, with a 30 megawatt substation on site' — the 30 MW is substation capacity for future phases, not IT load, so capacityMw records the 7.2 MW phase-1 figure. Efficiency features reported at opening: 400V power distribution, in-row cooling, hot air containment, and an expected PUE of 1.4. The building is LEED Gold certified."
     },
@@ -20636,6 +20921,9 @@
       "state": "TX",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 384
+    },
     "statusHistory": [
       {
         "status": "under_construction",
@@ -20664,9 +20952,16 @@
         "label": "Texas Department of Licensing and Regulation (TDLR) TABS project registration #TABS2025023484 — \"ECX AUSTIN DFW33220N\", owner DFW33220N LLC (EdgeConneX), address 8001 Wolf Ln Bldg 2 / 6752 FM 535, Cedar Creek, TX 78612",
         "retrievedAt": "2026-07-18",
         "kind": "other"
+      },
+      {
+        "url": "https://bastropcc.com/blog/edgeconnex-data-center-update-may-2026/",
+        "label": "EdgeConneX data center update, May 2026",
+        "publisher": "Bastrop County Chamber",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "4-building campus, approximately 140 acres near Wolf Ln/FM 535.",
     "investmentUsd": 1400000000,
     "landAcres": 140,
@@ -21447,6 +21742,9 @@
       "state": "IL",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 7
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -21469,9 +21767,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://elementcritical.com/data-centers/chicago-one/",
+        "label": "Element Critical facility directory",
+        "publisher": "Element Critical",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed via operator's own facility page. Address 711 N. Edgewood Avenue, Wood Dale, IL. Operator markets '30 years never down' track record. Distinct site from Chicago Two.",
     "energy": {
       "utility": "ComEd"
@@ -22816,6 +23121,9 @@
       "state": "MD",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 0.8
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -22838,9 +23146,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.expedient.com/data-centers/baltimore/",
+        "label": "Expedient official Baltimore data center page",
+        "publisher": "Expedient",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed via official Expedient directory: 11155 Red Run Blvd, Suite 200, Owings Mills, MD 21117. 800kW critical IT load, 22,000 sq ft. Distinct from the Tidepoint facility in Baltimore city.",
     "energy": {
       "utility": "BGE"
@@ -26415,6 +26730,9 @@
       "state": "TX",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 933
+    },
     "poweredBy": "mixed",
     "announcedDate": "2024",
     "statusHistory": [
@@ -26487,9 +26805,16 @@
         "publisher": "The Energy Mag",
         "retrievedAt": "2026-07-31",
         "kind": "press"
+      },
+      {
+        "url": "https://e360.yale.edu/digest/google-natural-gas-data-center",
+        "label": "Google to Use Natural Gas to Power Massive Data Center in Texas",
+        "publisher": "Yale Environment 360",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-16",
     "notes": "Campus name: Goodnight, near the town of Claude, TX (known address: 10001 Lima Rd, Claude, TX 79019). Coordinates approximate (based on dispatch seed; county parcel area). Developed by Crusoe Energy via entity GN DC1, LLC (Delaware LLC, 255 Filmore St., Denver, CO 80206); Google is the hyperscale tenant/customer, confirmed publicly November 2025. Tax abatement agreement was signed with GN DC1, LLC in late 2024 without publicly naming the tenant. Google confirmed the Crusoe partnership but had not signed an offtake agreement for the on-site gas plant as of early 2026; negotiations on power amounts still ongoing per Google spokesperson. Planned IT capacity: Phase 1 described in tax abatement agreement as 'anticipated to consume up to 530 MW,' 4 buildings each with 4 x 25 MW data halls, on approximately 350 acres; Phase 2 (possible additional 3+ buildings) reported at up to ~500 MW additional; combined full build-out reported as 1 GW+ — all capacity figures are 'up to' ceilings from permit and abatement documents, not firm contracted amounts. Project was scaled back from an original 7-building plan (October 2025 local reporting); 4 buildings with construction permits from TDLR as of early 2026; Crusoe described 3-4 buildings as likely; grading on additional parcels suggests total program may reach 5+ buildings. First phase expected online 2026; initial county PILOT payment expected June/July 2026. The $40B Google Texas investment is a statewide commitment through 2027 covering multiple sites (Armstrong County, Haskell County, Ellis County) with no site-specific investment figure disclosed by Google. A $29B campus investment figure appeared in Aterio/Crusoe reporting — this is a projected ceiling, not a firm committed amount; omitted from investmentUsd per data-rigor policy. Distinct from Google's separate Haskell County TX site and Red Oak (Ellis County) TX sites — do not conflate. Building 3 is scheduled for completion 2026-08-01; Building 4 is due March 2027. Nothing at the campus is yet described as operational.",
     "energy": {
       "source": "mixed",
@@ -28041,12 +28366,11 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-16",
     "notes": "Exact site is unknown and undisclosed. Tenaska has optioned over 2,600 acres across Gage, Lancaster, Otoe, and Cass Counties in SE Nebraska since December 2025. Coordinates are approximate centroid of the Otoe/Gage County search area. Reported capacity range is 1,000–3,000 MW depending on phase; 1,000 MW used as minimum. Google has invested $3.5B in Nebraska since 2019 across existing Papillion, Omaha, and Lincoln data centers. Legislative feasibility depends on LB1261; could be operational by 2029 if approved.",
     "energy": {
       "source": "on_site_gas",
-      "onSiteGenerationMw": 2730,
-      "notes": "Tenaska (Omaha-based) to build and operate a privately owned combined-cycle natural gas plant; capacity potentially exceeding twice Nebraska's largest existing plant (1,365 MW Gerald Gentleman Station); carbon capture technology planned; Tallgrass Energy potentially to supply gas and transport captured CO2 (Tallgrass later denied involvement); project contingent on passage of Nebraska LB1261 permitting private generators to interconnect with public utility grids"
+      "notes": "Tenaska (Omaha-based) to build and operate a privately owned combined-cycle natural gas plant; capacity potentially exceeding twice Nebraska's largest existing plant (1,365 MW Gerald Gentleman Station); carbon capture technology planned; Tallgrass Energy potentially to supply gas and transport captured CO2 (Tallgrass later denied involvement); project contingent on passage of Nebraska LB1261 permitting private generators to interconnect with public utility grids On-site generation is not stated in the cited sources. Reporting says the campus could produce more than twice the 1,365 MW produced by Gerald Gentleman Station, implying roughly 2,730 MW — an inference, deliberately not recorded as a structured figure."
     },
     "water": {
       "notes": "Cooling technology not disclosed in public filings. County officials and residents have raised concerns about combined water demand from the proposed data center and its associated natural-gas power plant."
@@ -30361,6 +30685,9 @@
       "state": "SC",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 100
+    },
     "announcedDate": "2022-01-25",
     "statusHistory": [],
     "sources": [
@@ -30384,9 +30711,16 @@
         "publisher": "SEC EDGAR",
         "retrievedAt": "2026-08-05",
         "kind": "filing"
+      },
+      {
+        "url": "https://governor.sc.gov/news/2022-01/greenidge-generation-establishing-operations-spartanburg-county",
+        "label": "Greenidge Generation Establishing Operations in Spartanburg County",
+        "publisher": "Office of SC Governor Henry McMaster",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-16",
     "notes": "Former LSC Communications/RR Donnelley printing plant (175 acres, bought Dec 2021 for $15M); unveiled Jan 2022 as a planned $264M, up-to-100MW buildout. Greenidge built 44 MW of Bitcoin mining, transferred to NYDIG in 2023 as a debt-settlement; per Greenidge's SEC filings the NYDIG hosting arrangement now covers 'substantially all' of Greenidge's mining capacity at the New York facility, not South Carolina. The remaining 152 acres + 60 MW power rights went through a failed Nov 2024 sale to Data Journey LLC (terminated Aug 2025) before Greenidge sold the land outright to a Lightstone Group / Lighthouse Datacenters affiliate on Dec 11, 2025. Status cancelled: Greenidge holds no confirmed ongoing operating interest as of its most recent 10-Q.",
     "energy": {
       "source": "grid",
@@ -31168,6 +31502,9 @@
       "state": "PA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 4500
+    },
     "poweredBy": "on-site natural gas (GE Vernova turbines; 4.5 GW on-site generation; data center IT load not separately disclosed)",
     "announcedDate": "2025-04-02",
     "statusHistory": [
@@ -31247,9 +31584,16 @@
         "publisher": "GE Vernova",
         "retrievedAt": "2026-08-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.alleghenyfront.org/homer-city-pennsylvania-gas-plant-data-center-ai/",
+        "label": "In Western Pennsylvania, a former coal town gets a gas-fired data center — The Allegheny Front",
+        "publisher": "The Allegheny Front",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-16",
     "notes": "EPC contractor: Kiewit.",
     "energy": {
       "source": "on_site_gas",
@@ -34432,6 +34776,9 @@
       "state": "OH",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 3
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -34461,9 +34808,16 @@
         "publisher": "datacenters.com",
         "retrievedAt": "2026-08-02",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/lumen-akron-2",
+        "label": "Lumen Akron 2 data center listing",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-16",
     "notes": "Distinct from lumen-cleveland-1-oh (different city/county). Address and neighborhood (Middlebury/Goodyear Heights) independently confirmed via Signal Akron local journalism and OSM Nominatim geocode, corroborated by three aggregator listings (datacentermap.com, baxtel.com, datacenters.com), which consistently label it 'Akron 2' (legacy Level 3 branding) to distinguish it from a separate, unverified 'Lumen Akron 1' at 520 S. Main St. Building is ~12,000 sqft with ~6,000 sqft raised-floor colocation space; certifications (HIPAA, ISO 27001, PCI DSS, SOC 1/2, SSAE 18) are generic enterprise-colocation marks, not AI/GPU-specific, so no aiClassification is set. No capacity MW disclosed in any source. Akron City Council approved a 2026-07-27 conditional-use review ordinance for new data centers; Signal Akron names this facility explicitly as an existing site unaffected by the ordinance (not retroactive). No operator-primary (assets.lumen.com) page exists for this specific site, unlike Cleveland.",
     "facilityType": "data_center"
   },
@@ -37866,6 +38220,9 @@
       "state": "AZ",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 50
+    },
     "poweredBy": "Eleven Mile Solar Center (300 MW + 300 MW/4hr battery, Pinal County) + West Line Solar (50 MW allocation, Eloy) + Brittlebush Solar (Coolidge) via SRP",
     "announcedDate": "2021",
     "statusHistory": [
@@ -37908,9 +38265,15 @@
         "label": "Arizona Technology Council — Meta expands plans for proposed large-scale Mesa data center",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://media.srpnet.com/meta-teams-up-with-srp-and-rsted-to-support-data-center-with-clean-energy-from-new-solar-and-battery--project/",
+        "label": "SRP - Meta Teams Up with SRP and Ørsted to Support Data Center with Clean Energy",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-16",
     "notes": "Meta data center at 3841 S Ellsworth Rd in the Elliot Road Technology Corridor, Mesa, Maricopa County — land acquired 2021 (shell entity 'Redale LLC'), came online in 2025, and was redesigned for AI workloads during construction (baxtel). Meta states 'more than $1 billion' invested in Arizona. No site-specific IT-load MW is disclosed. Coordinates are an approximate geocode of the disclosed Ellsworth Rd address; a county-parcel pass could upgrade precision to exact.",
     "energy": {
       "source": "solar",
@@ -43250,7 +43613,8 @@
       "precision": "exact"
     },
     "capacityMw": {
-      "planned": 175
+      "planned": 175,
+      "operational": 200
     },
     "statusHistory": [],
     "sources": [
@@ -43274,9 +43638,16 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.novva.com/data-center-facilities/utah/",
+        "label": "Novva Data Centers — Utah Data Center, 100-Acre SLC Colocation Campus",
+        "publisher": "Novva Data Centers",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-08-16",
     "energy": {
       "notes": "Novva's own facility page describes a centralized 200MW on-campus substation with N+1 redundancy serving the four-phase campus, plus a planned 15MW-30MW of on-site solar. The 175MW figure is the campus's stated total data center capacity at four-phase completion; the 200MW is substation capacity, not IT load."
     },
@@ -45335,6 +45706,9 @@
       "state": "VA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 600
+    },
     "statusHistory": [
       {
         "status": "proposed",
@@ -45370,9 +45744,16 @@
         "publisher": "Fauquier.com (Fauquier Times)",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.fauquiernow.com/news/business/fauquier-board-of-supervisors-approves-private-power-plant-for-remington-technology-park-data-center/article_5991291e-ba38-4d44-9aef-acdabd1d3608.html",
+        "label": "Fauquier Board of Supervisors approves private power plant for Remington Technology Park data center (July 10, 2026 vote, 3-1)",
+        "publisher": "FauquierNow",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "Strongest of the Fauquier speculative cluster: approved status (not merely filed/on-hold), specific street address given by the county database. Confidence set to 'confirmed' on that basis. Fauquier planning-database roundup; long-standing (2018-approved) Remington Technology Park — verify against any existing record before elevating.",
     "landAcres": 234,
     "community": {
@@ -46212,6 +46593,9 @@
       "state": "TX",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 4000
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -46240,9 +46624,16 @@
         "label": "Tract Data Center Technology Park — Central Texas Data Center Tracker (Bluebonnet/LCRA/gas pipeline detail)",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/news/500-acre-texas-data-center-project-eyed-by-powerhouse",
+        "label": "500-Acre Texas Data Center Project Eyed by PowerHouse (Baxtel)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-16",
     "notes": "Within the larger Caldwell Valley Technology Park megasite near Austin/San Antonio - a distinct operator/parcel from Tract's own 1,515-acre/2,000MW land holding in the same park (existing tracked entry tract-caldwell-valley-uhland-tx); do not conflate the two. ~700MW figure from a single-source tracker, not independently verified, so omitted from capacityMw. PowerHouse has filed a petition to move the site from Town of Uhland jurisdiction to Caldwell County jurisdiction (lighter TX zoning authority at the county level). Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -47306,6 +47697,9 @@
       "state": "OH",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 250
+    },
     "announcedDate": "2025-10",
     "statusHistory": [
       {
@@ -47353,9 +47747,15 @@
         "label": "WYSO — \"Trenton approves 15-year tax abatement for data center\"",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.journal-news.com/local/what-to-know-about-trenton-s-proposed-data-center-tax-incentives/article_7b381512-adde-58f8-b35b-b43ca25051ef.html",
+        "label": "Journal-News — \"What to know about Trenton's proposed data center tax incentives\"",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "Project Mila in Trenton, Butler County (outside Cincinnati): four 220,000 sq ft single-story buildings (880k sq ft total) plus an on-site substation. Planning approved March 2026; construction from fall 2026. Estimated ~100-200 MW (not officially disclosed — omitted from capacity). Distinct from Prologis's Newnan, GA campus. Coordinates are the Trenton area centroid.",
     "energy": {
       "source": "grid",
@@ -47871,6 +48271,9 @@
       "state": "VA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 55
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -47893,9 +48296,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://q.com/data-centers/ashburn-1/",
+        "label": "QTS facility directory",
+        "publisher": "QTS",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed DC1 at 22271 Broderick Drive, Sterling VA (operational); DC2 at 22280 Randolph Drive under construction as part of same campus.",
     "energy": {
       "utility": "Dominion Energy Virginia"
@@ -47963,6 +48373,9 @@
       "state": "GA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 278
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -47985,9 +48398,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://q.com/data-centers/atlanta/",
+        "label": "QTS facility directory",
+        "publisher": "QTS",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed 4-building mega campus at 1033 Jefferson St NW etc, Atlanta, GA. This is the primary Atlanta 1 campus entry; candidate 1007825570 (Atlanta DC2) is on the same campus, kept as a separate co-located building only because it's independently confirmed as a distinct 72MW building, not because it's a distinct campus.",
     "energy": {
       "utility": "Georgia Power"
@@ -48410,6 +48830,9 @@
       "state": "UT",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 200
+    },
     "poweredBy": "grid (Rocky Mountain Power); water-free cooling",
     "announcedDate": "2023",
     "statusHistory": [
@@ -48475,9 +48898,16 @@
         "publisher": "Utah Business",
         "retrievedAt": "2026-04-20",
         "kind": "press"
+      },
+      {
+        "url": "https://grist.org/business/ai-utah-data-center-boom-fossil-fuels-gas/",
+        "label": "To power Utah's data center boom, companies are turning to fossil fuels — Grist",
+        "publisher": "Grist",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-16",
     "notes": "Groundbreaking was October 2025; the third of three initial buildings topped out (structural completion) on 2026-04-20. Not yet operational; no delivery date confirmed.",
     "energy": {
       "source": "grid",
@@ -48606,6 +49036,9 @@
       "state": "OR",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 20
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -48628,9 +49061,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://q.com/data-centers/hillsboro-1/",
+        "label": "QTS facility directory",
+        "publisher": "QTS",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed at 4951 NE Huffman St, Hillsboro, OR 97124, 25-acre multi-building campus.",
     "energy": {
       "utility": "Portland General Electric (PGE)"
@@ -49321,6 +49761,9 @@
       "state": "CA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 7.5
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -49343,9 +49786,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://q.com/data-centers/santa-clara/",
+        "label": "QTS facility directory",
+        "publisher": "QTS",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed 4-acre multi-building QTS campus at 2805 Mission College Blvd, Santa Clara, CA. Candidate 58708529 is the same campus, ~0.1km away; kept this one, dropped the other as duplicate.",
     "energy": {
       "utility": "Silicon Valley Power"
@@ -53852,6 +54302,7 @@
       "precision": "exact"
     },
     "capacityMw": {
+      "planned": 17,
       "operational": 18
     },
     "statusHistory": [],
@@ -53876,9 +54327,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.stackinfra.com/locations/americas/northern-virginia/nva01/",
+        "label": "STACK Infrastructure facility directory",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed at 22080 Pacific Boulevard, Sterling, Loudoun County — 17-18MW, listed on operator's own NVA01 page (site naming appears to have shortened from NVA01A to NVA01).",
     "energy": {
       "utility": "Dominion Energy Virginia"
@@ -53951,6 +54409,9 @@
       "state": "OR",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 24
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -53973,9 +54434,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.stackinfra.com/locations/americas/portland/por02/",
+        "label": "STACK Infrastructure facility directory",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "One of STACK's 3 confirmed operational Portland-area campuses (POR01/02/03, 250MW total).",
     "energy": {
       "utility": "Portland General Electric (PGE)"
@@ -53997,6 +54465,10 @@
       "postalCode": "97124",
       "state": "OR",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 200,
+      "operational": 72
     },
     "statusHistory": [],
     "sources": [
@@ -54020,9 +54492,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.stackinfra.com/locations/americas/portland/por03/",
+        "label": "STACK Infrastructure facility directory",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Kept as the canonical POR03 entry; three other OSM nodes (1243089554/5/7) are duplicate map nodes for the same campus, dropped below.",
     "energy": {
       "utility": "Portland General Electric (PGE)"
@@ -54221,6 +54700,9 @@
       "state": "CA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 67.2
+    },
     "statusHistory": [
       {
         "status": "proposed",
@@ -54270,9 +54752,16 @@
         "publisher": "OpGov News",
         "retrievedAt": "2026-08-02",
         "kind": "press"
+      },
+      {
+        "url": "https://ceqanet.lci.ca.gov/2025030999",
+        "label": "CEQAnet Mitigated Negative Declaration filing (SCH# 2025030999)",
+        "publisher": "California State Clearinghouse (CEQAnet)",
+        "retrievedAt": "2026-08-16",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-16",
     "notes": "STACK's first tracked East Bay CA site (existing STACK entries stack-svy01-ca/San Jose and stack-svy02-ca/Santa Clara are both South Bay). 300,000 sq ft campus at Production Ave/Investment Blvd: 3-story primary data center building + 1-story secondary building, height 100ft (+8ft variance approved); site plan also shows frontage on Eden Landing Road, treated as the same 11.3-acre parcel, not a separate site. energy.onSiteGenerationMw reflects the CEC SPPE-disclosed backup-generator capacity (28 generators across two yards, docket 23-SPPE-01) - this is NOT a disclosed IT/critical-load figure; no whole-facility IT MW is publicly disclosed anywhere. The 76.6 MW figure supersedes the original CEQA filing's 67.2 MW. Jobs figures (41 permanent, ~380 construction) are single-sourced to local press (Tri City Voice; Hayward Herald ran the same underlying story). Coordinates are a geocoded street-address point, not parcel-confirmed.",
     "energy": {
       "source": "grid",
@@ -54445,9 +54934,16 @@
         "publisher": "KTXS News",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://epoch.ai/publications/openai-stargate-where-the-us-sites-stand",
+        "label": "OpenAI Stargate: where the US sites stand — Epoch AI",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-05",
+    "lastUpdated": "2026-08-16",
     "energy": {
       "source": "mixed",
       "utility": "AEP Texas",
@@ -56388,6 +56884,10 @@
       "state": "NV",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 650,
+      "operational": 130
+    },
     "poweredBy": "Gigawatt Nevada solar+storage (Citadel behind-the-meter, Storey County) + Switch Station 1 & 2 solar via NV Energy renewable tariff",
     "statusHistory": [],
     "sources": [
@@ -56423,9 +56923,15 @@
         "label": "Switch/Capital Dynamics groundbreaking release",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.switch.com/switch-tahoe-reno-data-center-now-open/",
+        "label": "Switch TAHOE RENO Now Open press release (130MW renewable figure for TR1)",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-16",
     "notes": "Citadel Campus, 1 Superloop Circle, McCarran NV 89434, Storey County. Press (PRNewswire/DCD) cites e-commerce/semiconductor + AI/HPC clients at the campus.",
     "energy": {
       "source": "solar",
@@ -56578,6 +57084,9 @@
       "state": "TX",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 185
+    },
     "poweredBy": "ERCOT grid via Oncor; company-wide '100% renewable' pledge with no site-specific PPA found",
     "statusHistory": [],
     "sources": [
@@ -56613,9 +57122,16 @@
         "label": "Switch sustainable data center design page (confirms 179MW renewable claim is Nevada-only, silent on TX)",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://www.switch.com/switch-announces-fifth-prime-expansion-with-development-of-exascale-data-center-campus-in-texas/",
+        "label": "Switch AI/HPC — The Rock: exascale data center campus for hyperscale/high-density",
+        "publisher": "switch.com",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-16",
     "notes": "Land purchase from Dell + rezoning approved per DCD and Round Rock city government release; project is Switch's 5th 'Prime' campus, not yet reported as fully operational. AI/HPC (likely): The Rock: exascale data center campus for hyperscale/high-density.",
     "energy": {
       "source": "grid",
@@ -59153,6 +59669,9 @@
       "state": "NE",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 5.5
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -59161,9 +59680,16 @@
         "publisher": "TierPoint",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.tierpoint.com/data-centers/nebraska/omaha-bellevue/",
+        "label": "TierPoint Omaha - Bellevue Data Center — 1001 North Fort Crook Road, Bellevue NE 68005; '100,000+ total square feet, 21,000+ square feet of raised floor space'; 'Five redundant generators totaling 5.5 MW'",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-16",
     "notes": "Multi-tenant colocation facility at 1001 North Fort Crook Road, Bellevue (Sarpy County): 100,000+ total sq ft with 21,000+ sq ft of raised floor, A-side/B-side power distribution, a 100% uptime SLA, and 10,000 sq ft of business-continuity seating with a 300-seat recovery space. Carrier-class, carrier-neutral, with cloud on-ramps and a 10G wave to five regional TierPoint facilities. Certified SOC 1/2 Type II, SOC 2 + HITRUST, GLBA, HIPAA, PCI-DSS, NIST SP 800-53, ISO 27001, ITAR and Data Privacy Framework registered. capacityMw is deliberately OMITTED: the only power figure the operator publishes is 'five redundant generators totaling 5.5 MW', which is BACKUP generator nameplate, not IT load — recording it as facility capacity would overstate the site. Directory listings associate this address with Cosentry, the regional provider TierPoint acquired; no source fetched this session states that, so it is noted rather than asserted. Coordinates are a street-address approximation. confidence is 'reported' — single source (the operator's own page).",
     "energy": {
       "notes": "Five redundant on-site generators totaling 5.5 MW with a minimum 48 hours of runtime — backup capacity, not IT load."
@@ -59545,6 +60071,9 @@
       "state": "AZ",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 1800
+    },
     "announcedDate": "2025-02",
     "statusHistory": [
       {
@@ -59594,9 +60123,16 @@
         "label": "AZFamily: Developer wants to power the future of AI in Buckeye with new data center",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://www.tract.com/project/buckeye/",
+        "label": "Buckeye — Tract project page",
+        "publisher": "Tract",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-16",
     "notes": "Master-planned data center park on a ~2,069-acre former residential (Cipriani) parcel Tract acquired for ~$136M, south of I-10 in Buckeye; planned for up to ~20M sq ft across as many as 40 data centers at full build-out over ~15 years (~$20B). Coordinates are an approximate town-level geocode (Buckeye, south of I-10), not a parcel-confirmed point.",
     "energy": {
       "source": "grid",
@@ -59908,6 +60444,9 @@
       "state": "VA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 900
+    },
     "announcedDate": "2025-10",
     "statusHistory": [
       {
@@ -59983,9 +60522,16 @@
         "label": "WTVR (CBS 6) — Hanover rejects Mountain Road data center after marathon meeting / vote coverage",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://richmondbizsense.com/2025/10/30/data-center-developer-tract-proposes-mountain-road-tech-park-in-western-hanover-county/",
+        "label": "Data center developer Tract proposes Mountain Road Tech Park in western Hanover County",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-16",
     "notes": "Tract (with Marchetti Properties, via Valco Hanover County 4 LLC) sought to rezone ~427 acres from A1 Agricultural to M1 at 13074 Mountain Road / 12517 Winns Church Road (US Route 33) on the Hanover-Henrico line near the Chickahominy River — five data center buildings, up to three substations, hundreds of MW of demand. Aligned with Hanover's Route 33 Gateway Small Area Plan. Distinct from Tract's Tuckahoe Technology Park in Goochland County. Coordinates are an approximate geocode of the Route 33 / Mountain Road corridor in western Hanover near the Henrico line.",
     "energy": {
       "source": "grid",
@@ -60861,6 +61407,9 @@
       "state": "CA",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 75
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -60883,9 +61432,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://vantage-dc.com/data-center-locations/north-america/santa-clara-ii-california/",
+        "label": "Vantage facility directory",
+        "publisher": "Vantage",
+        "retrievedAt": "2026-08-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-16",
     "notes": "Confirmed on Vantage's official directory. Address 737 Mathew Street, Santa Clara, CA 95051 per datacenters.com/datacentermap cross-check.",
     "energy": {
       "utility": "Silicon Valley Power"
@@ -61438,6 +61994,9 @@
       "state": "NM",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 15
+    },
     "announcedDate": "2018",
     "statusHistory": [],
     "sources": [
@@ -61461,9 +62020,16 @@
         "publisher": "CoinDesk",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.vice.com/en/article/financial-colonialism-a-bitcoin-mine-in-navajo-nation-flares-tensions/",
+        "label": "'Financial Colonialism': A Bitcoin Mine in Navajo Nation Flares Tensions",
+        "publisher": "Vice",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-16",
     "notes": "WestBlock Capital (Calgary, AB) began mining bitcoin near Shiprock, San Juan County, NM in 2018/2019 on Navajo Nation land, drawing from a 7 MW (later 15 MW, expanded by Jan 2022) NTUA substation load that had been sitting unused; NTUA sold the underutilized capacity near-at-cost. Company was acquired by Luxxfolio Holdings Inc. (2021). Framed by Vice/Coindesk (Nov 2021) as 'financial/monetary colonialism' — Navajo community reaction was contested, citing residents without electricity/running water near a mine paying ~$48K tax + ~$60K land-lease revenue over the prior several years. STATUS: per WebSearch-surfaced OTC Markets / Luxxfolio filings (not independently page-verified this session — direct fetch attempts to otcmarkets.com and gem.wiki both failed, timeout/403), WestBlock LLC idled operations around 2022-11-23 and went non-operating by 2022-11-30 following an NTUA access restriction tied to non-payment and a default notice (~$1.155M). Treat the closure date/details as reported-not-confirmed pending a direct read of the primary filing; the site's existence, location, and 2018-2022 operating history ARE independently confirmed via Futurism/Vice/Coindesk.",
     "energy": {
       "source": "grid"
@@ -61592,7 +62158,8 @@
       "precision": "exact"
     },
     "capacityMw": {
-      "planned": 200
+      "planned": 200,
+      "operational": 24
     },
     "poweredBy": "Duke Energy",
     "announcedDate": "2025",
@@ -61645,9 +62212,16 @@
         "publisher": "WhiteFiber, Inc. via PR Newswire",
         "retrievedAt": "2026-08-15",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.whitefiber.com/blog/nc-1-data-center",
+        "label": "Announcing NC-1: New Flagship Data Center in North Carolina",
+        "publisher": "WhiteFiber",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-08-16",
     "notes": "Operator is WhiteFiber (Bit Digital's AI unit); Nscale is the 40 MW anchor tenant (10-year, ~$865M total contract value = revenue, not capex — in notes). ~1M sq ft, up to 150 kW/cabinet, 99 MW secured from Duke Energy, 200 MW eventual site potential (planned figure). $150M WhiteFiber equity. Madison is in Rockingham County, NC. Coordinates are the Madison town centroid. Property acquired for $45M (2025, from Unifi); the total buildout described as 'over $1B' is conditional on reaching 200 MW -> investmentUsd omitted. ~60 permanent jobs (~$67k avg) were pledged (Rockingham County) - a commitment, with the facility still under construction -> jobs honest-zero. Cooling type not publicly disclosed -> water honest-zero.",
     "energy": {
       "source": "grid",
@@ -61847,6 +62421,9 @@
       "state": "VA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 600
+    },
     "poweredBy": "Red Post Energy Group (Maverick Project)",
     "announcedDate": "2025-12",
     "statusHistory": [
@@ -61885,9 +62462,16 @@
         "publisher": "Wise County Economic Development",
         "retrievedAt": "2026-07-13",
         "kind": "other"
+      },
+      {
+        "url": "https://cardinalnews.org/2026/02/25/data-center-complex-with-gas-power-plant-planned-for-wise-county/",
+        "label": "Data center complex with gas power plant planned for Wise County",
+        "publisher": "Cardinal News",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-13",
+    "lastUpdated": "2026-08-16",
     "notes": "Phased technology/data-center hub planned over ~10 years at the Lonesome Pine Regional Business & Technology Park (adjacent to Lonesome Pine Regional Airport) on former mined land in Wise County — a multi-tenant cluster co-located with the existing Mineral Gap data center. Developer Wise Innovation Hub Venture LLC (branded 'OASIS') signed a 2025-12-18 LOI with Red Post Energy for dedicated power; compute capacity and named end-users not yet disclosed, so capacity is omitted.",
     "energy": {
       "source": "other",
@@ -61969,6 +62553,7 @@
       "precision": "exact"
     },
     "capacityMw": {
+      "planned": 1200,
       "operational": 150
     },
     "poweredBy": "grid (Memphis Light Gas & Water)",
@@ -62022,9 +62607,16 @@
         "publisher": "CNBC",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Colossus_(supercomputer)",
+        "label": "Colossus (supercomputer) — Wikipedia",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-16",
     "energy": {
       "source": "mixed",
       "utility": "Memphis Light Gas & Water (MLGW) / TVA",
@@ -62057,6 +62649,9 @@
       "county": "DeSoto",
       "state": "MS",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 2000
     },
     "poweredBy": "xAI (self-generated, behind-the-meter)",
     "announcedDate": "2026-01",
@@ -62111,9 +62706,16 @@
         "label": "Earthjustice: Illegal Pollution from Data Center Power Plants — xAI case page",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://governorreeves.ms.gov/tech-leader-xai-investing-more-than-20-billion-in-southaven/",
+        "label": "Tech leader xAI investing more than $20 billion in Southaven",
+        "publisher": "Office of the Governor, Mississippi",
+        "retrievedAt": "2026-08-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-16",
     "notes": "Address: 2400 Stateline Road, Southaven, MS 38671 (near Tennessee border); coordinates are approximate for that address. The $20B investment figure covers total xAI Mississippi commitments including adjacent power plant site, not only this building. Facility is distinct from the already-tracked Colossus supercomputer clusters in Memphis, TN. Combined with Memphis facilities, xAI aims for nearly 2 GW total compute capacity. Fix: jobs.sourceIndex corrected from 0 to 1; the specific 145-person figure is reported by Mississippi Free Press (source 1), not the governor's press release (source 0) which states only 'hundreds of permanent jobs.'",
     "energy": {
       "source": "on_site_gas",
