@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { getAllFacilities, getOperators } from "@/lib/data";
 import {
-  buildSearchIndex,
   searchCommands,
   facilityToSearchEntry,
   mergeFacilityResults,
   type SearchEntry,
   type SearchResultGroup,
 } from "@/lib/search";
+import { buildSearchIndex } from "@/lib/search-index";
 import type { Facility } from "@/lib/schema";
 
 describe("buildSearchIndex", () => {

@@ -105,12 +105,21 @@ describe("HeroGlobe", () => {
 });
 
 describe("HeroGlobe dynamic wrapper", () => {
-  it("renders the animated survey graticule as the parchment placeholder before the client-only globe hydrates", () => {
+  it("renders the animated survey graticule as the placeholder on narrow (sub-640px) viewports, and never mounts the real globe", () => {
+    // DEFAULT_MATCH_MEDIA returns matches: false for every query, including
+    // "(min-width: 640px)" — simulating a phone with no sm+ match, so the
+    // mobile gate in hero-globe-dynamic.tsx never allows the dynamic import.
     const { container } = render(<HeroGlobeDynamic points={SAMPLE_POINTS} />);
     expect(container.querySelector(".graticule-survey")).toBeInTheDocument();
+    expect(screen.queryByTestId("mock-map")).not.toBeInTheDocument();
   });
 
-  it("swaps in the real globe once the dynamic import resolves", async () => {
+  it("swaps in the real globe once the dynamic import resolves on sm+ viewports", async () => {
+    window.matchMedia = ((query: string) => ({
+      ...DEFAULT_MATCH_MEDIA(query),
+      matches: query.includes("min-width: 640px"),
+    })) as unknown as typeof window.matchMedia;
+
     render(<HeroGlobeDynamic points={SAMPLE_POINTS} />);
     await waitFor(() =>
       expect(screen.getByTestId("mock-map")).toBeInTheDocument()

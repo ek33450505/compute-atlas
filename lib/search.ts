@@ -1,6 +1,5 @@
 import Fuse from "fuse.js";
-import { loadFacilitiesForSearch, operatorSlug } from "@/lib/data";
-import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
+import { stateNameFromCode } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 
 /** The kind of thing a search result points to. */
@@ -40,10 +39,6 @@ const DEFAULT_LIMITS: Record<SearchEntryType, number> = {
   state: 5,
 };
 
-function pluralize(n: number, singular: string, plural: string): string {
-  return n === 1 ? singular : plural;
-}
-
 /** Builds one facility SearchEntry. Shared by buildSearchIndex (the Fuse
  * index) and the live DB-search merge path so both produce identical entry
  * shapes. Pure — depends only on stateNameFromCode. */
@@ -69,61 +64,6 @@ export function facilityToSearchEntry(f: Facility): SearchEntry {
     href: `/facilities/${f.id}`,
     keywords,
   };
-}
-
-/**
- * Builds the data-backed search index: one entry per facility, operator, and
- * state. Does NOT include "page" entries — those are UI config supplied by
- * the command palette component, not data.
- */
-export async function buildSearchIndex(): Promise<SearchEntry[]> {
-  const facilities = await loadFacilitiesForSearch();
-  const entries: SearchEntry[] = [];
-
-  // Facilities — one entry each.
-  for (const f of facilities) {
-    entries.push(facilityToSearchEntry(f));
-  }
-
-  // Operators — count facilities per operator in one pass, and derive the
-  // unique operator name list from the same `facilities` read (avoids a
-  // second loadFacilities-family read that would re-pin the ISR floor).
-  const operatorCounts = new Map<string, number>();
-  for (const f of facilities) {
-    operatorCounts.set(f.operator, (operatorCounts.get(f.operator) ?? 0) + 1);
-  }
-  const operatorNames = [...new Set(facilities.map((f) => f.operator))].sort();
-  for (const name of operatorNames) {
-    const n = operatorCounts.get(name) ?? 0;
-    entries.push({
-      type: "operator",
-      label: name,
-      sublabel: `${n} ${pluralize(n, "facility", "facilities")}`,
-      href: `/operators/${operatorSlug(name)}`,
-      keywords: name.toLowerCase(),
-    });
-  }
-
-  // States — derive unique codes from facilities, skip any without a slug.
-  const stateCounts = new Map<string, number>();
-  for (const f of facilities) {
-    const code = f.location.state;
-    stateCounts.set(code, (stateCounts.get(code) ?? 0) + 1);
-  }
-  for (const [code, n] of stateCounts) {
-    const slug = stateSlugFromCode(code);
-    const stateName = stateNameFromCode(code);
-    if (!slug || !stateName) continue;
-    entries.push({
-      type: "state",
-      label: stateName,
-      sublabel: `${n} ${pluralize(n, "facility", "facilities")}`,
-      href: `/states/${slug}`,
-      keywords: `${stateName} ${code}`.toLowerCase(),
-    });
-  }
-
-  return entries;
 }
 
 /**

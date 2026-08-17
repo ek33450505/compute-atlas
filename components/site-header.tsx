@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Code2 } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
-import { buildSearchIndex } from "@/lib/search";
+import { buildSearchIndex } from "@/lib/search-index";
 import { Wordmark } from "@/components/wordmark";
 import { PrimaryNav } from "@/components/primary-nav";
 import { MobileNav } from "@/components/mobile-nav";

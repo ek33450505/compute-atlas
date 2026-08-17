@@ -271,6 +271,26 @@
     margin-top: 0.02em;
     color: var(--primary); /* sage versal — 6.67:1 on parchment, AA-clear */
   }
+  /* Plate reveal — sections settle in as they enter, like plates laid into a
+     bound atlas. Progressive enhancement ONLY: Firefox has no stable
+     scroll-driven-animation support (behind a pref, Aug 2026), Safari only
+     from 26. Default (unanimated) state IS the settled end state, so
+     non-supporting browsers and reduced-motion users see the finished page
+     with nothing missing. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .plate-reveal {
+        animation: plate-settle linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 45%;
+        animation-duration: 1ms; /* Firefox requires non-zero duration for SDA */
+      }
+    }
+  }
+  @keyframes plate-settle {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 }
 
 /* ── MapLibre chrome — parchment/ink theme (Phase 1c) ──────────────────────────
