@@ -68,8 +68,16 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
   // sharing open-state through context would mean lifting it into the root
   // layout and adding a client boundary there just to bridge two otherwise
   // unrelated components.
+  //
+  // Resets `query` as well as opening: `query` is otherwise only cleared in
+  // `go()` (on selection), so dismissing with Escape or a backdrop click
+  // leaves the previous search in state. Without the reset, ⌘K → type
+  // "solar" → Escape → click the hero search reopens showing stale results.
+  // The hero affordance is presented as a fresh starting point, so it should
+  // open a blank search, not resume an abandoned one.
   useEffect(() => {
     function handleOpenSearch() {
+      setQuery("");
       setOpen(true);
     }
     window.addEventListener("compute-atlas:open-search", handleOpenSearch);

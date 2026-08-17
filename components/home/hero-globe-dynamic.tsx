@@ -34,13 +34,20 @@ import type { HeroPoint } from "@/components/home/hero-globe";
 
 const HERO_DEFAULT_HEIGHT_CLASS = "h-[60vh] min-h-[420px]";
 
-// Shorter static plate for phones (`!allowGlobe`) — exactly 2/3 of the
-// desktop default in both dimensions. The decorative graticule doesn't need
-// a full 60vh to read as a grid, and the hero now stacks a search bar and a
-// CTA row below the subhead, so a shorter decorative band leaves more of a
-// short mobile viewport for that real, interactive content instead of a
-// dead zone.
-const HERO_MOBILE_HEIGHT_CLASS = "h-[40vh] min-h-[280px]";
+// Static plate rendered while `allowGlobe` is false — 2/3 of the desktop
+// default on phones, where the graticule doesn't need a full 60vh to read as
+// a grid and the hero now stacks a search bar and CTA row that deserve the
+// space instead.
+//
+// The `sm:` half is NOT cosmetic and must not be dropped: `allowGlobe` starts
+// false on EVERY viewport, so desktop first-paints this plate too, before the
+// post-paint effect confirms sm+ and swaps in HERO_DEFAULT_HEIGHT_CLASS. With
+// a phone-only height here, every desktop load showed a visible 40vh→60vh pop
+// in the graticule band. Matching the desktop height at sm+ makes that swap
+// height-stable, so the only thing that changes is the graticule becoming the
+// globe.
+const HERO_MOBILE_HEIGHT_CLASS =
+  "h-[40vh] min-h-[280px] sm:h-[60vh] sm:min-h-[420px]";
 
 interface HeroGlobeProps {
   points: HeroPoint[];

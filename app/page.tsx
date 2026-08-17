@@ -131,6 +131,19 @@ export default async function HomePage() {
          * the scrim to cover them too was measured at 70%/95% and buried
          * everything except the Gulf, which defeats the point of plotting
          * 1,034 sites behind the cartouche.
+         *
+         * Measured (Playwright, against the live DOM) — subhead bottom as a
+         * share of this box: desktop 1280px = 52.7%, inside the 58% band.
+         * Phones measure 71%, i.e. past it — but that is NOT a legibility bug
+         * today, because below `sm` the globe never mounts at all
+         * (hero-globe-dynamic.tsx) and the static plate it is replaced by
+         * ends around 51%, so the lower text sits on bare parchment with
+         * nothing behind it to compete with.
+         *
+         * ⚠️ That makes these stops COUPLED to the mobile globe gate: if the
+         * globe is ever allowed to render below `sm`, the bottom ~13% of the
+         * subhead lands over live map tiles and this needs a responsive
+         * near-opaque stop (roughly `via-76% sm:via-58%`).
          */}
         <div
           aria-hidden="true"
@@ -168,8 +181,13 @@ export default async function HomePage() {
               a 10% sage wash on parchment reads as a disabled/ghost control,
               which is not what the single most important action on the page
               should look like. primary-foreground #F5F1E6 on primary
-              #3F5B43 computes to 6.68:1 — AA for body text, AAA at this
-              size — matching the ratio already recorded in globals.css. */}
+              #3F5B43 computes to 6.672:1 — comfortably past this repo's
+              4.5:1 bar, matching the ratio already recorded in globals.css.
+              Note this grades as NORMAL text, not large: the label is
+              text-sm (14px) at font-semibold (600), and WCAG's large-text
+              threshold needs >=18.66px, or >=14px AND >=700 weight. So this
+              is AA, not AAA — don't reuse the pair somewhere AAA is
+              required. */}
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="/map"

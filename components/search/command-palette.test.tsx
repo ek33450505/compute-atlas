@@ -148,6 +148,39 @@ describe("CommandPalette — global shortcut", () => {
   });
 });
 
+// The homepage hero's search affordance (components/home/hero-search.tsx)
+// dispatches this event instead of sharing state — the hero and the palette
+// live in different subtrees. hero-search.test.tsx covers the dispatch side;
+// these cover the receiving side, so the contract is tested at both ends
+// rather than only where it is emitted.
+describe("CommandPalette — compute-atlas:open-search event", () => {
+  it("opens the palette when the hero dispatches the open-search event", async () => {
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
+
+    fireEvent(window, new CustomEvent("compute-atlas:open-search"));
+
+    expect(await screen.findByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("opens with a cleared query rather than resuming an abandoned search", async () => {
+    const user = userEvent.setup();
+    render(<CommandPalette index={searchIndex} navLinks={NAV_LINKS} />);
+
+    // Open via ⌘K, type, then dismiss with Escape — which does NOT clear the
+    // query on its own.
+    fireEvent.keyDown(window, { key: "k", metaKey: true });
+    const input = await screen.findByRole("combobox");
+    await user.type(input, "solar");
+    expect(input).toHaveValue("solar");
+    await user.keyboard("{Escape}");
+
+    // Reopening from the hero must present a blank search, not "solar".
+    fireEvent(window, new CustomEvent("compute-atlas:open-search"));
+
+    expect(await screen.findByRole("combobox")).toHaveValue("");
+  });
+});
+
 describe("CommandPalette — empty-query quick nav", () => {
   it("shows only the Pages group before typing, no data results", async () => {
     const user = userEvent.setup();
