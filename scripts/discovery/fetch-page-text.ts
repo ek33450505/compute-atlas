@@ -151,12 +151,13 @@ async function readBodyWithCap(res: Response, maxBytes: number): Promise<string 
 
 // --- HTML -> plain text (dependency-free) ----------------------------------
 
-// `<\/\1\s*>` not `<\/\1>`: HTML permits whitespace before an end tag's closing
-// bracket, so `</script >` is valid and a strict `</script>` misses it — the
+// `<\/\1\b[^>]*>` not `<\/\1>`: HTML parsers tolerate whitespace AND stray junk
+// inside an end tag, so `</script >` and even `</script\t\n bar>` are treated as
+// end tags while a strict `</script>` misses them — the
 // script body then survives into the "plain text" and is fed to the model as if
 // it were prose. Flagged by CodeQL (js/bad-tag-filter) on the bench's copy of
 // this regex, PR #158; fixed in both so the two stay in step.
-const SCRIPT_OR_STYLE_RE = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi;
+const SCRIPT_OR_STYLE_RE = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\b[^>]*>/gi;
 const TAG_RE = /<[^>]+>/g;
 const WHITESPACE_RE = /\s+/g;
 

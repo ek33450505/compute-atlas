@@ -64,6 +64,10 @@ describe("htmlToText", () => {
     expect(htmlToText("<script>track('x');</script ><p>hello</p>")).toBe("hello");
     expect(htmlToText("<style>.a{color:red}</style\t>\n<p>hello</p>")).toBe("hello");
     expect(htmlToText("<p>hello</p><script>secret()</script\n>")).toBe("hello");
+    // HTML parsers also tolerate stray junk inside an end tag, not just
+    // whitespace — `</script\t\n bar>` still closes the element. This is the
+    // exact spelling CodeQL rejected a whitespace-only `\s*` fix over.
+    expect(htmlToText("<script>secret()</script\t\n bar><p>hello</p>")).toBe("hello");
   });
 
   it("strips remaining tags", () => {

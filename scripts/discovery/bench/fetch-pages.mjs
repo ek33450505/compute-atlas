@@ -99,12 +99,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         if (!r.ok) { console.log(`  ${String(r.status).padStart(3)} skip  ${t.id}`); continue; }
         if (/pdf/i.test(r.headers.get("content-type") || "")) { console.log(`  pdf skip ${t.id}`); continue; }
         const html = await r.text();
-        // `\s*>` not `>`: HTML permits whitespace before the closing bracket, so
-        // `</script >` is a valid end tag. Without it, script contents survive the
+        // `<\/script\b[^>]*>` not `<\/script>`: HTML parsers tolerate whitespace AND
+        // stray junk inside an end tag (`</script >`, `</script\t\n bar>`). Without it, script contents survive the
         // strip and land in the cached page text as if they were prose (CodeQL
         // js/bad-tag-filter, flagged on PR #158). Mirrors SCRIPT_OR_STYLE_RE in
         // scripts/discovery/fetch-page-text.ts — keep the two in step.
-        const full = html.replace(/<script[\s\S]*?<\/script\s*>/gi, " ").replace(/<style[\s\S]*?<\/style\s*>/gi, " ")
+        const full = html.replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, " ").replace(/<style\b[^>]*>[\s\S]*?<\/style\b[^>]*>/gi, " ")
           .replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
         if (full.length < 400) { console.log(`  thin skip ${t.id} (${full.length}ch)`); continue; }
         const w = windowText(full, t.name, t.city);
