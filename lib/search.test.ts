@@ -7,39 +7,85 @@ import {
   type SearchEntry,
   type SearchResultGroup,
 } from "@/lib/search";
-import { buildSearchIndex } from "@/lib/search-index";
+import { buildNavSearchIndex } from "@/lib/search-index";
+import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 
-describe("buildSearchIndex", () => {
-  let index: SearchEntry[];
+// `buildNavSearchIndex` is the only index builder — the facility-inclusive
+// `buildSearchIndex` was deleted once `/api/search` became the sole source of
+// facility results (see the lib/search-index.ts header). The operator/state/
+// pluralization assertions it used to carry live here; the per-facility entry
+// shape it also covered is asserted directly against `facilityToSearchEntry`
+// further down, which is what the live search path actually calls.
+describe("buildNavSearchIndex", () => {
+  let navIndex: SearchEntry[];
 
   beforeAll(async () => {
-    index = await buildSearchIndex();
+    navIndex = await buildNavSearchIndex();
   });
 
-  it("includes exactly one entry per facility", async () => {
-    const facilityEntries = index.filter((e) => e.type === "facility");
-    expect(facilityEntries.length).toBe((await getAllFacilities()).length);
+  it("contains no facility entries — those come from /api/search", () => {
+    expect(navIndex.some((e) => e.type === "facility")).toBe(false);
   });
 
   it("includes exactly one entry per operator", async () => {
-    const operatorEntries = index.filter((e) => e.type === "operator");
+    const operatorEntries = navIndex.filter((e) => e.type === "operator");
     expect(operatorEntries.length).toBe((await getOperators()).length);
   });
 
   it("every entry has a non-empty label and an href starting with /", () => {
-    for (const entry of index) {
+    expect(navIndex.length).toBeGreaterThan(0);
+    for (const entry of navIndex) {
       expect(entry.label.length).toBeGreaterThan(0);
       expect(entry.href.startsWith("/")).toBe(true);
     }
   });
 
   it("every state entry href is /states/<non-empty-slug>", () => {
-    const stateEntries = index.filter((e) => e.type === "state");
+    const stateEntries = navIndex.filter((e) => e.type === "state");
     expect(stateEntries.length).toBeGreaterThan(0);
     for (const entry of stateEntries) {
       expect(entry.href).toMatch(/^\/states\/.+$/);
     }
+  });
+
+  it("counts facilities per operator and pluralizes the sublabel", () => {
+    const operatorEntries = navIndex.filter((e) => e.type === "operator");
+    for (const entry of operatorEntries) {
+      expect(entry.sublabel).toMatch(/^\d+ (facility|facilities)$/);
+    }
+    // "1 facility" singular vs "N facilities" plural — assert both forms are
+    // produced correctly rather than only that the pattern matches.
+    const singulars = operatorEntries.filter((e) => e.sublabel?.startsWith("1 "));
+    for (const entry of singulars) {
+      expect(entry.sublabel).toBe("1 facility");
+    }
+    const plurals = operatorEntries.filter((e) => e.sublabel && !e.sublabel.startsWith("1 "));
+    expect(plurals.length).toBeGreaterThan(0);
+    for (const entry of plurals) {
+      expect(entry.sublabel).toMatch(/ facilities$/);
+    }
+  });
+
+  it("ships exactly one entry per operator plus one per mapped state — the payload win", async () => {
+    // The point of the nav index: what ships in every route's RSC payload is
+    // bounded by operators + states, not by dataset size. Asserted as an
+    // exact identity rather than the previous ratio (`< facilityCount / 2`),
+    // which had only ~23% headroom (396 vs 517 measured 2026-08-17) against an
+    // operator count that grows with every data wave — a wave heavy in
+    // single-facility operators could have redded it with nothing regressed.
+    const facilities = await getAllFacilities();
+    const operatorCount = new Set(facilities.map((f) => f.operator)).size;
+    // Mirrors the builder's skip: a state code with no slug/name yields no entry.
+    const stateCount = new Set(
+      facilities
+        .map((f) => f.location.state)
+        .filter((code) => stateSlugFromCode(code) && stateNameFromCode(code))
+    ).size;
+
+    expect(navIndex.length).toBe(operatorCount + stateCount);
+    // The invariant the ratio was reaching for, stated without a magic factor.
+    expect(navIndex.length).toBeLessThan(facilities.length);
   });
 });
 
@@ -57,7 +103,7 @@ describe("searchCommands — empty query (quick nav)", () => {
   });
 
   it("returns [] for a data-only index (no page entries)", async () => {
-    const dataOnly = await buildSearchIndex();
+    const dataOnly = await buildNavSearchIndex();
     const groups = searchCommands(dataOnly, "");
     expect(groups).toEqual([]);
   });
@@ -74,8 +120,14 @@ describe("searchCommands — ranked search", () => {
   let knownFacility: Facility;
 
   beforeAll(async () => {
-    index = await buildSearchIndex();
-    knownFacility = (await getAllFacilities())[0];
+    // `searchCommands` is a pure function over whatever entries it is handed,
+    // so the mixed index is composed here rather than by a builder: in
+    // production the palette merges nav entries (prop) with facility entries
+    // mapped from /api/search through `facilityToSearchEntry` — this is that
+    // same combination.
+    const facilities = await getAllFacilities();
+    index = [...(await buildNavSearchIndex()), ...facilities.map(facilityToSearchEntry)];
+    knownFacility = facilities[0];
   });
 
   it("a facility-name substring surfaces a group whose items include that facility", () => {

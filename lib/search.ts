@@ -39,9 +39,9 @@ const DEFAULT_LIMITS: Record<SearchEntryType, number> = {
   state: 5,
 };
 
-/** Builds one facility SearchEntry. Shared by buildSearchIndex (the Fuse
- * index) and the live DB-search merge path so both produce identical entry
- * shapes. Pure — depends only on stateNameFromCode. */
+/** Builds one facility SearchEntry. The single place a Facility becomes a
+ * palette entry — used by the live /api/search merge path in
+ * command-palette.tsx. Pure — depends only on stateNameFromCode. */
 export function facilityToSearchEntry(f: Facility): SearchEntry {
   const stateName = stateNameFromCode(f.location.state) ?? f.location.state;
   const sublabel = [f.location.city, stateName].filter(Boolean).join(", ");

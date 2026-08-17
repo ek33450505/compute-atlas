@@ -34,6 +34,8 @@
  *   public/data/groundwater-decline.geojson (WRI Aqueduct groundwater table decline, US-clipped)
  *   public/data/aquifers.geojson            (USGS Principal Aquifers, US-clipped)
  *   public/data/map-layers.json             (attribution + asOf manifest)
+ *   public/data/hero-points.json            (homepage hero globe point set — see
+ *                                             build-hero-points.mjs; local, no network)
  *   data/siting-context.json                (per-facility nearest-water/-transmission +
  *                                             waterStress/groundwaterDecline/aquifer stats)
  *
@@ -56,6 +58,8 @@ import bboxClip from '@turf/bbox-clip';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import { lineString as turfLineString, point as turfPoint } from '@turf/helpers';
+
+import { buildHeroPoints } from './build-hero-points.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
@@ -956,6 +960,11 @@ async function main() {
   };
   writeFileSync(MANIFEST_OUT, JSON.stringify(manifest, null, 2), 'utf8');
 
+  // Homepage hero globe point set. Pure local transform of data/facilities.json
+  // (no network), so it runs under --skip-nhd too — new facilities must never
+  // be missing from the hero just because the slow NHD pass was skipped.
+  const heroPointsResult = buildHeroPoints();
+
   console.log('\n--- Build Summary ---');
   if (!skipNHD) {
     console.log(`water.geojson:   ${(waterResult.waterSize / 1024).toFixed(0)} KB (tolerance ${waterResult.waterTolerance})`);
@@ -969,6 +978,7 @@ async function main() {
   console.log(`aquifers.geojson:            ${(aquifersResult.aquifersSize / 1024).toFixed(0)} KB (tolerance ${aquifersResult.aquifersTolerance})`);
   console.log(`map-layers.json: ${MANIFEST_OUT}`);
   console.log(`siting-context.json: ${SITING_CONTEXT_OUT} (${Object.keys(sitingContext).length} entries)`);
+  console.log(`hero-points.json: ${heroPointsResult.outPath} (${heroPointsResult.count} points, ${(heroPointsResult.bytes / 1024).toFixed(0)} KB)`);
   console.log('\nDone.');
 }
 
