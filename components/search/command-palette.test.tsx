@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CommandPalette } from "./command-palette";
 import { getAllFacilities } from "@/lib/data";
-import { buildSearchIndex } from "@/lib/search";
+import { buildSearchIndex } from "@/lib/search-index";
 import type { SearchEntry } from "@/lib/search";
 import type { Facility } from "@/lib/schema";
 

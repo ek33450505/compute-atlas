@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { ArrowRight, Globe } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
 import { datasetJsonLdString } from "@/lib/seo";
@@ -15,6 +16,7 @@ import {
 } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
+import { HeroSearch } from "@/components/home/hero-search";
 import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
@@ -96,7 +98,13 @@ export default async function HomePage() {
       {/* ------------------------------------------------------------------ */}
       {/* Hero                                                                */}
       {/* ------------------------------------------------------------------ */}
-      <div className="relative mb-10 min-h-[60vh] overflow-hidden">
+      {/* min-height is responsive: on phones the globe is replaced by a
+          shorter static plate (h-[40vh], see hero-globe-dynamic.tsx), so
+          reserving a full 60vh here would hand that saving straight back as
+          dead space above the fold. Below sm the box floors just under the
+          plate and otherwise sizes to the real content — overline, H1,
+          subhead, search, CTAs. sm+ is unchanged. */}
+      <div className="relative mb-10 min-h-[46vh] sm:min-h-[60vh] overflow-hidden">
         {/*
          * Living globe hero — every tracked facility plotted on a
          * globe-projection basemap, drawn in west→east on load. Purely
@@ -113,15 +121,20 @@ export default async function HomePage() {
         {/*
          * Parchment scrim so the cartouche stays legible over the map.
          * Scoped to the text region, not a full-hero fade: near-opaque
-         * (≥92%) through 50% of the hero's height — generous headroom for
-         * the overline/H1/subhead even when the subhead wraps to several
-         * lines on narrow viewports — then fades to fully transparent by
-         * 85%, so the globe still reads clearly in the lower part of the
-         * (now taller) hero.
+         * (≥92%) through 58% of the hero's height — enough for the overline,
+         * H1 and subhead even when the subhead wraps on narrow viewports —
+         * then fully transparent by 85%.
+         *
+         * The stops are set by the BARE TEXT only. The search field and the
+         * CTA below it paint their own opaque backgrounds (bg-card and solid
+         * bg-primary), so they are legible over the map without help; sizing
+         * the scrim to cover them too was measured at 70%/95% and buried
+         * everything except the Gulf, which defeats the point of plotting
+         * 1,034 sites behind the cartouche.
          */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background from-0% via-background/92 via-50% to-transparent to-85%"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background from-0% via-background/92 via-58% to-transparent to-85%"
         />
 
         <div className="relative z-10 space-y-4 pt-8 pb-10">
@@ -140,6 +153,36 @@ export default async function HomePage() {
           <p className="text-base text-foreground/85 leading-relaxed max-w-2xl">
             Public data on data centers is everywhere and nowhere — split across hundreds of local permits, tax abatements, water filings, and interconnection queues. Compute Atlas unifies it into a single open, source-cited map. Community-built, fully transparent, and continuously updated.
           </p>
+
+          {/* Gazetteer search — the first next step for a first-time
+              visitor; opens the same ⌘K command palette rendered in the
+              header (see components/search/command-palette.tsx). */}
+          <HeroSearch facilityCount={count} className="max-w-2xl" />
+
+          {/* Primary CTA — the accessible next step this hero's own comment
+              above already claimed existed. Deliberately the ONLY button
+              here: a second "browse all sites" link duplicated the header's
+              Table nav, and competing CTAs blunt the primary one.
+
+              Solid --primary (not the bg-primary/10 tint it started as):
+              a 10% sage wash on parchment reads as a disabled/ghost control,
+              which is not what the single most important action on the page
+              should look like. primary-foreground #F5F1E6 on primary
+              #3F5B43 computes to 6.68:1 — AA for body text, AAA at this
+              size — matching the ratio already recorded in globals.css. */}
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              href="/map"
+              className="group inline-flex h-11 items-center gap-2.5 rounded-sm border border-primary bg-primary px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary-foreground shadow-sm transition-colors motion-reduce:transition-none hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <Globe aria-hidden="true" className="size-4 shrink-0" />
+              Explore the map
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+              />
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -148,7 +191,7 @@ export default async function HomePage() {
       {/* unit on the plain parchment page background — reads clearly as     */}
       {/* "below the hero," not "in the map."                                */}
       {/* ------------------------------------------------------------------ */}
-      <div className="border-t border-border pt-10">
+      <div className="border-t border-border pt-10 plate-reveal">
         {/* Survey ledger + pipeline-scale signature */}
         <SurveyLedger
           count={count}
@@ -180,7 +223,7 @@ export default async function HomePage() {
       {/* ------------------------------------------------------------------ */}
       {/* Notable sites                                                       */}
       {/* ------------------------------------------------------------------ */}
-      <div>
+      <div className="plate-reveal">
         <h2 className="font-display text-2xl text-foreground mb-5">
           Notable sites
         </h2>
@@ -245,14 +288,14 @@ export default async function HomePage() {
           opposed: communityCounts.opposed ?? 0,
           contested: communityCounts.contested ?? 0,
         }}
-        className="mt-12 border-t border-border pt-10"
+        className="mt-12 border-t border-border pt-10 plate-reveal"
       />
 
       {/* A living, open record — provenance, contribute, recent activity */}
       <OpenRecord
         sources={sourcesCited}
         recentActivity={recentActivity}
-        className="mt-12 border-t border-border pt-10"
+        className="mt-12 border-t border-border pt-10 plate-reveal"
       />
     </div>
   );
