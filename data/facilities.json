@@ -667,7 +667,7 @@
     "id": "air-products-cetronia-road-upper-macungie-pa",
     "name": "Cetronia Road Data Center (former Air Products site)",
     "operator": "Air Products",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 40.5510536,
@@ -684,6 +684,12 @@
         "date": "2025-11",
         "note": "Air Products proposed a 2.6M sq ft, three-building data center campus on its former HQ site along Hamilton Blvd and Cetronia Road.",
         "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-08-17",
+        "note": "Project ended. The Upper Macungie Township Zoning Hearing Board rejected Air Products' request to establish a data center on the 194-acre former headquarters property in a decision issued July 2026 (after a May 27, 2026 hearing). Air Products let the August 5, 2026 appeal deadline pass without appealing; spokesman Art George confirmed 'Air Products has decided not to pursue an appeal of the Upper Macungie Township Zoning Board decision.' No decision has been made on future ownership or use of the property.",
+        "sourceIndex": 4
       }
     ],
     "sources": [
@@ -714,9 +720,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.lehighvalleypublicmedia.org/news/all/air-products-abandons-plan-for-data-center-at-former-upper-macungie-headquarters/",
+        "label": "Air Products abandons plan for data center at former Upper Macungie headquarters",
+        "publisher": "Lehigh Valley Public Media",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-17",
     "notes": "194-acre, ~2.6 million sq ft campus of three buildings (435,600 sq ft to 1.23M sq ft) on the former Air Products headquarters site at 7201 Hamilton Blvd, Upper Macungie Township.",
     "energy": {
       "utility": "PPL Electric"
@@ -1194,6 +1207,90 @@
     "aiClassification": "likely"
   },
   {
+    "id": "aligned-ord-02-northlake-il",
+    "name": "Aligned ORD-02",
+    "operator": "Aligned Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.9169,
+      "lon": -87.8956,
+      "city": "Northlake",
+      "county": "Cook",
+      "street": "501 Northwest Ave",
+      "postalCode": "60164",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-17",
+        "note": "Listed as an operating campus on Aligned's Chicago page; described as the first facility achieving OCP Ready for Hyperscale",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://aligneddc.com/chicago/",
+        "label": "Aligned Data Centers — Chicago (ORD) campuses",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Second Aligned building on the Northlake campus, adjacent to ORD-01 at 505 Northwest Ave. Tier III design, 100% uptime SLA. Operator page does not publish MW.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Delta3 air cooling arrays with a closed-loop chilled water system; Aligned states near-zero WUE and secondary loops supporting DeltaFlow liquid cooling."
+    },
+    "landAcres": 18.5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "aligned-ord-03-elk-grove-village-il",
+    "name": "Aligned ORD-03",
+    "operator": "Aligned Data Centers",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0039,
+      "lon": -87.9703,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "street": "50 NW Point Blvd.",
+      "postalCode": "60007",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-08-17",
+        "note": "Listed on Aligned's Chicago campus page with specifications but no in-service date",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://aligneddc.com/chicago/",
+        "label": "Aligned Data Centers — Chicago (ORD) campuses",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Aligned's third Chicago campus and its first in Elk Grove Village (36 acres, Tier III). STATUS IS PROVISIONAL: the operator page lists the campus without a delivery or in-service date, so under_construction is an inference — confirm against a delivery announcement before publishing.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Aligned's ORD campuses use Delta3 air cooling arrays on a closed-loop chilled water system with near-zero WUE."
+    },
+    "landAcres": 36,
+    "facilityType": "data_center"
+  },
+  {
     "id": "aligned-pataskala-licking-oh",
     "name": "Aligned Data Centers — Pataskala",
     "operator": "Aligned Data Centers",
@@ -1614,7 +1711,7 @@
     "id": "aligned-shippingport-pa",
     "name": "Shippingport Industrial Park",
     "operator": "Aligned Data Centers",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 40.63,
@@ -1630,6 +1727,12 @@
         "date": "2026",
         "note": "",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-08-17",
+        "note": "Conditional use largely granted. On January 28, 2026 Shippingport Borough Council approved most of Aligned's conditional use permit and related modifications for the campus ('Project Phoenix') — three data center buildings of 672,924, 638,000 and 638,000 sq ft plus a 147,000 sq ft warehouse/office building, on a 593-acre site of which roughly 400 acres would be graded, alongside a 70-acre natural gas power generation pad. Requested variances covered building height (45 ft to ~65 ft), clearing up to 75% of woodland, 24-hour construction noise, and a 65 dB noise limit measured at the nearest residence. PARTIAL: two noise-related items remain to be voted on, and mass grading, NPDES, stormwater and emergency management permits are filed but not yet issued.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -1639,10 +1742,28 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://bcbizpa.com/data-centers-beaver-county-cant-seem-to-get-enough-of-them/",
+        "label": "Data Centers? Beaver County Can't Seem to Get Enough of Them",
+        "publisher": "Beaver County Business",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://bcbizpa.com/data-centers-beaver-county-cant-seem-to-get-enough-of-them/",
+        "label": "Data Centers? Beaver County Can't Seem to Get Enough of Them",
+        "publisher": "Beaver County Business",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-17",
     "notes": "Two natural-gas-powered buildings in a 660-acre industrial park; construction potentially starting later 2026.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Site plan for 'Project Phoenix' includes a 70-acre natural gas power generation pad serving the campus; roughly 400 of the 593 acres would be graded. A campus MW figure was not disclosed in this source."
+    },
     "investmentUsd": 10000000000,
     "landAcres": 660,
     "facilityType": "data_center"
@@ -1736,6 +1857,66 @@
     ],
     "lastUpdated": "2026-08-15",
     "facilityType": "data_center"
+  },
+  {
+    "id": "allegheny-dc-springdale-cheswick-pa",
+    "name": "Springdale Data Center (former Cheswick Generating Station)",
+    "operator": "Allegheny DC Property Co., LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.5425,
+      "lon": -79.7844,
+      "city": "Springdale",
+      "county": "Allegheny",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 180
+    },
+    "announcedDate": "2025-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09",
+        "note": "Conditional use application presented to Springdale planning commission; recommendation delayed to gather studies and resident comment.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wesanews.org/environment-energy/2025-09-29/allegheny-county-springdale-cheswick-data-center-concern",
+        "label": "Coal plant to data center: Allegheny County community voices concern",
+        "publisher": "90.5 WESA",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.alleghenyfront.org/allegheny-county-springdale-cheswick-power-plant-community-concern/",
+        "label": "From coal plant to data center: An Allegheny County community voices concern",
+        "publisher": "The Allegheny Front",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.blackridgeresearch.com/news-releases/pennsylvania-data-center-plans-face-delays-as-officials-review-former-power-station-project-us",
+        "label": "Pennsylvania data center plans face delays as officials review former power station project",
+        "publisher": "BlackRidge Research",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "A 565,000 sq ft data center building plus a 200,000 sq ft cooling and facility-management building on the 47-acre former Cheswick Generating Station site in Springdale Borough. Allegheny DC Property Co., LLC is owned by investment firm Davidson Kempner. The proposal states the facility would be used largely for AI development.",
+    "landAcres": 47,
+    "community": {
+      "status": "contested",
+      "notes": "Residents raised noise, air quality, water use and grid-reliability concerns at planning commission and council hearings; a Change.org petition against the project gathered more than 300 signatures.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "alterra-development-marshall-mi",
@@ -3564,6 +3745,57 @@
       "technology": "natural_gas",
       "notes": "Up to ~2,000 MW of natural gas generation planned in two phases: Phase 1 via competitive procurement for general customer growth, Phase 2 via a subscription model enabling extra-large (data center) customer load ('growth pays for growth')."
     }
+  },
+  {
+    "id": "ardent-pittsburgh-mckees-rocks-pa",
+    "name": "Ardent Data Centers Pittsburgh (McKees Rocks)",
+    "operator": "Ardent Data Centers (Northern Data Group)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.4646,
+      "lon": -80.081,
+      "city": "McKees Rocks",
+      "county": "Allegheny",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20,
+      "operational": 5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-01-22",
+        "note": "Acquisition of the existing Pennsylvania data center completed; conversion to a high-density HPC facility expected complete Q4 2024, scaling to 20 MW.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.co.uk/news-releases/ardent-data-centers-a-northern-data-group-company-completes-acquisition-of-pennsylvania-data-center-302040653.html",
+        "label": "Ardent Data Centers, a Northern Data Group company, completes acquisition of Pennsylvania data center",
+        "publisher": "Northern Data Group via PR Newswire",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cleanview.co/data-centers/pennsylvania",
+        "label": "Data Centers in Pennsylvania — Project List & Locations (HPC data center, Northern Data, Allegheny, 20 MW)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "41,000 sq ft building on 7.5 acres in McKees Rocks, Allegheny County, acquired by Ardent (Northern Data Group) in January 2024 with 5 MW in place and a phased path to 20 MW. Purpose-built for GPU/HPC workloads at 135 kW+ rack densities. Street address is reported by third-party directories as 615 McMichael Road but was not confirmed in the sources cited here, so it is omitted.",
+    "water": {
+      "notes": "High-density HPC build using rear-door heat exchangers and direct-to-chip liquid cooling; operator target PUE of 1.2 or lower."
+    },
+    "landAcres": 7.5,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "arizona-land-consulting-hassayampa-ranch-tonopah-az",
@@ -12126,6 +12358,47 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cnx-zediker-station-south-strabane-washington-county-pa",
+    "name": "Zediker Station Data Center Site",
+    "operator": "CNX Resources",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.156,
+      "lon": -80.19,
+      "city": "South Strabane Township",
+      "county": "Washington",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-10-20",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-20",
+        "note": "CNX and JLL announced marketing of the 1,500-acre Zediker Station site for data center development.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.jll.com/en-us/newsroom/jll-announces-major-data-center-development-site-in-washington",
+        "label": "JLL announces major data center development site in Washington County, Pennsylvania",
+        "publisher": "JLL",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "1,500-acre CNX-owned, industrially zoned site in South Strabane Township about 20 miles southwest of Pittsburgh, with 400 buildable acres, marketed for lease/development with JLL. No tenant or operator has publicly committed, and South Strabane Township was still finalizing a data center ordinance as of early 2026 — this is a marketed development site, not an approved facility.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Marketed for 500–700 MW of on-site generation using natural gas blended with Remediated Mine Gas (methane captured from coal mine ventilation), which the owners describe as achieving carbon-neutral power generation. A single planned MW value is not stated, so onSiteGenerationMw is omitted."
+    },
+    "landAcres": 1500,
+    "facilityType": "data_center"
+  },
+  {
     "id": "coachella-valley-technology-campus-ca",
     "name": "Coachella Valley Technology Campus",
     "operator": "Stronghold Power Systems",
@@ -14814,6 +15087,7 @@
       "lon": -76.3055,
       "city": "Lancaster",
       "county": "Lancaster",
+      "street": "216 Greenfield Road",
       "state": "PA",
       "precision": "exact"
     },
@@ -14886,9 +15160,16 @@
         "publisher": "CRE Daily",
         "retrievedAt": "2026-08-02",
         "kind": "press"
+      },
+      {
+        "url": "https://rebusinessonline.com/coreweave-to-invest-6b-for-ai-based-data-center-in-lancaster-pennsylvania/",
+        "label": "CoreWeave to Invest $6B for AI-Based Data Center in Lancaster, Pennsylvania",
+        "publisher": "REBusinessOnline",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-17",
     "energy": {
       "source": "grid",
       "utility": "PPL Electric",
@@ -15146,14 +15427,30 @@
         "publisher": "E&E News / POLITICO",
         "retrievedAt": "2026-07-18",
         "kind": "press"
+      },
+      {
+        "url": "https://www.ans.org/news/2026-04-03/article-7905/constellation-seeks-ferc-help-with-crane-restart/",
+        "label": "Constellation seeks FERC help with Crane restart",
+        "publisher": "American Nuclear Society — Nuclear Newswire",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-06-09",
+    "lastUpdated": "2026-08-17",
     "notes": "Restoration underway pending final NRC approval — physical restart work (steam generator, main generator, emergency diesel generator, and underground piping inspections; ~500 on-site staff as of Sept 2025) is proceeding, but the final NRC restart license-amendment decision is not expected until 2027. Jobs figure (3,400 direct/indirect) is a third-party Brattle Group economic-impact projection, not an audited actual, and was omitted from the structured jobs field for that reason; investmentUsd of $1.6B is Constellation's own disclosed restart capex estimate.",
     "energy": {
       "source": "nuclear",
       "notes": "Restart of Three Mile Island Unit 1 (shut 2019). Delivers into the PJM grid. Target in-service reported as 2027 (2026 coverage) to 2028 (original 2024 announcement)."
     },
+    "subsidies": [
+      {
+        "program": "U.S. Department of Energy loan",
+        "amountUsd": 1000000000,
+        "jurisdiction": "United States",
+        "year": "2025",
+        "sourceIndex": 15
+      }
+    ],
     "investmentUsd": 1600000000,
     "community": {
       "status": "mixed",
@@ -16775,6 +17072,85 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cyrusone-sangamon-talkington-township-il",
+    "name": "CyrusOne Sangamon County Data Center Campus",
+    "operator": "CyrusOne",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.64,
+      "lon": -89.84,
+      "county": "Sangamon",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 630
+    },
+    "announcedDate": "2025-11",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11",
+        "note": "Zoning application filed; Sangamon County Zoning Board of Appeals consideration set for Nov 20, 2025",
+        "sourceIndex": 2
+      },
+      {
+        "status": "permitted",
+        "date": "2026-04-07",
+        "note": "Sangamon County Board approved the conditional permitted use 17-10 on 280 acres of agriculturally zoned land",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.illinoistimes.com/news/sangamon-county-approves-data-center/",
+        "label": "Sangamon County approves data center",
+        "publisher": "Illinois Times",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.illinoistimes.com/news/area-data-center-updates/",
+        "label": "Area data center updates",
+        "publisher": "Illinois Times",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.illinoistimes.com/news/first-data-center-in-sangamon-county/",
+        "label": "First data center in Sangamon County",
+        "publisher": "Illinois Times",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Sited at the northwest corner of Thayer and Clark roads in unincorporated Talkington Township, about 14 miles southwest of Springfield. Building program shifted between filings: six 250,000 sq ft buildings at application, four 450,000 sq ft buildings as reported in June 2026. Construction was expected to start summer 2026.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 31250000,
+        "jurisdiction": "State of Illinois",
+        "year": "2026",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 500000000,
+    "landAcres": 280,
+    "jobs": {
+      "construction": 500,
+      "permanent": 100,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Hundreds attended the April 2026 County Board meeting; more than 60 signed up to speak and public comment was capped at one hour. Board approved 17-10 across party lines.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cyrusone-sat1-san-antonio-tx",
     "name": "CyrusOne SAT1 (San Antonio)",
     "operator": "CyrusOne",
@@ -17155,6 +17531,73 @@
       }
     ],
     "lastUpdated": "2026-08-15",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-pit1-pittsburgh-pa",
+    "name": "DataBank PIT1 (Downtown Pittsburgh)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.4479,
+      "lon": -80.0086,
+      "city": "Pittsburgh",
+      "county": "Allegheny",
+      "street": "100 S Commons",
+      "postalCode": "15212",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1.9
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/pittsburgh/",
+        "label": "DataBank Pittsburgh Data Centers — PIT1",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "30,760 IT square feet with 1.9 MW of critical IT load and 29 on-site carriers, at 100 S Commons on Pittsburgh's North Shore.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-pit2-summit-park-pittsburgh-pa",
+    "name": "DataBank PIT2 (Summit Park)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.4433,
+      "lon": -80.1697,
+      "city": "Pittsburgh",
+      "county": "Allegheny",
+      "street": "35 Summit Park Drive",
+      "postalCode": "15275",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 5
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/pittsburgh/",
+        "label": "DataBank Pittsburgh Data Centers — PIT2 Summit Park",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "47,100 IT square feet with 5 MW of critical IT load and 29 on-site carriers, on a 17-acre campus near Pittsburgh International Airport that DataBank says has room for multiple additional data centers.",
+    "landAcres": 17,
     "facilityType": "data_center"
   },
   {
@@ -30348,6 +30791,56 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "gouldsboro-project-gold-clifton-covington-lackawanna-pa",
+    "name": "Gouldsboro Data Center Campus (Project Gold)",
+    "operator": "1778 Rich Pike LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.195,
+      "lon": -75.595,
+      "city": "Clifton Township",
+      "county": "Lackawanna",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-03",
+        "note": "Zoning settlement approved by Clifton Township supervisors; developer to build five two-story data center buildings across three campuses.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wvia.org/news/local/2026-01-03/clifton-twp-supervisors-settle-with-data-center-developer-residents-promise-litigation",
+        "label": "Clifton Twp. Supervisors settle with data center developer, residents promise litigation",
+        "publisher": "WVIA",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cleanview.co/data-centers/pennsylvania",
+        "label": "Data Centers in Pennsylvania — Project List & Locations (Gouldsboro Data Center, 1778 Rich Pike LLC, Lackawanna, 1,500 MW planned)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Five two-story data center buildings across three campuses in Clifton and Covington townships along Route 380, on roughly 390 acres of Clifton Road properties plus a 144-acre parcel at Routes 611 and 380. The settlement raised the permitted height from 35 to 65 feet (80 feet with rooftop equipment), requires technology reducing backup generator counts, and commits the developer to abandon nuclear and cycle gas-fired generation on the southeast campus. landAcres omitted because the source gives parcel-by-parcel acreage rather than a campus total.",
+    "community": {
+      "status": "litigation",
+      "notes": "Clifton Township supervisors unanimously approved a zoning settlement with the developer on January 3, 2026 after the developer appealed a zoning board decision on November 26, 2025; residents said they plan to take the supervisors to court. An earlier settlement was rejected in September 2025.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "green-data-socorro-county-nm",
     "name": "Green Data Socorro Campus",
     "operator": "Green Data (Green Data Centers)",
@@ -31959,6 +32452,60 @@
     "lastUpdated": "2026-07-18",
     "notes": "280 MW, behind-the-meter at a wind farm, owned via a 50% joint venture. Enumerated in Hut 8's 10-Q.",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "hut8-logan-prairie-latham-il",
+    "name": "Logan Prairie Data Center",
+    "operator": "Hut 8 Corp",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.9672,
+      "lon": -89.1614,
+      "city": "Latham",
+      "county": "Logan",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-17",
+        "note": "Operator describes the project as in early development, not yet approved; local permitting and utility approvals outstanding",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.hut8.com/data-centers/logan-prairie",
+        "label": "Logan Prairie Data Center — Hut 8",
+        "publisher": "Hut 8 Corp",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "AI/cloud campus proposed near Latham in Logan County; estimated up to $65M/year in property tax revenue and a project labor agreement with local trades. landAcres omitted: the operator page states 50 acres while press accounts describe roughly 200 acres of farmland.",
+    "energy": {
+      "source": "grid",
+      "utility": "Ameren Illinois",
+      "notes": "Grid-served by Ameren Illinois inside MISO; formal interconnection and system impact studies required before energization."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop recirculation; cooling water trucked in from outside Logan County and reused approximately four to seven years. About 9,000 gallons/day of local water for domestic needs only."
+    },
+    "investmentUsd": 5000000000,
+    "jobs": {
+      "construction": 1500,
+      "permanent": 200,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "hut8-river-bend-west-feliciana-la",
@@ -36279,6 +36826,50 @@
       "hardwareType": "asic",
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "mcd7-limerick-township-montgomery-county-pa",
+    "name": "Limerick Township Data Center Campus (MCD 7)",
+    "operator": "MCD 7 LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.2447,
+      "lon": -75.573,
+      "city": "Limerick Township",
+      "county": "Montgomery",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 750
+    },
+    "announcedDate": "2026-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-16",
+        "note": "Limerick Township planning commission received a first look at the 1.4 million sq ft, eight-building proposal.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.suburbanrealtorsalliance.com/news/2026/01/16/montgomery-county/limerick-gets-first-look-at-1.4m-square-foot-data-center-proposal/",
+        "label": "Limerick gets first look at 1.4M-square-foot data center proposal",
+        "publisher": "Suburban Realtors Alliance",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Eight server buildings totaling about 1.4 million sq ft on roughly 192 acres across from the Philadelphia Premium Outlets, replacing a previously approved warehouse complex; projected to generate $10–20 million in tax revenue, primarily to the Spring-Ford School District. Trade press reports the project under the name 'Project Laurel' and places it within a mile of Constellation's Limerick nuclear station; neither detail was confirmed in the source cited here. The eventual occupant is under a non-disclosure agreement.",
+    "water": {
+      "reportedMgd": 1.3,
+      "notes": "Township review materials describe cooling demand of as much as 1.3 million gallons of water per day."
+    },
+    "landAcres": 192,
+    "facilityType": "data_center"
   },
   {
     "id": "menomonie-data-center-wi",
@@ -42208,10 +42799,66 @@
     }
   },
   {
+    "id": "mudiita-ransom-township-lackawanna-pa",
+    "name": "Mudiita Ransom Township Data Center Campus",
+    "operator": "Mudiita Land Venture LLC",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.4483,
+      "lon": -75.7375,
+      "city": "Ransom Township",
+      "county": "Lackawanna",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 750
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07",
+        "note": "Mudiita Land Venture acquired ~530 acres south of Ransom Road and west of South Keyser Avenue from KF Real Estate for $2.4 million; Mudiita Infra advertised a 930-acre, 750 MW phased campus.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-07-27",
+        "note": "Listed incorporator Sinha Shatrughan told WVIA 'Personally, I didn't want to go ahead with any sort of data center there right now'; the Mudiita Infra websites are deactivated.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/ransom-township-could-host-930-acre-data-centre-campus",
+        "label": "Ransom Township Could Host 930-Acre Data Centre Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wvia.org/news/local/2026-07-27/future-of-ransom-twp-property-uncertain-as-carbon-county-developer-says-no-plans-for-data-center-campus",
+        "label": "Future of Ransom Twp. property uncertain as Carbon County developer says 'no plans' for data center campus",
+        "publisher": "WVIA",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Announced and effectively abandoned within the same month (July 2026). Part of the property may instead be used for the Old Forge Pumped Storage Project, filed with FERC on July 7, 2026 by Renewable Energy Aggregators Inc. Recorded as cancelled because the named incorporator disclaimed any intent to proceed and the project's marketing sites were taken down; no formal withdrawal filing was located.",
+    "energy": {
+      "notes": "Mudiita Infra's (now deactivated) website described an all-electric campus using battery energy storage and solar infrastructure without relying on gas power."
+    },
+    "landAcres": 930,
+    "facilityType": "data_center"
+  },
+  {
     "id": "muncy-data-center-lycoming-county-pa",
     "name": "Muncy Data Center",
     "operator": "Danko Holdings II",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 41.23,
@@ -42228,6 +42875,12 @@
         "date": "2026-04",
         "note": "Zoning permit application (dated April 15, filed by Danko Holdings II / Fishlips LLC) for three data center buildings along John Brady Drive near the West Branch Susquehanna River.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-08-17",
+        "note": "Approval claimed by operation of law. Danko Holdings II, LP / Fishlips, LLC filed a legal notice in July 2026 asserting deemed approval of the conditional use application it submitted on April 28, 2026, on the basis that Muncy Township failed to commence, conduct and complete the required hearing within the 60 days set by Pennsylvania Municipalities Planning Code §908(1.2). CONTESTED: the township solicitor is preparing a legal challenge and has called the developer's filings 'inconsistent,' and a citizens' group challenge is also possible — so this approval may not survive.",
+        "sourceIndex": 4
       }
     ],
     "sources": [
@@ -42258,9 +42911,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.sungazette.com/news/top-news/2026/07/legal-notice-claims-deemed-approval-for-muncy-township-data-center/",
+        "label": "Legal notice claims deemed approval for Muncy Township data center",
+        "publisher": "Williamsport Sun-Gazette",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-17",
     "notes": "Three-building data center complex (two 14-pod facilities and one eight-pod facility) with water storage/treatment infrastructure along John Brady Drive in Muncy Township, eastern Lycoming County. Site engineering by Livic Civil; applicant Danko Holdings II/Fishlips LLC.",
     "energy": {
       "utility": "PPL Electric"
@@ -42825,6 +43485,39 @@
     ],
     "lastUpdated": "2026-07-23",
     "notes": "OSM candidate is a generic unaddressed 'Netrality Data Centers' point in St. Louis; Netrality operates TWO distinct downtown St. Louis carrier hotels (210 North Tucker and 900 Walnut, both ex-Digital Realty, acquired 2016). Resolved to 210 North Tucker as the larger/primary flagship (400,000 sq ft vs 100,000 sq ft) since only one OSM point was supplied, but this is an assumption — recommend the discovery pipeline split this into two explicit candidates (210 N Tucker + 900 Walnut) on a future pass so both real facilities get tracked distinctly.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "netrality-401-north-broad-philadelphia-pa",
+    "name": "Netrality 401 North Broad",
+    "operator": "Netrality Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.9601,
+      "lon": -75.1619,
+      "city": "Philadelphia",
+      "county": "Philadelphia",
+      "street": "401 North Broad Street",
+      "postalCode": "19108",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://netrality.com/data-center/401-north-broad-philadelphia/",
+        "label": "Philadelphia Pennsylvania Data Center, 401 North Broad St",
+        "publisher": "Netrality Data Centers",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Philadelphia's principal carrier hotel: a 1.3 million sq ft building operated by Netrality with 73+ on-net network providers, 36 peering networks and 3 peering exchanges. Cabinet power density up to 20 kW; 2N UPS; N+1 generators with 30,000 gallons of fuel. Netrality's own page does not publish a facility MW total, so capacityMw is omitted rather than taken from third-party directories.",
+    "water": {
+      "notes": "Chilled-water plant rated 13,600 tons (N+1) with an open-loop system and free-cooling mode; cooling is generator-protected."
+    },
     "facilityType": "data_center"
   },
   {
@@ -45177,6 +45870,50 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "panther-creek-hpc-ai-campus-nesquehoning-pa",
+    "name": "Panther Creek HPC/AI Data Center Campus",
+    "operator": "Bitfarms Ltd.",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.8564,
+      "lon": -75.8283,
+      "city": "Nesquehoning",
+      "county": "Carbon",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-08-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-05",
+        "note": "Bitfarms announced a partnership with T5 Data Centers for pre-construction design planning and development approvals for an HPC/AI data center at the Panther Creek campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://investor.bitfarms.com/news-releases/news-release-details/bitfarms-announces-partnership-t5-data-centers-advance-hpcai",
+        "label": "Bitfarms Announces Partnership with T5 Data Centers to Advance HPC/AI Development at Panther Creek Campus",
+        "publisher": "Bitfarms Ltd.",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://paenvironmentdaily.blogspot.com/2025/08/bitfarms-announces-partnership-to.html",
+        "label": "Bitfarms Announces Partnership To Develop A.I. Data Center At Panther Creek Waste Coal-Fired Power Plant In Carbon County",
+        "publisher": "PA Environment Digest",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "An HPC/AI data center campus in pre-construction design at the Panther Creek waste-coal power plant site in Nesquehoning, Carbon County, with T5 Data Centers providing pre-construction design, development-approval and construction guidance. This is a separate data_center record from the already-tracked Panther Creek plant / crypto-mining operation at the same site, following the same convention as the split Homer City generation and campus records. Trade reports of a 350 MW firm power contract by 2028 (scalable toward 500 MW+) and of a special exception permit from the Nesquehoning Planning Commission were not confirmed in the sources cited here, so capacityMw and a 'permitted' status are omitted.",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "pathone-hull-ia",
@@ -50749,6 +51486,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "renaissance-park-upper-merion-king-of-prussia-pa",
+    "name": "Renaissance Park and Innovation Data Center Campus",
+    "operator": "MLP Ventures",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.092,
+      "lon": -75.347,
+      "city": "King of Prussia",
+      "county": "Montgomery",
+      "street": "411 Swedeland Road",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "Five-site, 4.6 million sq ft campus publicly unveiled at The Discovery Labs / Renaissance Park.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://6abc.com/post/proposed-king-prussia-data-center-campus-faces-renewed-scrutiny-review-continues/19560357/",
+        "label": "Proposed King of Prussia data center campus faces renewed scrutiny as review continues",
+        "publisher": "6abc Philadelphia",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.desmog.com/2026/08/07/how-pennsylvania-governors-office-helped-push-for-huge-data-centers-in-the-philadelphia-suburbs/",
+        "label": "How Pennsylvania Governor's Office Helped Push for Huge Data Centers in the Philadelphia Suburbs",
+        "publisher": "DeSmog",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Five separate applications in Upper Merion Township totaling about 4.6 million sq ft, on parcels including 411 Swedeland Road (1.6M sq ft), 2201/2301/2701/2901 Renaissance Blvd (1.9M sq ft), 2100 Renaissance Road (187,000 sq ft) and 3200 Horizon Drive (370,000 sq ft). Applicant entities are affiliated with MLP Ventures founder Brian O'Neill. Filed just before Upper Merion's March 2026 data center ordinance took effect, so reviewed under the prior rules. A company document cited by DeSmog puts campus investment at $35.16 billion; that figure is not independently corroborated, so investmentUsd is omitted. Distinct site from MLP Ventures' Plymouth Township proposal.",
+    "energy": {
+      "onSiteGenerationMw": 1000,
+      "notes": "A company document cited by DeSmog describes roughly 1 gigawatt of on-site generation across the five-site campus; fuel type is not stated in the sources reviewed."
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "At the July 23, 2026 Upper Merion planning commission meeting the vast majority of the crowd stood when asked who opposed the project; opposition has grown since the late-May 2026 unveiling.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "revolve-labs-glencoe-mn",
     "name": "Revolve Labs Glencoe",
     "operator": "Revolve Labs",
@@ -52597,7 +53388,7 @@
     "id": "sentinel-east-whiteland-chester-county-pa",
     "name": "Sentinel East Whiteland Data Center",
     "operator": "Sentinel Data Centers",
-    "status": "permitted",
+    "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 40.041,
@@ -52611,7 +53402,14 @@
       "planned": 300
     },
     "poweredBy": "Grid — PECO",
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-08-17",
+        "note": "Construction has begun. Earth-moving work (dirt movement and digging under an erosion and sedimentation control permit) started at the East Whiteland site, was halted by a township stop-work order earlier in July 2026 while officials reviewed soil and health safety plans for the former Cyprus Foote Mineral Superfund site, and resumed on Wednesday, July 30, 2026 under a permit carrying conditions on soil monitoring, dust control and protection of the Superfund remedy. Stormwater management work is also under way in adjacent West Whiteland. Further permits are still needed for concrete and foundations, and the developers' request to shrink the building program from 1.5 million to 536,000 sq ft was tabled to an August 19, 2026 meeting.",
+        "sourceIndex": 3
+      }
+    ],
     "sources": [
       {
         "url": "https://cleanview.co/news/data-centers/sentinel-data-centers-announces-300-mw-sentinel-east-whiteland-data-center-in-pa-20260417",
@@ -52633,9 +53431,23 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.inquirer.com/news/pennsylvania/east-whiteland-data-center-project-20260730.html",
+        "label": "East Whiteland officials allow work to resume on data center planned for Superfund site",
+        "publisher": "The Philadelphia Inquirer",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.suburbanrealtorsalliance.com/news/2026/07/31/chester-county/data-center-construction-starts-then-stops-at-superfund-site-in-east-whiteland/",
+        "label": "Data center construction starts - then stops - at Superfund site in East Whiteland",
+        "publisher": "Suburban Realtors Alliance",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-17",
     "notes": "Site: 13 S. Bacton Hill Rd, former Foote Mineral Superfund site. Coordinates are approximate for the township.",
     "energy": {
       "source": "grid",
@@ -55943,6 +56755,127 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "stream-chicago-i-orda-elk-grove-village-il",
+    "name": "Stream Chicago I (ORDA)",
+    "operator": "Stream Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0039,
+      "lon": -87.9703,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "street": "2080 Lunt Avenue",
+      "postalCode": "60007",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 31
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020",
+        "note": "Acquired December 2017; fully leased by end of 2020",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.streamdatacenters.com/locations/chicago-data-centers/",
+        "label": "Stream Data Centers — Chicago data centers",
+        "publisher": "Stream Data Centers",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "155,189 sq ft facility with 31 MW of utility power; fully leased. Expanded in 2024 by 1.10 acres.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "stream-chicago-ii-ordb-elk-grove-village-il",
+    "name": "Stream Chicago II (ORDB)",
+    "operator": "Stream Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0039,
+      "lon": -87.9703,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "street": "1925 Busse Road",
+      "postalCode": "60007",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 32
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023",
+        "note": "Development launched 2020; phase-one commissioning began 3Q22; fully leased in 2023",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.streamdatacenters.com/locations/chicago-data-centers/",
+        "label": "Stream Data Centers — Chicago data centers",
+        "publisher": "Stream Data Centers",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "226,000 sq ft facility, 32 MW at full build; fully leased.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "stream-chicago-iii-ordc-elk-grove-village-il",
+    "name": "Stream Chicago III (ORDC)",
+    "operator": "Stream Data Centers",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0039,
+      "lon": -87.9703,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "street": "2000 Landmeier Rd",
+      "postalCode": "60007",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 40
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-08-17",
+        "note": "Listed as 'In Development' on the operator's Chicago page; building one set to deliver 40 MW",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.streamdatacenters.com/locations/chicago-data-centers/",
+        "label": "Stream Data Centers — Chicago data centers",
+        "publisher": "Stream Data Centers",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "35+ acre hyperscale campus planned for up to 2 million sq ft of data center space; building one to deliver 40 MW. capacityMw records building one only — the campus total is not published.",
+    "landAcres": 35,
+    "facilityType": "data_center"
+  },
+  {
     "id": "stream-data-centers-dfwa-dfw-vii-tx",
     "name": "Stream Data Centers DFWA (DFW VII)",
     "operator": "Stream Data Centers",
@@ -56081,6 +57014,47 @@
     "community": {
       "status": "opposed",
       "notes": "Contested locally. KSL reports over 1,350 petition signatures opposing the facility, residents objecting to its proximity to homes and the Sunroc gravel pit, air-quality fears ('With Santaquin and just Utah in general already having such high pollution, we find that this is not a good placement'), and complaints about a lack of transparency during approval. The city projects 'more than $3 million annually in sales tax revenue'."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "suncap-stowe-township-allegheny-county-pa",
+    "name": "Stowe Township Data Center (former railcar plant)",
+    "operator": "SunCap Industries",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.469,
+      "lon": -80.064,
+      "city": "Stowe Township",
+      "county": "Allegheny",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-14",
+        "note": "SunCap Industries presented a data center proposal for the former railcar plant on Nichol Avenue; commissioners voted to advertise a zoning amendment adding data centers to permitted uses in the industrial district.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpxi.com/news/local/stowe-township-community-expresses-concerns-over-data-center-proposal/F3UN7MXY3RD2DMMTPZDZR6VVXM/",
+        "label": "Stowe Township community expresses concerns over data center proposal",
+        "publisher": "WPXI",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "SunCap Industries is developing the former railcar plant site on Nichol Avenue in Stowe Township, Allegheny County. The zoning amendment adding data centers to permitted industrial uses was subsequently approved, which enables but does not itself authorize a specific building. No capacity, acreage or square footage was disclosed in the reviewed sources, so those fields are omitted.",
+    "community": {
+      "status": "mixed",
+      "notes": "Residents questioned grid impact and electricity prices; Commissioner Tyler Kochirka said the ordinance change 'came about in, I think, an undermining way,' while Commissioner Cheryl McDermott supported the project.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -57617,6 +58591,45 @@
     "facilityType": "data_center"
   },
   {
+    "id": "ta-realty-elk-grove-village-il",
+    "name": "TA Realty Elk Grove Village Data Center",
+    "operator": "TA Realty",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0039,
+      "lon": -87.9703,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 250
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-10-03",
+        "note": "Demolition of existing buildings underway to clear the 47-acre site; buildings south of Coyle Avenue torn down",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.journal-topics.com/articles/demolition-to-clear-way-for-47-acre-data-center-near-higgins-elmhurst/",
+        "label": "Demolition To Clear Way For 47-Acre Data Center Near Higgins & Elmhurst",
+        "publisher": "Journal & Topics Media Group",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Four-building, 1.183 million sq ft development east of Elmhurst Road and south of Old Higgins Road; the approved plan includes an electrical substation expansion. Single-source; no end tenant named.",
+    "landAcres": 47,
+    "facilityType": "data_center"
+  },
+  {
     "id": "takanock-project-baccara-maricopa-county-az",
     "name": "Project Baccara",
     "operator": "Takanock, LLC",
@@ -58095,6 +59108,68 @@
       "notes": "Hybrid: ERCOT grid interconnection plus a non-binding letter agreement with Thunderhead Energy Solutions for ~250 MW of behind-the-meter gas generation (reciprocating engines + turbines), per New Era Energy / Sharon AI releases."
     },
     "landAcres": 438,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "tecfusions-keystone-connect-upper-burrell-pa",
+    "name": "TECfusions Keystone Connect",
+    "operator": "TECfusions",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.5817,
+      "lon": -79.705,
+      "city": "Upper Burrell Township",
+      "county": "Westmoreland",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 3000,
+      "operational": 12
+    },
+    "announcedDate": "2025-01-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01-14",
+        "note": "TECfusions announced acquisition of the 1,395-acre former Alcoa R&D campus and a phased 3 GW AI/HPC campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/tecfusions-unveils-massive-1400-acre-data-center-project-in-pennsylvania-revitalizing-former-industrial-plant-302350041.html",
+        "label": "TECfusions Unveils Massive 1400-Acre Data Center Project in Pennsylvania, Revitalizing Former Industrial Plant",
+        "publisher": "TECfusions via PR Newswire",
+        "retrievedAt": "2026-08-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cleanview.co/data-centers/pennsylvania",
+        "label": "Data Centers in Pennsylvania — Project List & Locations (TECfusions Keystone Connect, Westmoreland, 3,000 MW planned)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "Adaptive reuse of the former Alcoa research and development campus in Upper Burrell, Westmoreland County: 1,395 acres, 3 GW planned over a six-year buildout, with 12 MW described as immediately available in existing buildings. Awarded a $2 million Pennsylvania RACP grant. Investment total not disclosed by the developer.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "On-site natural gas generation with dual utility feeds and microgrid capability; the developer says discussions are under way to export excess power to the local grid."
+    },
+    "subsidies": [
+      {
+        "program": "Pennsylvania Redevelopment Assistance Capital Program (RACP)",
+        "amountUsd": 2000000,
+        "jurisdiction": "Pennsylvania",
+        "year": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "landAcres": 1395,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -59187,6 +60262,37 @@
     "energy": {
       "utility": "Rappahannock Electric Co-op"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tierpoint-allentown-tekpark-breinigsville-pa",
+    "name": "TierPoint Allentown TekPark",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.5384,
+      "lon": -75.6288,
+      "city": "Breinigsville",
+      "county": "Lehigh",
+      "street": "9999 Hamilton Boulevard",
+      "postalCode": "18031",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/pennsylvania/tekpark-campus/",
+        "label": "TekPark Data Center Campus — TierPoint",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-08-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-17",
+    "notes": "122,000+ sq ft of enterprise data center capacity including 96,000+ sq ft of raised floor, on a TierPoint-owned 137-acre campus at 9999 Hamilton Blvd, Breinigsville (Lehigh County). Dual redundant 'A'/'B' 69 kV utility transmission feeds; 23 generators totaling roughly 49.5 MW of standby capacity and 36+ hours of on-site fuel. capacityMw is omitted deliberately: 49.5 MW is standby generator nameplate, not IT load.",
+    "landAcres": 137,
     "facilityType": "data_center"
   },
   {
