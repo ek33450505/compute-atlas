@@ -363,6 +363,52 @@
       "rock": "Carbonate-rock"
     }
   },
+  "aligned-ord-02-northlake-il": {
+    "nearestWater": {
+      "name": "Addison Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "aligned-ord-03-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Higgins Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "aligned-pataskala-licking-oh": {
     "nearestWater": {
       "name": "South Fork Licking River",
@@ -544,6 +590,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "allegheny-dc-springdale-cheswick-pa": {
+    "nearestWater": {
+      "name": "Tawney Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12.5
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "alterra-development-marshall-mi": {
@@ -1049,6 +1114,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "ardent-pittsburgh-mckees-rocks-pa": {
+    "nearestWater": {
+      "name": "Chartiers Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "arizona-land-consulting-hassayampa-ranch-tonopah-az": {
@@ -3811,6 +3895,25 @@
       "label": "Low (<10%)"
     }
   },
+  "cnx-zediker-station-south-strabane-washington-county-pa": {
+    "nearestWater": {
+      "name": "Redd Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 10.9
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "coachella-valley-technology-campus-ca": {
     "nearestWater": {
       "name": "Whitewater River",
@@ -5200,6 +5303,21 @@
       "label": "Low (<10%)"
     }
   },
+  "cyrusone-sangamon-talkington-township-il": {
+    "nearestWater": {
+      "name": "South Fork Lick Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "cyrusone-sat1-san-antonio-tx": {
     "nearestWater": {
       "name": "Culebra Creek",
@@ -5361,6 +5479,44 @@
     "aquifer": {
       "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "databank-pit1-pittsburgh-pa": {
+    "nearestWater": {
+      "name": "Allegheny River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "databank-pit2-summit-park-pittsburgh-pa": {
+    "nearestWater": {
+      "name": "Pinkertons Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "databank-red-oak-tx": {
@@ -9822,6 +9978,21 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "gouldsboro-project-gold-clifton-covington-lackawanna-pa": {
+    "nearestWater": {
+      "name": "Kasulaitis Lake",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "green-data-socorro-county-nm": {
     "nearestWater": {
       "name": "Rio Grande",
@@ -10353,6 +10524,21 @@
     "aquifer": {
       "name": "Edwards-trinity Aquifer System",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "hut8-logan-prairie-latham-il": {
+    "nearestWater": {
+      "name": "South Fork Lake Fork",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "hut8-river-bend-west-feliciana-la": {
@@ -11898,6 +12084,25 @@
       "rock": "Sandstone"
     }
   },
+  "mcd7-limerick-township-montgomery-county-pa": {
+    "nearestWater": {
+      "name": "Hartenstine Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "menomonie-data-center-wi": {
     "nearestWater": {
       "name": "Lake Menomin",
@@ -13337,6 +13542,25 @@
       "rock": "Carbonate-rock"
     }
   },
+  "mudiita-ransom-township-lackawanna-pa": {
+    "nearestWater": {
+      "name": "Lindy Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "muncy-data-center-lycoming-county-pa": {
     "nearestWater": {
       "name": "Wolf Run",
@@ -13502,6 +13726,29 @@
     "aquifer": {
       "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
+    }
+  },
+  "netrality-401-north-broad-philadelphia-pa": {
+    "nearestWater": {
+      "name": "Schuylkill River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "netrality-717-south-wells-il": {
@@ -14331,6 +14578,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "panther-creek-hpc-ai-campus-nesquehoning-pa": {
+    "nearestWater": {
+      "name": "Nesquehoning Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "pathone-hull-ia": {
@@ -16001,6 +16267,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "renaissance-park-upper-merion-king-of-prussia-pa": {
+    "nearestWater": {
+      "name": "Schuylkill River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Carbonate-rock Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "revolve-labs-glencoe-mn": {
     "nearestWater": {
       "name": "Buffalo Creek",
@@ -17563,6 +17848,75 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "stream-chicago-i-orda-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Higgins Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "stream-chicago-ii-ordb-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Higgins Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "stream-chicago-iii-ordc-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Higgins Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "stream-data-centers-dfwa-dfw-vii-tx": {
     "nearestWater": {
       "name": "Spring Creek",
@@ -17618,6 +17972,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "suncap-stowe-township-allegheny-county-pa": {
+    "nearestWater": {
+      "name": "Chartiers Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "switch-atlanta-the-keep-ga": {
@@ -18088,6 +18461,29 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "ta-realty-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Higgins Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "takanock-project-baccara-maricopa-county-az": {
     "nearestWater": {
       "name": "Picacho Wash",
@@ -18216,6 +18612,25 @@
     "aquifer": {
       "name": "Edwards-trinity Aquifer System",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "tecfusions-keystone-connect-upper-burrell-pa": {
+    "nearestWater": {
+      "name": "Little Pucketa Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.2
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "tenaska-nebraska-ai-campus-power-plant-proposed": {
@@ -18474,6 +18889,25 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "tierpoint-allentown-tekpark-breinigsville-pa": {
+    "nearestWater": {
+      "name": "Breinig Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "tierpoint-baltimore-bwi-md": {
