@@ -9227,6 +9227,50 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cambrin-project-cornmaze-town-of-beloit-wi",
+    "name": "Project Cornmaze Data Center (Town of Beloit)",
+    "operator": "Cambrin LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.5843885,
+      "lon": -89.0215921,
+      "city": "Beloit",
+      "county": "Rock",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-07-15",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07-15",
+        "note": "Town of Beloit signed a pre-development agreement with Cambrin LLC covering rezoning, a development agreement and possible tax increment financing; Cambrin agreed to reimburse the town up to $175,000 in costs.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/news/town-of-beloit-pre-development-agreement-develop-data-center",
+        "label": "Town of Beloit has pre-development agreement with company looking to develop data center",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-08-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://608scanner.com/the-rock-county-data-center-fight-janesvilles-three-proposals-and-the-vote-that-could-decide-them/",
+        "label": "The Rock County data center fight — Cambrin/Beloit quarry site",
+        "publisher": "608 Scanner",
+        "retrievedAt": "2026-08-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-18",
+    "notes": "430 acres at an existing gravel pit on the northeast side of the Town of Beloit, along Town Line Road, South Prairie Avenue and East Philhower Road; property currently owned by Rock Road Companies Inc. Very preliminary — a sewer and water study is underway, no site plans or applications filed, land not yet purchased. Cambrin LLC is a Delaware entity; DNR filings share a contact name and email with Degas LLC, the entity Meta used for Beaver Dam, but Meta has not confirmed involvement, so the operator is recorded as Cambrin only. Coordinates geocode Town Line Road.",
+    "landAcres": 430,
+    "facilityType": "data_center"
+  },
+  {
     "id": "canaan-alborz-happy-tx",
     "name": "Alborz Bitcoin Mine",
     "operator": "WindHQ LLC / Canaan Inc.",
@@ -9573,6 +9617,61 @@
       "offtaker": "Amazon",
       "unitCount": 4,
       "notes": "Amazon announced funding (2024-10-16) for the feasibility/environmental/safety/permitting/licensing phase of four Xe-100 reactors with Energy Northwest and X-energy, amid AI-driven power demand. Energy Northwest owns, builds, and operates the facility; X-energy is the reactor-technology licensor. Amazon holds a contractual right to purchase power from the first 320 MW phase; public power utilities may purchase up to 50% of the full 960 MW build-out per Energy Northwest's own project page, so Amazon's offtake share of the full build-out is not necessarily 100%. Design-builder Cascade Nuclear Partners (Kiewit Nuclear Solutions / Black & Veatch / Aecon) selected 2025. Amazon separately anchored a ~$500M Series C-1 investment in X-energy (announced 2024-10-16, alongside Amazon's Climate Pledge Fund, Citadel's Ken Griffin, Ares Management affiliates, NGP, and the University of Michigan) supporting X-energy's reactor design/licensing and Phase 1 of its TRISO-X fuel fabrication facility in Oak Ridge, TN -- this is company-level X-energy funding, not Cascade project capex. Project-level construction jobs are projected at ~1,000-2,000 and operational jobs at ~100-200 per Energy Northwest's own project page; these are the operator's projections, not delivered/operational counts, and are recorded here as notes rather than in the jobs field."
+    }
+  },
+  {
+    "id": "cascade-digital-power-hatfield-wi",
+    "name": "Cascade Digital Power Hatfield Bitcoin Mine (Lake Arbutus Hydro)",
+    "operator": "Cascade Digital Power (Digital Power Optimization)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.4146842,
+      "lon": -90.7306966,
+      "city": "Hatfield",
+      "county": "Jackson",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 6
+    },
+    "announcedDate": "2022-03",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-02",
+        "note": "Industrial-scale mining began at the Hatfield site in mid-February 2022; the partnership was announced at the end of March 2022.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wpr.org/jackson-county-home-new-cryptocurrency-mine-surprise-many-local-county-officials",
+        "label": "Jackson County is home to a new cryptocurrency mine — a surprise for many local, county officials",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-08-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/digital-power-optimization-forms-partnership-to-combine-hydro-power-and-cryptocurrency-mining--cascade-digital-power-301513816.html",
+        "label": "Digital Power Optimization Forms Partnership to Combine Hydro Power and Cryptocurrency Mining: Cascade Digital Power",
+        "publisher": "PR Newswire / Digital Power Optimization",
+        "retrievedAt": "2026-08-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-18",
+    "notes": "Cascade Digital Power was formed in 2022 by Digital Power Optimization, Wiconi Hydro and a family office to monetize surplus output from a 1908 hydroelectric plant that had fallen into disrepair. Four employees (three plant, one IT). Bitmain S19j Pro ASICs. Local town and county officials were unaware of the operation when it began. Coordinates are the Hatfield locality geocode, not a parcel-confirmed point.",
+    "energy": {
+      "source": "hydro",
+      "notes": "Powered by a hydroelectric plant on Lake Arbutus operating since 1908; roughly half the plant's output is sold to the grid and the remainder consumed on site by the mining load."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "coolingType": "air",
+      "powerArrangement": "behind_meter"
     }
   },
   {
@@ -17329,6 +17428,51 @@
     "aiClassification": "likely"
   },
   {
+    "id": "data-holdings-milwaukee-wi",
+    "name": "Data Holdings Milwaukee Data Center",
+    "operator": "Data Holdings LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.0437366,
+      "lon": -87.9540068,
+      "city": "Milwaukee",
+      "county": "Milwaukee",
+      "street": "3135 W. Highland Blvd",
+      "postalCode": "53208",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 10
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://dataholdings.com/milwaukee-data-center",
+        "label": "Milwaukee Data Center — facility specifications",
+        "publisher": "Data Holdings",
+        "retrievedAt": "2026-08-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://cloudandcolocation.com/datacenters/data-holdings-milwaukee-data-center/",
+        "label": "Data Holdings Milwaukee Data Center — facility profile",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-08-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-18",
+    "notes": "Purpose-built two-story 46,000 sq ft carrier-neutral colocation facility commissioned in 2014; Tier III+ concurrently maintainable design, 2N route-diverse utility feeds, 10 MW of total commercial power, up to 30 kW per cabinet, LEED Gold, SOC 2 Type II / HIPAA / PCI DSS. Coordinates are an address geocode.",
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.28,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
+  },
+  {
     "id": "databank-brooklyn-park-mn",
     "name": "DataBank Brooklyn Park Campus",
     "operator": "DataBank",
@@ -20853,6 +20997,52 @@
     }
   },
   {
+    "id": "dpo-wisconsin-rapids-hpc-wi",
+    "name": "DPO Wisconsin Rapids AI Computing Facility",
+    "operator": "Digital Power Optimization",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.3917589,
+      "lon": -89.8228767,
+      "city": "Wisconsin Rapids",
+      "county": "Wood",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "announcedDate": "2025-01-31",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01-31",
+        "note": "DPO announced a $200M, 20 MW AI computing development with land and firm hydro power secured through CWPCo; energization targeted for 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/dpo-launches-200-million-ai-data-center-development-in-partnership-with-billerud-302359217.html",
+        "label": "DPO Launches $200 Million AI Data Center Development in Partnership with Billerud",
+        "publisher": "PR Newswire / Digital Power Optimization",
+        "retrievedAt": "2026-08-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-18",
+    "notes": "Pre-development funded by an investor consortium led by Salutem Capital; Stantec providing engineering support. Exact street address and acreage not disclosed in the announcement, so coordinates are the Wisconsin Rapids city geocode. Single-source, hence 'reported'.",
+    "energy": {
+      "source": "hydro",
+      "utility": "Consolidated Water Power Company",
+      "notes": "Firm power from CWPCo (a Billerud subsidiary and regulated utility operating 32 MW of hydroelectric generation). DPO secured a land lease of up to 50 years and interconnection rights to an existing, energized substation."
+    },
+    "investmentUsd": 200000000,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "drox-group-rural-hall-forsyth-county-nc",
     "name": "Rural Hall Data Center (The Drox Group)",
     "operator": "The Drox Group",
@@ -21525,6 +21715,43 @@
     "energy": {
       "utility": "DTE Energy"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "edgeconnex-mad01-madison-wi",
+    "name": "EdgeConneX Madison (MAD01)",
+    "operator": "EdgeConneX",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.0481038,
+      "lon": -89.2982832,
+      "city": "Madison",
+      "county": "Dane",
+      "street": "4916 E Broadway",
+      "postalCode": "53716",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.edgeconnex.com/locations/americas/madison-wi/",
+        "label": "EdgeConneX Madison, WI data center",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-08-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterhawk.com/colo/edgeconnex/4916-east-broadway/mad01",
+        "label": "EdgeConneX MAD01 — 4916 East Broadway, Madison",
+        "publisher": "datacenterHawk",
+        "retrievedAt": "2026-08-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-18",
+    "notes": "Carrier-neutral edge colocation established in 2015 as a retrofit of a 115,000 sq ft building constructed in 1999; 7,800 sq ft of facility with 2,650 sq ft of raised floor, 30-inch plenum, N+1 CRAC, capable of 20+ kW per cabinet and 600+ watts per sq ft. No megawatt figure is published by the operator, so capacityMw is omitted. Coordinates are an address geocode.",
     "facilityType": "data_center"
   },
   {
@@ -61915,6 +62142,79 @@
     "facilityType": "data_center"
   },
   {
+    "id": "us-signal-wi01-madison-wi",
+    "name": "US Signal WI01 Madison",
+    "operator": "US Signal",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.0732716,
+      "lon": -89.3870807,
+      "city": "Madison",
+      "county": "Dane",
+      "street": "222 W Washington Ave. Ste. 1",
+      "postalCode": "53703",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.15
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://ussignal.com/data-centers/wi01-madison/",
+        "label": "US Signal WI01 Madison — facility specifications",
+        "publisher": "US Signal",
+        "retrievedAt": "2026-08-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-18",
+    "notes": "Small downtown Madison colocation facility in a 1972 building renovated in 2008; Tier 3 resiliency with a 280 kW generator, 150 kW UPS, 300 kVA utility feed and 40 tons of N+1 HVAC; five on-net carriers. capacityMw.operational reflects installed UPS capacity — this is a small edge/POP-scale site, not a hyperscale campus. Coordinates are an address geocode.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "us-signal-wi02-fitchburg-wi",
+    "name": "US Signal WI02 Madison (Fitchburg)",
+    "operator": "US Signal",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.9947535,
+      "lon": -89.42339,
+      "city": "Fitchburg",
+      "county": "Dane",
+      "street": "5515 Nobel Drive",
+      "postalCode": "53711",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 6
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://ussignal.com/data-centers/wi02-madison/",
+        "label": "US Signal WI02 Madison — facility specifications",
+        "publisher": "US Signal",
+        "retrievedAt": "2026-08-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://ussignal.com/data-centers",
+        "label": "US Signal data center locations (two Madison, WI facilities)",
+        "publisher": "US Signal",
+        "retrievedAt": "2026-08-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-18",
+    "notes": "Originally constructed in 2008 with expansions in 2011, 2015 and 2017; Tier 3 with 4,500 kW of 2N generators, 6,000 kW of UPS, 9,000 kVA of utility feeds and 1,510 tons of N+1 HVAC; nine on-net carriers. This is the former OneNeck Madison data center — oneneck.com/colocation/data-centers/madison now 301-redirects to ussignal.com, so the operator is recorded as US Signal rather than OneNeck. capacityMw.operational is taken from installed UPS capacity. Coordinates are an address geocode.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "valley-oak-shinn-street-fremont-ca",
     "name": "Valley Oak Partners Shinn Street Data Center",
     "operator": "Valley Oak Partners",
@@ -62969,6 +63269,72 @@
     "notes": "By-right project (no rezoning needed), awaiting a site plan submission — a step further along than the Remington 'on-hold' cluster. Same Vint Hill locality as tracked CyrusOne project but confirmed distinct parcel/applicant. Fauquier planning-database roundup; distinct parcel from the tracked CyrusOne Vint Hill campus (verified) but near-name — flagged.",
     "landAcres": 50,
     "facilityType": "data_center"
+  },
+  {
+    "id": "viridian-apecs-janesville-wi",
+    "name": "APECS Data Center Campus (Former GM Assembly Plant)",
+    "operator": "Viridian Acquisitions LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.66331,
+      "lon": -89.02056,
+      "city": "Janesville",
+      "county": "Rock",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 800
+    },
+    "announcedDate": "2025-11",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-11",
+        "note": "Janesville City Council voted 5-2 to approve a non-binding letter of intent, opening a 120-day negotiation window with Viridian.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/news/janesville-data-center-abandoned-gm-site",
+        "label": "Janesville moves forward with data center plans for abandoned GM site",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-08-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/apecs-data-center-campus",
+        "label": "APECS Data Center Campus — project record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://608scanner.com/the-rock-county-data-center-fight-janesvilles-three-proposals-and-the-vote-that-could-decide-them/",
+        "label": "The Rock County data center fight: Janesville's three proposals",
+        "publisher": "608 Scanner",
+        "retrievedAt": "2026-08-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-18",
+    "notes": "Redevelopment of the 250-acre former General Motors assembly plant (demolished 2019), a DNR-cleanup brownfield. Two configurations are under evaluation: an 11-building data center campus or an 8- or 9-building hyperscale campus, drawing up to 800 MW. Utility is Alliant Energy. The end user has not been disclosed. Coordinates are the geocoded former GM plant site, not a parcel-confirmed footprint.",
+    "investmentUsd": 8000000000,
+    "landAcres": 250,
+    "jobs": {
+      "construction": 1200,
+      "permanent": 600,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "More than 20 residents spoke against the proposal at the November 2025 council meeting; a Nov. 3, 2026 Janesville ballot initiative would require voter approval for projects over $450 million at the GM/JATCO site.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "voltagrid-covington-power-plant-ga",
