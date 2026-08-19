@@ -2779,6 +2779,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "cambrin-project-cornmaze-town-of-beloit-wi": {
+    "nearestWater": {
+      "name": "Rock River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "canaan-alborz-happy-tx": {
     "nearestWater": {
       "name": "Palo Duro Creek",
@@ -2892,6 +2911,21 @@
     "aquifer": {
       "name": "Columbia Plateau Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cascade-digital-power-hatfield-wi": {
+    "nearestWater": {
+      "name": "Lake Arbutus",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 20.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "cassville-grant-county-wi": {
@@ -5390,6 +5424,29 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "data-holdings-milwaukee-wi": {
+    "nearestWater": {
+      "name": "Menomonee River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "databank-brooklyn-park-mn": {
     "nearestWater": {
       "name": "Shingle Creek",
@@ -6751,6 +6808,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "dpo-wisconsin-rapids-hpc-wi": {
+    "nearestWater": {
+      "name": "Wisconsin River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.9
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "drox-group-rural-hall-forsyth-county-nc": {
     "nearestWater": {
       "name": "Town Fork Creek",
@@ -6969,6 +7041,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "edgeconnex-mad01-madison-wi": {
+    "nearestWater": {
+      "name": "Lake Waubesa",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "edgeconnex-mcn-new-albany-licking-county-oh": {
@@ -19482,6 +19573,44 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "us-signal-wi01-madison-wi": {
+    "nearestWater": {
+      "name": "Lake Monona",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "us-signal-wi02-fitchburg-wi": {
+    "nearestWater": {
+      "name": "Swan Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "valley-oak-shinn-street-fremont-ca": {
     "nearestWater": {
       "name": "Alameda Creek",
@@ -19840,6 +19969,25 @@
     },
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "viridian-apecs-janesville-wi": {
+    "nearestWater": {
+      "name": "Rock River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.6
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
     }
   },
