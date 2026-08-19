@@ -51,6 +51,70 @@ export function formatStatusLabel(s: Status): string {
   return STATUS_META[s].label;
 }
 
+/**
+ * Trailing legal-entity suffixes stripped when comparing an operator name
+ * against a facility name for redundancy (see `isOperatorRedundant` below).
+ * Anchored to the end of the string, preceded by a comma and/or whitespace,
+ * with an optional trailing period — case-insensitive.
+ */
+const LEGAL_SUFFIX_RE =
+  /[,\s]+(?:l\.?l\.?c\.?|llp|lp|inc\.?|incorporated|corp\.?|corporation|ltd\.?|limited|co\.?|company|holdings|group|plc)$/i;
+
+/**
+ * Strips trailing legal-entity suffixes (", Inc.", " LLC", " Holdings", ...)
+ * from an organization name, looping until none remain — so a compound like
+ * "Foo Holdings, LLC" fully reduces to "Foo" in one call. Mirrors the
+ * suffix-normalization shape of `normalizeCounty` in lib/metros.ts, applied
+ * to company names instead of county names.
+ */
+export function stripLegalSuffix(name: string): string {
+  let current = name.trim();
+  for (;;) {
+    const stripped = current.replace(LEGAL_SUFFIX_RE, "").trim();
+    if (stripped === current) return current;
+    current = stripped;
+  }
+}
+
+/**
+ * True when a facility's name already conveys its operator, or vice versa
+ * (e.g. name "Google Council Bluffs", operator "Google") — both sides are
+ * run through `stripLegalSuffix` first so a trailing "Inc."/"LLC"/etc. can't
+ * defeat the match (e.g. name "CleanSpark Dalton Bitcoin Mining Facility",
+ * operator "CleanSpark, Inc."). Used to omit a redundant operator segment
+ * from generated titles.
+ */
+export function isOperatorRedundant(name: string, operator: string): boolean {
+  const nameLower = stripLegalSuffix(name).toLowerCase();
+  const operatorLower = stripLegalSuffix(operator).toLowerCase();
+  return nameLower.includes(operatorLower) || operatorLower.includes(nameLower);
+}
+
+/**
+ * Per-type keywords that, if present in a facility's own name, already
+ * convey its facilityType (e.g. name "... Bitcoin Mining Facility" conveys
+ * crypto_mining) — deliberately a short, high-precision list rather than an
+ * exhaustive one. Matched as case-insensitive substrings in `nameConveysType`.
+ */
+const TYPE_KEYWORDS: Record<Facility["facilityType"], string[]> = {
+  data_center: ["data center", "datacenter", "data centre"],
+  crypto_mining: ["mining", "miner"],
+  power_generation: ["solar", "wind", "power plant", "power station", "generating station"],
+};
+
+/**
+ * True when a facility's own name already conveys its facilityType — signals
+ * a title generator can omit the redundant type-label segment. Used by
+ * app/facilities/[slug]/page.tsx's generateMetadata.
+ */
+export function nameConveysType(
+  name: string,
+  facilityType: Facility["facilityType"]
+): boolean {
+  const nameLower = name.toLowerCase();
+  return TYPE_KEYWORDS[facilityType].some((keyword) => nameLower.includes(keyword));
+}
+
 /** Human-readable labels for the aiClassification enum. */
 export const AI_CLASSIFICATION_LABELS: Record<string, string> = {
   confirmed: "AI-specific",

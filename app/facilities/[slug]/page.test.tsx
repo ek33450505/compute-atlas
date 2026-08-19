@@ -56,8 +56,12 @@ describe("generateMetadata", () => {
   });
 
   it("power_generation: title AND description say power-generation facility, and neither contains 'data center' (regression for the type-label bug)", async () => {
+    // Name deliberately avoids the power_generation redundancy keywords
+    // ("solar"/"wind"/"power plant"/"power station"/"generating station") so
+    // this test isolates the data-center-mislabel regression, not the
+    // type-redundancy-omission behavior (covered separately below).
     const facility = makeFacility({
-      name: "Sunrise Solar Array",
+      name: "Riverbend Generation Campus",
       operator: "NextEra Energy",
       facilityType: "power_generation",
       location: { lat: 32.7, lon: -97.3, city: "Fort Worth", state: "TX", precision: "exact" },
@@ -65,7 +69,7 @@ describe("generateMetadata", () => {
     mockGetFacilityByIdCached.mockResolvedValue(facility);
 
     const metadata = await generateMetadata({
-      params: Promise.resolve({ slug: "sunrise-solar-array" }),
+      params: Promise.resolve({ slug: "riverbend-generation-campus" }),
     });
 
     expect(metadata.title).toContain("power-generation facility");
@@ -137,5 +141,61 @@ describe("generateMetadata", () => {
     });
 
     expect(metadata).toEqual({ title: "Facility not found" });
+  });
+
+  it("strips a legal suffix ('CleanSpark, Inc.') before checking operator redundancy, and also omits the type label since the name says 'Bitcoin Mining Facility'", async () => {
+    const facility = makeFacility({
+      name: "CleanSpark Dalton Bitcoin Mining Facility",
+      operator: "CleanSpark, Inc.",
+      facilityType: "crypto_mining",
+      location: { lat: 34.8, lon: -84.9, city: "Dalton", state: "GA", precision: "exact" },
+    });
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "cleanspark-dalton" }),
+    });
+
+    const title = metadata.title as string;
+    // Without suffix-stripping, ", Inc." would defeat the substring match and
+    // "CleanSpark" would print twice — assert it appears exactly once.
+    expect(title.split(/cleanspark/i).length - 1).toBe(1);
+    expect(title).toBe("CleanSpark Dalton Bitcoin Mining Facility — Dalton, GA");
+  });
+
+  it("strips a legal suffix ('Applied Digital Corporation') before checking operator redundancy", async () => {
+    const facility = makeFacility({
+      name: "Applied Digital Polaris Forge 1",
+      operator: "Applied Digital Corporation",
+      facilityType: "data_center",
+      location: { lat: 47.9, lon: -97.0, city: "Harwood", state: "ND", precision: "exact" },
+    });
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "applied-digital-polaris-forge-1" }),
+    });
+
+    const title = metadata.title as string;
+    expect(title.split(/applied digital/i).length - 1).toBe(1);
+    expect(title).toBe("Applied Digital Polaris Forge 1 — data center in Harwood, ND");
+  });
+
+  it("omits the type label but keeps the operator when only the name conveys the type (operator not redundant)", async () => {
+    const facility = makeFacility({
+      name: "Riverbend Solar Array",
+      operator: "NextEra Energy",
+      facilityType: "power_generation",
+      location: { lat: 32.7, lon: -97.3, city: "Fort Worth", state: "TX", precision: "exact" },
+    });
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "riverbend-solar-array" }),
+    });
+
+    // "Solar" in the name makes "power-generation facility" redundant, but
+    // the operator ("NextEra Energy") is unrelated to the name and stays.
+    expect(metadata.title).toBe("Riverbend Solar Array — NextEra Energy in Fort Worth, TX");
   });
 });

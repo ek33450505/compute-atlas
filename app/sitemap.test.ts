@@ -16,8 +16,8 @@ import { GLOSSARY_TOPICS } from "@/lib/glossary";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
-  it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, /explore, /activity, and /contribute", () => {
-    const routes = buildStaticRoutes();
+  it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, /explore, /activity, and /contribute", async () => {
+    const routes = await buildStaticRoutes();
     const urls = routes.map((r) => r.url);
     expect(urls).toContain(siteConfig.url);
     expect(urls).toContain(`${siteConfig.url}/map`);
@@ -141,7 +141,7 @@ describe("sitemap", () => {
   });
 
   it("total route count equals the sum of all five builders", async () => {
-    const staticRoutes = buildStaticRoutes();
+    const staticRoutes = await buildStaticRoutes();
     const stateRoutes = await buildStateRoutes();
     const operatorRoutes = await buildOperatorRoutes();
     const facilityRoutes = await buildFacilityRoutes();
@@ -153,7 +153,7 @@ describe("sitemap", () => {
       facilityRoutes.length +
       statusRoutes.length;
     expect(total).toBe(
-      buildStaticRoutes().length +
+      (await buildStaticRoutes()).length +
         (await buildStateRoutes()).length +
         (await buildOperatorRoutes()).length +
         (await buildFacilityRoutes()).length +
@@ -163,7 +163,7 @@ describe("sitemap", () => {
 
   it("all URLs are absolute and under siteConfig.url", async () => {
     const allRoutes = [
-      ...buildStaticRoutes(),
+      ...(await buildStaticRoutes()),
       ...(await buildStateRoutes()),
       ...(await buildOperatorRoutes()),
       ...(await buildFacilityRoutes()),
@@ -184,6 +184,50 @@ describe("sitemap", () => {
       );
       expect(entry).toBeDefined();
       expect(entry!.url).toBe(`${siteConfig.url}/facilities/${f.id}`);
+    }
+  });
+
+  it("static routes' lastModified does not change across two calls made at different wall-clock times", async () => {
+    const first = await buildStaticRoutes();
+    // A real, non-zero clock advance between calls — the bug this guards
+    // against is `new Date()` baked into every entry, which would differ
+    // between these two calls even a millisecond apart.
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    const second = await buildStaticRoutes();
+
+    expect(first).toHaveLength(second.length);
+    for (let i = 0; i < first.length; i++) {
+      expect(first[i].url).toBe(second[i].url);
+      const a = first[i].lastModified as Date;
+      const b = second[i].lastModified as Date;
+      expect(a.getTime()).toBe(b.getTime());
+    }
+  });
+
+  it("dataset-backed static routes (e.g. /) use the dataset's real max lastUpdated, not 'now'", async () => {
+    const testStart = Date.now();
+    const routes = await buildStaticRoutes();
+    const facilities = await getAllFacilities();
+    const expectedMax = Math.max(
+      ...facilities.map((f) => new Date(f.lastUpdated).getTime())
+    );
+
+    const home = routes.find((r) => r.url === siteConfig.url);
+    expect(home).toBeDefined();
+    const actual = home!.lastModified as Date;
+    expect(actual.getTime()).toBe(expectedMax);
+    // Proves the value is real facility data, not build-time "now".
+    expect(actual.getTime()).toBeLessThan(testStart);
+  });
+
+  it("genuinely static editorial routes (/about, /api, /contribute) use a stable date, not 'now'", async () => {
+    const testStart = Date.now();
+    const routes = await buildStaticRoutes();
+    for (const path of ["/about", "/api", "/contribute"]) {
+      const entry = routes.find((r) => r.url === `${siteConfig.url}${path}`);
+      expect(entry).toBeDefined();
+      const actual = entry!.lastModified as Date;
+      expect(actual.getTime()).toBeLessThan(testStart);
     }
   });
 });

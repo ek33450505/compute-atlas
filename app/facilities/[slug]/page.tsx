@@ -11,6 +11,8 @@ import {
   formatLocation,
   AI_CLASSIFICATION_LABELS,
   CONFIDENCE_LABELS,
+  isOperatorRedundant,
+  nameConveysType,
 } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { formatCountyLabel } from "@/lib/metros";
@@ -72,16 +74,25 @@ export async function generateMetadata({
   const titleLocation = city ? `${city}, ${state}` : stateNameFromCode(state) ?? state;
 
   // Omit the operator when it's already embedded in the facility name (or
-  // vice versa) — e.g. name "Google Council Bluffs", operator "Google" —
-  // to avoid "Google Council Bluffs — Google data center in ...".
-  const nameLower = facility.name.toLowerCase();
-  const operatorLower = facility.operator.toLowerCase();
-  const operatorInName =
-    nameLower.includes(operatorLower) || operatorLower.includes(nameLower);
+  // vice versa, modulo legal suffixes like "Inc."/"LLC") — e.g. name
+  // "Google Council Bluffs", operator "Google" — to avoid "Google Council
+  // Bluffs — Google data center in ...". Likewise omit the type label when
+  // the name already conveys the type — e.g. "... Bitcoin Mining Facility"
+  // already says crypto-mining. Both keep titles from carrying two names
+  // for the same thing; see lib/format.ts for the redundancy checks.
+  const operatorRedundant = isOperatorRedundant(facility.name, facility.operator);
+  const typeRedundant = nameConveysType(facility.name, facility.facilityType);
 
-  const title = operatorInName
-    ? `${facility.name} — ${typeLabel} in ${titleLocation}`
-    : `${facility.name} — ${facility.operator} ${typeLabel} in ${titleLocation}`;
+  const descriptor = [
+    operatorRedundant ? null : facility.operator,
+    typeRedundant ? null : typeLabel,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const title = descriptor
+    ? `${facility.name} — ${descriptor} in ${titleLocation}`
+    : `${facility.name} — ${titleLocation}`;
 
   const capacity = formatCapacity(facility);
   const hasCapacity = Boolean(capacity) && capacity !== "—";
