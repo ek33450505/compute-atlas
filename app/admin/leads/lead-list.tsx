@@ -6,8 +6,8 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { AlertTriangle, CheckCircle2, Clock, ExternalLink } from "lucide-react";
 
-import type { LeadTriage, AdminLeadRow } from "@/lib/leads";
-import { LEAD_STATUSES, type LeadStatus } from "@/lib/leads";
+import type { LeadTriage, AdminLeadRow } from "@/lib/lead-fields";
+import { LEAD_STATUSES, type LeadStatus } from "@/lib/lead-fields";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

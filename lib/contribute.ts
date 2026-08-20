@@ -8,50 +8,18 @@ import {
   CORRECTABLE_FIELD_META,
   type CorrectableKey,
 } from "@/lib/contribute-fields";
+import { httpUrlSchema, sanitizeAttribution } from "@/lib/intake-fields";
 
 export { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
-
-// sanitizeAttribution
-const LEADING_AT_RE = /^@+/; // drop any leading @
-const ATTRIBUTION_DISALLOWED_RE = /[^A-Za-z0-9 _.\-]/g; // conservative allowlist: alnum, space, _ . -
-const WHITESPACE_RUN_RE = /\s+/g; // collapse internal whitespace
+// Re-exported so existing callers (this module's own tests, lib/leads.ts
+// previously) keep working. The canonical definitions live in the
+// client-safe "@/lib/intake-fields" leaf — see that file's header.
+export { httpUrlSchema, sanitizeAttribution } from "@/lib/intake-fields";
 
 // slugify
 const SLUG_NON_ALNUM_RE = /[^a-z0-9]+/g;
 const SLUG_EDGE_DASHES_RE = /^-+|-+$/g;
 const SLUG_DASH_RUN_RE = /-+/g;
-
-// Mirrors lib/schema.ts sourceSchema's http/https refine — rejects
-// javascript:/data: URLs at submit time, not just at facility-write time.
-// Exported so lib/leads.ts (a sibling public-intake surface) reuses this
-// exact refine instead of maintaining a second copy.
-export const httpUrlSchema = z.string().max(2000).url().refine(
-  (value) => {
-    try {
-      const { protocol } = new URL(value);
-      return protocol === "http:" || protocol === "https:";
-    } catch {
-      return false;
-    }
-  },
-  { message: "url must use the http or https protocol" }
-);
-
-/**
- * Normalizes an optional, public contributor handle for display. Rejects
- * anything email-like, strips to a conservative handle charset, hard-caps
- * length, and returns undefined for empty/invalid input so callers omit the
- * field entirely (anonymous stays the default).
- */
-export function sanitizeAttribution(raw?: string): string | undefined {
-  if (!raw) return undefined;
-  let s = raw.trim().replace(LEADING_AT_RE, "");
-  if (s.includes("@")) return undefined;       // reject emails / anything address-like
-  s = s.replace(ATTRIBUTION_DISALLOWED_RE, "");
-  s = s.replace(WHITESPACE_RUN_RE, " ").trim();
-  s = s.slice(0, 40);                           // hard cap 40
-  return s.length > 0 ? s : undefined;
-}
 
 const createSchema = z.object({
   kind: z.literal("create"),

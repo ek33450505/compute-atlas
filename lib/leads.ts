@@ -3,26 +3,14 @@ import { eq, desc } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { leadsTable, type LeadRow } from "@/lib/db/schema";
-import { httpUrlSchema, sanitizeAttribution } from "@/lib/contribute";
+import { httpUrlSchema, sanitizeAttribution } from "@/lib/intake-fields";
+import { LEAD_STATUSES, type LeadStatus, type LeadTriage, type AdminLeadRow } from "@/lib/lead-fields";
 
-/**
- * Submit-time server-side fetch result, recorded by the Unit 2 POST /api/leads
- * handler after it fetches `url` once. Every field but `fetchedAt`/`ok` is
- * optional/nullable because the fetch itself can fail.
- */
-export interface LeadTriage {
-  fetchedAt: string; // ISO date
-  ok: boolean; // did we reach it at all
-  httpStatus?: number;
-  finalUrl?: string; // after redirects
-  title?: string; // <title>, trimmed
-  contentType?: string;
-  error?: string; // set when ok === false
-  duplicateFacilityIds?: string[]; // live facilities already citing this URL
-}
-
-export const LEAD_STATUSES = ["new", "researching", "promoted", "dismissed"] as const;
-export type LeadStatus = (typeof LEAD_STATUSES)[number];
+// Re-exported so existing server-side callers (app/admin/leads/page.tsx,
+// app/admin/leads/actions.ts, this module's own tests) keep importing from
+// "@/lib/leads" unchanged. Client components must import these from the
+// client-safe "@/lib/lead-fields" leaf directly — see that file's header.
+export { LEAD_STATUSES, type LeadStatus, type LeadTriage, type AdminLeadRow };
 
 export const leadInputSchema = z.object({
   url: httpUrlSchema,
@@ -88,20 +76,6 @@ const ADMIN_LEAD_COLUMNS = {
   reviewedAt: leadsTable.reviewedAt,
   promotedSubmissionId: leadsTable.promotedSubmissionId,
 } as const;
-
-export type AdminLeadRow = Pick<
-  LeadRow,
-  | "id"
-  | "createdAt"
-  | "url"
-  | "note"
-  | "attribution"
-  | "status"
-  | "triage"
-  | "reviewNote"
-  | "reviewedAt"
-  | "promotedSubmissionId"
->;
 
 /** Lists leads for the admin triage UI, optionally filtered by status, newest first. */
 export async function listLeadsForAdmin(status?: string): Promise<AdminLeadRow[]> {
