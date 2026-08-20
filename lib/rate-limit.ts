@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { and, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
-import { submissionsTable, subscriptionsTable } from "@/lib/db/schema";
+import { submissionsTable, subscriptionsTable, leadsTable } from "@/lib/db/schema";
 
 export const RATE_LIMIT_MAX = 5;
 export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -52,6 +52,23 @@ export async function checkSubscribeRateLimit(ipHash: string): Promise<{ ok: boo
         eq(subscriptionsTable.submitterIpHash, ipHash)
       )
     );
+  return rateLimitDecision(Number(rows[0]?.c ?? 0));
+}
+
+/**
+ * Per-IP rate limit for the leads endpoint (`POST /api/leads`), counting
+ * `leadsTable` rows via its real `submitterIpHash` column — unlike
+ * `checkRateLimit`, which counts `submissions` rows through a jsonb-path
+ * lookup. Kept as its own counter (own table, same MAX/WINDOW) so leads and
+ * facility submissions don't share a budget — otherwise a burst of one would
+ * silently starve the other.
+ */
+export async function checkLeadRateLimit(ipHash: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(leadsTable)
+    .where(and(gt(leadsTable.createdAt, windowStart), eq(leadsTable.submitterIpHash, ipHash)));
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
 }
 

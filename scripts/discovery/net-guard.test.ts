@@ -103,6 +103,31 @@ describe("isBlockedHost", () => {
   it("does not block an ordinary public hostname", () => {
     expect(isBlockedHost("example.com")).toBe(false);
   });
+
+  it("blocks a fully-qualified hostname with a trailing root dot, without relying on DNS", () => {
+    // "localhost." is a DNS-legal, FQDN spelling of "localhost" that the
+    // literal `===` / `.endsWith(".localhost")` comparisons would otherwise
+    // miss. This must hold on isBlockedHost ALONE — no resolve4/resolve6
+    // deps are passed here, so a pass proves layer one stands on its own
+    // rather than depending on Node's dns.resolve4("localhost.") incidentally
+    // normalizing it back to 127.0.0.1.
+    expect(isBlockedHost("localhost.")).toBe(true);
+  });
+
+  it("blocks an uppercase trailing-dot variant (case AND trailing-dot canonicalization together)", () => {
+    expect(isBlockedHost("LOCALHOST.")).toBe(true);
+  });
+
+  it("blocks a *.localhost subdomain with a trailing root dot", () => {
+    expect(isBlockedHost("foo.localhost.")).toBe(true);
+  });
+
+  it("blocks an IPv4 literal with a trailing root dot", () => {
+    // Without stripping the trailing dot, ipv4ToInt's split(".") sees a
+    // trailing empty segment and the address parses as malformed (falls
+    // through unblocked).
+    expect(isBlockedHost("127.0.0.1.")).toBe(true);
+  });
 });
 
 describe("parseRetryAfterMs", () => {

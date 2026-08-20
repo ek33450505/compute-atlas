@@ -107,7 +107,7 @@ interface ZodIssue {
   message: string;
 }
 
-function issuesToFieldMap(issues: unknown): FieldIssues {
+export function issuesToFieldMap(issues: unknown): FieldIssues {
   const map: FieldIssues = {};
   if (!Array.isArray(issues)) return map;
   for (const issue of issues) {
@@ -129,7 +129,7 @@ function issuesToFieldMap(issues: unknown): FieldIssues {
 // Reusable small field wrappers (mirrors app/admin/facilities/facility-form.tsx)
 // ---------------------------------------------------------------------------
 
-function FieldError({ id, message }: { id: string; message?: string }) {
+export function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
     <p id={id} role="alert" className="text-sm text-destructive">
@@ -138,7 +138,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-function TextField({
+export function TextField({
   id,
   label,
   value,
@@ -150,6 +150,7 @@ function TextField({
   min,
   hint,
   maxLength,
+  placeholder,
 }: {
   id: string;
   label: string;
@@ -162,6 +163,7 @@ function TextField({
   min?: string;
   hint?: string;
   maxLength?: number;
+  placeholder?: string;
 }) {
   const errorId = `${id}-error`;
   const hintId = `${id}-hint`;
@@ -179,6 +181,7 @@ function TextField({
         step={step}
         min={min}
         maxLength={maxLength}
+        placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
@@ -505,19 +508,25 @@ function NotesSection({
 // Honeypot (hidden from humans, off-screen not display:none)
 // ---------------------------------------------------------------------------
 
-function HoneypotField({
+export function HoneypotField({
+  id = "website",
   value,
   onChange,
 }: {
+  /** DOM id/name — override when co-mounting more than one form on a page
+   * (e.g. /contribute renders this alongside ContributeFacilityForm's own
+   * honeypot) so ids stay document-unique. Field key in the JSON payload is
+   * always `website`, independent of this. */
+  id?: string;
   value: string;
   onChange: (v: string) => void;
 }) {
   return (
     <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
-      <label htmlFor="website">Website</label>
+      <label htmlFor={id}>Website</label>
       <input
-        id="website"
-        name="website"
+        id={id}
+        name={id}
         type="text"
         tabIndex={-1}
         autoComplete="off"

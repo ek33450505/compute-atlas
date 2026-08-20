@@ -143,7 +143,16 @@ export function isBlockedHost(hostname: string): boolean {
   // already strips the brackets, but guard defensively in case a raw
   // bracketed value is passed directly.
   const unbracketed = hostname.startsWith("[") && hostname.endsWith("]") ? hostname.slice(1, -1) : hostname;
-  const lower = unbracketed.toLowerCase();
+  // Canonicalize BEFORE any blocklist comparison below: lowercase, and strip
+  // a single trailing root dot. "localhost." is a valid, DNS-legal spelling
+  // of "localhost" (a fully-qualified name) that the literal `===` and
+  // `.endsWith(".localhost")` checks below would otherwise miss — as would
+  // isBlockedIpv4's dotted-quad parse for an IP literal like "127.0.0.1.".
+  // Node's `dns.resolve4("localhost.")` happens to special-case it back to
+  // 127.0.0.1, so `resolvesToBlockedAddress` currently catches this too —
+  // but that's incidental resolver behavior this layer must not depend on to
+  // stand alone.
+  const lower = unbracketed.toLowerCase().replace(/\.$/, "");
 
   if (lower === "localhost" || lower.endsWith(".localhost")) return true;
   if (isBlockedIpv4(lower)) return true;

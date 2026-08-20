@@ -8,12 +8,13 @@ import { PrimaryNav } from "@/components/primary-nav";
 import { MobileNav } from "@/components/mobile-nav";
 import { CommandPalette } from "@/components/search/command-palette";
 
-const NAV_LINKS = [
+export const NAV_LINKS = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
   { label: "Stats", href: "/stats" },
   { label: "Explore", href: "/explore" },
   { label: "Activity", href: "/activity" },
+  { label: "Contribute", href: "/contribute" },
   { label: "About", href: "/about" },
 ] as const;
 

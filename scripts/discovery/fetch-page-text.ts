@@ -37,7 +37,33 @@ const ALLOWED_CONTENT_TYPES = ["text/html", "text/plain"];
 const DEFAULT_TIMEOUT_MS = 10_000;
 
 export type FetchPageTextResult =
-  | { ok: true; text: string; finalUrl: string; httpStatus: number }
+  | {
+      ok: true;
+      text: string;
+      finalUrl: string;
+      httpStatus: number;
+      /**
+       * The base content-type actually served (one of ALLOWED_CONTENT_TYPES).
+       * Optional (not just new-and-unused) because several existing test
+       * files in this directory construct `FetchPageTextResult` literals by
+       * hand without it — making it required broke those call sites'
+       * type-checking even though they never read the field.
+       */
+      contentType?: string;
+      /**
+       * The unstripped response body, present only when `contentType` is
+       * `"text/html"`. Additive field for `lib/url-triage.ts` (Unit 2's
+       * lead-triage caller — the first consumer of this module outside
+       * scripts/discovery/), which needs the real `<title>` tag rather than
+       * the flattened `text` (tags are already stripped there, so a
+       * `<title>` can't be distinguished from surrounding body text once
+       * `htmlToText` has run). Every existing caller in this directory reads
+       * only `.text`/`.finalUrl`/`.httpStatus`, so this is backward
+       * compatible; still bounded by the same MAX_RESPONSE_BYTES cap as
+       * `text` since both derive from the one already-capped `rawBody` read.
+       */
+      rawHtml?: string;
+    }
   | {
       ok: false;
       reason: "blocked" | "too_large" | "bad_content_type" | "http_error" | "network_error" | "redirect_limit";
@@ -83,6 +109,21 @@ export interface FetchPageTextDeps {
   fetchImpl: typeof fetch;
   /** Per-attempt timeout in ms. Defaults to 10s. */
   timeoutMs?: number;
+  /**
+   * Wall-clock budget in ms across the WHOLE redirect chain (the initial
+   * attempt plus every hop), not just a single attempt. `timeoutMs` resets
+   * on each iteration of the hop loop, so without this a malicious redirect
+   * chain can hold the caller alive for roughly `(MAX_REDIRECTS + 1) *
+   * timeoutMs` — six attempts at the default 10s timeout is ~60s.
+   *
+   * Optional and `undefined` by default so existing scripts/discovery/
+   * callers (curated source URLs the operator chose; no wall-clock concern)
+   * see NO behavior change — this file's own timeout budget is unchanged
+   * unless a caller opts in. `lib/url-triage.ts` (untrusted, anonymous
+   * public input, run inside a serverless request) passes an explicit
+   * budget.
+   */
+  totalTimeoutMs?: number;
   /** Injectable DNS resolvers, threaded through to `resolvesToBlockedAddress`
    * so tests never touch real DNS. Production callers omit this and get the
    * real `node:dns/promises` resolvers. */
@@ -214,11 +255,29 @@ function baseContentType(header: string | null): string | null {
 export async function fetchPageText(url: string, deps: FetchPageTextDeps): Promise<FetchPageTextResult> {
   const { fetchImpl, resolveDeps } = deps;
   const timeoutMs = deps.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  // Wall-clock deadline across the WHOLE hop loop — see FetchPageTextDeps's
+  // `totalTimeoutMs` doc comment. `undefined` (no budget passed) yields
+  // `Infinity` here, so the remaining-budget checks below are always a no-op
+  // for callers that don't opt in, preserving today's per-hop-only behavior
+  // exactly.
+  const deadline = deps.totalTimeoutMs !== undefined ? Date.now() + deps.totalTimeoutMs : Infinity;
 
   let currentUrl = url;
   let hops = 0;
 
   for (;;) {
+    // Checked before EVERY attempt, including each redirect hop — the whole
+    // point is a chain of redirects can't outlast this budget by resetting
+    // a per-hop timer on each iteration.
+    const remainingMs = deadline - Date.now();
+    if (remainingMs <= 0) {
+      return {
+        ok: false,
+        reason: "network_error",
+        errorMessage: "Total fetch time budget exceeded across redirect hops",
+      };
+    }
+
     if (await isUnsafeToConnect(currentUrl, resolveDeps)) {
       return { ok: false, reason: "blocked" };
     }
@@ -233,8 +292,13 @@ export async function fetchPageText(url: string, deps: FetchPageTextDeps): Promi
     // after headers arrive would let a body that stalls mid-stream (a
     // slow-loris response) hang forever — the exact failure this guard
     // exists to prevent.
+    //
+    // Clamped to whatever total budget remains so the last hop before the
+    // deadline can't itself overshoot it (e.g. a 10s per-attempt timeout
+    // with only 2s of total budget left waits at most 2s, not 10).
+    const attemptTimeoutMs = Math.min(timeoutMs, remainingMs);
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const timer = setTimeout(() => controller.abort(), attemptTimeoutMs);
     try {
       let res: Response;
       try {
@@ -295,7 +359,14 @@ export async function fetchPageText(url: string, deps: FetchPageTextDeps): Promi
         return { ok: false, reason: "too_large", httpStatus: res.status };
       }
 
-      return { ok: true, text: htmlToText(rawBody), finalUrl: currentUrl, httpStatus: res.status };
+      return {
+        ok: true,
+        text: htmlToText(rawBody),
+        finalUrl: currentUrl,
+        httpStatus: res.status,
+        contentType,
+        ...(contentType === "text/html" ? { rawHtml: rawBody } : {}),
+      };
     } finally {
       clearTimeout(timer);
     }

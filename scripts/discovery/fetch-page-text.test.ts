@@ -251,6 +251,61 @@ describe("fetchPageText", () => {
     expect(result.reason).toBe("redirect_limit");
   });
 
+  it("aborts on the wall-clock total budget rather than running the full per-hop timeout on every hop", async () => {
+    // Simulates real elapsed time deterministically via Date.now() rather
+    // than real sleeps (never hits the real network or uses real waits):
+    // iteration 1 sees 15ms of budget remaining (proceeds), iteration 2 sees
+    // 5ms remaining (proceeds), iteration 3 sees the budget already
+    // exhausted (-15ms) and aborts BEFORE a third connection attempt — this
+    // is the regression case for the per-hop-timeout bug, where a redirect
+    // chain could otherwise run all the way to MAX_REDIRECTS (6 fetchImpl
+    // calls) instead of stopping at the wall-clock deadline.
+    const dateNowSpy = vi.spyOn(Date, "now");
+    const timeline = [1_000, 1_005, 1_015, 1_035];
+    let call = 0;
+    dateNowSpy.mockImplementation(() => timeline[Math.min(call++, timeline.length - 1)]);
+
+    const fetchImpl = vi.fn<typeof fetch>(async (input) => {
+      const url = String(input);
+      const hopNumber = Number(url.match(/\/hop(\d+)$/)?.[1] ?? "0");
+      return makeResponse({ status: 302, headers: { location: `https://public.example.com/hop${hopNumber + 1}` } });
+    });
+
+    try {
+      const result = await fetchPageText(
+        "https://public.example.com/hop0",
+        baseDeps(fetchImpl, { timeoutMs: 10_000, totalTimeoutMs: 20 }),
+      );
+
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("expected ok:false");
+      expect(result.reason).toBe("network_error");
+      expect(result.errorMessage).toMatch(/budget/i);
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
+    } finally {
+      dateNowSpy.mockRestore();
+    }
+  });
+
+  it("does not enforce any total budget when totalTimeoutMs is omitted — existing scripts/discovery/ callers unaffected", async () => {
+    // Same redirect-chain shape as "gives up after more than 5 redirect
+    // hops" above, but explicit about the backward-compatibility contract:
+    // with no totalTimeoutMs passed, the loop must still reach
+    // MAX_REDIRECTS's own redirect_limit rather than short-circuiting on a
+    // wall-clock budget it was never given.
+    const fetchImpl = vi.fn<typeof fetch>(async (input) => {
+      const url = String(input);
+      const hopNumber = Number(url.match(/\/hop(\d+)$/)?.[1] ?? "0");
+      return makeResponse({ status: 302, headers: { location: `https://public.example.com/hop${hopNumber + 1}` } });
+    });
+
+    const result = await fetchPageText("https://public.example.com/hop0", baseDeps(fetchImpl, { timeoutMs: 10_000 }));
+
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("expected ok:false");
+    expect(result.reason).toBe("redirect_limit");
+  });
+
   it("classifies a non-2xx, non-3xx response as http_error with the status attached", async () => {
     const fetchImpl = vi.fn<typeof fetch>(async () => makeResponse({ status: 404, headers: {} }));
     const result = await fetchPageText("https://example.com/missing", baseDeps(fetchImpl));

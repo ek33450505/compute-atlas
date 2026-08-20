@@ -37,6 +37,9 @@ const NAV_LINKS = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
   { label: "Stats", href: "/stats" },
+  { label: "Explore", href: "/explore" },
+  { label: "Activity", href: "/activity" },
+  { label: "Contribute", href: "/contribute" },
   { label: "About", href: "/about" },
 ] as const;
 
@@ -50,6 +53,18 @@ describe("PrimaryNav — render", () => {
 
     for (const { label } of NAV_LINKS) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
+    }
+  });
+
+  it("renders all 7 links with correct hrefs", () => {
+    render(<PrimaryNav links={NAV_LINKS} />);
+
+    expect(NAV_LINKS).toHaveLength(7);
+    for (const { label, href } of NAV_LINKS) {
+      expect(screen.getByRole("link", { name: label })).toHaveAttribute(
+        "href",
+        href
+      );
     }
   });
 

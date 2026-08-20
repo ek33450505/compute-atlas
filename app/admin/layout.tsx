@@ -30,6 +30,12 @@ export default function AdminLayout({
               Submissions
             </Link>
             <Link
+              href="/admin/leads"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Leads
+            </Link>
+            <Link
               href="/admin/facilities"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
