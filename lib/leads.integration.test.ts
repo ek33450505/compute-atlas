@@ -12,7 +12,7 @@ import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
-import { createLead, listLeadsForAdmin, updateLeadStatus } from "@/lib/leads";
+import { createLead, listLeadsForAdmin, updateLeadStatus, promoteLead } from "@/lib/leads";
 
 let tdb: TestDbHandle;
 
@@ -153,6 +153,48 @@ describe("updateLeadStatus", () => {
     expect(first.ok).toBe(true);
 
     const repeat = await updateLeadStatus(created.id, "researching");
+    expect(repeat.ok).toBe(false);
+    if (repeat.ok) return;
+    expect(repeat.status).toBe(409);
+  });
+});
+
+describe("promoteLead", () => {
+  it("sets status=promoted and records promotedSubmissionId in one write", async () => {
+    const created = await createLead({ url: "https://example.com/a" }, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const result = await promoteLead(created.id, "11111111-1111-1111-1111-111111111111", "auto-staged");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.lead.status).toBe("promoted");
+    expect(result.lead.promotedSubmissionId).toBe("11111111-1111-1111-1111-111111111111");
+    expect(result.lead.reviewNote).toBe("auto-staged");
+    expect(result.lead.reviewedAt).not.toBeNull();
+
+    const rows = await listLeadsForAdmin("promoted");
+    expect(rows).toHaveLength(1);
+    expect(rows[0].promotedSubmissionId).toBe("11111111-1111-1111-1111-111111111111");
+  });
+
+  it("404s on an unknown lead id", async () => {
+    const result = await promoteLead(
+      "00000000-0000-0000-0000-000000000000",
+      "22222222-2222-2222-2222-222222222222"
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(404);
+  });
+
+  it("409s when the lead is already promoted", async () => {
+    const created = await createLead({ url: "https://example.com/a" }, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const first = await promoteLead(created.id, "33333333-3333-3333-3333-333333333333");
+    expect(first.ok).toBe(true);
+
+    const repeat = await promoteLead(created.id, "44444444-4444-4444-4444-444444444444");
     expect(repeat.ok).toBe(false);
     if (repeat.ok) return;
     expect(repeat.status).toBe(409);

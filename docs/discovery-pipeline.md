@@ -583,3 +583,84 @@ The bench deliberately duplicates the shipped quote-gate logic (see
   2/7 recall against 4/4 for one-field-per-call. The reason is recall, not
   determinism — do not conflate this with the `OLLAMA_NUM_PARALLEL`
   reproducibility finding above, which is a separate result about concurrency.
+
+## Leads lane: closing the loop on public tips
+
+`scripts/discovery/leads-lane.ts` takes anonymous public tips out of the
+`leads` table (`POST /api/leads`, staged `new` and reviewed at
+`/admin/leads`), researches each one with a local Ollama model, and stages the
+promising ones as `pending` `submissions` for the maintainer's normal human
+approve gate. Like Track 5, this is an operator tool — it never writes a live
+facility and never imports `lib/facility-write.ts`.
+
+### What it does
+
+For each `new` lead (oldest first):
+
+1. Fetches the lead's URL. A fetch failure leaves the lead `new` — a
+   bot-walled page is not a bad tip (s87) — and is not counted against it.
+2. Asks the model to extract `name`, `operator`, `facilityType`, `status`,
+   `city`, `state`, and `capacityMw`, explicitly instructed to return `null`
+   for anything the page does not state. **The model never produces
+   coordinates** — that field does not exist in the extraction schema at all.
+3. If the extraction has no usable identity (`name`/`operator`/`state` all
+   required), the lead moves to `researching` — a human should look. A lead is
+   never `dismissed` automatically; only a human dismisses a lead.
+4. Re-verifies the extracted name (plus any capacity figure, as a numeric
+   hint) against the page via the same mechanical gate discovery submissions
+   already use (`verify-source.ts`). Only a `"verified"` verdict proceeds.
+   `"rejected"` (checked and it didn't hold up) moves the lead to
+   `researching`. `"escalate"` (the fetcher couldn't structurally ingest the
+   page) leaves the lead untouched at `new` for a human to look at from the
+   normal queue — it is deliberately never treated as a rejection.
+   `"unavailable"` (the model itself could not be reached) **aborts the
+   entire run**, exactly like the discovery submission gate — never silently
+   reclassified as "nothing found."
+5. Geocodes the extracted `city, state` via `geocodeUS`
+   (`lib/geocode.ts`) — coordinates are derived ONLY this way, never proposed
+   by the model. Zero geocode results moves the lead to `researching`.
+6. Builds the `create` payload in exactly the shape `buildCreatePayload`
+   (`lib/contribute.ts`) produces — `confidence: "rumored"`,
+   `location.precision: "approximate"`, the lead's URL as the source — and
+   validates it against `facilitySchema` before ever calling
+   `createSubmission`.
+7. On success, `promoteLead` (`lib/leads.ts`) moves the lead to `promoted` and
+   records the new submission id, in one write.
+
+### Usage
+
+```bash
+# Real run (default) — processes up to 10 new leads.
+npm run leads-lane
+
+# Preview without writing anything.
+npm run leads-lane -- --dry-run
+
+# Process more leads in one pass, with a custom run id.
+npm run leads-lane -- --limit=25 --run-id=manual-test
+```
+
+Needs a local Ollama daemon with `OLLAMA_VERIFY_MODEL` pulled, same as every
+other verification-gated discovery script — see "Source verification gate"
+above for setup and configuration (`OLLAMA_BASE_URL`, `OLLAMA_VERIFY_MODEL`,
+`OLLAMA_TIMEOUT_MS`). Unlike `submit-candidates.ts`, this lane talks to the
+database directly (via `lib/leads.ts`/`lib/submissions.ts`), not over HTTP —
+there is no public REST route for reading or mutating leads (the admin triage
+UI is session-gated Server Actions, unreachable from a standalone script), so
+run it with `--env-file=.env.local` for `DATABASE_URL`, matching
+`scripts/seed.ts`/`scripts/sync-to-neon.ts`.
+
+### Safety properties
+
+- **Staging-only, same invariant as the rest of discovery:** the only write
+  paths are `createSubmission` (a `pending` row) and `promoteLead`/
+  `updateLeadStatus` (moving a lead between `new`/`researching`/`promoted`).
+  Nothing here ever writes a live facility.
+- **A lead is never auto-dismissed.** The worst outcome an unpromising lead
+  can reach on its own is `researching` — flagged for a human, never
+  discarded. Only the admin triage UI's explicit dismiss action sets
+  `dismissed`.
+- **Fail-loud on an Ollama outage**, identical to `submit-candidates.ts`: any
+  `"unavailable"` model response (extraction OR verification) throws and
+  aborts the whole run rather than silently staging unverified leads or
+  misreading an outage as "nothing found."

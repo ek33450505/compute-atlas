@@ -147,6 +147,47 @@ export async function updateLeadStatus(
   return { ok: true, lead: updated };
 }
 
+/**
+ * Promotes a lead directly to `promoted`, recording the submission id it was
+ * staged into. Used by the discovery leads-lane operator tool
+ * (scripts/discovery/leads-lane.ts) after `createSubmission` succeeds — a
+ * single update that sets `status` and `promotedSubmissionId` together, so
+ * the two can never race apart into a lead marked promoted with no
+ * submission id (or vice versa). Mirrors `updateLeadStatus`'s
+ * not-found/already-that-status guards; kept as a sibling function rather
+ * than an optional param on `updateLeadStatus` to avoid touching that
+ * function's existing call sites (the three admin triage actions) for an
+ * unrelated caller's need.
+ */
+export async function promoteLead(
+  id: string,
+  submissionId: string,
+  reviewNote?: string
+): Promise<LeadActionResult> {
+  const db = getDb();
+  const rows = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
+  const row = rows[0];
+  if (!row) {
+    return { ok: false, status: 404, error: "Lead not found" };
+  }
+  if (row.status === "promoted") {
+    return { ok: false, status: 409, error: "Lead already promoted" };
+  }
+
+  const [updated] = await db
+    .update(leadsTable)
+    .set({
+      status: "promoted",
+      reviewedAt: new Date(),
+      reviewNote: reviewNote ?? null,
+      promotedSubmissionId: submissionId,
+    })
+    .where(eq(leadsTable.id, id))
+    .returning();
+
+  return { ok: true, lead: updated };
+}
+
 /** Records the submit-time server-side fetch result against a lead. Used by Unit 2. */
 export async function setLeadTriage(id: string, triage: LeadTriage): Promise<LeadActionResult> {
   const db = getDb();
