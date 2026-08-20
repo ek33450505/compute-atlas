@@ -50,7 +50,7 @@ export function Wordmark({ showTagline = false, className }: WordmarkProps) {
         </span>
       </span>
       {showTagline && (
-        <span className="hidden sm:block font-mono text-[8.5px] uppercase tracking-[0.19em] text-muted-foreground leading-tight mt-0.5">
+        <span className="hidden lg:block font-mono text-[8.5px] uppercase tracking-[0.19em] text-muted-foreground leading-tight mt-0.5">
           Mapping the U.S. compute buildout
         </span>
       )}

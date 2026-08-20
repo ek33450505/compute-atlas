@@ -1,21 +1,26 @@
 import type { Metadata } from "next";
 
 import { Breadcrumb } from "@/components/breadcrumb";
+import { ContributeLeadForm } from "@/components/contribute/contribute-lead-form";
 import { ContributeFacilityForm } from "@/components/contribute/contribute-facility-form";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contribute a facility",
+  title: "Share a lead",
   description:
-    "Suggest a data center, crypto-mining, or power-generation facility for Compute Atlas. Anonymous, source-cited, and reviewed before publishing.",
+    "Know about a data center, mining site, or power plant that isn't on Compute Atlas yet? Send a link and we'll take it from there — anonymous, source-cited, and checked before anything is published.",
   alternates: { canonical: "/contribute" },
 };
 
 /**
- * /contribute — public facility-submission form. Static server component;
- * all interactivity (form state, fetch, validation-error surfacing) lives in
- * the client component it renders. Mirrors the masthead structure of
- * /opposition (Breadcrumb -> header -> border-t -> body).
+ * /contribute — public lead-intake page. Static server component; all
+ * interactivity lives in the client components it renders. Lead-first: a
+ * bare source link is the whole ask (ContributeLeadForm), with the full
+ * facility form (name/operator/coordinates/etc.) tucked behind a closed-by-
+ * default <details> disclosure for contributors who already know the
+ * details — same disclosure idiom as app/operators/page.tsx's "no disclosed
+ * capacity" toggle. Mirrors the masthead structure of /opposition
+ * (Breadcrumb -> header -> border-t -> body).
  */
 export default function ContributePage() {
   return (
@@ -28,19 +33,34 @@ export default function ContributePage() {
       <header className="space-y-4 pb-2">
         <p className="font-mono text-xs uppercase tracking-widest text-primary">Contribute</p>
         <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Suggest a facility
+          Share a lead
         </h1>
         <p className="max-w-2xl text-base text-muted-foreground">
-          Know a data center, mining site, or power plant that isn&rsquo;t on the
-          map yet? Submit it below. No account needed &mdash; every submission
-          is anonymous, needs at least one public source, and is reviewed by a
-          person before it goes live. We ask for coordinates because the atlas
-          is a map first; a rough location beats none.
+          Know about a data center, mining site, or power plant that
+          isn&rsquo;t on the map yet? Send the link &mdash; a news article,
+          permit filing, or press release &mdash; and we&rsquo;ll take it
+          from there. No account needed, and every submission is anonymous.
+          If you already know the details, the full form is below.
         </p>
         <div className="border-t border-border" />
       </header>
 
-      <ContributeFacilityForm />
+      <ContributeLeadForm />
+
+      <details className="group border-t border-border pt-6">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+          I know the full details
+          <span
+            aria-hidden="true"
+            className="transition-transform motion-reduce:transition-none group-open:rotate-90"
+          >
+            →
+          </span>
+        </summary>
+        <div className="mt-6">
+          <ContributeFacilityForm />
+        </div>
+      </details>
 
       {/* Support the atlas */}
       <section
