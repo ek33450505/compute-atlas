@@ -1756,9 +1756,30 @@
         "publisher": "Beaver County Business",
         "retrievedAt": "2026-08-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cbsnews.com/pittsburgh/news/ai-infrastructure-beaver-valley/",
+        "label": "Beaver Valley could become center of AI infrastructure for region",
+        "publisher": "CBS Pittsburgh",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "http://www.tmia.com/content/beaver-valley-becomes-data-center-target",
+        "label": "Beaver Valley becomes data center target (Post-Gazette reprint, byline Anya Litvak and Chloe Jad, Feb 8 2026)",
+        "publisher": "Pittsburgh Post-Gazette (via Three Mile Island Alert reprint)",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://community.triblive.com/news/3990268",
+        "label": "Shippingport data centers will be financial, health burdens on Beaver County residents",
+        "publisher": "TribLive (community op-ed by Elan Justice Pavlinich, Environmental Health Project)",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-08-19",
     "notes": "Two natural-gas-powered buildings in a 660-acre industrial park; construction potentially starting later 2026.",
     "energy": {
       "source": "on_site_gas",
@@ -1766,6 +1787,11 @@
     },
     "investmentUsd": 10000000000,
     "landAcres": 660,
+    "community": {
+      "status": "mixed",
+      "notes": "Local officials and Pennsylvania Gov. Josh Shapiro have criticized the pace and secrecy of the Shippingport-area data center buildout, and community groups have organized against nearby proposed data centers citing noise and environmental concerns; a nonprofit (Environmental Health Project) op-ed warned of health and financial burdens. A Shippingport resident and the Beaver County Corporation for Economic Development president voiced support/openness to the project (with caveats about energy costs), and reporting noted comparatively little organized public opposition to date.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -2022,10 +2048,29 @@
         "publisher": "ARC West Michigan",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://wwmt.com/news/local/marshall-data-center-moratorium-delays-development-one-year-alterra-brooks-industrial-park-acres-wetland-lake-energy-environment-calhoun-county-west-michigan",
+        "label": "Marshall data center moratorium delays development by at least one year",
+        "publisher": "WWMT",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://edraofmi.org/marshall?blogcategory=EGLE",
+        "label": "Stop the Marshall Megasite!",
+        "publisher": "EDRA of Michigan (advocacy organization)",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-19",
     "notes": "Natural-gas turbine generation proposed on the same Brooks Industrial Park site as the Alterra Marshall data center, sized at “around 1,000 megawatts” to carry most of the campus load, with up to 400 MW imported from the grid at peak. Split into its own record per the project's same-site power+compute convention. Still conceptual as of 2026-01 — no site plans or utility agreements — and subject to Michigan air-permitting and local review that no fetched source shows as begun. Coordinates mirror the compute record's approximate Marshall-area point, not a siting-confirmed location.",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents chanted opposition at a packed Marshall-area Local Development Finance Authority meeting after the city's October 2025 land deal with Alterra Development became public, citing lack of advance notice and impacts to the adjacent Brooks Wetland; Marshall City Council approved a 365-day moratorium on data-center approvals in August 2026, and the Michigan advocacy group EDRA of Michigan has organized against the project, calling for local ordinances and city-council recalls. No documented resident or community support for the project was found in the sources reviewed.",
+      "sourceIndex": 2
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -7240,14 +7285,33 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.turnto23.com/news/in-your-neighborhood/taft-maricopa/massive-ai-data-center-proposed-for-kern-countys-elk-hills",
+        "label": "Massive AI data center proposed for Kern County's Elk Hills",
+        "publisher": "Turn to 23 (KERO-TV, Bakersfield)",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://grist.org/energy/a-solution-to-data-center-backlash-put-them-in-oil-fields/",
+        "label": "A solution to data center backlash? Put them in oil fields.",
+        "publisher": "Grist",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-19",
     "notes": "400,000 sq ft on 100 acres, dedicated 275MW from CRC's own Elk Hills natural gas power plant, closed-loop cooling. Standalone campus on former oilfield, not a colo tenancy.",
     "energy": {
       "utility": "Pacific Gas & Electric (PG&E)"
     },
     "landAcres": 100,
+    "community": {
+      "status": "mixed",
+      "notes": "California Resources Corp submitted roughly 150 resident signatures supporting the project with its own permit application; Grist reports at least five signatories are affiliated with the local oil industry. Taft resident Emmanuel Campos spoke favorably about the economic opportunity, after attending the company's community meetings. Earthjustice attorney Nina Robertson criticized the project's reliance on gas power and its air-quality impact on Kern County.",
+      "sourceIndex": 4
+    },
     "facilityType": "data_center"
   },
   {
@@ -7359,6 +7423,55 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "beale-project-atlas-coweta-ok",
+    "name": "Project Atlas (Coweta) — withdrawn",
+    "operator": "Beale Infrastructure",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.9526,
+      "lon": -95.6483,
+      "city": "Coweta",
+      "county": "Wagoner",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10",
+        "note": "Community meetings held on a proposed campus north of the Arkansas River near Coweta.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-03-30",
+        "note": "Beale Infrastructure withdrew the 270-acre rezoning application after resident opposition and NDA-disclosure concerns; the Coweta planning commission had voted 4-1 to deny.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://infrathesis.substack.com/p/oklahoma-is-walling-off-data-centers",
+        "label": "Oklahoma Is Walling Off Data Centers — project-by-project timeline",
+        "publisher": "Infra Thesis",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (lists Project Atlas, Coweta, as canceled)",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Distinct Beale Infrastructure site from Project Clydesdale (Tulsa County) and Project Mustang (Claremore). Coordinates are a Coweta town-centroid approximation; the parcel was reported at 16192 State Hwy 51B.",
+    "landAcres": 270,
+    "facilityType": "data_center"
   },
   {
     "id": "beale-project-blue-pima-county-az",
@@ -7649,6 +7762,63 @@
       "offtaker": "Meta",
       "notes": "Part of the Jan 2026 Vistra-Meta 20-year PPA package (2,609 MW total across three plants). IMPORTANT: Beaver Valley's Meta allocation is uprate-only — a 140 MW share of a fleet-wide uprate program (full delivery targeted ~2034), roughly 7% of the plant's ~1,872 MW capacity. None of its existing output is Meta-contracted; the 1,872 MW / 2,012 MW capacities are the whole plant, not Meta's slice. Grid-matched, so no poweredFacilityIds. Operated by Vistra since the 2024 Energy Harbor acquisition."
     }
+  },
+  {
+    "id": "beltline-luther-horizon-technology-park-ok",
+    "name": "Luther Horizon Technology Park",
+    "operator": "Beltline Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.6612,
+      "lon": -97.1961,
+      "city": "Luther",
+      "county": "Oklahoma",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08",
+        "note": "Described by the developer as in the community-input and regulatory-review process with the Town of Luther.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lutherhorizontechnologypark.com/",
+        "label": "Luther Horizon Technology Park — official project site",
+        "publisher": "Beltline Energy",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.publicradiotulsa.org/local-regional/2026-08-06/some-data-centers-are-building-their-own-power-plants-in-oklahoma-most-want-to-plug-into-the-grid",
+        "label": "Some data centers are building their own power plants. In Oklahoma, most want to plug into the grid",
+        "publisher": "StateImpact Oklahoma / Public Radio Tulsa",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "A third Beltline Energy site in Oklahoma, distinct from the tracked OKC/Frisco Road and Piedmont proposals. Coordinates are a Luther town-centroid approximation; the parcel is near OG&E's Redbud Energy Facility.",
+    "energy": {
+      "source": "grid",
+      "utility": "Oklahoma Gas & Electric (OG&E)",
+      "notes": "Site sits adjacent to OG&E's Redbud Energy Facility with both 138 kV and 345 kV transmission lines on-site; developer states it will cover 100% of infrastructure improvements under long-term utility service arrangements overseen by state regulators."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Developer states the facility will not use private wells or local drinking water for cooling; it is evaluating treated wastewater plus air-cooled chillers or direct-to-chip liquid cooling to reduce freshwater consumption by up to 70%. Potable water limited to restrooms, fire protection, landscaping and office use."
+    },
+    "investmentUsd": 14000000000,
+    "jobs": {
+      "construction": 11100,
+      "permanent": 420,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "beltline-oklahoma-city-frisco-road-ok",
@@ -9073,6 +9243,41 @@
     }
   },
   {
+    "id": "boomtown-lawton-ok",
+    "name": "Boomtown Lawton Data Center — cancelled",
+    "operator": "Boomtown",
+    "status": "cancelled",
+    "confidence": "rumored",
+    "location": {
+      "lat": 34.6086,
+      "lon": -98.3903,
+      "city": "Lawton",
+      "county": "Comanche",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025-12",
+        "note": "Project listed as canceled in December 2025 after the developer walked away from a long-term lease on state school-trust land east of Lawton.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://nathanhammer.substack.com/p/a-2026-guide-to-the-oklahoma-data",
+        "label": "A 2026 Guide to the Oklahoma Data Center Boom (Boomtown, Lawton — canceled December 2025)",
+        "publisher": "Nathan Hammer",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Thinly sourced: only one page naming this project could be fetched this session (Oklahoma Watch and its syndication partners returned 403/429). The lessee's full legal name, parcel acreage and the Commissioners of the Land Office vote were visible only in search summaries and are deliberately NOT asserted here. Confidence 'rumored' pending a fetched primary source.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "bristolville-25-lordstown-oh",
     "name": "Bristolville 25",
     "operator": "Bristolville 25 Developer LLC / BHGH Properties",
@@ -9130,6 +9335,46 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "buckley-bros-pawhuska-ok",
+    "name": "Pawhuska AI Data Center",
+    "operator": "Buckley Bros Holdings LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.6698,
+      "lon": -96.3364,
+      "city": "Pawhuska",
+      "county": "Osage",
+      "street": "1901 E. Boundary",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 10
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04",
+        "note": "Proposed conversion of a 200,000 sq ft vacant building (former carpet mill, later a cannabis cultivation facility) into an 8-10 MW AI data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (Pawhuska AI Data Center, Buckley Bros Holdings, 1901 E. Boundary, 8-10 MW)",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Reported at 8-10 MW; the planned figure recorded here is the upper end of that reported range. Coordinates are a Pawhuska town-centroid approximation, not a parcel-confirmed point.",
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "bull-church-data-center-caroline-va",
@@ -11045,15 +11290,34 @@
         "publisher": "CleanSpark, Inc. (Investor Relations)",
         "retrievedAt": "2026-08-07",
         "kind": "press"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-07",
+    "lastUpdated": "2026-08-19",
     "notes": "Two-parcel buildout totaling 75 MW contracted power (30 MW site 1 + 45 MW site 2), combined target of 5+ EH/s using all-new S21 immersion XPs. Site 1 (30 MW) is confirmed as Cheyenne, Laramie County via the primary SEC 8-K; site 2 (45 MW) is described only as 'Wyoming' in the 8-K, with secondary/aggregator sources placing it in the 'Cheyenne market' — coordinates and city are therefore approximate for the combined record. Current operational status has not been independently reverified since the 2024 announcement. Pure bitcoin ASIC mining — no AI/HPC evidence found for this site (a later, unrelated CNBC report on CleanSpark pursuing a Wyoming AI data center was not tied to this facility and is not reflected here).",
     "energy": {
       "source": "grid",
       "notes": "75 MW of executed power contracts across two Cheyenne sites (initial 30 MW plus a second 45 MW site)."
     },
+    "subsidies": [
+      {
+        "program": "Wyoming Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "year": "2025",
+        "sourceIndex": 4
+      }
+    ],
     "investmentUsd": 18750000,
+    "jobs": {
+      "permanent": 13,
+      "sourceIndex": 4
+    },
     "facilityType": "crypto_mining",
     "mining": {
       "hardwareType": "asic",
@@ -11948,6 +12212,56 @@
       "hardwareType": "asic",
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "cloudburst-oklahoma-city-campus-ok",
+    "name": "CloudBurst Oklahoma City Campus",
+    "operator": "CloudBurst Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.4676,
+      "lon": -97.5164,
+      "city": "Oklahoma City",
+      "county": "Oklahoma",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08",
+        "note": "Developer's site shows a Q4 2025 groundbreaking target with 30 MW revenue-generating service in Q4 2026; still pre-construction as of retrieval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cloudburstdc.com/oklahoma-city/",
+        "label": "CloudBurst Data Centers — Oklahoma City campus",
+        "publisher": "CloudBurst Data Centers",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma?",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "200 MW IT load across a planned multi-building campus reported near 2000 S Council Rd. Coordinates are an Oklahoma City centroid approximation. Oklahoma City's 2026 data-center moratorium is reported to have affected the timeline.",
+    "energy": {
+      "source": "grid",
+      "notes": "Developer markets the campus as 'behind-the-meter' power infrastructure with N+1 redundancy."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "cloudburst-san-marcos-tx",
@@ -17369,11 +17683,23 @@
         "publisher": "Fauquier Now",
         "retrievedAt": "2026-07-17",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.princewilliamtimes.com/news/vint-hill-landowners-push-back-on-move-to-curb-large-data-centers/article_c22ef762-820a-5b88-bed0-3b84ac791efe.html",
+        "label": "Effort to curb data centers in Vint Hill faces pushback",
+        "publisher": "Prince William Times / Fauquier Times",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-19",
     "notes": "47 acres, 870,000 sq ft; site plan submitted; grandfathered from prior PCID zoning.",
     "landAcres": 47,
+    "community": {
+      "status": "contested",
+      "notes": "At a March 2024 Vint Hill Conservancy community meeting devoted largely to the CyrusOne campus, critics said the plans showed 45-foot buildings on elevated ground that would be obtrusive to residents roughly a third of a mile away, while conservancy president Chris Zumot publicly backed the project, telling the Fauquier Times the group \"feels for CyrusOne\" over county restrictions affecting it.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -21424,6 +21750,57 @@
     "water": {
       "notes": "Data Center Knowledge reports water-side economizer cooling fed by a 400,000 gallon rainwater cistern."
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "echostar-cheyenne-wy",
+    "name": "EchoStar Cheyenne Data Center and Satellite Uplink Facility",
+    "operator": "EchoStar",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.135,
+      "lon": -104.725,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "announcedDate": "2010-08-03",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011",
+        "note": "77,000 sq ft Tier III data center built adjacent to the existing uplink facility; first certified by the Wyoming Business Council as a qualifying data center in 2011 and described in June 2026 state materials as the initial anchor tenant of the Cheyenne Business Parkway.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterknowledge.com/business/echostar-picks-cheyenne-for-data-center",
+        "label": "EchoStar Picks Cheyenne for Data Center",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "77,000 sq ft Tier III data center in the Cheyenne Business Park east of Cheyenne along Interstate 80, built adjacent to EchoStar's satellite uplink and broadcast facility. Announced 2010-08-03 with completion expected by end of 2011; the 2026 Wyoming Business Council materials describe it in the present tense as a certified qualifying data center. Jobs are not recorded: the widely quoted 360-plus Cheyenne headcount covers the whole broadcast centre, an entity-level figure that must not be attributed to the data center. Coordinates approximate the Cheyenne Business Park, not a parcel-confirmed point.",
+    "subsidies": [
+      {
+        "program": "Wyoming Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "year": "2011",
+        "sourceIndex": 1
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -26102,9 +26479,23 @@
         "publisher": "Salisbury Post",
         "retrievedAt": "2026-08-15",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.salisburypost.com/2026/04/15/salisbury-presents-proposed-henderson-grove-church-road-data-center-to-community-members-faces-concerns/",
+        "label": "Salisbury presents proposed Henderson Grove Church Road data center to community members, faces concerns",
+        "publisher": "Salisbury Post",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.salisburypost.com/2026/08/12/salisbury-planning-recommends-henderson-grove-church-data-center-approval/",
+        "label": "Salisbury Planning recommends Henderson Grove Church data center approval",
+        "publisher": "Salisbury Post",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-08-19",
     "notes": "Developed by Trammell Crow Company with Flexential named as the end user. Distinct from the three tracked Flexential NC sites (Charlotte North, Charlotte South, Raleigh).",
     "energy": {
       "utility": "Duke Energy",
@@ -26115,6 +26506,11 @@
       "notes": "Closed-loop cooling required under Salisbury's data center text amendment; water demand estimated at 1,000 gallons/day average and 1,250 gallons/day peak, for bathroom and cafeteria use only."
     },
     "landAcres": 95,
+    "community": {
+      "status": "opposed",
+      "notes": "More than 90 residents attended an April 2026 town hall on the proposed Henderson Grove Church Road data center, submitting written concerns ranging from demanding the project be stopped to questions about power/water demand and emergency response; advocacy group Down Home North Carolina criticized the meeting format. At an August 2026 Salisbury Planning Board courtesy hearing, resident Dina Parker spoke against the rezoning citing insufficient environmental-impact research and residential proximity; no residents are documented speaking in support (only the applicant's representative spoke favorably).",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -26488,6 +26884,76 @@
     "landAcres": 120,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "fluidstack-okmulgee-county-ok",
+    "name": "Fluidstack Okmulgee County Data Center",
+    "operator": "Fluidstack",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.6231,
+      "lon": -95.9605,
+      "city": "Okmulgee",
+      "county": "Okmulgee",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-21",
+        "note": "Open house held; residents raised property-value, water, health and electricity concerns.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "proposed",
+        "date": "2026-08",
+        "note": "Okmulgee County commissioners agreed to allow construction; first phase targeted operational September 2027, final phase September 2028.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.okmulgeefluidstack.io/",
+        "label": "Okmulgee Data Center — official project site",
+        "publisher": "Fluidstack",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://krmg.com/2026/07/21/okmulgee-residents-raise-concerns-during-fluidstack-data-center-open-house/",
+        "label": "Okmulgee residents raise concerns during Fluidstack data center open house",
+        "publisher": "KRMG 102.3",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://okenergytoday.com/2026/08/whats-happening-about-data-centers/",
+        "label": "What's happening about data centers (Okmulgee County commissioners approve Fluidstack site)",
+        "publisher": "Oklahoma Energy Today",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "First tenant is reported to be Jane Street. Fluidstack states it is not seeking local property-tax incentives and has committed to a voluntary 60 dB noise limit at property lines; Fluidstack and Jane Street jointly committed $7 million for local education. Capacity has not been publicly disclosed. Coordinates are an Okmulgee town-centroid approximation.",
+    "energy": {
+      "source": "grid",
+      "utility": "AEP-PSO",
+      "notes": "Developer states it is self-funding all energy infrastructure costs."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer states the cooling system is filled once — described as about an Olympic swimming pool's worth of water — and then recirculated for years."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Residents voiced distrust over transparency and raised water, property-value, public-health and electricity concerns at a July 2026 open house; the county commission established a citizen advisory planning committee on data centers.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "fort-spunky-pacifico-energy-hood-county-tx",
@@ -31740,6 +32206,41 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "h6-coin-newcastle-wy",
+    "name": "H6 Coin Newcastle Bitcoin Mining Facility",
+    "operator": "H6 Coin LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.85,
+      "lon": -104.2,
+      "city": "Newcastle",
+      "county": "Weston",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-06",
+        "note": "Described in the present tense as operating a Bitcoin mining facility in Newcastle in Wyoming Business Council program materials prepared for the Joint Minerals Committee, June 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Named in June 2026 Wyoming Business Council materials as a Newcastle Bitcoin mining operation that reaches the threshold to qualify for the state's Data Center Sales Tax Exemption because it employs people in Wyoming and spends CAPEX at a rate similar to a traditional data center. No subsidy record is entered: the source states the operation qualifies, which is eligibility, not a certified award. Capacity, power arrangement and address are not stated in the source and are omitted rather than estimated. A Wyoming DEQ air-quality public notice for H6 Coin, LLC (permit F032396/A0019068, dated 2026-05-07) was indexed but the notice page returned HTTP 403 and could not be read this session, so it is not cited and its permit details are not recorded. Coordinates approximate the town of Newcastle.",
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "hanton-city-smithfield-ri",
     "name": "Hanton City Business Park (data center anchor)",
     "operator": "Hanton City Investments LLC",
@@ -32033,10 +32534,22 @@
         "publisher": "WSMV News 4 Nashville",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wsmv.com/2026/06/03/mcminnville-approves-18-month-moratorium-new-data-centers-creating-requirements-numerous-impact-studies/",
+        "label": "McMinnville approves 18-month moratorium on new data centers, creating requirements for numerous impact studies",
+        "publisher": "WSMV",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-08-19",
     "energy": {},
+    "community": {
+      "status": "opposed",
+      "notes": "More than 2,600 McMinnville residents signed a petition for a temporary moratorium on new AI and large-scale data center approvals, triggered by the proposed Hixson Data Center project; the McMinnville Board of Mayor and Aldermen approved an 18-month moratorium on data center land-use, zoning, building, site-plan, and conditional-use permits on June 3, 2026, directly prompted by the project and requiring infrastructure, environmental, sound, and utility impact studies before any such facility can proceed. No representatives for the Hixson Data Center attended the vote, and no documented local support for the project was found.",
+      "sourceIndex": 2
+    },
     "facilityType": "power_generation"
   },
   {
@@ -34016,6 +34529,43 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "isocentric-networks-tulsa-ok",
+    "name": "Isocentric Networks Tulsa Data Center",
+    "operator": "Isocentric Networks",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.154,
+      "lon": -95.9928,
+      "city": "Tulsa",
+      "county": "Tulsa",
+      "street": "100 W 5th St",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operating downtown Tulsa colocation facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (Isocentric Networks, 100 W 5th St, Tulsa)",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Single fetched source. Coordinates are a Tulsa centroid approximation; street address is as published.",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "ivcm-imperial-county-ca",
     "name": "Imperial Valley Computer Manufacturing AI Data Center",
     "operator": "Imperial Valley Computer Manufacturing (IVCM)",
@@ -35187,6 +35737,61 @@
     "lastUpdated": "2026-08-08",
     "notes": "Two-building purpose-built colocation campus on Northridge Circle, Altoona (Des Moines metro): 1435 Northridge Circle and 1401 Northridge Circle, both confirmed on LightEdge's own site. Owns/operates the buildings — not a tenancy. Could NOT confirm an MW or exact sq-ft figure on any page I fetched directly (the LightEdge page references 'critical IT capacity'/'total square feet' fields without rendering values, and a linked PDF spec sheet exceeded fetchable size). Third-party listings (not independently confirmed) cite ~73,000 SF total and N+1 cooling redundancy — omitted capacityMw rather than guess. Worth a follow-up with a direct call/site-visit-grade source, or a successful fetch of the spec-sheet PDF, to pin capacity.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "lightfield-energy-chickasha-airport-ok",
+    "name": "Chickasha Airport Industrial Park Behind-the-Meter Power Plant",
+    "operator": "Lightfield Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.0526,
+      "lon": -97.9364,
+      "city": "Chickasha",
+      "county": "Grady",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-06-05",
+        "note": "Announced by developer Chet Hitt with Citizen Capital (financing, led by Bond Payne) and Lightfield Energy (plant construction, led by Billy Sorenson).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://okenergytoday.com/2025/06/more-details-about-the-proposed-chickasha-data-center/",
+        "label": "More details about the proposed Chickasha data center",
+        "publisher": "Oklahoma Energy Today",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.publicradiotulsa.org/local-regional/2026-08-06/some-data-centers-are-building-their-own-power-plants-in-oklahoma-most-want-to-plug-into-the-grid",
+        "label": "Some data centers are building their own power plants. In Oklahoma, most want to plug into the grid",
+        "publisher": "StateImpact Oklahoma / Public Radio Tulsa",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "The $3.5B figure is for the combined plant-plus-data-center project and is therefore recorded in generation.notes, not as this record's investmentUsd. As of the August 2026 reporting no firm data-center tenant had been made public; the compute side of the site is intentionally not created as a separate record until it is named.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural gas supplied via an Energy Transfer connection; built under Oklahoma's SB 480 'behind the meter' law to serve a co-located data center rather than the grid."
+    },
+    "landAcres": 200,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Co-located data center at Chickasha Airport Industrial Park",
+      "notes": "Phased build: 125-150 MW added roughly every six months, first phase 18-24 months, remaining phases over ~2.5 further years. Combined power-plant-plus-data-center investment reported at $3.5 billion or more; 280 acres purchased for $1.358 million, of which about 200 acres is designated for the power plant and data center and 80 acres for a commercial/industrial subdivision."
+    }
   },
   {
     "id": "liquidcool-loring-afb-me",
@@ -36391,6 +36996,70 @@
       "utility": "Pacific Gas & Electric (PG&E)"
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "lunavi-cheyenne-wy",
+    "name": "Lunavi Cheyenne Data Center",
+    "operator": "Lunavi",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.11,
+      "lon": -104.78,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "street": "340 Progress Circle",
+      "postalCode": "82007",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 8,
+      "operational": 5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026",
+        "note": "Operating colocation facility marketed by Lunavi at 340 Progress Circle with 800 available cabinets.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.lunavi.com/data-centers/cheyenne",
+        "label": "Lunavi Cheyenne Data Center",
+        "publisher": "Lunavi",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.1547realty.com/data-center/cheyenne-wy-chwy1/",
+        "label": "Cheyenne WY | CHWY1",
+        "publisher": "Fifteenfortyseven Critical Systems Realty",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Colocation facility at 340 Progress Circle, Cheyenne. 5 MW available with stated ability to expand to 8 MW; critical IT load 4 MW; average PUE 1.17, low 1.05. Formerly Green House Data. Ownership caveat: Fifteenfortyseven Critical Systems Realty markets a Cheyenne facility (CHWY1) with a matching 42,000 sq ft building and ~5 MW on-site, so the same building may be owned by 1547 and operated/marketed by Lunavi; only one record is held here to avoid a duplicate, with Lunavi named as operator on the strength of its own current first-party listing. No subsidy is recorded: the Wyoming Business Council materials describe Lunavi as a driver of the exemption's co-location amendments, not as a certified recipient. Coordinates approximate the street address.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Custom indirect evaporative cooling units using filtered outside air rather than traditional air conditioning; N+2 cooling at 1.2 MW."
+    },
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.17,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
   },
   {
     "id": "mara-findlay-oh",
@@ -37714,15 +38383,30 @@
         "publisher": "CleanView",
         "retrievedAt": "2026-08-07",
         "kind": "other"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-07",
+    "lastUpdated": "2026-08-19",
     "notes": "715,000 sq ft campus at High Plains Business Park, Meta's 25th global data center. Originally Project Cosmo. Optimized for AI workloads with new H-departed design. Expected operational 2027. Coordinates approximate for High Plains Business Park in SE Cheyenne. Energy.notes corrected: removed on-site nuclear claim (Meta-TerraPower PPA is portfolio-wide grid delivery, not an on-site Cheyenne plant) and removed unverified $1.2B solar claim. jobs.sourceIndex corrected from 0 to 1 (Cheyenne LEADS is the source for the 1,000 construction jobs figure).",
     "energy": {
       "source": "grid",
       "utility": "Black Hills Energy",
       "notes": "Served under Black Hills Energy Large Power Contract Service tariff with customized renewable procurement. Meta and Black Hills Energy partnered to add new renewable resources to the Wyoming grid. Note: Meta signed a separate January 2026 portfolio-wide PPA with TerraPower for up to 8 remote Natrium reactors (power delivery via grid, not at the Cheyenne site); no on-site nuclear generation planned at this location per cited sources."
     },
+    "subsidies": [
+      {
+        "program": "Wyoming Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "year": "2022",
+        "sourceIndex": 4
+      }
+    ],
     "investmentUsd": 800000000,
     "landAcres": 960,
     "jobs": {
@@ -40337,15 +41021,34 @@
         "publisher": "Microsoft",
         "retrievedAt": "2026-08-07",
         "kind": "press"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-07",
+    "lastUpdated": "2026-08-19",
     "notes": "Described by Microsoft as a 'multi-gigawatt multi-decade ecosystem.' The 400 MW initial-target figure that appeared in the prior record was NOT found in either cited source and has been removed pending a citable source (neither the Microsoft newsroom announcement nor Cowboy State Daily mentions a specific MW figure). Separate from existing Cheyenne campus (since 2012) and the HR Ranch Road construction underway 2025-2026. Coordinates approximate for Bison Business Park / SE Cheyenne area.",
     "energy": {
       "source": "grid",
       "utility": "Black Hills Energy",
       "notes": "Large Power Contract Service (LPCS) tariff; Microsoft funds all grid infrastructure upgrades without raising residential rates. Hydrogen fuel cell pilot (Caterpillar) tested 48-hour backup power. Commitment to carbon-free energy matching fossil fuel consumption."
     },
+    "subsidies": [
+      {
+        "program": "Wyoming Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "sourceIndex": 5
+      },
+      {
+        "program": "Wyoming Business Council Business Ready Community (BRC) grant and loan program",
+        "jurisdiction": "Wyoming",
+        "sourceIndex": 5
+      }
+    ],
     "landAcres": 3200,
     "community": {
       "status": "supported",
@@ -43968,6 +44671,116 @@
     "facilityType": "crypto_mining",
     "mining": {
       "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "nextera-high-spring-solar-muskogee-county-ok",
+    "name": "High Spring Solar",
+    "operator": "NextEra Energy Resources",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.62,
+      "lon": -95.38,
+      "county": "Muskogee",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-20",
+        "note": "Named in Google's Muskogee County data-center announcement as a contracted PPA project.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nexteraenergyresources.com/high-spring-solar/project-overview.html",
+        "label": "NextEra Energy Resources — High Spring Solar project overview",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://ktul.com/news/local/google-announces-2-data-center-campuses-in-muskogee-county-summit-council-hill-electricity-grid-energy-investment-ai-cloud-workspace-search-maps-port-stephens-infrastructure-workforce-agriculture",
+        "label": "Google announces 2 data center campuses in Muskogee County (600 MW of PPAs incl. High Spring Solar)",
+        "publisher": "KTUL",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Coordinates are a Muskogee County centroid approximation; the 4,505-acre footprint is developer-stated and no parcel boundary was published.",
+    "energy": {
+      "source": "solar"
+    },
+    "landAcres": 4505,
+    "jobs": {
+      "construction": 300,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "notes": "Second of the two NextEra PPAs Google contracted for its Oklahoma data-center buildout (600 MW combined with Rush Springs Solar). Developer projects approximately $54 million in additional Muskogee County revenue over an initial 30-year period. Operations targeted for December 2027 pending local and state approvals."
+    }
+  },
+  {
+    "id": "nextera-rush-springs-solar-stephens-county-ok",
+    "name": "Rush Springs Solar",
+    "operator": "NextEra Energy Resources",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.49,
+      "lon": -97.85,
+      "county": "Stephens",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-20",
+        "note": "Named in Google's Muskogee County announcement as a contracted PPA project; NextEra lists it as a proposed project in Stephens County.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nexteraenergyresources.com/rush-springs-solar.html",
+        "label": "NextEra Energy Resources — Rush Springs Solar",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://ktul.com/news/local/google-announces-2-data-center-campuses-in-muskogee-county-summit-council-hill-electricity-grid-energy-investment-ai-cloud-workspace-search-maps-port-stephens-infrastructure-workforce-agriculture",
+        "label": "Google announces 2 data center campuses in Muskogee County (600 MW of PPAs incl. Rush Springs Solar)",
+        "publisher": "KTUL",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "The $280M figure is the developer's stated capital investment over the project's first 30 years. Coordinates are a Stephens County centroid approximation — NextEra's page does not publish a parcel location.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 280000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "notes": "One of two long-term PPAs Google announced alongside its Oklahoma data-center buildout, together adding 600 MW of new clean energy to the Oklahoma grid (the other is High Spring Solar in Muskogee County). Developer projects roughly $25 million in tax revenue and hundreds of construction jobs."
     }
   },
   {
@@ -49068,15 +49881,42 @@
         "publisher": "PR Newswire",
         "retrievedAt": "2026-08-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prometheushyperscale.com/news/ph-spiritus-casper-carbon-capture-announce-strategic-partnership",
+        "label": "Prometheus Hyperscale, Spiritus, and Casper Carbon Capture Announce Strategic Partnership to Build Carbon-Negative Data Halls and Energy Infrastructure in Wyoming",
+        "publisher": "Prometheus Hyperscale",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-07",
+    "lastUpdated": "2026-08-19",
     "notes": "1.5GW campus proposed on the Falls Ranch property spanning the Natrona/Converse county line near I-25, roughly 10 miles east of Casper. Site plan still in flux as of July 2026, with developers weighing an alternate parcel south of I-25; targeted operational by 2028.",
     "energy": {
       "source": "mixed",
       "utility": "PacifiCorp",
+      "onSiteGenerationMw": 1500,
       "notes": "On-site generation with a minimum $500M initial investment; carbon-negative operations via partnership with Spiritus and Casper Carbon Capture, combining natural gas with proprietary geothermal systems and carbon capture."
     },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer describes proprietary aquifer, non-consumptive water-cooling systems for the high-density compute halls."
+    },
+    "subsidies": [
+      {
+        "program": "Wyoming Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "year": "2022",
+        "sourceIndex": 7
+      }
+    ],
     "investmentUsd": 500000000,
     "community": {
       "status": "contested",
@@ -49154,15 +49994,41 @@
         "publisher": "DatacenterDynamics",
         "retrievedAt": "2026-08-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kpcw.org/state-regional/2026-06-19/1-25gw-data-center-approved-on-ranchland-near-evanston-wyoming",
+        "label": "1.25GW data center approved on ranchland near Evanston, Wyoming",
+        "publisher": "KPCW",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-07",
+    "lastUpdated": "2026-08-19",
     "notes": "506-acre 'Atlas Industrial Park' campus about 8-12 miles east of Evanston near the Silver Eagle refinery on County Road 180, south side of I-80 (Section 13, T15N R119W). Approved for 1.25GW initial IT capacity with a stated development path to 5GW; only the confirmed initial figure is recorded here.",
     "energy": {
       "source": "on_site_gas",
       "utility": "PacifiCorp",
       "notes": "Fully islanded on-site microgrid generating power through natural gas engines and turbines, avoiding interconnection-queue exposure and ratepayer impact."
     },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Cooling uses a water-glycol coolant mixture that is trucked in and lasts about six years before replacement, so the facility does not draw groundwater or surface water for cooling and will not use water from the nearby Bear River. A private on-site well supplies plumbing water only."
+    },
+    "subsidies": [
+      {
+        "program": "Wyoming Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "year": "2022",
+        "sourceIndex": 7
+      }
+    ],
     "landAcres": 506,
     "community": {
       "status": "mixed",
@@ -50913,6 +51779,51 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "rack59-oklahoma-city-ok",
+    "name": "RACK59 Data Center",
+    "operator": "RACK59",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.4676,
+      "lon": -97.5164,
+      "city": "Oklahoma City",
+      "county": "Oklahoma",
+      "street": "7725 W Reno Ave, Suite 304",
+      "postalCode": "73127",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Operator markets the facility as an operating mission-critical colocation site with 30+ carrier connections.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://rack59.com/",
+        "label": "RACK59 Data Center — operator site",
+        "publisher": "RACK59",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (RACK59, 7725 W Reno Ave, ~30,000 sq ft)",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "capacityMw deliberately omitted: the operator's own site advertises 175 MW while third-party listings report ~40 MW, and no filing reconciles the two. Coordinates are an Oklahoma City centroid approximation; the street address is exact.",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "radius-dc-raleigh-1-wake-county-nc",
     "name": "Radius DC Raleigh I",
     "operator": "Undisclosed (annexation petitioner: Radius DC Raleigh I)",
@@ -51711,6 +52622,76 @@
     ],
     "lastUpdated": "2026-08-15",
     "facilityType": "data_center"
+  },
+  {
+    "id": "related-digital-cheyenne-wy",
+    "name": "Related Digital Cheyenne Data Center Campus",
+    "operator": "Related Digital",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.13,
+      "lon": -104.735,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 302
+    },
+    "announcedDate": "2025-10-07",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-10-07",
+        "note": "Groundbreaking on Phase I: a 184,000 sq ft building on 36 acres, expected complete late 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.related-digital.com/news/related-digital-breaks-ground-on-302-mw-data-center-campus-in-cheyenne-wyoming",
+        "label": "Related Digital Breaks Ground on 302 MW Data Center Campus in Cheyenne, Wyoming",
+        "publisher": "Related Digital",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/09-202606049-05WBCMaterialsPreparedforJointMinerals06052026.pdf",
+        "label": "Wyoming Business Council program & service catalog, materials prepared for the Joint Minerals Committee (June 2026) — Data Center Sales Tax Exemption recipients",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-08-19",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "115-acre campus in the Cheyenne Business Parkway; up to 302 MW of critical IT capacity across the full campus. CoreWeave is the anchor tenant under a long-term lease for 88 MW of critical IT capacity — the 88 MW is the leased slice, not the campus total. Phase I projected to generate over $250 million in tax revenue to Wyoming and Cheyenne in its first 15 years. Coordinates approximate the Cheyenne Business Parkway, not a parcel-confirmed point.",
+    "energy": {
+      "source": "grid",
+      "utility": "Black Hills Energy"
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "High-efficiency air-cooled chillers with nominal water consumption, primarily for domestic use."
+    },
+    "subsidies": [
+      {
+        "program": "Wyoming Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 1200000000,
+    "landAcres": 115,
+    "jobs": {
+      "construction": 700,
+      "permanent": 40,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "renaissance-park-upper-merion-king-of-prussia-pa",
@@ -52543,11 +53524,37 @@
         "publisher": "Polk County GIS / Assessor",
         "retrievedAt": "2026-07-18",
         "kind": "other"
+      },
+      {
+        "url": "https://www.fox13news.com/news/lakeland-residents-question-environmental-impact-proposed-project-swan-data-center",
+        "label": "Lakeland residents question environmental impact of proposed 'Project Swan' data center",
+        "publisher": "FOX 13 Tampa Bay",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.tampabay28.com/news/region-polk/after-backlash-over-project-swan-some-call-for-data-center-moratorium-in-lakeland",
+        "label": "After backlash over Project Swan, some call for data center moratorium in Lakeland",
+        "publisher": "Tampa Bay 28 / WFTS",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://lakelandgazette.info/news/2026/06/01/coalition-rallies-against-lakeland-data-center-proposal/",
+        "label": "Coalition Rallies Against Lakeland Data Center Proposal",
+        "publisher": "Lakeland Gazette",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-19",
     "notes": "600,000 sq ft across 3 buildings on 60.5 acres (4 parcels, near 923 Wilkinson Rd). Zoning may prohibit the project — data centers are not in Lakeland's Land Development Code — and part of the site is unincorporated Polk County, requiring annexation.",
     "landAcres": 60.5,
+    "community": {
+      "status": "opposed",
+      "notes": "More than 50 residents attended the June 1, 2026 Lakeland City Commission meeting to oppose the proposed 'Project Swan' hyperscale data center, with 18 speaking against it during audience comments. Resident Magdalene DuPree called the project 'a bad fit' and objected to a facility 'extracting value from us.' A grassroots petition campaign and coalition rally pushed the City Commission to consider a temporary data-center moratorium. No organized support for the project was documented in coverage reviewed.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -53583,6 +54590,56 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "seminoe-generating-station-carbon-county-wy",
+    "name": "Seminoe Generating Station",
+    "operator": "Power Company of Wyoming",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.65,
+      "lon": -107.2,
+      "county": "Carbon",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2000
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-07",
+        "note": "Preliminary project overview presented to the Carbon County Board of Commissioners.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cowboystatedaily.com/2026/01/08/seminoe-plant-aims-to-cut-water-use-and-emissions-in-carbon-county/",
+        "label": "Proposed Seminoe Power Plant Aims To Cut Water Use 95% And Slash Emissions",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Located on the Anschutz-owned Overland Trail Ranch in Carbon County, south of Rawlins and Sinclair. Development began in 2017 and was shelved until market conditions improved. Wyoming reporting separately describes Anschutz Corporation subsidiaries planning roughly 3,200 MW of gas and 1,000 MW of solar in southern Wyoming partly to serve data-center load, but the cited source names no offtaker for this station, so none is recorded. Coordinates are an approximate placement on the ranch from the described location.",
+    "water": {
+      "coolingType": "air",
+      "notes": "Dry cooling using air rather than water, described as reducing water consumption by up to 95%; about 320 acre-feet per year, sourced from the Platte River."
+    },
+    "jobs": {
+      "construction": 350,
+      "permanent": 30,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Simple- and combined-cycle natural gas generation station on the Overland Trail Ranch, combined with wind power. Selective catalytic reduction to cut nitrous oxide emissions by about 90%. Scheduled to come online with the TransWest Express transmission line in 2029 or 2030."
+    }
   },
   {
     "id": "senawave-salt-lake-city-ut",
@@ -55001,12 +56058,31 @@
         "label": "Cardinal News",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://wset.com/news/local/pittsylvania-county-advances-100b-data-center-campus-proposal-despite-resident-concerns-berry-hill-july-2026",
+        "label": "Pittsylvania supervisors back $100B Berry Hill Data Center project",
+        "publisher": "WSET (ABC13)",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://wset.com/news/local/local-leaders-approve-100b-ai-data-campus-in-pittsylvania-county-amid-citizen-concerns-megasite-berry-hill-may-2026",
+        "label": "Local leaders approve $100B AI data campus in Pittsylvania County amid citizen concerns",
+        "publisher": "WSET (ABC13)",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-19",
     "notes": "Performance agreement caps investment at up to $73.5B over 30 years (2,050 jobs); parallel reporting cites a ~$100B project scope. ~2,990 acres of the Southern Virginia Megasite; land deal ~$737.8M. investmentUsd reflects the conservative $73B figure from the March 2026 draft performance agreement (2,050 jobs, 30-year span, not yet signed); a May 2026 'final document' revised it upward to $100B / 2,500 jobs.",
     "investmentUsd": 73000000000,
     "landAcres": 2990,
+    "community": {
+      "status": "contested",
+      "notes": "The Pittsylvania County Board of Supervisors passed a resolution supporting the project, and Regional Industrial Facility Authority chair Vic Ingram publicly championed it, calling the investment historic. Erin Hall, a resident living four miles from the megasite, spoke against the project during public comment, questioning water and power safeguards and saying county meetings had been kept 'hush-hush.'",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -60149,6 +61225,54 @@
     "facilityType": "data_center"
   },
   {
+    "id": "terrapower-natrium-kemmerer-wy",
+    "name": "TerraPower Natrium Kemmerer Unit 1",
+    "operator": "TerraPower",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.75,
+      "lon": -110.6,
+      "city": "Kemmerer",
+      "county": "Lincoln",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 345
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-04-24",
+        "note": "Construction began 2026-04-24 following NRC construction-permit approval in early March 2026; completion expected by 2030.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ans.org/news/2026-04-24/article-7975/terrapower-begins-construction-on-natrium-power-plant-in-kemmerer/",
+        "label": "TerraPower begins construction on Natrium power plant in Kemmerer",
+        "publisher": "American Nuclear Society — Nuclear Newswire",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Wyoming's first commercial nuclear power plant and the first U.S. construction permit for a commercial non-light-water reactor in more than 40 years. Reporting elsewhere ties TerraPower's Natrium fleet to hyperscaler offtake agreements at the corporate level (an announced agreement for up to eight plants by 2035); that is an entity-level arrangement, so no site-specific offtaker is recorded for Kemmerer Unit 1. Coordinates approximate the Kemmerer/Naughton area, not a parcel-confirmed point.",
+    "jobs": {
+      "construction": 1600,
+      "permanent": 250,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "unitCount": 1,
+      "notes": "Sodium-cooled fast reactor paired with an integrated molten-salt heat-storage system that can temporarily boost output to 500 MWe. Sited near a retiring coal-fired facility. Supported by the U.S. Department of Energy's Advanced Reactor Demonstration Program."
+    }
+  },
+  {
     "id": "tesla-cortex-2-giga-texas-austin-tx",
     "name": "Tesla Cortex 2.0 AI Training Cluster (Giga Texas)",
     "operator": "Tesla",
@@ -60987,6 +62111,51 @@
     "facilityType": "data_center"
   },
   {
+    "id": "tierpoint-oklahoma-city-ok",
+    "name": "TierPoint Oklahoma City (OKC / OKC2)",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.4676,
+      "lon": -97.5164,
+      "city": "Oklahoma City",
+      "county": "Oklahoma",
+      "street": "4121 Perimeter Center Place",
+      "postalCode": "73112",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Both OKC facilities listed as operating on TierPoint's Oklahoma page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/oklahoma/",
+        "label": "TierPoint Oklahoma data centers (OKC 4121 Perimeter Center Place; OKC2 4114 Perimeter Center Place)",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (TierPoint Oklahoma City 1 & 2)",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Recorded as one campus record: TierPoint lists OKC (4121 Perimeter Center Place) and OKC2 (4114 Perimeter Center Place) as two facilities across the street from each other. Distinct from the tracked TierPoint Tulsa - Archer record. Coordinates are an Oklahoma City centroid approximation.",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "tierpoint-omaha-bellevue-ne",
     "name": "TierPoint Omaha - Bellevue Data Center",
     "operator": "TierPoint",
@@ -61208,6 +62377,51 @@
     "lastUpdated": "2026-07-23",
     "notes": "Confirmed directly on TierPoint's own facility page (Tulsa - Archer).",
     "facilityType": "data_center"
+  },
+  {
+    "id": "tierpoint-tulsa-state-farm-ok",
+    "name": "TierPoint Tulsa - State Farm",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.154,
+      "lon": -95.9928,
+      "city": "Tulsa",
+      "county": "Tulsa",
+      "street": "12151 E. State Farm Boulevard",
+      "postalCode": "74146",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operating TierPoint Oklahoma facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/oklahoma/",
+        "label": "TierPoint Oklahoma data centers (Tulsa - State Farm, 12151 E. State Farm Blvd)",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (TierPoint Tulsa - State Farm)",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Second TierPoint Tulsa facility, distinct from the tracked Tulsa - Archer site (322 E. Archer St, downtown). Coordinates are a Tulsa centroid approximation; the street address is exact.",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "tierpoint-valley-forge-pa",
@@ -62110,6 +63324,101 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "tulsaconnect-downtown-dc5-tulsa-ok",
+    "name": "TulsaConnect Downtown (DC-5)",
+    "operator": "TulsaConnect",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.154,
+      "lon": -95.9928,
+      "city": "Tulsa",
+      "county": "Tulsa",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operating downtown Tulsa facility by the operator.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tulsaconnect.com/data-centers-overview.php",
+        "label": "TulsaConnect data centers overview (DC-5 Downtown Tulsa)",
+        "publisher": "TulsaConnect",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (TulsaConnect Downtown DC-5)",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "No street address published on the operator's overview page, so location is a Tulsa centroid approximation only. Distinct from DC-3 in east Tulsa.",
+    "energy": {
+      "source": "grid",
+      "notes": "Operator describes the site as on the underground power grid in downtown Tulsa with fully redundant A+B power infrastructure and multiple on-site fiber carriers."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
+    "id": "tulsaconnect-east-dc3-tulsa-ok",
+    "name": "TulsaConnect East (DC-3)",
+    "operator": "TulsaConnect",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.154,
+      "lon": -95.9928,
+      "city": "Tulsa",
+      "county": "Tulsa",
+      "street": "4500 S 129th E Ave",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Operator describes DC-3 as its largest facility, with two fully independent data center pods.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tulsaconnect.com/data-centers-overview.php",
+        "label": "TulsaConnect data centers overview (DC-3 East Tulsa, DC-5 Downtown)",
+        "publisher": "TulsaConnect",
+        "retrievedAt": "2026-08-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (TulsaConnect East DC-3, 4500 S 129th E Ave, underground facility)",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-19",
+    "notes": "Reported as an underground facility. Coordinates are a Tulsa centroid approximation; the street address is exact.",
+    "energy": {
+      "source": "grid",
+      "notes": "Operator describes redundant A+B power feeds from two diverse AEP substations plus multiple on-site emergency diesel generators."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "unisys-salt-lake-city-ut",
@@ -63263,11 +64572,30 @@
         "publisher": "Rappahannock News",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.fauquier.com/news/fauquier-supervisors-exempt-3rd-data-center-from-new-vint-hill-zoning-rules/article_d2c516d4-0fd1-11ef-af98-138f4b7b5664.html",
+        "label": "Fauquier supervisors exempt 3rd data center from new Vint Hill zoning rules",
+        "publisher": "Fauquier Times (Piedmont Journalism Foundation)",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.princewilliamtimes.com/news/vint-hill-landowners-push-back-on-move-to-curb-large-data-centers/article_c22ef762-820a-5b88-bed0-3b84ac791efe.html",
+        "label": "Effort to curb data centers in Vint Hill faces pushback",
+        "publisher": "Prince William Times / Fauquier Times",
+        "retrievedAt": "2026-08-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-17",
+    "lastUpdated": "2026-08-19",
     "notes": "By-right project (no rezoning needed), awaiting a site plan submission — a step further along than the Remington 'on-hold' cluster. Same Vint Hill locality as tracked CyrusOne project but confirmed distinct parcel/applicant. Fauquier planning-database roundup; distinct parcel from the tracked CyrusOne Vint Hill campus (verified) but near-name — flagged.",
     "landAcres": 50,
+    "community": {
+      "status": "contested",
+      "notes": "In May 2024, Fauquier County supervisors voted 4-1 to grandfather the Vint Hill Corners project out of stricter new Vint Hill data-center zoning rules; Supervisor Ike Broaddus, who represents the district, said he remained personally opposed to the project as sited because it would be too close to residences, while Supervisor Regan Washer cast the lone dissenting vote on the exemption agreement.",
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {

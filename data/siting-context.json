@@ -2179,6 +2179,21 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "beale-project-atlas-coweta-ok": {
+    "nearestWater": {
+      "name": "Coweta Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "beale-project-blue-pima-county-az": {
     "nearestWater": {
       "name": "Pantano Wash",
@@ -2263,6 +2278,25 @@
     },
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "beltline-luther-horizon-technology-park-ok": {
+    "nearestWater": {
+      "name": "Deep Fork",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Central Oklahoma Aquifer",
       "rock": "Sandstone"
     }
   },
@@ -2714,6 +2748,21 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "boomtown-lawton-ok": {
+    "nearestWater": {
+      "name": "Numu Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "bristolville-25-lordstown-oh": {
     "nearestWater": {
       "name": "Duck Creek",
@@ -2731,6 +2780,25 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "buckley-bros-pawhuska-ok": {
+    "nearestWater": {
+      "name": "Bird Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 21.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ada-vamoosa Aquifer",
+      "rock": "Sandstone"
     }
   },
   "bull-church-data-center-caroline-va": {
@@ -3783,6 +3851,21 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "cloudburst-oklahoma-city-campus-ok": {
+    "nearestWater": {
+      "name": "North Canadian River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "cloudburst-san-marcos-tx": {
@@ -6956,6 +7039,29 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "echostar-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Wyoming Hereford Ranch Reservoir Number One",
+      "kind": "lake",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "ecl-csc1-santa-clara-ca": {
     "nearestWater": {
       "name": "Saratoga Creek",
@@ -8896,6 +9002,21 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "fluidstack-okmulgee-county-ok": {
+    "nearestWater": {
+      "name": "Okmulgee Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "fort-spunky-pacifico-energy-hood-county-tx": {
     "nearestWater": {
       "name": "Lake Granbury",
@@ -10343,6 +10464,25 @@
       "rock": "Sandstone"
     }
   },
+  "h6-coin-newcastle-wy": {
+    "nearestWater": {
+      "name": "Little Oil Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.6
+    },
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "hanton-city-smithfield-ri": {
     "nearestWater": {
       "name": "Reaper Brook",
@@ -11081,6 +11221,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "isocentric-networks-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "ivcm-imperial-county-ca": {
     "nearestWater": {
       "name": "New River",
@@ -11440,6 +11595,21 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "lightfield-energy-chickasha-airport-ok": {
+    "nearestWater": {
+      "name": "Rock Hollow Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 16
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "liquidcool-loring-afb-me": {
@@ -11940,6 +12110,29 @@
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "lunavi-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Wyoming Hereford Ranch Reservoir Number One",
+      "kind": "lake",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -13931,6 +14124,36 @@
     "nearestTransmission": {
       "voltageKv": 500,
       "distanceMi": 7.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "nextera-high-spring-solar-muskogee-county-ok": {
+    "nearestWater": {
+      "name": "Spaniard Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "nextera-rush-springs-solar-stephens-county-ok": {
+    "nearestWater": {
+      "name": "West Mud Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5
     },
     "waterStress": {
       "cat": 0,
@@ -16100,6 +16323,21 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "rack59-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "North Canadian River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "radius-dc-raleigh-1-wake-county-nc": {
     "nearestWater": {
       "name": "Big Branch",
@@ -16355,6 +16593,29 @@
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "related-digital-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Wyoming Hereford Ranch Reservoir Number One",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -16948,6 +17209,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "seminoe-generating-station-carbon-county-wy": {
+    "nearestWater": {
+      "name": "Teton Reservoir",
+      "kind": "lake",
+      "distanceMi": 4.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
     }
   },
   "senawave-salt-lake-city-ut": {
@@ -18883,6 +19163,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "terrapower-natrium-kemmerer-wy": {
+    "nearestWater": {
+      "name": "North Fork Little Muddy Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "tesla-cortex-2-giga-texas-austin-tx": {
     "nearestWater": {
       "name": "Colorado River",
@@ -19194,6 +19489,21 @@
       "label": "Low (<10%)"
     }
   },
+  "tierpoint-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "North Canadian River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "tierpoint-omaha-bellevue-ne": {
     "nearestWater": {
       "name": "Mud Creek",
@@ -19286,6 +19596,21 @@
     "nearestTransmission": {
       "voltageKv": 345,
       "distanceMi": 7.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "tierpoint-tulsa-state-farm-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
     },
     "waterStress": {
       "cat": 2,
@@ -19548,6 +19873,36 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "tulsaconnect-downtown-dc5-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "tulsaconnect-east-dc3-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "unisys-salt-lake-city-ut": {
