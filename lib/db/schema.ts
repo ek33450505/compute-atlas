@@ -12,6 +12,7 @@ import {
 
 import type { Facility } from "@/lib/schema";
 import type { DiffEntry } from "@/lib/doc-diff";
+import type { LeadTriage } from "@/lib/leads";
 
 /**
  * `pg-core` has no first-class `tsvector` column type, so this is a minimal
@@ -158,3 +159,38 @@ export const subscriptionsTable = pgTable(
 );
 
 export type SubscriptionRow = typeof subscriptionsTable.$inferSelect;
+
+/**
+ * Unstructured research inbox for bare tips — a URL and an optional one-line
+ * note, submitted anonymously by the public. A lead is NOT a facility and NOT
+ * a submission: it carries no facility payload, and nothing in
+ * lib/facility-write.ts or lib/submissions.ts ever reads this table. A lead
+ * can only reach a live facility by first being promoted into a `submissions`
+ * row (see `promotedSubmissionId` below), which then goes through the
+ * existing human approve gate — there is no direct path.
+ */
+export const leadsTable = pgTable(
+  "leads",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    url: text("url").notNull(), // the tip itself; the only required user input
+    note: text("note"), // optional one-line what/where
+    attribution: text("attribution"), // optional public handle
+    submitterIpHash: text("submitter_ip_hash"), // for lead rate-limiting
+    status: text("status").notNull().default("new"), // new | researching | promoted | dismissed
+    triage: jsonb("triage").$type<LeadTriage>(), // submit-time server-side fetch result; null until set
+    reviewNote: text("review_note"),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    // Set when this lead is promoted into a submissions row. Deliberately no
+    // FK constraint, mirroring facilityHistoryTable.facilityId's loose coupling.
+    promotedSubmissionId: uuid("promoted_submission_id"),
+  },
+  (table) => [
+    index("leads_status_idx").on(table.status),
+    index("leads_created_at_idx").on(table.createdAt.desc()),
+    index("leads_submitter_ip_hash_idx").on(table.submitterIpHash),
+  ]
+);
+
+export type LeadRow = typeof leadsTable.$inferSelect;

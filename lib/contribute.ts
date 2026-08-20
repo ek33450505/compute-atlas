@@ -23,7 +23,9 @@ const SLUG_DASH_RUN_RE = /-+/g;
 
 // Mirrors lib/schema.ts sourceSchema's http/https refine — rejects
 // javascript:/data: URLs at submit time, not just at facility-write time.
-const httpUrlSchema = z.string().max(2000).url().refine(
+// Exported so lib/leads.ts (a sibling public-intake surface) reuses this
+// exact refine instead of maintaining a second copy.
+export const httpUrlSchema = z.string().max(2000).url().refine(
   (value) => {
     try {
       const { protocol } = new URL(value);

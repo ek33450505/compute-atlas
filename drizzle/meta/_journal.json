@@ -36,6 +36,13 @@
       "when": 1785191309694,
       "tag": "0004_icy_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787184508766,
+      "tag": "0005_aspiring_captain_cross",
+      "breakpoints": true
     }
   ]
 }
