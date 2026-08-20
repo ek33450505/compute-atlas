@@ -64,10 +64,49 @@ export async function createLead(input: unknown, ipHash: string): Promise<LeadRe
   return { ok: true, id: row.id, url };
 }
 
-/** Lists leads, optionally filtered by status, newest first. */
-export async function listLeads(status?: string): Promise<LeadRow[]> {
+/**
+ * The columns the admin leads screen actually renders. Deliberately excludes
+ * `submitterIpHash` (a hashed submitter IP — pseudonymous personal data about
+ * an anonymous member of the public): every field on a row passed from a
+ * server component into a "use client" component crosses into the browser in
+ * the RSC payload whether or not it's rendered in JSX, so an unprojected
+ * `LeadRow[]` would ship the hash to the admin's browser unused. Selecting an
+ * explicit column list (rather than stripping fields after the fact) means a
+ * future column added to `leadsTable` can't silently start leaking here too.
+ * `submitterIpHash` stays readable server-side via the full `LeadRow` —
+ * `checkLeadRateLimit` in lib/rate-limit.ts depends on it.
+ */
+const ADMIN_LEAD_COLUMNS = {
+  id: leadsTable.id,
+  createdAt: leadsTable.createdAt,
+  url: leadsTable.url,
+  note: leadsTable.note,
+  attribution: leadsTable.attribution,
+  status: leadsTable.status,
+  triage: leadsTable.triage,
+  reviewNote: leadsTable.reviewNote,
+  reviewedAt: leadsTable.reviewedAt,
+  promotedSubmissionId: leadsTable.promotedSubmissionId,
+} as const;
+
+export type AdminLeadRow = Pick<
+  LeadRow,
+  | "id"
+  | "createdAt"
+  | "url"
+  | "note"
+  | "attribution"
+  | "status"
+  | "triage"
+  | "reviewNote"
+  | "reviewedAt"
+  | "promotedSubmissionId"
+>;
+
+/** Lists leads for the admin triage UI, optionally filtered by status, newest first. */
+export async function listLeadsForAdmin(status?: string): Promise<AdminLeadRow[]> {
   const db = getDb();
-  const query = db.select().from(leadsTable);
+  const query = db.select(ADMIN_LEAD_COLUMNS).from(leadsTable);
 
   if (status && (LEAD_STATUSES as readonly string[]).includes(status)) {
     return query.where(eq(leadsTable.status, status)).orderBy(desc(leadsTable.createdAt));

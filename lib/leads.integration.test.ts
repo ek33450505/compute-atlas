@@ -12,7 +12,7 @@ import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
-import { createLead, listLeads, updateLeadStatus } from "@/lib/leads";
+import { createLead, listLeadsForAdmin, updateLeadStatus } from "@/lib/leads";
 
 let tdb: TestDbHandle;
 
@@ -40,7 +40,7 @@ describe("createLead", () => {
     if (!result.ok) return;
     expect(result.id).toBeTruthy();
 
-    const rows = await listLeads();
+    const rows = await listLeadsForAdmin();
     expect(rows).toHaveLength(1);
     expect(rows[0].url).toBe("https://example.com/tip");
     expect(rows[0].status).toBe("new");
@@ -53,7 +53,7 @@ describe("createLead", () => {
     if (result.ok) return;
     expect(result.status).toBe(400);
 
-    const rows = await listLeads();
+    const rows = await listLeadsForAdmin();
     expect(rows).toHaveLength(0);
   });
 
@@ -72,7 +72,7 @@ describe("createLead", () => {
     if (result.ok) return;
     expect(result.status).toBe(400);
 
-    const rows = await listLeads();
+    const rows = await listLeadsForAdmin();
     expect(rows).toHaveLength(0);
   });
 
@@ -90,18 +90,47 @@ describe("createLead", () => {
     );
     expect(result.ok).toBe(true);
 
-    const rows = await listLeads();
+    const rows = await listLeadsForAdmin();
     expect(rows[0].attribution).toBeNull();
   });
 });
 
-describe("listLeads", () => {
+describe("listLeadsForAdmin", () => {
   it("ignores an unrecognized status filter instead of returning nothing", async () => {
     await createLead({ url: "https://example.com/a" }, "hash-1");
     await createLead({ url: "https://example.com/b" }, "hash-1");
 
-    const rows = await listLeads("not-a-real-status");
+    const rows = await listLeadsForAdmin("not-a-real-status");
     expect(rows).toHaveLength(2);
+  });
+
+  // Security-relevant: app/admin/leads/page.tsx passes these rows straight
+  // into a "use client" component, and EVERY field on a row crosses into the
+  // browser in the RSC payload whether or not it's rendered in JSX. This
+  // asserts the exact key set rather than merely "no submitterIpHash" so it
+  // also fails if any OTHER un-vetted column (present or future) starts
+  // crossing the boundary — the actual invariant is "only these columns
+  // leave the server," not "this one specific field stays behind."
+  it("returns only the columns the admin UI needs, never submitterIpHash", async () => {
+    await createLead({ url: "https://example.com/a", note: "n", attribution: "A" }, "hash-1");
+
+    const rows = await listLeadsForAdmin();
+    expect(rows).toHaveLength(1);
+    expect(Object.keys(rows[0]).sort()).toEqual(
+      [
+        "id",
+        "createdAt",
+        "url",
+        "note",
+        "attribution",
+        "status",
+        "triage",
+        "reviewNote",
+        "reviewedAt",
+        "promotedSubmissionId",
+      ].sort()
+    );
+    expect(rows[0]).not.toHaveProperty("submitterIpHash");
   });
 });
 
