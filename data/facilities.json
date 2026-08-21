@@ -4494,9 +4494,16 @@
         "publisher": "Source New Mexico",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kob.com/news/top-news/raton-residents-push-back-on-proposed-data-center-plans/",
+        "label": "Raton residents push back on proposed data center plans",
+        "publisher": "KOB 4",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-20",
     "notes": "Three-phase proposal: Phase 1 would convert a former Kmart on the south side of Raton into a data center drawing up to 5 MW, with later phases at a nearby power station and the city airport over roughly five years, totalling up to 50 MW. Nothing is approved — the feasibility study period ran to early August 2026 and the City Commission must still authorize any development. Atterix was incorporated in Colorado in December 2025.",
     "community": {
       "status": "opposed",
@@ -12211,6 +12218,59 @@
     "mining": {
       "hardwareType": "asic",
       "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "cleco-rapides-parish-gas-plant-la",
+    "name": "Cleco Rapides Parish Combustion Turbine (756 MW)",
+    "operator": "Cleco Power",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.3905,
+      "lon": -92.6693,
+      "county": "Rapides Parish",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 756
+    },
+    "announcedDate": "2026-07-01",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "http://thehayride.com/2026/07/cleco-plans-756-mw-gas-plant-alongside-rapides-data-center/",
+        "label": "Cleco plans 756-MW gas plant alongside Rapides data center",
+        "publisher": "The Hayride",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.1012industryreport.com/energy/new-cleco-power-plant-could-support-3-6b-data-center-in-rapides-parish/",
+        "label": "New Cleco power plant could support $3.6B data center in Rapides Parish",
+        "publisher": "1012 Industry Report",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kalb.com/2026/07/30/cleco-looks-fast-track-new-generator-data-center/",
+        "label": "Cleco looks to fast-track new generator for data center",
+        "publisher": "KALB",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-20",
+    "notes": "Location is approximate (Rapides Parish, near Boyce) — no exact site/parcel name was disclosed in available sources; coverage describes the turbine as being sited on Cleco's existing Rapides Parish generation campus.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Applied Digital Corporation",
+      "poweredFacilityIds": [
+        "applied-digital-delta-forge-1-la"
+      ],
+      "notes": "Cleco filed testimony with the Louisiana Public Service Commission on July 1, 2026 seeking approval to build a new 756 MW natural gas combustion turbine on its existing Rapides Parish generation campus. Driven in large part by Applied Digital's Delta Forge 1 data center load, but Cleco states the plant will serve all Cleco customers, not solely the data center, and cites retiring older units as an independent driver. Applied Digital is expected to cover the plant's and interconnection's costs."
     }
   },
   {
@@ -31619,6 +31679,9 @@
       "state": "NM",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 5
+    },
     "announcedDate": "2026-07",
     "statusHistory": [
       {
@@ -31642,9 +31705,16 @@
         "publisher": "Source New Mexico",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.abqjournal.com/news/developer-plans-worlds-largest-green-data-center-in-socorro/3023420",
+        "label": "Developer plans 'world's largest' green data center in Socorro (Spaceport America companion-project detail)",
+        "publisher": "Albuquerque Journal",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-20",
     "notes": "Sited on state trust land inside Spaceport America's 18,000-acre lease outside Truth or Consequences. Current plan would occupy 21 acres within the horizontal launch area, possibly plus 30 additional acres. Spaceport America says discussions with Green Data have been ongoing since 2021 and that the project 'is not a relocation of the Socorro proposal'; only 'limited planning agreements' are in effect. Capacity has not been disclosed.",
     "energy": {
       "source": "mixed",
@@ -32130,6 +32200,35 @@
     "community": {
       "status": "unknown"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "h5-data-centers-albuquerque-nm",
+    "name": "H5 Data Centers Albuquerque",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.0862,
+      "lon": -106.6512,
+      "city": "Albuquerque",
+      "county": "Bernalillo",
+      "street": "505 Marquette Avenue NW",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/h5-Albuquerque.html",
+        "label": "H5 Data Centers Announces Expansion to Albuquerque Edge Data Center",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-08-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-20",
+    "notes": "225,000 SF Tier III carrier-neutral colocation campus across two buildings at 505 Marquette Ave NW in downtown Albuquerque; H5's first New Mexico facility, positioned as the state's primary interconnection point.",
     "facilityType": "data_center"
   },
   {
@@ -33300,9 +33399,16 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/news/hut-8-selects-entergy-southeast-louisiana-for-10-billion-artificial-intelligence-data-center",
+        "label": "Hut 8 selects Entergy, Southeast Louisiana for $10 billion artificial intelligence data center",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-20",
     "notes": "River Bend campus on 611 acres in West Feliciana Parish. Fluidstack (backed by Google) is primary tenant; Anthropic also signed a long-term lease. Phase I: two 450,000 sq ft facilities. Phase II (additional facilities) targeted by end of 2026. Coordinates approximate St. Francisville area.",
     "energy": {
       "source": "grid",
@@ -39210,15 +39316,23 @@
         "publisher": "Sierra Club",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://datacenters.atmeta.com/richland-parish-data-center/",
+        "label": "Meta's Richland Parish Data Center",
+        "publisher": "Meta",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-05",
+    "lastUpdated": "2026-08-20",
     "energy": {
       "source": "mixed",
       "utility": "Entergy Louisiana",
       "notes": "Entergy Louisiana is building new natural-gas combined-cycle generation (7+ units, 5,200+ MW) to serve the load, plus Meta committed up to 2,500 MW of new solar; Meta pledges to match total use with 100% clean and renewable energy. The gas buildout and its ratepayer impact are contested by advocates."
     },
     "water": {
+      "coolingType": "closed_loop",
       "reportedMgd": 5,
       "notes": "Sierra Club reporting states ~5 million gallons/day (~2 billion/year). Cooling type not disclosed in primary sources. Meta pledges 100% water restoration by 2030 via a 316-acre restoration project with Resource Environmental Solutions."
     },
@@ -39673,9 +39787,16 @@
         "publisher": "The Santa Fe New Mexican",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news-bulletin.com/news/los-lunas-meta-data-center-introduces-expansion-dedicated-to-artificial-intelligence/article_809a47fe-d366-11ef-b76e-470988820678.html",
+        "label": "Los Lunas Meta Data Center introduces expansion dedicated to Artificial Intelligence",
+        "publisher": "News-Bulletin (Valencia County)",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-20",
     "notes": "Reported as the first Meta facilities explicitly dedicated to AI/ML workloads. Existing campus is 750 acres. IRBs authorize tax-exempt bond financing for construction materials — the $7.5B per series is the authorized principal ceiling, not a direct cash subsidy. Meta required to invest $350M into expansion by year 10 under agreement. Operating entity: Greater Kudu LLC.",
     "energy": {
       "source": "solar",
@@ -56157,6 +56278,7 @@
       "lon": -93.9,
       "city": "Blanchard",
       "county": "Caddo",
+      "street": "7340 Greenwood Road",
       "state": "LA",
       "precision": "approximate"
     },
@@ -56182,9 +56304,23 @@
         "publisher": "Opportunity Louisiana",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/stack-resilient-tech-park",
+        "label": "Stack: Resilient Tech Park Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.ksla.com/2026/08/18/amazon-web-services-announces-third-data-center-campus-is-coming-shreveport/",
+        "label": "Amazon Web Services announces a third data center campus is coming to Shreveport",
+        "publisher": "KSLA",
+        "retrievedAt": "2026-08-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-20",
     "notes": "Part of a ~$12,000,000,000 combined Amazon/STACK investment spanning this Caddo Parish campus and the companion Bossier Parish campus (Benton, LA).",
     "subsidies": [
       {

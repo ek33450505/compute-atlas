@@ -3853,6 +3853,29 @@
       "rock": "Sandstone"
     }
   },
+  "cleco-rapides-parish-gas-plant-la": {
+    "nearestWater": {
+      "name": "Red River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "cloudburst-oklahoma-city-campus-ok": {
     "nearestWater": {
       "name": "North Canadian River",
@@ -10424,6 +10447,25 @@
     "aquifer": {
       "name": "New York And New England Carbonate-rock Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "h5-data-centers-albuquerque-nm": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "h5-data-centers-st-paul-mn": {
