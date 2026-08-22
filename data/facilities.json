@@ -9226,9 +9226,16 @@
         "publisher": "KCRG",
         "retrievedAt": "2026-08-14",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.alliantenergy.com/our-energy/natural-gas/bobcat",
+        "label": "Bobcat Energy Center project page",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-21",
     "notes": "720 MW gas peaker in Marshalltown, fully permitted. The Iowa Utilities Commission unanimously approved Alliant's Certificate of Public Convenience, Use and Necessity on 2025-12-16, and the Iowa DNR approved the air permits in early August 2026. Construction anticipated to begin in Q3 2026 with an operational date of 2029. Status is 'permitted' rather than 'under_construction' because no source fetched this session confirms construction has actually started.",
     "energy": {
       "source": "on_site_gas",
@@ -9435,6 +9442,52 @@
     },
     "landAcres": 87.53,
     "facilityType": "data_center"
+  },
+  {
+    "id": "burt-county-solar-tekamah-ne",
+    "name": "Burt County Solar",
+    "operator": "Sandhills Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.7778,
+      "lon": -96.2214,
+      "city": "Tekamah",
+      "county": "Burt",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 250
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "OPPD announced agreements tied to the project; in-service expected within 2029.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.oppd.com/news-resources/news-releases/2026/may/oppd-signs-deals-tied-to-two-renewable-energy-projects/",
+        "label": "OPPD signs deals tied to two renewable energy projects",
+        "publisher": "Omaha Public Power District",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-21",
+    "energy": {
+      "source": "solar",
+      "utility": "Omaha Public Power District"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Omaha Public Power District",
+      "notes": "250 MW solar project east of Tekamah developed by Sandhills Energy. \"Burt County Solar is expected to be in service within 2029, generating enough electricity to power 50,000 homes,\" and is \"expected to generate more than $20 million in local tax revenue over its operational lifetime.\""
+    }
   },
   {
     "id": "calethos-lithium-valley-imperial-county-ca",
@@ -22787,10 +22840,22 @@
         "publisher": "Edged Energy",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://edged.us/news/des-moines-iowa",
+        "label": "Edged Brings Ultra-Efficient, AI-Ready Data Center with Advanced Waterless Cooling to Des Moines, Iowa",
+        "publisher": "Edged",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-21",
     "notes": "AI-focused colocation developer (not a Big-5 hyperscaler) building a waterless-cooled, high-density facility at 9100 SE Four Mile Drive, Ankeny (address confirmed via secondary aggregators; coordinates are city-level, not parcel-geocoded — mark approximate). Design PUE 1.15 portfolio-wide; ThermalWorks closed-loop cooling claims >52M gal/yr water savings vs conventional. Third-party trade press (Site Selection Magazine, via search only — not independently fetched) cited a $187M investment and a 105,000 sq ft building; not included here since I couldn't confirm those two figures on a page I fetched myself. Also be aware: a 2024 DCD article (403'd on fetch, so NOT used as a source) described a much larger 'I-80 Commerce Center' two-building proposal (~535K + ~775K sq ft) at what looks like the same general site/intersection under 'Commerce Center LLC' — possibly an earlier or future-phase master plan for the same park. Could not verify, so this record covers ONLY the confirmed Edged 13.2MW project. Worth a follow-up pass to see if the 13.2MW figure has grown, since news headlines referenced the building having since 'topped out.'",
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0,
+      "notes": "Closed-loop, air-based ThermalWorks waterless cooling; Edged projects it will save more than 52 million gallons of water annually versus a similar-sized conventional data center. Supports up to 70 kW/rack air-cooled, 200 kW/rack with plug-and-play liquid integration."
+    },
     "landAcres": 17.5,
     "facilityType": "data_center"
   },
@@ -32523,9 +32588,16 @@
         "publisher": "WVIK (Quad Cities NPR)",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cipco.net/hickory-grove-generating-station",
+        "label": "Hickory Grove Generating Station project page",
+        "publisher": "Central Iowa Power Cooperative (CIPCO)",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-21",
     "notes": "Proposed 240 MW simple-cycle gas peaker east of Maysville in Hickory Grove Township, rural Scott County. The fenced site would be roughly 30 acres; CIPCO holds options on about 90 acres. Timeline as reported: construction spring 2027, mechanical completion summer 2029, commercial operation late/winter 2029, over a three-year construction schedule employing about 200 workers, leaving 5 to 7 permanent staff. A reported construction cost of $350-400 million appears in secondary coverage not fetched this session and is therefore not recorded. Included in this dataset as new dispatchable capacity in a state whose load growth is driven substantially by data center development, though neither cited source names data centers as the driver.",
     "energy": {
       "source": "on_site_gas",
@@ -35723,12 +35795,20 @@
         "publisher": "LightEdge Solutions",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://lightedge.com/ames/",
+        "label": "Ames Data Center Proposal — LightEdge",
+        "publisher": "LightEdge Solutions",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-21",
     "notes": "Proposed single-storey edge colocation facility on roughly 10.86 acres of Ames airport land on Aviation Way, in a Planned Industrial zone, adjacent to the Ames Regional Airport and the ISU Research Park. Phased electrical demand of 3 MW in phase one, 6 MW in phase two, and as much as 25 MW at full buildout over roughly ten years — reported locally as about a 15 percent increase in the city's total consumption. LightEdge explicitly rules out AI or hyperscale use: asked whether it would house AI servers, its proposal answers 'No. This is edge colocation.' aiClassification is therefore omitted. Reported at roughly 100,000 sq ft in local coverage, but the operator's own page does not state a square footage, so it is not recorded. Distinct site from the tracked LightEdge Altoona facility.",
     "water": {
       "coolingType": "air",
+      "reportedMgd": 0,
       "notes": "Air-cooled using chillers and fans rather than evaporative systems; LightEdge's proposal states approximately 0 gallons per day of cooling water, and cites its Altoona facility's 1,267 gallons a day — 5 percent of Iowa's 25,000-gallon permit threshold — as the reference case."
     },
     "landAcres": 10.86,
@@ -41903,6 +41983,7 @@
       "lon": -93.7362003,
       "city": "West Des Moines",
       "county": "Polk",
+      "street": "1475 SE Maffitt Lake Road",
       "state": "IA",
       "precision": "approximate"
     },
@@ -41921,9 +42002,16 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://gowestdesmoines.com/news_article/the-city-of-west-des-moines-approved-several-permits-to-proceed-with-the-construction-of-the-data-center/",
+        "label": "Construction Underway on 4 New Microsoft Data Centers",
+        "publisher": "Go West Des Moines (City of West Des Moines economic development)",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-21",
     "notes": "1475 SE Maffitt Lake Road - a distinct 146-acre campus from the already-tracked 'Ginger West' (11100 Booneville Rd, different parcel). Building 1 (250,000 sq ft) came online 2023; up to 5 buildings / ~1.8M sq ft planned campus-wide (Microsoft's own naming convention pairs Ginger East/West as siblings but they are separate parcels/addresses). investmentUsd is the value of ONE building permit, not full campus capex.",
     "investmentUsd": 358000000,
     "landAcres": 146,
@@ -41940,6 +42028,7 @@
       "lon": -93.782,
       "city": "West Des Moines",
       "county": "Polk",
+      "street": "11100 Booneville Road",
       "state": "IA",
       "precision": "exact"
     },
@@ -41993,9 +42082,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://gowestdesmoines.com/news_article/the-city-of-west-des-moines-approved-several-permits-to-proceed-with-the-construction-of-the-data-center/",
+        "label": "Construction Underway on 4 New Microsoft Data Centers",
+        "publisher": "Go West Des Moines (City of West Des Moines economic development)",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-21",
     "notes": "Site at 11100 Booneville Rd area, West Des Moines (Polk County). 1.8M sq ft planned across multiple buildings. Turner Construction is general contractor; completion estimated summer 2028. Companion Ginger East campus (124 acres, 5 buildings) is a separate site in West Des Moines. Part of Microsoft's multi-billion dollar total Iowa investment since 2009. Planned MW capacity not confirmed from primary sources; 444 MW figure removed as unsupported. Iowa's Sec. 423.3(95) data-center sales-tax exemption applies, but Iowa data-center incentive awards are not publicly disclosed; no Ginger West-specific job count is published.",
     "energy": {
       "source": "grid",
@@ -43531,6 +43627,59 @@
     "facilityType": "data_center"
   },
   {
+    "id": "milligan-1-wind-saline-ne",
+    "name": "Milligan I Wind Project",
+    "operator": "EDF Renewables",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.5011,
+      "lon": -97.3903,
+      "city": "Milligan",
+      "county": "Saline",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 300
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-09-01",
+        "note": "OPPD power purchase agreement for the project's full 300 MW capacity took effect September 1, 2024.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.edf-re.com/press-release/edf-renewables-north-america-acquires-nebraska-wind-project/",
+        "label": "EDF Renewables North America Acquires Nebraska Wind Project",
+        "publisher": "EDF Renewables",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://oppdthewire.com/new-agreement-provides-oppd-with-300-megawatts-of-wind-energy/",
+        "label": "Agreement adds 300 MW of wind energy to portfolio",
+        "publisher": "OPPD - The Wire",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-21",
+    "energy": {
+      "source": "wind",
+      "utility": "Omaha Public Power District"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "offtaker": "Omaha Public Power District",
+      "notes": "300 MW project in Saline County acquired by EDF Renewables from its developer; originally structured to \"sell its generated energy and Renewable Energy Credits (RECs) into the Southwest Power Pool.\" OPPD subsequently contracted for the project's full capacity effective September 1, 2024."
+    }
+  },
+  {
     "id": "miningstore-eldora-township-ia",
     "name": "MiningStore Eldora Township Site",
     "operator": "MiningStore",
@@ -43794,6 +43943,7 @@
       "lat": 41.92,
       "lon": -91.83,
       "county": "Linn",
+      "street": "near U.S. 30 and Benton-Linn Road",
       "state": "IA",
       "precision": "approximate"
     },
@@ -43829,15 +43979,26 @@
         "publisher": "The Gazette",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kwwl.com/news/alliant-energy-proposes-720-mw-gas-plant-near-cedar-rapids/article_dfbd166c-64f2-4ad9-83cc-3d8a4d6b3915.html",
+        "label": "Alliant Energy proposes 720-MW gas plant near Cedar Rapids",
+        "publisher": "KWWL",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-21",
     "notes": "Proposed 720 MW natural gas plant on roughly 160 acres in unincorporated Linn County near the Linn-Benton county line, west of Cedar Rapids. Alliant expects it to be operational in 2030 pending approvals. Three approvals are required: a certificate of public convenience, use and necessity from the Iowa Utilities Commission; a Prevention of Significant Deterioration air permit from the Iowa DNR; and rezoning from Agriculture to Exclusive Use-Two (EU-2) by the Linn County Planning and Zoning Commission and Board of Supervisors. Alliant filed the rezoning application on 2026-07-15 and an air quality application with Linn County Public Health in July 2026.",
     "energy": {
       "source": "on_site_gas",
       "utility": "Alliant Energy"
     },
     "landAcres": 160,
+    "jobs": {
+      "construction": 200,
+      "sourceIndex": 3
+    },
     "community": {
       "status": "opposed",
       "notes": "Overwhelming local opposition in surrounding rural communities. Atkins city administrator Scott Flory: 'In our community, I would estimate that the opposition to the project is overwhelming.' Resident Lonnie Jacobson: 'I believe their facility should be kept in an industrial park, not out in rural areas where they are taking prime farm grounds.' Benton County and the cities of Atkins and Fairfax filed petitions to intervene in the approval process, arguing they lack a formal voice despite impacts on emergency services and infrastructure. Alliant held town halls on 2026-07-30 at the IBEW Hall in Cedar Rapids.",
@@ -46666,6 +46827,53 @@
     }
   },
   {
+    "id": "oppd-standing-bear-lake-station-douglas-ne",
+    "name": "Standing Bear Lake Station",
+    "operator": "Omaha Public Power District",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.3129,
+      "lon": -96.118,
+      "city": "Omaha",
+      "county": "Douglas",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 150
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-11-11",
+        "note": "Commercial operation began November 11, 2025.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.oppdcommunityconnect.com/standing-bear-lake-station",
+        "label": "Standing Bear Lake Station",
+        "publisher": "Omaha Public Power District",
+        "retrievedAt": "2026-08-21",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-21",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Omaha Public Power District",
+      "notes": "Natural gas with light fuel oil capability; engines \"are capable of running on a 15% hydrogen/natural gas blend in support of future technology advancements.\""
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 9,
+      "notes": "Nine Wärtsilä 18V50DF reciprocating internal combustion engines near North 120th Street and Military Road in northwest Omaha. Peaking/balancing plant that \"will run only as needed (estimated at less than 15% of the time).\" Built under OPPD's Power with Purpose program, the same buildout as the already-tracked Turtle Creek Station."
+    }
+  },
+  {
     "id": "oppd-turtle-creek-station-sarpy-ne",
     "name": "Turtle Creek Station",
     "operator": "Omaha Public Power District",
@@ -46939,9 +47147,16 @@
         "publisher": "Western Iowa Today",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.midamericanenergy.com/newsroom/2025-generation-projects",
+        "label": "MidAmerican 2025 generation projects newsroom page",
+        "publisher": "MidAmerican Energy",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-21",
     "notes": "Proposed 465 MW natural gas-fired combustion turbine in Adair County, south of the town of Orient, targeted to come online in 2028. Part of the same MidAmerican long-term plan that includes an 800 MW multi-site solar reliability project across roughly six Iowa sites in 2027-2028 whose locations are not finalised. Reported project cost of $600 million and a site of roughly 28 acres appear in trade and local coverage that could not be fetched this session and are therefore not recorded here. Relevant to this dataset as new dispatchable capacity added in a state whose load growth is being driven substantially by data center development.",
     "energy": {
       "source": "on_site_gas",
@@ -47588,6 +47803,58 @@
       "technology": "nuclear",
       "offtaker": "Meta",
       "notes": "Part of the Jan 2026 Vistra-Meta 20-year PPA package (2,609 MW across three Vistra nuclear plants) — Perry is the single largest allocation (1,268 MW existing + 213 MW uprate). Grid-matched: power continues to the PJM grid rather than a dedicated campus feed, so no poweredFacilityIds. Operated by Vistra since the 2024 Energy Harbor acquisition; NRC license renewed to 2046."
+    }
+  },
+  {
+    "id": "platteview-solar-saunders-ne",
+    "name": "Platteview Solar",
+    "operator": "AES Corporation",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.228,
+      "lon": -96.3936,
+      "city": "Yutan",
+      "county": "Saunders",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 81
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-07-11",
+        "note": "Ribbon cutting for the completed 81 MW array.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://oppdthewire.com/oppds-first-utility-scale-solar-project-platteview-solar-is-a-major-milestone/",
+        "label": "Launching OPPD's first utility-scale solar project",
+        "publisher": "OPPD - The Wire",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-21",
+    "energy": {
+      "source": "solar",
+      "utility": "Omaha Public Power District"
+    },
+    "investmentUsd": 57000000,
+    "landAcres": 500,
+    "jobs": {
+      "construction": 350,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Omaha Public Power District",
+      "notes": "Spread across roughly 500 acres of privately owned land near Yutan in Saunders County. \"OPPD has a power purchase agreement with the facility's developer and owner/operator, the AES Corporation.\" Described as OPPD's first utility-scale solar project and the largest in Nebraska to date."
     }
   },
   {
@@ -53332,9 +53599,16 @@
         "publisher": "Alliant Energy",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.alliantenergy.com/our-energy/natural-gas/riverhawk",
+        "label": "Riverhawk Energy Center project page",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-21",
     "notes": "Proposed in Cerro Gordo County adjacent to Alliant's Emery Generating Station, expected operational in 2031 pending regulatory approval. Requires detailed air-quality modelling with Iowa DNR confirmation that emissions meet air-quality standards. Alliant held a public information meeting on 2026-05-13, and local coverage indicates a new gas pipeline would cross Hancock and Cerro Gordo counties to serve it. Acreage, investment and job counts are not stated on the operator's page. At 1,200 MW this would be the largest single generation addition among the current Iowa gas proposals.",
     "energy": {
       "source": "on_site_gas",
@@ -55042,6 +55316,55 @@
     }
   },
   {
+    "id": "sequitor-edge-kearney-ne",
+    "name": "Sequitor Edge Kearney Data Center",
+    "operator": "Sequitor Edge",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.6994,
+      "lon": -99.0817,
+      "city": "Kearney",
+      "county": "Buffalo",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-09-19",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-09-19",
+        "note": "Kearney approved the sale of approximately 16 acres in TechONE Crossing to Shamrock Data LLC for the Sequitor Edge data center.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://sequitoredge.com/press/approved-site-for-next-generation-data-center-in-kearney-nebraska/",
+        "label": "Approved Site For Next Generation Data Center in Kearney Nebraska",
+        "publisher": "Sequitor Edge",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://metro.newschannelnebraska.com/story/53099125/kearney-secures-new-data-center-after-citys-deal-with-sequitor-edge",
+        "label": "Kearney secures new data center after city's deal with Sequitor Edge",
+        "publisher": "News Channel Nebraska",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-21",
+    "notes": "Shamrock Data LLC is developing an approximately 40,000 sq ft facility on roughly 16 acres inside Kearney's TechONE Crossing tech park for Sequitor Edge; facility design by Morrissey Engineering (Omaha). Developer targets operation in early 2027. Distinct from the former Compute North / MARA crypto-mining site elsewhere in the same tech park.",
+    "energy": {
+      "source": "grid",
+      "utility": "Nebraska Public Power District",
+      "notes": "Developer states the site is \"strategically placed near NPPD's energy infrastructure and will take advantage of its proximity to fiber optic cabling.\""
+    },
+    "landAcres": 16,
+    "facilityType": "data_center"
+  },
+  {
     "id": "serverfarm-covington-hazelbrand-ga",
     "name": "Serverfarm Covington Data Center (Hazelbrand Road)",
     "operator": "Serverfarm",
@@ -55311,6 +55634,59 @@
     "investmentUsd": 13000000,
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "sholes-wind-energy-center-wayne-ne",
+    "name": "Sholes Wind Energy Center",
+    "operator": "NextEra Energy Resources",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.2308,
+      "lon": -97.0178,
+      "city": "Wayne",
+      "county": "Wayne",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 160
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2018-12",
+        "note": "Project placed in service; up to 10 full-time operational positions began December 2018.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://newsroom.nexteraenergy.com/2018-07-27-NextEra-Energy-Resources-OPPD-break-ground-on-the-Sholes-Wind-Energy-Center-marking-more-than-200-million-investment-in-Nebraska?l=12",
+        "label": "NextEra Energy Resources, OPPD, break ground on the Sholes Wind Energy Center, marking more than $200 million investment in Nebraska",
+        "publisher": "NextEra Energy",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-21",
+    "energy": {
+      "source": "wind",
+      "utility": "Omaha Public Power District"
+    },
+    "investmentUsd": 200000000,
+    "jobs": {
+      "construction": 200,
+      "permanent": 10,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "offtaker": "Omaha Public Power District",
+      "unitCount": 71,
+      "notes": "71 GE turbines across Wayne and Stanton counties. \"The energy will serve customers of OPPD through a 20-year power purchase agreement.\" Expected to deliver over $30 million in property taxes to the counties over 30 years and roughly $40 million in landowner payments."
+    }
   },
   {
     "id": "simple-mining-cascade-ia",
@@ -61752,6 +62128,52 @@
     "facilityType": "data_center"
   },
   {
+    "id": "thunderhead-wind-energy-center-antelope-ne",
+    "name": "Thunderhead Wind Energy Center",
+    "operator": "WEC Energy Group",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.1289,
+      "lon": -98.0298,
+      "city": "Neligh",
+      "county": "Antelope",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 300
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020-12",
+        "note": "Commercial operation expected by end of 2020 per the acquisition announcement.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/wec-energy-group-to-acquire-80-ownership-in-thunderhead-wind-energy-center-300909971.html",
+        "label": "WEC Energy Group to acquire 80% ownership in Thunderhead Wind Energy Center",
+        "publisher": "WEC Energy Group via PR Newswire",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-21",
+    "energy": {
+      "source": "wind"
+    },
+    "investmentUsd": 338000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "unitCount": 108,
+      "notes": "108 GE turbines across Antelope and Wheeler counties, developed by Invenergy; WEC Energy Group acquired an 80% interest for $338 million. \"The wind farm has a long-term offtake agreement with a Fortune 100 company for 100% of the energy produced\" — the buyer is not named in the source, so no offtaker is asserted here."
+    }
+  },
+  {
     "id": "tierpoint-allentown-tekpark-breinigsville-pa",
     "name": "TierPoint Allentown TekPark",
     "operator": "TierPoint",
@@ -64616,6 +65038,7 @@
       "lon": -92.4805,
       "city": "Cedar Falls",
       "county": "Black Hawk",
+      "street": "West Viking Road Industrial Park (southwest Cedar Falls)",
       "state": "IA",
       "precision": "approximate"
     },
@@ -64644,9 +65067,16 @@
         "publisher": "Iowa Public Radio",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.iowapublicradio.org/ipr-news/2026-06-17/cedar-falls-approves-new-gas-power-plant",
+        "label": "Cedar Falls approves new $80M gas power plant",
+        "publisher": "Iowa Public Radio",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-08-21",
     "notes": "$80 million municipal gas plant on 48 acres in the West Viking Road Industrial Park in southwest Cedar Falls. Rezoning and land conveyance to Cedar Falls Utilities approved by the city council on 2026-06-15; the project still requires Iowa Utilities Commission approval before construction. Discussed since 2022. Relevant to the compute buildout on two counts: IPR cites data center load growth as a driver, and the same industrial park is where a crypto mining operator sought rezoning in March 2026 — though the council has banned crypto operations citywide.",
     "energy": {
       "source": "on_site_gas",
@@ -64914,6 +65344,60 @@
       }
     ],
     "lastUpdated": "2026-08-15",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "wahawk-power-waterloo-ia",
+    "name": "Wahawk Power Data Center",
+    "operator": "Wahawk Power, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.4429861,
+      "lon": -92.4006906,
+      "city": "Waterloo",
+      "county": "Black Hawk",
+      "street": "North of 570 West Shaulis Road, South Waterloo Business Park",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-12-15",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.hottlerealestate.com/blog/wahawk-power-data-center-blog_2",
+        "label": "Wahawk Power Data Center — 80,000 SF, $6M Value in South Waterloo Business Park",
+        "publisher": "Hottle Real Estate",
+        "retrievedAt": "2026-08-21",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.kwwl.com/news/waterloo-data-center-plan-sparks-protest-at-city-hall/article_db0d730e-4c25-4fef-aa9c-3db93a5a3402.html",
+        "label": "Waterloo data center plan sparks protest at city hall",
+        "publisher": "KWWL",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kcrg.com/2026/08/18/city-waterloo-considering-three-month-data-center-moratorium/",
+        "label": "City of Waterloo considering three-month data center moratorium",
+        "publisher": "KCRG",
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-21",
+    "notes": "80,000 sq ft edge/colocation data center proposed on a 12-acre city-owned parcel (with a right to purchase 10-12 more acres within 5 years) sold to the developer for $1; Waterloo City Council approved a development agreement Dec 15, 2025, but Planning Commission and Council site-plan approval were still pending as of June 2026, and the Council is weighing a 3-month moratorium (discussion set for September 2026) amid resident opposition.",
+    "energy": {
+      "source": "grid",
+      "utility": "MidAmerican Energy"
+    },
+    "landAcres": 12,
+    "community": {
+      "status": "contested",
+      "notes": "Protests at city hall and a push for a data-center moratorium followed the December 2025 development agreement; opponents cite water, power, noise and economic-benefit concerns.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {

@@ -2824,6 +2824,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "burt-county-solar-tekamah-ne": {
+    "nearestWater": {
+      "name": "Tekamah Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "calethos-lithium-valley-imperial-county-ca": {
     "nearestWater": {
       "name": "New River",
@@ -5100,9 +5119,9 @@
   },
   "crypto-colo-center-mclouth-ks": {
     "nearestWater": {
-      "name": "Fall Creek",
-      "kind": "river",
-      "distanceMi": 0.5
+      "name": "Lake Dabanawa",
+      "kind": "lake",
+      "distanceMi": 4
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -13758,6 +13777,25 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "milligan-1-wind-saline-ne": {
+    "nearestWater": {
+      "name": "South Fork Turkey Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "miningstore-eldora-township-ia": {
     "nearestWater": {
       "name": "Iowa River",
@@ -14815,6 +14853,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "oppd-standing-bear-lake-station-douglas-ne": {
+    "nearestWater": {
+      "name": "Standing Bear Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "oppd-turtle-creek-station-sarpy-ne": {
     "nearestWater": {
       "name": "Buffalo Creek",
@@ -15104,6 +15161,25 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "platteview-solar-saunders-ne": {
+    "nearestWater": {
+      "name": "Clear Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.1
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "pointone-remington-technology-park-fauquier-va": {
@@ -17348,6 +17424,25 @@
       "rock": "Sandstone"
     }
   },
+  "sequitor-edge-kearney-ne": {
+    "nearestWater": {
+      "name": "Lake Kearney",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "serverfarm-covington-hazelbrand-ga": {
     "nearestWater": {
       "name": "Dried Indian Creek",
@@ -17403,6 +17498,25 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "sholes-wind-energy-center-wayne-ne": {
+    "nearestWater": {
+      "name": "South Logan Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "simple-mining-cascade-ia": {
@@ -19319,6 +19433,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "thunderhead-wind-energy-center-antelope-ne": {
+    "nearestWater": {
+      "name": "Elkhorn River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "tierpoint-allentown-tekpark-breinigsville-pa": {
     "nearestWater": {
       "name": "Breinig Run",
@@ -20424,6 +20557,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "wahawk-power-waterloo-ia": {
+    "nearestWater": {
+      "name": "Prescotts Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "westblock-shiprock-nm": {
