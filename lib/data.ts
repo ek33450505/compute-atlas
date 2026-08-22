@@ -210,14 +210,20 @@ export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VI
 // ============================================================
 //
 // These back the pages that must NOT depend on the global `"facilities"`
-// tag or its 1h timer: facility detail, state landing, and (indirectly, via
-// loadPowerGenerationCached) the power-links cross-reference on detail
-// pages. Each is tag-only (no `revalidate` option) so the page stays fully
-// static and rewrites only when `lib/facility-write.ts` busts its specific
-// tag on write. Each reads the DB/JSON directly rather than routing through
-// `loadFacilities()`, so it never re-acquires the global tag. Every reader
-// mirrors the `process.env.VITEST` bypass so the test suite (no
-// DATABASE_URL) stays green.
+// tag or its 1h timer: facility detail, state landing, per-operator
+// (`getFacilitiesByOperatorCached`, for the related-facilities rail), and
+// (indirectly, via loadPowerGenerationCached) the power-links cross-reference
+// on detail pages. Each is tag-only (no `revalidate` option on the reader
+// itself) and rewrites only when `lib/facility-write.ts` busts its specific
+// tag on write — but "tag-only" describes the READER, not the page's actual
+// worst-case staleness: `loadFacilitiesForSearch` runs in the root layout
+// with an untagged 86400s timer, and a route's effective floor is the
+// minimum across its own config and every nested `unstable_cache` in its
+// render tree, so these pages still inherit that 24h ceiling even though
+// none of them carry the timer themselves. Each reads the DB/JSON directly
+// rather than routing through `loadFacilities()`, so it never re-acquires
+// the global tag. Every reader mirrors the `process.env.VITEST` bypass so
+// the test suite (no DATABASE_URL) stays green.
 
 /**
  * Uncached direct-row fetch backing `getFacilityByIdCached`. The DB branch
@@ -269,8 +275,13 @@ async function fetchFacilitiesByStateUncached(code: string): Promise<Facility[]>
 
 /**
  * Per-state scoped reader for the state landing page. Tagged
- * `state:${CODE}` (uppercase) — busted only by a write touching that state,
- * never by the global tag or timer. Same filter/sort as `getFacilitiesByState`.
+ * `state:${CODE}` (uppercase) — this READER is busted only by a write
+ * touching that state, never by the global tag or timer. That is a claim
+ * about the reader's own cache entry, not the state page's measured
+ * behavior: `/states/*` sits at `initialRevalidateSeconds: 3600` (the root
+ * layout's search read still floors it) and, per the ground truth measured
+ * 2026-08-21, does carry the bare `facilities` tag via other reads in its
+ * render tree. Same filter/sort as `getFacilitiesByState`.
  */
 export const getFacilitiesByStateCached = (code: string): Promise<Facility[]> => {
   const upper = code.toUpperCase();
@@ -1166,7 +1177,10 @@ export async function getPoweredCampuses(facility: Facility): Promise<Facility[]
  * Reads `loadPowerGenerationCached()` (tag `power-generation`), not
  * `getPowerGenerationFacilities()`/`loadFacilities()` — same reasoning as
  * `getPoweredCampuses` above: this backs the facility detail page's
- * cross-reference and must stay decoupled from the global tag/timer.
+ * cross-reference and must stay decoupled from the global tag — though only
+ * from the tag, not from the site-wide 86400s floor `loadFacilitiesForSearch`
+ * imposes on every route from the root layout. Decoupling from the tag is
+ * still what keeps a single-facility write from re-triggering this reader.
  */
 export async function getPoweredByGenerators(facility: Facility): Promise<PowerGenerationFacility[]> {
   const generation = await loadPowerGenerationCached();

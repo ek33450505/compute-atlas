@@ -132,9 +132,7 @@ drift (`check:drift`, the `neon-sync` workflow) to be detected and repaired
 afterwards. Syncing first makes drift structurally impossible instead, and
 `check:drift` becomes a true invariant that should always pass.
 
-`db:sync` writes `facility_history` for every change (so `/activity` sees it) and
-busts exactly the cache tags it touched. `db:seed --force` does neither — it is
-bootstrap-only, kept for filling an empty database.
+`db:sync` writes `facility_history` for every change (so `/activity` sees it) and busts the cache tags for affected scopes (`facility:<id>`, `state:<XX>`, `operator:<slug>`, ±`power-generation`), plus unconditionally adds the `"facilities"` tag to keep aggregate pages fresh. It cannot reach the untagged search index (86400s timer only). `db:seed --force` does neither — it is bootstrap-only, kept for filling an empty database.
 
 ## Discovery pipeline
 
@@ -183,17 +181,12 @@ tool, not part of the deployed app.
   deploy, so the fail-open paths matter more than they used to. Verify changes by
   reading the real build log (`npx vercel inspect --logs <url> | grep
   vercel-ignore`), never by local probes alone.
-- **Prod cache & bulk go-live:** aggregate pages (home/map/table/stats/explore) read
-  `loadFacilities` with a **1h ISR timer** (`revalidate: 3600`) — they self-heal within
-  the hour. Scoped pages (facility detail, state landing) are **tag-only, no timer** —
-  they refresh only when a write busts their tag. The tag vocabulary is centralized in
-  `lib/cache-tags.ts` (`tagsForFacility` + the route's allowlist), shared by
-  `lib/facility-write.ts` and `POST /api/revalidate` so producer and validator can't
-  drift apart. `db:sync --apply` and the approve-on-prod path both bust tags for you.
-  Only a **raw** Neon write (`db:seed --force`, an ad-hoc upsert) leaves them un-busted
-  — then hit the admin-bearer `POST /api/revalidate` yourself with the affected tags
-  (e.g. `{"tags":["facilities","state:CA"]}`); brand-new facility ids need no bust
-  (cache-miss populates them).
+- **Prod cache & bulk go-live:** The site has three independent cache tiers:
+  - **Aggregate pages** (home/map/table/stats/explore) read `loadFacilities` with **1h ISR timer** (`revalidate: 3600`) and carry the `"facilities"` tag — they self-heal within the hour even if a tag bust is missed.
+  - **Scoped pages**: `/facilities/[slug]` (1064 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it floors at 86400s inherited from the root layout. The state/operator/metro hubs (50/363/27 routes) **do** still carry `"facilities"` on a 3600s timer, so they self-heal hourly as well as on a bust. There is no `metro:` tag — metro hubs are covered by `"facilities"` alone.
+  - **Search index** (global ⌘K palette via `loadFacilitiesForSearch` in root layout) is **24h untagged timer only** — no tag bust affects it; `db:sync --apply` cannot refresh it.
+  
+  All pages inherit the longest timer from any reader in their render tree (typically 24h from the root layout). The tag vocabulary (`facility:<id>`, `state:<XX>`, `operator:<slug>`, `power-generation`, `facilities`) is centralized in `lib/cache-tags.ts` and shared by `lib/facility-write.ts` and `POST /api/revalidate` so producer and validator can't drift apart. `db:sync --apply` and the approve-on-prod path bust affected tags for you. Only a **raw** Neon write (`db:seed --force`, an ad-hoc upsert) leaves them un-busted — then hit the admin-bearer `POST /api/revalidate` yourself with the affected tags (e.g. `{"tags":["facilities","state:CA"]}`); brand-new facility ids need no bust (cache-miss populates them).
 - **JSON ↔ Neon — Neon is truth, and `db:sync` is the only bulk write path.**
   `db:sync` applies adds *and* updates, writes history, busts tags, and refuses to
   overwrite a Neon row that moved ahead of the JSON's basis (`facilities.meta.json`'s
@@ -205,3 +198,4 @@ tool, not part of the deployed app.
   are gitignored maintainer notes — never commit them.
 - **Dev server:** don't run `next build`/`start` while `next dev` is live (it
   corrupts `.next`); a long-running dev server can also serve stale `globals.css`.
+- **Static-asset edge cache:** `/data/:path*` and `/basemap/:path*` carry `Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800` (edge cache up to 1 day plus 7 days stale reuse); `/fonts/:path*` are immutable. After `npm run build:mapdata`, regenerated geojson rides the edge cache for up to 24 hours — if a correction must go live immediately, purge Cloudflare by prefix.

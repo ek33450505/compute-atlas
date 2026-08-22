@@ -9,7 +9,11 @@ import { isValidCacheTag, MAX_TAGS_PER_REQUEST } from "@/lib/cache-tags";
  * data waves via scripts, not the app) can't bust Next's scoped
  * `unstable_cache` tags themselves — only the running app can — so a bulk
  * upsert step calls this route afterward with the tags it touched, e.g.
- * `{ tags: ["facilities", "state:CA"] }`.
+ * `{ tags: ["state:CA", "operator:some-operator-slug"] }`. `"facilities"` is
+ * still a valid tag (see `tagsForChanges` in `scripts/sync-to-neon.ts`) but
+ * no longer reaches the ⌘K nav index — `loadFacilitiesForSearch` is
+ * deliberately untagged (see `lib/search-index.ts`) and refreshes only on
+ * its own 86400s timer, so busting `"facilities"` alone will not update it.
  */
 export async function POST(request: Request): Promise<Response> {
   const denied = requireAdmin(request);

@@ -61,7 +61,9 @@ export function isValidCacheTag(tag: string): boolean {
 /**
  * The exact set of tags one facility write invalidates — the scoped
  * alternative to the old global `"facilities"` nuke, which shrank a write's
- * blast radius from the whole ~900-page surface to ~2-3 scoped pages.
+ * blast radius from the whole ~1,547-route surface to up to 6 scoped tags
+ * (facility, new + previous state, new + previous operator, and
+ * `power-generation` when either side qualifies — see below).
  *
  * `"facilities"` is deliberately NOT included: aggregate pages (home, map,
  * table, stats, ...) refresh on their own cheap `revalidate: 3600` timer
