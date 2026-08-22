@@ -132,7 +132,7 @@ async function loadFacilitiesUncached(): Promise<Facility[]> {
  */
 function loadFacilitiesCompressed(
   keyParts: string[],
-  opts: { tags: string[]; revalidate: number }
+  opts: { tags?: string[]; revalidate: number }
 ): () => Promise<Facility[]> {
   const loadCompressedBlob = unstable_cache(
     async () => {
@@ -184,14 +184,23 @@ export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
  * revalidate becomes the site-wide ISR floor — deliberately long (86400s) so it
  * does NOT pin every page to a 1h cycle. Aggregate pages read loadFacilities
  * (1h) directly and float above this floor; detail/state pages read scoped
- * tag-only caches and floor here at 24h. Same "facilities" tag (inert — nothing
- * calls revalidateTag("facilities") anymore). Gzip-compressed for the same
- * 2MB-ceiling reason as `loadFacilities` above.
+ * tag-only caches and floor here at 24h.
+ *
+ * Deliberately NO cache tag here — do NOT add one back (not "facilities", not
+ * "search-index", not anything). A tag on a root-layout read gets stamped onto
+ * every prerendered route (~1,500 of them), so busting it hard-expires the
+ * whole site in one shot. This used to carry the "facilities" tag, reasoned
+ * at the time to be inert because nothing called revalidateTag("facilities").
+ * That premise held only until `scripts/sync-to-neon.ts` started adding
+ * "facilities" to every publish's tag set — at which point this read turned
+ * every `db:sync -- --apply` into a site-wide cache nuke. Measured 2026-08-21.
+ * The 86400s timer above is the intended refresh mechanism for this reader;
+ * it needs no tag to stay correct. Gzip-compressed for the same 2MB-ceiling
+ * reason as `loadFacilities` above.
  */
 export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VITEST
   ? loadFacilitiesUncached
   : loadFacilitiesCompressed(["facilities-search"], {
-      tags: ["facilities"],
       revalidate: 86400,
     });
 
