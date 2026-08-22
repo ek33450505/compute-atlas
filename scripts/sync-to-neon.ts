@@ -213,11 +213,18 @@ export function planSync(
  * `"facilities"` tag when the batch is non-empty.
  *
  * `tagsForFacility` deliberately omits `"facilities"`: a single write must
- * not nuke the ~900-page aggregate surface, which self-heals on its own 1h
- * ISR timer. A bulk sync inverts that argument — one extra tag, once, is far
- * cheaper than the 95 individual writes it stands in for, and without it the
- * homepage would keep quoting yesterday's facility count for up to an hour
- * after a publish.
+ * not nuke the ~1,547-route aggregate surface, which self-heals on its own
+ * 1h ISR timer. A bulk sync inverts that argument — one extra tag, once, is
+ * far cheaper than the individual writes it stands in for, and without it
+ * the homepage would keep quoting yesterday's facility count for up to an
+ * hour after a publish. That justification still holds and this line should
+ * stay as-is — but it was only ever safe to add unconditionally once
+ * `loadFacilitiesForSearch` (see the comment on it in `lib/data.ts`) stopped
+ * carrying the `"facilities"` tag. While it still did, this one `tags.add`
+ * fanned out through the root layout's search read and hard-expired ~1,495
+ * of ~1,500 routes on every `--apply` — not just the aggregate pages this
+ * comment names. Measured 2026-08-21; see the ground-truth table on that
+ * fix for the corrected per-route numbers.
  */
 export function tagsForChanges(changes: PlannedChange[]): string[] {
   const tags = new Set<string>();
@@ -601,9 +608,14 @@ async function main(): Promise<void> {
 
   // Pre-flight BEFORE any write. Publishing rows whose pages can never be
   // busted is worse than not publishing: scoped pages (facility detail, state
-  // landing) are tag-only with no ISR timer, so they would stay stale
-  // indefinitely. Deliberately no localhost default for API_BASE_URL — that
-  // would write prod Neon and bust a dev server's cache.
+  // landing) are tag-only with no ISR timer of their own. That no longer
+  // means indefinitely stale, though — every route still floors at the root
+  // layout's 86400s `loadFacilitiesForSearch` timer, so an un-busted scoped
+  // page now self-heals within ~24h worst case rather than staying stale
+  // forever. Still worth refusing: ~24h of a published change not showing up
+  // is exactly the kind of silent gap this guard exists to prevent.
+  // Deliberately no localhost default for API_BASE_URL — that would write
+  // prod Neon and bust a dev server's cache.
   if (willRevalidate && (!baseUrl || !token)) {
     console.error(
       "Refusing to apply: --apply busts cache tags over HTTP and needs both API_BASE_URL and " +

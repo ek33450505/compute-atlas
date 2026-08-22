@@ -36,6 +36,12 @@ const READ_ENDPOINTS: Endpoint[] = [
   },
   {
     method: "GET",
+    path: "/api/search",
+    description:
+      "Full-text search over facility names and operators: { count, facilities, query }. Query parameter q is capped at 200 characters.",
+  },
+  {
+    method: "GET",
     path: "/api/stats",
     description:
       "Aggregate dataset figures: { count, states, operationalMw, plannedMw, underConstructionMw }.",
@@ -47,12 +53,27 @@ const READ_ENDPOINTS: Endpoint[] = [
   },
 ];
 
+const WRITE_ENDPOINTS: Endpoint[] = [
+  {
+    method: "POST",
+    path: "/api/contribute",
+    description:
+      'Submit a candidate facility for human review. Hard-pins status="pending". Rate-limited to 5 requests per hour per IP.',
+  },
+  {
+    method: "POST",
+    path: "/api/leads",
+    description:
+      "Submit a URL reference for a facility update or new candidate. Rate-limited to 5 requests per hour per IP.",
+  },
+];
+
 const SUBMISSION_ENDPOINTS: Endpoint[] = [
   {
     method: "POST",
     path: "/api/submissions",
     description:
-      'Stage a candidate for review: { kind: "create" | "update", targetFacilityId?, payload, provenance }. targetFacilityId is required when kind is "update".',
+      'Admin-only. Stage a candidate for review: { kind: "create" | "update", targetFacilityId?, payload, provenance }. targetFacilityId is required when kind is "update".',
   },
   {
     method: "GET",
@@ -62,12 +83,12 @@ const SUBMISSION_ENDPOINTS: Endpoint[] = [
   {
     method: "POST",
     path: "/api/submissions/{id}/approve",
-    description: "Validate a pending submission and promote it to a live facility.",
+    description: "Admin-only. Validate a pending submission and promote it to a live facility.",
   },
   {
     method: "POST",
     path: "/api/submissions/{id}/reject",
-    description: 'Reject a pending submission: { reason }.',
+    description: "Admin-only. Reject a pending submission: { reason }.",
   },
 ];
 
@@ -162,6 +183,24 @@ export default function ApiPage() {
         </p>
       </section>
 
+      {/* ---- Public writes ---- */}
+      <section aria-labelledby="writes-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Contributing data
+        </p>
+        <h2 id="writes-heading" className="font-display text-2xl text-foreground">
+          Public write endpoints
+        </h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Anyone can submit new candidates or updates via these endpoints
+          without authentication. Every submission is staged as{" "}
+          <strong className="font-medium text-foreground">pending</strong> and
+          requires human review before it goes live. Rate limits: 5 requests
+          per hour per IP address.
+        </p>
+        <EndpointTable endpoints={WRITE_ENDPOINTS} />
+      </section>
+
       {/* ---- Limits, caching & attribution ---- */}
       <section aria-labelledby="limits-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -174,12 +213,12 @@ export default function ApiPage() {
           <div>
             <dt className="font-medium text-foreground">Rate limits</dt>
             <dd className="text-muted-foreground">
-              Read endpoints allow up to 60 requests per minute per IP. Over
-              the limit, a request returns{" "}
+              Read endpoints allow up to 60 requests per minute per IP; write
+              endpoints allow 5 per hour. Over the limit, a request returns{" "}
               <code className={CODE}>429 Too Many Requests</code> with a{" "}
               <code className={CODE}>Retry-After</code> header — a
-              best-effort limit, not a hard global cap. Cache responses
-              rather than polling.
+              best-effort limit per instance, not a hard global cap. Cache
+              responses rather than polling.
             </dd>
           </div>
           <div>
@@ -190,9 +229,12 @@ export default function ApiPage() {
               <code className={CODE}>public, s-maxage, stale-while-revalidate</code>
               ) so shared caches and CDNs can serve it without hitting the
               origin. Typical freshness: the facility list and stats ~1
-              hour, the JSON Schema ~24 hours, search ~10 minutes. By
-              design, a read can be up to an hour stale — the tradeoff
-              favors cache efficiency over instant freshness.
+              hour, the JSON Schema ~24 hours, search ~10 minutes. A CDN may
+              legally serve stale data via{" "}
+              <code className={CODE}>stale-while-revalidate</code>: for the
+              facility list, up to ~25 hours total (1 hour fresh + 24 hours
+              stale). This tradeoff favors cache efficiency over instant
+              freshness.
             </dd>
           </div>
           <div>

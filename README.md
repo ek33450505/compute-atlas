@@ -58,10 +58,16 @@ Compute Atlas exposes a public JSON API for programmatic access to the dataset. 
 
 - `GET /api/facilities` — List all facilities, optionally filtered by `?state`, `?type`, `?operator`, `?status`, or `?q` (free-text search). Returns `{ count, facilities }`.
 - `GET /api/facilities/{id}` — Fetch a single facility by ID.
+- `GET /api/search` — Full-text search over facility names and operators. Takes `?q` query parameter (max 200 chars). Returns `{ count, facilities, query }`.
 - `GET /api/stats` — Aggregate dataset figures: total facility count, number of states, and operational / planned / under-construction capacity (MW).
 - `GET /api/schema` — JSON Schema export of the facility data model (derived from Zod schema).
 
-**Rate limiting and caching:** Public endpoints are rate-limited to 60 requests per minute per IP; requests over the limit receive a `429` response with a `Retry-After` header. Responses are CDN-cached and carry `Cache-Control` headers; repeat reads are edge-served. All public read responses include attribution headers: `X-License: CC-BY-4.0`, `Link: <https://creativecommons.org/licenses/by/4.0/>; rel="license"`, and `X-API-Version: 1`.
+**Public write endpoints** (CORS-open, no auth required, `5/hour` per IP):
+
+- `POST /api/contribute` — Submit a candidate facility for human review. Hard-pins `status=pending`.
+- `POST /api/leads` — Submit a URL reference for a facility update.
+
+**Rate limiting and caching:** Read endpoints allow up to 60 requests per minute per IP; write endpoints allow 5 requests per hour. Over the limit, a request returns `429 Too Many Requests` with a `Retry-After` header. This is a per-instance best-effort limit, not a hard global cap: bucket state resets on cold start and is not shared across serverless instances/regions. Responses are CDN-cached and carry `Cache-Control` headers; repeat reads are edge-served. All public responses include attribution headers: `X-License: CC-BY-4.0`, `Link: <https://creativecommons.org/licenses/by/4.0/>; rel="license"`, and `X-API-Version: 1`.
 
 **Admin-only submission endpoints** (require `Authorization: Bearer <API_ADMIN_TOKEN>` header):
 

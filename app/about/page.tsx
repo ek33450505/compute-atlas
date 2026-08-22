@@ -536,7 +536,27 @@ export default function AboutPage() {
             license.
           </li>
           <li>
-            The Compute Atlas codebase and original data are published at{" "}
+            The Compute Atlas codebase is published under the{" "}
+            <a
+              href="https://opensource.org/licenses/MIT"
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="MIT license (opens in new tab)"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              MIT license
+            </a>{" "}
+            and the dataset is published under{" "}
+            <a
+              href="https://creativecommons.org/licenses/by/4.0/"
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              Creative Commons Attribution 4.0 (CC-BY)
+            </a>
+            . Both are published at{" "}
             <a
               href={siteConfig.repoUrl}
               target="_blank"
@@ -546,7 +566,7 @@ export default function AboutPage() {
             >
               {siteConfig.repoUrl}
             </a>
-            .
+            . When using the data, attribution to Compute Atlas is requested.
           </li>
         </ul>
       </section>

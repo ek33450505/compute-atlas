@@ -24,7 +24,9 @@
  * SERIALIZED into the RSC payload of every route as a `CommandPalette` prop.
  * Measured 2026-08-17 against the 1034-facility dataset, that was ~1430
  * entries per route (1034 facilities + 346 operators + 50 states) on all
- * ~1486 routes; the nav-only index below is ~396 (operators + states).
+ * ~1486 routes (dated — the route count has since grown to ~1,547, see the
+ * ground-truth table on the 2026-08-21 edge-cache-tag fix; the shape of the
+ * saving is unchanged); the nav-only index below is ~396 (operators + states).
  * (An earlier revision of this comment said "~1062 entries, 1034 of them
  * facilities" — that 1062 was a count of the string `facilities/` in the
  * rendered HTML, not the index size.) `SiteHeader`
@@ -40,6 +42,19 @@
  * are served by `/api/search`, full stop; if you find yourself re-adding a
  * builder that walks every facility into `SearchEntry[]`, that is the
  * regression, not the fix.
+ *
+ * `loadFacilitiesForSearch` above is the reader this index is built from,
+ * and it is deliberately UNTAGGED — it refreshes only on its own 86400s
+ * `revalidate` timer, not on a per-facility cache-tag bust (see the comment
+ * on `loadFacilitiesForSearch` in `lib/data.ts` for why: it once carried the
+ * global `"facilities"` tag and that turned every bulk sync into a
+ * site-wide cache nuke). Because it runs in the root layout, its 86400s
+ * timer is also the effective staleness floor for every other route on the
+ * site, regardless of that route's own `revalidate`/tag config. If you find
+ * yourself tempted to tag this reader again — e.g. so a single write can
+ * refresh the nav index immediately — remember that tag would be stamped
+ * onto every route's render tree, not scoped to the routes that actually
+ * changed.
  */
 import { loadFacilitiesForSearch, operatorSlug } from "@/lib/data";
 import { type SearchEntry } from "@/lib/search";

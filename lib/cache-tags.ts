@@ -1,4 +1,5 @@
 import type { Facility } from "@/lib/schema";
+import { operatorSlug } from "@/lib/operator-slug";
 
 /**
  * The cache-tag vocabulary, in one place.
@@ -19,9 +20,10 @@ import type { Facility } from "@/lib/schema";
  * were two independent copies of the same rules, so a tag the app happily
  * busts could be a tag the route rejects. They are now the same source.
  *
- * Deliberately dependency-free apart from a **type-only** import: `tsx` CLIs
- * import this without dragging in `next/cache`, which only resolves inside
- * the Next.js runtime.
+ * Deliberately dependency-free apart from a **type-only** import and
+ * `operatorSlug` (itself a zero-dependency leaf in `lib/operator-slug.ts`):
+ * `tsx` CLIs import this without dragging in `next/cache`, which only
+ * resolves inside the Next.js runtime.
  */
 
 /** Tags with no dynamic part. */
@@ -33,7 +35,11 @@ const LITERAL_TAGS = new Set(["facilities", "power-generation"]);
  * `facilitySchema`, so a tag failing these patterns means bad data, not a
  * missing case.
  */
-const TAG_PATTERNS = [/^state:[A-Z]{2}$/, /^facility:[a-z0-9-]+$/];
+const TAG_PATTERNS = [
+  /^state:[A-Z]{2}$/,
+  /^facility:[a-z0-9-]+$/,
+  /^operator:[a-z0-9-]+$/,
+];
 
 /**
  * Hard cap on tags accepted per `POST /api/revalidate` call — bounds the
@@ -55,7 +61,9 @@ export function isValidCacheTag(tag: string): boolean {
 /**
  * The exact set of tags one facility write invalidates — the scoped
  * alternative to the old global `"facilities"` nuke, which shrank a write's
- * blast radius from the whole ~900-page surface to ~2-3 scoped pages.
+ * blast radius from the whole ~1,547-route surface to up to 6 scoped tags
+ * (facility, new + previous state, new + previous operator, and
+ * `power-generation` when either side qualifies — see below).
  *
  * `"facilities"` is deliberately NOT included: aggregate pages (home, map,
  * table, stats, ...) refresh on their own cheap `revalidate: 3600` timer
@@ -64,11 +72,17 @@ export function isValidCacheTag(tag: string): boolean {
  * wants aggregates refreshed now — e.g. a one-shot bulk sync, where the
  * amplification argument runs the other way — adds it once itself.
  *
- * - Always `facility:${doc.id}` (the detail page) and
- *   `state:${doc.location.state}` (the new/current state's landing page).
+ * - Always `facility:${doc.id}` (the detail page),
+ *   `state:${doc.location.state}` (the new/current state's landing page),
+ *   and `operator:${operatorSlug(doc.operator)}` (that operator's entries in
+ *   the related-facilities rail — `getFacilitiesByOperatorCached` in
+ *   `lib/data.ts`).
  * - If `prevDoc` is given and sat in a different state, also the *old*
  *   state's tag — otherwise a facility that moved states leaves a stale
- *   entry on its old state's landing page.
+ *   entry on its old state's landing page. Same reasoning for operator: if
+ *   `prevDoc` had a different operator, also the *old* operator's tag,
+ *   otherwise a facility that changes operator leaves a stale entry on its
+ *   old operator's related-facilities rail.
  * - If either side is a `power_generation` facility, also `power-generation`
  *   — the shared tag backing the facility detail page's "Powered by"/"Powers"
  *   cross-reference (`loadPowerGenerationCached` in `lib/data.ts`), on either
@@ -80,10 +94,12 @@ export function tagsForFacility(doc: Facility, prevDoc?: Facility): string[] {
   const tags = new Set<string>([
     `facility:${doc.id}`,
     `state:${doc.location.state.toUpperCase()}`,
+    `operator:${operatorSlug(doc.operator)}`,
   ]);
 
   if (prevDoc) {
     tags.add(`state:${prevDoc.location.state.toUpperCase()}`);
+    tags.add(`operator:${operatorSlug(prevDoc.operator)}`);
   }
 
   if (doc.facilityType === "power_generation" || prevDoc?.facilityType === "power_generation") {

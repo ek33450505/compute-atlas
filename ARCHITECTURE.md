@@ -21,8 +21,8 @@ All database reads flow through centralized loaders in `lib/data.ts`. Components
 
 **Cached loaders (internal):**
 - **`loadFacilities()`**: Whole-dataset loader, cached for 1 hour with tag `"facilities"`. Backs ~15 aggregate pages (home, map, table, stats, explore lenses, operators/states index, sitemap). Returns deterministically sorted by `id`.
-- **`loadFacilitiesForSearch()`**: Same data cached for 24 hours with tag `"facilities"` (the cache key is `"facilities-search"`, but the tag is `"facilities"`). Used only for the global ⌘K search index in the root layout (deliberately decoupled from the 1h timer so the site-wide ISR floor stays long). This tag is inert — nothing calls `revalidateTag("facilities")` on write anymore.
-- **Scoped cached readers** (per-facility, per-state, power-generation, etc.): Tag-only, no timer. Revalidated only when writes affect their specific scope.
+- **`loadFacilitiesForSearch()`**: Same data cached for 24 hours, **NO cache tag** (cache key is `"facilities-search"`, but deliberately untagged). Used only for the global ⌘K search index in the root layout. The 86400s timer is the intended refresh; the no-tag design prevents a root-layout read from being stamped onto all ~1,547 routes. A tag here would be busted by every `db:sync --apply`, nuking the entire site's cache in one shot. Previously carried `"facilities"` tag, reasoned inert at the time; that premise broke once `scripts/sync-to-neon.ts` began adding `"facilities"` to every publish.
+- **Scoped cached readers** (per-facility, per-state, per-operator, power-generation, etc.): Tag-only, no timer on the reader. Revalidated only when writes affect their specific scope. Note: the rendered page may still inherit a longer ISR timer from other reads in its render tree (e.g., a scoped detail page reads `loadFacilitiesForSearch` in the root layout, so it inherits that reader's 86400s floor).
 
 All loaders read from either Neon (if `DATABASE_URL` is set) or fall back to the bundled JSON file `data/facilities.json` for offline development. In tests (vitest), caching is disabled.
 
@@ -81,11 +81,11 @@ Collection pages (`/states/{state}`, `/operators/{operator}`, `/power`, `/opposi
 
 ### Caching Tiers
 
-- **Full-site ISR floor:** 24h (search index in root layout). This is the longest revalidation on the site.
-- **Aggregate page cache:** 1h (loadFacilities). Intentionally uncoupled from write events; a write does *not* bust this tag.
-- **Scoped page caches:** Tag-only, no timer. Revalidated on write only.
+- **Full-site ISR floor:** 24h (search index in root layout via `loadFacilitiesForSearch`). This is the longest revalidation on the site. The reader carries no cache tag, so writes do not affect it; the 86400s timer is the only refresh mechanism. All pages inherit this floor when the root layout renders.
+- **Aggregate page cache:** 1h (loadFacilities). Intentionally uncoupled from write events; `db:sync --apply` does bust the `"facilities"` tag, but aggregates have a cheap 1h self-healing timer (Ed, 2026-07-22 ISR-write-blowout fix), so scoped writes don't pin them to a refresh cycle.
+- **Scoped page caches:** Tag-only, no timer on the reader itself. Revalidated on write only. Pages inherit any longer timer from reads higher in the render tree (typically 24h from the root layout).
 
-Why decouple? Previous versions busted the global `"facilities"` tag on every write, causing the entire ~700-page site to rebuild. Scoped tags cut that blast radius to 2–3 pages per write.
+Why decouple? Previous versions busted the global `"facilities"` tag on every write, causing the entire ~1,547-route site to rebuild. Scoped tags cut that blast radius to 4–6 pages per write (facility detail, current/previous state, current/previous operator, ±power-generation).
 
 **Prod-only gotcha:** Neon is the source of truth. `unstable_cache` is Next.js in-memory; a prod data-only change (approving a facility on prod) updates Neon but not the cache until the tag expires or a tagged page is revalidated. The cache survives Neon outages by serving stale data — this is intentional, a feature not a bug, ensuring the site stays read-accessible even during database downtime.
 
@@ -121,7 +121,7 @@ graph TB
 
     subgraph "Server (Next.js)"
         Data["Centralized Read Layer<br/>(lib/data.ts)<br/>loadFacilities, getFacilityById, etc."]
-        Cache["Tag-Based ISR Cache<br/>(unstable_cache)<br/>1h aggregate, tag-only scoped"]
+        Cache["Tag-Based ISR Cache<br/>(unstable_cache)<br/>1h aggregate, tag-scoped detail<br/>24h site floor (untagged)"]
         Schema["Domain Schema<br/>(lib/schema.ts)<br/>Zod facilitySchema<br/>discriminated union"]
         API["API Routes<br/>(app/api/)<br/>Public read, public contribute,<br/>admin write"]
     end
@@ -172,9 +172,9 @@ graph TB
 
 **Why Drizzle over raw SQL?** Type safety on queries and migrations without heavyweight ORMs like Prisma. Drizzle stays close to SQL.
 
-**Why tag-based ISR over time-based?** Aggregates have natural revalidation timers (1h is acceptable staleness for stats); scoped pages need immediate refresh on change. Mixing both (tags + timers) gives fine-grained control.
+**Why tag-based ISR over time-based?** Aggregates have natural revalidation timers (1h is acceptable staleness for stats); scoped pages should refresh immediately on write via tag bust, yet all pages inherit a 24h ISR floor from the root layout's untagged search reader. Mixing both (tags + timers) gives fine-grained control without nuking the entire site on every change.
 
-**Why no time-based full cache invalidation?** Previous versions used `revalidate: 300` (5 min), causing prod cache rot during outages. The current model: scoped tags bust immediately, aggregates use a cheap long timer (1h), search index stays 24h.
+**Why no time-based full cache invalidation?** Previous versions used `revalidate: 300` (5 min), causing prod cache rot during outages. The current model: scoped tags bust immediately, aggregates use a cheap long timer (1h), search index stays 24h. However, all pages floor at 24h because the root layout's `loadFacilitiesForSearch` reader carries no cache tag — it can only refresh via its timer — so an un-busted data change can take up to a full day to propagate.
 
 **Why no user accounts?** Contributor attribution is optional; the admin UI is for one operator. User accounts add auth complexity, session management, and account recovery. For a single-operator tool, the bearer token is simpler and sufficient. This is a durable design choice, not a placeholder pending features.
 
@@ -186,5 +186,7 @@ graph TB
 
 - **Data model:** `lib/schema.ts` — Zod schemas for all facility types and enums.
 - **DB migrations:** `drizzle/` — Drizzle migration files; apply with `npm run db:migrate`.
+- **Cache tag vocabulary:** `lib/cache-tags.ts` — the tags a write emits (`tagsForFacility`) and the `POST /api/revalidate` allowlist (`isValidCacheTag`, backed by `LITERAL_TAGS` + `TAG_PATTERNS`), kept in one place so producer and validator cannot drift apart.
+- **Operator slug handling:** `lib/operator-slug.ts` — dependency-free slug generator (imported by `lib/cache-tags.ts` for `operator:<slug>` scoping).
 - **Discovery pipeline:** `scripts/discovery/` and `docs/discovery-pipeline.md` — methodology and source enumeration.
 - **Public contribution:** `CONTRIBUTING.md` — editorial standards for source-cited data.
