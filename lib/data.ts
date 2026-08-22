@@ -21,6 +21,7 @@ import { getDb, hasDatabaseUrl } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 import type { DiffEntry } from "@/lib/doc-diff";
+import { operatorSlug } from "@/lib/operator-slug";
 
 /**
  * Validated view of the bundled JSON fallback, memoized for the process
@@ -331,6 +332,41 @@ export const loadPowerGenerationCached: () => Promise<PowerGenerationFacility[]>
 
 export async function getAllFacilities(): Promise<Facility[]> {
   return loadFacilities();
+}
+
+/**
+ * Uncached, direct id-only fetch backing `getAllFacilityIds`. Selects just
+ * the `id` column — enumerating every facility route for
+ * `generateStaticParams` doesn't need the full ~1,064-row document set. Not
+ * `unstable_cache`d: this only runs at build time (route enumeration), never
+ * per-request, so there's no cache entry — and therefore no tag — to add.
+ */
+async function fetchFacilityIdsUncached(): Promise<string[]> {
+  const ids = hasDatabaseUrl()
+    ? await withJsonFallback(
+        async () =>
+          (await getDb().select({ id: facilitiesTable.id }).from(facilitiesTable)).map(
+            (row) => row.id
+          ),
+        () => loadFromJson().map((f) => f.id)
+      )
+    : loadFromJson().map((f) => f.id);
+  // Sort by id so the DB and JSON-fallback paths enumerate routes in
+  // byte-identical order — the same invariant `loadFacilitiesUncached` holds
+  // above, and what keeps `generateStaticParams` reproducible across builds.
+  // Neither branch is ordered on its own: Postgres returns rows in physical
+  // order (which a reseed changes) and the JSON path returns file order.
+  // Safe to sort in place — every branch above produces a fresh array.
+  return ids.sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * Facility ids only — backs `generateStaticParams` on the facility detail
+ * page (`app/facilities/[slug]/page.tsx`), which needs `{ slug: f.id }` for
+ * every route and nothing else from the full document.
+ */
+export async function getAllFacilityIds(): Promise<string[]> {
+  return fetchFacilityIdsUncached();
 }
 
 export async function getFacilityById(id: string): Promise<Facility | undefined> {
@@ -1279,10 +1315,12 @@ export async function getFacilitiesByMetro(slug: string): Promise<Facility[]> {
 // Per-operator helpers (used by operator landing pages)
 // ============================================================
 
-/** URL slug for an operator name, e.g. "Amazon Web Services" -> "amazon-web-services". */
-export function operatorSlug(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
+// `operatorSlug` now lives in the dependency-free `lib/operator-slug.ts` leaf
+// module — `lib/cache-tags.ts` needs it too and must stay free of
+// `next/cache` (see that file's header comment). Re-exported here so
+// existing importers of `@/lib/data` (app/facilities/[slug]/page.tsx,
+// components/facility/related-facilities.tsx) keep working unchanged.
+export { operatorSlug };
 
 interface OperatorIndex {
   /** Operator name -> that operator's facilities, pre-sorted by max MW desc, then name A→Z. */
@@ -1345,17 +1383,54 @@ export async function getOperatorBySlug(slug: string): Promise<string | undefine
 }
 
 /**
+ * Uncached direct-filtered fetch backing `getFacilitiesByOperatorCached`.
+ * The DB branch filters on the indexed `operator` column
+ * (`facilities_operator_idx`) directly rather than pulling the whole table,
+ * and retries transient Neon read failures before degrading to the JSON
+ * snapshot (see `withJsonFallback`).
+ */
+async function fetchFacilitiesByOperatorUncached(name: string): Promise<Facility[]> {
+  const list = hasDatabaseUrl()
+    ? await withJsonFallback(
+        async () =>
+          (
+            await getDb().select().from(facilitiesTable).where(eq(facilitiesTable.operator, name))
+          ).map(rowToFacility),
+        () => loadFromJson().filter((f) => f.operator === name)
+      )
+    : loadFromJson().filter((f) => f.operator === name);
+  return list.sort(
+    (a, b) =>
+      (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) || a.name.localeCompare(b.name)
+  );
+}
+
+/**
+ * Per-operator scoped reader for the related-facilities rail on the facility
+ * detail page. Tagged `operator:${operatorSlug(name)}` — busted only by a
+ * write touching that operator (see `tagsForFacility` in
+ * `lib/cache-tags.ts`), never by the global `"facilities"` tag or a timer.
+ * No `revalidate` option — tag-only, same contract as
+ * `getFacilitiesByStateCached`.
+ */
+export const getFacilitiesByOperatorCached = (name: string): Promise<Facility[]> =>
+  process.env.VITEST
+    ? fetchFacilitiesByOperatorUncached(name)
+    : unstable_cache(fetchFacilitiesByOperatorUncached, ["facilities-by-operator", name], {
+        tags: [`operator:${operatorSlug(name)}`],
+      })(name);
+
+/**
  * Returns all facilities operated by `name` (exact match), sorted by max
  * capacity (operational or planned) desc, then name A→Z (deterministic
- * tie-break). Backed by the memoized operator index — an O(1) map lookup
- * rather than a full-list filter+sort on every call.
+ * tie-break). Backed by the scoped, tag-only `getFacilitiesByOperatorCached`
+ * reader — an indexed DB query rather than the full-dataset operator index —
+ * so callers (the facility detail page's related-facilities rail) don't
+ * re-acquire the global `"facilities"` tag or its 1h timer. Returns a fresh
+ * array the caller may mutate.
  */
 export async function getFacilitiesByOperator(name: string): Promise<Facility[]> {
-  const { byOperator } = await getOperatorIndex();
-  const bucket = byOperator.get(name);
-  // Shallow copy so callers can't mutate the cached, pre-sorted bucket —
-  // preserves the previous .filter().sort() contract of returning a fresh array.
-  return bucket ? [...bucket] : [];
+  return getFacilitiesByOperatorCached(name);
 }
 
 /** Aggregate summary of one operator's facilities. */

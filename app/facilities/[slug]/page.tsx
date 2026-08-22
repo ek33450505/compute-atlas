@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Info } from "lucide-react";
 
-import { getAllFacilities, getFacilityByIdCached, operatorSlug } from "@/lib/data";
+import { getAllFacilityIds, getFacilityByIdCached, operatorSlug } from "@/lib/data";
 import { getStatusMeta } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import {
@@ -34,8 +34,8 @@ import { WatchButton } from "@/components/subscribe/watch-button";
 export const revalidate = false;
 
 export async function generateStaticParams() {
-  const facilities = await getAllFacilities();
-  return facilities.map((f) => ({ slug: f.id }));
+  const ids = await getAllFacilityIds();
+  return ids.map((id) => ({ slug: id }));
 }
 
 /**

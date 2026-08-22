@@ -11,7 +11,7 @@ const { mockGetFacilityByIdCached } = vi.hoisted(() => ({
 
 vi.mock("@/lib/data", () => ({
   getFacilityByIdCached: mockGetFacilityByIdCached,
-  getAllFacilities: vi.fn(),
+  getAllFacilityIds: vi.fn(),
 }));
 
 import { generateMetadata } from "./page";

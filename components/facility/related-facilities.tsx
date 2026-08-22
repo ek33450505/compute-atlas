@@ -53,9 +53,11 @@ function RelatedFacilityCard({ facility }: { facility: Facility }) {
  * Related-facilities rail for the facility detail page — "More from
  * {operator}" and "Other data centers in {state}" groups, each excluding
  * the current facility and capped at 6. Async server component (fetches
- * both lists in parallel via the per-scope cached readers, so it doesn't
- * pull in the global `"facilities"` tag/timer — see the doc comments on
- * `getFacilitiesByOperator`/`getFacilitiesByStateCached` in lib/data.ts).
+ * both lists in parallel via the per-scope cached readers —
+ * `getFacilitiesByOperator` now delegates to the tag-only
+ * `getFacilitiesByOperatorCached`, mirroring `getFacilitiesByStateCached` —
+ * so it doesn't pull in the global `"facilities"` tag/timer; see the doc
+ * comments on both in lib/data.ts).
  *
  * Returns null (no separator, no heading) when both groups are empty, so a
  * facility whose operator and state both have no other entries renders no

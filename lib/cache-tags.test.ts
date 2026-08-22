@@ -41,12 +41,34 @@ function makePowerDoc(id: string, state = "GA"): PowerGenerationFacility {
 }
 
 describe("tagsForFacility", () => {
-  it("busts the facility and state tags for a plain create, never the global 'facilities' tag", () => {
-    const tags = tagsForFacility(makeDoc({ id: "some-facility-ga" }));
+  it("busts the facility, state, and operator tags for a plain create, never the global 'facilities' tag", () => {
+    const tags = tagsForFacility(makeDoc({ id: "some-facility-ga", operator: "Test Operator" }));
 
-    expect(tags).toEqual(expect.arrayContaining(["facility:some-facility-ga", "state:GA"]));
+    expect(tags).toEqual(
+      expect.arrayContaining(["facility:some-facility-ga", "state:GA", "operator:test-operator"])
+    );
     expect(tags).not.toContain("facilities");
     expect(tags).not.toContain("power-generation");
+  });
+
+  it("busts BOTH operators when a facility changes operator, so the old operator's rail can't keep a stale entry", () => {
+    const prev = makeDoc({ id: "switcher", operator: "Old Operator" });
+    const next = makeDoc({ id: "switcher", operator: "New Operator" });
+
+    const tags = tagsForFacility(next, prev);
+
+    expect(tags).toEqual(
+      expect.arrayContaining(["operator:new-operator", "operator:old-operator"])
+    );
+  });
+
+  it("emits one operator tag (not two) when the operator is unchanged", () => {
+    const prev = makeDoc({ id: "stayer-op", operator: "Same Operator" });
+    const next = makeDoc({ id: "stayer-op", operator: "Same Operator", name: "Renamed" });
+
+    const tags = tagsForFacility(next, prev);
+
+    expect(tags.filter((t) => t.startsWith("operator:"))).toEqual(["operator:same-operator"]);
   });
 
   it("busts BOTH states when a facility moves, so the old state's landing page can't keep a stale entry", () => {
@@ -124,6 +146,9 @@ describe("isValidCacheTag", () => {
       "state:ga",
       "state:GEORGIA",
       "state:G",
+      "operator:",
+      "operator:Has-Uppercase",
+      "operator:has_underscore",
       "unknown-tag",
       "facilities ",
     ]) {
