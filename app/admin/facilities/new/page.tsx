@@ -4,6 +4,13 @@ import { loadFacilities } from "@/lib/data";
 import { FacilityForm } from "@/app/admin/facilities/facility-form";
 import { emptyFacilityFormState } from "@/app/admin/facilities/facility-form-state";
 
+// Cookie-gated (proxy.ts matches /admin/:path*) — no anonymous visitor can ever
+// receive this page, so prerendering it at build time and regenerating it every
+// hour bought nothing. Measured against the sibling /admin/facilities page's
+// 7.60 MB prerendered HTML on a 3600s ISR timer. Render on demand for the one
+// authenticated maintainer instead.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Admin — New facility",
 };

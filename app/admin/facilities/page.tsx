@@ -3,6 +3,13 @@ import type { Metadata } from "next";
 import { loadFacilities } from "@/lib/data";
 import { FacilityAdminTable } from "@/app/admin/facilities/facility-table";
 
+// Cookie-gated (proxy.ts matches /admin/:path*) — no anonymous visitor can ever
+// receive this page, so prerendering it at build time and regenerating it every
+// hour bought nothing. Measured 7.60 MB prerendered HTML on a 3600s ISR timer,
+// the largest artifact in the build. Render on demand for the one authenticated
+// maintainer instead.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Admin — Facilities",
 };
