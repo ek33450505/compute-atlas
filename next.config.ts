@@ -27,6 +27,37 @@ const nextConfig: NextConfig = {
         source: "/admin/:path*",
         headers: [{ key: "X-Frame-Options", value: "DENY" }],
       },
+      {
+        // Static map data and basemap style. Regenerated only by
+        // `npm run build:mapdata`, so a 1-day edge TTL is safe and a long
+        // stale-while-revalidate keeps the CDN serving during a refresh.
+        // Next's default for `public/` is `max-age=0, must-revalidate`,
+        // which left 8.3 MB of geojson uncacheable at both Vercel and
+        // Cloudflare (measured `cf-cache-status: DYNAMIC`, 2026-08-21).
+        source: "/data/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/basemap/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        // Vendored font files never change content under a fixed name.
+        source: "/fonts/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
     ];
   },
 };
