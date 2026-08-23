@@ -5,6 +5,20 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.29.0](https://github.com/ek33450505/compute-atlas/compare/v1.28.0...v1.29.0) (2026-08-22)
+
+
+### Features
+
+* **contribute:** lead-first intake — share a link, we take it from there ([#164](https://github.com/ek33450505/compute-atlas/issues/164)) ([e7bf768](https://github.com/ek33450505/compute-atlas/commit/e7bf76877ed10f22b7c8e0592b752c354c831f69))
+
+
+### Performance Improvements
+
+* **web:** cut hosting cost — fix four cache defects (1,495→468 routes busted per publish) ([#167](https://github.com/ek33450505/compute-atlas/issues/167)) ([a646d59](https://github.com/ek33450505/compute-atlas/commit/a646d59ca06ab22f42d70f43bbdee01bf475b7d0))
+* **web:** cut the search index and hero points out of the RSC payload ([#161](https://github.com/ek33450505/compute-atlas/issues/161)) ([1e458fb](https://github.com/ek33450505/compute-atlas/commit/1e458fbe4343db0474fdbdc9e039e169428436fc))
+* **web:** stop shipping the full dataset to every client + rebuild the homepage hero ([#160](https://github.com/ek33450505/compute-atlas/issues/160)) ([b0363c7](https://github.com/ek33450505/compute-atlas/commit/b0363c7607f3592c34d3f9eeed57b5090aadad23))
+
 ## [1.28.0](https://github.com/ek33450505/compute-atlas/compare/v1.27.0...v1.28.0) (2026-08-17)
 
 
