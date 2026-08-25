@@ -24,14 +24,8 @@ describe("buildSubscribePayload", () => {
     });
   });
 
-  it("carries an absent targetId through as undefined (dropped by JSON.stringify)", () => {
-    const payload = buildSubscribePayload("jdoe@example.com", "all", undefined, "");
-    expect(payload.targetId).toBeUndefined();
-    expect(JSON.stringify(payload)).not.toContain("targetId");
-  });
-
   it("carries the honeypot value through untouched", () => {
-    const payload = buildSubscribePayload("jdoe@example.com", "state", "TX", "bot-filled-this");
+    const payload = buildSubscribePayload("jdoe@example.com", "facility", "facility-1", "bot-filled-this");
     expect(payload.website).toBe("bot-filled-this");
   });
 });
@@ -81,8 +75,8 @@ function mockFetchOnce(response: { ok: boolean; status: number; json: () => Prom
 }
 
 async function openAndFillEmail(user: ReturnType<typeof userEvent.setup>) {
-  render(<WatchButton targetType="state" targetId="TX" label="Watch Texas" />);
-  await user.click(screen.getByRole("button", { name: "Watch Texas" }));
+  render(<WatchButton targetType="facility" targetId="facility-1" label="Watch this facility" />);
+  await user.click(screen.getByRole("button", { name: "Watch this facility" }));
   await user.type(screen.getByLabelText(/^email$/i), "jdoe@example.com");
 }
 
@@ -183,8 +177,8 @@ describe("WatchButton — submit outcomes", () => {
     const body = JSON.parse(init.body as string);
     expect(body).toEqual({
       email: "jdoe@example.com",
-      targetType: "state",
-      targetId: "TX",
+      targetType: "facility",
+      targetId: "facility-1",
       website: "",
     });
   });

@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { ActivityList } from "@/app/activity/activity-list";
-import { WatchButton } from "@/components/subscribe/watch-button";
 import type { ActivityEntry } from "@/lib/data";
 
 export interface OpenRecordProps {
@@ -109,7 +108,6 @@ export function OpenRecord({
         >
           Add a facility · Correct a figure →
         </Link>
-        <WatchButton targetType="all" label="Watch all updates" />
       </div>
 
       {recentActivity.length > 0 && (

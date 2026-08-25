@@ -20,7 +20,6 @@ import { formatCapacity, formatLocation, formatPower, AI_CLASSIFICATION_CONFIDEN
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
-import { WatchButton } from "@/components/subscribe/watch-button";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { aiClassificationEnum } from "@/lib/schema";
 
@@ -149,9 +148,7 @@ export default async function StatePage({
             {stateName} &middot; {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
           </>
         }
-      >
-        <WatchButton targetType="state" targetId={code} label={`Watch ${stateName}`} />
-      </PageMasthead>
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}

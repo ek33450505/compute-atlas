@@ -6,17 +6,16 @@ import { subscriptionsTable } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
 import { getFacilityById } from "@/lib/data";
 import { checkEmailSendCap } from "@/lib/rate-limit";
-import { stateNameFromCode } from "@/lib/us-states";
 
 export const subscribeInputSchema = z
   .object({
     email: z.string().email().max(254),
-    targetType: z.enum(["facility", "state", "all"]),
+    targetType: z.enum(["facility"]),
     targetId: z.string().max(120).optional(),
     website: z.string().optional(), // honeypot — real users never fill this
   })
-  .refine((s) => s.targetType === "all" || Boolean(s.targetId), {
-    message: "targetId is required for facility and state subscriptions",
+  .refine((s) => Boolean(s.targetId), {
+    message: "targetId is required",
     path: ["targetId"],
   });
 
@@ -77,27 +76,12 @@ export async function subscribeToTarget(
 
   const email = data.email.trim().toLowerCase();
 
-  let targetId: string | null = null;
-  let targetLabel: string;
-
-  if (data.targetType === "facility") {
-    const facility = await getFacilityById(data.targetId!);
-    if (!facility) {
-      return { ok: false, status: 400, error: "Unknown facility" };
-    }
-    targetId = data.targetId!;
-    targetLabel = facility.name;
-  } else if (data.targetType === "state") {
-    const code = data.targetId!.toUpperCase();
-    const stateName = stateNameFromCode(code);
-    if (!stateName) {
-      return { ok: false, status: 400, error: "Unknown state" };
-    }
-    targetId = code;
-    targetLabel = stateName;
-  } else {
-    targetLabel = "all Compute Atlas updates";
+  const facility = await getFacilityById(data.targetId!);
+  if (!facility) {
+    return { ok: false, status: 400, error: "Unknown facility" };
   }
+  const targetId = data.targetId!;
+  const targetLabel = facility.name;
 
   // Per-address send cap (Fix 2, s65 security review): the IP rate limit
   // alone doesn't stop a distributed attacker from email-bombing one victim
