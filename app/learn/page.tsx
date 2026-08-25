@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { GLOSSARY_TOPICS } from "@/lib/glossary";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -57,22 +58,15 @@ export default function LearnIndexPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Learn
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Data center glossary
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Plain-language answers to the questions that come up most, each
-          grounded in the facilities Compute Atlas tracks.
-        </p>
+      <PageMasthead
+        eyebrow="Learn"
+        title="Data center glossary"
+        dek="Plain-language answers to the questions that come up most, each grounded in the facilities Compute Atlas tracks."
+      >
         <p className="text-base text-muted-foreground">
           {GLOSSARY_TOPICS.length} topics
         </p>
-        <div className="border-t border-border" />
-      </header>
+      </PageMasthead>
 
       {/* ------------------------------------------------------------------ */}
       {/* Topic list                                                          */}

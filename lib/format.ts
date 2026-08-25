@@ -97,3 +97,16 @@ export function formatUsdCompact(n: number): string {
     trailingZeroDisplay: "stripIfInteger",
   }).format(n);
 }
+
+/** Formats megawatts as MW, or GW at 1,000 MW and above. */
+export function formatPower(mw: number): string {
+  if (mw >= 1000) {
+    return `${(mw / 1000).toFixed(1)} GW`;
+  }
+  return `${Math.round(mw)} MW`;
+}
+
+/** Formats a million-gallons-per-day water figure. */
+export function formatMgd(mgd: number): string {
+  return `${mgd.toFixed(1)} MGD`;
+}

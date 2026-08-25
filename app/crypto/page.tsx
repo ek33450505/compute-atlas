@@ -2,21 +2,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getCryptoMiningFacilities, getCryptoMiningStats } from "@/lib/data";
-import { formatCapacity, formatLocation, getFacilityMaxMw } from "@/lib/format";
+import { formatCapacity, formatLocation, formatPower, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small totals. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 const CRUMBS = [{ label: "Explore", href: "/explore" }, { label: "Crypto" }];
 
@@ -77,18 +71,11 @@ export default async function CryptoPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Crypto mining
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Crypto mining facilities in the United States
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Bitcoin and altcoin mining capacity, tracked site by site.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Crypto mining"
+        title="Crypto mining facilities in the United States"
+        dek="Bitcoin and altcoin mining capacity, tracked site by site."
+      />
 
       {stats.count === 0 ? (
         <p className="text-base text-muted-foreground">
@@ -121,40 +108,14 @@ export default async function CryptoPage() {
           {/* ------------------------------------------------------------------ */}
           {/* Survey stats row                                                    */}
           {/* ------------------------------------------------------------------ */}
-          <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {stats.count}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Facilities
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {formatPower(stats.operationalMw)}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Operational
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {formatPower(stats.plannedMw)}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Pipeline
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {stats.stateCount}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                States
-              </span>
-            </div>
-          </div>
+          <SurveyStatRow
+            stats={[
+              { value: stats.count, label: "Facilities" },
+              { value: formatPower(stats.operationalMw), label: "Operational" },
+              { value: formatPower(stats.plannedMw), label: "Pipeline" },
+              { value: stats.stateCount, label: "States" },
+            ]}
+          />
 
           {/* ------------------------------------------------------------------ */}
           {/* § Facilities                                                        */}

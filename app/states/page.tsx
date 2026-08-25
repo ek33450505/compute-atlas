@@ -2,20 +2,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getStates, getStateSummary, getAllFacilities } from "@/lib/data";
+import { formatPower } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small states. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 export const metadata: Metadata = {
   title: "Data centers by state",
@@ -47,6 +42,14 @@ export default async function StatesIndexPage() {
   );
 
   const totalFacilities = (await getAllFacilities()).length;
+  const totalOperationalMw = rows.reduce(
+    (sum, r) => sum + r.summary.operationalMw,
+    0
+  );
+  const totalPlannedMw = rows.reduce(
+    (sum, r) => sum + r.summary.plannedMw,
+    0
+  );
 
   return (
     <div
@@ -69,18 +72,45 @@ export default async function StatesIndexPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          By geography
+      <PageMasthead
+        eyebrow="By geography"
+        title="States"
+        dek="Where the buildout is landing. Every state with at least one tracked facility, ranked by how many sites it carries. Capacity is shown where operators disclose it — most don’t, so the megawatt figures rank a subset, not the field."
+      />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Survey stats row                                                    */}
+      {/* ------------------------------------------------------------------ */}
+      <SurveyStatRow
+        stats={[
+          { value: rows.length.toLocaleString(), label: "States" },
+          { value: totalFacilities.toLocaleString(), label: "Facilities" },
+          { value: formatPower(totalOperationalMw), label: "Operational" },
+          { value: formatPower(totalPlannedMw), label: "Pipeline" },
+        ]}
+      />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Overview prose                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="states-overview-heading"
+        className="max-w-2xl space-y-4"
+      >
+        <h2
+          id="states-overview-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          What the ranking does and doesn&apos;t say
+        </h2>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Facility count is the honest default: it ranks what the dataset
+          actually knows. Sorting by megawatts would rank disclosure instead
+          — a state with three documented gigawatt campuses would outrank
+          one with forty sites whose operators never published a figure.
+          Both numbers are here; only one of them is close to complete.
         </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          States
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {rows.length} states &middot; {totalFacilities} facilities tracked
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* State grid                                                          */}

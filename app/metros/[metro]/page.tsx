@@ -2,19 +2,12 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { getFacilitiesByMetro } from "@/lib/data";
+import { formatPower } from "@/lib/format";
 import { getMetroBySlug, METROS, type Metro } from "@/lib/metros";
 import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Mirrors app/status/[status]/page.tsx's formatPower. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 function sumOperationalMw(facilities: Facility[]): number {
   return facilities.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0);

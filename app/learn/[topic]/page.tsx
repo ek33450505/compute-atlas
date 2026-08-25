@@ -16,25 +16,15 @@ import {
   type EnergySource,
   type CoolingType,
 } from "@/lib/data";
+import { formatMgd, formatPower } from "@/lib/format";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Explainer } from "@/components/learn/explainer";
+import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Mirrors app/power/page.tsx's formatPower. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
-
-/** Formats a reported daily water figure as MGD (1 decimal). Mirrors app/power/page.tsx's formatMgd. */
-function formatMgd(mgd: number): string {
-  return `${mgd.toFixed(1)} MGD`;
-}
 
 /** Display order + labels for `energy.source` — mirrors app/power/page.tsx's ENERGY_SOURCE_ENTRIES. */
 const ENERGY_SOURCE_ENTRIES: { key: EnergySource; label: string }[] = [
@@ -282,16 +272,7 @@ export default async function LearnTopicPage({
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Learn
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          {topic.title}
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">{topic.dek}</p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead eyebrow="Learn" title={topic.title} dek={topic.dek} />
 
       {/* ------------------------------------------------------------------ */}
       {/* Cited explainer (editor-approved prose; only some topics have one)  */}
@@ -325,21 +306,7 @@ export default async function LearnTopicPage({
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
       <h2 className="sr-only">Key statistics</h2>
-      <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-        {content.stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="flex flex-col items-center gap-1 text-center"
-          >
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {stat.value}
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              {stat.label}
-            </span>
-          </div>
-        ))}
-      </div>
+      <SurveyStatRow stats={content.stats} />
 
       {/* ------------------------------------------------------------------ */}
       {/* § Breakdown                                                         */}

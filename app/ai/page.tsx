@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { getAiClassificationByState, getAiClassificationCounts } from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
@@ -87,19 +89,11 @@ export default async function AiPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          AI classification
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          AI data centers by state
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Where AI/GPU compute is concentrated across the tracked data-center
-          layer, state by state.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="AI classification"
+        title="AI data centers by state"
+        dek="Where AI/GPU compute is concentrated across the tracked data-center layer, state by state."
+      />
 
       {totalAiClassified === 0 ? (
         <p className="text-base text-muted-foreground">
@@ -155,40 +149,14 @@ export default async function AiPage() {
           {/* ------------------------------------------------------------------ */}
           {/* Survey stats row                                                    */}
           {/* ------------------------------------------------------------------ */}
-          <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {totalAiClassified}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                AI-classified
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {aiCounts.confirmed}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Confirmed
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {aiCounts.likely}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Likely
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {stateRows.length}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                States
-              </span>
-            </div>
-          </div>
+          <SurveyStatRow
+            stats={[
+              { value: totalAiClassified, label: "AI-classified" },
+              { value: aiCounts.confirmed, label: "Confirmed" },
+              { value: aiCounts.likely, label: "Likely" },
+              { value: stateRows.length, label: "States" },
+            ]}
+          />
 
           {/* ------------------------------------------------------------------ */}
           {/* § States                                                            */}

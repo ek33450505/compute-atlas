@@ -11,9 +11,11 @@ import {
   type EnergySource,
   type CoolingType,
 } from "@/lib/data";
-import { formatCapacity, formatLocation, getFacilityMaxMw } from "@/lib/format";
+import { formatCapacity, formatLocation, formatMgd, formatPower, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import type { PowerGenerationFacility } from "@/lib/schema";
 import {
   GENERATION_TECHNOLOGY_ORDER,
@@ -24,22 +26,9 @@ import {
 
 export const revalidate = 3600;
 
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small totals. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
-
 /** Returns a label + facility-count row for the technology in the same tech + location line used elsewhere. */
 function technologyLabel(f: PowerGenerationFacility): string {
   return getGenerationTechnologyLabel(f.generation?.technology);
-}
-
-/** Formats a reported daily water figure as MGD (1 decimal), e.g. "12.5 MGD". */
-function formatMgd(mgd: number): string {
-  return `${mgd.toFixed(1)} MGD`;
 }
 
 /** Display order + labels for `energy.source` — mirrors the § Energy section on /stats. */
@@ -133,18 +122,11 @@ export default async function PowerPage() {
         className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
       >
         <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Power" }]} />
-        <header className="space-y-4 pb-2">
-          <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            Dedicated generation
-          </p>
-          <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-            Behind-the-meter power generation for AI data centers
-          </h1>
-          <p className="text-base text-muted-foreground">
-            No dedicated-generation projects are tracked yet.
-          </p>
-          <div className="border-t border-border" />
-        </header>
+        <PageMasthead
+          eyebrow="Dedicated generation"
+          title="Behind-the-meter power generation for AI data centers"
+          dek="No dedicated-generation projects are tracked yet."
+        />
       </div>
     );
   }
@@ -159,62 +141,23 @@ export default async function PowerPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Dedicated generation
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Behind-the-meter power generation for AI data centers
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Purpose-built generation — most often natural gas, with a growing
-          nuclear and small-modular-reactor cohort — that hyperscalers are
-          financing or contracting to feed AI and compute demand directly.
-          Tracked here as its own facility layer, distinct from the compute
-          campuses it supplies: a dedicated plant built or contracted for a
-          specific offtaker, rather than a data center drawing solely from the
-          grid.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Dedicated generation"
+        title="Behind-the-meter power generation for AI data centers"
+        dek="Purpose-built generation — most often natural gas, with a growing nuclear and small-modular-reactor cohort — that hyperscalers are financing or contracting to feed AI and compute demand directly. Tracked here as its own facility layer, distinct from the compute campuses it supplies: a dedicated plant built or contracted for a specific offtaker, rather than a data center drawing solely from the grid."
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {stats.count}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Projects
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(stats.operationalMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Operational
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(stats.plannedMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Pipeline
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {stats.offtakerCount}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Offtakers
-          </span>
-        </div>
-      </div>
+      <SurveyStatRow
+        stats={[
+          { value: stats.count, label: "Projects" },
+          { value: formatPower(stats.operationalMw), label: "Operational" },
+          { value: formatPower(stats.plannedMw), label: "Pipeline" },
+          { value: stats.offtakerCount, label: "Offtakers" },
+        ]}
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Overview prose                                                      */}

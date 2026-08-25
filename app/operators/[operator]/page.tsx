@@ -11,19 +11,13 @@ import {
 } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
-import { formatCapacity, formatLocation } from "@/lib/format";
+import { formatCapacity, formatLocation, formatPower } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small operators. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 export async function generateStaticParams() {
   const names = await getOperators();
@@ -109,18 +103,15 @@ export default async function OperatorPage({
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Operator profile
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          {operatorName} data centers
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Operator profile"
+        title={<>{operatorName} data centers</>}
+        dek={
+          <>
+            {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
+          </>
+        }
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}
@@ -139,40 +130,14 @@ export default async function OperatorPage({
       {/* ------------------------------------------------------------------ */}
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {summary.count}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Sites
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(summary.operationalMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Operational
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(summary.plannedMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Pipeline
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {summary.stateCount}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            States
-          </span>
-        </div>
-      </div>
+      <SurveyStatRow
+        stats={[
+          { value: summary.count, label: "Sites" },
+          { value: formatPower(summary.operationalMw), label: "Operational" },
+          { value: formatPower(summary.plannedMw), label: "Pipeline" },
+          { value: summary.stateCount, label: "States" },
+        ]}
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* § By type                                                           */}

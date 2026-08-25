@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { ContributeLeadForm } from "@/components/contribute/contribute-lead-form";
 import { ContributeFacilityForm } from "@/components/contribute/contribute-facility-form";
 import { siteConfig } from "@/lib/site";
@@ -30,20 +31,19 @@ export default function ContributePage() {
     >
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Contribute" }]} />
 
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">Contribute</p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Share a lead
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Know about a data center, mining site, or power plant that
-          isn&rsquo;t on the map yet? Send the link &mdash; a news article,
-          permit filing, or press release &mdash; and we&rsquo;ll take it
-          from there. No account needed, and every submission is anonymous.
-          If you already know the details, the full form is below.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Contribute"
+        title="Share a lead"
+        dek={
+          <>
+            Know about a data center, mining site, or power plant that
+            isn&rsquo;t on the map yet? Send the link &mdash; a news article,
+            permit filing, or press release &mdash; and we&rsquo;ll take it
+            from there. No account needed, and every submission is anonymous.
+            If you already know the details, the full form is below.
+          </>
+        }
+      />
 
       <ContributeLeadForm />
 

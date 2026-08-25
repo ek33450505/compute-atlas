@@ -16,21 +16,15 @@ import {
 } from "@/lib/us-states";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
-import { formatCapacity, formatLocation, AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
+import { formatCapacity, formatLocation, formatPower, AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { WatchButton } from "@/components/subscribe/watch-button";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { aiClassificationEnum } from "@/lib/schema";
 
 export const revalidate = false;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small states. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 export async function generateStaticParams() {
   const codes = await getStates();
@@ -147,19 +141,17 @@ export default async function StatePage({
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          State profile
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Data centers in {stateName}
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {stateName} &middot; {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
-        </p>
+      <PageMasthead
+        eyebrow="State profile"
+        title={<>Data centers in {stateName}</>}
+        dek={
+          <>
+            {stateName} &middot; {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
+          </>
+        }
+      >
         <WatchButton targetType="state" targetId={code} label={`Watch ${stateName}`} />
-        <div className="border-t border-border" />
-      </header>
+      </PageMasthead>
 
       {/* ------------------------------------------------------------------ */}
       {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}
@@ -181,40 +173,17 @@ export default async function StatePage({
       {/* ------------------------------------------------------------------ */}
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {summary.count}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Sites
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(summary.operationalMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Operational
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(summary.plannedMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Planned pipeline
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(summary.underConstructionMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Under construction
-          </span>
-        </div>
-      </div>
+      <SurveyStatRow
+        stats={[
+          { value: summary.count, label: "Sites" },
+          { value: formatPower(summary.operationalMw), label: "Operational" },
+          { value: formatPower(summary.plannedMw), label: "Planned pipeline" },
+          {
+            value: formatPower(summary.underConstructionMw),
+            label: "Under construction",
+          },
+        ]}
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* § By type                                                           */}
