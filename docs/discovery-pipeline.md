@@ -1,7 +1,5 @@
 # Discovery pipeline
 
-[docs-destroy-ok]
-
 A local, scheduled, subscription-powered pipeline that proposes candidate
 facilities into the staging queue AND re-checks existing facilities
 for genuine status changes. It NEVER writes live facilities — every candidate
