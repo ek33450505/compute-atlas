@@ -1,11 +1,15 @@
 # CI — the pull-request gate for compute-atlas.
 #
 # Runs typecheck + eslint + vitest (jsdom; the suite is self-contained and needs
-# NO DATABASE_URL / API_ADMIN_TOKEN — the API/auth tests manage their own env)
-# and the discovery + vercel ignore-gate BATS suites. The Vercel preview build still covers the
-# production `next build` separately, so this workflow deliberately omits it
-# (and the Playwright e2e suite, which needs browsers + a live server + external
-# basemap tiles).
+# NO DATABASE_URL / API_ADMIN_TOKEN — the API/auth tests manage their own env),
+# the discovery + vercel ignore-gate BATS suites, the JSON↔Neon drift check
+# (informational), and the Playwright e2e suite. The Vercel preview build still
+# covers the production `next build` separately.
+#
+# WHICH JOBS CAN BLOCK A MERGE is decided by branch protection on `main`, NOT by
+# anything in this file. As of 2026-08-25 the required contexts are exactly
+# "typecheck · lint · test" and "BATS tests". The `e2e` job is deliberately NOT
+# among them — see the note on that job before changing this.
 name: CI
 
 on:
@@ -13,6 +17,9 @@ on:
     branches: [main]
   push:
     branches: [main]
+  # Kept when neon-drift-check.yml was folded in below, so the drift check (and
+  # the rest of CI) stays runnable on demand.
+  workflow_dispatch:
 
 # Least privilege: CI only needs to read the checked-out code.
 permissions:
@@ -26,6 +33,11 @@ jobs:
   quality:
     name: typecheck · lint · test
     runs-on: ubuntu-latest
+    # Map the DATABASE_URL secret to a job-level env var so it can be tested in a
+    # step `if:` condition — the `secrets` context is NOT available in `if:`
+    # expressions. Same pattern as neon-sync.yml.
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -36,6 +48,25 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+
+      # Informational only. Absorbed from the former neon-drift-check.yml, which
+      # paid for a whole second job (checkout + setup-node + a full `npm ci`) just
+      # to print this one annotation; here it rides the install this job already did.
+      #
+      # ⚠️ THIS STEP LIVES INSIDE A REQUIRED CHECK. `check-neon-drift.ts` reports
+      # drift via a `::warning::` annotation and exits 0 on every path — success,
+      # drift, and caught error alike, ending in an unconditional `process.exit(0)`.
+      # Verified 2026-08-25 against real drift (21 new + 4 changed) with
+      # DATABASE_URL set, not merely against the graceful-skip path. That exit-0
+      # behaviour is now load-bearing: making the script exit non-zero on drift
+      # would turn "typecheck · lint · test" red on every PR opened between a prod
+      # approval and the next daily neon-sync export. Drift is EXPECTED — it is
+      # how the approve-on-prod path works, not a fault. Do not "fix" this into a
+      # gate. If it should ever block, that is a branch-protection decision made
+      # deliberately, not a side effect of editing the script.
+      - name: Check JSON↔Neon drift (informational)
+        if: env.DATABASE_URL != ''
+        run: npx tsx scripts/check-neon-drift.ts
 
   discovery-shell:
     name: BATS tests
@@ -53,3 +84,43 @@ jobs:
         run: bats tests/discovery/run.bats
       - name: vercel ignore-gate BATS
         run: bats tests/vercel/run.bats
+
+  # Playwright covers what vitest structurally cannot: vitest calls page functions
+  # directly and never exercises Next's HTTP layer, so it is blind to status-code
+  # bugs. `e2e/facility.spec.ts` correctly caught the soft-404 regression fixed in
+  # PR #180 — and nobody saw it, because Playwright ran in no workflow at all. A
+  # correct test that never runs is indistinguishable from no test.
+  #
+  # NON-BLOCKING BY BRANCH PROTECTION, NOT BY `continue-on-error`. This job is
+  # absent from main's required-status-check contexts, so a red e2e is plainly
+  # visible in the PR checks list while the merge stays available. That is the
+  # deliberate design: `continue-on-error: true` would report this job GREEN on
+  # failure, which recreates in a quieter form the exact invisibility this job
+  # exists to end. If e2e should ever gate merges, add it to the required contexts
+  # in branch protection — do not express that here.
+  #
+  # No build step: playwright.config.ts's `webServer` runs `npm run build && npm
+  # run start` itself. The build needs no DATABASE_URL — server reads fall back to
+  # the bundled data/facilities.json snapshot.
+  #
+  # ⚠️ UNPROVEN TIMING on first run: that webServer builds ~1,500 static routes
+  # inside a 240s `webServer.timeout` on a cold runner. If this job goes red with
+  # a webServer timeout rather than assertion failures, the fix is raising
+  # `webServer.timeout` in playwright.config.ts — not "fixing" the tests.
+  e2e:
+    name: Playwright e2e
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      # `github` reporter annotates failures inline on the PR diff; `list` keeps
+      # the run readable in the raw log. Both override the config's `html`
+      # default, which produces no useful stdout in CI.
+      - name: Run Playwright e2e tests
+        run: npm run test:e2e -- --reporter=github,list
