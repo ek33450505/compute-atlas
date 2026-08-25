@@ -6,4 +6,6 @@ This directory contains guides for understanding and contributing to Compute Atl
 
 - **[discovery-pipeline.md](discovery-pipeline.md)** — How the automated discovery pipeline works: scheduling, data validation, staging, and the submission workflow.
 
+- **[discovery-runbook.md](discovery-runbook.md)** — Day-to-day operations: running the pipeline manually, installing/managing the launchd job, reviewing submissions, and using the field extraction and leads lane tools.
+
 For the project architecture, tech stack, and data model, see the main [README.md](../README.md).
