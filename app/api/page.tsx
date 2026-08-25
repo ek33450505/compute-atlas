@@ -223,6 +223,27 @@ export default function ApiPage() {
             </dd>
           </div>
           <div>
+            <dt className="font-medium text-foreground">Bulk access</dt>
+            <dd className="text-muted-foreground">
+              If you want the whole dataset rather than a query, take the
+              export instead of paging this API:{" "}
+              <a
+                href="https://raw.githubusercontent.com/ek33450505/compute-atlas/main/data/facilities.json"
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="Full facilities dataset as JSON on GitHub (opens in new tab)"
+                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              >
+                data/facilities.json
+              </a>
+              . It is every record in one file, under the same CC-BY-4.0
+              terms, regenerated from the database on each publish and served
+              by GitHub&rsquo;s CDN. For a full-list consumer it is fresher
+              per request than a cached API response, and it costs this
+              project nothing to serve.
+            </dd>
+          </div>
+          <div>
             <dt className="font-medium text-foreground">Caching</dt>
             <dd className="text-muted-foreground">
               Every read response carries a{" "}
