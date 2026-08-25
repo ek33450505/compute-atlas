@@ -96,6 +96,11 @@ export function isOperatorRedundant(name: string, operator: string): boolean {
  * crypto_mining) — deliberately a short, high-precision list rather than an
  * exhaustive one. Matched as case-insensitive substrings in `nameConveysType`.
  */
+/** Escape a literal string for safe interpolation into a RegExp. */
+function escapeRegExp(literal: string): string {
+  return literal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 const TYPE_KEYWORDS: Record<Facility["facilityType"], string[]> = {
   data_center: ["data center", "datacenter", "data centre"],
   crypto_mining: ["mining", "miner"],
@@ -112,7 +117,15 @@ export function nameConveysType(
   facilityType: Facility["facilityType"]
 ): boolean {
   const nameLower = name.toLowerCase();
-  return TYPE_KEYWORDS[facilityType].some((keyword) => nameLower.includes(keyword));
+  // Match the keyword as a whole word, tolerating a plural "s" — a bare
+  // substring test suppresses the type label on names that merely CONTAIN a
+  // keyword inside a longer word ("Windsor"/"Winding" both contain "wind",
+  // "Minerva" contains "miner", "Solaris" contains "solar"). The trailing
+  // `s?` is what keeps "Data Centers" matching, which is why a plain \b
+  // word-boundary test is not enough here.
+  return TYPE_KEYWORDS[facilityType].some((keyword) =>
+    new RegExp(`${escapeRegExp(keyword)}s?(?![a-z])`).test(nameLower)
+  );
 }
 
 /** Human-readable labels for the aiClassification enum. */

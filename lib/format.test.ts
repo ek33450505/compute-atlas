@@ -195,6 +195,10 @@ describe("formatMgd", () => {
 
   it("formats a whole MGD value with a trailing .0", () => {
     expect(formatMgd(10)).toBe("10.0 MGD");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // stripLegalSuffix
 // ---------------------------------------------------------------------------
 describe("stripLegalSuffix", () => {
@@ -267,5 +271,21 @@ describe("nameConveysType", () => {
 
   it("is false when the name says nothing about the facility type", () => {
     expect(nameConveysType("Colossus", "data_center")).toBe(false);
+  });
+
+  // A bare substring test suppressed the type label on any name that merely
+  // CONTAINED a keyword inside a longer word. Zero facilities tripped it when
+  // this shipped, so these pin the behaviour before a future record does.
+  it("is false when a keyword is glued inside a longer word", () => {
+    expect(nameConveysType("Windsor Energy Center", "power_generation")).toBe(false);
+    expect(nameConveysType("Winding Creek Station", "power_generation")).toBe(false);
+    expect(nameConveysType("Minerva Ridge Station", "crypto_mining")).toBe(false);
+    expect(nameConveysType("Solaris Holdings Center", "power_generation")).toBe(false);
+  });
+
+  it("still matches a keyword used as a real word, including plurals", () => {
+    expect(nameConveysType("Sunrise Wind Farm", "power_generation")).toBe(true);
+    expect(nameConveysType("Ark Data Centers Marion", "data_center")).toBe(true);
+    expect(nameConveysType("Compass Datacenters Lauderdale", "data_center")).toBe(true);
   });
 });
