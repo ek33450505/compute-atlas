@@ -135,8 +135,12 @@ export const subscriptionsTable = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     email: text("email").notNull(), // stored lowercased + trimmed
-    targetType: text("target_type").notNull(), // facility | state | all
-    targetId: text("target_id"), // facility id (slug) | 2-letter state code | null for 'all'
+    // "facility" is the only type accepted for NEW subscriptions. Legacy rows may
+    // still hold "state" or "all"; those are inert — lib/notify.ts matches on
+    // targetType = "facility" only, so they are never selected for delivery.
+    // The column stays permissive so existing rows remain readable/unsubscribable.
+    targetType: text("target_type").notNull(), // facility (legacy: state | all)
+    targetId: text("target_id"), // facility id (slug); legacy: 2-letter state code, or null for 'all'
     status: text("status").notNull().default("pending"), // pending | confirmed | unsubscribed
     confirmToken: text("confirm_token").notNull(), // raw 256-bit base64url, single-use (double-opt-in)
     unsubscribeToken: text("unsubscribe_token").notNull(), // raw 256-bit base64url, embedded in every email

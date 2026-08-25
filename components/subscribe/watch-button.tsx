@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-export type WatchTargetType = "facility" | "state" | "all";
+export type WatchTargetType = "facility";
 
 export interface WatchButtonProps {
   targetType: WatchTargetType;
-  /** Facility id or 2-letter state code. Omitted for targetType "all". */
-  targetId?: string;
-  /** Trigger button copy, e.g. "Watch this facility" / "Watch Texas" / "Watch all updates". */
+  /** Facility id. */
+  targetId: string;
+  /** Trigger button copy, e.g. "Watch this facility". */
   label: string;
   className?: string;
 }

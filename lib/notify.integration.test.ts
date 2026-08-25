@@ -117,8 +117,8 @@ describe("notifySubscribersOfChange", () => {
     expect(sendChangeNotification).not.toHaveBeenCalled();
   });
 
-  it("notifies a confirmed state subscriber when facility.location.state matches", async () => {
-    const sub = await insertSubscription({
+  it("does NOT notify a confirmed state-target subscriber, even when facility.location.state matches (state targeting is inert)", async () => {
+    await insertSubscription({
       targetType: "state",
       targetId: facility.location.state,
       status: "confirmed",
@@ -126,10 +126,7 @@ describe("notifySubscribersOfChange", () => {
 
     await notifySubscribersOfChange(facility, "record updated");
 
-    expect(sendChangeNotification).toHaveBeenCalledTimes(1);
-    expect(sendChangeNotification).toHaveBeenCalledWith(
-      expect.objectContaining({ email: sub.email, unsubscribeToken: sub.unsubscribeToken })
-    );
+    expect(sendChangeNotification).not.toHaveBeenCalled();
   });
 
   it("does NOT notify a confirmed state subscriber for a different state", async () => {
@@ -144,20 +141,27 @@ describe("notifySubscribersOfChange", () => {
     expect(sendChangeNotification).not.toHaveBeenCalled();
   });
 
-  it("notifies a confirmed 'all' subscriber for any facility", async () => {
-    const sub = await insertSubscription({ targetType: "all", status: "confirmed" });
+  it("does NOT notify a confirmed 'all'-target subscriber (site-wide targeting is inert)", async () => {
+    await insertSubscription({ targetType: "all", status: "confirmed" });
 
     await notifySubscribersOfChange(otherStateFacility, "status updated");
 
-    expect(sendChangeNotification).toHaveBeenCalledTimes(1);
-    expect(sendChangeNotification).toHaveBeenCalledWith(
-      expect.objectContaining({ email: sub.email, unsubscribeToken: sub.unsubscribeToken })
-    );
+    expect(sendChangeNotification).not.toHaveBeenCalled();
   });
 
   it("passes each subscriber's own unsubscribeToken, not a shared one", async () => {
-    const subA = await insertSubscription({ email: "a@example.com", targetType: "all", status: "confirmed" });
-    const subB = await insertSubscription({ email: "b@example.com", targetType: "all", status: "confirmed" });
+    const subA = await insertSubscription({
+      email: "a@example.com",
+      targetType: "facility",
+      targetId: facility.id,
+      status: "confirmed",
+    });
+    const subB = await insertSubscription({
+      email: "b@example.com",
+      targetType: "facility",
+      targetId: facility.id,
+      status: "confirmed",
+    });
 
     await notifySubscribersOfChange(facility, "record updated");
 

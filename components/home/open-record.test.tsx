@@ -64,13 +64,6 @@ describe("OpenRecord", () => {
     ).toHaveAttribute("href", "/contribute");
   });
 
-  it("renders the sitewide watch-updates CTA alongside the contribute CTA", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} />);
-    expect(
-      screen.getByRole("button", { name: "Watch all updates" })
-    ).toBeInTheDocument();
-  });
-
   it("links the JSON API and RSS feed access facts", () => {
     render(<OpenRecord sources={100} recentActivity={[]} />);
     expect(screen.getByRole("link", { name: "JSON API" })).toHaveAttribute(
