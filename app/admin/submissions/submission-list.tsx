@@ -122,7 +122,18 @@ function SubmissionRowCard({
     startTransition(async () => {
       const result = await approveSubmissionAction(submission.id);
       if (result.ok) {
-        toast.success(`Approved "${facilityLabel}" — now live.`);
+        // historyRecorded is strictly false only when the facility write
+        // itself succeeded but its facility_history audit row failed to
+        // insert (lib/facility-write.ts) — surface that instead of letting
+        // it disappear into the server log. `undefined` (unknown) reads the
+        // same as a clean success.
+        if (result.historyRecorded === false) {
+          toast.warning(
+            `Approved "${facilityLabel}" — now live, but its audit log entry failed to record.`
+          );
+        } else {
+          toast.success(`Approved "${facilityLabel}" — now live.`);
+        }
         router.refresh();
       } else {
         toast.error(formatActionError(result));

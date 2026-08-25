@@ -11,7 +11,7 @@ import { statusUpdateIntentSchema, applyStatusUpdate } from "@/lib/status-update
 import { enrichmentUpdateIntentSchema, applyEnrichmentUpdate } from "@/lib/enrichment-update";
 
 export type WriteResult =
-  | { ok: true; facility: Facility }
+  | { ok: true; facility: Facility; historyRecorded?: boolean }
   | { ok: false; status: number; error: string; issues?: unknown };
 
 /**
@@ -39,18 +39,25 @@ function revalidateForFacility(doc: Facility, prevDoc?: Facility): void {
  * history row is recoverable, whereas failing a facility save because the
  * audit table hiccuped would be a worse outcome. (Judgment call per Phase 5a
  * of the admin-ui-part2 plan.)
+ *
+ * Still never throws or rolls back the facility mutation. Instead, returns
+ * `true`/`false` so the caller can carry the outcome on `WriteResult.
+ * historyRecorded` — a failure is logged here (as before) AND surfaced to
+ * whoever triggered the write, instead of only living in the server log.
  */
 async function recordFacilityHistory(
   facilityId: string,
   changeType: "create" | "update" | "delete",
   diff: DiffEntry[],
   source: string
-): Promise<void> {
+): Promise<boolean> {
   try {
     const db = getDb();
     await db.insert(facilityHistoryTable).values({ facilityId, changeType, diff, source });
+    return true;
   } catch (err) {
     console.error("facility_history insert failed for %s (%s):", facilityId, changeType, err);
+    return false;
   }
 }
 
@@ -83,9 +90,9 @@ export async function createFacility(
   }
 
   await db.insert(facilitiesTable).values(docToRow(doc));
-  await recordFacilityHistory(doc.id, "create", computeDocDiff(null, doc), source);
+  const historyRecorded = await recordFacilityHistory(doc.id, "create", computeDocDiff(null, doc), source);
   revalidateForFacility(doc);
-  return { ok: true, facility: doc };
+  return { ok: true, facility: doc, historyRecorded };
 }
 
 /**
@@ -125,9 +132,9 @@ export async function updateFacility(
     .update(facilitiesTable)
     .set({ ...docToRow(doc), updatedAt: new Date() })
     .where(eq(facilitiesTable.id, id));
-  await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
+  const historyRecorded = await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
   revalidateForFacility(doc, existingRow.doc);
-  return { ok: true, facility: doc };
+  return { ok: true, facility: doc, historyRecorded };
 }
 
 /**
@@ -170,9 +177,9 @@ export async function writeStatusUpdate(
     .update(facilitiesTable)
     .set({ ...docToRow(doc), updatedAt: new Date() })
     .where(eq(facilitiesTable.id, id));
-  await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
+  const historyRecorded = await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
   revalidateForFacility(doc, existingRow.doc);
-  return { ok: true, facility: doc };
+  return { ok: true, facility: doc, historyRecorded };
 }
 
 /**
@@ -216,9 +223,9 @@ export async function writeEnrichmentUpdate(
     .update(facilitiesTable)
     .set({ ...docToRow(doc), updatedAt: new Date() })
     .where(eq(facilitiesTable.id, id));
-  await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
+  const historyRecorded = await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
   revalidateForFacility(doc, existingRow.doc);
-  return { ok: true, facility: doc };
+  return { ok: true, facility: doc, historyRecorded };
 }
 
 /**
@@ -241,9 +248,9 @@ export async function deleteFacility(
   }
 
   await db.delete(facilitiesTable).where(eq(facilitiesTable.id, id));
-  await recordFacilityHistory(id, "delete", computeDocDiff(existingRow.doc, null), source);
+  const historyRecorded = await recordFacilityHistory(id, "delete", computeDocDiff(existingRow.doc, null), source);
   // Only the deleted doc exists (no prevDoc) — still correctly busts
   // facility:${id}, state:${state}, and power-generation (if applicable).
   revalidateForFacility(existingRow.doc);
-  return { ok: true, facility: existingRow.doc };
+  return { ok: true, facility: existingRow.doc, historyRecorded };
 }
