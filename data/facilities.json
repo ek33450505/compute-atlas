@@ -33496,7 +33496,7 @@
     "investmentUsd": 10000000000,
     "landAcres": 3200,
     "community": {
-      "status": "contested",
+      "status": "mixed",
       "notes": "A strong local-revival narrative (an economic anchor after the 2023 coal-plant closure, backed by state officials) meets organized environmental opposition — the air permit drew 500+ comments and Clean Air Council opposition citing ~17M tons CO2e/year, potentially Pennsylvania's largest single pollution source. Developers project ~10,000 construction and ~1,000 permanent jobs.",
       "sourceIndex": 5
     },
@@ -53139,7 +53139,7 @@
     "lastUpdated": "2026-08-02",
     "notes": "December 2025: Raeden Inc. proposed leasing 'Building 10' (110 Marcellin Drive) within Majestic Realty's 290-acre Grand Crossing South business park for a data center, requesting up to 30 MVA (an apparent-power unit, not converted to a MW figure since no source discloses one). No lease is confirmed executed; City of Industry directed consultants to plan the site as a future data center 'whether with Raeden or another tenant.' aiClassification set to 'likely' on the strength of Raeden's company-wide AI/HPC/neocloud-focused business model (150kW+/rack, liquid cooling, GPU-cloud tenants), though no site-specific tenant or spec has been disclosed yet. Investment/acreage/jobs not disclosed for this specific building (Grand Crossing South's 290 acres covers the whole multi-building park, not this parcel alone) and are omitted. ZIP 91789 spans both City of Industry and Diamond Bar - jurisdiction resolved to City of Industry via the city government body actively considering this project, not postal city alone; recommend parcel/APN-level confirmation in a future pass. Distinct from the unrelated Puente Hills Mall/MARICI battery-storage project in the same city (rezoned for battery storage, not a data center, in Feb 2026). Coordinates are an approximate representative point within the Grand Crossing master-planned development (the specific private road 'Marcellin Drive' is not indexed in OpenStreetMap), not a parcel-confirmed point. Proposed tenant; developer: Majestic Realty.",
     "community": {
-      "status": "contested",
+      "status": "unknown",
       "notes": "Organized, citywide opposition to City of Industry data-center development exists (an 18,000-signature 'No Data Centers SGV Coalition' petition per LA TACO, and a separate Action Network petition titled 'No Data Centers in City of Industry!'), but no source names Raeden or this specific building as the target of that opposition - the opposition is citywide/policy-level, not project-specific.",
       "sourceIndex": 2
     },
@@ -53421,7 +53421,7 @@
     "investmentUsd": 250000000,
     "landAcres": 55.54,
     "community": {
-      "status": "contested",
+      "status": "mixed",
       "notes": "Active opposition (Ridgecrest City Councilman Skip Gorman; the Indian Wells Valley groundwater basin is in critical overdraft, with water-use estimates ranging from the company's claim of 50 acre-ft/yr or less to opposition estimates of approximately 500 acre-ft/yr) alongside organized labor support - IBEW Local 47 and regional Building & Construction Trades Councils have filed CEC letters of support. Filed at 99 MW, just under the 100 MW threshold that would trigger a more rigorous CEC Application for Certification instead of the lighter SPPE exemption.",
       "sourceIndex": 4
     },
@@ -57373,7 +57373,7 @@
     "investmentUsd": 73000000000,
     "landAcres": 2990,
     "community": {
-      "status": "contested",
+      "status": "mixed",
       "notes": "The Pittsylvania County Board of Supervisors passed a resolution supporting the project, and Regional Industrial Facility Authority chair Vic Ingram publicly championed it, calling the investment historic. Erin Hall, a resident living four miles from the megasite, spoke against the project during public comment, questioning water and power safeguards and saying county meetings had been kept 'hush-hush.'",
       "sourceIndex": 3
     },
@@ -57619,7 +57619,7 @@
       "utility": "Portland General Electric (PGE)"
     },
     "community": {
-      "status": "contested",
+      "status": "unknown",
       "notes": "Advocacy groups (1000 Friends of Oregon, Oregon Education Association, Tax Fairness Oregon, Tualatin Riverkeepers) sued Hillsboro and Washington County (June 2026) to block enterprise-zone tax breaks granted to 17 proposed data centers in the jurisdiction where this campus sits; the suit does not name this project specifically.",
       "sourceIndex": 2
     },
@@ -61470,7 +61470,7 @@
       "notes": "Existing 2,514 MW two-unit (BWR) plant, operating since the 1980s. Up to 1,920 MW earmarked for AWS via a front-of-meter retail power supply PPA through 2042 (announced 2025-06-11), ramping from 840-1,200 MW by 2029 to 1,680-1,920 MW by 2032. This front-of-meter structure replaced the original co-located behind-the-meter arrangement after FERC rejected that interconnection service agreement 2-1 on 2024-11-01; transition expected after transmission reconfiguration, targeted spring 2026."
     },
     "community": {
-      "status": "contested",
+      "status": "unknown",
       "notes": "American Electric Power (AEP) and Exelon formally intervened at FERC against the co-located behind-the-meter ISA amendment, arguing it could shift up to $140 million/year in transmission costs onto PJM ratepayers as a 'free rider' benefit -- a factor in the ISA's rejection. This is a regulatory/ratepayer-cost dispute among utilities, not local community opposition; the front-of-meter restructuring addresses the underlying jurisdictional issue.",
       "sourceIndex": 9
     },
@@ -62570,7 +62570,7 @@
       "sourceIndex": 0
     },
     "community": {
-      "status": "contested",
+      "status": "mixed",
       "notes": "Residents are split; state Rep. Ben Moss called for more public input before the council acts. City council scheduled a public hearing following the planning board recommendation.",
       "sourceIndex": 1
     },
@@ -65874,7 +65874,7 @@
     "landAcres": 75,
     "jobs": {},
     "community": {
-      "status": "opposed",
+      "status": "mixed",
       "notes": "Proposal drew both support and opposition. Construction unions backed it for job creation (Eric Morgan, North Coast States Carpenters Union). Residents raised concerns about water use, electricity demand, noise and environmental impact, and called for a proper public process. On July 30, 2026 Governor Tina Kotek directed the Department of Administrative Services to terminate the state's contract to sell approximately 32 acres at the Mill Creek Corporate Center for the project, saying 'Growth has to make sense for the community, for our infrastructure, and for our natural resources.' Verrus, through subsidiary Alderstone LLC, submitted a land use application to the City of Salem on July 31, 2026. Projected tax revenue cited: about $9 million annually to Salem's general fund and about $1.5 million to the Community Livability Levy."
     },
     "facilityType": "data_center"
