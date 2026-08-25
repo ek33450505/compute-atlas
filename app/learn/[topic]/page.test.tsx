@@ -10,6 +10,7 @@ const {
   mockGetWaterUsage,
   mockGetCoolingTypeCounts,
   mockGetStats,
+  mockGetFacilityTypeCounts,
   mockGetEnergySourceCounts,
   mockGetAiClassificationCounts,
   mockGetGenerationStats,
@@ -18,6 +19,7 @@ const {
   mockGetWaterUsage: vi.fn(),
   mockGetCoolingTypeCounts: vi.fn(),
   mockGetStats: vi.fn(),
+  mockGetFacilityTypeCounts: vi.fn(),
   mockGetEnergySourceCounts: vi.fn(),
   mockGetAiClassificationCounts: vi.fn(),
   mockGetGenerationStats: vi.fn(),
@@ -28,6 +30,7 @@ vi.mock("@/lib/data", () => ({
   getWaterUsage: mockGetWaterUsage,
   getCoolingTypeCounts: mockGetCoolingTypeCounts,
   getStats: mockGetStats,
+  getFacilityTypeCounts: mockGetFacilityTypeCounts,
   getEnergySourceCounts: mockGetEnergySourceCounts,
   getAiClassificationCounts: mockGetAiClassificationCounts,
   getGenerationStats: mockGetGenerationStats,
@@ -90,6 +93,11 @@ beforeEach(() => {
     operationalMw: 0,
     plannedMw: 0,
     underConstructionMw: 0,
+  });
+  mockGetFacilityTypeCounts.mockReset().mockResolvedValue({
+    data_center: 0,
+    crypto_mining: 0,
+    power_generation: 0,
   });
   mockGetEnergySourceCounts.mockReset().mockResolvedValue(EMPTY_ENERGY_COUNTS);
   mockGetAiClassificationCounts.mockReset().mockResolvedValue({

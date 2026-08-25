@@ -194,8 +194,8 @@ tool, not part of the deployed app.
   **silently drops every correction to an existing row, writes no history, and busts
   no tags** — it is bootstrap-only. After syncing, `db:export` regenerates the JSON
   from Neon so `check:drift` is clean.
-- **Local-only docs:** `docs/NEXT-SESSION.md` and `docs/track-c-candidate-ledger.md`
-  are gitignored maintainer notes — never commit them.
+- **Local-only docs:** some maintainer notes under `docs/` are gitignored working
+  files — check `.gitignore` before adding a doc, and never commit those.
 - **Dev server:** don't run `next build`/`start` while `next dev` is live (it
   corrupts `.next`); a long-running dev server can also serve stale `globals.css`.
 - **Static-asset edge cache:** `/data/:path*` and `/basemap/:path*` carry `Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800` (edge cache up to 1 day plus 7 days stale reuse); `/fonts/:path*` are immutable. After `npm run build:mapdata`, regenerated geojson rides the edge cache for up to 24 hours — if a correction must go live immediately, purge Cloudflare by prefix.

@@ -4,7 +4,7 @@ import { LensGateway, type LensGatewayProps } from "./lens-gateway";
 
 const PROPS: LensGatewayProps = {
   counts: {
-    sites: 727,
+    sites: 1095,
     states: 45,
     utilityLinked: 307,
     frictionCount: 153,
@@ -39,7 +39,7 @@ describe("LensGateway", () => {
   it("renders the passed counts in each card's stat text", () => {
     render(<LensGateway {...PROPS} />);
 
-    expect(screen.getByText("727 sites")).toBeInTheDocument();
+    expect(screen.getByText("1,095 sites")).toBeInTheDocument();
     expect(screen.getByText("45 states")).toBeInTheDocument();
     expect(screen.getByText("307 grid-linked")).toBeInTheDocument();
     expect(screen.getByText("153 in friction")).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe("LensGateway", () => {
   it("renders the two trailing links to /explore and /stats", () => {
     render(<LensGateway {...PROPS} />);
 
-    const exploreLink = screen.getByRole("link", { name: /See all 11 lenses/ });
+    const exploreLink = screen.getByRole("link", { name: /See every lens/ });
     expect(exploreLink).toHaveAttribute("href", "/explore");
 
     const statsLink = screen.getByRole("link", { name: /View full statistics/ });

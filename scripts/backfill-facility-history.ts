@@ -10,9 +10,16 @@
  * /activity feed at the date they actually went live, not all bunched at
  * the moment this script happens to run.
  *
- * Run via: npm run db:backfill-history             (writes)
- *          npm run db:backfill-history -- --dry-run (computes + logs only, writes nothing)
- * (requires DATABASE_URL in .env.local)
+ * ALREADY APPLIED — kept for reference, not part of any routine workflow.
+ * This patched a hole that no longer exists: `db:seed` wrote no history, so
+ * bulk-seeded facilities were invisible to /activity. `db:sync` (the only
+ * bulk write path now) writes facility_history for every change, so nothing
+ * new can arrive history-less. A re-run is a verified no-op.
+ *
+ * There is deliberately no npm alias. Run it directly if you ever need to:
+ *   npx tsx --env-file=.env.local scripts/backfill-facility-history.ts --dry-run  (computes + logs only, writes nothing)
+ *   npx tsx --env-file=.env.local scripts/backfill-facility-history.ts            (writes)
+ * (requires DATABASE_URL in .env.local — i.e. it targets prod Neon)
  *
  * Uses relative imports throughout — tsx does not resolve the `@/*` path
  * alias, which is a Next.js/tsconfig-plugin feature, not a Node runtime one.

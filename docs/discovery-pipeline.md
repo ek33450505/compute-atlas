@@ -1,10 +1,10 @@
-# Discovery pipeline (Phase 5)
+# Discovery pipeline
 
 A local, scheduled, subscription-powered pipeline that proposes candidate
-facilities into the Phase 4 staging queue AND re-checks existing facilities
+facilities into the staging queue AND re-checks existing facilities
 for genuine status changes. It NEVER writes live facilities — every candidate
 (new or updated) lands as a `pending` row in `submissions`, reviewed and
-approved/rejected by a human via the Phase 4 CLI.
+approved/rejected by a human via the `submissions` CLI.
 
 ## Architecture
 
@@ -54,7 +54,7 @@ run.sh (launchd, daily)
 
 ## The combined-pass model
 
-Since Phase 5 launch (s30, 2026-07-14), each scheduled invocation now does
+Each scheduled invocation does
 **both** discovery of net-new facilities AND re-checking of existing facilities
 in a single daily `claude -p` call, driven by a four-responsibility prompt.
 
@@ -217,7 +217,7 @@ rejection is not proof that a citation is bad.
 - **Staging-only:** the pipeline only ever calls `POST /api/submissions`. It
   never calls `/api/facilities` and never edits `data/facilities.json`.
   Promotion to a live facility (new or updated) happens only via `npm run submissions --
-  approve <id>` (Phase 4), a deliberate human action.
+  approve <id>`, a deliberate human action.
 - **Fail-closed kill switch:** `run.sh` exits 0 immediately unless
   `DISCOVERY_ENABLED=true` is set in the environment, or if
   `discovery-logs/DISABLED` exists. The launchd plist deliberately does NOT
@@ -412,7 +412,7 @@ To remove entirely: `launchctl bootout gui/$(id -u)/com.compute-atlas.discovery`
 ## Reviewing candidates and updates
 
 Every candidate the pipeline submits (new or updated) lands as a `pending` row
-in the submissions staging queue. Review with the Phase 4 CLI:
+in the submissions staging queue. Review with the `submissions` CLI:
 
 ```bash
 npm run submissions -- list pending
@@ -441,7 +441,7 @@ Note that `bot_blocked` and `throttled` are transient/anti-bot signals, not
 submissions. A future enhancement may wire these reports into an admin dashboard
 or automated deprecation workflow.
 
-## Track 5: field extraction from existing sources
+## Field extraction from existing sources
 
 `scripts/discovery/extract-fields.ts` fills missing structured fields on
 *existing* facilities by re-reading sources those facilities already cite,
@@ -590,7 +590,7 @@ The bench deliberately duplicates the shipped quote-gate logic (see
 `leads` table (`POST /api/leads`, staged `new` and reviewed at
 `/admin/leads`), researches each one with a local Ollama model, and stages the
 promising ones as `pending` `submissions` for the maintainer's normal human
-approve gate. Like Track 5, this is an operator tool — it never writes a live
+approve gate. Like field extraction, this is an operator tool — it never writes a live
 facility and never imports `lib/facility-write.ts`.
 
 ### What it does
@@ -598,7 +598,7 @@ facility and never imports `lib/facility-write.ts`.
 For each `new` lead (oldest first):
 
 1. Fetches the lead's URL. A fetch failure leaves the lead `new` — a
-   bot-walled page is not a bad tip (s87) — and is not counted against it.
+   bot-walled page is not a bad tip — and is not counted against it.
 2. Asks the model to extract `name`, `operator`, `facilityType`, `status`,
    `city`, `state`, and `capacityMw`, explicitly instructed to return `null`
    for anything the page does not state. **The model never produces

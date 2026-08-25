@@ -14,7 +14,7 @@
 - [ ] **Every new or changed fact has a public, verifiable source URL.** _(data)_
 - [ ] Confidence is honest — announced-but-unbuilt sites are `proposed`/`permitted`, not `under_construction`. _(data)_
 - [ ] `npm run typecheck`, `npm run lint`, and `npm run test` pass. _(code)_
-- [ ] `npm run build` passes — it validates every record against the schema. _(data)_
+- [ ] The data-integrity suite (`lib/data-integrity.test.ts`) passes over `data/facilities.json` — every record valid against the schema. _(data)_
 - [ ] Changes are additive where possible; no existing records dropped.
 
 ## Notes for the reviewer

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
+import { getStats } from "@/lib/data";
 import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
@@ -15,7 +16,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about" },
 };
 
-export default function AboutPage() {
+/**
+ * Matches every sibling aggregate page that reads `loadFacilities` (which is
+ * itself tagged `"facilities"` on a 3600s timer): § Sources renders the live
+ * facility/state counts, so /about self-heals hourly as well as on tag bust.
+ */
+export const revalidate = 3600;
+
+export default async function AboutPage() {
+  const stats = await getStats();
+
   return (
     <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
       <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "About" }]} />
@@ -72,11 +82,11 @@ export default function AboutPage() {
           </h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
             Every field traces back to a public source, cited on the facility&rsquo;s
-            page. We record what the documents say and no more: ranges and
-            projections are marked as estimates, not presented as fact; where a
-            figure genuinely isn&rsquo;t known, the record says so rather than
-            guessing. Nothing here is fabricated or inferred beyond what a reader
-            can check for themselves.
+            page. Compute Atlas records what the documents say and no more:
+            ranges and projections are marked as estimates, not presented as
+            fact; where a figure genuinely isn&rsquo;t known, the record says
+            so rather than guessing. Nothing here is fabricated or inferred
+            beyond what a reader can check for themselves.
           </p>
         </div>
 
@@ -163,8 +173,9 @@ export default function AboutPage() {
               {FACILITY_TYPE_META[FACILITY_TYPE_ORDER[2]].label}
             </dt>
             <dd className="text-muted-foreground">
-              Dedicated generation — e.g. nuclear or small modular reactors —
-              built or contracted specifically to feed the compute buildout.
+              Dedicated generation — most often natural gas, plus nuclear and
+              small modular reactors — built or contracted specifically to feed
+              the compute buildout.
               Tracked as its own layer, distinct from the compute campuses it
               supplies.
             </dd>
@@ -372,9 +383,10 @@ export default function AboutPage() {
           Sources
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          The current dataset is a curated seed drawn from publicly available
-          sources. Every record links to the specific sources used to create or
-          update it. Source types include:
+          The dataset now covers {stats.count.toLocaleString("en-US")}{" "}
+          facilities across {stats.states} states, compiled from publicly
+          available sources. Every record links to the specific sources used to
+          create or update it. Source types include:
         </p>
         <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
           <li>Company announcements and press releases</li>
@@ -384,9 +396,16 @@ export default function AboutPage() {
           <li>OpenStreetMap data (for coordinates and facility boundaries)</li>
         </ul>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          The roadmap includes automated ingestion from interconnection queues
-          and public permit databases, as well as a structured community
-          submission process.
+          <Link
+            href="/contribute"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            Community submissions
+          </Link>{" "}
+          are live: anyone can share a lead or submit a full record, and every
+          submission is staged for human review before it publishes. Automated
+          ingestion from interconnection queues and public permit databases
+          remains on the roadmap.
         </p>
       </section>
 

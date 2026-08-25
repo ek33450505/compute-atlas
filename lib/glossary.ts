@@ -20,27 +20,27 @@ export interface GlossaryTopic {
 export const GLOSSARY_TOPICS: GlossaryTopic[] = [
   {
     slug: "data-center-water-use",
-    title: "How Much Water Does a Data Center Use?",
+    title: "How much water does a data center use?",
     dek: "Cooling a large data center can consume millions of gallons of water a year — here's how facility-level water use is tracked and reported.",
   },
   {
     slug: "data-center-power-draw",
-    title: "How Much Power Does a Data Center Draw?",
+    title: "How much power does a data center draw?",
     dek: "From megawatts of critical IT load to gigawatt-scale campuses — a breakdown of how data center power draw is measured and reported.",
   },
   {
     slug: "what-is-an-ai-data-center",
-    title: "What Is an AI Data Center?",
+    title: "What is an AI data center?",
     dek: "AI data centers are purpose-built for GPU-dense training and inference workloads — how they differ from traditional cloud and colocation facilities.",
   },
   {
     slug: "behind-the-meter-power",
-    title: "What Is Behind-the-Meter Power?",
+    title: "What is behind-the-meter power?",
     dek: "Some data centers generate their own power on-site rather than drawing entirely from the grid — what \"behind-the-meter\" means and why it's growing.",
   },
   {
     slug: "why-do-communities-oppose-data-centers",
-    title: "Why Do Communities Oppose Data Centers?",
+    title: "Why do communities oppose data centers?",
     dek: "Noise, water use, land, and grid strain — the recurring reasons local communities push back on proposed data center projects.",
   },
 ];

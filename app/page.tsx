@@ -157,7 +157,7 @@ export default async function HomePage() {
           {/* Subhead — text-foreground/85 (not text-muted-foreground): needs
               to stay legible against the map showing through the scrim. */}
           <p className="text-base text-foreground/85 leading-relaxed max-w-2xl">
-            Public data on data centers is everywhere and nowhere — split across hundreds of local permits, tax abatements, water filings, and interconnection queues. Compute Atlas unifies it into a single open, source-cited map. Community-built, fully transparent, and continuously updated.
+            Public data on data centers is everywhere and nowhere — split across hundreds of local permits, tax abatements, water filings, and interconnection queues. Compute Atlas unifies it into a single open, source-cited map. Open data, open corrections, and a public source behind every record.
           </p>
 
           {/* Gazetteer search — the first next step for a first-time

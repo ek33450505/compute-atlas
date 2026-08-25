@@ -8,13 +8,13 @@
 [![code: MIT](https://img.shields.io/badge/code-MIT-informational?style=flat)](LICENSE)
 [![data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational?style=flat)](LICENSE-DATA)
 
-An open, source-cited dataset of data centers across the United States — from proposed and permitted to under construction and operational — with a public source behind every record.
+An open, source-cited dataset of data centers, crypto-mining sites, and dedicated power generation across the United States — from proposed and permitted to under construction and operational — with a public source behind every record.
 
 **Live site → [www.compute-atlas.com](https://www.compute-atlas.com)**
 
 ## What it is
 
-There is no national registry of data centers. "Data center" spans a wide range of facility types — Compute Atlas curates a provenance-first dataset covering traditional and hyperscale compute, AI/ML-specific campuses, and crypto-mining operations, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries a confidence level and links its sources.
+There is no national registry of data centers. "Data center" spans a wide range of facility types — Compute Atlas curates a provenance-first dataset covering traditional and hyperscale compute, AI/ML-specific campuses, crypto-mining operations, and the dedicated power generation built or contracted to supply these campuses, drawn from public permit filings, utility interconnection queues, company announcements, and subsidy disclosures. Every record carries a confidence level and links its sources.
 
 The project also tracks the civic footprint of these facilities — energy, water, subsidies, jobs, and community impact — because that information is public but scattered across county records, water-authority applications, and local reporting, and assembling it is genuinely hard. That's the gap the atlas tries to close.
 
@@ -22,7 +22,7 @@ Intended audience: journalists, researchers, local officials, and residents.
 
 ## The numbers
 
-The live facility and state counts are shown in the badges above (read live from the public **[`/api/stats`](https://www.compute-atlas.com/api/stats)** endpoint, so they never drift). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the live **[Statistics page](https://www.compute-atlas.com/stats)**, or read the raw data in [`data/facilities.json`](data/facilities.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
+The live facility and state counts are shown in the badges above (read live from the public **[`/api/stats`](https://www.compute-atlas.com/api/stats)** endpoint, so they never drift). For the full, always-current breakdown — status, states, operators, capacity, and reported water use — see the live **[Statistics page](https://www.compute-atlas.com/stats)**, or read the raw data in [`data/facilities.json`](data/facilities.json). That snapshot lags the live site: it is regenerated once per data wave, and its `asOf` timestamp is recorded in [`data/facilities.meta.json`](data/facilities.meta.json). Figures are intentionally not hardcoded in this README so they never drift from the data.
 
 ## How the data is built
 
@@ -52,39 +52,23 @@ Candidates from the scheduled discovery pipeline are checked before they are sta
 
 ## API
 
-Compute Atlas exposes a public JSON API for programmatic access to the dataset. Full API documentation is available at [`/api`](https://www.compute-atlas.com/api) on the live site.
+Compute Atlas exposes a public, CORS-open JSON API — no authentication, rate-limited by IP, CDN-cached, and served with `X-License: CC-BY-4.0` attribution headers. The read endpoints are `GET /api/facilities`, `/api/facilities/{id}`, `/api/search`, `/api/stats`, and `/api/schema`. Writes are moderated: `POST /api/contribute` stages a candidate facility for human review, `POST /api/leads` submits a URL tip-off, and the submission-management endpoints require an admin bearer token.
 
-**Public read endpoints** (CORS-open, no auth required):
-
-- `GET /api/facilities` — List all facilities, optionally filtered by `?state`, `?type`, `?operator`, `?status`, or `?q` (free-text search). Returns `{ count, facilities }`.
-- `GET /api/facilities/{id}` — Fetch a single facility by ID.
-- `GET /api/search` — Full-text search over facility names and operators. Takes `?q` query parameter (max 200 chars). Returns `{ count, facilities, query }`.
-- `GET /api/stats` — Aggregate dataset figures: total facility count, number of states, and operational / planned / under-construction capacity (MW).
-- `GET /api/schema` — JSON Schema export of the facility data model (derived from Zod schema).
-
-**Public write endpoints** (CORS-open, no auth required, `5/hour` per IP):
-
-- `POST /api/contribute` — Submit a candidate facility for human review. Hard-pins `status=pending`.
-- `POST /api/leads` — Submit a URL reference for a facility update.
-
-**Rate limiting and caching:** Read endpoints allow up to 60 requests per minute per IP; write endpoints allow 5 requests per hour. Over the limit, a request returns `429 Too Many Requests` with a `Retry-After` header. This is a per-instance best-effort limit, not a hard global cap: bucket state resets on cold start and is not shared across serverless instances/regions. Responses are CDN-cached and carry `Cache-Control` headers; repeat reads are edge-served. All public responses include attribution headers: `X-License: CC-BY-4.0`, `Link: <https://creativecommons.org/licenses/by/4.0/>; rel="license"`, and `X-API-Version: 1`.
-
-**Admin-only submission endpoints** (require `Authorization: Bearer <API_ADMIN_TOKEN>` header):
-
-- `GET /api/submissions` — List staged submissions (optionally filter by `?status`).
-- `POST /api/submissions` — Stage a new submission (create or update candidate).
-
-The submission flow is human-gated: new candidates are staged, reviewed, and approved before merging into the live dataset. This ensures accuracy over volume.
+Full contract — parameters, response shapes, rate limits, and examples — is documented at [`/api`](https://www.compute-atlas.com/api) on the live site.
 
 ## Data & database
 
 Compute Atlas data is backed by **Neon Postgres** (via **Drizzle ORM**). The authoritative source is the database; the published `data/facilities.json` is a read-only **CC-BY snapshot** exported from the DB and remains the forkable artifact for users.
 
-**Data flow discipline:**
-- **File → DB:** `npm run db:seed` loads initial data from `data/facilities.json` into Postgres.
-- **DB → File:** `npm run db:export` generates a fresh `data/facilities.json` snapshot from the live database (used before each release).
+**Data flow discipline.** `data/facilities.json` is a generated artifact — it is never hand-edited to publish a change. Every data wave runs in one direction, DB first:
 
-This one-directional flow prevents divergence between the source of truth (DB) and the published export.
+1. `npm run db:sync` — dry run by default; prints the plan of adds and updates for review.
+2. `npm run db:sync -- --apply` — publishes adds and updates, writes `facility_history`, and busts the affected cache tags.
+3. `npm run db:export` — regenerates `data/facilities.json` from the live database.
+4. `npm run build:mapdata` — regenerates the static map overlays and per-facility siting context.
+5. Commit the regenerated files.
+
+`npm run db:seed` is bootstrap-only, for filling an empty database from the JSON; its `--force` variant writes no history and busts no cache tags, so it is not a publish path.
 
 ## Releases and versioning
 
@@ -94,9 +78,11 @@ Compute Atlas follows [Semantic Versioning](https://semver.org). Releases are pu
 
 - `npm run db:generate` — Generate Drizzle schema migrations.
 - `npm run db:migrate` — Run pending migrations against the database.
-- `npm run db:push` — Sync schema to the database (dev shortcut; use `migrate` for production).
-- `npm run db:seed` — Populate the database from `data/facilities.json`.
+- `npm run db:sync` — Diff `data/facilities.json` against the database and print the plan; `-- --apply` publishes it.
 - `npm run db:export` — Write the live database to `data/facilities.json`.
+- `npm run build:mapdata` — Rebuild the static map overlays and siting context from public sources.
+- `npm run check:drift` — Read-only report of any drift between the JSON snapshot and the database.
+- `npm run db:seed` — Bootstrap-only: populate an empty database from `data/facilities.json`.
 
 Required environment variables (see `.env.example`):
 
@@ -111,11 +97,12 @@ Key fields per facility:
 
 | Field | Description |
 |---|---|
+| `facilityType` | The discriminator: `data_center` / `crypto_mining` / `power_generation` |
 | `id` | Lowercase kebab slug (e.g. `xai-colossus-memphis-tn`) |
 | `name` | Facility name |
 | `operator` | Operating company |
 | `status` | `proposed` / `permitted` / `under_construction` / `operational` / `cancelled` |
-| `aiClassification` | `confirmed` / `likely` / `mixed_use` |
+| `aiClassification` | `confirmed` / `likely` / `mixed_use` (data-center and crypto-mining records only) |
 | `confidence` | `confirmed` / `reported` / `rumored` |
 | `location` | `lat`, `lon`, `city?`, `county?`, `state` (2-letter) |
 | `capacityMw` | `planned?` and/or `operational?` in megawatts |
@@ -123,11 +110,13 @@ Key fields per facility:
 | `sources` | At least one source with `url`, `label`, `kind`, and `retrievedAt` |
 | `lastUpdated` | ISO date string (YYYY or YYYY-MM or YYYY-MM-DD) |
 
+Plus type-specific blocks (`mining`, `generation`, `environmental`) and civic fields (`energy`, `water`, `subsidies`, `jobs`, `community`) — see `lib/schema.ts`.
+
 ## Contributing and corrections
 
 Contributions and corrections are welcome — every submission needs a public source URL. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for how to propose a new facility or a correction, and the standard the data is held to. Participation is governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-**New to the project?** Start with the [good first issues](https://github.com/ek33450505/compute-atlas/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) or the [New Facility form](https://github.com/ek33450505/compute-atlas/issues/new/choose) to add a facility you know about — no code required. Questions or ideas? Post in [Discussions](https://github.com/ek33450505/compute-atlas/discussions). Security concerns should be reported privately; see [SECURITY.md](SECURITY.md).
+**New to the project?** Use the [New Facility form](https://github.com/ek33450505/compute-atlas/issues/new/choose) to add a facility you know about — no code required. Questions or ideas? Post in [Discussions](https://github.com/ek33450505/compute-atlas/discussions). Security concerns should be reported privately; see [SECURITY.md](SECURITY.md).
 
 ## Tech stack
 
@@ -136,7 +125,7 @@ Contributions and corrections are welcome — every submission needs a public so
 - **TypeScript** + **Zod** for runtime-validated data and JSON Schema export
 - **MapLibre GL** + **react-map-gl** for the interactive map
 - **Tailwind CSS v4** + **shadcn/ui** components
-- **Vitest** + **React Testing Library** for a comprehensive unit-test suite
+- **Vitest** + **React Testing Library** for the unit-test suite
 - **Playwright** for end-to-end tests
 - **Ollama** (local models, maintainer's machine only) for source verification in the discovery pipeline — not part of the deployed app
 
@@ -147,12 +136,12 @@ npm install
 npm run dev        # start dev server at http://localhost:3000
 npm run test       # run unit tests (Vitest)
 npm run test:e2e   # run E2E tests (Playwright — requires npm run build first)
-npm run build      # production build (validates all records against the schema)
+npm run build      # production build
 npm run lint       # ESLint
 npm run typecheck  # TypeScript type check
 ```
 
-The build fails loudly if any facility record is missing a required field or violates the schema, so a green build is also a data-integrity check.
+Data integrity is checked by the test suite, not the build: `lib/data-integrity.test.ts` validates every record against the Zod schema in `lib/schema.ts`, so `npm test` fails loudly on a missing required field or a malformed record. CI runs it on every pull request. Note it reads whatever `lib/data.ts` resolves to — run it *without* `DATABASE_URL` set to validate the `data/facilities.json` snapshot rather than Neon.
 
 ## Accessibility
 
@@ -177,4 +166,4 @@ Compute Atlas is an independent project by **Edward Kubiak**.
 
 Suggested citation:
 
-> Data center data from Compute Atlas by Edward Kubiak, licensed under CC BY 4.0 — https://github.com/ek33450505/compute-atlas
+> Compute-infrastructure data from Compute Atlas by Edward Kubiak, licensed under CC BY 4.0 — https://github.com/ek33450505/compute-atlas

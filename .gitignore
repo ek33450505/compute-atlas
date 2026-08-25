@@ -47,7 +47,6 @@ next-env.d.ts
 # internal planning notes — kept local, not part of the public repo
 /docs/NEXT-SESSION.md
 /docs/ROADMAP.md
-/docs/phase3-audit-report.md
 /docs/session-archive-*.md
 /docs/track-c-candidate-ledger.md
 /docs/seo-promotion-checklist.md
@@ -57,8 +56,5 @@ next-env.d.ts
 
 # discovery pipeline run logs / candidate dumps — local only
 /discovery-logs/
+# leftover local logs from the removed seo-runner
 /seo-runner-logs/
-
-# python bytecode (scripts/seo-runner/state.py — the repo's only Python)
-__pycache__/
-*.pyc
