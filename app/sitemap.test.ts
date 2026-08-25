@@ -87,8 +87,8 @@ describe("sitemap", () => {
     expect(metroRoutes).toHaveLength(METROS.length + 1);
   });
 
-  it("learn routes include /learn and all 5 /learn/:slug routes, derived from GLOSSARY_TOPICS", () => {
-    const learnRoutes = buildLearnRoutes();
+  it("learn routes include /learn and all 5 /learn/:slug routes, derived from GLOSSARY_TOPICS", async () => {
+    const learnRoutes = await buildLearnRoutes();
     const urls = learnRoutes.map((r) => r.url);
     expect(urls).toContain(`${siteConfig.url}/learn`);
     for (const topic of GLOSSARY_TOPICS) {
@@ -96,6 +96,22 @@ describe("sitemap", () => {
     }
     // 1 index + 5 per-topic entries, no duplicates.
     expect(learnRoutes).toHaveLength(GLOSSARY_TOPICS.length + 1);
+  });
+
+  it("learn route lastModified is derived from the dataset, not 'new Date()' now", async () => {
+    const testStart = Date.now();
+    const learnRoutes = await buildLearnRoutes();
+    const facilities = await getAllFacilities();
+    const expectedMax = Math.max(...facilities.map((f) => new Date(f.lastUpdated).getTime()));
+
+    for (const entry of learnRoutes) {
+      const actual = entry.lastModified as Date;
+      expect(actual.getTime()).toBe(expectedMax);
+      // Proves the value is real dataset data, not build-time "now" — these
+      // pages interpolate live figures, so a churning lastmod was wrong twice
+      // over: it lied about freshness AND re-stamped on every hourly regen.
+      expect(actual.getTime()).toBeLessThan(testStart);
+    }
   });
 
   it("state hub lastModified is derived from the state's facilities, not 'new Date()' now", async () => {
