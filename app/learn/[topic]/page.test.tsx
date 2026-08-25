@@ -208,11 +208,8 @@ function makeFacility(overrides: Partial<DataCenterFacility> = {}): DataCenterFa
   };
 }
 
-describe("LearnTopicPage explainer wiring (why-do-communities-oppose-data-centers)", () => {
+describe("LearnTopicPage explainer wiring", () => {
   const EXPLAINER_TOPIC = getGlossaryTopicBySlug("why-do-communities-oppose-data-centers")!;
-  const OTHER_TOPICS = GLOSSARY_TOPICS.filter(
-    (t) => t.slug !== "why-do-communities-oppose-data-centers"
-  );
 
   it("renders the cited explainer's lede, sections, and a resolved exemplar", async () => {
     const facility = makeFacility();
@@ -249,16 +246,52 @@ describe("LearnTopicPage explainer wiring (why-do-communities-oppose-data-center
     expect([...requestedIds].sort()).toEqual([...expectedIds].sort());
   });
 
-  it.each(OTHER_TOPICS)(
-    "$slug renders with no cited explainer (regression guard)",
+  // Every topic now carries a cited explainer. This replaces the earlier guard
+  // that asserted the other four had none — inverted rather than deleted, so the
+  // wiring stays pinned for all five rather than only the first one shipped.
+  it.each(GLOSSARY_TOPICS)(
+    "$slug renders its cited explainer's lede and sources",
     async ({ slug }) => {
+      const topic = getGlossaryTopicBySlug(slug)!;
+      expect(topic.explainer).toBeDefined();
+
       const page = await LearnTopicPage({ params: Promise.resolve({ topic: slug }) });
       render(page);
 
+      expect(screen.getByText(topic.explainer!.lede)).toBeInTheDocument();
       expect(
-        screen.queryByRole("heading", { level: 2, name: "Sources" })
-      ).not.toBeInTheDocument();
-      expect(mockGetFacilitiesByIds).not.toHaveBeenCalled();
+        screen.getByRole("heading", { level: 2, name: "Sources" })
+      ).toBeInTheDocument();
+
+      for (const section of topic.explainer!.sections) {
+        expect(
+          screen.getByRole("heading", { level: 2, name: section.heading })
+        ).toBeInTheDocument();
+      }
+    }
+  );
+
+  // The exemplar fetch is batched: one call when the topic names any exemplarIds,
+  // and no call at all when it names none (page.tsx skips the query entirely).
+  it.each(GLOSSARY_TOPICS)(
+    "$slug fetches exemplars in one batched call, or not at all",
+    async ({ slug }) => {
+      const topic = getGlossaryTopicBySlug(slug)!;
+      const expectedIds = [
+        ...new Set(topic.explainer!.sections.flatMap((s) => s.exemplarIds ?? [])),
+      ];
+
+      const page = await LearnTopicPage({ params: Promise.resolve({ topic: slug }) });
+      render(page);
+
+      if (expectedIds.length === 0) {
+        expect(mockGetFacilitiesByIds).not.toHaveBeenCalled();
+        return;
+      }
+
+      expect(mockGetFacilitiesByIds).toHaveBeenCalledTimes(1);
+      const requestedIds = mockGetFacilitiesByIds.mock.calls[0][0] as string[];
+      expect([...requestedIds].sort()).toEqual([...expectedIds].sort());
     }
   );
 });
