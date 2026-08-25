@@ -10,14 +10,14 @@ import type { Facility } from "@/lib/schema";
 // specifiers — route shared mocks through vi.hoisted() so initialization
 // is hoisted alongside the vi.mock calls themselves. Mirrors
 // app/admin/submissions/submission-list.test.tsx.
-const { mockRefresh, mockToastSuccess, mockToastError, mockDeleteFacilityAction } = vi.hoisted(
-  () => ({
+const { mockRefresh, mockToastSuccess, mockToastWarning, mockToastError, mockDeleteFacilityAction } =
+  vi.hoisted(() => ({
     mockRefresh: vi.fn(),
     mockToastSuccess: vi.fn(),
+    mockToastWarning: vi.fn(),
     mockToastError: vi.fn(),
     mockDeleteFacilityAction: vi.fn(),
-  })
-);
+  }));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: mockRefresh }),
@@ -26,6 +26,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("sonner", () => ({
   toast: {
     success: mockToastSuccess,
+    warning: mockToastWarning,
     error: mockToastError,
   },
 }));
@@ -136,6 +137,7 @@ describe("FacilityAdminTable — delete flow", () => {
   beforeEach(() => {
     mockDeleteFacilityAction.mockClear();
     mockToastSuccess.mockClear();
+    mockToastWarning.mockClear();
     mockToastError.mockClear();
     mockRefresh.mockClear();
   });
@@ -161,6 +163,27 @@ describe("FacilityAdminTable — delete flow", () => {
 
     await waitFor(() => expect(mockDeleteFacilityAction).toHaveBeenCalledWith("test-facility"));
     await waitFor(() => expect(mockToastSuccess).toHaveBeenCalled());
+    expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  // Regression coverage for lib/facility-write.ts's recordFacilityHistory:
+  // the facility write can succeed while its facility_history audit row
+  // fails to insert. That must still refresh (the delete itself succeeded)
+  // but warn instead of silently celebrating a clean success.
+  it("shows a warning toast (not success) when deleted but the audit row failed to record", async () => {
+    mockDeleteFacilityAction.mockResolvedValue({
+      ok: true,
+      facility: makeFacility(),
+      historyRecorded: false,
+    });
+    const user = userEvent.setup();
+    render(<FacilityAdminTable facilities={[makeFacility()]} />);
+
+    await user.click(screen.getByRole("button", { name: "Delete Test Facility" }));
+    await user.click(screen.getByRole("button", { name: "Delete facility" }));
+
+    await waitFor(() => expect(mockToastWarning).toHaveBeenCalled());
+    expect(mockToastSuccess).not.toHaveBeenCalled();
     expect(mockRefresh).toHaveBeenCalled();
   });
 
