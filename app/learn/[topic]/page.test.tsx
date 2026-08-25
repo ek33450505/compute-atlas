@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { GLOSSARY_TOPICS, getGlossaryTopicBySlug } from "@/lib/glossary";
+import type { DataCenterFacility } from "@/lib/schema";
 
 // vi.mock calls are hoisted above imports by Vitest. Route the shared mocks
 // through vi.hoisted() so their initialization is hoisted alongside the
@@ -15,6 +16,7 @@ const {
   mockGetAiClassificationCounts,
   mockGetGenerationStats,
   mockGetCommunityReceptionCounts,
+  mockGetFacilitiesByIds,
 } = vi.hoisted(() => ({
   mockGetWaterUsage: vi.fn(),
   mockGetCoolingTypeCounts: vi.fn(),
@@ -24,6 +26,7 @@ const {
   mockGetAiClassificationCounts: vi.fn(),
   mockGetGenerationStats: vi.fn(),
   mockGetCommunityReceptionCounts: vi.fn(),
+  mockGetFacilitiesByIds: vi.fn(),
 }));
 
 vi.mock("@/lib/data", () => ({
@@ -35,6 +38,7 @@ vi.mock("@/lib/data", () => ({
   getAiClassificationCounts: mockGetAiClassificationCounts,
   getGenerationStats: mockGetGenerationStats,
   getCommunityReceptionCounts: mockGetCommunityReceptionCounts,
+  getFacilitiesByIds: mockGetFacilitiesByIds,
 }));
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency in jsdom
@@ -112,6 +116,7 @@ beforeEach(() => {
     offtakerCount: 0,
   });
   mockGetCommunityReceptionCounts.mockReset().mockResolvedValue(EMPTY_RECEPTION_COUNTS);
+  mockGetFacilitiesByIds.mockReset().mockResolvedValue([]);
 });
 
 describe("LearnTopicPage", () => {
@@ -176,6 +181,86 @@ describe("LearnTopicPage", () => {
 
     expect(mockGetWaterUsage).not.toHaveBeenCalled();
   });
+});
+
+/** Minimal data-center Facility stub, mirroring components/facility/civic-impact.test.tsx's makeFacility. */
+function makeFacility(overrides: Partial<DataCenterFacility> = {}): DataCenterFacility {
+  return {
+    id: "arizona-land-consulting-hassayampa-ranch-tonopah-az",
+    name: "Arizona Land Consulting — Hassayampa Ranch",
+    operator: "Arizona Land Consulting",
+    status: "proposed",
+    facilityType: "data_center",
+    aiClassification: "likely",
+    confidence: "reported",
+    location: { lat: 33.5, lon: -112.9, city: "Tonopah", state: "AZ", precision: "exact" },
+    statusHistory: [],
+    sources: [
+      {
+        url: "https://example.com/source",
+        label: "Test source",
+        retrievedAt: "2024-01-01",
+        kind: "press",
+      },
+    ],
+    lastUpdated: "2024-06-01",
+    ...overrides,
+  };
+}
+
+describe("LearnTopicPage explainer wiring (why-do-communities-oppose-data-centers)", () => {
+  const EXPLAINER_TOPIC = getGlossaryTopicBySlug("why-do-communities-oppose-data-centers")!;
+  const OTHER_TOPICS = GLOSSARY_TOPICS.filter(
+    (t) => t.slug !== "why-do-communities-oppose-data-centers"
+  );
+
+  it("renders the cited explainer's lede, sections, and a resolved exemplar", async () => {
+    const facility = makeFacility();
+    mockGetFacilitiesByIds.mockResolvedValue([facility]);
+
+    const page = await LearnTopicPage({
+      params: Promise.resolve({ topic: EXPLAINER_TOPIC.slug }),
+    });
+    render(page);
+
+    expect(screen.getByText(EXPLAINER_TOPIC.explainer!.lede)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Sources" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: facility.name })).toHaveAttribute(
+      "href",
+      `/facilities/${facility.id}`
+    );
+  });
+
+  it("collects every section's exemplarIds into exactly one deduped getFacilitiesByIds call", async () => {
+    const page = await LearnTopicPage({
+      params: Promise.resolve({ topic: EXPLAINER_TOPIC.slug }),
+    });
+    render(page);
+
+    expect(mockGetFacilitiesByIds).toHaveBeenCalledTimes(1);
+    const requestedIds = mockGetFacilitiesByIds.mock.calls[0][0] as string[];
+    const expectedIds = [
+      ...new Set(
+        EXPLAINER_TOPIC.explainer!.sections.flatMap((s) => s.exemplarIds ?? [])
+      ),
+    ];
+    expect([...requestedIds].sort()).toEqual([...expectedIds].sort());
+  });
+
+  it.each(OTHER_TOPICS)(
+    "$slug renders with no cited explainer (regression guard)",
+    async ({ slug }) => {
+      const page = await LearnTopicPage({ params: Promise.resolve({ topic: slug }) });
+      render(page);
+
+      expect(
+        screen.queryByRole("heading", { level: 2, name: "Sources" })
+      ).not.toBeInTheDocument();
+      expect(mockGetFacilitiesByIds).not.toHaveBeenCalled();
+    }
+  );
 });
 
 describe("generateMetadata (learn topic)", () => {

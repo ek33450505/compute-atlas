@@ -12,11 +12,13 @@ import {
   getAiClassificationCounts,
   getGenerationStats,
   getCommunityReceptionCounts,
+  getFacilitiesByIds,
   type EnergySource,
   type CoolingType,
 } from "@/lib/data";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { Explainer } from "@/components/learn/explainer";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -245,6 +247,16 @@ export default async function LearnTopicPage({
     notFound();
   }
 
+  // Exemplar facilities for the cited explainer's sections (if this topic has
+  // one) — one getFacilitiesByIds call for every section's exemplarIds
+  // combined, never a call per section or per id.
+  const exemplarIds = topic.explainer
+    ? [...new Set(topic.explainer.sections.flatMap((s) => s.exemplarIds ?? []))]
+    : [];
+  const exemplarFacilities =
+    exemplarIds.length > 0 ? await getFacilitiesByIds(exemplarIds) : [];
+  const exemplars = new Map(exemplarFacilities.map((f) => [f.id, f]));
+
   const crumbs = [
     { label: "Explore", href: "/explore" },
     { label: "Learn", href: "/learn" },
@@ -280,6 +292,13 @@ export default async function LearnTopicPage({
         <p className="max-w-2xl text-base text-muted-foreground">{topic.dek}</p>
         <div className="border-t border-border" />
       </header>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Cited explainer (editor-approved prose; only some topics have one)  */}
+      {/* ------------------------------------------------------------------ */}
+      {topic.explainer && (
+        <Explainer explainer={topic.explainer} exemplars={exemplars} />
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* Explainer (dataset-grounded, no fabricated figures)                 */}
