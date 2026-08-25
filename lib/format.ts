@@ -1,5 +1,5 @@
 import { STATUS_META, type Status } from "@/lib/status";
-import { aiClassificationEnum, type Facility } from "@/lib/schema";
+import type { Facility } from "@/lib/schema";
 
 /**
  * Returns the maximum of operational/planned capacity in MW, or undefined if
@@ -140,15 +140,10 @@ export const AI_CLASSIFICATION_LABELS: Record<string, string> = {
  * contexts where the page already establishes the AI framing (/ai, /stats,
  * /states/[state], the admin form). Per-facility contexts use
  * {@link AI_CLASSIFICATION_LABELS} above, which is self-describing ("AI-specific").
+ * Derived from `AI_CLASSIFICATION_ENTRIES` in `lib/ai-classification.ts` — re-exported
+ * here so existing imports from `@/lib/format` keep working unchanged.
  */
-export const AI_CLASSIFICATION_CONFIDENCE_LABELS: Record<
-  (typeof aiClassificationEnum.options)[number],
-  string
-> = {
-  confirmed: "Confirmed",
-  likely: "Likely",
-  mixed_use: "Mixed use",
-};
+export { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/ai-classification";
 
 /** Human-readable labels for the confidence enum. */
 export const CONFIDENCE_LABELS: Record<string, string> = {

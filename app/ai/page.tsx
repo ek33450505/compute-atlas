@@ -9,6 +9,7 @@ import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
+import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { aiClassificationEnum } from "@/lib/schema";
 
 export const revalidate = 3600;
@@ -114,28 +115,12 @@ export default async function AiPage() {
               {stateRows.length === 1 ? "state" : "states"}.
             </p>
             <dl className="space-y-3 text-sm">
-              <div>
-                <dt className="font-medium text-foreground">Confirmed</dt>
-                <dd className="text-muted-foreground">
-                  The operator or a credible primary source explicitly
-                  describes the facility as an AI or GPU cluster.
-                </dd>
-              </div>
-              <div>
-                <dt className="font-medium text-foreground">Likely</dt>
-                <dd className="text-muted-foreground">
-                  The facility exhibits strong indicators — hyperscale GPU
-                  procurement, AI-specific power agreements — but has not been
-                  explicitly confirmed as AI-primary.
-                </dd>
-              </div>
-              <div>
-                <dt className="font-medium text-foreground">Mixed use</dt>
-                <dd className="text-muted-foreground">
-                  A multi-purpose campus where AI workloads are a known
-                  component but not necessarily the primary or exclusive use.
-                </dd>
-              </div>
+              {AI_CLASSIFICATION_ENTRIES.map((entry) => (
+                <div key={entry.key}>
+                  <dt className="font-medium text-foreground">{entry.label}</dt>
+                  <dd className="text-muted-foreground">{entry.description}</dd>
+                </div>
+              ))}
             </dl>
             <p className="text-base leading-relaxed text-muted-foreground">
               Not every data center has a classification — general-purpose

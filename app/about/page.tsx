@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
 import { getStats } from "@/lib/data";
+import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
@@ -206,28 +207,12 @@ export default async function AboutPage() {
           itself meaningful information, not a gap in the data:
         </p>
         <dl className="space-y-3 text-sm">
-          <div>
-            <dt className="font-medium text-foreground">Confirmed</dt>
-            <dd className="text-muted-foreground">
-              The operator or a credible primary source explicitly describes the
-              facility as an AI or GPU cluster (e.g., xAI Colossus).
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Likely</dt>
-            <dd className="text-muted-foreground">
-              The facility exhibits strong indicators (e.g., hyperscale GPU
-              procurement, AI-specific power agreements) but has not been
-              explicitly confirmed as AI-primary.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Mixed use</dt>
-            <dd className="text-muted-foreground">
-              A multi-purpose campus where AI workloads are a known component
-              but not necessarily the primary or exclusive use.
-            </dd>
-          </div>
+          {AI_CLASSIFICATION_ENTRIES.map((entry) => (
+            <div key={entry.key}>
+              <dt className="font-medium text-foreground">{entry.label}</dt>
+              <dd className="text-muted-foreground">{entry.description}</dd>
+            </div>
+          ))}
         </dl>
       </section>
 
