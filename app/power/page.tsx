@@ -11,7 +11,7 @@ import {
   type EnergySource,
   type CoolingType,
 } from "@/lib/data";
-import { formatCapacity, formatLocation, getFacilityMaxMw } from "@/lib/format";
+import { formatCapacity, formatLocation, formatMgd, formatPower, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import type { PowerGenerationFacility } from "@/lib/schema";
@@ -24,22 +24,9 @@ import {
 
 export const revalidate = 3600;
 
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small totals. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
-
 /** Returns a label + facility-count row for the technology in the same tech + location line used elsewhere. */
 function technologyLabel(f: PowerGenerationFacility): string {
   return getGenerationTechnologyLabel(f.generation?.technology);
-}
-
-/** Formats a reported daily water figure as MGD (1 decimal), e.g. "12.5 MGD". */
-function formatMgd(mgd: number): string {
-  return `${mgd.toFixed(1)} MGD`;
 }
 
 /** Display order + labels for `energy.source` — mirrors the § Energy section on /stats. */

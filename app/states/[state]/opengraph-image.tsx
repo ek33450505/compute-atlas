@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { siteConfig } from "@/lib/site";
 import { getStateSummaryCached } from "@/lib/data";
+import { formatPower } from "@/lib/format";
 import { stateNameFromCode, stateCodeFromSlug } from "@/lib/us-states";
 
 // Render on demand and cache for a day — do NOT add generateStaticParams here.
@@ -27,18 +28,6 @@ export const contentType = "image/png";
 
 // Fraunces-72pt-SemiBold.ttf is vendored in public/fonts/ — loaded via
 // readFileSync below, same as app/opengraph-image.tsx.
-
-/**
- * Formats a MW figure as GW (1 decimal) above 1000, else whole MW.
- * Mirrors the local `formatPower` helper in app/states/[state]/page.tsx
- * (not exported there, so duplicated here rather than imported).
- */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 /** Small graticule wordmark, reused at two sizes (fallback card vs. footer). */
 function AtlasMark({ dim }: { dim: number }) {

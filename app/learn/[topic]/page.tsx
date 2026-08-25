@@ -16,25 +16,13 @@ import {
   type EnergySource,
   type CoolingType,
 } from "@/lib/data";
+import { formatMgd, formatPower } from "@/lib/format";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Explainer } from "@/components/learn/explainer";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Mirrors app/power/page.tsx's formatPower. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
-
-/** Formats a reported daily water figure as MGD (1 decimal). Mirrors app/power/page.tsx's formatMgd. */
-function formatMgd(mgd: number): string {
-  return `${mgd.toFixed(1)} MGD`;
-}
 
 /** Display order + labels for `energy.source` — mirrors app/power/page.tsx's ENERGY_SOURCE_ENTRIES. */
 const ENERGY_SOURCE_ENTRIES: { key: EnergySource; label: string }[] = [

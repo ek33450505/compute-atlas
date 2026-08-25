@@ -10,7 +10,7 @@ import {
   type OperatorCapacityRanking,
   type StateCapacityRanking,
 } from "@/lib/data";
-import { formatCapacity, formatLocation } from "@/lib/format";
+import { formatCapacity, formatLocation, formatPower } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
@@ -18,14 +18,6 @@ import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small totals. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 /** A state capacity ranking row enriched with display name + route slug. */
 type StateRow = StateCapacityRanking & { name: string; slug: string | undefined };

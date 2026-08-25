@@ -2,21 +2,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getCryptoMiningFacilities, getCryptoMiningStats } from "@/lib/data";
-import { formatCapacity, formatLocation, getFacilityMaxMw } from "@/lib/format";
+import { formatCapacity, formatLocation, formatPower, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small totals. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 const CRUMBS = [{ label: "Explore", href: "/explore" }, { label: "Crypto" }];
 

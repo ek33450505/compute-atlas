@@ -16,21 +16,13 @@ import {
 } from "@/lib/us-states";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
-import { formatCapacity, formatLocation, AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
+import { formatCapacity, formatLocation, formatPower, AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { WatchButton } from "@/components/subscribe/watch-button";
 import { aiClassificationEnum } from "@/lib/schema";
 
 export const revalidate = false;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small states. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 export async function generateStaticParams() {
   const codes = await getStates();

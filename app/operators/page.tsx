@@ -2,19 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getOperators, getOperatorSummary, getAllFacilities, operatorSlug } from "@/lib/data";
+import { formatPower } from "@/lib/format";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Avoids "0.0 GW" for small operators. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 export const metadata: Metadata = {
   title: "Data centers by operator",

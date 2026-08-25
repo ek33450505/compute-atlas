@@ -2,19 +2,12 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { getFacilitiesByStatus } from "@/lib/data";
+import { formatPower } from "@/lib/format";
 import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
 import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
 
 export const revalidate = 3600;
-
-/** Formats a MW figure as GW (1 decimal) above 1000, else whole MW. Mirrors app/states/[state]/page.tsx's formatPower. */
-function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
-  }
-  return `${Math.round(mw)} MW`;
-}
 
 /**
  * The capacity figure shown in each status page's stat row: operational

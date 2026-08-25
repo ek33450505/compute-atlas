@@ -5,6 +5,8 @@ import {
   formatLocation,
   formatStatusLabel,
   formatUsdCompact,
+  formatPower,
+  formatMgd,
 } from "./format";
 import type { DataCenterFacility } from "@/lib/schema";
 
@@ -156,5 +158,39 @@ describe("formatStatusLabel", () => {
 
   it("returns 'Cancelled' for cancelled", () => {
     expect(formatStatusLabel("cancelled")).toBe("Cancelled");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatPower
+// ---------------------------------------------------------------------------
+describe("formatPower", () => {
+  it("formats below the GW threshold as whole MW", () => {
+    expect(formatPower(999)).toBe("999 MW");
+  });
+
+  it("formats at the GW threshold as 1.0 GW", () => {
+    expect(formatPower(1000)).toBe("1.0 GW");
+  });
+
+  it("formats above the GW threshold as GW with one decimal", () => {
+    expect(formatPower(2500)).toBe("2.5 GW");
+  });
+
+  it("rounds a fractional MW value below the threshold", () => {
+    expect(formatPower(12.4)).toBe("12 MW");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatMgd
+// ---------------------------------------------------------------------------
+describe("formatMgd", () => {
+  it("formats a fractional MGD value with one decimal", () => {
+    expect(formatMgd(3.25)).toBe("3.3 MGD");
+  });
+
+  it("formats a whole MGD value with a trailing .0", () => {
+    expect(formatMgd(10)).toBe("10.0 MGD");
   });
 });
