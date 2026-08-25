@@ -14,6 +14,7 @@ import { formatCapacity, formatLocation, formatPower } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -130,40 +131,14 @@ export default async function RankingsPage() {
           {/* ------------------------------------------------------------------ */}
           {/* Survey stats row                                                    */}
           {/* ------------------------------------------------------------------ */}
-          <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {stats.count}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Facilities
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {stats.states}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                States
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {formatPower(stats.operationalMw)}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Operational
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {formatPower(stats.plannedMw)}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Pipeline
-              </span>
-            </div>
-          </div>
+          <SurveyStatRow
+            stats={[
+              { value: stats.count, label: "Facilities" },
+              { value: stats.states, label: "States" },
+              { value: formatPower(stats.operationalMw), label: "Operational" },
+              { value: formatPower(stats.plannedMw), label: "Pipeline" },
+            ]}
+          />
 
           {/* ------------------------------------------------------------------ */}
           {/* § Biggest projects                                                  */}

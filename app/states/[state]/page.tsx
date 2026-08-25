@@ -20,6 +20,7 @@ import { formatCapacity, formatLocation, formatPower, AI_CLASSIFICATION_CONFIDEN
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { WatchButton } from "@/components/subscribe/watch-button";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { aiClassificationEnum } from "@/lib/schema";
 
 export const revalidate = false;
@@ -173,40 +174,17 @@ export default async function StatePage({
       {/* ------------------------------------------------------------------ */}
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {summary.count}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Sites
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(summary.operationalMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Operational
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(summary.plannedMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Planned pipeline
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {formatPower(summary.underConstructionMw)}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Under construction
-          </span>
-        </div>
-      </div>
+      <SurveyStatRow
+        stats={[
+          { value: summary.count, label: "Sites" },
+          { value: formatPower(summary.operationalMw), label: "Operational" },
+          { value: formatPower(summary.plannedMw), label: "Planned pipeline" },
+          {
+            value: formatPower(summary.underConstructionMw),
+            label: "Under construction",
+          },
+        ]}
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* § By type                                                           */}

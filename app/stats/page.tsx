@@ -24,6 +24,7 @@ import type { Facility } from "@/lib/schema";
 import { aiClassificationEnum } from "@/lib/schema";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS, getFacilityMaxMw } from "@/lib/format";
 
 export const revalidate = 3600;
@@ -144,48 +145,24 @@ export default async function StatsPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {total.toLocaleString("en-US")}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Sites tracked
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {stats.states}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            States covered
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {(stats.operationalMw / 1000).toFixed(1)} GW
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Operational
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {(stats.plannedMw / 1000).toFixed(0)} GW
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Planned pipeline
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {(stats.underConstructionMw / 1000).toFixed(0)} GW
-          </span>
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Under construction
-          </span>
-        </div>
-      </div>
+      <SurveyStatRow
+        stats={[
+          { value: total.toLocaleString("en-US"), label: "Sites tracked" },
+          { value: stats.states, label: "States covered" },
+          {
+            value: `${(stats.operationalMw / 1000).toFixed(1)} GW`,
+            label: "Operational",
+          },
+          {
+            value: `${(stats.plannedMw / 1000).toFixed(0)} GW`,
+            label: "Planned pipeline",
+          },
+          {
+            value: `${(stats.underConstructionMw / 1000).toFixed(0)} GW`,
+            label: "Under construction",
+          },
+        ]}
+      />
 
       <p className="text-sm leading-relaxed text-muted-foreground">
         Capacity is disclosed for {disclosedCapacityCount.toLocaleString("en-US")}{" "}

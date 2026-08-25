@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getAiClassificationByState, getAiClassificationCounts } from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
@@ -155,40 +156,14 @@ export default async function AiPage() {
           {/* ------------------------------------------------------------------ */}
           {/* Survey stats row                                                    */}
           {/* ------------------------------------------------------------------ */}
-          <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {totalAiClassified}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                AI-classified
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {aiCounts.confirmed}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Confirmed
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {aiCounts.likely}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Likely
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-                {stateRows.length}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                States
-              </span>
-            </div>
-          </div>
+          <SurveyStatRow
+            stats={[
+              { value: totalAiClassified, label: "AI-classified" },
+              { value: aiCounts.confirmed, label: "Confirmed" },
+              { value: aiCounts.likely, label: "Likely" },
+              { value: stateRows.length, label: "States" },
+            ]}
+          />
 
           {/* ------------------------------------------------------------------ */}
           {/* § States                                                            */}

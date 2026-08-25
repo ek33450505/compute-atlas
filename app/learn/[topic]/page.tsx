@@ -20,6 +20,7 @@ import { formatMgd, formatPower } from "@/lib/format";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Explainer } from "@/components/learn/explainer";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -313,21 +314,7 @@ export default async function LearnTopicPage({
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
       <h2 className="sr-only">Key statistics</h2>
-      <div className="flex flex-wrap gap-8 border-b border-border pb-10">
-        {content.stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="flex flex-col items-center gap-1 text-center"
-          >
-            <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-              {stat.value}
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              {stat.label}
-            </span>
-          </div>
-        ))}
-      </div>
+      <SurveyStatRow stats={content.stats} />
 
       {/* ------------------------------------------------------------------ */}
       {/* § Breakdown                                                         */}
