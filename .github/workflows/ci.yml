@@ -33,11 +33,13 @@ jobs:
   quality:
     name: typecheck · lint · test
     runs-on: ubuntu-latest
-    # Map the DATABASE_URL secret to a job-level env var so it can be tested in a
-    # step `if:` condition — the `secrets` context is NOT available in `if:`
-    # expressions. Same pattern as neon-sync.yml.
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    # ⛔ DO NOT put DATABASE_URL in a job-level `env:` here. Doing so exposes it to
+    # EVERY step, including `npm test`, and the vitest suite is self-contained by
+    # design: app/api/facilities/route.test.ts and app/api/stats/route.test.ts
+    # assert against the bundled data/facilities.json snapshot. With a live
+    # DATABASE_URL present they read Neon instead and fail on the count
+    # (`expected 1137 to be 1116` — CI, 2026-08-25). The secret belongs on the one
+    # step that needs it, and nowhere else.
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -64,9 +66,16 @@ jobs:
       # how the approve-on-prod path works, not a fault. Do not "fix" this into a
       # gate. If it should ever block, that is a branch-protection decision made
       # deliberately, not a side effect of editing the script.
+      #
+      # No `if:` guard: the script already prints `::notice::DATABASE_URL not
+      # configured — skipping drift check` and exits 0 when the secret is absent.
+      # An `if:` here would need the value at job level to be readable at all
+      # (`secrets` is unavailable in `if:`), which is exactly what broke the test
+      # suite. Deferring to the script's own handling is both simpler and correct.
       - name: Check JSON↔Neon drift (informational)
-        if: env.DATABASE_URL != ''
         run: npx tsx scripts/check-neon-drift.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   discovery-shell:
     name: BATS tests
