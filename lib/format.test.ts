@@ -7,6 +7,9 @@ import {
   formatUsdCompact,
   formatPower,
   formatMgd,
+  stripLegalSuffix,
+  isOperatorRedundant,
+  nameConveysType,
 } from "./format";
 import type { DataCenterFacility } from "@/lib/schema";
 
@@ -192,5 +195,97 @@ describe("formatMgd", () => {
 
   it("formats a whole MGD value with a trailing .0", () => {
     expect(formatMgd(10)).toBe("10.0 MGD");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// stripLegalSuffix
+// ---------------------------------------------------------------------------
+describe("stripLegalSuffix", () => {
+  it("strips a comma-separated 'Inc.' suffix", () => {
+    expect(stripLegalSuffix("CleanSpark, Inc.")).toBe("CleanSpark");
+  });
+
+  it("strips a space-separated 'Corporation' suffix", () => {
+    expect(stripLegalSuffix("Applied Digital Corporation")).toBe("Applied Digital");
+  });
+
+  it("strips compound suffixes by looping until stable", () => {
+    expect(stripLegalSuffix("Foo Holdings, LLC")).toBe("Foo");
+  });
+
+  it("leaves a name with no legal suffix unchanged", () => {
+    expect(stripLegalSuffix("Google")).toBe("Google");
+  });
+
+  it("does not strip an unrelated word that merely ends in a suffix-like substring", () => {
+    // "Sunoco" ends in "co" but it's not a comma/space-separated suffix token.
+    expect(stripLegalSuffix("Sunoco")).toBe("Sunoco");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isOperatorRedundant
+// ---------------------------------------------------------------------------
+describe("isOperatorRedundant", () => {
+  it("is true when the operator (after stripping 'Inc.') is embedded in the name", () => {
+    // Regression: the raw strings share no substring because of ", Inc." —
+    // without suffix-stripping this would be a false negative.
+    expect(
+      isOperatorRedundant("CleanSpark Dalton Bitcoin Mining Facility", "CleanSpark, Inc.")
+    ).toBe(true);
+  });
+
+  it("is true when the operator (after stripping 'Corporation') is embedded in the name", () => {
+    expect(
+      isOperatorRedundant("Applied Digital Polaris Forge 1", "Applied Digital Corporation")
+    ).toBe(true);
+  });
+
+  it("is true when the name is embedded in the operator (reverse direction)", () => {
+    expect(isOperatorRedundant("Google Council Bluffs", "Google")).toBe(true);
+  });
+
+  it("is false for a genuinely distinct name and operator (no over-stripping)", () => {
+    expect(isOperatorRedundant("Colossus", "xAI")).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// nameConveysType
+// ---------------------------------------------------------------------------
+describe("nameConveysType", () => {
+  it("is true for a data_center name containing 'Data Center'", () => {
+    expect(nameConveysType("Meta Prineville Data Center Campus", "data_center")).toBe(true);
+  });
+
+  it("is true for a crypto_mining name containing 'Mining'", () => {
+    expect(
+      nameConveysType("CleanSpark Dalton Bitcoin Mining Facility", "crypto_mining")
+    ).toBe(true);
+  });
+
+  it("is true for a power_generation name containing 'Solar'", () => {
+    expect(nameConveysType("Sunrise Solar Array", "power_generation")).toBe(true);
+  });
+
+  it("is false when the name says nothing about the facility type", () => {
+    expect(nameConveysType("Colossus", "data_center")).toBe(false);
+  });
+
+  // A bare substring test suppressed the type label on any name that merely
+  // CONTAINED a keyword inside a longer word. Zero facilities tripped it when
+  // this shipped, so these pin the behaviour before a future record does.
+  it("is false when a keyword is glued inside a longer word", () => {
+    expect(nameConveysType("Windsor Energy Center", "power_generation")).toBe(false);
+    expect(nameConveysType("Winding Creek Station", "power_generation")).toBe(false);
+    expect(nameConveysType("Minerva Ridge Station", "crypto_mining")).toBe(false);
+    expect(nameConveysType("Solaris Holdings Center", "power_generation")).toBe(false);
+  });
+
+  it("still matches a keyword used as a real word, including plurals", () => {
+    expect(nameConveysType("Sunrise Wind Farm", "power_generation")).toBe(true);
+    expect(nameConveysType("Ark Data Centers Marion", "data_center")).toBe(true);
+    expect(nameConveysType("Compass Datacenters Lauderdale", "data_center")).toBe(true);
   });
 });

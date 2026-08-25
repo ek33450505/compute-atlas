@@ -23,104 +23,126 @@ function maxLastUpdated(facilities: Facility[]): Date {
 }
 
 /**
+ * Stable `lastModified` for genuinely static editorial pages (/about, /api,
+ * /contribute) that have no underlying dataset to derive freshness from —
+ * using `new Date()` here would churn exactly like the dataset-backed routes
+ * did (see buildStaticRoutes below). Bump by hand only when a page's content
+ * meaningfully changes, never on every sitemap regeneration.
+ */
+const STATIC_PAGE_LAST_MODIFIED = new Date("2026-08-25T00:00:00Z");
+
+/**
  * Builds the list of static route entries for the sitemap.
+ *
+ * Previously hardcoded `lastModified: new Date()` on every entry. Since this
+ * file sets `revalidate = 3600`, that meant every static route — aggregate
+ * pages included — advertised a brand-new lastmod every hour, forever,
+ * which trains crawlers to discount the lastmod signal site-wide (including
+ * on facility routes where it's accurate). Aggregate/dataset-backed routes
+ * now use the dataset's real max `lastUpdated` via `maxLastUpdated` (the
+ * same helper buildStateRoutes/buildOperatorRoutes use); genuinely static
+ * editorial pages use `STATIC_PAGE_LAST_MODIFIED` instead.
+ *
  * Exported separately so it can be unit-tested without Next.js.
  */
-export function buildStaticRoutes(): MetadataRoute.Sitemap {
+export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
+  const facilities = await getAllFacilities();
+  const datasetLastModified = maxLastUpdated(facilities);
+
   return [
     {
       url: siteConfig.url,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "daily",
       priority: 1.0,
     },
     {
       url: `${siteConfig.url}/map`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
       url: `${siteConfig.url}/table`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
       url: `${siteConfig.url}/states`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteConfig.url}/operators`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteConfig.url}/power`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteConfig.url}/crypto`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteConfig.url}/ai`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteConfig.url}/rankings`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteConfig.url}/opposition`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteConfig.url}/stats`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
       url: `${siteConfig.url}/about`,
-      lastModified: new Date(),
+      lastModified: STATIC_PAGE_LAST_MODIFIED,
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
       url: `${siteConfig.url}/api`,
-      lastModified: new Date(),
+      lastModified: STATIC_PAGE_LAST_MODIFIED,
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
       url: `${siteConfig.url}/explore`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
       url: `${siteConfig.url}/activity`,
-      lastModified: new Date(),
+      lastModified: datasetLastModified,
       changeFrequency: "daily",
       priority: 0.7,
     },
     {
       url: `${siteConfig.url}/contribute`,
-      lastModified: new Date(),
+      lastModified: STATIC_PAGE_LAST_MODIFIED,
       changeFrequency: "monthly",
       priority: 0.6,
     },
@@ -256,8 +278,9 @@ export function buildLearnRoutes(): MetadataRoute.Sitemap {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [stateRoutes, operatorRoutes, facilityRoutes, statusRoutes, metroRoutes] =
+  const [staticRoutes, stateRoutes, operatorRoutes, facilityRoutes, statusRoutes, metroRoutes] =
     await Promise.all([
+      buildStaticRoutes(),
       buildStateRoutes(),
       buildOperatorRoutes(),
       buildFacilityRoutes(),
@@ -265,7 +288,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       buildMetroRoutes(),
     ]);
   return [
-    ...buildStaticRoutes(),
+    ...staticRoutes,
     ...buildLearnRoutes(),
     ...stateRoutes,
     ...operatorRoutes,
