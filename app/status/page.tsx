@@ -5,6 +5,7 @@ import { getStatusCounts } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 
 export const revalidate = 3600;
 
@@ -43,6 +44,7 @@ const LIFECYCLE_PROSE = (() => {
 
 export default async function StatusIndexPage() {
   const counts = await getStatusCounts();
+  const totalSites = STATUS_ORDER.reduce((sum, s) => sum + counts[s], 0);
 
   return (
     <div
@@ -67,6 +69,52 @@ export default async function StatusIndexPage() {
       />
 
       {/* ------------------------------------------------------------------ */}
+      {/* Survey stats row                                                    */}
+      {/* ------------------------------------------------------------------ */}
+      <SurveyStatRow
+        stats={[
+          { value: totalSites.toLocaleString(), label: "Tracked sites" },
+          {
+            value: counts.operational.toLocaleString(),
+            label: "Operational",
+          },
+          {
+            value: counts.under_construction.toLocaleString(),
+            label: "Under construction",
+          },
+          { value: counts.proposed.toLocaleString(), label: "Proposed" },
+        ]}
+      />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Overview prose                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="status-overview-heading"
+        className="max-w-2xl space-y-4"
+      >
+        <h2
+          id="status-overview-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          What status means here
+        </h2>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Status is where a project sits in its own lifecycle, taken from
+          the most recent citation on the record — not a judgment about
+          whether it should be built, and not how the surrounding community
+          has received it. Reception is tracked separately, on the{" "}
+          <Link
+            href="/opposition"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            opposition lens
+          </Link>
+          . A site can be under construction and contested at the same time.
+        </p>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
       {/* Status grid                                                         */}
       {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="status-list-heading" className="space-y-4">
@@ -85,7 +133,7 @@ export default async function StatusIndexPage() {
                     {STATUS_META[status].label}
                   </span>
                   <span className="font-mono text-xs text-muted-foreground shrink-0">
-                    {counts[status]} sites
+                    {counts[status].toLocaleString()} sites
                   </span>
                 </span>
                 <span className="text-sm leading-relaxed text-muted-foreground">

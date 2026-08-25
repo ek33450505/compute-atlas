@@ -5,6 +5,7 @@ import { getOperators, getOperatorSummary, getAllFacilities, operatorSlug } from
 import { formatPower } from "@/lib/format";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -50,6 +51,7 @@ export default async function OperatorsIndexPage() {
 
   const disclosed = rows.filter((r) => r.total > 0);
   const undisclosed = rows.filter((r) => r.total === 0);
+  const totalDisclosedMw = disclosed.reduce((sum, r) => sum + r.total, 0);
 
   const totalFacilities = (await getAllFacilities()).length;
 
@@ -77,13 +79,43 @@ export default async function OperatorsIndexPage() {
       <PageMasthead
         eyebrow="By operator"
         title="Operators"
-        dek={
-          <>
-            {rows.length} operators &middot; {disclosed.length} with disclosed
-            capacity &middot; {totalFacilities} facilities tracked
-          </>
-        }
+        dek="Who is building it. Every company running tracked capacity, ranked by disclosed megawatts. Operators with no disclosed figure are listed separately — undisclosed is not the same as small."
       />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Survey stats row                                                    */}
+      {/* ------------------------------------------------------------------ */}
+      <SurveyStatRow
+        stats={[
+          { value: rows.length.toLocaleString(), label: "Operators" },
+          { value: disclosed.length.toLocaleString(), label: "With capacity" },
+          { value: totalFacilities.toLocaleString(), label: "Facilities" },
+          { value: formatPower(totalDisclosedMw), label: "Disclosed" },
+        ]}
+      />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Overview prose                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="operators-overview-heading"
+        className="max-w-2xl space-y-4"
+      >
+        <h2
+          id="operators-overview-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          Why the list is split
+        </h2>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Operators are ranked by operational plus planned capacity, because
+          much of the largest buildout is still unbuilt — ranking on
+          operational alone would bury the companies with the biggest
+          pipelines. Companies that have never published a megawatt figure
+          sit in their own list below rather than at rank zero, where they
+          would read as small rather than silent.
+        </p>
+      </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* Operator grid                                                       */}

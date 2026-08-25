@@ -6,6 +6,7 @@ import { formatPower } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
+import { SurveyStatRow } from "@/components/survey-stat-row";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -41,6 +42,14 @@ export default async function StatesIndexPage() {
   );
 
   const totalFacilities = (await getAllFacilities()).length;
+  const totalOperationalMw = rows.reduce(
+    (sum, r) => sum + r.summary.operationalMw,
+    0
+  );
+  const totalPlannedMw = rows.reduce(
+    (sum, r) => sum + r.summary.plannedMw,
+    0
+  );
 
   return (
     <div
@@ -66,12 +75,42 @@ export default async function StatesIndexPage() {
       <PageMasthead
         eyebrow="By geography"
         title="States"
-        dek={
-          <>
-            {rows.length} states &middot; {totalFacilities} facilities tracked
-          </>
-        }
+        dek="Where the buildout is landing. Every state with at least one tracked facility, ranked by how many sites it carries. Capacity is shown where operators disclose it — most don’t, so the megawatt figures rank a subset, not the field."
       />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Survey stats row                                                    */}
+      {/* ------------------------------------------------------------------ */}
+      <SurveyStatRow
+        stats={[
+          { value: rows.length.toLocaleString(), label: "States" },
+          { value: totalFacilities.toLocaleString(), label: "Facilities" },
+          { value: formatPower(totalOperationalMw), label: "Operational" },
+          { value: formatPower(totalPlannedMw), label: "Pipeline" },
+        ]}
+      />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Overview prose                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="states-overview-heading"
+        className="max-w-2xl space-y-4"
+      >
+        <h2
+          id="states-overview-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          What the ranking does and doesn&apos;t say
+        </h2>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Facility count is the honest default: it ranks what the dataset
+          actually knows. Sorting by megawatts would rank disclosure instead
+          — a state with three documented gigawatt campuses would outrank
+          one with forty sites whose operators never published a figure.
+          Both numbers are here; only one of them is close to complete.
+        </p>
+      </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* State grid                                                          */}
