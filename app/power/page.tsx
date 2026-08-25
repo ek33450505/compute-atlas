@@ -8,10 +8,9 @@ import {
   getEnergySourceCounts,
   getFacilitiesByWaterUsage,
   getCoolingTypeCounts,
-  type EnergySource,
-  type CoolingType,
 } from "@/lib/data";
 import { formatCapacity, formatLocation, formatMgd, formatPower, getFacilityMaxMw } from "@/lib/format";
+import { ENERGY_SOURCE_ENTRIES, COOLING_TYPE_ENTRIES } from "@/lib/energy";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
@@ -30,26 +29,6 @@ export const revalidate = 3600;
 function technologyLabel(f: PowerGenerationFacility): string {
   return getGenerationTechnologyLabel(f.generation?.technology);
 }
-
-/** Display order + labels for `energy.source` — mirrors the § Energy section on /stats. */
-const ENERGY_SOURCE_ENTRIES: { key: EnergySource; label: string }[] = [
-  { key: "grid", label: "Grid" },
-  { key: "mixed", label: "Mixed" },
-  { key: "on_site_gas", label: "On-site gas" },
-  { key: "nuclear", label: "Nuclear" },
-  { key: "solar", label: "Solar" },
-  { key: "hydro", label: "Hydro" },
-  { key: "wind", label: "Wind" },
-  { key: "other", label: "Other" },
-];
-
-/** Display order + labels for `water.coolingType` — ordered by water intensity (high -> minimal), mirrors /stats § Water use. */
-const COOLING_TYPE_ENTRIES: { key: CoolingType; label: string }[] = [
-  { key: "evaporative", label: "Evaporative (high water)" },
-  { key: "hybrid", label: "Hybrid" },
-  { key: "closed_loop", label: "Closed-loop (low water)" },
-  { key: "air", label: "Air-cooled (minimal)" },
-];
 
 export const metadata: Metadata = {
   title: "Data center power generation",
