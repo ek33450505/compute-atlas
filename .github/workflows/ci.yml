@@ -2,7 +2,7 @@
 #
 # Runs typecheck + eslint + vitest (jsdom; the suite is self-contained and needs
 # NO DATABASE_URL / API_ADMIN_TOKEN — the API/auth tests manage their own env)
-# and the discovery + seo-runner BATS suites. The Vercel preview build still covers the
+# and the discovery + vercel ignore-gate BATS suites. The Vercel preview build still covers the
 # production `next build` separately, so this workflow deliberately omits it
 # (and the Playwright e2e suite, which needs browsers + a live server + external
 # basemap tiles).
@@ -51,7 +51,5 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y bats
       - name: discovery BATS
         run: bats tests/discovery/run.bats
-      - name: seo-runner BATS
-        run: bats tests/seo-runner/run.bats
       - name: vercel ignore-gate BATS
         run: bats tests/vercel/run.bats

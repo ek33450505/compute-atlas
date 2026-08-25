@@ -112,12 +112,9 @@ export default async function CryptoPage() {
               {stats.stateCount === 1 ? "state" : "states"}.
             </p>
             <p className="text-base leading-relaxed text-muted-foreground">
-              Coverage of crypto mining varies across public trackers:
-              datacentermap.com, for instance, lists select crypto miners
-              alongside its data-center entries rather than tracking mining
-              as its own layer. The facilities below are the crypto-mining
-              sites in Compute Atlas&apos;s own sourced dataset — each entry
-              links through to its full record and cited sources.
+              The facilities below are the crypto-mining sites in Compute
+              Atlas&apos;s own sourced dataset — each entry links through to
+              its full record and cited sources.
             </p>
           </div>
 

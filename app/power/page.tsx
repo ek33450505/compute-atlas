@@ -65,14 +65,14 @@ const COOLING_TYPE_ENTRIES: { key: CoolingType; label: string }[] = [
 export const metadata: Metadata = {
   title: "Data center power generation",
   description:
-    "Dedicated power generation feeding the U.S. compute buildout — the nuclear and SMR projects hyperscalers are financing or contracting, grouped by offtaker and technology. Source-cited.",
+    "Dedicated power generation feeding the U.S. compute buildout — the gas, nuclear, and renewable projects hyperscalers are financing or contracting, grouped by offtaker and technology. Source-cited.",
   alternates: { canonical: "/power" },
 };
 
 /**
  * /power — index of the power_generation facility layer. Static server component.
  *
- * Surfaces dedicated generation (largely nuclear and advanced SMRs) that
+ * Surfaces dedicated generation (most often natural gas, plus nuclear and SMRs) that
  * hyperscalers are financing or contracting to power AI/compute, grouped by
  * offtaker (the buyer) and by technology. Mirrors the /states and /stats
  * visual language (masthead, survey-stat row, § progress-bar sections).
@@ -140,9 +140,6 @@ export default async function PowerPage() {
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             Behind-the-meter power generation for AI data centers
           </h1>
-          <p className="max-w-2xl text-base text-muted-foreground">
-            Powering the buildout.
-          </p>
           <p className="text-base text-muted-foreground">
             No dedicated-generation projects are tracked yet.
           </p>
@@ -170,14 +167,13 @@ export default async function PowerPage() {
           Behind-the-meter power generation for AI data centers
         </h1>
         <p className="max-w-2xl text-base text-muted-foreground">
-          Powering the buildout.
-        </p>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Purpose-built generation — mostly nuclear and advanced SMRs — that
-          hyperscalers are financing or contracting to feed AI and compute
-          demand directly, tracked here as its own facility layer. In plain
-          terms: these are data centers with their own power plant, generating
-          on-site rather than drawing solely from the grid.
+          Purpose-built generation — most often natural gas, with a growing
+          nuclear and small-modular-reactor cohort — that hyperscalers are
+          financing or contracting to feed AI and compute demand directly.
+          Tracked here as its own facility layer, distinct from the compute
+          campuses it supplies: a dedicated plant built or contracted for a
+          specific offtaker, rather than a data center drawing solely from the
+          grid.
         </p>
         <div className="border-t border-border" />
       </header>

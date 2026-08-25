@@ -7,6 +7,7 @@ import {
   getWaterUsage,
   getCoolingTypeCounts,
   getStats,
+  getFacilityTypeCounts,
   getEnergySourceCounts,
   getAiClassificationCounts,
   getGenerationStats,
@@ -110,14 +111,15 @@ async function getTopicContent(slug: string): Promise<TopicContent | undefined> 
       };
     }
     case "data-center-power-draw": {
-      const [stats, energyCounts] = await Promise.all([
+      const [stats, typeCounts, energyCounts] = await Promise.all([
         getStats(),
+        getFacilityTypeCounts(),
         getEnergySourceCounts(),
       ]);
       const energyRows = ENERGY_SOURCE_ENTRIES.filter(({ key }) => energyCounts[key] > 0);
       const energyReporting = energyRows.reduce((sum, { key }) => sum + energyCounts[key], 0);
       return {
-        explainer: `Compute Atlas tracks ${stats.count} data centers across ${stats.states} states, with ${formatPower(stats.operationalMw)} of operational capacity today and ${formatPower(stats.plannedMw)} planned or under construction.`,
+        explainer: `Compute Atlas tracks ${typeCounts.data_center} data centers across ${stats.states} states, alongside ${typeCounts.crypto_mining} crypto-mining sites and ${typeCounts.power_generation} dedicated generation projects, with ${formatPower(stats.operationalMw)} of operational capacity today and ${formatPower(stats.plannedMw)} planned or under construction.`,
         stats: [
           { value: formatPower(stats.operationalMw), label: "Operational" },
           { value: formatPower(stats.plannedMw), label: "Planned pipeline" },
@@ -128,7 +130,7 @@ async function getTopicContent(slug: string): Promise<TopicContent | undefined> 
           count: energyCounts[key],
           pct: energyReporting > 0 ? (energyCounts[key] / energyReporting) * 100 : 0,
         })),
-        breakdownLabel: "Power source",
+        breakdownLabel: "Power source, all tracked facilities",
       };
     }
     case "what-is-an-ai-data-center": {

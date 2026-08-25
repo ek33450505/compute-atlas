@@ -39,9 +39,9 @@ export function SiteFooter() {
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
               An open, source-cited survey of the U.S. compute buildout —
-              data centers, AI campuses, and crypto-mining — and its civic
-              footprint. Not affiliated with any corporation or government
-              agency.
+              data centers, AI campuses, crypto-mining, and the power built to
+              feed them — and its civic footprint. Not affiliated with any
+              corporation or government agency.
             </p>
             <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
               An independent project by Edward Kubiak

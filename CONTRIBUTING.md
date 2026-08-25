@@ -23,7 +23,7 @@ Found a bug? Have an idea? Use [GitHub Discussions](https://github.com/ek3345050
 For code changes or larger data additions, open a pull request. See the [README](README.md#local-development) for local setup. Before opening a PR:
 
 - Run `npm run typecheck`, `npm run lint`, and `npm run test`.
-- For data changes, run `npm run build` — it validates every record against the Zod schema in `lib/schema.ts` and fails loudly on any malformed or missing field.
+- For data changes, `npm run test` is the integrity gate: `lib/data-integrity.test.ts` validates every record against the Zod schema in `lib/schema.ts` and fails loudly on any malformed or missing field. (Maintainers: run it without `DATABASE_URL` set, or it validates Neon instead of the JSON snapshot.)
 - Keep data changes additive where possible; never drop existing records.
 
 ## The data standard

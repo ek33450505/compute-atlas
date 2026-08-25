@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "API",
   description:
     "The Compute Atlas API — a public, CORS-open JSON read API over the dataset, plus a provenance-staged submissions API for contributors.",
+  alternates: { canonical: "/api" },
 };
 
 /** Shared style for inline `<code>` tokens (endpoints, headers, param names). */

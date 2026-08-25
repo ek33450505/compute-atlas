@@ -118,13 +118,16 @@ export default async function RankingsPage() {
           {/* ------------------------------------------------------------------ */}
           <div className="max-w-2xl space-y-4">
             <p className="text-base leading-relaxed text-muted-foreground">
-              Three views over the same {stats.count}-facility dataset: the
+              Three views over the same{" "}
+              {stats.count.toLocaleString("en-US")}-facility dataset: the
               single largest projects by disclosed planned capacity, the
               operators with the most capacity across all their sites, and
               the states hosting the most capacity overall. Each ranking is
               ordered by tracked megawatts — not by press coverage or
               announcement size — and reflects only what a cited source
-              discloses.
+              discloses. These rankings cover only the facilities that disclose
+              a capacity figure — a site absent from them may be large but
+              undisclosed, not small.
             </p>
             <p className="text-base leading-relaxed text-muted-foreground">
               Every entry below links through to its full facility, operator,

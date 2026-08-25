@@ -39,7 +39,7 @@ const LENSES: Lens[] = [
     label: "Map",
     href: "/map",
     icon: Globe,
-    stat: (c) => `${c.sites} sites`,
+    stat: (c) => `${c.sites.toLocaleString("en-US")} sites`,
     blurb: "Every tracked site plotted on the interactive globe.",
     lead: true,
   },
@@ -107,7 +107,7 @@ export function LensGateway({ counts, className }: LensGatewayProps) {
         Find your way in
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Eight lenses on the same source-cited dataset.
+        {LENSES.length} lenses on the same source-cited dataset.
       </p>
       <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {LENSES.map(({ label, href, icon: Icon, stat, blurb, lead }) => (
@@ -139,7 +139,7 @@ export function LensGateway({ counts, className }: LensGatewayProps) {
           href="/explore"
           className="inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          See all 11 lenses →
+          See every lens →
         </Link>
         <Link
           href="/stats"

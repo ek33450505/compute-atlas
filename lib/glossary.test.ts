@@ -36,7 +36,7 @@ describe("getGlossaryTopicBySlug", () => {
   it("returns the topic for a known slug", () => {
     const topic = getGlossaryTopicBySlug("data-center-water-use");
     expect(topic).toBeDefined();
-    expect(topic?.title).toBe("How Much Water Does a Data Center Use?");
+    expect(topic?.title).toBe("How much water does a data center use?");
   });
 
   it("returns undefined for an unknown slug", () => {

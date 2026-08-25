@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getStatusCounts } from "@/lib/data";
-import { STATUS_ORDER, STATUS_META } from "@/lib/status";
+import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
 import { Breadcrumb } from "@/components/breadcrumb";
 
 export const revalidate = 3600;
@@ -19,6 +19,27 @@ export const metadata: Metadata = {
  * (app/status/[status]/page.tsx). Mirrors /explore's lens-grid layout.
  * Static server component; counts are live via getStatusCounts.
  */
+/**
+ * Lifecycle sequence for the masthead prose. `STATUS_ORDER` is *display* order
+ * (operational first); this is the order a project actually moves through, with
+ * `cancelled` as the fifth stage rather than an aside. Typed `readonly Status[]`
+ * so a renamed or removed status fails typecheck here. The masthead's count and
+ * its enumeration both derive from this array, so they cannot disagree.
+ */
+const LIFECYCLE_ORDER: readonly Status[] = [
+  "proposed",
+  "permitted",
+  "under_construction",
+  "operational",
+  "cancelled",
+];
+
+/** "proposed, permitted, under construction, operational, or cancelled" */
+const LIFECYCLE_PROSE = (() => {
+  const labels = LIFECYCLE_ORDER.map((s) => STATUS_META[s].label.toLowerCase());
+  return `${labels.slice(0, -1).join(", ")}, or ${labels[labels.length - 1]}`;
+})();
+
 export default async function StatusIndexPage() {
   const counts = await getStatusCounts();
 
@@ -40,9 +61,9 @@ export default async function StatusIndexPage() {
           By status
         </h1>
         <p className="max-w-2xl text-base text-muted-foreground">
-          Every tracked site sits in one of five lifecycle stages, from
-          announced to operational — or cancelled. Each stage links to the
-          full, source-cited list.
+          Every tracked site sits in one of {LIFECYCLE_ORDER.length} lifecycle
+          stages: {LIFECYCLE_PROSE}. Each stage links to the full, source-cited
+          list.
         </p>
         <div className="border-t border-border" />
       </header>

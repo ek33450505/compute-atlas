@@ -10,7 +10,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Data table",
   description:
-    "Filterable, sortable table of all tracked data centers in the United States — shares filter state with the map.",
+    "Filterable, sortable table of every facility tracked by Compute Atlas — data centers, crypto-mining operations, and dedicated power generation. Shares filter state with the map.",
   alternates: { canonical: "/table" },
 };
 
@@ -35,12 +35,9 @@ export default async function TablePage() {
             Data center data table
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Compute Atlas tracks data centers across the United States —
-            traditional and hyperscale compute, AI-specific facilities, and
-            crypto-mining operations — with a public source behind every
-            record. Every tracked facility is listed below, filterable and
-            sortable. Filters are shared with the map — the URL carries them
-            between the two views. Each row links to its detail plate.
+            Every tracked facility is listed below, filterable and sortable.
+            Filters are shared with the map — the URL carries them between the
+            two views. Each row links to its detail plate.
           </p>
         </div>
         <div className="border-t border-border" />

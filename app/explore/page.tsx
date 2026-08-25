@@ -10,7 +10,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Explore US data centers",
   description:
-    "Browse the atlas by lens — states, power generation, community opposition, operators, and the public API.",
+    "Browse the atlas by lens — geography, lifecycle stage, power and facility type, community reception, operators, rankings, the glossary, and the public API. Source-cited.",
   alternates: { canonical: "/explore" },
 };
 
@@ -116,9 +116,10 @@ export default async function ExplorePage() {
             Explore
           </h1>
           <p className="max-w-2xl text-base text-muted-foreground">
-            The same dataset, sliced five ways — by geography, by power
-            source, by community reception, by who&rsquo;s building it, and
-            through the API directly.
+            {LENSES.length} lenses on the same source-cited dataset — by
+            geography, lifecycle stage, power and facility type, community
+            reception, and who&rsquo;s building it, plus rankings, the glossary,
+            and the API directly.
           </p>
         </div>
         <div className="border-t border-border" />

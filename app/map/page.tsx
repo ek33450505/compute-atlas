@@ -9,7 +9,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Map",
   description:
-    "Interactive map of data center facilities across the United States — traditional, AI-specific, and crypto-mining. Filter by status, state, operator, and capacity.",
+    "Interactive map of the U.S. compute buildout — traditional and AI-specific data centers, crypto-mining operations, and the dedicated power generation built to supply them. Filter by status, state, operator, and capacity.",
   alternates: { canonical: "/map" },
 };
 

@@ -24,7 +24,7 @@ import type { Facility } from "@/lib/schema";
 import { aiClassificationEnum } from "@/lib/schema";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
-import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
+import { AI_CLASSIFICATION_CONFIDENCE_LABELS, getFacilityMaxMw } from "@/lib/format";
 
 export const revalidate = 3600;
 
@@ -103,6 +103,12 @@ export default async function StatsPage() {
   const dataCenterCount = allFacilities.filter(
     (f) => f.facilityType === "data_center"
   ).length;
+  // Capacity is optional in the schema — every GW figure on this page sums only
+  // the records that publish an operational or planned figure, so state that
+  // denominator rather than implying the sums cover the whole dataset.
+  const disclosedCapacityCount = allFacilities.filter(
+    (f) => getFacilityMaxMw(f) !== undefined
+  ).length;
   const unclassifiedCount =
     dataCenterCount - (aiCounts.confirmed + aiCounts.likely + aiCounts.mixed_use);
 
@@ -141,7 +147,7 @@ export default async function StatsPage() {
       <div className="flex flex-wrap gap-8 border-b border-border pb-10">
         <div className="flex flex-col items-center gap-1 text-center">
           <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
-            {total}
+            {total.toLocaleString("en-US")}
           </span>
           <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
             Sites tracked
@@ -181,6 +187,13 @@ export default async function StatsPage() {
         </div>
       </div>
 
+      <p className="text-sm leading-relaxed text-muted-foreground">
+        Capacity is disclosed for {disclosedCapacityCount.toLocaleString("en-US")}{" "}
+        of the {total.toLocaleString("en-US")} tracked sites. Every GW figure on
+        this page sums those records only — read them as a floor, not a dataset
+        total.
+      </p>
+
       {/* ------------------------------------------------------------------ */}
       {/* § By type                                                           */}
       {/* ------------------------------------------------------------------ */}
@@ -199,7 +212,9 @@ export default async function StatsPage() {
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
           Most tracked sites are data centers; a smaller set are large-scale
-          crypto mining facilities, which draw on the same grid capacity.
+          crypto mining facilities, which draw on the same grid capacity; and a
+          smaller set again are the dedicated generation projects built to feed
+          the buildout.
         </p>
         <div className="space-y-4">
           {FACILITY_TYPE_ORDER.map((key) => {
