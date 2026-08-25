@@ -3731,6 +3731,51 @@
     "facilityType": "data_center"
   },
   {
+    "id": "apricus-rock-point-data-center-west-plains-wa",
+    "name": "Rock Point Data Center Project",
+    "operator": "Apricus Energy Partners",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 47.621,
+      "lon": -117.73,
+      "city": "West Plains",
+      "county": "Spokane",
+      "street": "11703 W. Medical Lake Highway",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.spokesman.com/stories/2026/aug/02/company-proposing-massive-west-plains-data-center-/",
+        "label": "Company proposing massive West Plains data center",
+        "publisher": "The Spokesman-Review",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.spokesman.com/stories/2026/jun/09/avista-confirms-negotiations-with-company-seeking-/",
+        "label": "Avista confirms negotiations with company seeking to build large data center",
+        "publisher": "The Spokesman-Review",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-22",
+    "notes": "Conceptual-stage dual hydrogen-production-plus-data-center project; Avista's own engineering study projects only ~50MW available by 2030 (vs. the company's aspirational 1,000MW target), rising to ~650MW by 2033; no formal county application filed as of Aug 2026.",
+    "landAcres": 514,
+    "community": {
+      "status": "contested",
+      "notes": "Developer has little operating history and a prior unrealized project in Livermore, CA; undisclosed discussions between the developer and Spokane County commissioners drew public criticism; a companion Avista MOU (counterparty undisclosed, believed to be this project) was paused June 12, 2026.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "aps-desert-sun-power-plant-gila-bend-az",
     "name": "Desert Sun Power Plant",
     "operator": "Arizona Public Service (APS)",
@@ -3790,6 +3835,37 @@
       "technology": "natural_gas",
       "notes": "Up to ~2,000 MW of natural gas generation planned in two phases: Phase 1 via competitive procurement for general customer growth, Phase 2 via a subscription model enabling extra-large (data center) customer load ('growth pays for growth')."
     }
+  },
+  {
+    "id": "archer-datacenter-faribault-mn",
+    "name": "Archer Datacenter Faribault",
+    "operator": "Archer Datacenter",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.3654972,
+      "lon": -93.2871543,
+      "city": "Faribault",
+      "county": "Rice",
+      "street": "15339 Acorn Trail",
+      "postalCode": "55021",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.southernminn.com/faribault_daily_news/news/developer-city-officials-outline-plans-for-proposed-faribault-data-center/article_2884e9a7-4b43-4622-b449-fcc37dd56a5e.html",
+        "label": "Developer, city officials outline plans for proposed Faribault data center",
+        "publisher": "southernminn.com",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Up to 500,000 sq ft across six one-story buildings, south of 150th Street West and east of Acorn Trail, north of the Daikin plant. Land acquired 2024; no formal application yet submitted to the city as of the source date. Project on hold pending redo of the city's environmental review after a June 2026 Minnesota Court of Appeals ruling found it non-compliant.",
+    "landAcres": 87.6,
+    "facilityType": "data_center"
   },
   {
     "id": "ardent-pittsburgh-mckees-rocks-pa",
@@ -4222,6 +4298,55 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "Enterprise colocation facility at 5055 Rec Drive, Marion (Cedar Rapids metro); rebranded from Involta to Ark Data Centers in May 2024 (Involta acquired by Carlyle Group funds Feb 2022). Owns/operates the building — not a tenancy. IMPORTANT DISCREPANCY: the operator's own site (fetched directly) states 810kW total facility capacity ('750 kW Diesel Generator (N+1)'), which is what I used for capacityMw. Third-party aggregator listings (datacenters.com, baxtel, dchub — not independently fetched with numeric confirmation) variously describe this same site as a '12 MW' or '20 MW enterprise center' — a >10x discrepancy from the primary source. Flagging for human review rather than picking a number I can't verify; recommend treating 0.81MW as current/critical load and the larger figures as unconfirmed campus/enterprise-park branding.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "armory-innovation-district-st-louis-mo",
+    "name": "Armory Innovation District Data Center",
+    "operator": "Contour / TerraWatt (with Steadfast City, THO Investments, ARCO, Lewis Rice)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.636,
+      "lon": -90.237,
+      "city": "St. Louis",
+      "street": "Adjacent to The Armory, Midtown (former Macy's/Famous-Barr warehouse site)",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 120
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.stlmag.com/news/midtown-data-center-armory-board-of-public-service/",
+        "label": "Midtown data center wins key approval from St. Louis Board of Public Service",
+        "publisher": "St. Louis Magazine",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.stlpr.org/health-science-environment/2026-07-30/st-louis-board-allows-data-center-near-armory-to-move-forward-with-new-rules",
+        "label": "St. Louis board upholds Midtown data center permit with new rules",
+        "publisher": "St. Louis Public Radio",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "St. Louis Board of Public Service approved the conditional use permit 5-0 on 2026-04-22; the Board of Adjustment upheld/amended it on 2026-07-30. No tenant has been named as of this session; targeted for full operation by end of 2028. Officially branded the 'Armory Innovation District.'",
+    "investmentUsd": 3000000000,
+    "jobs": {
+      "construction": 1050,
+      "permanent": 200,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Approved with conditions including a $15.75M community benefits fund, no local tax abatement sought, closed-loop cooling, rooftop solar/green-roof requirements, and a target of 50% renewable energy within five years; subject to potential appeal.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -7045,14 +7170,25 @@
         "label": "Tri-Cities Area Journal of Business — 'Transformative' $5 billion data center campus planned for Wallula",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nbcrightnow.com/news/amazon-to-hold-burbank-open-house-on-walla-walla-county-data-center-plan/article_7704eb3b-1182-4823-808e-52f20c90d0cf.html",
+        "label": "Amazon to hold Burbank open house on Walla Walla County data center plan",
+        "publisher": "NBC Right Now",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-22",
     "notes": "~$4.8B, ~300 MW campus near Wallula, Walla Walla County; operator reported (not officially confirmed) to be AWS → confidence reported. Coordinates are the Wallula area centroid. Operator confirmed as Amazon Data Services when the Port of Walla Walla amended the buyer from Advance Phase LLC to Amazon Data Services (Feb 12, 2026 commission vote; >550 acres for >$36M land) — confidence upgraded to confirmed. The reported ~$4.8B (DCD) / ~$5B (local) campus figure is an estimate across ~4 phases, not a firm pledge -> investmentUsd omitted. Port projects ~720 direct+indirect jobs at full build-out (projection) -> jobs honest-zero. Eligible for Washington's rural-county server-equipment sales/use-tax exemption (RCW 82.08.986) but no DOR certificate is confirmed -> subsidy honest-zero. Water source and cooling type are undisclosed pending SEPA (no water rights were conveyed in the land deal).",
     "energy": {
       "source": "grid",
       "utility": "Columbia Rural Electric Assn, Inc",
       "notes": "In Pacific Power (PacifiCorp) service territory (utility inferred from territory, not company-confirmed); regional supply is hydro-dominant."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Amazon's Aug 2026 community materials state the cooling system will use outside air ~93% of the year, with water-based cooling supplementing during the hottest ~7%."
     },
     "investmentUsd": 4800000000,
     "landAcres": 500,
@@ -8681,7 +8817,7 @@
     "id": "bitfarms-moses-lake-wa",
     "name": "Moses Lake Facility",
     "operator": "Bitfarms Ltd. (Keel Infrastructure Corp.)",
-    "status": "operational",
+    "status": "under_construction",
     "confidence": "confirmed",
     "location": {
       "lat": 47.1301,
@@ -8707,6 +8843,12 @@
         "date": "2025-11-13",
         "note": "Bitfarms announces a binding, fully-funded turnkey agreement (~$128-129M, figure dual-sourced across filings) with Vertiv Group to convert the site to HPC/AI workloads (NVIDIA GB300 reference architecture, liquid cooling, target PUE 1.2-1.3), targeting completion December 2026. As of the FY2025 10-K, the site remains an active Bitcoin-mining operation -- conversion not yet complete.",
         "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-08-22",
+        "note": "Keel Infrastructure (formerly Bitfarms) completed decommissioning of Bitcoin mining at Moses Lake in April 2026 and, per its Q2 2026 results (published Aug 10, 2026), has begun receiving Vertiv modules and other long-lead HPC/AI construction equipment on site, with fiber contracts being finalized — the site is actively being retrofitted, not merely operating as before.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -8730,9 +8872,16 @@
         "publisher": "SEC EDGAR",
         "retrievedAt": "2026-08-02",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.crypto-reporter.com/newsfeed/keel-infrastructure-reports-second-quarter-2026-results-130053/",
+        "label": "Keel Infrastructure Reports Second Quarter 2026 Results",
+        "publisher": "GlobeNewswire (via Crypto Reporter)",
+        "retrievedAt": "2026-08-22",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-22",
     "notes": "18 MW is the current operating capacity per the FY2025 10-K property table (down from the 24 MW nameplate acquired in 2021). Powered by Grant County PUD hydroelectric power. A binding, fully-funded HPC/AI conversion agreement with Vertiv Group is disclosed -- reported as $128M in the Nov 2025 press release and $129M in the FY2025 10-K (a genuine cross-filing discrepancy, both cited); target hardware is NVIDIA GB300 (up to 190kW/rack), liquid cooling, target PUE 1.2-1.3, targeting completion December 2026. No GPUs are installed/operating as of the most recent filing -- aiClassification is 'likely,' not 'confirmed.' A widely-repeated 6-acre/~60,000 sq ft site-size claim could not be confirmed in any SEC filing and is omitted. No exact street address disclosed. Grant PUD has imposed regional load-growth limits on data-center customers and approved a 10.6% rate increase (2026-01-27) for its crypto-mining rate schedule -- a supply-constraint risk factor, not site-specific opposition.",
     "energy": {
       "source": "hydro",
@@ -9903,9 +10052,16 @@
         "publisher": "Washington Energy Facility Site Evaluation Council",
         "retrievedAt": "2026-07-11",
         "kind": "other"
+      },
+      {
+        "url": "https://www.energy-northwest.com/energy-projects/cascade-advanced-energy-facility/",
+        "label": "Cascade Advanced Energy Facility",
+        "publisher": "Energy Northwest",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-11",
+    "lastUpdated": "2026-08-22",
     "notes": "Coordinates (46.4706, -119.3339) anchor to Energy Northwest's Columbia Generating Station on the DOE Hanford Reservation, Benton County -- the distinct Cascade SMR parcel, described only as 'adjacent to' Columbia Generating Station, has no publicly confirmed exact coordinate; treat as an approximate site anchor, not a parcel-exact point. Project-level capital cost is not disclosed in any source reviewed and is omitted rather than estimated; Amazon's ~$500M investment in X-energy is a company-level reactor-technology investment, not Cascade project capex (see generation.notes). Site is licensed for up to 12 modules (960 MW) total; only the initial 4-module (320 MW) phase is recorded in capacityMw.planned as the confirmed near-term build.",
     "energy": {
       "source": "nuclear",
@@ -16178,6 +16334,60 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "crg-festus-data-center-mo",
+    "name": "Festus Data Center Campus",
+    "operator": "CRG (Clayco)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.2192,
+      "lon": -90.399,
+      "city": "Festus",
+      "county": "Jefferson",
+      "street": "North of Highway 67, west of Highway CC",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "announcedDate": "2026-03-30",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.stlpr.org/government-politics-issues/2026-03-31/festus-data-center-development-approval",
+        "label": "Festus council approves $6 billion data center plan despite massive public pushback",
+        "publisher": "St. Louis Public Radio",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://themissouritimes.com/press-release-crg-unveils-refined-conceptual-design-for-proposed-festus-data-center-launches-community-information-website/",
+        "label": "CRG Unveils Refined Conceptual Design for Proposed Festus Data Center",
+        "publisher": "The Missouri Times",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://festusdatacenter.org/",
+        "label": "Festus Data Center — community information site",
+        "publisher": "CRG",
+        "retrievedAt": "2026-08-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Festus City Council approved a development-agreement ordinance 6-2 on 2026-03-30 covering a refined ~600MW, four-building conceptual plan on 360 rezoned acres (188 acres permanently preserved). Two active lawsuits seek to invalidate the rezoning/development agreement; no end-user tenant has been publicly named and construction has not started as of this session.",
+    "investmentUsd": 6000000000,
+    "landAcres": 360,
+    "jobs": {
+      "construction": 1000,
+      "permanent": 200,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "crosland-southeast-matthews-project-accelerate-nc",
     "name": "Project Accelerate — Matthews (East John Street)",
     "operator": "Crosland Southeast",
@@ -17598,6 +17808,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cyrusone-pnw1-quincy-wa",
+    "name": "CyrusOne PNW1",
+    "operator": "CyrusOne",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.2334,
+      "lon": -119.8528,
+      "city": "Quincy",
+      "county": "Grant",
+      "street": "1025 D Street NW",
+      "postalCode": "98848",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 90
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/quincy-washington",
+        "label": "Quincy, WA: PNW1",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-22",
+    "notes": "Operator describes PNW1 as Washington's largest greenfield-built data center; 720,000 sq ft technical space on a 45-acre site acquired 2016; construction began 2023.",
+    "energy": {
+      "source": "hydro"
+    },
+    "landAcres": 45,
+    "facilityType": "data_center"
+  },
+  {
     "id": "cyrusone-sangamon-talkington-township-il",
     "name": "CyrusOne Sangamon County Data Center Campus",
     "operator": "CyrusOne",
@@ -18846,6 +19093,49 @@
     "lastUpdated": "2026-08-15",
     "community": {
       "status": "opposed"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "diamond-farms-gateway-digital-villa-ridge-mo",
+    "name": "Diamond Farms (Gateway Digital Campus)",
+    "operator": "Provident Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.484,
+      "lon": -90.85,
+      "city": "Villa Ridge",
+      "county": "Franklin",
+      "street": "Robertsville Road, near I-44",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-04-23",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.ksdk.com/article/news/politics/franklin-county-planning-and-zoning-commission-backs-one-data-center-diamond-farms-rejects-another-crooked-creek/63-89185f2a-d50e-4ac5-bfe9-f5e8209fa9e0",
+        "label": "Franklin County Planning and Zoning Commission backs one data center, rejects another",
+        "publisher": "KSDK",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://themissouritimes.com/franklin-county-planning-and-zoning-approves-diamond-farms-data-center-project/",
+        "label": "Franklin County Planning and Zoning Approves Diamond Farms Data Center Project",
+        "publisher": "The Missouri Times",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Franklin County Planning & Zoning Commission recommended approval 5-4 on 2026-04-21/23; final rezoning decision rests with the three-member Franklin County Commission, which had not voted as of this session. Also marketed by the developer as 'Gateway Digital Campus.' The companion Crooked Creek (Beltline Energy) proposal in the same county was withdrawn on 2026-08-07 and is not included here.",
+    "landAcres": 600,
+    "jobs": {
+      "construction": 2000,
+      "permanent": 250,
+      "sourceIndex": 1
     },
     "facilityType": "data_center"
   },
@@ -23003,6 +23293,39 @@
     "energy": {
       "utility": "ComEd"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "elk-river-capital-swervo-mn",
+    "name": "Elk River Data Center (Elk River Capital / Swervo Development)",
+    "operator": "Elk River Capital LLC (Swervo Development Corp affiliate)",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.3187147,
+      "lon": -93.5864375,
+      "city": "Elk River",
+      "county": "Sherburne",
+      "street": "19178 Industrial Blvd NW",
+      "postalCode": "55330",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 33
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.thegazette.com/data_centers/across_america/minnesota-elk-river-data-center-developer-withdraws-application/article_61f12c2b-f46b-46e4-8ad9-bd0f86d3ff60.html",
+        "label": "MINNESOTA: Elk River data center developer withdraws application",
+        "publisher": "The Gazette",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Proposed converting a vacant, ~62,000 sq ft former injection-molding building into a 33MW data center. Elk River City Council unanimously rejected the zoning amendment 2026-07-06; the developer withdrew its application shortly after.",
     "facilityType": "data_center"
   },
   {
@@ -27802,9 +28125,16 @@
         "label": "Geronimo Power's Farmer-Friendly and Community First Approach Receives Warm Welcome (PR Newswire)",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.dakotanewsnow.com/2026/03/19/geronimo-power-seeks-feedback-nobles-county-data-center/",
+        "label": "Geronimo Power seeks feedback on Nobles County data center",
+        "publisher": "Dakota News Now",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-24",
     "notes": "Coordinates are approximate (near Worthington, MN).",
     "energy": {
       "source": "wind",
@@ -28792,10 +29122,37 @@
         "publisher": "Google",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.kaxe.org/local-news/2026-03-03/google-proposed-data-center-hermantown-minnesota-power",
+        "label": "Google is behind proposed Hermantown data center",
+        "publisher": "KAXE",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox21online.com/news/local/minnesota-power-presents-details-on-proposed-data-center-deal/article_92618e5c-5e51-456f-b7d4-dfd7d99434e4.html",
+        "label": "Minnesota Power presents details on proposed data center deal",
+        "publisher": "Fox21online",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.duluthnewstribune.com/news/local/hermantown-begins-new-downsized-site-review-for-data-center",
+        "label": "Hermantown begins new downsized site review for data center",
+        "publisher": "Duluth News Tribune",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-24",
     "notes": "Listed by Google among its US data centers under development. Google has not published a dedicated location page, capacity, investment figure, or timeline for this site — it appears only on Google's US locations index, so this record is intentionally thin. Coordinates are the Hermantown city centroid (approximate).",
+    "energy": {
+      "source": "mixed",
+      "utility": "Minnesota Power",
+      "notes": "Google-Minnesota Power electric service agreement calls for 700MW of new clean energy resources (300MW wind + 400MW battery storage) to serve the campus; Google also committed $5M to Minnesota Power's energy-affordability and efficiency programs for low/moderate-income customers."
+    },
+    "landAcres": 278,
     "facilityType": "data_center"
   },
   {
@@ -30189,6 +30546,7 @@
       "lon": -94.651,
       "city": "Kansas City",
       "county": "Clay",
+      "street": "12701 N Arrowhead Trafficway",
       "state": "MO",
       "precision": "exact"
     },
@@ -30230,9 +30588,16 @@
         "publisher": "KSHB",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kctv5.com/2026/02/12/google-confirms-new-data-center-development-kansas-citys-northland/",
+        "label": "Google confirms new data center development in Kansas City's Northland",
+        "publisher": "KCTV5",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-24",
     "notes": "Five hyperscale data center buildings on 493 acres, northeast of I-435 and US-169 in KC Northland (near Smithville, Clay County). Google committed $1.5M to Smithville School District and $250K to Northland Career Center. Coordinates are approximate for the site northeast of the I-435/US-169 interchange.",
     "energy": {
       "source": "grid",
@@ -32297,6 +32662,81 @@
     "facilityType": "data_center"
   },
   {
+    "id": "h5-data-centers-quincy-campus-wa",
+    "name": "H5 Data Centers Quincy Campus",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.2334,
+      "lon": -119.8528,
+      "city": "Quincy",
+      "county": "Grant",
+      "street": "1711 M St NE",
+      "postalCode": "98848",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 40
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/quincy-data-center.html",
+        "label": "Quincy Data Center - Washington Data Center",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/h5-quincy",
+        "label": "H5 Quincy Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-22",
+    "notes": "Multi-building Quincy campus (Quincy I, II, III); Quincy I acquired from Intuit in July 2018. A long-operating, Grant County PUD data-center customer not previously tracked.",
+    "energy": {
+      "source": "hydro",
+      "notes": "100% renewable hydroelectric power available; power cost cited under $0.03/kWh."
+    },
+    "landAcres": 63,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "h5-data-centers-seattle-denny-way-wa",
+    "name": "H5 Data Centers Seattle",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.6205,
+      "lon": -122.3379,
+      "city": "Seattle",
+      "county": "King",
+      "street": "1000 Denny Way",
+      "postalCode": "98109",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/seattle-data-center.html",
+        "label": "Seattle Data Center",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-22",
+    "notes": "293,000 sq ft carrier-hotel/colocation facility in the former Seattle Times building. Distinct building from the Westin Building Exchange (already tracked); no MW capacity disclosed on the operator's site.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "h5-data-centers-st-paul-mn",
     "name": "H5 Data Centers St. Paul",
     "operator": "H5 Data Centers",
@@ -32548,6 +32988,42 @@
       ],
       "notes": "Orion is billed as the world's first commercial fusion power plant, targeting at least 50 MW to Microsoft (PPA signed 2023, delivery targeted 2028). Under construction in Malaga, WA following first-of-a-kind Washington Dept. of Health fusion licensing in June 2026. An ADDITIONAL power source for the co-located Microsoft Malaga campus (microsoft-malaga-wa), otherwise served by Chelan County PUD hydropower. Recorded under the `fusion` technology type."
     }
+  },
+  {
+    "id": "hematite-bitcoin-mining-jefferson-county-mo",
+    "name": "Hematite Bitcoin Mining Facility",
+    "operator": "NYDIG / Global Connect Communications",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.126,
+      "lon": -90.508,
+      "city": "Hematite",
+      "county": "Jefferson",
+      "street": "Off Highway P, adjacent to the Missouri National Guard Armory (2740 Hwy P)",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.myleaderpaper.com/business/bitcoin-mining-facility-to-possibly-open-in-hematite/article_b383ae61-29e9-42cd-b1e0-95f291992a93.html",
+        "label": "Bitcoin mining facility to possibly open in Hematite",
+        "publisher": "The Leader (Jefferson County, MO)",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ksdk.com/article/news/local/bitcoin-mining-facility-to-possibly-open-highway-p-hematite-jefferson-county/63-b78d7a99-db72-4782-87cd-5bd46b0dc4e5",
+        "label": "Jefferson County anticipates new Bitcoin mining facility",
+        "publisher": "KSDK",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Per reporting dated 2025-08-28 (byline), all building permits and stormwater approvals were complete and the site was described by the county's director of services as 'ready to have the key turned on,' pending only a permanent access easement from the neighboring Missouri National Guard Armory for the final occupancy permit. Would be Jefferson County's first Bitcoin mining facility. No more recent (2026) reporting confirming occupancy or operational status was found this session.",
+    "facilityType": "crypto_mining"
   },
   {
     "id": "hickory-grove-generating-station-ia",
@@ -37184,6 +37660,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumon-solutions-marshfield-mo",
+    "name": "Marshfield Data Center (Lumon Solutions)",
+    "operator": "Lumon Solutions Marshfield, LLC",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.36,
+      "lon": -92.905,
+      "city": "Marshfield",
+      "county": "Webster",
+      "street": "Rifle Range Road, north of Marshfield",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://webstercountymo.gov/commission-data-center-update-may-21/",
+        "label": "Commission – Data Center Update – May 21",
+        "publisher": "Webster County, MO",
+        "retrievedAt": "2026-08-24",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.protectwebstercounty.com/the-project",
+        "label": "The Marshfield Data Center Project",
+        "publisher": "Protect Webster County",
+        "retrievedAt": "2026-08-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Lumon Solutions Marshfield, LLC (formed October 2025) is developing a 5-acre, Tier III, AI-ready facility described as eight modular units on land owned by ARY Investments LLC; building-size figures differ between the county (~14,000 sq ft) and the developer (~7,000 sq ft). Webster County has no planning-and-zoning ordinance, limiting county jurisdiction. Site preparation began without public notice, prompting community opposition and discussion of a possible county moratorium. Developer claims on water/power/noise impact are not independently verified.",
+    "landAcres": 5,
+    "facilityType": "data_center"
+  },
+  {
     "id": "lunavi-cheyenne-wy",
     "name": "Lunavi Cheyenne Data Center",
     "operator": "Lunavi",
@@ -38084,6 +38597,51 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "merkle-standard-usk-wa",
+    "name": "Merkle Standard Usk Facility",
+    "operator": "Merkle Standard (Allrise Capital)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 48.3079,
+      "lon": -117.2848,
+      "city": "Usk",
+      "county": "Pend Oreille",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cascadepbs.org/news/2022/11/tiny-eastern-wa-town-could-become-bitcoin-mining-hub/",
+        "label": "This tiny Eastern WA town could become a bitcoin mining hub",
+        "publisher": "Cascade PBS",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-22",
+    "notes": "Site of the former Ponderay Newsprint mill (bankrupt 2020, acquired for $18.1M by Allrise Capital); Merkle Standard is the operating subsidiary, Bitmain the equipment partner; permitted for up to 100MW annually with studies examining expansion to 600MW.",
+    "investmentUsd": 18100000,
+    "landAcres": 927,
+    "jobs": {
+      "permanent": 40,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Pend Oreille County's hearing examiner rejected a wildlife biologist's appeal and upheld the conditional-use permit in May 2022; opposition centered on noise impacts to threatened long-eared bats and white pelicans.",
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "grid"
+    }
   },
   {
     "id": "meta-aiken-county-sc",
@@ -40481,14 +41039,31 @@
         "publisher": "Star Tribune",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.inforum.com/news/minnesota/minnesotas-first-hyperscale-data-center-nearing-completion-in-rosemount",
+        "label": "Minnesota's first hyperscale data center nearing completion in Rosemount",
+        "publisher": "InForum",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://mn.gov/governor/newsroom/press-releases/?id=1055-614120",
+        "label": "Governor Walz Announces Meta Will Build New Data Center in Rosemount",
+        "publisher": "Office of Governor Tim Walz",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-17",
+    "lastUpdated": "2026-08-24",
     "notes": "Site is 280 acres of UMore Park (former WWII smokeless powder facility, then Univ. of Minnesota agricultural research land) in Rosemount. Meta's 19th US data center. Coordinates approximate for northern UMore Park area. Additional parcels purchased Feb 2025 via Jimnist LLC for potential expansion; no current build plan on those parcels.",
     "energy": {
       "source": "grid",
       "utility": "Xcel Energy",
       "notes": "Powered by 100% renewable energy via Xcel Energy; Meta working with partners to add new renewable resources to the grid"
+    },
+    "water": {
+      "notes": "A company representative described typical water use for a facility like this as roughly 10 million gallons a year — compared to a car wash, a small apartment building, or a McDonald's. This is an informal comparison quoted in coverage, not a permitted/reported figure, so no reportedMgd value is asserted."
     },
     "investmentUsd": 800000000,
     "landAcres": 280,
@@ -40969,6 +41544,42 @@
     "lastUpdated": "2026-07-25",
     "notes": "Microsoft's first self-owned/operated data center in San Jose. Groundbreaking June 10, 2026, target completion 2028. 64-acre site (1657 Alviso-Milpitas Rd), two-building campus. Distinct from the already-tracked Prologis San Jose records.",
     "landAcres": 65,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-becker-mn",
+    "name": "Microsoft Becker Data Center",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.3931821,
+      "lon": -93.8768904,
+      "city": "Becker",
+      "county": "Sherburne",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.mprnews.org/story/2024/02/21/xcel-energy-sells-land-in-becker-to-microsoft-for-data-center",
+        "label": "Xcel Energy sells land in Becker to Microsoft for data center",
+        "publisher": "MPR News",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.inforum.com/news/minnesota/as-hyperscale-data-centers-boom-minnesotas-projects-are-confronting-regulatory-and-environmental-realities",
+        "label": "As hyperscale data centers boom, Minnesota's projects are confronting regulatory and environmental realities",
+        "publisher": "InForum",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Microsoft bought ~295 acres from Xcel Energy near the Sherco coal plant in Becker for ~$17.7M (closed 2024-02-12) 'with the intent' to build a data center. As of Oct 2025 no formal plans had been submitted to the city. Distinct site/operator from the already-tracked, suspended Amazon Becker project (~348 acres, same area; locally nicknamed 'Core Ridge') — not a duplicate.",
+    "landAcres": 295,
     "facilityType": "data_center"
   },
   {
@@ -43934,6 +44545,35 @@
     "facilityType": "data_center"
   },
   {
+    "id": "monticello-tech-park-frattalone-mn",
+    "name": "Monticello Tech Park (Monticello Tech LLC / Frattalone)",
+    "operator": "Frattalone Companies (via Monticello Tech, LLC)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.298583,
+      "lon": -93.7994056,
+      "city": "Monticello",
+      "county": "Wright",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.hometownsource.com/monticello_times/two-data-center-proposals-on-the-table-in-monticello/article_502daa86-6ea3-4728-a1f5-88ac70cbc7f7.html",
+        "label": "Two data center proposals on the table in Monticello",
+        "publisher": "Monticello Times / Hometown Source",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "East of Highway 25, south of 85th Street NW in Monticello's Orderly Annexation Area. Up to 3M sq ft across multiple ~300,000 sq ft buildings; estimated $2.5-5B investment across a phased, multi-year buildout. Comprehensive Plan amendment approved Feb 2026; annexation petitions filed April 2026; AUAR environmental review underway, expected complete late winter 2026.",
+    "landAcres": 550,
+    "facilityType": "data_center"
+  },
+  {
     "id": "morgan-valley-energy-center-ia",
     "name": "Morgan Valley Energy Center",
     "operator": "Alliant Energy",
@@ -44520,9 +45160,16 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.arconational.com/nebius-independence-mo/",
+        "label": "Nebius AI Factory | Independence, MO",
+        "publisher": "ARCO",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-24",
     "notes": "Nebius Group's (Nasdaq: NBIS) first gigawatt-scale US data center project. Located in Eastgate Commerce Center, off Little Blue Parkway and Missouri Highway 78 in eastern Independence. Up to 10 buildings planned. Phase 1 operational target Q2 2027; full campus completion 2028–2029. Projected $30–50M annual tax revenue for Independence. Separate Nebius facility exists at former Kansas City Star printing press building ~20 miles west (not this record). Coordinates approximate for Eastgate Commerce Center in eastern Independence. The $150.6B bond authorization is a Missouri Chapter 100 IDRB structure; bonds are privately issued and owned by Nebius — no city credit exposure.",
     "energy": {
       "source": "mixed",
@@ -46942,6 +47589,58 @@
     }
   },
   {
+    "id": "oppidan-apple-valley-technology-park-mn",
+    "name": "Apple Valley Technology Park (Oppidan/Rockport)",
+    "operator": "Oppidan Investment Company",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.7546223,
+      "lon": -93.1731744,
+      "city": "Apple Valley",
+      "county": "Dakota",
+      "postalCode": "55124",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.hometownsource.com/sun_thisweek/community/apple_valley/apple-valley-continues-to-deny-data-center-use/article_4c1fcb85-2200-4737-8209-31a6b789b138.html",
+        "label": "Apple Valley continues to deny data center use",
+        "publisher": "Sun Thisweek / Hometown Source",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.limitless-news.com/local/apple-valley-technology-park-update",
+        "label": "Apple Valley Planning Commission Recommends Denial of Proposed Data Center Project",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://southmetroscoop.com/blogs/apple-valley-data-center-denied-full-story",
+        "label": "Apple Valley Just Killed a 1-Million-Sq-Ft Data Center",
+        "publisher": "South Metro Scoop",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Five-building, ~1.05M sq ft campus proposed on the former Fischer Aggregate/AVR sand-and-gravel site (Orchard Place) southwest of County Road 42 and Pilot Knob Road; developer claimed ~$1.08B construction-phase GDP contribution. Denial was final after the developer's extension expired 2026-03-31.",
+    "landAcres": 134,
+    "jobs": {
+      "permanent": 200,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "City council unanimously rejected the project 2026-03-26, following the planning commission's denial recommendation, citing conflicts with the city's Comprehensive Plan and inability to fund required water-treatment expansion.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "oppidan-des-moines-ia",
     "name": "Oppidan Des Moines Data Center",
     "operator": "Oppidan",
@@ -47348,13 +48047,14 @@
     "id": "patmos-kansas-city-mo",
     "name": "Patmos KC Star Building Campus",
     "operator": "Patmos Hosting",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 39.0997,
       "lon": -94.5786,
       "city": "Kansas City",
       "county": "Jackson",
+      "street": "1601 McGee St",
       "state": "MO",
       "precision": "exact"
     },
@@ -47367,6 +48067,12 @@
         "date": "2026",
         "note": "Patmos Hosting redeveloping the former Kansas City Star building into a ~35 MW, ~$1B data center",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-08-24",
+        "note": "Local TV coverage from 2026-01-12 reports Patmos 'has customers with equipment online' at the running Kansas City Star building data center, indicating a genuine transition from under_construction to operational even as the broader retrofit continues in phases.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -47376,13 +48082,28 @@
         "publisher": "Blackridge Research",
         "retrievedAt": "2026-07-07",
         "kind": "other"
+      },
+      {
+        "url": "https://rebusinessonline.com/patmos-receives-100m-c-pace-loan-for-redevelopment-of-kansas-city-star-building-into-data-center/",
+        "label": "Patmos Receives $100M C-PACE Loan for Redevelopment of Kansas City Star Building into Data Center",
+        "publisher": "REBusinessOnline",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kctv5.com/2026/01/12/company-transforming-downtown-kansas-city-landmark-announces-expansion/",
+        "label": "Former Kansas City Star building houses data company Patmos",
+        "publisher": "KCTV5",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
+    "lastUpdated": "2026-08-24",
     "notes": "~$1B redevelopment of the former Kansas City Star building into a ~35 MW data center, Jackson County. Distinct (downtown KC, Jackson County) from the Lambda/Google/Meta Kansas City sites. Single-tracker source → confidence reported. Coordinates are the Kansas City centroid.",
     "energy": {
       "source": "grid"
     },
+    "landAcres": 5,
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -53149,6 +53870,9 @@
       "state": "MN",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 20
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -53178,9 +53902,16 @@
         "publisher": "Glencoe News",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.glencoenews.com/articles/featured-mcc/revolve-labs-announces-new-high-performance-data-center-in-glencoe/",
+        "label": "Revolve Labs announces new high-performance data center in Glencoe",
+        "publisher": "Glencoe News",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-24",
     "notes": "Revolve Labs has operated a bitcoin-mining facility in Glencoe's industrial area since 2021. Separately, the Glencoe City Council approved a rezoning on Nov. 6, 2025 for a new first-phase 20 MW AI/HPC data center (reported $40-60M, ~6.2 acres, requiring a new substation); it is not independently confirmed whether the new build occupies the same parcel as the existing mine, so both are represented here as one site record. The 20 MW figure is the announced first phase of the new build, not current operating capacity.",
     "landAcres": 6.2,
     "facilityType": "crypto_mining"
@@ -54953,6 +55684,35 @@
     "aiClassification": "likely"
   },
   {
+    "id": "scannell-monticello-tech-park-mn",
+    "name": "Scannell Properties Monticello Tech Park",
+    "operator": "Scannell Properties LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.2914854,
+      "lon": -93.8499172,
+      "city": "Monticello",
+      "county": "Wright",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.hometownsource.com/monticello_times/two-data-center-proposals-on-the-table-in-monticello/article_502daa86-6ea3-4728-a1f5-88ac70cbc7f7.html",
+        "label": "Two data center proposals on the table in Monticello",
+        "publisher": "Monticello Times / Hometown Source",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Located between the Otter Creek industrial park and 90th Street NW, adjacent to Bertram Chain of Lakes Regional Park. Roughly four buildings totaling ~1.3M sq ft (~320,000 sq ft each). Comprehensive Plan amendment approved May 2026; annexation petitions not yet filed as of the source date; investment amount not disclosed.",
+    "landAcres": 106,
+    "facilityType": "data_center"
+  },
+  {
     "id": "scott-data-center-omaha-ne",
     "name": "Scott Data Center",
     "operator": "Scott Data",
@@ -55507,6 +56267,43 @@
     "notes": "Formerly T5 Data Centers (T5@LA), built 2011 (~$30M construction cost); sold to Serverfarm + NantWorks for $71M in April 2021 and rebranded LAX1. Capacity corrected: Serverfarm's own current site discloses 17.3MW IT capacity / 26MVA utility capacity (not the 22MW figure some discovery leads cite, which conflates the 2021 acquisition press release's '22 MVA' apparent-power figure with real MW); datacenterHawk independently corroborates ~18.3MW commissioned. aiClassification set to 'likely' on the strength of facility-specific 'AI-ready... liquid cooling... 200 W/sq ft' language on Serverfarm's current site, though no named AI/HPC tenant was confirmed. Distinct from an unrelated, separate 2026 community-opposition story at 750 North Nash Street (a different, proposed, since-withdrawn project) - no opposition attaches to this facility.",
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "serverfarm-titan-moses-lake-wa",
+    "name": "TiTAN (Serverfarm Moses Lake)",
+    "operator": "Serverfarm LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.1554,
+      "lon": -119.25,
+      "city": "Moses Lake",
+      "county": "Grant",
+      "street": "4949 Randolph Rd NE",
+      "postalCode": "98837",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 22
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.serverfarmllc.com/moses-lake-data-center/",
+        "label": "TiTAN | Moses Lake, Washington Data Center",
+        "publisher": "Serverfarm",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-22",
+    "notes": "Former US Titan missile-defense command center repurposed by Serverfarm (ex-Cyxtera MWh1); two buildings totaling 413,000 sq ft; a new 120MW substation sits adjacent to the campus. Distinct site from the tracked Bitfarms and Salcido Wheeler facilities in Moses Lake.",
+    "energy": {
+      "source": "hydro",
+      "notes": "Nearly 100% hydroelectric power via nearby Columbia River dams; ~$0.026/kWh."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "servistar-westfield-ma",
@@ -56828,6 +57625,49 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "stack-infrastructure-goldendale-data-center-wa",
+    "name": "STACK Infrastructure Goldendale Data Center",
+    "operator": "STACK Infrastructure",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.8213,
+      "lon": -120.8217,
+      "city": "Goldendale",
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 958
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tricitiesbusinessnews.com/articles/yakamas-protest-clean-energy-project-on-sacred-site",
+        "label": "Yakamas protest clean energy project on sacred site to power data center",
+        "publisher": "Tri-Cities Area Journal of Business (via Oregon Capital Chronicle)",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/klickitat-county-wa-data-center-wa--61a57f2b-6d60-4d2e-a38e-ee726e2a16e3",
+        "label": "Klickitat County, WA Data Center (STACK Infrastructure)",
+        "publisher": "More Than Just Parks Data Center Tracker",
+        "retrievedAt": "2026-08-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-22",
+    "notes": "Identified via a 2022 Puget Sound Energy interconnection filing describing a 958MW STACK data center in 'study phase,' sited on a portion of a 700-acre former aluminum smelter (ex-Lockheed Martin) near the John Day Dam. STACK has not publicly confirmed its involvement.",
+    "community": {
+      "status": "opposed",
+      "notes": "Yakama Nation members and environmental groups protest the adjacent Goldendale pumped-storage project on the sacred site of Pushpum, which would supply up to 80% of its output to this data center.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "stack-nal01-new-albany-oh",
@@ -63366,6 +64206,7 @@
       "lon": -93.152,
       "city": "Farmington",
       "county": "Dakota",
+      "street": "2830 W. 220th St.",
       "state": "MN",
       "precision": "approximate"
     },
@@ -63402,10 +64243,18 @@
         "publisher": "City of Farmington, MN (official)",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/5b-data-center-park-farmington-110700186.html",
+        "label": "$5B data center park in Farmington moves forward despite objections from some residents",
+        "publisher": "Yahoo News",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-24",
     "notes": "Denver-based land developer Tract's speculative hyperscale campus at the former Fountain Valley Golf Club (2830 220th St W) plus adjacent Farmington school-district land, Dakota County. Final plat/PUD unanimously approved by Planning Commission Nov 12, 2024; City Council approved final plat/PUD Nov 18, 2024 and a development contract Dec 2, 2024. Tract closed on the golf-course land purchase Feb 10, 2026 ($18M, per a Tract exec, injecting ~$3,000/student into the school district). City Council split the Technology Park into two phases in April 2026; recording deadline for the final plat extended to May 18, 2026. END USER NOT PUBLICLY DISCLOSED as of source dates — Tract builds speculative 'powered shell' campuses for undisclosed hyperscale tenants, so treat operator as the developer, not a confirmed end-user. Two lawsuits pending (Castle Rock Township + Farmington residents) over water use, noise, and setbacks; judge denied the city's motion to dismiss in November 2025/2026. Facility scope: up to 12 buildings, 2.5M+ sq ft, plus 2 admin buildings. Coordinates are an approximate estimate for 220th St W south of downtown Farmington — not geocoded this session, verify before publish. Operating entities: MNLCO Farmington LLC / MNLCO Farmington Two LLC.",
+    "investmentUsd": 5000000000,
     "landAcres": 340,
     "facilityType": "data_center"
   },
@@ -63790,6 +64639,35 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "trammell-crow-lewis-clark-ranch-west-richland-wa",
+    "name": "Trammell Crow Lewis & Clark Ranch Data Center",
+    "operator": "Trammell Crow Company",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 46.3046,
+      "lon": -119.3667,
+      "city": "West Richland",
+      "county": "Benton",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tricitiesbusinessnews.com/articles/west-richland-data-center",
+        "label": "Company eyes West Richland for future data center",
+        "publisher": "Tri-Cities Area Journal of Business",
+        "retrievedAt": "2026-08-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-22",
+    "notes": "Feasibility-stage proposal on part of the 7,000-acre Lewis & Clark Ranch; due diligence and a purchase-and-sale agreement with landowner Frank Tiegs LLC underway as of Dec 2025; no capacity or investment figure disclosed; BPA power availability cited as the open question.",
+    "landAcres": 500,
+    "facilityType": "data_center"
   },
   {
     "id": "trex-peakdigital-orofino-id",
@@ -64835,6 +65713,39 @@
     "facilityType": "data_center"
   },
   {
+    "id": "vaultas-st-cloud-mn",
+    "name": "Vaultas St. Cloud",
+    "operator": "Vaultas",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5405392,
+      "lon": -94.2023528,
+      "city": "St. Cloud",
+      "county": "Stearns",
+      "street": "3701 18th St S",
+      "postalCode": "56301",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 0.6
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.stcloudlive.com/news/local/to-plug-in-or-not-to-plug-in-that-is-the-question-for-area-cities-about-data-centers-1",
+        "label": "To plug in or not to plug in? That is the question for area cities about data centers",
+        "publisher": "St. Cloud Live",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Modular edge-computing facility with a starting capacity of 0.5-0.6MW, expandable by stacking additional nodes. As of Feb 2026 construction had not yet begun despite a stated 2026 opening target.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "vermaland-la-osa-eloy-az",
     "name": "La Osa Data Center Park",
     "operator": "Vermaland LLC",
@@ -65507,6 +66418,54 @@
     "energy": {
       "utility": "Seattle City Light"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "white-cloud-acres-barnard-mo",
+    "name": "White Cloud Acres",
+    "operator": "Scale Microgrids",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.2528,
+      "lon": -94.9436,
+      "city": "Barnard",
+      "county": "Nodaway",
+      "street": "Near 35045 Jet Road, east of Highway 71",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://nodaway.org/6270/proposed-4-billion-white-cloud-acres-ai-data-center-in-rural-barnard/",
+        "label": "Proposed $4 Billion White Cloud Acres AI Data Center in Rural Barnard",
+        "publisher": "Nodaway County, MO",
+        "retrievedAt": "2026-08-24",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.kxcv.org/news/2026-03-11/with-little-public-notice-data-center-developers-consider-nodaway-county",
+        "label": "With little public notice, data center developers consider Nodaway County",
+        "publisher": "KXCV-KRNW",
+        "retrievedAt": "2026-08-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-24",
+    "notes": "Scale Microgrids (acquired by EQT Transition Infrastructure, Jan 2025) proposal remains in the planning/discussion phase as of 2026-04-29 reporting; Nodaway County enacted a temporary moratorium on new data center proposals dated 2026-07-21. Organized opposition group 'Nodaway Says No' has drawn 7,000+ petition signatures. Nodaway County has no zoning ordinance, limiting regulatory oversight.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Developer plans co-located on-site natural-gas generation; local reporting also associates the project with Evergy's separate ~440 MW Mullin Creek plant nearby, though Evergy describes Mullin Creek as general grid capacity, not a dedicated PPA."
+    },
+    "water": {
+      "reportedMgd": 0.2,
+      "notes": "~200,000 gallons/day per county reporting; cooling type not specified."
+    },
+    "investmentUsd": 4000000000,
     "facilityType": "data_center"
   },
   {

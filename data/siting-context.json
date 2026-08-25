@@ -1093,6 +1093,25 @@
       "rock": "Sandstone"
     }
   },
+  "apricus-rock-point-data-center-west-plains-wa": {
+    "nearestWater": {
+      "name": "Deep Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "aps-desert-sun-power-plant-gila-bend-az": {
     "nearestWater": {
       "name": "Sauceda Wash",
@@ -1114,6 +1133,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "archer-datacenter-faribault-mn": {
+    "nearestWater": {
+      "name": "Cannon River",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 15.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "ardent-pittsburgh-mckees-rocks-pa": {
@@ -1246,6 +1284,25 @@
     },
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "armory-innovation-district-st-louis-mo": {
+    "nearestWater": {
+      "name": "Compton Hill Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
     }
   },
@@ -5026,6 +5083,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "crg-festus-data-center-mo": {
+    "nearestWater": {
+      "name": "Plattin Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
+    }
+  },
   "crosland-southeast-matthews-project-accelerate-nc": {
     "nearestWater": {
       "name": "Fourmile Creek",
@@ -5119,9 +5195,9 @@
   },
   "crypto-colo-center-mclouth-ks": {
     "nearestWater": {
-      "name": "Lake Dabanawa",
-      "kind": "lake",
-      "distanceMi": 4
+      "name": "Fall Creek",
+      "kind": "river",
+      "distanceMi": 0.5
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -5460,6 +5536,29 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "cyrusone-pnw1-quincy-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 3.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "cyrusone-sangamon-talkington-township-il": {
@@ -5903,6 +6002,25 @@
     },
     "aquifer": {
       "name": "Ordovician Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "diamond-farms-gateway-digital-villa-ridge-mo": {
+    "nearestWater": {
+      "name": "Brush Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
     }
   },
@@ -7482,6 +7600,25 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "elk-river-capital-swervo-mn": {
+    "nearestWater": {
+      "name": "Orono Lake",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "emerald-lakes-etheridge-lakes-data-center-chesapeake-va": {
@@ -10487,6 +10624,48 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "h5-data-centers-quincy-campus-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 3.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "h5-data-centers-seattle-denny-way-wa": {
+    "nearestWater": {
+      "name": "Lake Union",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "h5-data-centers-st-paul-mn": {
     "nearestWater": {
       "name": "Lake Como",
@@ -10580,6 +10759,25 @@
     "aquifer": {
       "name": "Pacific Northwest Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "hematite-bitcoin-mining-jefferson-county-mo": {
+    "nearestWater": {
+      "name": "Fisher Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
     }
   },
   "hickory-grove-generating-station-ia": {
@@ -12174,6 +12372,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "lumon-solutions-marshfield-mo": {
+    "nearestWater": {
+      "name": "Turnbo Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 13.3
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
+    }
+  },
   "lunavi-cheyenne-wy": {
     "nearestWater": {
       "name": "Wyoming Hereford Ranch Reservoir Number One",
@@ -12465,6 +12682,25 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "merkle-standard-usk-wa": {
+    "nearestWater": {
+      "name": "Pend Oreille River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "meta-aiken-county-sc": {
@@ -13099,6 +13335,21 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "microsoft-becker-mn": {
+    "nearestWater": {
+      "name": "Elk River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     }
   },
   "microsoft-boydton-bn-campus-mecklenburg-va": {
@@ -13885,6 +14136,25 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Carbonate-rock Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "monticello-tech-park-frattalone-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "morgan-valley-energy-center-ia": {
@@ -14885,6 +15155,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "oppidan-apple-valley-technology-park-mn": {
+    "nearestWater": {
+      "name": "Gerhardt Lake",
+      "kind": "lake",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "oppidan-des-moines-ia": {
@@ -17314,6 +17603,25 @@
       "label": "Extremely High (>80%)"
     }
   },
+  "scannell-monticello-tech-park-mn": {
+    "nearestWater": {
+      "name": "Bertram Lake",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "scott-data-center-omaha-ne": {
     "nearestWater": {
       "name": "Little Papillion Creek",
@@ -17478,6 +17786,29 @@
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "serverfarm-titan-moses-lake-wa": {
+    "nearestWater": {
+      "name": "Crab Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -17951,6 +18282,25 @@
     "aquifer": {
       "name": "Willamette Lowland Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "stack-infrastructure-goldendale-data-center-wa": {
+    "nearestWater": {
+      "name": "Little Klickitat River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "stack-nal01-new-albany-oh": {
@@ -20016,6 +20366,29 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "trammell-crow-lewis-clark-ranch-west-richland-wa": {
+    "nearestWater": {
+      "name": "Yakima River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "trex-peakdigital-orofino-id": {
     "nearestWater": {
       "name": "Orofino Creek",
@@ -20407,6 +20780,21 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "vaultas-st-cloud-mn": {
+    "nearestWater": {
+      "name": "Sauk River",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    }
+  },
   "vermaland-la-osa-eloy-az": {
     "nearestWater": {
       "name": "Santa Cruz River",
@@ -20614,6 +21002,21 @@
     "aquifer": {
       "name": "Puget Sound Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "white-cloud-acres-barnard-mo": {
+    "nearestWater": {
+      "name": "Jenkins Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "white-oak-technology-park-columbia-county-ga": {
