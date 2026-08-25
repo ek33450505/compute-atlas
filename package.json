@@ -35,6 +35,7 @@
     "@neondatabase/serverless": "^1.1.0",
     "@tanstack/react-table": "^8.21.3",
     "@turf/circle": "^7.3.5",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
