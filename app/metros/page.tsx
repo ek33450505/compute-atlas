@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getFacilitiesByMetro } from "@/lib/data";
 import { METROS } from "@/lib/metros";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 
 export const revalidate = 3600;
 
@@ -49,20 +50,11 @@ export default async function MetrosIndexPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Metro areas
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          By metro
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Curated clusters of counties driving the buildout, from Northern
-          Virginia to the Permian Basin. Each metro links to the full,
-          source-cited list.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Metro areas"
+        title="By metro"
+        dek="Curated clusters of counties driving the buildout, from Northern Virginia to the Permian Basin. Each metro links to the full, source-cited list."
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Metro grid                                                          */}

@@ -13,6 +13,7 @@ import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow, type SurveyStat } from "@/components/survey-stat-row";
 
 export const revalidate = 3600;
@@ -89,24 +90,18 @@ export default async function OppositionPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Community friction
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Data center opposition across the United States
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Where the buildout meets resistance.
-        </p>
+      <PageMasthead
+        eyebrow="Community friction"
+        title="Data center opposition across the United States"
+        dek="Where the buildout meets resistance."
+      >
         <p className="max-w-2xl text-base text-muted-foreground">
           Tracked sites with documented local friction — lawsuits, moratoria,
           referendums, and formal opposition. This is not a claim about the
           buildout as a whole; it is the sourced subset facing pushback, and
           every entry links to a source-cited record.
         </p>
-        <div className="border-t border-border" />
-      </header>
+      </PageMasthead>
 
       {total === 0 ? (
         <p className="text-base text-muted-foreground">

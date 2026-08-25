@@ -19,6 +19,7 @@ import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatCapacity, formatLocation, formatPower, AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { WatchButton } from "@/components/subscribe/watch-button";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { aiClassificationEnum } from "@/lib/schema";
@@ -140,19 +141,17 @@ export default async function StatePage({
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          State profile
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Data centers in {stateName}
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {stateName} &middot; {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
-        </p>
+      <PageMasthead
+        eyebrow="State profile"
+        title={<>Data centers in {stateName}</>}
+        dek={
+          <>
+            {stateName} &middot; {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
+          </>
+        }
+      >
         <WatchButton targetType="state" targetId={code} label={`Watch ${stateName}`} />
-        <div className="border-t border-border" />
-      </header>
+      </PageMasthead>
 
       {/* ------------------------------------------------------------------ */}
       {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}

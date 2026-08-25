@@ -5,6 +5,7 @@ import { getStates, getStateSummary, getAllFacilities } from "@/lib/data";
 import { formatPower } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -62,18 +63,15 @@ export default async function StatesIndexPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          By geography
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          States
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {rows.length} states &middot; {totalFacilities} facilities tracked
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="By geography"
+        title="States"
+        dek={
+          <>
+            {rows.length} states &middot; {totalFacilities} facilities tracked
+          </>
+        }
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* State grid                                                          */}

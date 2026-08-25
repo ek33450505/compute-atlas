@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getOperators, getOperatorSummary, getAllFacilities, operatorSlug } from "@/lib/data";
 import { formatPower } from "@/lib/format";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -73,19 +74,16 @@ export default async function OperatorsIndexPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          By operator
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Operators
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {rows.length} operators &middot; {disclosed.length} with disclosed
-          capacity &middot; {totalFacilities} facilities tracked
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="By operator"
+        title="Operators"
+        dek={
+          <>
+            {rows.length} operators &middot; {disclosed.length} with disclosed
+            capacity &middot; {totalFacilities} facilities tracked
+          </>
+        }
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Operator grid                                                       */}

@@ -20,6 +20,7 @@ import { formatMgd, formatPower } from "@/lib/format";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Explainer } from "@/components/learn/explainer";
+import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 
@@ -271,16 +272,7 @@ export default async function LearnTopicPage({
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Learn
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          {topic.title}
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">{topic.dek}</p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead eyebrow="Learn" title={topic.title} dek={topic.dek} />
 
       {/* ------------------------------------------------------------------ */}
       {/* Cited explainer (editor-approved prose; only some topics have one)  */}

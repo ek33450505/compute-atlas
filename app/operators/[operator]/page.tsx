@@ -14,6 +14,7 @@ import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatCapacity, formatLocation, formatPower } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 
 export const revalidate = 3600;
@@ -102,18 +103,15 @@ export default async function OperatorPage({
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Operator profile
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          {operatorName} data centers
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Operator profile"
+        title={<>{operatorName} data centers</>}
+        dek={
+          <>
+            {summary.count} facilit{summary.count === 1 ? "y" : "ies"} tracked
+          </>
+        }
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}

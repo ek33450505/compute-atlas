@@ -5,6 +5,7 @@ import { getCryptoMiningFacilities, getCryptoMiningStats } from "@/lib/data";
 import { formatCapacity, formatLocation, formatPower, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -70,18 +71,11 @@ export default async function CryptoPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Crypto mining
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Crypto mining facilities in the United States
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Bitcoin and altcoin mining capacity, tracked site by site.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Crypto mining"
+        title="Crypto mining facilities in the United States"
+        dek="Bitcoin and altcoin mining capacity, tracked site by site."
+      />
 
       {stats.count === 0 ? (
         <p className="text-base text-muted-foreground">

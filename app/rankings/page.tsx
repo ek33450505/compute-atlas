@@ -14,6 +14,7 @@ import { formatCapacity, formatLocation, formatPower } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -87,18 +88,11 @@ export default async function RankingsPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Rankings
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Biggest data center projects, largest operators, top states
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          The compute buildout, ranked by tracked capacity.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Rankings"
+        title="Biggest data center projects, largest operators, top states"
+        dek="The compute buildout, ranked by tracked capacity."
+      />
 
       {stats.count === 0 ? (
         <p className="text-base text-muted-foreground">

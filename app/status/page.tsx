@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getStatusCounts } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 
 export const revalidate = 3600;
 
@@ -53,20 +54,17 @@ export default async function StatusIndexPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Lifecycle status
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          By status
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Every tracked site sits in one of {LIFECYCLE_ORDER.length} lifecycle
-          stages: {LIFECYCLE_PROSE}. Each stage links to the full, source-cited
-          list.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Lifecycle status"
+        title="By status"
+        dek={
+          <>
+            Every tracked site sits in one of {LIFECYCLE_ORDER.length} lifecycle
+            stages: {LIFECYCLE_PROSE}. Each stage links to the full, source-cited
+            list.
+          </>
+        }
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Status grid                                                         */}

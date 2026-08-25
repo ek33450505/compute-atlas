@@ -14,6 +14,7 @@ import {
 import { formatCapacity, formatLocation, formatMgd, formatPower, getFacilityMaxMw } from "@/lib/format";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import type { PowerGenerationFacility } from "@/lib/schema";
 import {
@@ -121,18 +122,11 @@ export default async function PowerPage() {
         className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
       >
         <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Power" }]} />
-        <header className="space-y-4 pb-2">
-          <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            Dedicated generation
-          </p>
-          <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-            Behind-the-meter power generation for AI data centers
-          </h1>
-          <p className="text-base text-muted-foreground">
-            No dedicated-generation projects are tracked yet.
-          </p>
-          <div className="border-t border-border" />
-        </header>
+        <PageMasthead
+          eyebrow="Dedicated generation"
+          title="Behind-the-meter power generation for AI data centers"
+          dek="No dedicated-generation projects are tracked yet."
+        />
       </div>
     );
   }
@@ -147,24 +141,11 @@ export default async function PowerPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <header className="space-y-4 pb-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">
-          Dedicated generation
-        </p>
-        <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-          Behind-the-meter power generation for AI data centers
-        </h1>
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Purpose-built generation — most often natural gas, with a growing
-          nuclear and small-modular-reactor cohort — that hyperscalers are
-          financing or contracting to feed AI and compute demand directly.
-          Tracked here as its own facility layer, distinct from the compute
-          campuses it supplies: a dedicated plant built or contracted for a
-          specific offtaker, rather than a data center drawing solely from the
-          grid.
-        </p>
-        <div className="border-t border-border" />
-      </header>
+      <PageMasthead
+        eyebrow="Dedicated generation"
+        title="Behind-the-meter power generation for AI data centers"
+        dek="Purpose-built generation — most often natural gas, with a growing nuclear and small-modular-reactor cohort — that hyperscalers are financing or contracting to feed AI and compute demand directly. Tracked here as its own facility layer, distinct from the compute campuses it supplies: a dedicated plant built or contracted for a specific offtaker, rather than a data center drawing solely from the grid."
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Survey stats row                                                    */}
