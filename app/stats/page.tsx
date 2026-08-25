@@ -534,7 +534,8 @@ export default async function StatsPage() {
           <strong className="font-medium text-foreground">sourced</strong> value
           in that dimension — not average completeness. A facility with any
           documented energy source, utility, or note counts as covered for
-          energy; the same logic applies across all six dimensions.
+          energy; the same logic applies across all {COVERAGE_DIMENSIONS.length}{" "}
+          dimensions.
         </p>
         <div className="space-y-4">
           {COVERAGE_DIMENSIONS.map(({ key, label }) => {
