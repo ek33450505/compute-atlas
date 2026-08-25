@@ -385,6 +385,18 @@ export async function getFacilityById(id: string): Promise<Facility | undefined>
   return facilities.find((f) => f.id === id);
 }
 
+/**
+ * Returns the facilities matching `ids`, in the order given. Unknown ids are
+ * omitted. Backs the /learn explainer's exemplar lookups — a single
+ * `loadFacilities()` read (already cached, already called by this page's
+ * stat helpers) plus a Map lookup, never N calls to `getFacilityById`.
+ */
+export async function getFacilitiesByIds(ids: string[]): Promise<Facility[]> {
+  const facilities = await loadFacilities();
+  const byId = new Map(facilities.map((f) => [f.id, f]));
+  return ids.map((id) => byId.get(id)).filter((f): f is Facility => f !== undefined);
+}
+
 /** Returns unique 2-letter state codes, sorted A→Z. */
 export async function getStates(): Promise<string[]> {
   const facilities = await loadFacilities();

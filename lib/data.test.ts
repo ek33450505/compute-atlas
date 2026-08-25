@@ -4,6 +4,7 @@ import facilitiesRaw from "@/data/facilities.json";
 import {
   getAllFacilities,
   getFacilityById,
+  getFacilitiesByIds,
   getFacilityByIdCached,
   withJsonFallback,
   getStates,
@@ -79,6 +80,56 @@ describe("getFacilityById", () => {
 
   it("returns undefined for an unknown id", async () => {
     expect(await getFacilityById("not-a-real-facility")).toBeUndefined();
+  });
+});
+
+describe("getFacilitiesByIds", () => {
+  it("returns facilities matching known ids", async () => {
+    const ids = ["meta-prineville-or", "xai-colossus-memphis-tn"];
+    const result = await getFacilitiesByIds(ids);
+    expect(result).toHaveLength(2);
+    expect(result[0]?.id).toBe("meta-prineville-or");
+    expect(result[0]?.operator).toBe("Meta");
+    expect(result[1]?.id).toBe("xai-colossus-memphis-tn");
+  });
+
+  it("preserves input order, not dataset order", async () => {
+    // xai-colossus (index 1113) and mara-granbury (index 651) appear in reverse
+    // dataset order. Requesting them as [xai, mara] must return them in that
+    // order, not dataset order [mara, xai] — this test fails if order-preservation
+    // is removed.
+    const ids = ["xai-colossus-memphis-tn", "mara-granbury-hood-tx"];
+    const result = await getFacilitiesByIds(ids);
+    expect(result).toHaveLength(2);
+    expect(result[0]?.id).toBe("xai-colossus-memphis-tn");
+    expect(result[1]?.id).toBe("mara-granbury-hood-tx");
+  });
+
+  it("omits unknown ids without throwing", async () => {
+    const ids = ["meta-prineville-or", "not-a-real-facility", "xai-colossus-memphis-tn"];
+    const result = await getFacilitiesByIds(ids);
+    expect(result).toHaveLength(2);
+    expect(result.map((f) => f.id)).toEqual([
+      "meta-prineville-or",
+      "xai-colossus-memphis-tn",
+    ]);
+  });
+
+  it("returns empty array for empty input", async () => {
+    const result = await getFacilitiesByIds([]);
+    expect(result).toEqual([]);
+  });
+
+  it("handles duplicate ids by returning duplicates", async () => {
+    // The implementation maps input ids to facilities, so duplicates in input
+    // produce duplicates in output (each mapped from byId.get).
+    const ids = ["meta-prineville-or", "meta-prineville-or"];
+    const result = await getFacilitiesByIds(ids);
+    expect(result).toHaveLength(2);
+    expect(result[0]?.id).toBe("meta-prineville-or");
+    expect(result[1]?.id).toBe("meta-prineville-or");
+    // Verify they are the same object (or at least equal).
+    expect(result[0]).toEqual(result[1]);
   });
 });
 
