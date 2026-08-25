@@ -252,15 +252,19 @@ export async function buildMetroRoutes(): Promise<MetadataRoute.Sitemap> {
 
 /**
  * Builds the /learn index + 5 per-topic route entries for the sitemap.
- * `GLOSSARY_TOPICS` (lib/glossary.ts) is a static content registry, not a
- * facility-derived query — unlike buildStatusRoutes/buildMetroRoutes there's
- * no dataset to await, so this builder is synchronous (mirrors
- * buildStaticRoutes' sync shape) while still following the index-plus-N-
- * children structure of buildStatusRoutes/buildMetroRoutes. Exported
- * separately so it can be unit-tested without Next.js.
+ * `GLOSSARY_TOPICS` (lib/glossary.ts) is a static content registry, but the
+ * rendered pages are NOT static: each one interpolates live dataset figures
+ * (the stat row and the dataset-grounded paragraph in app/learn/[topic]/
+ * page.tsx), so the page a crawler sees changes when the dataset changes.
+ * `lastModified` therefore derives from the dataset's real max `lastUpdated`,
+ * exactly like buildStatusRoutes/buildMetroRoutes — not `new Date()`, which
+ * would re-stamp "now" on every hourly regeneration and churn the same way
+ * buildStaticRoutes used to. Exported separately so it can be unit-tested
+ * without Next.js.
  */
-export function buildLearnRoutes(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
+export async function buildLearnRoutes(): Promise<MetadataRoute.Sitemap> {
+  const facilities = await getAllFacilities();
+  const lastModified = maxLastUpdated(facilities);
   return [
     {
       url: `${siteConfig.url}/learn`,
@@ -278,18 +282,26 @@ export function buildLearnRoutes(): MetadataRoute.Sitemap {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [staticRoutes, stateRoutes, operatorRoutes, facilityRoutes, statusRoutes, metroRoutes] =
-    await Promise.all([
-      buildStaticRoutes(),
-      buildStateRoutes(),
-      buildOperatorRoutes(),
-      buildFacilityRoutes(),
-      buildStatusRoutes(),
-      buildMetroRoutes(),
-    ]);
+  const [
+    staticRoutes,
+    learnRoutes,
+    stateRoutes,
+    operatorRoutes,
+    facilityRoutes,
+    statusRoutes,
+    metroRoutes,
+  ] = await Promise.all([
+    buildStaticRoutes(),
+    buildLearnRoutes(),
+    buildStateRoutes(),
+    buildOperatorRoutes(),
+    buildFacilityRoutes(),
+    buildStatusRoutes(),
+    buildMetroRoutes(),
+  ]);
   return [
     ...staticRoutes,
-    ...buildLearnRoutes(),
+    ...learnRoutes,
     ...stateRoutes,
     ...operatorRoutes,
     ...facilityRoutes,
