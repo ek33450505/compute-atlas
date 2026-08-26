@@ -337,6 +337,23 @@ export function FacilityMap({
       // Globe projection unsupported (older maplibre) — fall back to mercator silently.
     }
 
+    // Drag always pans; tilt and rotation are reachable only through the
+    // explicit ViewToggle3D (pitch) and CompassRose (bearing reset) controls —
+    // never through a drag/touch gesture. This is deliberate: don't restore the
+    // default MapLibre bindings later. dragRotate={false}/touchPitch={false} on
+    // <Map> below cover the mouse (ctrl+drag / right-drag) and single-touch
+    // pitch gestures; disableRotation() here additionally strips the
+    // two-finger touch-rotate gesture bundled into the pinch-zoom handler.
+    // The `?.` guards the (unexpected) case where touchZoomRotate isn't
+    // present on this maplibre build rather than throwing — do NOT disable
+    // touchZoomRotate wholesale, as that also carries pinch-to-zoom, which
+    // must keep working on mobile.
+    try {
+      mapRef.current?.getMap().touchZoomRotate?.disableRotation();
+    } catch {
+      // touchZoomRotate unavailable on this maplibre version — fail soft.
+    }
+
     const strip = () => {
       mapEl
         .querySelectorAll<HTMLElement>('.maplibregl-marker[role="button"]')
@@ -410,6 +427,15 @@ export function FacilityMap({
           style={{ width: "100%", height: "100%" }}
           reuseMaps
           attributionControl={false}
+          // Drag must always pan, never tilt/rotate — tilt is opt-in via
+          // ViewToggle3D and bearing reset via CompassRose only (see the
+          // touchZoomRotate.disableRotation() call in handleMapLoad for the
+          // touch two-finger-rotate counterpart). Deliberate: previously
+          // ctrl+drag (or right-drag) — a stray modifier on a trackpad, easy
+          // to trigger by accident — tilted the map into 3D when a user only
+          // meant to pan. Do not restore these default MapLibre bindings.
+          dragRotate={false}
+          touchPitch={false}
           onLoad={handleMapLoad}
           onClick={handleMapClick}
           onZoomEnd={(e) => setZoom(e.viewState.zoom)}
