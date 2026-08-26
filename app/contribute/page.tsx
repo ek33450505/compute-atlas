@@ -81,7 +81,7 @@ export default function ContributePage() {
           independent and growing. Either way, every figure stays traceable to a
           public source:{" "}
           <strong className="font-medium text-foreground">
-            sponsorship never changes what the record says.
+            support never changes what the record says.
           </strong>
         </p>
         <SupportCta />
