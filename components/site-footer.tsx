@@ -101,7 +101,7 @@ export function SiteFooter() {
               </li>
               <li>
                 <a
-                  href={siteConfig.sponsorUrl}
+                  href={siteConfig.githubSponsorsUrl}
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
