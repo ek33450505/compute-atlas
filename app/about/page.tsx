@@ -9,6 +9,7 @@ import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
+import { SupportCta } from "@/components/support-cta";
 
 export const metadata: Metadata = {
   title: "About & method",
@@ -599,15 +600,13 @@ export default async function AboutPage() {
           the same across everything I build: tools that are verifiable,
           community-stewarded, and honest about their limits.
         </p>
-        <a
-          href={siteConfig.sponsorUrl}
-          target="_blank"
-          rel="noreferrer noopener"
-          aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
-          className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          Sponsor on GitHub <span aria-hidden="true">↗</span>
-        </a>
+        <SupportCta />
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          <Link href="/support" className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
+            More on how Compute Atlas is funded
+          </Link>{" "}
+          &mdash; including what support does not buy.
+        </p>
       </section>
 
       {/* Contribute / corrections */}

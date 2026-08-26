@@ -16,6 +16,7 @@ import {
 } from "@/lib/data";
 import { formatMgd, formatPower } from "@/lib/format";
 import { ENERGY_SOURCE_ENTRIES, COOLING_TYPE_ENTRIES } from "@/lib/energy";
+import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Explainer } from "@/components/learn/explainer";
@@ -112,11 +113,13 @@ async function getTopicContent(slug: string): Promise<TopicContent | undefined> 
           total > 0
             ? `${total} tracked data center${total === 1 ? " carries" : "s carry"} an AI classification today — confirmed, likely, or mixed use — out of the facilities in Compute Atlas's dataset.`
             : "No tracked data center carries an AI classification yet.",
-        stats: [
-          { value: String(aiCounts.confirmed), label: "Confirmed" },
-          { value: String(aiCounts.likely), label: "Likely" },
-          { value: String(aiCounts.mixed_use), label: "Mixed use" },
-        ],
+        // Labels and order come from lib/ai-classification.ts — the same source
+        // /about and /ai render from. Hand-writing them here was a fourth copy
+        // of three strings PR #181 collapsed everywhere else.
+        stats: AI_CLASSIFICATION_ENTRIES.map(({ key, label }) => ({
+          value: String(aiCounts[key]),
+          label,
+        })),
         crossLink: { href: "/ai", label: "the AI data center hub" },
       };
     }

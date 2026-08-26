@@ -8,6 +8,7 @@ const ROUTES = [
   "/table",
   "/stats",
   "/about",
+  "/support",
   "/facilities/meta-prineville-or",
 ] as const;
 
