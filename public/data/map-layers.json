@@ -7,30 +7,30 @@
   },
   "drought": {
     "attribution": "U.S. Drought Monitor (NDMC / USDA / NOAA)",
-    "asOf": "2026-08-25"
+    "asOf": "2026-08-26"
   },
   "waterStress": {
     "attribution": "WRI Aqueduct 4.0 (CC BY 4.0)",
     "license": "CC-BY-4.0",
-    "total": 1113,
+    "total": 1134,
     "distribution": {
-      "Extremely High (>80%)": 155,
-      "High (40-80%)": 218,
-      "Medium - High (20-40%)": 248,
-      "Low - Medium (10-20%)": 179,
-      "Low (<10%)": 302,
-      "Arid and Low Water Use": 11
+      "Extremely High (>80%)": 159,
+      "High (40-80%)": 226,
+      "Medium - High (20-40%)": 251,
+      "Low - Medium (10-20%)": 182,
+      "Low (<10%)": 304,
+      "Arid and Low Water Use": 12
     }
   },
   "groundwaterDecline": {
     "attribution": "WRI Aqueduct 4.0 (CC BY 4.0)",
     "license": "CC-BY-4.0",
-    "total": 290,
+    "total": 296,
     "distribution": {
-      "High (4-8 cm/y)": 62,
+      "High (4-8 cm/y)": 63,
       "Medium - High (2-4 cm/y)": 19,
-      "Low - Medium (0-2 cm/y)": 207,
-      "Low (<0 cm/y)": 2
+      "Low - Medium (0-2 cm/y)": 211,
+      "Low (<0 cm/y)": 3
     }
   },
   "aquifers": {

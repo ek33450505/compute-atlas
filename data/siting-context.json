@@ -744,6 +744,29 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "amazon-pecos-county-data-center-tx": {
+    "nearestWater": {
+      "name": "Comanche Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 34.6
+    },
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Edwards-trinity Aquifer System",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "amazon-perry-township-stark-oh": {
     "nearestWater": {
       "name": "Nimishillen Creek",
@@ -2034,6 +2057,48 @@
       "rock": "Carbonate-rock"
     }
   },
+  "aws-project-eagle-boling-wharton-county-tx": {
+    "nearestWater": {
+      "name": "Caney Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "aws-project-spectrum-somervell-county-tx": {
+    "nearestWater": {
+      "name": "Paluxy River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Edwards-trinity Aquifer System",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "aws-richmond-county-nc": {
     "nearestWater": {
       "name": "Hitchcock Creek",
@@ -2710,6 +2775,63 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "blockchain-digital-infrastructure-collin-county-tx": {
+    "nearestWater": {
+      "name": "Jeans Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
+  "blockchain-digital-infrastructure-reeves-county-tx": {
+    "nearestWater": {
+      "name": "Pecos River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 64.2
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Pecos River Basin Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "blockchain-digital-infrastructure-wise-county-tx": {
+    "nearestWater": {
+      "name": "Martin Branch",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Edwards-trinity Aquifer System",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "blockfusion-niagara-falls-ny": {
     "nearestWater": {
       "name": "Gill Creek",
@@ -2767,6 +2889,44 @@
       "rock": "Carbonate-rock"
     }
   },
+  "blusky-ai-delta-millard-county-ut": {
+    "nearestWater": {
+      "name": "Sevier River",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "blusky-ai-milford-ut": {
+    "nearestWater": {
+      "name": "Beaver River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.6
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "blusky-ai-nephi-ut": {
     "nearestWater": {
       "name": "Salt Creek",
@@ -2818,6 +2978,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "brightnight-red-butte-newcastle-ut": {
+    "nearestWater": {
+      "name": "Shoal Creek",
+      "kind": "river",
+      "distanceMi": 5.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 19.3
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
     }
   },
   "bristolville-25-lordstown-oh": {
@@ -3438,6 +3617,25 @@
     },
     "aquifer": {
       "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cirrus-data-services-midvale-ut": {
+    "nearestWater": {
+      "name": "Jordan River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -5303,6 +5501,21 @@
       "rock": "Sandstone"
     }
   },
+  "cyrusone-bosque-county-thad-hill-tx": {
+    "nearestWater": {
+      "name": "North Bosque River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "cyrusone-chi1-chi3-aurora-il": {
     "nearestWater": {
       "name": "Waubonsie Creek",
@@ -5384,6 +5597,29 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cyrusone-freestone-energy-center-fairfield-tx": {
+    "nearestWater": {
+      "name": "Walnut Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Texas Coastal Uplands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "cyrusone-nas-lemoore-ca": {
@@ -8688,6 +8924,21 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "flexential-kaufman-county-talty-tx": {
+    "nearestWater": {
+      "name": "Little Brushy Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "flexential-las-vegas-downtown-nv": {
@@ -14567,6 +14818,25 @@
       "rock": "Carbonate-rock"
     }
   },
+  "nine-mile-data-myton-duchesne-county-ut": {
+    "nearestWater": {
+      "name": "Duchesne River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "northern-data-pryor-ok": {
     "nearestWater": {
       "name": "Pryor Creek",
@@ -16178,6 +16448,44 @@
       "rock": "Sandstone"
     }
   },
+  "prometheus-hyperscale-kaufman-county-tx": {
+    "nearestWater": {
+      "name": "Big Brushy Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "pronghorn-antelope-cedar-city-ut": {
+    "nearestWater": {
+      "name": "Coal Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 0,
+      "label": "Low (<0 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "prsm-group-cumberland-county-nc": {
     "nearestWater": {
       "name": "Cape Fear River",
@@ -16730,6 +17038,21 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "qumulusai-denton-tx": {
+    "nearestWater": {
+      "name": "Fletcher Branch",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "rack59-oklahoma-city-ok": {
     "nearestWater": {
       "name": "North Canadian River",
@@ -17024,6 +17347,25 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "rellis-data-research-center-bryan-brazos-county-tx": {
+    "nearestWater": {
+      "name": "White Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Texas Coastal Uplands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "renaissance-park-upper-merion-king-of-prussia-pa": {
@@ -20909,6 +21251,25 @@
       "rock": "Sandstone"
     }
   },
+  "volition-spanish-fork-ut": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "voltagrid-covington-power-plant-ga": {
     "nearestWater": {
       "name": "Dried Indian Creek",
@@ -20964,6 +21325,25 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "wells-draw-energy-duchesne-county-ut": {
+    "nearestWater": {
+      "name": "Duchesne River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
     }
   },
   "westblock-shiprock-nm": {
@@ -21196,6 +21576,25 @@
     "aquifer": {
       "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "zenith-tooele-valley-burmester-ut": {
+    "nearestWater": {
+      "name": "Delle Springs",
+      "kind": "river",
+      "distanceMi": 2.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 275,
+      "distanceMi": 26.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "zenith-volts-roswell-chaves-county-data-center-nm": {
