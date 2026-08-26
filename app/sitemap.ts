@@ -24,12 +24,12 @@ function maxLastUpdated(facilities: Facility[]): Date {
 
 /**
  * Stable `lastModified` for genuinely static editorial pages (/about, /api,
- * /contribute) that have no underlying dataset to derive freshness from —
- * using `new Date()` here would churn exactly like the dataset-backed routes
- * did (see buildStaticRoutes below). Bump by hand only when a page's content
- * meaningfully changes, never on every sitemap regeneration.
+ * /contribute, /support) that have no underlying dataset to derive freshness
+ * from — using `new Date()` here would churn exactly like the dataset-backed
+ * routes did (see buildStaticRoutes below). Bump by hand only when a page's
+ * content meaningfully changes, never on every sitemap regeneration.
  */
-const STATIC_PAGE_LAST_MODIFIED = new Date("2026-08-25T00:00:00Z");
+const STATIC_PAGE_LAST_MODIFIED = new Date("2026-08-26T00:00:00Z");
 
 /**
  * Builds the list of static route entries for the sitemap.
@@ -145,6 +145,12 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
       lastModified: STATIC_PAGE_LAST_MODIFIED,
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${siteConfig.url}/support`,
+      lastModified: STATIC_PAGE_LAST_MODIFIED,
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
   ];
 }

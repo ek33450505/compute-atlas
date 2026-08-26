@@ -16,7 +16,7 @@ import { GLOSSARY_TOPICS } from "@/lib/glossary";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
-  it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, /explore, /activity, and /contribute", async () => {
+  it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, /explore, /activity, /contribute, and /support", async () => {
     const routes = await buildStaticRoutes();
     const urls = routes.map((r) => r.url);
     expect(urls).toContain(siteConfig.url);
@@ -31,6 +31,7 @@ describe("sitemap", () => {
     expect(urls).toContain(`${siteConfig.url}/explore`);
     expect(urls).toContain(`${siteConfig.url}/activity`);
     expect(urls).toContain(`${siteConfig.url}/contribute`);
+    expect(urls).toContain(`${siteConfig.url}/support`);
   });
 
   it("facility routes count equals facilities.length", async () => {
@@ -236,10 +237,10 @@ describe("sitemap", () => {
     expect(actual.getTime()).toBeLessThan(testStart);
   });
 
-  it("genuinely static editorial routes (/about, /api, /contribute) use a stable date, not 'now'", async () => {
+  it("genuinely static editorial routes (/about, /api, /contribute, /support) use a stable date, not 'now'", async () => {
     const testStart = Date.now();
     const routes = await buildStaticRoutes();
-    for (const path of ["/about", "/api", "/contribute"]) {
+    for (const path of ["/about", "/api", "/contribute", "/support"]) {
       const entry = routes.find((r) => r.url === `${siteConfig.url}${path}`);
       expect(entry).toBeDefined();
       const actual = entry!.lastModified as Date;
