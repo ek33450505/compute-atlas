@@ -98,7 +98,18 @@ function DeleteFacilityDialog({
     startTransition(async () => {
       const result = await deleteFacilityAction(facility.id);
       if (result.ok) {
-        toast.success(`Deleted "${facility.name}".`);
+        // historyRecorded is strictly false only when the facility write
+        // itself succeeded but its facility_history audit row failed to
+        // insert (lib/facility-write.ts) — surface that instead of letting
+        // it disappear into the server log. `undefined` (unknown) reads the
+        // same as a clean success.
+        if (result.historyRecorded === false) {
+          toast.warning(
+            `Deleted "${facility.name}" — but its audit log entry failed to record.`
+          );
+        } else {
+          toast.success(`Deleted "${facility.name}".`);
+        }
         onOpenChange(false);
         router.refresh();
       } else {

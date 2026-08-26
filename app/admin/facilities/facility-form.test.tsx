@@ -10,14 +10,21 @@ import type { Facility } from "@/lib/schema";
 // specifiers — route shared mocks through vi.hoisted() so initialization
 // is hoisted alongside the vi.mock calls themselves. Mirrors
 // app/admin/facilities/facility-table.test.tsx.
-const { mockPush, mockToastSuccess, mockToastError, mockCreateFacilityAction, mockUpdateFacilityAction } =
-  vi.hoisted(() => ({
-    mockPush: vi.fn(),
-    mockToastSuccess: vi.fn(),
-    mockToastError: vi.fn(),
-    mockCreateFacilityAction: vi.fn(),
-    mockUpdateFacilityAction: vi.fn(),
-  }));
+const {
+  mockPush,
+  mockToastSuccess,
+  mockToastWarning,
+  mockToastError,
+  mockCreateFacilityAction,
+  mockUpdateFacilityAction,
+} = vi.hoisted(() => ({
+  mockPush: vi.fn(),
+  mockToastSuccess: vi.fn(),
+  mockToastWarning: vi.fn(),
+  mockToastError: vi.fn(),
+  mockCreateFacilityAction: vi.fn(),
+  mockUpdateFacilityAction: vi.fn(),
+}));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -26,6 +33,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("sonner", () => ({
   toast: {
     success: mockToastSuccess,
+    warning: mockToastWarning,
     error: mockToastError,
   },
 }));
@@ -224,6 +232,7 @@ describe("FacilityForm — create mode", () => {
   beforeEach(() => {
     mockPush.mockClear();
     mockToastSuccess.mockClear();
+    mockToastWarning.mockClear();
     mockToastError.mockClear();
     mockCreateFacilityAction.mockClear();
     mockUpdateFacilityAction.mockClear();
@@ -326,6 +335,28 @@ describe("FacilityForm — create mode", () => {
 
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith("/admin/facilities"));
     expect(mockToastSuccess).toHaveBeenCalled();
+  });
+
+  // Regression coverage for lib/facility-write.ts's recordFacilityHistory:
+  // the facility write can succeed while its facility_history audit row
+  // fails to insert. That must still redirect (the write itself succeeded)
+  // but warn instead of silently celebrating a clean success.
+  it("shows a warning toast (not success) when created but the audit row failed to record", async () => {
+    const user = userEvent.setup({ delay: null });
+    mockCreateFacilityAction.mockResolvedValue({
+      ok: true,
+      facility: { id: "new-dc", name: "New DC" },
+      historyRecorded: false,
+    });
+
+    render(<FacilityForm mode="create" initialState={emptyFacilityFormState()} />);
+
+    await fillRequiredFields(user);
+    await user.click(screen.getByRole("button", { name: /create facility/i }));
+
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith("/admin/facilities"));
+    expect(mockToastWarning).toHaveBeenCalled();
+    expect(mockToastSuccess).not.toHaveBeenCalled();
   });
 });
 

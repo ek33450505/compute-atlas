@@ -622,7 +622,19 @@ export function FacilityForm({
           : await updateFacilityAction(state.id, payload);
 
       if (result.ok) {
-        toast.success(`${mode === "create" ? "Created" : "Updated"} "${result.facility.name}".`);
+        const verb = mode === "create" ? "Created" : "Updated";
+        // historyRecorded is strictly false only when the facility write
+        // itself succeeded but its facility_history audit row failed to
+        // insert (lib/facility-write.ts) — surface that instead of letting
+        // it disappear into the server log. `undefined` (unknown) reads the
+        // same as a clean success.
+        if (result.historyRecorded === false) {
+          toast.warning(
+            `${verb} "${result.facility.name}" — but its audit log entry failed to record.`
+          );
+        } else {
+          toast.success(`${verb} "${result.facility.name}".`);
+        }
         router.push("/admin/facilities");
         return;
       }

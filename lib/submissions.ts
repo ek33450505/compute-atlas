@@ -56,7 +56,7 @@ export type SubmissionResult =
   | { ok: false; status: number; error: string; issues?: unknown };
 
 export type SubmissionActionResult =
-  | { ok: true; submission: SubmissionRow; facility: Facility }
+  | { ok: true; submission: SubmissionRow; facility: Facility; historyRecorded?: boolean }
   | { ok: false; status: number; error: string; issues?: unknown };
 
 export type SubmissionRejectResult =
@@ -152,7 +152,12 @@ export async function approveSubmission(
     console.error("subscriber notification failed", err);
   }
 
-  return { ok: true, submission: updated, facility: writeResult.facility };
+  return {
+    ok: true,
+    submission: updated,
+    facility: writeResult.facility,
+    historyRecorded: writeResult.historyRecorded,
+  };
 }
 
 /** Rejects a pending submission with a required, non-empty reason. */

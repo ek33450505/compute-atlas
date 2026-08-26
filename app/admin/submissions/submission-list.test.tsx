@@ -14,6 +14,7 @@ const {
   mockPush,
   mockRefresh,
   mockToastSuccess,
+  mockToastWarning,
   mockToastError,
   mockApproveSubmissionAction,
   mockRejectSubmissionAction,
@@ -21,6 +22,7 @@ const {
   mockPush: vi.fn(),
   mockRefresh: vi.fn(),
   mockToastSuccess: vi.fn(),
+  mockToastWarning: vi.fn(),
   mockToastError: vi.fn(),
   mockApproveSubmissionAction: vi.fn(),
   mockRejectSubmissionAction: vi.fn(),
@@ -33,6 +35,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("sonner", () => ({
   toast: {
     success: mockToastSuccess,
+    warning: mockToastWarning,
     error: mockToastError,
   },
 }));
@@ -207,6 +210,7 @@ describe("SubmissionList — approve action", () => {
   beforeEach(() => {
     mockApproveSubmissionAction.mockClear();
     mockToastSuccess.mockClear();
+    mockToastWarning.mockClear();
     mockToastError.mockClear();
     mockRefresh.mockClear();
   });
@@ -220,6 +224,24 @@ describe("SubmissionList — approve action", () => {
 
     await waitFor(() => expect(mockApproveSubmissionAction).toHaveBeenCalledWith("sub-1"));
     await waitFor(() => expect(mockToastSuccess).toHaveBeenCalled());
+    expect(mockToastWarning).not.toHaveBeenCalled();
+    expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  // Regression coverage for lib/facility-write.ts's recordFacilityHistory:
+  // the facility write can succeed while its facility_history audit row
+  // fails to insert. That must still refresh the list (the write itself
+  // succeeded) but warn instead of silently celebrating a clean success.
+  it("shows a warning toast (not success) when the facility is approved but its audit row failed to record", async () => {
+    mockApproveSubmissionAction.mockResolvedValue({ ok: true, historyRecorded: false });
+    const user = userEvent.setup();
+    renderList([makeSubmission()], "pending");
+
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    await waitFor(() => expect(mockApproveSubmissionAction).toHaveBeenCalledWith("sub-1"));
+    await waitFor(() => expect(mockToastWarning).toHaveBeenCalled());
+    expect(mockToastSuccess).not.toHaveBeenCalled();
     expect(mockRefresh).toHaveBeenCalled();
   });
 

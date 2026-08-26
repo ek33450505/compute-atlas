@@ -320,3 +320,68 @@ describe("revalidateForFacility (scoped tag invalidation, not the old global nuk
     expect(calledTags).not.toContain("facilities");
   });
 });
+
+describe("recordFacilityHistory failure handling (WriteResult.historyRecorded)", () => {
+  it("createFacility succeeds and reports historyRecorded: true on a clean history insert", async () => {
+    const doc = makeSeedDoc();
+    doc.id = "history-ok-test-facility";
+
+    const result = await createFacility(doc);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.historyRecorded).toBe(true);
+  });
+
+  it("still saves the facility and returns historyRecorded: false when the facility_history insert fails", async () => {
+    // Simulate a facility_history-only DB failure: intercept `db.insert`,
+    // reject just for facilityHistoryTable, and pass every other table
+    // (facilitiesTable etc.) through to the real PGlite-backed insert.
+    const originalInsert = tdb.db.insert.bind(tdb.db);
+    const insertSpy = vi.spyOn(tdb.db, "insert").mockImplementation((table: unknown) => {
+      if (table === facilityHistoryTable) {
+        return {
+          values: () => Promise.reject(new Error("simulated facility_history insert failure")),
+        } as unknown as ReturnType<typeof tdb.db.insert>;
+      }
+      return originalInsert(table as never);
+    });
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const doc = makeSeedDoc();
+      doc.id = "history-failure-test-facility";
+
+      const result = await createFacility(doc);
+
+      // The facility write itself must still succeed — a hiccup in the
+      // audit table must never fail a successful facility save (the
+      // documented judgment call in lib/facility-write.ts).
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      expect(result.facility.id).toBe(doc.id);
+      expect(result.historyRecorded).toBe(false);
+
+      // The failure is still logged (unchanged behavior), on top of now
+      // also being carried on the result for the caller to surface.
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "facility_history insert failed for %s (%s):",
+        doc.id,
+        "create",
+        expect.any(Error)
+      );
+
+      // And the facility really did land in the DB, not just in the
+      // in-memory `result.facility` — a failed audit row must not roll
+      // back the facility mutation.
+      const saved = await tdb.db
+        .select({ id: facilitiesTable.id })
+        .from(facilitiesTable)
+        .where(eq(facilitiesTable.id, doc.id));
+      expect(saved).toHaveLength(1);
+    } finally {
+      insertSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    }
+  });
+});

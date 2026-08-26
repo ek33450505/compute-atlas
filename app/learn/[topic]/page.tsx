@@ -13,10 +13,9 @@ import {
   getGenerationStats,
   getCommunityReceptionCounts,
   getFacilitiesByIds,
-  type EnergySource,
-  type CoolingType,
 } from "@/lib/data";
 import { formatMgd, formatPower } from "@/lib/format";
+import { ENERGY_SOURCE_ENTRIES, COOLING_TYPE_ENTRIES } from "@/lib/energy";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Explainer } from "@/components/learn/explainer";
@@ -25,26 +24,6 @@ import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 
 export const revalidate = 3600;
-
-/** Display order + labels for `energy.source` — mirrors app/power/page.tsx's ENERGY_SOURCE_ENTRIES. */
-const ENERGY_SOURCE_ENTRIES: { key: EnergySource; label: string }[] = [
-  { key: "grid", label: "Grid" },
-  { key: "mixed", label: "Mixed" },
-  { key: "on_site_gas", label: "On-site gas" },
-  { key: "nuclear", label: "Nuclear" },
-  { key: "solar", label: "Solar" },
-  { key: "hydro", label: "Hydro" },
-  { key: "wind", label: "Wind" },
-  { key: "other", label: "Other" },
-];
-
-/** Display order + labels for `water.coolingType` — mirrors app/power/page.tsx's COOLING_TYPE_ENTRIES. */
-const COOLING_TYPE_ENTRIES: { key: CoolingType; label: string }[] = [
-  { key: "evaporative", label: "Evaporative (high water)" },
-  { key: "hybrid", label: "Hybrid" },
-  { key: "closed_loop", label: "Closed-loop (low water)" },
-  { key: "air", label: "Air-cooled (minimal)" },
-];
 
 interface StatCell {
   value: string;
