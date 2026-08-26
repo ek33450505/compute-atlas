@@ -90,10 +90,8 @@ describe("SiteFooter", () => {
       screen.getByRole("link", { name: /Recent activity/i })
     ).toHaveAttribute("href", "/activity");
     expect(
-      // Accessible name is the descriptive aria-label, which overrides the
-      // visible "Sponsor this project" text per WAI-ARIA name computation.
-      screen.getByRole("link", { name: /Sponsor Compute Atlas on GitHub Sponsors/i })
-    ).toHaveAttribute("href", "https://github.com/sponsors/ek33450505");
+      screen.getByRole("link", { name: /Support the atlas/i })
+    ).toHaveAttribute("href", "/support");
     expect(
       screen.getByRole("link", { name: /Source on GitHub/i })
     ).toHaveAttribute("href", "https://github.com/ek33450505/compute-atlas");
@@ -101,13 +99,10 @@ describe("SiteFooter", () => {
 
   it("marks external links with target=_blank and rel=noreferrer noopener", () => {
     render(<SiteFooter />);
-    const sponsor = screen.getByRole("link", {
-      name: /Sponsor Compute Atlas on GitHub Sponsors/i,
-    });
     const repo = screen.getByRole("link", { name: /Source on GitHub/i });
     const osm = screen.getByRole("link", { name: /OpenStreetMap/i });
 
-    for (const link of [sponsor, repo, osm]) {
+    for (const link of [repo, osm]) {
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noreferrer noopener");
     }

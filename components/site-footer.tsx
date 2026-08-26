@@ -100,15 +100,9 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <a
-                  href={siteConfig.githubSponsorsUrl}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  aria-label="Sponsor Compute Atlas on GitHub Sponsors (opens in new tab)"
-                  className={EXTERNAL_NAV_LINK_CLASS}
-                >
-                  Sponsor this project <span aria-hidden="true">↗</span>
-                </a>
+                <Link href="/support" className={NAV_LINK_CLASS}>
+                  Support the atlas <span aria-hidden="true">→</span>
+                </Link>
               </li>
               <li>
                 <a
