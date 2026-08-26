@@ -9,6 +9,16 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     exclude: ["**/node_modules/**", "**/e2e/**", "**/.next/**"],
+    // Vitest does not clear mock call history between tests by default, and
+    // most files calling vi.mock never cleared one by hand (39 of 66 when this
+    // was added). That let an assertion match a PREVIOUS test's call and pass
+    // vacuously — which once hid a real navigation bug through a code review.
+    // clearMocks runs mockClear() before each test: it wipes
+    // mock.calls/instances/results but NOT implementations, so
+    // mockReturnValue/mockResolvedValue set in a vi.mock factory or a
+    // beforeEach still apply. (Contrast mockReset, which also drops the
+    // implementation, and restoreMocks — verified against vitest 4.1.9.)
+    clearMocks: true,
     // Vitest's 5000ms default is too tight for a 175-file suite running in
     // parallel. The FacilityForm create-mode tests do legitimate multi-step
     // async work (type 7 fields, submit, await assertions) — 305-750ms when
