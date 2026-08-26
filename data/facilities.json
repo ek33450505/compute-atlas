@@ -2456,6 +2456,43 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "amazon-pecos-county-data-center-tx",
+    "name": "Amazon Pecos County Data Center Campus",
+    "operator": "Amazon Data Services, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.8981,
+      "lon": -102.8779,
+      "county": "Pecos",
+      "street": "6000 TX-18",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-08-09",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://usdatacenterprojects.com/texas/amazon-files-plans-for-new-data-center-buildings-in-texas-across-three-sites",
+        "label": "Amazon Files Plans for New Data Center Buildings in Texas",
+        "publisher": "US Data Center Projects",
+        "retrievedAt": "2026-08-25",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.aboutamazon.com/news/company-news/amazon-pecos-county-texas-data-center-clean-energy-jobs",
+        "label": "Amazon's planned data center campus in Pecos County, Texas: Read Amazon's statement",
+        "publisher": "About Amazon",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Three buildings (A, B, C), 189,060 sq ft / $300M each ($900M total this phase), at 6000 TX-18, ~11 miles north of Fort Stockton; construction planned Aug-Dec 2026. To be powered initially off-grid by the adjacent Pacifico Energy 'GW Ranch' gas plant (already tracked as gw-ranch-pacifico-energy-pecos-county-tx) with a path to future grid interconnection; distinct facility/operator from that power_generation record and from Microsoft's and Core Scientific's separate Pecos County campuses.",
+    "investmentUsd": 900000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "amazon-perry-township-stark-oh",
     "name": "Amazon Perry Township Data Center",
     "operator": "Amazon Web Services",
@@ -6854,6 +6891,68 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "aws-project-eagle-boling-wharton-county-tx",
+    "name": "AWS Project Eagle (Wharton County)",
+    "operator": "Amazon Data Services, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.3167,
+      "lon": -96.0553,
+      "city": "Boling",
+      "county": "Wharton",
+      "street": "Eaglewood Road",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07-09",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://usdatacenterprojects.com/texas/aws-files-1-2-billion-permit-for-four-building-data-center-campus-in-wharton-county-texas",
+        "label": "AWS Files $1.2 Billion Permit for Data Center in Texas",
+        "publisher": "US Data Center Projects",
+        "retrievedAt": "2026-08-25",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Project Eagle: four identical 189,060 sq ft buildings ($300M each) at 240/244/258 Eaglewood Road near FM 1301/FM 442; construction planned to start Aug 1 2026, staggered completion Jan-Aug 2027.",
+    "investmentUsd": 1200000000,
+    "landAcres": 2700,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "aws-project-spectrum-somervell-county-tx",
+    "name": "AWS Project Spectrum (Somervell/Hood County)",
+    "operator": "Amazon Data Services, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.2373,
+      "lon": -97.7561,
+      "county": "Somervell",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-02-25",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://constructionreviewonline.com/amazon-to-collocate-5-billion-project-spectrum-data-center-campus-in-texas-with-nuclear-power-plant/",
+        "label": "Amazon to Collocate $5 Billion Project Spectrum Data Center Campus in Texas with Nuclear Power Plant",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Up to 18 two-story buildings on Vistra-owned land adjacent to the Comanche Peak Nuclear Power Plant, with an additional 1,265+ acres being coordinated in neighboring Hood County; distinct facility/operator from the existing Vistra/AWS PPA power_generation record for Comanche Peak itself. Construction could commence 2027; still subject to finalized lease terms with Vistra.",
+    "investmentUsd": 5000000000,
+    "landAcres": 435,
+    "facilityType": "data_center"
+  },
+  {
     "id": "aws-richmond-county-nc",
     "name": "Amazon Web Services Richmond County Data Center Campus",
     "operator": "Amazon Web Services",
@@ -9136,6 +9235,89 @@
     }
   },
   {
+    "id": "blockchain-digital-infrastructure-collin-county-tx",
+    "name": "BlockchAIn Collin County AI GPU Hosting Site",
+    "operator": "BlockchAIn Digital Infrastructure, Inc.",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.1972,
+      "lon": -96.6398,
+      "county": "Collin",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/blockchain-collin-county-tx",
+        "label": "BlockchAIn: Collin County, TX Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "AI GPU hosting site under construction, targeted Q3 2027 completion, within the DFW metro data center corridor.",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "blockchain-digital-infrastructure-reeves-county-tx",
+    "name": "BlockchAIn Reeves County AI GPU Hosting Site",
+    "operator": "BlockchAIn Digital Infrastructure, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.4229,
+      "lon": -103.4933,
+      "county": "Reeves",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/blockchain-reeves-county-tx",
+        "label": "BlockchAIn: Reeves County, TX Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Future AI GPU hosting site in the planning stage, West Texas (ERCOT West Hub), targeted Q3 2028 completion.",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "blockchain-digital-infrastructure-wise-county-tx",
+    "name": "BlockchAIn Wise County Data Mining Site",
+    "operator": "BlockchAIn Digital Infrastructure, Inc.",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.2343,
+      "lon": -97.5864,
+      "county": "Wise",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/blockchain-wise-county-tx",
+        "label": "BlockchAIn: Wise County, TX Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "20MW data mining site, currently in due diligence, targeted for Q4 2026 energization. BlockchAIn Digital Infrastructure (NYSE American: AIB) began trading after a March 2026 business combination with Signing Day Sports.",
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "blockfusion-niagara-falls-ny",
     "name": "Blockfusion Niagara Falls Facility (North East Data)",
     "operator": "Blockfusion",
@@ -9290,6 +9472,89 @@
     "facilityType": "data_center"
   },
   {
+    "id": "blusky-ai-delta-millard-county-ut",
+    "name": "BluSky AI Delta Data Center",
+    "operator": "BluSky AI Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.3502,
+      "lon": -112.5766,
+      "city": "Delta",
+      "county": "Millard",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07-29",
+        "note": "BluSky AI signed a non-binding Letter of Intent with Creekstone Energy LLC to acquire 25 acres with up to 50MW of capacity within the Delta Gigasite development; transaction expected to finalize Q4 2025 with groundbreaking projected late 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.manilatimes.net/2025/07/29/tmt-newswire/globenewswire/blusky-ai-inc-signs-letter-of-intent-to-acquire-25-acres-with-up-to-50-mw-of-capacity-in-strategic-expansion/2158223",
+        "label": "BluSky AI Inc. Signs Letter of Intent to Acquire 25 Acres with up to 50 MW of Capacity in Strategic Expansion",
+        "publisher": "GlobeNewswire (via Manila Times)",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "A specific 25-acre BluSky AI parcel and building within Creekstone Energy's already-tracked Delta Gigasite campus (creekstone-delta-ut) — tracked separately because it is a distinct operator/tenant with its own land agreement, consistent with how this tracker distinguishes co-located operators elsewhere.",
+    "landAcres": 25,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "blusky-ai-milford-ut",
+    "name": "BluSky AI Milford Campus",
+    "operator": "BluSky AI Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.3936,
+      "lon": -113.0111,
+      "city": "Milford",
+      "county": "Beaver",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 9.3
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-06-30",
+        "note": "BluSky AI executed a Ground Lease with Option to Purchase for the site with Wild Mustang Ventures LLC and a Power Assignment Agreement with Digital Asset Management, LLC.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.manilatimes.net/2025/07/08/tmt-newswire/globenewswire/blusky-ai-inc-secures-first-site-with-93mw-to-launch-flagship-data-center-in-central-utah/2145520",
+        "label": "BluSky AI Inc. Secures First Site with 9.3MW to Launch Flagship Data Center in Central, Utah",
+        "publisher": "GlobeNewswire (via Manila Times)",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "BluSky AI's first secured modular 'SkyMod' site, distinct from its Nephi (Juab County) and Delta (Millard County) sites already/also tracked; 51.6 acres leased from Wild Mustang Ventures LLC.",
+    "energy": {
+      "source": "grid",
+      "utility": "grid-interconnected power assigned via Digital Asset Management, LLC",
+      "onSiteGenerationMw": 9.3
+    },
+    "landAcres": 51.6,
+    "facilityType": "data_center"
+  },
+  {
     "id": "blusky-ai-nephi-ut",
     "name": "BluSky AI Nephi SkyMod Site",
     "operator": "BluSky AI Inc.",
@@ -9438,6 +9703,55 @@
     ],
     "lastUpdated": "2026-08-19",
     "notes": "Thinly sourced: only one page naming this project could be fetched this session (Oklahoma Watch and its syndication partners returned 403/429). The lessee's full legal name, parcel acreage and the Commissioners of the Land Office vote were visible only in search summaries and are deliberately NOT asserted here. Confidence 'rumored' pending a fetched primary source.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "brightnight-red-butte-newcastle-ut",
+    "name": "Red Butte Energy and Data Center Campus",
+    "operator": "BrightNight",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.6949,
+      "lon": -113.943,
+      "city": "Newcastle",
+      "county": "Iron",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-22",
+        "note": "Application submitted May 4, 2026 and deemed incomplete May 22, 2026; on hold under Iron County's 180-day data center moratorium.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://brightnightpower.com/red-butte/",
+        "label": "Red Butte Energy and Data Center Campus",
+        "publisher": "BrightNight",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://ironcountyut.gov/planning/data-center-projects",
+        "label": "Proposed Data Center Information — Iron County",
+        "publisher": "Iron County, Utah",
+        "retrievedAt": "2026-08-25",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Approximately 8 miles north of Newcastle, roughly 20 miles from Cedar City; application on hold pending the county's data-center moratorium.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Planned hybrid power: 300MW solar, 1,200MWh battery storage, and 1.5GW natural gas generation."
+    },
     "facilityType": "data_center"
   },
   {
@@ -11194,6 +11508,45 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cirrus-data-services-midvale-ut",
+    "name": "CirrusDS View 78 Data Center",
+    "operator": "Cirrus Data Services",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.6111,
+      "lon": -111.8994,
+      "city": "Midvale",
+      "county": "Salt Lake",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 112,
+      "operational": 32
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "http://cirrusds.com/midvale-ut-campus",
+        "label": "Midvale, UT Data Center Campus",
+        "publisher": "Cirrus Data Services",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prweb.com/releases/cirrus-data-services-entering-data-center-market-in-salt-lake-city-855163208.html",
+        "label": "Cirrus Data Services Entering Data Center Market in Salt Lake City",
+        "publisher": "PRWeb",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Phase 1 (32MW, four 8MW modules) is operational and being marketed for lease; two additional phases (~80MW more) are planned. Some third-party trackers report a larger total (up to 160MW) than the operator's own site; treated as unconfirmed beyond the operator's stated 112MW total.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cleanarc-ruther-glen-va",
     "name": "CleanArc VA1",
     "operator": "CleanArc Data Centers",
@@ -11332,9 +11685,16 @@
         "publisher": "CleanSpark, Inc.",
         "retrievedAt": "2026-08-02",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cleanspark-enters-texas-market-with-land-and-large-scale-power-acquisition-to-rapidly-deploy-an-ai-data-center-in-greater-houston-302598051.html",
+        "label": "CleanSpark Enters Texas Market with Land and Large-Scale Power Acquisition to Rapidly Deploy an AI Data Center in Greater Houston",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-08-25",
     "notes": "First of CleanSpark's two announced Greater Houston-area sites (see also the separate Brazoria County campus). No city/address disclosed anywhere in the filing — company language is only 'positioned between Houston and Austin'; Austin County (seat Bellville) fits that framing, so coordinates are an approximate county reference point, not a parcel. Targeting energization of >200 MW in H1 2027. Explicitly framed by named CleanSpark executives (CBO, SVP of AI Data Centers) as an AI/HPC campus, not continued bitcoin mining or generic cloud — clears the schema's evidence bar for aiClassification. Combined with the separate Brazoria County campus, CleanSpark cites 'more than 890 MW of aggregate potential utility capacity' in the greater Houston area.",
     "energy": {
       "source": "grid"
@@ -16306,9 +16666,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.solarpowerworldonline.com/2026/03/1-gw-solar-project-planned-for-utah-hyperscale-data-center/",
+        "label": "1-GW solar project planned for Utah hyperscale data center",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-25",
     "notes": "Claims to be world's largest planned AI data center campus at 20M sq ft. 1,143 acres owned; 13,000-acre SITLA lease for solar (largest solar lease in Utah history — record previously stated 30,000 acres, corrected to 13,000 acres per March 2026 BusinessWire announcement and multiple independent sources). Initial customer BluSky AI allocated up to 50MW. Adjacent to Intermountain Power Project. 10GW is full-buildout target; first 300MW gas delivery H1 2027. Coordinates at Delta city centroid; site is southeast of Delta.",
     "energy": {
       "source": "mixed",
@@ -17081,6 +17448,38 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cyrusone-bosque-county-thad-hill-tx",
+    "name": "CyrusOne Bosque County Campus (Thad Hill Energy Center)",
+    "operator": "CyrusOne",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.9243,
+      "lon": -97.6564,
+      "county": "Bosque",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/resources/press-releases/constellation-and-cyrusone-announce-agreement-to-support-new-data-center-facility-at-freestone-energy-center-in-texas",
+        "label": "Constellation and CyrusOne Announce Agreement to Support New Data Center Facility at Freestone Energy Center in Texas",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Referenced in CyrusOne's Freestone Energy Center release as a separate, already-agreed 400MW arrangement between Calpine and CyrusOne tied to the Thad Hill Energy Center in Bosque County (part of CyrusOne's >1,100MW contracted Texas power total). Secondary press (unconfirmed via direct fetch this session) additionally describes an Energy Capital Partners/KKR joint-venture financing of ~$4B for ~190MW at this site -- omitted here pending direct-source confirmation.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Calpine",
+      "onSiteGenerationMw": 400
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cyrusone-chi1-chi3-aurora-il",
     "name": "CyrusOne CHI1-CHI3 (Aurora)",
     "operator": "CyrusOne",
@@ -17348,6 +17747,40 @@
     "landAcres": 1201,
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "cyrusone-freestone-energy-center-fairfield-tx",
+    "name": "CyrusOne Freestone Energy Center Campus",
+    "operator": "CyrusOne",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.7285,
+      "lon": -96.1611,
+      "city": "Fairfield",
+      "county": "Freestone",
+      "street": "1366 FM488",
+      "postalCode": "75840",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 760
+    },
+    "announcedDate": "2026-02-09",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/resources/press-releases/constellation-and-cyrusone-announce-agreement-to-support-new-data-center-facility-at-freestone-energy-center-in-texas",
+        "label": "Constellation and CyrusOne Announce Agreement to Support New Data Center Facility at Freestone Energy Center in Texas",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Phase 1 (380MW) is under construction adjacent to Calpine's Freestone Energy Center at 1366 FM488, Fairfield, targeted operational Q4 2026; Calpine holds an exclusive agreement to also supply Phase 2 (an additional 380MW, planned total 760MW). Not previously tracked -- no existing Freestone County entries.",
+    "facilityType": "data_center"
   },
   {
     "id": "cyrusone-nas-lemoore-ca",
@@ -26148,6 +26581,39 @@
     "facilityType": "data_center"
   },
   {
+    "id": "flexential-kaufman-county-talty-tx",
+    "name": "Flexential Kaufman County Campus (Talty)",
+    "operator": "Flexential",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.689,
+      "lon": -96.3378,
+      "city": "Talty",
+      "county": "Kaufman",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 108
+    },
+    "announcedDate": "2026-07-28",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/flexential-to-build-new-dallas-area-data-center-campus-on-110-acres-in-kaufman-county-302836104.html",
+        "label": "Flexential to Build New Dallas-Area Data Center Campus on 110 Acres in Kaufman County",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Fourth and largest Flexential North Texas campus; phase 1 is a 375,000 sq ft, 36MW building with room for two more 36MW buildings (108MW full build-out). Site work targeted early 2027; first customers late 2028. Distinct site from Flexential's existing Dallas Downtown/Plano/Richardson facilities already tracked.",
+    "landAcres": 110,
+    "facilityType": "data_center"
+  },
+  {
     "id": "flexential-las-vegas-downtown-nv",
     "name": "Flexential Las Vegas - Downtown",
     "operator": "Flexential",
@@ -32481,6 +32947,9 @@
       "state": "TX",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 7650
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -32496,12 +32965,20 @@
         "publisher": "Inside Climate News",
         "retrievedAt": "2026-07-09",
         "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/amazon-backs-7-65-gw-gas-plant-in-texas-to-power-new-ai-data-center-campus/",
+        "label": "Amazon Backs 7.65-GW Gas Plant in Texas to Power New AI Data Center Campus",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-09",
+    "lastUpdated": "2026-08-25",
     "notes": "~17 miles north of Fort Stockton. This is fundamentally a power-generation project 'purpose-built to support hyperscale data center operators' (per Data Center Dynamics), but no data center tenant/operator has been named - classified 'rumored' confidence on the data-center use specifically. Distinct from the existing tracked Microsoft/Core Scientific 'Pecos' entries (those are in Reeves County, not Pecos County). Coordinates are approximate. Data center tenant unidentified.",
     "energy": {
       "source": "on_site_gas",
+      "onSiteGenerationMw": 7650,
       "notes": "TCEQ air permit secured (Jan 2026) for up to 7.65GW gas-fired generation - the largest such permit in the US. Includes 1.8GW battery storage + up to 750MWac solar. Off-grid/private-network design, not ERCOT-interconnected. Developer timeline: 1GW online 2028, 5+GW by 2030-31."
     },
     "landAcres": 8000,
@@ -45764,7 +46241,7 @@
     "id": "nexus-hubbard-campus-hill-county-tx",
     "name": "Nexus Hubbard Data Center & Power Campus",
     "operator": "Nexus Data Centers",
-    "status": "proposed",
+    "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 31.824001,
@@ -45777,7 +46254,14 @@
     "capacityMw": {
       "planned": 612
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-08-25",
+        "note": "Nexus reached Final Investment Decision (FID) for Phase 1 after securing financing led by Eagle Point Credit Management; the project has advanced from pre-NTP development to FID and construction continues, per Aug 19 2026 reporting.",
+        "sourceIndex": 6
+      }
+    ],
     "sources": [
       {
         "url": "https://www.datacenterdynamics.com/en/news/600mw-natural-gas-powered-data-center-campus-proposed-in-hubbard-texas/",
@@ -45819,9 +46303,16 @@
         "label": "Lake Lander — Citizens voice concerns about Nexus data center negotiations",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/nexus-data-center-project-in-hubbard-texas-reaches-fid-as-construction-advances/",
+        "label": "Nexus Data Center Project in Hubbard, Texas Reaches FID as Construction Advances",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-25",
     "notes": "612 MW first-phase data center campus on ~2,000 acres on the outskirts of Hubbard (Hill County), between Highway 171 and County Road 3369; behind-the-meter natural gas generation. Led by CEO/managing partner Ivan Van der Walt. TCEQ air permit applications filed Dec 2025 (183046, PSDTX1700, GHGPSDTX269); ~500 MW targeted online late 2026; publicly stated eventual full-buildout target ~7.7 GW. No end-user customer publicly identified. Coordinate anchored on the city of Hubbard; exact parcel not confirmed.",
     "energy": {
       "source": "on_site_gas",
@@ -45923,6 +46414,59 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "nine-mile-data-myton-duchesne-county-ut",
+    "name": "Nine Mile Data Center (Uinta Basin Data Center Project)",
+    "operator": "Nine Mile Data, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.193,
+      "lon": -110.0568,
+      "city": "Myton",
+      "county": "Duchesne",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-04-02",
+        "note": "Duchesne County Planning Commission approved conditional-use permits for the data center and related Wells Draw Energy/reWater facilities.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://uintahbasindatacenter.com/infrastructure.html",
+        "label": "Infrastructure — Uintah Basin Data Center Project Information",
+        "publisher": "Uintah Basin Data Center Project",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.basinnow.com/public-hearing-scheduled-on-nine-mile-data-llc-conditional-use-permit/",
+        "label": "Public Hearing Scheduled On Nine Mile Data LLC Conditional Use Permit",
+        "publisher": "Basin Now",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Approximately 6 miles southwest of Myton near Wells Draw and South Myton Bench; ~475 acres for data-center use within a ~879-acre leased area; targeting operational by 2029.",
+    "energy": {
+      "source": "mixed",
+      "notes": "On-site power via Wells Draw Energy's 400MW natural gas plant plus a 333MW solar photovoltaic plant and 800-1,600MWh of battery storage."
+    },
+    "investmentUsd": 10000000000,
+    "landAcres": 475,
+    "jobs": {
+      "construction": 1000,
+      "permanent": 200,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "northern-data-pryor-ok",
@@ -51148,6 +51692,88 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "prometheus-hyperscale-kaufman-county-tx",
+    "name": "Prometheus Hyperscale Kaufman County Campus",
+    "operator": "Prometheus Hyperscale",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.65,
+      "lon": -96.36,
+      "county": "Kaufman",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "announcedDate": "2026-05-22",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.greenvillechronicle.com/s/4925/Prometheus-Hyperscale-Plans-200MW-AI-Data-Center-Campus-in-Kaufman-County.php",
+        "label": "Prometheus Hyperscale Plans 200MW AI Data Center Campus in Kaufman County",
+        "publisher": "Greenville Chronicle",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Four liquid-cooled buildings on ~500 acres west of Dallas between Talty and Post Oak Bend City, Kaufman County; behind-the-meter Jenbacher J620 gas generation plus an Engie North America battery storage tie-in. Distinct operator/site from the Flexential Talty campus in the same county. First facility targeted for 2026 operation.",
+    "landAcres": 500,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "pronghorn-antelope-cedar-city-ut",
+    "name": "Antelope Data Center (Project Antelope)",
+    "operator": "Pronghorn Development LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.6775,
+      "lon": -113.0619,
+      "city": "Cedar City",
+      "county": "Iron",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-06-04",
+        "note": "Iron County Planning Commission unanimously approved a conditional use permit.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.stgeorgeutah.com/news/planning-commission-approves-conditional-use-permit-for-proposed-iron-county-data-center/article_0a818ae9-8496-4e3e-87e0-53a09ee256c5.html",
+        "label": "Planning Commission approves conditional use permit for proposed Iron County data center",
+        "publisher": "St. George News",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://ironcountyut.gov/planning/data-center-projects",
+        "label": "Proposed Data Center Information — Iron County",
+        "publisher": "Iron County, Utah",
+        "retrievedAt": "2026-08-25",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "West of Cedar City along Antelope Springs Road; permit deemed vested ahead of the county's 180-day data center moratorium; development planned in phases over 8-10 years; up to 6.75M sq ft at full buildout.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "On-site natural gas-fired power plant planned to serve the campus."
+    },
+    "landAcres": 640,
+    "facilityType": "data_center"
+  },
+  {
     "id": "prsm-group-cumberland-county-nc",
     "name": "PRSM Group Cumberland County AI Data Center (undisclosed industrial park)",
     "operator": "PRSM Group",
@@ -52888,6 +53514,39 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "qumulusai-denton-tx",
+    "name": "QumulusAI Denton Modular Data Center",
+    "operator": "QumulusAI, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.2148,
+      "lon": -97.1331,
+      "city": "Denton",
+      "county": "Denton",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "announcedDate": "2026-01-01",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/qumulusai-denton-tx",
+        "label": "QumulusAI: Denton, TX Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Up to eight prefabricated modules on ~4 leased acres near Western Boulevard/Jim Christal Road, next to the RD Wells substation; approved January 2026, city land lease ~$20k/yr for 10 years. Designed for AI and cryptomining workloads, closed-loop water-free cooling, PUE target 1.1. Site is ~1.9 miles from the existing Core Scientific Denton facility already tracked -- different operator, different parcel.",
+    "landAcres": 4,
+    "facilityType": "data_center"
+  },
+  {
     "id": "rack59-oklahoma-city-ok",
     "name": "RACK59 Data Center",
     "operator": "RACK59",
@@ -53801,6 +54460,35 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "rellis-data-research-center-bryan-brazos-county-tx",
+    "name": "RELLIS Data and Research Center",
+    "operator": "ThisWay Global, Inc.",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.6013,
+      "lon": -96.3589,
+      "city": "Bryan",
+      "county": "Brazos",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.kbtx.com/2026/08/18/brazos-county-commissioners-approve-new-owner-rellis-data-center-heres-what-it-means-your-wallet/",
+        "label": "Brazos County commissioners approve new owner for RELLIS data center",
+        "publisher": "KBTX",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "$700M data center on Texas A&M System-owned land at the RELLIS Campus in Bryan; originally developed as RELLIS Campus Data and Research Center LLC starting 2021 (delayed by bankruptcy and Winter Storm Uri fallout), tax abatement and project ownership transferred to ThisWay Global, Inc. on 2026-08-18 (Brazos County 4-0) after Texas A&M System Regents and City of Bryan approvals. WTAW reporting describes the site as already under construction.",
+    "investmentUsd": 700000000,
+    "facilityType": "data_center"
   },
   {
     "id": "renaissance-park-upper-merion-king-of-prussia-pa",
@@ -66142,6 +66830,60 @@
     "aiClassification": "likely"
   },
   {
+    "id": "volition-spanish-fork-ut",
+    "name": "Volition Spanish Fork Data Center",
+    "operator": "Volition Industries",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.115,
+      "lon": -111.6461,
+      "city": "Spanish Fork",
+      "county": "Utah",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 250
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-20",
+        "note": "Spanish Fork City Council tabled a vote on the municipal-code amendments (Title 15) needed to permit the project, pending written council concerns due August 24, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.heraldextra.com/news/2026/aug/20/data-center-discussion-spanish-fork-city-council-delays-vote-for-amendments-that-could-pave-way-for-data-center/",
+        "label": "Data center discussion: Spanish Fork City Council delays vote for amendments that could pave way for data center",
+        "publisher": "Daily Herald",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://servercountry.org/data/projects/volition-industries-spanish-fork-data-center-ut/",
+        "label": "Volition Industries - Spanish Fork Data Center",
+        "publisher": "Server Country",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "Proposed retrofit of a ~1M sq ft former Fingerhut distribution warehouse at the mouth of Spanish Fork Canyon; faced significant resident opposition at an August 20, 2026 public hearing; not yet zoned for the use.",
+    "energy": {
+      "source": "other",
+      "notes": "Proposed energy-independent design using Bloom Energy fuel cells for on-site power generation, per servercountry.org; closed-loop water cooling system."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "500,000 gallons for initial fill; ~250,000 gallons/year thereafter, per proposal terms discussed at the August 20, 2026 city council meeting."
+    },
+    "investmentUsd": 4000000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "voltagrid-covington-power-plant-ga",
     "name": "VoltaGrid Covington Power Plant (Hazelbrand Road)",
     "operator": "VoltaGrid",
@@ -66310,6 +67052,59 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "wells-draw-energy-duchesne-county-ut",
+    "name": "Wells Draw Energy Natural Gas Power Plant",
+    "operator": "Wells Draw Energy, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.193,
+      "lon": -110.0568,
+      "city": "Myton",
+      "county": "Duchesne",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-04-02",
+        "note": "Duchesne County Planning Commission approved the conditional-use permit alongside the Nine Mile Data Center application.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://uintahbasindatacenter.com/infrastructure.html",
+        "label": "Infrastructure — Uintah Basin Data Center Project Information",
+        "publisher": "Uintah Basin Data Center Project",
+        "retrievedAt": "2026-08-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.basinnow.com/public-hearing-scheduled-on-nine-mile-data-llc-conditional-use-permit/",
+        "label": "Public Hearing Scheduled On Nine Mile Data LLC Conditional Use Permit",
+        "publisher": "Basin Now",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "400MW natural gas plant sited to power the adjacent Nine Mile Data Center; not previously tracked as a distinct facility.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Nine Mile Data, LLC",
+      "poweredFacilityIds": [
+        "nine-mile-data-myton-duchesne-county-ut"
+      ],
+      "notes": "Behind-the-meter gas plant co-permitted alongside the adjacent Nine Mile Data Center and reWater LLC water-recycling facility."
+    }
   },
   {
     "id": "westblock-shiprock-nm",
@@ -67121,6 +67916,61 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "zenith-tooele-valley-burmester-ut",
+    "name": "Tooele Valley Data Center Campus",
+    "operator": "Zenith Development",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.748,
+      "lon": -112.674,
+      "city": "Burmester",
+      "county": "Tooele",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-27",
+        "note": "Public hearing held on a state water-discharge permit (UPDES UT0026409) required for the project; permit still pending as of the hearing.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/us/articles/500mw-utah-data-center-wants-150431818.html",
+        "label": "A 500MW Utah Data Center Wants to Dump 250,000 Gallons of Waste Water Into the Great Salt Lake Daily",
+        "publisher": "Yahoo News",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.standard.net/news/local/2026/jul/28/concern-about-data-center-impacts-on-great-salt-lake-grows-now-for-tooele-projects-wastewater/",
+        "label": "Concern about data center impacts on Great Salt Lake grows, now for Tooele project's wastewater",
+        "publisher": "Standard-Examiner",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sltrib.com/news/environment/2026/07/28/yet-another-data-center-planned/",
+        "label": "Utahns speak out as yet another data center is planned near the Great Salt Lake",
+        "publisher": "The Salt Lake Tribune",
+        "retrievedAt": "2026-08-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-25",
+    "notes": "500MW on-site gas-fired data center campus (~200-600 acre portion of a larger ~600-acre Tooele Valley Public Infrastructure District development that also includes a truck stop, hotel, and warehouses near I-80); backed by Utah Inland Port Authority financing. Developer plans a reverse-osmosis plant discharging ~250,000 gallons/day of brine into Great Salt Lake wetlands, drawing significant local opposition.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "zenith-volts-roswell-chaves-county-data-center-nm",
