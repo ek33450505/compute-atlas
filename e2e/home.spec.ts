@@ -64,9 +64,12 @@ test("/map shows interactive datacenter map region", async ({ page }) => {
 
 test("/map shows result count status", async ({ page }) => {
   await page.goto("/map");
-  await expect(page.getByRole("status")).toContainText(
-    /Showing \d+ of \d+ facilities/
-  );
+  // /map has two role="status" live regions (result-count subheader +
+  // location-search jump-to status); scope to the one with text so this
+  // doesn't hit a strict-mode violation once both are mounted.
+  await expect(
+    page.getByRole("status").filter({ hasText: /Showing/ })
+  ).toContainText(/Showing \d+ of \d+ facilities/);
 });
 
 test("/map has View as table cross-link", async ({ page }) => {
@@ -82,7 +85,10 @@ test("/map status filter updates URL and reduces results; Clear all resets", asy
 }) => {
   await page.goto("/map");
 
-  const statusEl = page.getByRole("status");
+  // /map has two role="status" live regions (result-count subheader +
+  // location-search jump-to status); scope to the one with text so this
+  // doesn't hit a strict-mode violation once both are mounted.
+  const statusEl = page.getByRole("status").filter({ hasText: /Showing/ });
   await expect(statusEl).toContainText(/Showing \d+ of \d+ facilities/);
 
   // Click the "Operational" status checkbox
@@ -109,7 +115,10 @@ test("filter state carries from /map to /table via the shared URL", async ({
 }) => {
   await page.goto("/map");
 
-  const statusEl = page.getByRole("status");
+  // /map has two role="status" live regions (result-count subheader +
+  // location-search jump-to status); scope to the one with text so this
+  // doesn't hit a strict-mode violation once both are mounted.
+  const statusEl = page.getByRole("status").filter({ hasText: /Showing/ });
   // Capture the unfiltered count: "Showing N of N facilities"
   await expect(statusEl).toContainText(/Showing \d+ of \d+ facilities/);
 
@@ -129,8 +138,13 @@ test("filter state carries from /map to /table via the shared URL", async ({
   // Assert the /table URL also has the status filter in the query string
   await expect(page).toHaveURL(/\/table\?.*status=operational/);
 
-  // Verify the status region is visible and shows filtered results
-  const tableStatusEl = page.getByRole("status");
+  // Verify the status region is visible and shows filtered results.
+  // Scoped defensively like the /map lookups above — /table only has one
+  // role="status" today (no location-search control in table view), but
+  // filtering keeps this locator correct if that ever changes.
+  const tableStatusEl = page
+    .getByRole("status")
+    .filter({ hasText: /Showing/ });
   await expect(tableStatusEl).toContainText(/Showing \d+ of \d+ facilities/);
 
   // Parse the status text to confirm the filter is actually applied:

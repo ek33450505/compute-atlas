@@ -14,6 +14,13 @@ interface MockMapInstance {
   getMap: ReturnType<typeof vi.fn>;
 }
 
+// The object returned by getMap() — real MapLibre's touchZoomRotate handler,
+// mocked so handleMapLoad's disableRotation() call has something to hit.
+interface MockMapLibreInstance {
+  setProjection: ReturnType<typeof vi.fn>;
+  touchZoomRotate: { disableRotation: ReturnType<typeof vi.fn> };
+}
+
 interface LayerProps {
   id?: string;
   layout?: Record<string, unknown>;
@@ -22,34 +29,46 @@ interface LayerProps {
 
 declare global {
   var __mockMapInstance: MockMapInstance;
+  var __mockMapLibreInstance: MockMapLibreInstance;
   var __layerPropsById: Record<string, LayerProps>;
   var __lastLayerProps: LayerProps;
+  var __mapGestureProps: { dragRotate?: boolean; touchPitch?: boolean };
 }
 
 // Mock react-map-gl/maplibre at the module boundary.
 // We do NOT mock MapLibre internals (addLayer, filter, cluster painting) — that's
 // Playwright's job. We mock only the react-map-gl components and the Map ref methods
-// we call from this component: easeTo, fitBounds, getContainer, getMap, setProjection.
+// we call from this component: easeTo, fitBounds, getContainer, getMap, setProjection,
+// touchZoomRotate.disableRotation.
 vi.mock("react-map-gl/maplibre", () => {
   // Create a persistent container element for all tests to use
   const mockContainer = document.createElement("div");
+
+  // Stable object (not recreated per getMap() call, like the real MapLibre
+  // Map instance isn't) so a test can hold a reference to `disableRotation`
+  // and assert calls made to it across the component's lifecycle.
+  const mockMapLibreInstance: MockMapLibreInstance = {
+    setProjection: vi.fn(),
+    touchZoomRotate: { disableRotation: vi.fn() },
+  };
 
   const mockMapInstance: MockMapInstance = {
     easeTo: vi.fn(),
     fitBounds: vi.fn(),
     flyTo: vi.fn(),
     getContainer: vi.fn(() => mockContainer),
-    getMap: vi.fn(() => ({
-      setProjection: vi.fn(),
-    })),
+    getMap: vi.fn(() => mockMapLibreInstance),
   };
 
-  // Expose mockMapInstance globally for tests to inspect spies
+  // Expose mock instances globally for tests to inspect spies
   globalThis.__mockMapInstance = mockMapInstance;
+  globalThis.__mockMapLibreInstance = mockMapLibreInstance;
 
   // Layer mock that tracks props passed to it by layer id
   interface MapMockProps {
     onLoad?: (instance: MockMapInstance) => void;
+    dragRotate?: boolean;
+    touchPitch?: boolean;
     children?: React.ReactNode;
   }
 
@@ -74,7 +93,7 @@ vi.mock("react-map-gl/maplibre", () => {
   const MapMock = forwardRef<
     MockMapInstance,
     MapMockProps & { children?: React.ReactNode }
-  >(({ onLoad, children }, ref) => {
+  >(({ onLoad, dragRotate, touchPitch, children }, ref) => {
     React.useImperativeHandle(ref, () => mockMapInstance, []);
 
     // Simulate map load with the mock instance
@@ -83,6 +102,11 @@ vi.mock("react-map-gl/maplibre", () => {
         onLoad(mockMapInstance);
       }
     }, [onLoad]);
+
+    // Capture the drag/touch gesture props passed by facility-map.tsx so a
+    // test can assert drag never tilts/rotates (see LayerMock above for the
+    // same synchronous-global-write pattern).
+    globalThis.__mapGestureProps = { dragRotate, touchPitch };
 
     return (
       <div
@@ -139,9 +163,7 @@ vi.mock("react-map-gl/maplibre", () => {
     Layer: LayerMock,
     useMap: vi.fn(() => ({
       getContainer: vi.fn(() => mockContainer),
-      getMap: vi.fn(() => ({
-        setProjection: vi.fn(),
-      })),
+      getMap: vi.fn(() => mockMapLibreInstance),
     })),
   };
 });
@@ -466,6 +488,70 @@ describe("FacilityMap", () => {
             duration: 600,
             center: [-90.0, 35.0],
           })
+        );
+      });
+    });
+  });
+
+  describe("Drag never tilts/rotates (opt-in 3D only)", () => {
+    it("passes dragRotate={false} and touchPitch={false} to the underlying Map", () => {
+      render(<FacilityMap facilities={[]} />);
+      // A drag must always pan — never tilt or rotate the map. Regressing
+      // either prop back to its MapLibre default (undefined/true) restores
+      // the ctrl+drag / right-drag / single-touch-pitch tilt gestures.
+      expect(globalThis.__mapGestureProps).toEqual({
+        dragRotate: false,
+        touchPitch: false,
+      });
+    });
+
+    it("strips the two-finger touch-rotate gesture on load, without disabling touchZoomRotate wholesale", async () => {
+      const mockMapLibreInstance = globalThis.__mockMapLibreInstance;
+
+      render(<FacilityMap facilities={[]} />);
+
+      // handleMapLoad calls getMap().touchZoomRotate.disableRotation() —
+      // this leaves pinch-to-zoom enabled (per MapLibre's own doc comment on
+      // disableRotation) while removing the touch-rotate half of the gesture.
+      await waitFor(() => {
+        expect(mockMapLibreInstance.touchZoomRotate.disableRotation).toHaveBeenCalled();
+      });
+    });
+
+    it("still eases pitch to 55 when ViewToggle3D is toggled on, and back to 0 when toggled off", async () => {
+      const user = userEvent.setup();
+      const mockMapInstance = globalThis.__mockMapInstance;
+
+      render(<FacilityMap facilities={[]} />);
+
+      // Programmatic camera moves (mapRef.current.easeTo) are a separate API
+      // surface from the drag/touch gesture handlers disabled above — the 3D
+      // toggle must keep working.
+      await user.click(screen.getByTestId("view-toggle-3d"));
+      await waitFor(() => {
+        expect(mockMapInstance.easeTo).toHaveBeenCalledWith(
+          expect.objectContaining({ pitch: 55, duration: 600 })
+        );
+      });
+
+      await user.click(screen.getByTestId("view-toggle-3d"));
+      await waitFor(() => {
+        expect(mockMapInstance.easeTo).toHaveBeenCalledWith(
+          expect.objectContaining({ pitch: 0, duration: 600 })
+        );
+      });
+    });
+
+    it("still resets bearing and pitch to 0 via the CompassRose reset-north control", async () => {
+      const user = userEvent.setup();
+      const mockMapInstance = globalThis.__mockMapInstance;
+
+      render(<FacilityMap facilities={[]} />);
+
+      await user.click(screen.getByTestId("compass-rose"));
+      await waitFor(() => {
+        expect(mockMapInstance.easeTo).toHaveBeenCalledWith(
+          expect.objectContaining({ bearing: 0, pitch: 0, duration: 400 })
         );
       });
     });

@@ -29,6 +29,14 @@ for (const route of ROUTES) {
     // Wait for the page to settle before scanning
     await page.waitForLoadState("networkidle");
 
+    // NOTE: `playwright.config.ts` sets `reducedMotion: "reduce"` project-wide.
+    // Without it, this scan measures RENDERED color mid-way through the
+    // scroll-driven `.plate-reveal` entrance animation on `/` (below-fold
+    // elements sit mid-fade), producing a false color-contrast violation even
+    // though the underlying tokens are AA-clear. The animation only runs under
+    // `prefers-reduced-motion: no-preference`, so forcing "reduce" here tests
+    // the accessible path real reduced-motion users get — do not remove it to
+    // "clean up" the config; that reintroduces the false failure.
     const results = await new AxeBuilder({ page })
       .withTags([...AXE_TAGS])
       .analyze();
