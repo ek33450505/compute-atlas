@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 
 import { GLOSSARY_TOPICS, getGlossaryTopicBySlug } from "@/lib/glossary";
 import type { DataCenterFacility } from "@/lib/schema";
+import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 
 // vi.mock calls are hoisted above imports by Vitest. Route the shared mocks
 // through vi.hoisted() so their initialization is hoisted alongside the
@@ -153,6 +154,44 @@ describe("LearnTopicPage", () => {
     expect(screen.getByText("Facilities reporting")).toBeInTheDocument();
     expect(screen.getByText("12.5 MGD")).toBeInTheDocument();
     expect(screen.getByText("Total reported")).toBeInTheDocument();
+  });
+
+  it("derives the what-is-an-ai-data-center stat labels from AI_CLASSIFICATION_ENTRIES, not a hand-written copy", async () => {
+    mockGetAiClassificationCounts.mockResolvedValue({
+      confirmed: 5,
+      likely: 3,
+      mixed_use: 2,
+    });
+
+    // Pinned literally — deliberately NOT derived from the same import the
+    // component consumes — so a drift in lib/ai-classification.ts's TIERS
+    // labels, or a regression back to a hand-written copy that goes stale,
+    // fails this test instead of being silently absorbed.
+    expect(AI_CLASSIFICATION_ENTRIES).toHaveLength(3);
+    expect(AI_CLASSIFICATION_ENTRIES.map((e) => e.label)).toEqual([
+      "Confirmed",
+      "Likely",
+      "Mixed use",
+    ]);
+
+    const page = await LearnTopicPage({
+      params: Promise.resolve({ topic: "what-is-an-ai-data-center" }),
+    });
+    const { container } = render(page);
+
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+
+    // Order matters (confirmed -> likely -> mixed_use, per TIER_ORDER) —
+    // check DOM order, not just presence, since the row has no roles/testids.
+    const text = container.textContent ?? "";
+    const confirmedIdx = text.indexOf("Confirmed");
+    const likelyIdx = text.indexOf("Likely");
+    const mixedIdx = text.indexOf("Mixed use");
+    expect(confirmedIdx).toBeGreaterThan(-1);
+    expect(likelyIdx).toBeGreaterThan(confirmedIdx);
+    expect(mixedIdx).toBeGreaterThan(likelyIdx);
   });
 
   it("cross-links to the power generation hub on the behind-the-meter-power topic", async () => {
