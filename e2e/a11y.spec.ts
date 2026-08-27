@@ -21,10 +21,31 @@ const AXE_TAGS = [
   "wcag22aa",
 ] as const;
 
+/**
+ * Routes whose axe scan cost scales with the size of the dataset, so their
+ * runtime grows on every data wave rather than staying put.
+ *
+ * `/table` renders a row per facility, and axe's analysis is superlinear in
+ * DOM nodes: at 1,145 facilities the scan took 29.6s against the 30s default
+ * and passed with 0.4s to spare; the very next wave (1,197, +4.5%) took 32.8s
+ * and failed on all three attempts. Nothing about the page's accessibility
+ * changed — the budget was simply too tight to survive normal growth.
+ *
+ * `test.slow()` triples the per-test timeout (30s → 90s), which is ~2.7x the
+ * current cost. That is headroom, not a fix: the underlying issue is that
+ * `/table` puts the whole dataset in the DOM at once, which is also a real
+ * user-facing weight problem. If this list needs a fourth entry, or `/table`
+ * starts brushing 90s, paginate or virtualise the table instead of raising
+ * this again.
+ */
+const DATASET_SIZED_ROUTES = new Set<string>(["/table"]);
+
 for (const route of ROUTES) {
   test(`a11y: ${route} — zero serious/critical violations`, async ({
     page,
   }) => {
+    if (DATASET_SIZED_ROUTES.has(route)) test.slow();
+
     await page.goto(route);
 
     // Wait for the page to settle before scanning
