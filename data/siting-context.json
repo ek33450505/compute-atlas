@@ -961,6 +961,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "apollo-power-generation-facility-wood-oh": {
+    "nearestWater": {
+      "name": "Toussaint Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "apple-maiden-nc": {
     "nearestWater": {
       "name": "Bel-Air Pond",
@@ -2935,6 +2954,25 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "blackstone-data-services-bluestone-tazewell-va": {
+    "nearestWater": {
+      "name": "Mud Fork",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "blockchain-digital-infrastructure-collin-county-tx": {
     "nearestWater": {
       "name": "Jeans Creek",
@@ -4707,6 +4745,66 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "cologix-col1-columbus-oh": {
+    "nearestWater": {
+      "name": "Olentangy River",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "cologix-col2-columbus-oh": {
+    "nearestWater": {
+      "name": "Olentangy River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "cologix-col3-columbus-oh": {
+    "nearestWater": {
+      "name": "Olentangy River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "cologix-col4-columbus-oh": {
+    "nearestWater": {
+      "name": "Olentangy River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "cologix-col5-orange-township-delaware-county-oh": {
@@ -7710,6 +7808,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "dominion-cumberland-energy-center-va": {
+    "nearestWater": {
+      "name": "Randolph Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "dpo-wisconsin-rapids-hpc-wi": {
     "nearestWater": {
       "name": "Wisconsin River",
@@ -8126,6 +8243,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "edgecore-culpeper-tech-zone-va": {
+    "nearestWater": {
+      "name": "Mountain Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 9.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
     }
   },
   "edgecore-mesa-az": {
@@ -8902,6 +9038,55 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "expedient-cmh1-upper-arlington-oh": {
+    "nearestWater": {
+      "name": "Slate Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "expedient-cmh2-dublin-oh": {
+    "nearestWater": {
+      "name": "South Fork Indian Run",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "expedient-cmh3-lewis-center-oh": {
+    "nearestWater": {
+      "name": "Alum Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "expedient-mke1-milwaukee-franklin-wi": {
@@ -10444,6 +10629,25 @@
       "rock": "Carbonate-rock"
     }
   },
+  "google-botetourt-greenfield-va": {
+    "nearestWater": {
+      "name": "Lemons Run",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "google-cedar-rapids-ia": {
     "nearestWater": {
       "name": "Hoosier Creek",
@@ -11574,6 +11778,36 @@
     "aquifer": {
       "name": "Rio Grande Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "h5-data-centers-cincinnati-gest-oh": {
+    "nearestWater": {
+      "name": "Ohio River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "h5-data-centers-cleveland-rockwell-oh": {
+    "nearestWater": {
+      "name": "Lake Erie",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "h5-data-centers-quincy-campus-wa": {
@@ -12964,6 +13198,25 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "long-ridge-hannibal-power-plant-monroe-oh": {
+    "nearestWater": {
+      "name": "Bares Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 3.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "lumen-akron-2-oh": {
     "nearestWater": {
       "name": "Little Cuyahoga River",
@@ -13638,6 +13891,29 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "menlo-digital-jamestown-drive-petersburg-va": {
+    "nearestWater": {
+      "name": "Blackwater Swamp",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "menomonie-data-center-wi": {
@@ -16182,6 +16458,29 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "nuvu-county-drive-petersburg-va": {
+    "nearestWater": {
+      "name": "Blackwater Swamp",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "nydig-dfm-kraken-richland-mt": {
     "nearestWater": {
       "name": "Charbonneau Creek",
@@ -16526,6 +16825,29 @@
       "rock": "Sandstone"
     }
   },
+  "penzance-1500-gateway-fredericksburg-va": {
+    "nearestWater": {
+      "name": "Fall Quarry Run",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "penzance-bedington-berkeley-county-wv": {
     "nearestWater": {
       "name": "Potomac River",
@@ -16581,6 +16903,29 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "peterson-project-sisson-stafford-va": {
+    "nearestWater": {
+      "name": "White Oak Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "platteview-solar-saunders-ne": {
@@ -17425,6 +17770,25 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "prsm-preble-county-oh": {
+    "nearestWater": {
+      "name": "Bantas Fork",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 16.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "qts-ashburn-1-va": {
@@ -19932,6 +20296,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "standard-power-coshocton-oh": {
+    "nearestWater": {
+      "name": "Tuscarawas River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.4
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "stargate-abilene-tx": {
     "nearestWater": {
       "name": "Cedar Creek",
@@ -20059,6 +20442,21 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "state-of-ohio-computer-center-columbus-oh": {
+    "nearestWater": {
+      "name": "Olentangy River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "stonebridge-fort-meade-fl": {
@@ -20794,6 +21192,25 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "tac-data-centers-wythe-county-va": {
+    "nearestWater": {
+      "name": "Reed Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "takanock-project-baccara-maricopa-county-az": {
@@ -21740,6 +22157,29 @@
       "rock": "Sandstone"
     }
   },
+  "tract-hanover-technology-park-va": {
+    "nearestWater": {
+      "name": "South Anna River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "tract-mooresville-nc": {
     "nearestWater": {
       "name": "Dye Creek",
@@ -22492,6 +22932,29 @@
       "rock": "Carbonate-rock"
     }
   },
+  "warrenton-group-halifax-road-petersburg-va": {
+    "nearestWater": {
+      "name": "Second Swamp",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "wells-draw-energy-duchesne-county-ut": {
     "nearestWater": {
       "name": "Duchesne River",
@@ -22528,6 +22991,29 @@
     "aquifer": {
       "name": "Colorado Plateaus Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "westdulles-iron-horse-hanover-va": {
+    "nearestWater": {
+      "name": "Slayden Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "westin-building-digital-realty-seattle-sea10-wa": {
@@ -22760,6 +23246,25 @@
     "aquifer": {
       "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "yondr-cerberus-manassas-va": {
+    "nearestWater": {
+      "name": "Russia Branch",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
     }
   },
   "zenith-tooele-valley-burmester-ut": {
