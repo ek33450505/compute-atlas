@@ -66,4 +66,42 @@ describe("SurveyStatRow", () => {
     const tile = tileFor("Composite figure");
     expect(within(tile).getByText("99.5%")).toBeInTheDocument();
   });
+
+  describe("spacing", () => {
+    const stats = [
+      { value: "10", label: "Sites" },
+      { value: "20", label: "Operational" },
+    ];
+
+    it("defaults to the original gap-8 container classes, unchanged", () => {
+      const { container } = render(<SurveyStatRow stats={stats} />);
+      const row = container.firstElementChild;
+
+      // Regression guard: this exact string is what the other 13 call sites
+      // of SurveyStatRow have always rendered. If this ever fails, a change
+      // meant only for /power's wide variant has leaked into every page.
+      expect(row?.className).toBe(
+        "flex flex-wrap gap-8 border-b border-border pb-10"
+      );
+    });
+
+    it('spacing="wide" renders the wider gap-x/gap-y container classes', () => {
+      const { container } = render(<SurveyStatRow stats={stats} spacing="wide" />);
+      const row = container.firstElementChild;
+
+      expect(row?.className).toBe(
+        "flex flex-wrap gap-x-16 gap-y-8 border-b border-border pb-10"
+      );
+      // The default rhythm must not leak into the wide variant as a bare token.
+      expect(row?.className).not.toMatch(/(?:^|\s)gap-8(?:\s|$)/);
+    });
+
+    it("still renders every stat's value and label with spacing=\"wide\"", () => {
+      render(<SurveyStatRow stats={stats} spacing="wide" />);
+
+      for (const stat of stats) {
+        expect(within(tileFor(stat.value)).getByText(stat.label)).toBeInTheDocument();
+      }
+    });
+  });
 });

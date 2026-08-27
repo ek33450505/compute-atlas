@@ -252,6 +252,51 @@ The field is excluded from both the automated discovery pipeline and public
 corrections. Stakeholders are added through maintainer research and human review
 only — a local model must never be able to name a private individual.
 
+## Emissions
+
+An optional `emissions` object records **permitted annual emission limits taken
+from a facility's air permit** (PSD, Title V, or a state construction permit).
+
+**These are regulatory ceilings, not measured output.** A permit states the most
+a facility is allowed to emit, which is not what it actually emitted. The facility
+page says so wherever the figures appear, and the two must never be presented
+interchangeably.
+
+**Nothing here is derived.** Converting capacity to tonnage would require a
+capacity factor and an emission rate — it would be an estimate wearing the
+clothes of a citation, and it is not done. Every value is a number printed in a
+permit, recorded in the permit's own units exactly as written. Units are never
+converted, short-term limits are never annualised, and a permit stating metric
+tonnes or a non-annual averaging period is recorded as written with the deviation
+noted rather than normalised.
+
+**`basis` is required whenever any tonnage is recorded**, because real permits
+are not uniform:
+
+- Some state **facility-wide** caps (PA DEP Plan Approval 32-00457A caps Homer
+  City at 1,142.8 tons/yr NOx across the whole site).
+- Others state **per-unit** caps (MDEQ PSD 0680-00119 caps each turbine at
+  5.60–15.47 tons/yr NOx depending on model, across 41 turbines).
+
+An unqualified number is ambiguous between those two readings, and reporting a
+per-turbine limit as a site total would be a serious error. `averagingPeriod`
+records whether a limit is a calendar year or a rolling 12-month total — permits
+commonly use the latter.
+
+**`unitsCovered` records what equipment the permit actually authorises**, in the
+permit's own words. A permit does not always cover the same equipment a record
+describes: a site may operate units beyond those a given permit authorises, and
+attaching that permit's limits to the whole site would cite real numbers against
+the wrong hardware.
+
+**A missing `co2e` does not mean "no greenhouse-gas limit."** Some permits
+constrain GHGs only as an efficiency *rate* (e.g. lb/MMBtu) with no annual
+tonnage at all. The field is left unset and the reason recorded in `notes`.
+
+Like `stakeholders`, this field is excluded from the automated discovery pipeline
+and from public corrections. It is added through maintainer research against the
+permit document itself.
+
 ## See also
 
 - [`README.md`](../README.md) — what the dataset is and the public API.

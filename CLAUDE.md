@@ -201,4 +201,20 @@ tool, not part of the deployed app.
   files — check `.gitignore` before adding a doc, and never commit those.
 - **Dev server:** don't run `next build`/`start` while `next dev` is live (it
   corrupts `.next`); a long-running dev server can also serve stale `globals.css`.
+  A restart does **not** clear `.next/cache`, so a "fresh" server can replay an
+  ISR-cached page from before the last data publish — that looks exactly like
+  JSON↔Neon drift but isn't (`check:drift` compares data and cannot see a stale
+  *render*). `rm -rf .next/cache` and re-fetch before concluding anything.
+- **JSX drops a leading space when the text chunk contains an HTML entity.** If a
+  text chunk *follows an interpolation* `{...}` **and** contains `&apos;`,
+  `&rsquo;`, `&middot;` etc., its leading space is silently dropped and two words
+  render joined — `tracks {stats.count} dedicated-…` became "tracks
+  79dedicated-…" live on prod. The source looks correct (`od -c` shows a normal
+  `0x20`), so this is **invisible in review**; it only shows in rendered HTML,
+  where React's `<!-- -->` separator sits directly between two word characters.
+  Fix with an explicit `{" "}` after the interpolation — **not** by replacing the
+  entity, which `react/no-unescaped-entities` forbids for `'`. Guarded by
+  `e2e/prose-spacing.spec.ts`, which scans raw SSR HTML (never a hydrated DOM —
+  hydration removes the `<!-- -->` markers and the check would silently always
+  pass) across 9 routes including one per dynamic template.
 - **Static-asset edge cache:** `/data/:path*` and `/basemap/:path*` carry `Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800` (edge cache up to 1 day plus 7 days stale reuse); `/fonts/:path*` are immutable. After `npm run build:mapdata`, regenerated geojson rides the edge cache for up to 24 hours — if a correction must go live immediately, purge Cloudflare by prefix.
