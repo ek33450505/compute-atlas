@@ -543,3 +543,63 @@ describe("sourceSchema — url protocol restriction", () => {
     expect(result.success).toBe(false);
   });
 });
+
+describe("facilitySchema — stakeholders", () => {
+  it("parses a facility with a valid stakeholders entry, and the field survives the parse", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      stakeholders: [
+        {
+          name: "Jane Doe",
+          role: "founder",
+          via: "xAI",
+          note: "Co-founded the company that operates this site.",
+          sourceIndex: 0,
+          asOf: "2026-07-05",
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect("stakeholders" in result.data).toBe(true);
+      expect(result.data.stakeholders?.[0].name).toBe("Jane Doe");
+      expect(result.data.stakeholders?.[0].role).toBe("founder");
+    }
+  });
+
+  it("fails when stakeholders[0].sourceIndex is out of range, with issue path [\"stakeholders\", 0, \"sourceIndex\"]", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      stakeholders: [
+        {
+          name: "Jane Doe",
+          role: "founder",
+          sourceIndex: 5,
+          asOf: "2026-07-05",
+        },
+      ],
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["stakeholders", 0, "sourceIndex"] })
+      );
+    }
+  });
+
+  it("fails when stakeholders[0] is missing sourceIndex or asOf", () => {
+    const missingSourceIndex = facilitySchema.safeParse({
+      ...baseFacility,
+      stakeholders: [
+        { name: "Jane Doe", role: "founder", asOf: "2026-07-05" },
+      ],
+    });
+    expect(missingSourceIndex.success).toBe(false);
+
+    const missingAsOf = facilitySchema.safeParse({
+      ...baseFacility,
+      stakeholders: [{ name: "Jane Doe", role: "founder", sourceIndex: 0 }],
+    });
+    expect(missingAsOf.success).toBe(false);
+  });
+});
