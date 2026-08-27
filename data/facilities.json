@@ -664,6 +664,58 @@
     }
   },
   {
+    "id": "ainet-cybernap-glen-burnie-md",
+    "name": "AiNET CyberNAP",
+    "operator": "AiNET",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.169,
+      "lon": -76.612,
+      "city": "Glen Burnie",
+      "county": "Anne Arundel",
+      "street": "7900 Ritchie Highway",
+      "postalCode": "21061",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 80
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-26",
+        "note": "Listed as an operational carrier hotel and colocation facility.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ai.net/cybernap/",
+        "label": "CyberNAP — AiNET",
+        "publisher": "AiNET",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://cloudandcolocation.com/datacenters/ainet-glen-burnie-cybernap-data-center/",
+        "label": "AiNET — Glen Burnie CyberNAP Data Center",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Carrier hotel and colocation campus of roughly 300,000-360,000 sq ft on 15 acres, less than 10 miles from Fort Meade, with three concentric security zones and power density above 25 kW per cabinet. Capacity is operator-stated.",
+    "energy": {
+      "source": "grid",
+      "notes": "Operator states over 80 MW of protected power delivered as 2N dual feeds from two independent substations on separate grids."
+    },
+    "landAcres": 15,
+    "facilityType": "data_center"
+  },
+  {
     "id": "air-products-cetronia-road-upper-macungie-pa",
     "name": "Cetronia Road Data Center (former Air Products site)",
     "operator": "Air Products",
@@ -1065,6 +1117,66 @@
       "source": "grid",
       "utility": "Dominion Energy Virginia",
       "notes": "Aligned's Ashburn campus connects to the Dominion Energy Virginia grid; Dominion offers green-energy program options but no site-specific dedicated generation or PPA was found for IAD-03 specifically."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "aligned-iad-06-frederick-md",
+    "name": "Aligned Data Centers IAD-06 Frederick",
+    "operator": "Aligned Data Centers",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.3417,
+      "lon": -77.5089,
+      "city": "Frederick",
+      "county": "Frederick",
+      "street": "5601 Manor Woods Road",
+      "postalCode": "21703",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 72
+    },
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-10",
+        "note": "Construction began October 2025 as the second building on Aligned's Quantum Frederick campus; the structure topped out March 9, 2026, fewer than five months after groundbreaking.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.turnerconstruction.com/insights/turner-celebrates-topping-out-of-aligned-iad-06-data-center-in-frederick-maryland",
+        "label": "Turner Celebrates Topping Out of Aligned IAD-06 Data Center in Frederick, Maryland",
+        "publisher": "Turner Construction Company",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://natureforward.org/quantum-frederick-frederick-county-md-maryland-data-center-series-pt-3/",
+        "label": "Quantum Frederick, Frederick County, MD: Maryland Data Center Series, Pt. 3",
+        "publisher": "Nature Forward",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://aligneddc.com/maryland-data-centers/",
+        "label": "Adaptive Data Centers in Frederick County, Maryland",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Two-story, 450,000 sq ft, 72 MW building — the second of four planned on Aligned's 75-acre, roughly 264 MW campus inside Quantum Frederick. About 345 skilled workers were on site at topping out with more than 80,000 craft hours logged.",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Turner Construction describes a high-efficiency hybrid cooling solution integrating liquid- and air-cooled technologies."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -1614,6 +1726,8 @@
       "lon": -77.387,
       "city": "Adamstown",
       "county": "Frederick",
+      "street": "5601 Manor Woods Road",
+      "postalCode": "21703",
       "state": "MD",
       "precision": "exact"
     },
@@ -1677,9 +1791,23 @@
         "publisher": "Frederick News-Post via Yahoo Finance",
         "retrievedAt": "2025-11-11",
         "kind": "press"
+      },
+      {
+        "url": "https://aligneddc.com/maryland-data-centers/",
+        "label": "Adaptive Data Centers in Frederick County, Maryland — IAD-04",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://natureforward.org/quantum-frederick-frederick-county-md-maryland-data-center-series-pt-3/",
+        "label": "Quantum Frederick, Frederick County, MD: Maryland Data Center Series, Pt. 3",
+        "publisher": "Nature Forward",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-26",
     "notes": "Part of TPG Real Estate / Catellus Development's 2,100-acre Quantum Frederick campus on former Alcoa Eastalco aluminum plant (closed 2010, demolished 2017) in Frederick County MD. Coordinates are approximate for campus area near Buckeystown/Adamstown. Location.city set to Adamstown per the more recent, project-specific Frederick News-Post coverage (2025-11-11, via Yahoo Finance); the 2021 Maryland Dept. of Commerce announcement had said \"near Buckeystown\" — recorded here so the choice is auditable rather than looking arbitrary.",
     "energy": {
       "source": "grid",
@@ -2427,81 +2555,6 @@
       "status": "contested",
       "notes": "Organized resident opposition active. Concerns cited: utility cost spikes, noise, fire and explosion risk from large-scale lithium BESS, and objection to AI use. An appeal was filed July 21, 2025, subsequently withdrawn August 18, 2025. Opponents requested Amazon guarantee the facility would not be used exclusively for AI workloads.",
       "sourceIndex": 0
-    },
-    "facilityType": "data_center",
-    "aiClassification": "mixed_use"
-  },
-  {
-    "id": "amazon-northwest-louisiana",
-    "name": "Amazon Data Center Campuses (Caddo and Bossier Parishes)",
-    "operator": "Amazon Web Services",
-    "status": "under_construction",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 32.51,
-      "lon": -93.75,
-      "city": "Shreveport",
-      "county": "Caddo",
-      "state": "LA",
-      "precision": "exact"
-    },
-    "poweredBy": "Grid (SWEPCO / AEP), with Amazon funding 100% of new transmission infrastructure",
-    "announcedDate": "2026-02",
-    "statusHistory": [
-      {
-        "status": "proposed",
-        "date": "2026-02",
-        "note": "Governor Landry announces three Amazon AI data centers in northwest Louisiana: Shreveport, rural Caddo Parish near Blanchard, rural Bossier Parish near Benton. Total investment $12B with STACK Infrastructure as developer partner.",
-        "sourceIndex": 0
-      },
-      {
-        "status": "under_construction",
-        "date": "2026-03",
-        "note": "Construction at Caddo and Bossier campuses begins. Third Shreveport site (Resilient Tech Park) faces litigation that is subsequently dismissed.",
-        "sourceIndex": 1
-      }
-    ],
-    "sources": [
-      {
-        "url": "https://www.opportunitylouisiana.gov/news/amazon-selects-louisiana-for-12-billion-data-center-campuses-in-major-u-s-expansion",
-        "label": "Amazon selects Louisiana for $12B data center campuses",
-        "publisher": "Louisiana Economic Development",
-        "retrievedAt": "2026-07-06",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.ksla.com/2026/02/24/campuses-newly-announced-amazon-data-center-spanning-bossier-caddo-parishes-confirmed/",
-        "label": "Amazon data center campuses in Bossier and Caddo parishes confirmed",
-        "publisher": "KSLA News 12",
-        "retrievedAt": "2026-07-06",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-07-06",
-    "notes": "Three campuses (Shreveport, near Blanchard in Caddo Parish, near Benton in Bossier Parish). STACK Infrastructure is developer partner. Each campus approximately 2-3 million sq ft. Sites on separate transmission lines for reliability. Coordinates use Shreveport as centroid; exact parcel locations not publicly mapped.",
-    "energy": {
-      "source": "grid",
-      "utility": "SWEPCO (Southwestern Electric Power Company)",
-      "notes": "Amazon covering 100% of grid connection costs. Sites placed on separate transmission lines for redundancy across Red River. SWEPCO is the utility provider."
-    },
-    "subsidies": [
-      {
-        "program": "Louisiana High Impact Jobs and Data Center Sales Tax Exemption (Act 730)",
-        "jurisdiction": "Louisiana",
-        "year": "2026",
-        "sourceIndex": 0
-      }
-    ],
-    "investmentUsd": 12000000000,
-    "jobs": {
-      "construction": 1500,
-      "permanent": 540,
-      "sourceIndex": 0
-    },
-    "community": {
-      "status": "mixed",
-      "notes": "Protesters at February 23, 2026 announcement raised water use and environmental concerns. Third site (Resilient Tech Park, Shreveport) had litigation dismissed mid-2026, clearing path for development. Project becomes largest property taxpayer in both Caddo and Bossier parishes.",
-      "sourceIndex": 1
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
@@ -3465,9 +3518,23 @@
         "publisher": "Rapides Parish Journal",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/central-louisiana-secures-3-6-billion-applied-digital-ai-factory-campus",
+        "label": "Central Louisiana Secures $3.6 Billion Applied Digital AI Factory Campus",
+        "publisher": "Louisiana Economic Development",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "http://thehayride.com/2026/07/cleco-plans-756-mw-gas-plant-alongside-rapides-data-center/",
+        "label": "Cleco plans 756-MW gas plant alongside Rapides data center",
+        "publisher": "The Hayride",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-26",
     "notes": "Anchor tenant is an undisclosed investment-grade U.S. hyperscaler under a $7.5B, 15-year lease. Two initial facilities totaling 300 MW across 300 acres (of 672-acre secured site). Initial operations targeted mid-2027. Applied Digital HQ in Dallas, TX.",
     "energy": {
       "source": "grid",
@@ -4541,6 +4608,57 @@
     }
   },
   {
+    "id": "aspen-creek-digital-olathe-co",
+    "name": "Aspen Creek Digital — Olathe Solar Bitcoin Mine",
+    "operator": "Aspen Creek Digital Corporation",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.5986,
+      "lon": -107.973,
+      "city": "Olathe",
+      "county": "Montrose",
+      "street": "59482 Highway 50",
+      "postalCode": "81425",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 6
+    },
+    "announcedDate": "2022-06",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-06",
+        "note": "Cryptomining operations formally began June 2022 at the former Louisiana-Pacific lumber mill site along U.S. 50.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Aspen_Creek_Digital_Corporation_Montrose_County_facility",
+        "label": "Aspen Creek Digital Corporation Montrose County facility",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "6 MW behind-the-meter bitcoin mine on the old Louisiana-Pacific mill site along U.S. 50 between Olathe and Delta, paired with a 10 MW solar farm. The site was purchased by CO Mine 1 Landco LLC for $2.5 million in May 2021 and operated by Aspen Creek Digital from 2022; Galaxy Digital is cited as a co-location client. Current ownership has not been independently re-verified for this entry. Distinct from the tracked Walden (Jackson County) flare-mitigation record.",
+    "energy": {
+      "source": "solar",
+      "onSiteGenerationMw": 10,
+      "notes": "Co-located behind the meter with a 10 MW solar array built on 74 acres in Montrose County."
+    },
+    "landAcres": 74,
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "behind_meter"
+    }
+  },
+  {
     "id": "atlas-compute-ai-data-center-campus-fort-pierce-fl",
     "name": "Atlas Compute AI Data Center Campus",
     "operator": "Atlas Compute (infrastructure by Penguin Solutions)",
@@ -4716,6 +4834,57 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "atmosphere-dickerson-montgomery-md",
+    "name": "Dickerson Data Center",
+    "operator": "Atmosphere Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.2117,
+      "lon": -77.4736,
+      "city": "Dickerson",
+      "county": "Montgomery",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 360
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "Five-building, 360 MW plan re-filed with Montgomery County in May 2026 (an earlier two-building proposal was approved in 2024). County public hearing scheduled for Nov. 12-13, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://natureforward.org/dickerson-data-center-montgomery-county-md-data-center-series-pt-5/",
+        "label": "Dickerson Data Center, Montgomery County, MD: Data Center Series, Pt. 5",
+        "publisher": "Nature Forward",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Five-building campus proposed by California-based Atmosphere Data Centers on the site of the decommissioned Dickerson coal power plant on the Potomac River. Single-source record: the developer's own filings were not independently retrieved.",
+    "energy": {
+      "source": "grid",
+      "notes": "Reuses the retired Dickerson coal plant's existing transmission lines and substation infrastructure; the application also includes a utility-scale battery storage facility on the site."
+    },
+    "water": {
+      "reportedMgd": 2,
+      "notes": "River-water cooling proposed; a permit application seeks up to two million gallons per day from the Potomac on peak days. The Potomac was named America's most endangered river of 2026 by opponents of the project."
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Sustained opposition from Montgomery County community and environmental groups. The County Executive issued a six-month permit pause on June 12, 2026, the County Council enacted an 18-month moratorium on July 28, 2026, and the developer challenged the moratorium in court.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "atterix-raton-digital-hub-nm",
@@ -5273,6 +5442,78 @@
     "facilityType": "data_center"
   },
   {
+    "id": "aws-benton-bossier-parish-la",
+    "name": "Amazon Web Services Bossier Parish Campus (Benton)",
+    "operator": "Amazon Web Services",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.77,
+      "lon": -93.74,
+      "city": "Benton",
+      "county": "Bossier",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "Announced 2026-02-24 as one of two northwest Louisiana campuses in Amazon's $12 billion program. KSLA confirmed the location as about five miles north of Benton on the west side of Highway 3.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-03",
+        "note": "Construction begins at the Caddo and Bossier campuses.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/amazon-selects-louisiana-for-12-billion-data-center-campuses-in-major-u-s-expansion",
+        "label": "Amazon Selects Louisiana for $12 Billion Data Center Campuses in Major U.S. Expansion",
+        "publisher": "Louisiana Economic Development",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ksla.com/2026/02/24/campuses-newly-announced-amazon-data-center-spanning-bossier-caddo-parishes-confirmed/",
+        "label": "Campuses for newly announced Amazon data center spanning Bossier & Caddo parishes confirmed",
+        "publisher": "KSLA News 12",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-27",
+    "notes": "One of the two campuses covered by Amazon's $12 billion northwest Louisiana announcement; the other is just north of Blanchard Latex Road in Caddo Parish. KSLA places this campus about five miles north of Benton on the west side of Highway 3. STACK Infrastructure is the developer partner and each campus is approximately 2-3 million sq ft. Program-level figures are deliberately not attributed to this site: the $12 billion investment and the roughly 1,500 construction / 540 permanent job figures cover both campuses jointly, and Amazon's up-to-$400 million public water-infrastructure commitment covers all of its northwest Louisiana campuses. The separately announced Resilient Technology Park campus in west Shreveport is tracked as aws-resilient-technology-park-shreveport-la; KSLA reported on 2026-02-24 that it is not part of the $12 billion investment. Coordinates are derived from the published road description and are approximate; no parcel coordinate has been published.",
+    "energy": {
+      "source": "grid",
+      "utility": "SWEPCO (Southwestern Electric Power Company)",
+      "notes": "Amazon is covering 100% of grid connection costs. The two campuses were placed on separate transmission lines for redundancy across the Red River. SWEPCO is the utility provider."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Amazon says it will fund all water and wastewater improvements required by the projects, investing up to $400 million in public water infrastructure across its northwest Louisiana campuses. That figure is program-level. No cooling technology or withdrawal figure has been published for this campus."
+    },
+    "subsidies": [
+      {
+        "program": "Louisiana High Impact Jobs and Data Center Sales Tax Exemption (Act 730)",
+        "jurisdiction": "Louisiana",
+        "year": "2026",
+        "sourceIndex": 0
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Protesters at the February 2026 announcement raised water-use and environmental concerns about the northwest Louisiana program. Amazon's campuses are expected to become the largest property taxpayer in both Caddo and Bossier parishes. The litigation reported in connection with this program concerned the separate Resilient Technology Park site in west Shreveport, not this campus.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "aws-birchwood-data-campus-king-george-va",
     "name": "Birchwood Data Campus",
     "operator": "Amazon Web Services",
@@ -5312,6 +5553,78 @@
       "notes": "Rezoning approved Sept 2023; a vested-rights challenge is contested in circuit court."
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "aws-blanchard-caddo-parish-la",
+    "name": "Amazon Web Services Caddo Parish Campus (Blanchard)",
+    "operator": "Amazon Web Services",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.6,
+      "lon": -94.04,
+      "city": "Blanchard",
+      "county": "Caddo",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "Announced 2026-02-24 as one of two northwest Louisiana campuses in Amazon's $12 billion program. KSLA confirmed the location as just north of Blanchard Latex Road on State Line Road.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-03",
+        "note": "Construction begins at the Caddo and Bossier campuses.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/amazon-selects-louisiana-for-12-billion-data-center-campuses-in-major-u-s-expansion",
+        "label": "Amazon Selects Louisiana for $12 Billion Data Center Campuses in Major U.S. Expansion",
+        "publisher": "Louisiana Economic Development",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ksla.com/2026/02/24/campuses-newly-announced-amazon-data-center-spanning-bossier-caddo-parishes-confirmed/",
+        "label": "Campuses for newly announced Amazon data center spanning Bossier & Caddo parishes confirmed",
+        "publisher": "KSLA News 12",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-27",
+    "notes": "One of the two campuses covered by Amazon's $12 billion northwest Louisiana announcement; the other is roughly five miles north of Benton in Bossier Parish. KSLA places this campus just north of Blanchard Latex Road on State Line Road. STACK Infrastructure is the developer partner and each campus is approximately 2-3 million sq ft. Program-level figures are deliberately not attributed to this site: the $12 billion investment and the roughly 1,500 construction / 540 permanent job figures cover both campuses jointly, and Amazon's up-to-$400 million public water-infrastructure commitment covers all of its northwest Louisiana campuses. The separately announced Resilient Technology Park campus in west Shreveport is tracked as aws-resilient-technology-park-shreveport-la; KSLA reported on 2026-02-24 that it is not part of the $12 billion investment. Coordinates are derived from the published road description and are approximate; no parcel coordinate has been published.",
+    "energy": {
+      "source": "grid",
+      "utility": "SWEPCO (Southwestern Electric Power Company)",
+      "notes": "Amazon is covering 100% of grid connection costs. The two campuses were placed on separate transmission lines for redundancy across the Red River. SWEPCO is the utility provider."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Amazon says it will fund all water and wastewater improvements required by the projects, investing up to $400 million in public water infrastructure across its northwest Louisiana campuses. That figure is program-level. No cooling technology or withdrawal figure has been published for this campus."
+    },
+    "subsidies": [
+      {
+        "program": "Louisiana High Impact Jobs and Data Center Sales Tax Exemption (Act 730)",
+        "jurisdiction": "Louisiana",
+        "year": "2026",
+        "sourceIndex": 0
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "Protesters at the February 2026 announcement raised water-use and environmental concerns about the northwest Louisiana program. Amazon's campuses are expected to become the largest property taxpayer in both Caddo and Bossier parishes. The litigation reported in connection with this program concerned the separate Resilient Technology Park site in west Shreveport, not this campus.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "aws-boardman-morrow-county-or",
@@ -5400,7 +5713,7 @@
     "id": "aws-calvert-cliffs-md",
     "name": "AWS Calvert County Data Center Campus",
     "operator": "Amazon Web Services",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 38.437,
@@ -5417,6 +5730,12 @@
         "date": "2026-03",
         "note": "AWS held community open house; described project as 'preliminary review work, regulatory analysis, site evaluation and early design concepts.' Site plan application filed May 4, 2026 with fees paid May 18. Up to 8 data centers proposed. No rezoning required (already heavy industry zoning).",
         "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-08-26",
+        "note": "Amazon Data Services Inc. formally withdrew its Calvert Technology Center Conceptual Site Development Plan application and decided not to pursue the proposed data center project in Calvert County. Calvert County Government announced the withdrawal in an Aug. 4, 2026 press release; the county's data center page now records the application as withdrawn and states no site plan applications for data center development are pending. The withdrawal followed voter backlash in the county's June 23, 2026 primary, and the county subsequently passed a six-month moratorium on data center site plan approvals effective Aug. 28, 2026.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -5440,9 +5759,30 @@
         "publisher": "The BayNet",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.calvertcountymd.gov/ArchiveCenter/ViewFile/Item/2925",
+        "label": "AWS Withdraws Proposed Calvert County Data Center Project — Calvert County News release, Aug. 4, 2026",
+        "publisher": "Calvert County Government",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.calvertcountymd.gov/3880/Data-Centers",
+        "label": "Data Centers — Calvert County official page (Calvert Technology Center application withdrawn Aug. 4, 2026; six-month moratorium effective Aug. 28, 2026)",
+        "publisher": "Calvert County Government",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.baltimoresun.com/2026/08/05/calvert-county-amazon-data-center/",
+        "label": "Amazon abandons plans to develop data centers in Maryland county",
+        "publisher": "The Baltimore Sun",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-26",
     "notes": "Very early-stage: AWS states no formal proposal submitted as of DCD article date. Site plan application filed May 2026. Concept design shared at community open house shows up to 8 buildings south and west of Calvert Cliffs nuclear plant. Capacity not disclosed by AWS. Coordinates approximate for Calvert Cliffs area.",
     "energy": {
       "source": "nuclear",
@@ -7065,6 +7405,62 @@
     "notes": "Up to 18 two-story buildings on Vistra-owned land adjacent to the Comanche Peak Nuclear Power Plant, with an additional 1,265+ acres being coordinated in neighboring Hood County; distinct facility/operator from the existing Vistra/AWS PPA power_generation record for Comanche Peak itself. Construction could commence 2027; still subject to finalized lease terms with Vistra.",
     "investmentUsd": 5000000000,
     "landAcres": 435,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "aws-resilient-technology-park-shreveport-la",
+    "name": "Amazon Web Services Shreveport Campus (Resilient Technology Park)",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.5135356,
+      "lon": -93.7477839,
+      "city": "Shreveport",
+      "county": "Caddo",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-08-19",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-19",
+        "note": "Announced as Amazon's third northwest Louisiana campus, raising the regional program from $12B to $18B.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://thehayride.com/2026/08/amazon-announces-6b-data-center-investment-in-shreveport/",
+        "label": "Amazon announces $6B data center investment in Shreveport",
+        "publisher": "The Hayride",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Third and separately announced Amazon campus in northwest Louisiana, sited at the Resilient Technology Park in west Shreveport. Distinct from the two campuses already under construction in rural Caddo and Bossier parishes. 499 indirect jobs also cited.",
+    "energy": {
+      "source": "grid",
+      "utility": "Southwestern Electric Power Company (SWEPCO)",
+      "notes": "Amazon says it will coordinate with SWEPCO to fully fund the new energy infrastructure and grid upgrades required."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Amazon states it will fund all water and wastewater improvements required by the projects, investing up to $400 million in public water infrastructure across its three northwest Louisiana campuses."
+    },
+    "investmentUsd": 6000000000,
+    "jobs": {
+      "construction": 2250,
+      "permanent": 210,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "The west Shreveport announcement was pulled from the February 2026 state event after a suit by three plaintiffs and the Sierra Club Delta Chapter; the case remains in the Second Circuit Court of Appeals.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -9711,6 +10107,65 @@
     "facilityType": "data_center"
   },
   {
+    "id": "blusky-ai-walsenburg-co",
+    "name": "BluSky AI Walsenburg (Indian Pool Ranch) Modular Data Center",
+    "operator": "BluSky AI Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.6235234,
+      "lon": -104.780995,
+      "city": "Walsenburg",
+      "county": "Huerfano",
+      "street": "1 Hwy 69 / Indian Pool Ranch",
+      "postalCode": "81089",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 15
+    },
+    "announcedDate": "2025-09-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09-02",
+        "note": "Purchase and sale agreement executed 2025-08-26 for a 36.06-acre parcel; announced as the company's fifth 'AI factory' site.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://finance.yahoo.com/news/blusky-ai-inc-executes-purchase-141700082.html",
+        "label": "BluSky AI Inc. Executes Purchase and Sale Agreement for its Fifth AI Factory Location",
+        "publisher": "BluSky AI Inc. (news release)",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://gazette.com/2026/03/28/ai-data-center-plans-baffle-small-southern-colorado-town/",
+        "label": "AI data center plans baffle small southern Colorado town (read via Internet Archive)",
+        "publisher": "Colorado Springs Gazette",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "BluSky AI Inc. (OTCID: BSAI), Salt Lake City, announced a purchase and sale agreement dated 2025-08-26 for LOT 1 INDIAN POOL RANCH, 36.06 acres north of Walsenburg, for up to 15 MW of modular 'SkyMod' compute. As of the Gazette's reporting in early 2026 the sale had not closed and the site remained under agreement with owner Snowy River Ranches. Coordinates are the Walsenburg town centroid (approximate); the parcel is north of town.",
+    "energy": {
+      "source": "grid",
+      "notes": "Company describes direct access to regional energy infrastructure and adjacency to transmission corridors; no utility service agreement is described in the sources."
+    },
+    "landAcres": 36,
+    "community": {
+      "status": "contested",
+      "notes": "Walsenburg's mayor and town administrator said they were unaware of the plan when contacted in early 2026. Mayor Gary Vezzani said he could not see the city council supplying municipal utilities to the facility and doubted it would replace the jobs lost with the town's shuttered correctional facility or safeguard the town's water rights.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "bobcat-energy-center-ia",
     "name": "Bobcat Energy Center",
     "operator": "Alliant Energy",
@@ -10322,6 +10777,63 @@
       "notes": "Sub-3-cents/kWh power rate cited for Bear/Chief in the Feb 2026 Canaan release; ERCOT grid demand-response/energy-arbitrage participation."
     },
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "canadys-station-colleton-county-sc",
+    "name": "Canadys Station",
+    "operator": "Dominion Energy South Carolina and Santee Cooper",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.0565161,
+      "lon": -80.6196529,
+      "city": "Canadys",
+      "county": "Colleton",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2200
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-05-14",
+        "note": "The Public Service Commission of South Carolina approved the joint Dominion Energy / Santee Cooper application for a certificate to construct and operate the station.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.santeecooper.com/community/generation-projects/canadys-station/",
+        "label": "Canadys Station — generation project page",
+        "publisher": "Santee Cooper",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://news.dominionenergy.com/press-releases/press-releases/2026/Dominion-Energy-Santee-Cooper-Joint-Project-Receives-Key-Regulatory-Approval/default.aspx",
+        "label": "Dominion Energy, Santee Cooper Joint Project Receives Key Regulatory Approval",
+        "publisher": "Dominion Energy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Canadys%2C+Colleton+County%2C+South+Carolina&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for Canadys, Colleton County, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Dedicated generation build-out driven in significant part by South Carolina large-load growth. Deliberately NOT linked to a named compute offtaker: no source ties its output to a specific campus, so `generation.offtaker` is omitted. Cost figures of roughly $5 billion and a target commercial operation date in the early 2030s appear in regulatory coverage but are not stated on either fetched company page, so they are not asserted here. Distinct from the tracked Project Boulder data center, which is also in Colleton County but is a different site and facility type. Coordinates are an approximate geocode of the Canadys community.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 3,
+      "notes": "Natural gas combined-cycle station of three combined-cycle turbines with flexible fuel capability, built on the brownfield site of Dominion Energy's retired Canadys coal plant roughly 40 miles northwest of Charleston. Kinder Morgan was selected as natural gas supplier. Jointly developed by Dominion Energy South Carolina and Santee Cooper."
+    }
   },
   {
     "id": "cango-greenvolt-soperton-ga",
@@ -11066,6 +11578,55 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "cielo-gaffney-cherokee-county-sc",
+    "name": "Cielo Digital Infrastructure Gaffney Campus",
+    "operator": "Cielo Digital Infrastructure, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.0666365,
+      "lon": -81.5576062,
+      "city": "Gaffney",
+      "county": "Cherokee",
+      "street": "Ford Road",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-06",
+        "note": "Announced by the S.C. Governor's office and S.C. Department of Commerce as Cielo's first South Carolina development project.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://governor.sc.gov/news/2025-06/cielo-digital-infrastructure-selects-cherokee-county-first-south-carolina-development",
+        "label": "Cielo Digital Infrastructure selects Cherokee County for first South Carolina development project",
+        "publisher": "Office of the Governor of South Carolina",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Ford+Road%2C+Gaffney%2C+Cherokee+County%2C+South+Carolina&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for Ford Road, Gaffney, Cherokee County, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Announcement describes four buildings of roughly 400,000 sq ft each plus an associated electrical substation, at '000 Ford Road, Gaffney'. Initial operations expected online by year-end 2028. Coordinates are an approximate geocode of Ford Road — no parcel-level location was published. A 300 MW full-build-out figure appears in trade coverage but is not stated in the state announcement, so capacity is omitted here.",
+    "investmentUsd": 2100000000,
+    "jobs": {
+      "permanent": 30,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "cielo-haines-city-fl",
@@ -13026,10 +13587,22 @@
         "publisher": "KALB",
         "retrievedAt": "2026-08-20",
         "kind": "press"
+      },
+      {
+        "url": "http://thehayride.com/2026/07/cleco-plans-756-mw-gas-plant-alongside-rapides-data-center/",
+        "label": "Cleco plans 756-MW gas plant alongside Rapides data center",
+        "publisher": "The Hayride",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-20",
+    "lastUpdated": "2026-08-26",
     "notes": "Location is approximate (Rapides Parish, near Boyce) — no exact site/parcel name was disclosed in available sources; coverage describes the turbine as being sited on Cleco's existing Rapides Parish generation campus.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Cleco Power",
+      "notes": "Cleco funds the 756 MW plant and argues it is needed regardless of the data center as older units retire; Applied Digital's Delta Forge 1 campus would draw up to 430 MW, the largest single load Cleco Power has served, and pays the full cost of interconnection infrastructure. The plant is expected to operate for about 30 years."
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -13151,15 +13724,23 @@
         "publisher": "Community Impact",
         "retrievedAt": "2026-07",
         "kind": "press"
+      },
+      {
+        "url": "https://web.archive.org/web/20260819033742/https://www.datacenterdynamics.com/en/news/706-acre-data-center-approved-for-development-outside-san-antonio-texas/",
+        "label": "706-acre data center approved for development outside San Antonio, Texas (Internet Archive snapshot of DCD)",
+        "publisher": "Data Center Dynamics (via Internet Archive)",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-26",
     "notes": "706-acre campus spanning Hays and Guadalupe counties; coordinates use San Marcos city area as centroid. Developed with Evolve Holdings as construction manager. 10-12 hyperscale buildings totaling ~3 million sq ft planned. Tenant not publicly confirmed. Investment total not confirmed in available sources; $14.5B figure removed as unsupported. Guadalupe County commissioners rejected a $500M abatement 3-2 on Feb 24, 2026, then approved a revised abatement on April 21, 2026; county records peg total campus investment at $14.5B (Hays County, home to 77.5 of the 220 abated acres, took no abatement action).",
     "energy": {
       "source": "on_site_gas",
       "notes": "10-year gas supply agreement with Energy Transfer Oasis Pipeline (up to 450,000 MMBtu/day, sufficient for approximately 1.2 GW per Energy Transfer). Developer reversed original pledge to use only renewables after signing gas contract. Three 400 MW phases planned."
     },
     "water": {
+      "coolingType": "closed_loop",
       "reportedMgd": 0.024,
       "notes": "24,000 gallons/day direct facility water use disclosed to county commissioners."
     },
@@ -14693,6 +15274,60 @@
     "aiClassification": "likely"
   },
   {
+    "id": "constellation-calvert-cliffs-new-nuclear-md",
+    "name": "Calvert Cliffs New Nuclear Expansion",
+    "operator": "Constellation Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.4322,
+      "lon": -76.4419,
+      "city": "Lusby",
+      "county": "Calvert",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2000
+    },
+    "announcedDate": "2025-11-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-04",
+        "note": "Constellation announced it will explore building 2,000 MW of new, next-generation nuclear at Calvert Cliffs.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.constellationenergy.com/news/2025/11/constellation-offers-maryland-a-menu-of-new-generation-options-to-meet-rising-demand.html",
+        "label": "Constellation Offers Maryland a Menu of New Generation Options to Meet Rising Demand, Including 5,800 Megawatts of New Power Generation and Battery Storage",
+        "publisher": "Constellation Energy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ans.org/news/2025-11-05/article-7520/constellation-considers-advanced-nuclear-in-maryland/",
+        "label": "Constellation considers advanced nuclear in Maryland",
+        "publisher": "American Nuclear Society / Nuclear Newswire",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Company-stated intention to explore, not a filed project — recorded at 'reported' confidence with no reactor technology, unit count or in-service date asserted because none has been published. Distinct from the withdrawn AWS Calvert Technology Center data center proposal at the same site.",
+    "energy": {
+      "source": "nuclear",
+      "notes": "Proposed next-generation nuclear units at the existing Calvert Cliffs Clean Energy Center, which Constellation says would roughly double the site's output. Separately, Constellation says uprates could add about 190 MW (10%) to the existing units and is pursuing a 20-year licence renewal."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "notes": "Announced Nov. 4, 2025 as part of a menu of up to 5,800 MW of new generation and storage offered to Maryland. Exploratory: no CPCN application and no NRC licence application for the new units has been identified, and the new nuclear component was not among the three Constellation projects filed in the PSC's Next Generation Energy Act solicitation."
+    }
+  },
+  {
     "id": "constellation-clinton-clean-energy-center-il",
     "name": "Clinton Clean Energy Center",
     "operator": "Constellation Energy",
@@ -15704,6 +16339,8 @@
       "lon": -104.9903,
       "city": "Denver",
       "county": "Denver",
+      "street": "4900 Race Street",
+      "postalCode": "80216",
       "state": "CO",
       "precision": "exact"
     },
@@ -15733,13 +16370,52 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.coresite.com/data-center/de3-denver-co",
+        "label": "CoreSite DE3 — Denver Data Center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://denverite.com/2026/07/21/denver-data-center-noise-coresite/",
+        "label": "Denver data center generators draw noise complaints in Elyria-Swansea (read via Internet Archive)",
+        "publisher": "Denverite / CPR News",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cpr.org/2026/07/08/qts-aurora-data-center-diesel-generators/",
+        "label": "Colorado's biggest data center wants to add another 98 diesel backup generators — CoreSite water-use figures (read via Internet Archive)",
+        "publisher": "Colorado Public Radio",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://coloradosun.com/2026/06/18/colorado-data-center-update-pollution-protests-moratoriums/",
+        "label": "What's the status of massive data centers in Colorado? (read via Internet Archive)",
+        "publisher": "The Colorado Sun",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-26",
     "notes": "DE3 Denver campus expansion: ~600,000 sq ft, 60 critical MW. CoreSite is a colocation/interconnection operator hosting AI/cloud tenants → mixed_use. Coordinates are the Denver centroid. Owned by American Tower.",
     "energy": {
       "source": "grid",
-      "utility": "Xcel Energy"
+      "utility": "Xcel Energy",
+      "notes": "The Colorado Sun reports CoreSite will draw from the Xcel grid rather than building its own generation; the fully built three-phase development would draw 65 to 75 MW, with phase one about 18 MW. Backup only: 14 diesel generators able to supply roughly 18 MW during outages; under its state air permit no single engine may be tested more than 25 hours a year, between 7 a.m. and 7 p.m."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "reportedMgd": 0.115,
+      "notes": "A CoreSite spokesperson told CPR News the facility is expected to consume an average of 115,000 gallons per day and 230,000 gallons per day at peak capacity, using evaporative cooling."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Elyria-Swansea residents have opposed the project over water use, air pollution and noise since construction began, holding a neighborhood press conference in February 2026; the backlash helped prompt Denver's one-year moratorium on new data center approvals, passed by city council in May 2026, which blocks CoreSite's two additional planned buildings but not the one already standing. Generator startup testing in July 2026 drew complaints from neighbors at the adjacent Viña Apartments and from Tepeyac Community Health Center; a local science teacher won a community grant to measure infrasound at the site.",
+      "sourceIndex": 3
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
@@ -17012,6 +17688,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "crow-holdings-cleanarc-stemmons-dallas-tx",
+    "name": "Crow Holdings Stemmons Corridor Data Center Campus",
+    "operator": "Crow Holdings (developed and leased by CleanArc Data Centers)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.7762719,
+      "lon": -96.7968559,
+      "city": "Dallas",
+      "county": "Dallas",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 245
+    },
+    "announcedDate": "2026-01-20",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-20",
+        "note": "Crow Holdings announced the 245 MW campus; CleanArc named as development and leasing lead in February 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.crowholdings.com/insights/crow-holdings-announces-245mw-flagship-data-center-campus-in-central-dallas/",
+        "label": "Crow Holdings Announces 245MW Flagship Data Center Campus in Central Dallas",
+        "publisher": "Crow Holdings",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Roughly 40 acres along the Stemmons Corridor that Crow Holdings has owned for decades, currently vacant. First building is 70 MW with delivery targeted for late 2027. The exact parcel address is not disclosed in the announcement, so coordinates are a Dallas city-level geocode rather than a parcel point.",
+    "energy": {
+      "notes": "Planned dedicated on-site substation sized to support the full 245 MW campus; long-lead equipment procurement and substation planning reported in process."
+    },
+    "landAcres": 40,
+    "facilityType": "data_center"
+  },
+  {
     "id": "crusoe-abilene-onsite-generation-tx",
     "name": "Crusoe Abilene on-site gas generation (Project Ludicrous)",
     "operator": "Crusoe",
@@ -17145,6 +17864,63 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "crusoe-nolan-county-tx",
+    "name": "Crusoe Nolan County Data Center",
+    "operator": "Crusoe Energy Systems",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.4709519,
+      "lon": -100.405938,
+      "city": "Sweetwater",
+      "county": "Nolan",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "announcedDate": "2026-04-13",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-13",
+        "note": "Nolan County commissioners approved a 10-year tax abatement for the project.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ktxs.com/news/local/it-will-change-our-rural-town-tax-abatement-for-7-billion-texas-data-center-approved",
+        "label": "'It will change our rural town': Tax abatement for $7 billion Texas data center approved",
+        "publisher": "KTXS (Sinclair)",
+        "retrievedAt": "2026-08-26",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Reported to generate more than $3m annually in payments in lieu of taxes plus more than $2m annually in charitable contributions to Nolan County. No investment figure is recorded here: the cited article headlines the project at $7 billion while other outlets have described a $70 million Crusoe data center in the same county, and the discrepancy is unresolved. Distinct from IREN's Sweetwater campus, which is a different operator on a different site in the same county. Coordinates are a city-level geocode.",
+    "energy": {
+      "notes": "A Nolan County commissioner states the data center will provide its own electricity and should not draw on residential supply; the generation type is not identified in the source."
+    },
+    "water": {
+      "notes": "The abatement agreement is reported to include water restrictions, metered water wells, mandatory reporting and penalties if the aquifer is harmed."
+    },
+    "subsidies": [
+      {
+        "program": "Nolan County 10-year tax abatement",
+        "jurisdiction": "Nolan County, Texas",
+        "year": "2026",
+        "sourceIndex": 0
+      }
+    ],
+    "jobs": {
+      "construction": 2000,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "crusoe-walden-co",
@@ -17649,7 +18425,7 @@
     "id": "cyrusone-bosque-county-thad-hill-tx",
     "name": "CyrusOne Bosque County Campus (Thad Hill Energy Center)",
     "operator": "CyrusOne",
-    "status": "proposed",
+    "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 31.9243,
@@ -17658,7 +18434,17 @@
       "state": "TX",
       "precision": "approximate"
     },
-    "statusHistory": [],
+    "capacityMw": {
+      "planned": 400
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-08-26",
+        "note": "Calpine, Constellation and the ECP/KKR joint-venture announcement all describe the Bosque County campus (DFW10), adjacent to the Thad Hill Energy Center, as currently under construction and expected to be operational in Q4 2026. The record currently carries status 'proposed'.",
+        "sourceIndex": 2
+      }
+    ],
     "sources": [
       {
         "url": "https://www.cyrusone.com/resources/press-releases/constellation-and-cyrusone-announce-agreement-to-support-new-data-center-facility-at-freestone-energy-center-in-texas",
@@ -17666,9 +18452,30 @@
         "publisher": "CyrusOne",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.calpine.com/calpine-and-cyrusone-announce-phase-2-of-powered-land-agreement-to-support-hyperscale-data-center-at-thad-hill-energy-center-in-texas/",
+        "label": "Calpine and CyrusOne Announce Phase 2 of Powered Land Agreement at Thad Hill Energy Center (190 MW + 210 MW = 400 MW)",
+        "publisher": "Calpine",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.calpine.com/calpine-and-cyrusone-announce-phase-2-of-powered-land-agreement-to-support-hyperscale-data-center-at-thad-hill-energy-center-in-texas/",
+        "label": "Calpine and CyrusOne Announce Phase 2 of Powered Land Agreement at Thad Hill Energy Center — 'currently under construction and expected to be operational by the fourth quarter of 2026'",
+        "publisher": "Calpine",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://web.archive.org/web/20251109203538/https://www.businesswire.com/news/home/20250730057911/en/Energy-Capital-Partners-and-KKR-Announce-Development-of-Hyperscale-Data-Center-Campus-in-Texas",
+        "label": "Energy Capital Partners and KKR Announce Development of Hyperscale Data Center Campus in Texas — 'Construction of the project is underway'",
+        "publisher": "Business Wire / Energy Capital Partners (via Internet Archive)",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-08-26",
     "notes": "Referenced in CyrusOne's Freestone Energy Center release as a separate, already-agreed 400MW arrangement between Calpine and CyrusOne tied to the Thad Hill Energy Center in Bosque County (part of CyrusOne's >1,100MW contracted Texas power total). Secondary press (unconfirmed via direct fetch this session) additionally describes an Energy Capital Partners/KKR joint-venture financing of ~$4B for ~190MW at this site -- omitted here pending direct-source confirmation.",
     "energy": {
       "source": "on_site_gas",
@@ -17974,9 +18781,16 @@
         "publisher": "CyrusOne",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.constellationenergy.com/news/2026/02/constellation-and-cyrusone-announce-agreement-to-support-new-data-center-facility-at-freestone-energy-center-in-texas.html",
+        "label": "Constellation and CyrusOne Announce Agreement to Support New Data Center Facility at Freestone Energy Center in Texas",
+        "publisher": "Constellation Energy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-08-26",
     "notes": "Phase 1 (380MW) is under construction adjacent to Calpine's Freestone Energy Center at 1366 FM488, Fairfield, targeted operational Q4 2026; Calpine holds an exclusive agreement to also supply Phase 2 (an additional 380MW, planned total 760MW). Not previously tracked -- no existing Freestone County entries.",
     "facilityType": "data_center"
   },
@@ -18694,6 +19508,99 @@
     "facilityType": "data_center"
   },
   {
+    "id": "dartpoints-greenville-sc",
+    "name": "DartPoints Greenville Data Center",
+    "operator": "DartPoints",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.8075277,
+      "lon": -82.3434922,
+      "city": "Greenville",
+      "county": "Greenville",
+      "street": "78 Global Drive",
+      "postalCode": "29607",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 12.5,
+      "operational": 2.5
+    },
+    "announcedDate": "2025-11-12",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-11-12",
+        "note": "DartPoints has operated in Greenville County since 2007. A $125 million, 88,000 sq ft expansion is under construction, raising the site from 2.5 MW to 12.5 MW, with operations expected to begin July 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sccommerce.com/news/dartpoints-expands-greenville-county-operations",
+        "label": "DartPoints expands Greenville County operations",
+        "publisher": "South Carolina Department of Commerce",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=78+Global+Drive%2C+Greenville%2C+SC&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for 78 Global Drive, Greenville, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Colocation / edge facility rather than a hyperscale campus, but explicitly positioned by the operator and the state for AI, enterprise and edge workloads. Coordinates are the OSM address point for 78 Global Drive.",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Expansion will use mixed air and liquid cooling to balance performance with energy efficiency."
+    },
+    "investmentUsd": 125000000,
+    "jobs": {
+      "permanent": 10,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "dartpoints-shv01-shreveport-la",
+    "name": "DartPoints SHV01 Shreveport",
+    "operator": "DartPoints",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.5135356,
+      "lon": -93.7477839,
+      "city": "Shreveport",
+      "county": "Caddo",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://dartpoints.com/locations/shv01-shreveport-la/",
+        "label": "DartPoints SHV01 — Shreveport, LA facility page",
+        "publisher": "DartPoints",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://brightlio.com/louisiana-data-centers/",
+        "label": "Louisiana Data Centers & Colocation — Venyu/DartPoints Shreveport, 87,000 sq ft, Tier III",
+        "publisher": "Brightlio",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Operator page: 5,600 sq ft data hall, 2.2 MW of utility power, 4,000 kW generator capacity, 760 tons of cooling, up to 20 kW per rack, more than 200 active racks, Uptime Institute Tier III Certified. Directory listings describe an 87,000 sq ft downtown Shreveport building. Street address not published on a source fetched this session, so the point is a Shreveport geocode flagged approximate. Formerly Venyu; acquired by DartPoints in 2023.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "data-city-energy-abundance-laredo-tx",
     "name": "Data City, Texas",
     "operator": "Energy Abundance Development Corporation",
@@ -18856,6 +19763,103 @@
     ],
     "lastUpdated": "2026-08-05",
     "notes": "Colocation facility in the 1255 Euclid Avenue carrier-hotel building, downtown Cleveland — 7,440 sq ft raised floor, 0.4 MW critical IT load. Distinct from the already-tracked Lumen Cleveland 1 (4000 Chester Ave). The same building also houses 365 Data Centers (CL1) and BlueBridge Networks as separate colocation tenants; recorded here as one representative record rather than three near-duplicate pins at one address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-den2-centennial-co",
+    "name": "DataBank DEN2 — Centennial",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5917924,
+      "lon": -104.8479857,
+      "city": "Centennial",
+      "county": "Arapahoe",
+      "street": "6900 South Peoria Street",
+      "postalCode": "80112",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 4
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-26",
+        "note": "Listed by the operator as part of the operational Centennial Campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/denver/centennial-campus/",
+        "label": "Centennial Campus Data Center — Denver (DEN2 and DEN5 specs)",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "31,510 IT sq ft, 4 MW critical IT load, 10 onsite carriers. The older of the two buildings on DataBank's 11-acre Centennial Campus; campus acreage is not attributed to this single building.",
+    "energy": {
+      "source": "grid",
+      "utility": "Xcel Energy",
+      "notes": "Campus powered by an Xcel Energy off-site substation."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-den5-centennial-co",
+    "name": "DataBank DEN5 — Centennial II",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5900652,
+      "lon": -104.8469635,
+      "city": "Centennial",
+      "county": "Arapahoe",
+      "street": "6961 S. Quentin Street",
+      "postalCode": "80112",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 16
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-26",
+        "note": "Listed by the operator as part of the operational Centennial Campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/denver/centennial-campus/den5/",
+        "label": "DEN5 Data Center — Centennial Campus, Denver",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.databank.com/data-centers/denver/centennial-campus/",
+        "label": "Centennial Campus Data Center — Denver",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "56,000 IT sq ft, 16 MW critical IT load, 11 onsite carriers. Adjacent to DataBank DEN2 on an 11-acre shared Centennial Campus (acreage is campus-level and therefore not recorded on this site record). Originally slated to open in early 2024.",
+    "energy": {
+      "source": "grid",
+      "utility": "Xcel Energy",
+      "notes": "Campus powered by an Xcel Energy off-site substation; operator markets a 100% renewable energy source."
+    },
     "facilityType": "data_center"
   },
   {
@@ -19509,6 +20513,53 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "dc-blox-myrtle-beach-cls-sc",
+    "name": "DC BLOX Myrtle Beach Cable Landing Station",
+    "operator": "DC BLOX",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.6746096,
+      "lon": -78.9440697,
+      "city": "Myrtle Beach",
+      "county": "Horry",
+      "street": "1401 Howard Avenue",
+      "postalCode": "29577",
+      "state": "SC",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 19
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-10-10",
+        "note": "DC BLOX opened the cable landing station, the first subsea cable landing facility in South Carolina.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.dcblox.com/dc-blox-opens-myrtle-beach-cable-landing-station/",
+        "label": "DC BLOX Opens Myrtle Beach Cable Landing Station",
+        "publisher": "DC BLOX",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Myrtle+Beach+International+Technology+and+Aerospace+Park%2C+Myrtle+Beach%2C+South+Carolina&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim record for DC BLOX Myrtle Beach Cable Landing Station, 1401 Howard Avenue",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "125,000 sq ft and 19 MW at full build-out, in the International Technology & Aerospace Park. Landing point for the Google Firmina and Nuvem cables and Meta's Anjana cable. DC BLOX announced an expansion on 2025-10-14 to add capacity for five more subsea cables. Coordinates come from the named OSM feature for the facility itself.",
+    "facilityType": "data_center"
   },
   {
     "id": "dc-blox-warren-township-marion-county-in",
@@ -23084,6 +24135,44 @@
     "aiClassification": "likely"
   },
   {
+    "id": "edgeconnex-den01-denver-co",
+    "name": "EdgeConneX DEN01 Denver",
+    "operator": "EdgeConneX",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5608526,
+      "lon": -104.8275475,
+      "city": "Englewood",
+      "county": "Douglas",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 3
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-26",
+        "note": "Operator lists two live data halls and an additional build in progress.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.edgeconnex.com/locations/americas/denver-co/",
+        "label": "Denver, CO Data Center & Colocation — EdgeConneX",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "29,800 sq ft facility with 9,300 sq ft of raised floor across two data halls and 3 MW N+1, with an additional 1.5 MW build in progress. EPA ENERGY STAR certified per the operator. On Highfield Parkway in the Meridian/Englewood submarket; coordinates are an approximate street-level point.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "edgeconnex-det01-mi",
     "name": "EdgeConneX DET01",
     "operator": "EdgeConneX",
@@ -23736,6 +24825,44 @@
     }
   },
   {
+    "id": "edged-dallas-irving-tx",
+    "name": "Edged Dallas (Irving)",
+    "operator": "Edged Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.8211516,
+      "lon": -96.9169508,
+      "city": "Irving",
+      "county": "Dallas",
+      "street": "505 North Wildwood Drive",
+      "postalCode": "75061",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 24
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://edged.us/news/edged-dallas-irving",
+        "label": "Edged Continues North American Expansion with New, Ultra-Efficient, AI Ready Data Center in Irving, Texas",
+        "publisher": "Edged Energy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "24 MW of critical IT capacity at 505 N Wildwood Drive. The operator cites a portfolio-average PUE of 1.15 and a 74% reduction in energy overhead against a 1.58 global average. A second 24 MW building on the same Irving campus has separately been reported as approved by Irving City Council; that expansion is not recorded here.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "ThermalWorks closed-loop waterless cooling; the operator states the design eliminates water use for cooling and supports up to 70 kW per rack air-cooled or 200 kW per rack with liquid cooling."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "edged-energy-ankeny-ia",
     "name": "Edged Ankeny (Des Moines) Data Center",
     "operator": "Edged Energy",
@@ -24199,6 +25326,111 @@
     "facilityType": "data_center"
   },
   {
+    "id": "entergy-bogalusa-west-solar-washington-parish-la",
+    "name": "Bogalusa West Solar Station",
+    "operator": "Entergy Louisiana",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.7910204,
+      "lon": -89.8486858,
+      "city": "Bogalusa",
+      "county": "Washington",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.interconnection.fyi/eia/plant/69990",
+        "label": "Bogalusa West Solar Station — Washington, LA — planned power plant (EIA-derived record)",
+        "publisher": "interconnection.fyi",
+        "retrievedAt": "2026-08-26",
+        "kind": "iso_queue"
+      },
+      {
+        "url": "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
+        "label": "Direct Testimony of Laura K. Beauchamp, Entergy Louisiana (Project Evest), March 2026 — 200 MW storage co-located at ELL's Bogalusa West Solar Facility 'which is under construction'",
+        "publisher": "Louisiana Public Service Commission",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "The two sources disagree on lifecycle stage — the LPSC filing says under construction, the EIA-derived record still says planned — so status follows the more recent utility filing and the discrepancy is recorded here rather than smoothed over. Coordinates are a Bogalusa geocode, flagged approximate; no parcel coordinate was published.",
+    "energy": {
+      "source": "solar",
+      "utility": "Entergy Louisiana"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Single 200 MW solar unit. Entergy's March 2026 Project Evest filing describes the site as under construction and plans to co-locate a 200 MW battery storage facility here; EIA-derived interconnection data lists the station as planned with a proposed operation date of 2028-12-01."
+    }
+  },
+  {
+    "id": "entergy-cypress-harvest-solar-iberville-la",
+    "name": "Cypress Harvest Solar Station",
+    "operator": "Entergy Louisiana",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.2318568,
+      "lon": -91.2636506,
+      "city": "Plaquemine",
+      "county": "Iberville",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04",
+        "note": "Project announced; parish council approval still pending as of July 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wafb.com/2026/07/28/iberville-parish-residents-oppose-entergy-solar-farm-plan-along-hwy-75/",
+        "label": "Some Iberville Parish residents oppose Entergy solar farm plan along Hwy. 75",
+        "publisher": "WAFB",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
+        "label": "Direct Testimony of Laura K. Beauchamp, Entergy Louisiana (Project Evest), March 2026 — 200 MW storage planned at the anticipated Cypress Harvest Solar Facility, Iberville Parish",
+        "publisher": "Louisiana Public Service Commission",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Coordinates are a geocode of Milly Plantation Road, one of the two roads the reporting names as the site's bounds, flagged approximate.",
+    "energy": {
+      "source": "solar",
+      "utility": "Entergy Louisiana"
+    },
+    "landAcres": 1660,
+    "community": {
+      "status": "opposed",
+      "notes": "Residents object to converting roughly 1,660 acres of productive sugarcane land; the parish imposed a two-year moratorium on industrial battery energy storage systems in July 2026, and a parish council vote was still pending.",
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Proposed along Highway 75 from Milly Plantation Road toward Derrick Road on former sugarcane land. Entergy's March 2026 Project Evest filing lists a 200 MW battery storage facility planned to be co-located at this 'anticipated' site."
+    }
+  },
+  {
     "id": "entergy-franklin-farms-power-station-la",
     "name": "Franklin Farms Power Station",
     "operator": "Entergy Louisiana",
@@ -24259,12 +25491,28 @@
         "publisher": "NOLA.com / The Times-Picayune",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/news/entergy-louisiana-breaks-ground-on-new-state-of-the-art-generation-facilities-to-power-reliability-growth-and-innovation",
+        "label": "Entergy Louisiana breaks ground on new, state-of-the-art generation facilities",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/entergy-louisiana-eyes-2-2-gw-of-new-gas-fired-generation-to-support-data-center-demand/",
+        "label": "Entergy Louisiana Eyes 2.2 GW of New Gas-Fired Generation to Support Data Center Demand",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-26",
     "notes": "Two natural-gas combined-cycle combustion turbine units totaling ~1,500 MW at the state-owned Franklin Farms site near Holly Ridge in Richland Parish, dedicated to powering Meta's Hyperion AI data center campus. Approved on an expedited basis by the Louisiana Public Service Commission in August 2025; first units expected online in late 2028. Entergy has sought approval for a larger buildout (up to ~7,400 MW across additional units) tied to the Meta campus expansion.",
     "energy": {
-      "source": "on_site_gas"
+      "source": "on_site_gas",
+      "utility": "Entergy Louisiana",
+      "notes": "Two 754 MW 1x1 combined-cycle combustion turbine units near Rayville / Holly Ridge in Richland Parish, designed for roughly 30% hydrogen co-firing and equipped to enable carbon capture; both expected operational by late 2028. The site appears in the Entergy air permit under the name Titanium Advanced Power Station."
     },
     "facilityType": "power_generation",
     "generation": {
@@ -24290,6 +25538,9 @@
       "county": "St. Charles",
       "state": "LA",
       "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 754
     },
     "announcedDate": "2025-08",
     "statusHistory": [
@@ -24328,9 +25579,23 @@
         "publisher": "NOLA.com / The Times-Picayune",
         "retrievedAt": "2026-08-04",
         "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/news/entergy-louisiana-receives-lpsc-approval-for-major-infrastructure-investments-to-support-metas-data-center-and-improve-reliability",
+        "label": "Entergy Louisiana receives LPSC approval for major infrastructure investments to support Meta's data center",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/entergy-louisiana-eyes-2-2-gw-of-new-gas-fired-generation-to-support-data-center-demand/",
+        "label": "Entergy Louisiana Eyes 2.2 GW of New Gas-Fired Generation to Support Data Center Demand",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-04",
+    "lastUpdated": "2026-08-26",
     "notes": "A distinct Entergy Louisiana plant from Franklin Farms — a new combined-cycle facility at the existing Waterford complex in St. Charles Parish, approved in the same Aug 2025 LPSC settlement (Docket U-37425) as the third of three plants (2,260 MW total) dedicated to Meta's Hyperion campus. Power is delivered north to Richland Parish via new 500 kV transmission; target in-service end of 2029.",
     "energy": {
       "source": "on_site_gas",
@@ -24572,6 +25837,78 @@
     "landAcres": 300,
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "equinix-dallas-da11-tx",
+    "name": "Equinix Dallas DA11",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.8017196,
+      "lon": -96.8243167,
+      "city": "Dallas",
+      "county": "Dallas",
+      "street": "1990 N Stemmons Freeway",
+      "postalCode": "75207",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020",
+        "note": "Four-storey facility completed adjacent to the Infomart.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/equinix-dallas-da11",
+        "label": "Equinix Dallas DA11 Data Center — site record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Four-storey expansion built next to the Infomart carrier hotel at 1990 N Stemmons Freeway, which Equinix acquired in 2018. No capacity figure is published on the fetched source, so none is recorded.",
+    "energy": {
+      "source": "grid",
+      "utility": "Oncor"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-dallas-da12-tx",
+    "name": "Equinix Dallas DA12 (West Dallas)",
+    "operator": "Equinix",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.8209286,
+      "lon": -96.8586608,
+      "city": "Dallas",
+      "county": "Dallas",
+      "street": "1550 W Mockingbird Lane",
+      "postalCode": "75235",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/equinix-dallas-da12",
+        "label": "Equinix: Dallas DA12 Data Center — site record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Planned four-storey campus of more than 372,000 sq ft on the former Taylor Publishing site in West Dallas. The source records construction as slated to begin February 2026 with DA12-1 finishing late 2027 and fit-out into early 2028, but still lists the site status as planned; recorded as proposed rather than under construction because no source confirms a start on site.",
+    "investmentUsd": 836000000,
+    "facilityType": "data_center"
   },
   {
     "id": "equinix-dc2-va",
@@ -25293,9 +26630,16 @@
         "publisher": "Expedient",
         "retrievedAt": "2026-08-16",
         "kind": "other"
+      },
+      {
+        "url": "https://www.expedient.com/data-centers/baltimore/",
+        "label": "Expedient Baltimore Data Centers — BWI1 (Owings Mills) specifications",
+        "publisher": "Expedient",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-08-26",
     "notes": "Confirmed via official Expedient directory: 11155 Red Run Blvd, Suite 200, Owings Mills, MD 21117. 800kW critical IT load, 22,000 sq ft. Distinct from the Tidepoint facility in Baltimore city.",
     "energy": {
       "utility": "BGE"
@@ -27263,6 +28607,59 @@
     "facilityType": "data_center"
   },
   {
+    "id": "flexential-parker-co",
+    "name": "Flexential Parker (Compark)",
+    "operator": "Flexential",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5620551,
+      "lon": -104.8119323,
+      "city": "Parker",
+      "county": "Douglas",
+      "street": "Compark Boulevard",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 22.5
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-08-11",
+        "note": "Reported under construction in the Compark Village development as Douglas County commissioners prepared to vote on an incentive agreement.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coloradopolitics.com/2026/08/11/parker-data-center-could-get-19m-tax-rebate-from-douglas-county/",
+        "label": "Parker data center could get $19M tax rebate from Douglas County",
+        "publisher": "Colorado Politics",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "249,000 sq ft on 17 acres on Compark Boulevard near South Chambers Road. The town of Parker approved rezoning and a data center overlay district in February 2024 after a January 2024 planning-commission approval. A $19.3 million Douglas County business-personal-property tax rebate over 35 years was scheduled for a commissioner vote the week of 2026-08-11; it is not recorded here as a subsidy because the award had not been made as of the source date. County estimate of 16 permanent positions; company representatives suggested 30-50. Coordinates are an approximate Compark Boulevard geocode, not parcel-confirmed. Distinct from Flexential's existing Aurora, Centennial, Downtown and Englewood Denver-market sites.",
+    "energy": {
+      "source": "grid",
+      "utility": "CORE Electric Cooperative"
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop liquid cooling targeting zero water usage effectiveness, per the county incentive review."
+    },
+    "investmentUsd": 205000000,
+    "landAcres": 17,
+    "jobs": {
+      "permanent": 16,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "flexential-philadelphia-collegeville-phl01-pa",
     "name": "Flexential Philadelphia - Collegeville (PHL01)",
     "operator": "Flexential",
@@ -28161,6 +29558,50 @@
     "aiClassification": "likely"
   },
   {
+    "id": "fogo-data-centers-new-orleans-la",
+    "name": "Fogo Data Centers New Orleans",
+    "operator": "Fogo Solutions",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 29.9529522,
+      "lon": -90.0730531,
+      "city": "New Orleans",
+      "county": "Orleans",
+      "street": "935 Gravier Street, Floor 10",
+      "postalCode": "70112",
+      "state": "LA",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/fogo-data-centers/935-gravier-street-floor-10/1029683",
+        "label": "Fogo Data Centers, 935 Gravier Street, Floor 10, New Orleans, LA",
+        "publisher": "datacenterHawk",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://fogosolutions.com/data-center-new-orleans-la/",
+        "label": "Secure Data Center New Orleans, LA — FOGO Solutions",
+        "publisher": "FOGO Solutions",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/louisiana",
+        "label": "Louisiana data centers — Fogo New Orleans listing",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Colocation suite on the 10th floor of a downtown New Orleans CBD office tower. Operator cites AICPA/SOC 2/HIPAA/PCI compliance and N+1 power and generators; the 401,481 SF figure in the marketplace listing is the host building, not the data hall, so square footage is not recorded here. No confirmed MW figure from a primary page.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "fort-spunky-pacifico-energy-hood-county-tx",
     "name": "Fort Spunky",
     "operator": "Pacifico Energy",
@@ -28377,6 +29818,45 @@
     "facilityType": "crypto_mining",
     "mining": {
       "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "freestone-energy-center-fairfield-tx",
+    "name": "Freestone Energy Center",
+    "operator": "Constellation Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.7244035,
+      "lon": -96.1648789,
+      "city": "Fairfield",
+      "county": "Freestone",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.constellationenergy.com/news/2026/02/constellation-and-cyrusone-announce-agreement-to-support-new-data-center-facility-at-freestone-energy-center-in-texas.html",
+        "label": "Constellation and CyrusOne Announce Agreement to Support New Data Center Facility at Freestone Energy Center in Texas",
+        "publisher": "Constellation Energy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Existing natural-gas generating station in Freestone County, roughly 80 miles southeast of Dallas. The fetched announcement does not state the plant's nameplate capacity or turbine configuration, so no capacityMw is recorded. Coordinates are a Fairfield town-level geocode; the plant's exact site is not given in the source.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "CyrusOne",
+      "poweredFacilityIds": [
+        "cyrusone-freestone-energy-center-fairfield-tx"
+      ],
+      "notes": "Constellation signed a 380 MW agreement with CyrusOne in February 2026 to serve a new data center adjacent to the plant, with an exclusive arrangement covering a second 380 MW phase — 760 MW in total. Constellation states it has over 1,100 MW contracted to CyrusOne data centers in Texas including 400 MW at the Thad Hill Energy Center."
     }
   },
   {
@@ -28799,6 +30279,113 @@
     "aiClassification": "likely"
   },
   {
+    "id": "genesis-digital-assets-anderson-sc",
+    "name": "Genesis Digital Assets Anderson Bitcoin Mining Data Center",
+    "operator": "Genesis Digital Assets",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.5068601,
+      "lon": -82.6506264,
+      "city": "Anderson",
+      "county": "Anderson",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 18
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-02",
+        "note": "Facility active since February 2023 with 18 MW of capacity, in a repurposed abandoned textile warehouse.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://scbiz.com/bitcoin-miner-opens-three-data-centers-in-anderson-union-counties/",
+        "label": "Bitcoin miner opens three data centers in Anderson, Union counties",
+        "publisher": "SC Biz News",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Anderson%2C+Anderson+County%2C+South+Carolina&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Anderson, Anderson County, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "GDA = Genesis Digital Assets. Coordinates are an approximate geocode of Anderson, SC — the source places the site 'near the community of Anderson' with no address. Current ownership/operation has not been re-verified against a 2026 source; the record reflects the operator named at opening.",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy",
+      "notes": "Reporting states the Anderson facility returns excess power to the Duke Energy grid when needed, and that it uses Hitachi dry-type distribution transformers."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "genesis-digital-assets-union-lockhart-sc",
+    "name": "Genesis Digital Assets Union–Lockhart Bitcoin Mining Data Centers",
+    "operator": "Genesis Digital Assets",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.7865238,
+      "lon": -81.4620402,
+      "city": "Lockhart",
+      "county": "Union",
+      "state": "SC",
+      "precision": "representative_multi_site",
+      "multiSite": {
+        "states": [
+          "SC"
+        ],
+        "siteCountNote": "Two adjacent facilities located between Union and Lockhart, South Carolina, with 15 MW of combined capacity; one is referred to as the Pacolet center. Neither has a published street address."
+      }
+    },
+    "capacityMw": {
+      "operational": 15
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-03",
+        "note": "The two Union/Lockhart facilities began operating in March 2023 with 15 MW of combined capacity; 95% of contracted construction workers were South Carolina residents.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://scbiz.com/bitcoin-miner-opens-three-data-centers-in-anderson-union-counties/",
+        "label": "Bitcoin miner opens three data centers in Anderson, Union counties",
+        "publisher": "SC Biz News",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Lockhart%2C+Union+County%2C+South+Carolina&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Lockhart, Union County, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Deliberately recorded as one multi-site record rather than two, because the source gives only a combined 15 MW figure and locates both facilities as 'between Union and Lockhart' with no addresses; splitting them would require inventing per-site capacity. Coordinates are the Lockhart, SC centroid and are illustrative only.",
+    "energy": {
+      "notes": "Reporting states the Pacolet center sits about three miles from two hydroelectric generation plants operated by Lockhart Power."
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "geobitmine-aberdeen-id",
     "name": "GeoBitmine Bingham County Facility",
     "operator": "GeoBitmine",
@@ -29006,6 +30593,68 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "global-ai-windsor-co",
+    "name": "Global AI Windsor Data Center (former Kodak/Carestream campus)",
+    "operator": "Global AI",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.4653149,
+      "lon": -104.909,
+      "city": "Windsor",
+      "county": "Weld",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 27.5
+    },
+    "announcedDate": "2025-11",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-08-07",
+        "note": "Construction under way on the former Kodak/Carestream buildings; county has repeatedly ordered work stopped pending zoning approval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cpr.org/2026/08/07/weld-county-ai-data-center/",
+        "label": "Weld County officials have told an AI company to stop construction on a new data center. Three times. (read via Internet Archive)",
+        "publisher": "Colorado Public Radio",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.windsorco.gov/1452/AI-Data-Center-Project-Information",
+        "label": "AI Data Center Project Information — Town of Windsor",
+        "publisher": "Town of Windsor, Colorado",
+        "retrievedAt": "2026-08-26",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Global AI, a New York-based firm, bought a 438-acre former Kodak/Carestream property in unincorporated Weld County near Windsor in November 2025 and is developing a 41-acre data center on it. Phase 1 is stated at 27.5 MW with an ambition to reach 1 GW; no timeline for later phases has been shared. The company says it plans to operate the site alongside Nvidia and Humain. Coordinates are approximate (former Kodak campus, Eastman Park Drive area), not parcel-confirmed.",
+    "energy": {
+      "source": "mixed",
+      "utility": "Poudre Valley Rural Electric Association",
+      "notes": "Poudre Valley REA told the county it can supply only 35 MW until mid-2028, dropping to about 27 MW at the start of 2028 and declining further in 2029, citing limited wholesale supply from Tri-State Generation and Transmission. Global AI's zoning application says later phases would be powered on-site with Bloom solid-oxide fuel cells; no state air permit had been filed as of 2026-07-29."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "A Weld County review published 2026-08-07 found the applicant still had to show proof of water supply. Windsor has issued only a non-binding will-serve letter for water and wastewater contingent on annexation."
+    },
+    "landAcres": 41,
+    "community": {
+      "status": "contested",
+      "notes": "Weld County posted stop-work orders on the property on 2026-05-07, 2026-06-11 and again on an unspecified date for un-permitted construction, and issued a formal order to abate on 2026-07-20. The county received hundreds of public comments; the site is in the Use by Special Review process. Windsor states it has not approved or endorsed the project.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "google-arcola-loudoun-va",
@@ -31881,6 +33530,8 @@
       "lon": -80.3239,
       "city": "Ridgeville",
       "county": "Dorchester",
+      "street": "Research Center Drive",
+      "postalCode": "29472",
       "state": "SC",
       "precision": "exact"
     },
@@ -31913,9 +33564,16 @@
         "publisher": "SC Governor's Office",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/google-ridgeville-sc",
+        "label": "Google: Ridgeville, SC Data Center (Project Dawson) — site record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-26",
     "notes": "Pine Hill Business Campus, Research Center Drive and Highway 17A, Ridgeville. Planned as part of Google's overall $9B SC commitment through 2027 (announced October 2025). MW capacity not disclosed by Google. investmentUsd not broken out by site; $2B is the combined Dorchester County (Ridgeville + St. George) figure. Second Dorchester campus at Winding Woods Commerce Park, St. George not separately tracked here. Coordinates are Ridgeville area centroid.",
     "energy": {
       "source": "solar",
@@ -31933,6 +33591,7 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 510000000,
     "landAcres": 231,
     "community": {
       "status": "supported",
@@ -32781,6 +34440,61 @@
     "facilityType": "data_center"
   },
   {
+    "id": "granite-renewables-logan-county-co",
+    "name": "Granite Renewables Logan County Data Center Campus",
+    "operator": "Granite Renewables",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.6255415,
+      "lon": -103.207709,
+      "city": "Sterling",
+      "county": "Logan",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2000
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-17",
+        "note": "Developer began meeting Logan County officials in late summer/early fall 2025; no formal application had been submitted at the time of reporting.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pagosadailypost.com/2025/12/17/big-pivots-massive-data-center-slated-for-northeastern-colorado-part-one/",
+        "label": "BIG PIVOTS: Massive Data Center Slated for Northeastern Colorado? Part One",
+        "publisher": "Pagosa Daily Post (Big Pivots)",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://bigpivots.com/geaing-up-for-data-centers/",
+        "label": "Gearing up for data centers",
+        "publisher": "Big Pivots",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Proposed hyperscale campus roughly 21 miles northwest of Sterling, 8-10 miles from the Nebraska border, discussed as up to 2 GW on about 4,000 acres. A $15 billion figure was attributed to a speaker describing investment across the corridor between Sterling and the Nebraska border, so it is deliberately NOT recorded as this site's investment. Coordinates are the Sterling town centroid (approximate); the site itself is northwest of town and has no confirmed parcel.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Developer describes combining solar farms, battery storage and modular gas units with cooperative grid power; the serving cooperative is a member of Tri-State Generation and Transmission. Major natural gas lines run parallel to Interstate 80 within about 30 miles, in nearby Nebraska."
+    },
+    "landAcres": 4000,
+    "community": {
+      "status": "contested",
+      "notes": "Logan County declared a moratorium on data centers, battery storage, solar and wind development in October 2025 while it wrote regulations; planning-commission recommendations went to the county commissioners on 2026-01-06. Existing wind farms add roughly $2.5 million a year to the county tax base.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "green-data-socorro-county-nm",
     "name": "Green Data Socorro Campus",
     "operator": "Green Data (Green Data Centers)",
@@ -33168,13 +34882,26 @@
         "publisher": "Office of SC Governor Henry McMaster",
         "retrievedAt": "2026-08-16",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sccommerce.com/news/greenidge-generation-establishing-operations-spartanburg-county",
+        "label": "Greenidge Generation establishing operations in Spartanburg County",
+        "publisher": "South Carolina Department of Commerce",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-08-26",
     "notes": "Former LSC Communications/RR Donnelley printing plant (175 acres, bought Dec 2021 for $15M); unveiled Jan 2022 as a planned $264M, up-to-100MW buildout. Greenidge built 44 MW of Bitcoin mining, transferred to NYDIG in 2023 as a debt-settlement; per Greenidge's SEC filings the NYDIG hosting arrangement now covers 'substantially all' of Greenidge's mining capacity at the New York facility, not South Carolina. The remaining 152 acres + 60 MW power rights went through a failed Nov 2024 sale to Data Journey LLC (terminated Aug 2025) before Greenidge sold the land outright to a Lightstone Group / Lighthouse Datacenters affiliate on Dec 11, 2025. Status cancelled: Greenidge holds no confirmed ongoing operating interest as of its most recent 10-Q.",
     "energy": {
       "source": "grid",
       "notes": "Grid-drawn (Duke Energy service territory); no on-site generation, unlike the Dresden, NY plant."
+    },
+    "investmentUsd": 264000000,
+    "landAcres": 175,
+    "jobs": {
+      "permanent": 40,
+      "sourceIndex": 4
     },
     "facilityType": "crypto_mining",
     "mining": {
@@ -34729,9 +36456,16 @@
         "publisher": "Entergy",
         "retrievedAt": "2026-08-20",
         "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/news/hut-8-selects-entergy-southeast-louisiana-for-10-billion-artificial-intelligence-data-center",
+        "label": "Hut 8 selects Entergy, Southeast Louisiana for $10 billion artificial intelligence data center",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-20",
+    "lastUpdated": "2026-08-26",
     "notes": "River Bend campus on 611 acres in West Feliciana Parish. Fluidstack (backed by Google) is primary tenant; Anthropic also signed a long-term lease. Phase I: two 450,000 sq ft facilities. Phase II (additional facilities) targeted by end of 2026. Coordinates approximate St. Francisville area.",
     "energy": {
       "source": "grid",
@@ -35655,6 +37389,64 @@
     "lastUpdated": "2026-07-22",
     "notes": "Confirmed operational at 8521 E. Princess Drive, Scottsdale, AZ 85255 (Maricopa County); 121,000 sqft, 5.8MW, linked via dark fiber to AZP-1/AZP-2.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "iron-mountain-den1-denver-co",
+    "name": "Iron Mountain DEN-1 Denver Data Center",
+    "operator": "Iron Mountain Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.7773827,
+      "lon": -104.9695542,
+      "city": "Denver",
+      "county": "Denver",
+      "street": "4300 Brighton Boulevard",
+      "postalCode": "80216",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 14.4
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-26",
+        "note": "Facility listed as commissioned and in operation.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://resources.ironmountain.com/solution-guides/d/data-centers-denver-den-1",
+        "label": "Denver Data Center (DEN-1) solution guide",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/iron-mountain-data-centers/4300-brighton-boulevard/den-1",
+        "label": "Iron Mountain Data Centers DEN-1, 4300 Brighton Boulevard",
+        "publisher": "datacenterHawk",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "About 180,000 sq ft (113,000 sq ft of IT space) and 14.4 MW on a 6-acre campus in the Elyria-Swansea industrial area, in a retrofitted 1946 building. Uptime Tier III-certified construction; operator cites a 1.2 PUE. Roughly half a mile from the CoreSite DE3 site but a separate operator and parcel.",
+    "energy": {
+      "source": "grid",
+      "utility": "Xcel Energy",
+      "notes": "Dual-feed utility power from Xcel Energy; operator reports 100% matched renewable energy."
+    },
+    "landAcres": 6,
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.2,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
   },
   {
     "id": "iron-mountain-mia-1-miami-fl",
@@ -37035,9 +38827,16 @@
         "publisher": "AfroTech",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://natureforward.org/brightseat-tech-park/",
+        "label": "Brightseat Tech Park, Prince George's County, MD: Maryland Data Center Series, Pt. 4",
+        "publisher": "Nature Forward",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-26",
     "notes": "2101 Brightseat Road, Landover MD. Project has final plan approvals but is politically frozen pending task force report. Five buildings on 87 acres of former mall site. As a permitted-but-frozen project, no facility-specific water design, subsidy award, or committed job figures have been disclosed; job figures circulating in press are Maryland Tech Council sector benchmarks, not Brightseat commitments.",
     "energy": {
       "source": "grid",
@@ -39553,9 +41352,16 @@
         "publisher": "WFXG (Augusta/Aiken local news)",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://governor.sc.gov/news/2024-08/meta-selects-aiken-county-first-south-carolina-data-center",
+        "label": "Meta selects Aiken County for first South Carolina data center",
+        "publisher": "Office of the Governor of South Carolina",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-17",
+    "lastUpdated": "2026-08-26",
     "notes": "Sage Mill Industrial Park, Graniteville. 715,000 sq ft; Meta's 22nd US data center. Explicitly optimized for AI workloads. Administration building constructed with mass timber. Expected operational spring 2027. Coordinates are Graniteville area centroid.",
     "energy": {
       "source": "mixed",
@@ -40818,9 +42624,30 @@
         "publisher": "Meta",
         "retrievedAt": "2026-08-20",
         "kind": "press"
+      },
+      {
+        "url": "https://datacenters.atmeta.com/richland-parish-data-center/",
+        "label": "The largest Meta data center yet brings big impact to Louisiana — Richland Parish Data Center",
+        "publisher": "Meta",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/news/entergy-louisiana-receives-lpsc-approval-for-major-infrastructure-investments-to-support-metas-data-center-and-improve-reliability",
+        "label": "Entergy Louisiana receives LPSC approval for major infrastructure investments to support Meta's data center",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
+        "label": "Direct Testimony of Laura K. Beauchamp, Entergy Louisiana (Project Evest), March 2026 — seven additional 754 MW CCCTs and 400 MW of battery storage",
+        "publisher": "Louisiana Public Service Commission",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-20",
+    "lastUpdated": "2026-08-26",
     "energy": {
       "source": "mixed",
       "utility": "Entergy Louisiana",
@@ -42016,6 +43843,75 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "meta-temple-tx",
+    "name": "Meta Temple Data Center",
+    "operator": "Meta",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.1399225,
+      "lon": -97.3812992,
+      "city": "Temple",
+      "county": "Bell",
+      "street": "3101 Industrial Blvd",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 152
+    },
+    "announcedDate": "2022-03",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2022-04",
+        "note": "JE Dunn began construction of the three-building, 386-acre campus in April 2022.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-07-22",
+        "note": "Meta brought the campus online as its first AI-optimised data center in the United States.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kwtx.com/2026/07/22/meta-goes-live-temple-with-12-billion-ai-data-center/",
+        "label": "Meta goes live in Temple with $1.2 billion AI data center",
+        "publisher": "KWTX",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://jedunn.com/projects/meta-temple-data-center/",
+        "label": "Meta Temple Data Center — project page (general contractor)",
+        "publisher": "JE Dunn Construction",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Three-building greenfield campus of more than 750,000 sq ft of data center and administrative space. JE Dunn lists the project status as completed. Meta reported $1.7m in direct funding to Bell County schools and nonprofits, including a $400,000 grant announced at the opening.",
+    "energy": {
+      "source": "grid",
+      "notes": "Meta says all energy use at the facility is matched with 100% clean and renewable energy; the company states its supported projects are adding 9,000 MW of new clean and renewable generation across Texas."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Dry-cooling design that minimises water use. Meta reports $8m invested in local water and wastewater infrastructure and support for a regional restoration project targeting 5.2 million gallons returned to the local watershed annually by 2030."
+    },
+    "investmentUsd": 1200000000,
+    "landAcres": 386,
+    "jobs": {
+      "construction": 1200,
+      "permanent": 100,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "metrobloks-liberty-mo",
@@ -44040,6 +45936,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "microsoft-irving-tx",
+    "name": "Microsoft Irving Data Centers",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.8295183,
+      "lon": -96.9442177,
+      "city": "Irving",
+      "county": "Dallas",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/microsoft-irving-tx",
+        "label": "Microsoft: Irving, TX Data Center — site record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.connectcre.com/stories/microsoft-qts-awarded-incentives-to-build-in-irving/",
+        "label": "Microsoft, QTS Awarded Incentives to Build in Irving",
+        "publisher": "Connect CRE",
+        "retrievedAt": "2026-08-26",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Irving City Council approved separate incentive packages for four Microsoft data centers. Terms reported: minimum 15-year leases on two buildings by the end of 2025 and on the remaining two by the end of 2026, occupancy of at least 500,000 sq ft by the end of 2026, and at least $200m of added taxable personal-property value by 2027. No street address, acreage or capacity is published in the fetched sources, so coordinates are a city-level geocode. Distinct from Microsoft's tracked San Antonio and Pecos projects.",
+    "subsidies": [
+      {
+        "program": "City of Irving 50% property tax abatement (10 years)",
+        "jurisdiction": "Irving, Texas",
+        "sourceIndex": 1
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "microsoft-kenosha-wi",
     "name": "Microsoft Kenosha Data Center Campus",
     "operator": "Microsoft",
@@ -45508,6 +47446,46 @@
     }
   },
   {
+    "id": "ms-solar-grid-data-new-orleans-east-la",
+    "name": "MS Solar Grid Data (New Orleans East)",
+    "operator": "MS Solar Grid Data",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.0406363,
+      "lon": -89.9786145,
+      "city": "New Orleans",
+      "county": "Orleans",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-01-28",
+        "note": "Developer pulled the zoning permit the same day the City Council passed a one-year data center moratorium.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wwno.org/economy/2026-01-29/new-orleans-city-council-bans-data-center-development-for-a-year-heres-why",
+        "label": "New Orleans City Council bans data center development for a year; here's why",
+        "publisher": "WWNO",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Proposed near Interstate 10 and Read Boulevard in New Orleans East. The source names the project as 'the MS Solar Grid Data facility' and does not otherwise identify the developer entity, so the operator field repeats that name rather than asserting a corporate parent. Size, power and street address were not disclosed. Coordinates are a Read Boulevard geocode, flagged approximate.",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents raised environmental and quality-of-life objections; the New Orleans City Council voted 6-0 on 2026-01-28 for a one-year moratorium on data center construction, and the developer withdrew the zoning permit hours later.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "mudiita-ransom-township-lackawanna-pa",
     "name": "Mudiita Ransom Township Data Center Campus",
     "operator": "Mudiita Land Venture LLC",
@@ -45638,6 +47616,83 @@
       "status": "contested",
       "notes": "Neighbors on John Brady Drive strongly oppose; township is drafting a data center ordinance and seeking legal counsel.",
       "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "natelli-appeal-digital-park-lusby-md",
+    "name": "Appeal Digital Park",
+    "operator": "Natelli Holdings",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.39,
+      "lon": -76.435,
+      "city": "Lusby",
+      "county": "Calvert",
+      "street": "10475 Solomons Island Road",
+      "postalCode": "20657",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-24",
+        "note": "Natelli Holdings presented a proposal to purchase 133 acres of county-owned land (the former Dominion laydown site) at the Board of County Commissioners meeting; Calvert County held a public information meeting on April 6, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.choosecalvert.com/4058/Natelli-Communities",
+        "label": "Natelli Communities — Calvert County official project page",
+        "publisher": "Calvert County Government",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.appealdigitalparkcalvertmd.com/fa-qs-and-fact-sheet/",
+        "label": "Appeal Digital Park FAQs and Fact Sheet",
+        "publisher": "Natelli Holdings",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.appealdigitalparkcalvertmd.com/",
+        "label": "Appeal Digital Park — proposed data center in Lusby, Calvert County, MD",
+        "publisher": "Natelli Holdings",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.calvertcountymd.gov/3880/Data-Centers",
+        "label": "Data Centers — Calvert County official page (no site plan applications pending; six-month moratorium effective Aug. 28, 2026)",
+        "publisher": "Calvert County Government",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Four data center buildings of roughly 200,000-220,000 sq ft each, about 70 feet tall, on 133 acres of county-owned I-2 heavy industrial land — the former Dominion Cove Point laydown site — paired with a pledged $30 million regional park on a separate Dominion-donated parcel. Capacity, water and jobs figures are developer-supplied. As of the county's data center page, no site plan application has been filed, and Calvert County's six-month moratorium on data center site plan approvals takes effect Aug. 28, 2026.",
+    "energy": {
+      "source": "grid",
+      "utility": "SMECO",
+      "notes": "Connection to the SMECO transmission grid via a new on-site substation, cost borne by the developer."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "reportedMgd": 0.4,
+      "notes": "Developer states cooling would use non-potable water from the Solomons Wastewater Treatment Plant, averaging about 0.4 MGD and reaching roughly one million gallons on peak summer days, with about one third evaporated and two thirds recirculated."
+    },
+    "landAcres": 133,
+    "jobs": {
+      "construction": 6100,
+      "permanent": 110,
+      "sourceIndex": 1
     },
     "facilityType": "data_center"
   },
@@ -46898,6 +48953,58 @@
     }
   },
   {
+    "id": "northmark-valara-spartanburg-sc",
+    "name": "NorthMark Strategies Spartanburg High-Performance Computing Center",
+    "operator": "Valara Holdings (NorthMark Strategies)",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.923066,
+      "lon": -81.851905,
+      "city": "Spartanburg",
+      "county": "Spartanburg",
+      "street": "4000 South Pine Street",
+      "postalCode": "29302",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-04-23",
+        "note": "Facility in development at the former Kohler manufacturing plant in Spartanburg County; slated to go online later in 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://spectrumlocalnews.com/sc/south-carolina/news/2026/04/23/south-carolina-news-data-center-power-generation-scdes",
+        "label": "Spartanburg data center requests additional equipment for larger power capacity",
+        "publisher": "Spectrum News 1 South Carolina",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=4000+South+Pine+Street%2C+Spartanburg%2C+SC&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for 4000 South Pine Street, Spartanburg, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Adaptive reuse of the former Kohler manufacturing facility in Spartanburg County, developed by NorthMark Strategies through its subsidiary Valara Holdings. This is a DIFFERENT Spartanburg County site from the tracked Greenidge record at 300 Jones Road. Coordinates are an approximate geocode of the South Pine Street address reported in local coverage; no parcel-level source was retrieved.",
+    "energy": {
+      "notes": "The project is being built with on-site power generation rather than drawing the full load from the local grid. NorthMark applied to the S.C. Department of Environmental Services on 2026-03-04 for 'additional equipment to support increased power generation capacity' at the site; the application was under technical review as of April 2026."
+    },
+    "investmentUsd": 2800000000,
+    "jobs": {
+      "permanent": 27,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "nova-energy-cryptomine-frenchcreek-venango-county-pa",
     "name": "Nova Energy Natural Gas-Powered Cryptomine (Frenchcreek Township)",
     "operator": "Nova Energy LLC",
@@ -47003,6 +49110,65 @@
     "notes": "Novva Data Centers acquired roughly 205 acres in the Apex Industrial Park in North Las Vegas from VanTrust Real Estate for $181 million; the sale closed 8 August 2025. Only the land acquisition is confirmed — no capacity, building count, investment or timeline has been announced, so this record is a site rather than a specified facility. Coordinates are an approximate point for the Apex area, not a parcel-confirmed location.",
     "landAcres": 205,
     "facilityType": "data_center"
+  },
+  {
+    "id": "novva-colorado-springs-co",
+    "name": "Novva Colorado Springs Data Center",
+    "operator": "Novva Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.0130116,
+      "lon": -104.8164434,
+      "city": "Colorado Springs",
+      "county": "El Paso",
+      "street": "650 Sybilla Lane",
+      "postalCode": "80921",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 40
+    },
+    "announcedDate": "2021-08-31",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-26",
+        "note": "Operator lists the campus as operational with immediate colocation availability.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.novva.com/media-center/novva-data-centers-acquires-colorado-springs-campus/",
+        "label": "Novva Data Centers Acquires Colorado Springs Campus",
+        "publisher": "Novva Data Centers",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.novva.com/data-center-facilities/colorado/",
+        "label": "Colorado Springs Data Center | Colocation | NOVVA Data Centers",
+        "publisher": "Novva Data Centers",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Novva acquired the campus (a 190,000 sq ft data center built in 2005 with 6 MW of designed capacity, plus an industrial building) for $38.5 million, announced 2021-08-31, and committed over $200 million to expand it. The operator's current facility page lists 40 MW, 122,000 sq ft of data hall plus 55,000 sq ft of office, on a 68-acre campus with 37 acres available for expansion. investmentUsd records the stated campus expansion commitment, not the acquisition price.",
+    "water": {
+      "coolingType": "air",
+      "notes": "Operator reports waterless cooling using chilled-water CRAHs plus 8,000+ hours a year of ambient high-altitude air cooling."
+    },
+    "investmentUsd": 200000000,
+    "landAcres": 68,
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.3,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
   },
   {
     "id": "novva-mesa-az",
@@ -49734,9 +51900,16 @@
         "publisher": "Forbes",
         "retrievedAt": "2026-07-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/machine-learning/article/55326541/how-coreweave-and-poolside-are-teaming-up-in-west-texas-to-build-the-next-generation-of-ai-data-centers",
+        "label": "How CoreWeave and Poolside Are Teaming Up in West Texas to Build the Next Generation of AI Data Centers",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-14",
+    "lastUpdated": "2026-08-26",
     "notes": "2 GW AI training campus on a 568-acre parcel of the Mitchell family's Longfellow Ranch in Pecos County, near Fort Stockton. Coordinate anchored on Fort Stockton (nearest named town in coverage); exact parcel not publicly disclosed. CoreWeave was original anchor tenant (15-year, 250 MW lease, 40,000 Nvidia GB300 GPUs) but terminated the lease in late March 2026 after Poolside's Series C funding round failed to close; site reported idle as of mid-2026.",
     "energy": {
       "source": "on_site_gas",
@@ -50919,6 +53092,66 @@
     "aiClassification": "likely"
   },
   {
+    "id": "project-altair-newberry-county-sc",
+    "name": "Project Altair (Mid-Carolina Commerce Park II)",
+    "operator": "Undisclosed developer (Project Altair)",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.2098669,
+      "lon": -81.5338576,
+      "city": "Prosperity",
+      "county": "Newberry",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-15",
+        "note": "Newberry County held a public hearing on an ordinance to enter an option and purchase agreement with 'Project Altair' for remaining acreage in Mid-Carolina Commerce Park II; the developer intended to lease to a data center tenant building several buildings. Santee Cooper was conducting an electrical grid capacity study for the area.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-06-03",
+        "note": "Newberry County Council voted unanimously to deny the land-sale ordinance at third reading, reversing the first two readings, and then moved to a 12-month moratorium on accepting new data center permits.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newberrycounty.gov/news/newberry-county-governments-statement-data-centers",
+        "label": "Newberry County Government's Statement on Data Centers (Project Altair / Ordinance 03-01-2026)",
+        "publisher": "Newberry County, South Carolina",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.wistv.com/2026/06/03/moratorium-data-centers-put-effect-after-newberry-county-residents-raise-concerns/",
+        "label": "Moratorium on data centers put in effect after Newberry County residents raise concerns",
+        "publisher": "WIS News 10",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Prosperity%2C+Newberry+County%2C+South+Carolina&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Prosperity, Newberry County, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "The end tenant and the developer were never named publicly; 'Project Altair' is the county's code name. Coordinates are an approximate geocode of Prosperity, SC — Mid-Carolina Commerce Park II did not resolve in OSM. Recorded as cancelled because the enabling land-sale ordinance was denied and a 12-month county moratorium followed.",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents at a packed public hearing objected over water-supply strain, electric-rate increases, industrial noise and loss of the county's rural/agricultural character.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "project-boulder-colleton-county-sc",
     "name": "Project Boulder",
     "operator": "Eagle Rock Partners",
@@ -52079,6 +54312,48 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "prometheus-hyperscale-fort-morgan-co",
+    "name": "Prometheus Hyperscale Fort Morgan",
+    "operator": "Prometheus Hyperscale",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.2502582,
+      "lon": -103.799951,
+      "city": "Fort Morgan",
+      "county": "Morgan",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-10",
+        "note": "Named as one of four pipeline sites when Wyoming Hyperscale rebranded as Prometheus Hyperscale; no timeline or specifications shared.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/wyoming-hyperscale-becomes-prometheus-hyperscale-reveals-pipeline-of-four-additional-sites/",
+        "label": "Wyoming Hyperscale becomes Prometheus Hyperscale, reveals pipeline of four additional sites (read via Internet Archive)",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://bigpivots.com/looming-questions-about-data-centers/",
+        "label": "Looming questions about data centers",
+        "publisher": "Big Pivots",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Early-stage pipeline site. DCD reports Prometheus Hyperscale plans four data centers beyond its Evanston, Wyoming flagship — Pueblo and Fort Morgan in Colorado, Phoenix and Tucson in Arizona — with timelines and specifications not shared. Big Pivots separately reports the company intends to create data centers in Fort Morgan and Pueblo. No capacity, acreage, investment or permit filing is recorded because none is sourced. Coordinates are the Fort Morgan town centroid (approximate); no parcel is known. Deliberately not attributing the Evanston flagship's 1.25 GW to this site.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "prometheus-hyperscale-kaufman-county-tx",
     "name": "Prometheus Hyperscale Kaufman County Campus",
     "operator": "Prometheus Hyperscale",
@@ -52108,6 +54383,48 @@
     "lastUpdated": "2026-08-25",
     "notes": "Four liquid-cooled buildings on ~500 acres west of Dallas between Talty and Post Oak Bend City, Kaufman County; behind-the-meter Jenbacher J620 gas generation plus an Engie North America battery storage tie-in. Distinct operator/site from the Flexential Talty campus in the same county. First facility targeted for 2026 operation.",
     "landAcres": 500,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "prometheus-hyperscale-pueblo-co",
+    "name": "Prometheus Hyperscale Pueblo",
+    "operator": "Prometheus Hyperscale",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.263995,
+      "lon": -104.6141867,
+      "city": "Pueblo",
+      "county": "Pueblo",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-10",
+        "note": "Named as one of four pipeline sites when Wyoming Hyperscale rebranded as Prometheus Hyperscale; no timeline or specifications shared.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/wyoming-hyperscale-becomes-prometheus-hyperscale-reveals-pipeline-of-four-additional-sites/",
+        "label": "Wyoming Hyperscale becomes Prometheus Hyperscale, reveals pipeline of four additional sites (read via Internet Archive)",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://bigpivots.com/looming-questions-about-data-centers/",
+        "label": "Looming questions about data centers",
+        "publisher": "Big Pivots",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Early-stage pipeline site named alongside Fort Morgan. No capacity, acreage, investment or permit filing is sourced, so none is recorded. Coordinates are the Pueblo city centroid (approximate). Not connected in the sources to the Comanche generating station or any specific parcel.",
     "facilityType": "data_center"
   },
   {
@@ -52629,6 +54946,47 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "qts-colorado-springs-co",
+    "name": "QTS Colorado Springs Data Center",
+    "operator": "QTS Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9220674,
+      "lon": -104.8426568,
+      "city": "Colorado Springs",
+      "county": "El Paso",
+      "street": "311 S. Rockrimmon Blvd",
+      "postalCode": "80919",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 14
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-26",
+        "note": "Operator lists the facility as operational and available for colocation.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://q.com/data-centers/colorado-springs/",
+        "label": "Colorado Springs — QTS Data Centers",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "249,958 sq ft on a 21-acre site with 14 MW+ of critical building capacity, per the operator's own location page. Distinct site from the QTS Aurora-Denver campus already tracked. Capacity recorded as 14 MW (operator states '14 MW+').",
+    "landAcres": 21,
+    "facilityType": "data_center"
   },
   {
     "id": "qts-dane-county-deforest-wi",
@@ -53836,6 +56194,92 @@
     "aiClassification": "likely"
   },
   {
+    "id": "qts-york-county-sc",
+    "name": "QTS York County Data Center Campus",
+    "operator": "QTS Data Centers",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.0046528,
+      "lon": -81.1001847,
+      "county": "York",
+      "street": "Hands Mill Highway",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023-09-19",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-09-19",
+        "note": "S.C. Department of Commerce announced QTS's first South Carolina campus, a $1 billion investment in unincorporated York County.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "York County states construction began in 2025, with nine buildings in various stages of development and site plans vested ahead of the county's July 2026 moratorium.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sccommerce.com/news/qts-data-centers-establishing-first-south-carolina-operations-york-county",
+        "label": "QTS Data Centers establishing first South Carolina operations in York County",
+        "publisher": "South Carolina Department of Commerce",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yorkcountysc.gov/1313/Data-Centers",
+        "label": "Data Centers — York County, SC (county information page on the QTS campus)",
+        "publisher": "York County, South Carolina",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Hands+Mill+Highway%2C+York+County%2C+South+Carolina&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for Hands Mill Highway, York County, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Site is near Hands Mill Highway and Campbell Road in unincorporated York County (Clover area). York County sold 173 acres to QTS on 2023-07-26; QTS also purchased additional private land, so total campus acreage exceeds the county-sold figure. investmentUsd reflects the $1 billion figure in the 2023 state announcement; York County's current page cites 'over $8 billion' in committed long-term investment for the campus. Coordinates are an approximate geocode of Hands Mill Highway.",
+    "energy": {
+      "source": "grid",
+      "utility": "York Electric Cooperative"
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "York County states the campus uses a closed-loop cooling design that 'saves over 48 million gallons of water annually per data center'; no wells are planned and the site is connected to York County water and sewer utilities."
+    },
+    "subsidies": [
+      {
+        "program": "Coordinating Council for Economic Development Set-Aside grant (to York County for site preparation)",
+        "amountUsd": 200000,
+        "jurisdiction": "South Carolina",
+        "year": "2023",
+        "sourceIndex": 0
+      },
+      {
+        "program": "Fee-in-Lieu of Tax (FILOT) agreement",
+        "jurisdiction": "York County, South Carolina",
+        "year": "2023",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 1000000000,
+    "landAcres": 173,
+    "jobs": {
+      "construction": 1000,
+      "permanent": 200,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "quantica-bsdi-billings-mt",
     "name": "Big Sky Digital Infrastructure Campus",
     "operator": "Quantica Infrastructure",
@@ -54203,6 +56647,7 @@
       "lon": -104.8214,
       "city": "Colorado Springs",
       "county": "El Paso",
+      "street": "1565 High Tech Way",
       "state": "CO",
       "precision": "exact"
     },
@@ -54237,13 +56682,32 @@
         "label": "SoCoDigest",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://gazette.com/2026/06/12/colorado-springs-administratively-approves-data-center-on-garden-of-the-gods-road/",
+        "label": "Colorado Springs administratively approves data center on Garden of the Gods Road (read via Internet Archive)",
+        "publisher": "Colorado Springs Gazette",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://gazette.com/2026/03/28/large-data-center-may-be-heading-to-former-computer-chip-facility-in-colorado-springs/",
+        "label": "Large data center may be heading to former computer chip facility in Colorado Springs (read via Internet Archive)",
+        "publisher": "Colorado Springs Gazette",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-26",
     "notes": "50 MW data center at the former Intel plant in Colorado Springs, El Paso County. Coordinates are the Colorado Springs area centroid.",
     "energy": {
       "source": "grid",
-      "utility": "Colorado Springs Utilities"
+      "utility": "Colorado Springs Utilities",
+      "notes": "Raeden's co-founder says the project is cleared to use a maximum of 50 MW — about half what the building was rated to draw as an Intel chip plant — against a Colorado Springs Utilities peak-day output of 976 MW per its 2025 report. Backup only: 30 standby generators are planned, sited near Garden of the Gods Road and screened by sound walls."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Air-cooled closed-loop system with 36 chillers (34 typically running at 75%); the developer says the roughly 200,000 gallons in the loop are not replenished because there is no evaporation, leaving only domestic water use for occupants."
     },
     "community": {
       "status": "contested",
@@ -55524,6 +57988,110 @@
     "aiClassification": "likely"
   },
   {
+    "id": "rowan-bauxite-ii-frederick-md",
+    "name": "Rowan Digital Infrastructure Bauxite II",
+    "operator": "Rowan Digital Infrastructure",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.34,
+      "lon": -77.515,
+      "city": "Frederick",
+      "county": "Frederick",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-12-12",
+        "note": "Frederick County Planning Commission approved the Bauxite II site plan unanimously (6-0).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/planning-commission-approves-two-more-045900384.html",
+        "label": "Planning Commission approves two more Rowan data centers (Frederick News-Post)",
+        "publisher": "The Frederick News-Post via Yahoo News",
+        "retrievedAt": "2026-08-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://rowan.digital/portfolio/bauxite-i-ii-iii/",
+        "label": "Bauxite I, II & III — Hyperscale Data Center Campus, Maryland",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Second phase of Rowan's three-phase Bauxite campus on the former Alcoa Eastalco site inside Quantum Frederick. Four data center buildings plus auxiliary buildings on 111.5 acres; Rowan states delivery in 2026. Per-phase MW is not stated consistently across sources, so capacityMw is omitted; Rowan describes the combined three-phase campus as about 600-630 MW across 375 acres.",
+    "energy": {
+      "source": "grid",
+      "utility": "Potomac Edison (FirstEnergy)",
+      "notes": "Served initially from the FirstEnergy Sage Substation; Rowan plans to build an adjacent substation for a direct connection."
+    },
+    "water": {
+      "reportedMgd": 0.392,
+      "notes": "Site plan filings state 392,000 gallons per day for cooling. Bauxite II and III together require about 1.081 million gpd, nearly exhausting the 1.3 million gpd first-phase allocation under Frederick County's Adequate Public Facilities Ordinance agreement."
+    },
+    "landAcres": 111.5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "rowan-bauxite-iii-frederick-md",
+    "name": "Rowan Digital Infrastructure Bauxite III",
+    "operator": "Rowan Digital Infrastructure",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.338,
+      "lon": -77.506,
+      "city": "Frederick",
+      "county": "Frederick",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-12-12",
+        "note": "Frederick County Planning Commission approved the Bauxite III site plan with one commissioner abstaining over soil management concerns; the parcel sits within a soil management area requiring environmental oversight.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/planning-commission-approves-two-more-045900384.html",
+        "label": "Planning Commission approves two more Rowan data centers (Frederick News-Post)",
+        "publisher": "The Frederick News-Post via Yahoo News",
+        "retrievedAt": "2026-08-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://rowan.digital/portfolio/bauxite-i-ii-iii/",
+        "label": "Bauxite I, II & III — Hyperscale Data Center Campus, Maryland",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Third phase of Rowan's Bauxite campus: three data center buildings plus an auxiliary water building, guard booth and water storage on 55 acres. Rowan states delivery in 2027. Per-phase MW omitted because published figures conflict.",
+    "energy": {
+      "source": "grid",
+      "utility": "Potomac Edison (FirstEnergy)",
+      "notes": "Served initially from the FirstEnergy Sage Substation."
+    },
+    "water": {
+      "reportedMgd": 0.297,
+      "notes": "Site plan filings state 297,000 gallons per day for cooling, drawn against the same Adequate Public Facilities Ordinance allocation as Bauxite II."
+    },
+    "landAcres": 55,
+    "facilityType": "data_center"
+  },
+  {
     "id": "rowan-digital-frederick-md",
     "name": "Rowan Digital Infrastructure Frederick Campus (Bauxite I)",
     "operator": "Rowan Digital Infrastructure",
@@ -55583,9 +58151,16 @@
         "publisher": "Yahoo News",
         "retrievedAt": "2025-04-25",
         "kind": "press"
+      },
+      {
+        "url": "https://natureforward.org/quantum-frederick-frederick-county-md-maryland-data-center-series-pt-3/",
+        "label": "Quantum Frederick, Frederick County, MD: Maryland Data Center Series, Pt. 3 — AWS BWI (Rowan Bauxite I): 151 acres, four buildings, 300 MW",
+        "publisher": "Nature Forward",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-26",
     "notes": "Rowan (Quinbrook Infrastructure Partners + Birch Infrastructure JV) serves as AWS hyperscale host at Quantum Frederick. Three campuses planned on-site total; Bauxite I is Phase 1 at 300MW. 777,150 sq ft total campus footprint. Coordinates approximate for same Quantum Frederick campus area as Aligned record. Location.city set to Adamstown per the more recent, project-specific Frederick News-Post coverage (2025-11-11, via Yahoo Finance); the 2021 Maryland Dept. of Commerce announcement had said \"near Buckeystown\" — recorded here so the choice is auditable rather than looking arbitrary. AWS is the confirmed tenant of Bauxite I on this former Alcoa Eastalco Works site — AWS's first Maryland data center; no source confirms go-live as of this pass.",
     "energy": {
       "source": "grid",
@@ -55660,9 +58235,16 @@
         "publisher": "KXXV",
         "retrievedAt": "2026-07-08",
         "kind": "press"
+      },
+      {
+        "url": "https://rowan.digital/portfolio/temple/",
+        "label": "Temple — 300 MW Hyperscale Data Center Campus (operator portfolio page)",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-08",
+    "lastUpdated": "2026-08-26",
     "notes": "300 MW campus in Temple, Bell County; $3B financing secured, operations targeted 2027. Distinct from Rowan's separately-tracked Frederick, MD campus. Coordinates are the Temple area centroid. The '$3B' figure is green debt financing (May 2026), not campus capex; the abatement cites a ~$700M minimum investment floor -> investmentUsd omitted. ~600 construction / ~40 permanent jobs projected (abatement requires >=48 permanent) -> jobs honest-zero.",
     "energy": {
       "source": "grid",
@@ -55681,6 +58263,8 @@
         "sourceIndex": 2
       }
     ],
+    "investmentUsd": 700000000,
+    "landAcres": 700,
     "community": {
       "status": "mixed",
       "notes": "Temple City Council approved unanimously and Bell County supported; organized resident opposition (town halls, council testimony) raised concerns over an undisclosed additional Rowan campus, water/grid/noise, and the abatement. Rowan held a March 2026 open house and community partnerships. The named tenant is undisclosed ('top global technology company'); opposition speculates Meta, unconfirmed.",
@@ -55688,6 +58272,65 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "rwe-maryland-blue-crab-solar-storage-dorchester-md",
+    "name": "Maryland Blue Crab Solar & Storage",
+    "operator": "RWE Clean Energy (Maryland Blue Crab Solar & Storage, LLC)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.578,
+      "lon": -75.945,
+      "county": "Dorchester",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-18",
+        "note": "Virtual public hearing held before Public Utility Law Judge Christine L. Burke in PSC Case No. 9782; project remains under PPRP review.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dnr.maryland.gov/pprp/pages/projects-under-review.aspx",
+        "label": "Projects Under Review — Case 9782, Blue Crab Solar & Storage LLC, 100 MW solar + 25 MW battery storage, ~820 acres, Dorchester County",
+        "publisher": "Maryland Department of Natural Resources, Power Plant Research Program",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      },
+      {
+        "url": "https://americas.rwe.com/our-energy/solar-energy/solar-projects-and-locations/maryland-blue-crab-solar-storage/",
+        "label": "Maryland Blue Crab Solar & Storage — RWE in the Americas",
+        "publisher": "RWE Clean Energy",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Sited about 0.5 miles southwest of East New Market and immediately north of Linkwood: 555 fenced acres within an 818-acre leased agricultural tract. Far and away the largest generation project in the Maryland PSC's current CPCN review queue, where the rest are 2-18 MW community-scale solar. Developer projects $39.5 million in county revenue over a 40-year life.",
+    "energy": {
+      "source": "solar",
+      "utility": "Delmarva Power & Light",
+      "notes": "100 MW solar PV with a co-located 25 MW battery energy storage system and a 69 kV interconnection line to the Delmarva Power & Light grid south of Route 50. Maryland PSC CPCN Case No. 9782."
+    },
+    "landAcres": 555,
+    "jobs": {
+      "construction": 140,
+      "permanent": 5,
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Under CPCN review by the Maryland PSC with Power Plant Research Program participation; a virtual public hearing was held Feb. 18, 2026 and a further public comment hearing was scheduled for Aug. 31, 2026. Developer targets commercial operation at the end of 2028."
+    }
   },
   {
     "id": "ryan-companies-project-swan-lakeland-fl",
@@ -56628,6 +59271,45 @@
     "facilityType": "data_center"
   },
   {
+    "id": "sandow-lakes-energy-station-lee-county-tx",
+    "name": "Sandow Lakes Energy Station",
+    "operator": "Sandow Lakes Energy Company, LLC",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.3031353,
+      "lon": -96.9588587,
+      "county": "Lee",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "announcedDate": "2024-02-12",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/sandow-lakes-energy-company-llc-announces-agreement-to-construct-a-1200-net-megawatt-combined-cycle-power-plant-at-sandow-lakes-ranch-in-the-texas-triangle-302059619.html",
+        "label": "Sandow Lakes Energy Company, LLC Announces Agreement to Construct a 1200 Net Megawatt Combined Cycle Power Plant at Sandow Lakes Ranch",
+        "publisher": "PR Newswire / Sandow Lakes Energy Company",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "1,200 net MW at Sandow Lakes Ranch, with construction stated to begin in 2025 and commercial operation targeted for 2028. The announcement names no offtaker; separate reporting has described the plant as serving private customers rather than the grid, but no data center offtaker is named in a source fetched this session, so `generation.offtaker` is deliberately left unset. County is recorded as Lee per the company announcement; the ranch is variously described as spanning the Milam County line. Coordinates are a county-level geocode.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2,
+      "notes": "Two Siemens Energy SGT6-9000HL turbines in combined-cycle configuration, described as hydrogen-ready. Built on the former Alcoa Sandow industrial site, replacing 1950s-era coal generation."
+    }
+  },
+  {
     "id": "sangha-systems-hennepin-il",
     "name": "Sangha Systems Hennepin (82 River North)",
     "operator": "Sangha Systems",
@@ -56827,6 +59509,68 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "security-land-woodlawn-baltimore-county-md",
+    "name": "1500 Woodlawn Drive Data Center Campus",
+    "operator": "Security Land and Development LP",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.3196,
+      "lon": -76.7448,
+      "city": "Woodlawn",
+      "county": "Baltimore",
+      "street": "1500 Woodlawn Drive",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "announcedDate": "2025-12",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12",
+        "note": "Community neighborhood meeting held on the proposal; razing permit applications filed April and June 2025. No development plan submitted as of mid-2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://natureforward.org/woodlawn-data-center-baltimore-md-maryland-data-center-series-pt-2/",
+        "label": "Woodlawn Data Center, Baltimore, MD: Maryland Data Center Series Pt. 2",
+        "publisher": "Nature Forward",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://foxbaltimore.com/news/local/data-centers-energy-woodlawn-baltimore-county-maryland",
+        "label": "New data center could be coming to Woodlawn area in Baltimore County",
+        "publisher": "FOX45 Baltimore",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Redevelopment of the 42-acre former Social Security Administration headquarters campus in Woodlawn, plus an adjacent Rodeway Inn parcel. Construction had been targeted for June/July 2026 before Baltimore County's permit moratorium.",
+    "energy": {
+      "source": "grid",
+      "utility": "Baltimore Gas and Electric",
+      "notes": "Proposal includes donating 5 acres to BGE for a new electrical substation; grid connection infrastructure is still required."
+    },
+    "landAcres": 42,
+    "jobs": {
+      "construction": 1000,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Residents raised concerns about water use, home values and utility bills at a December 2025 neighborhood meeting. Baltimore County enacted a one-year data center permit moratorium in January 2026 and Bill 3-26 requires public hearings and disclosure of cooling technology.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "seminoe-generating-station-carbon-county-wy",
@@ -57776,9 +60520,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://www.skyboxdatacenters.com/locations/skybox-houston",
+        "label": "Skybox Houston I — operator location page (26 MW, 96,129 SF, 20-acre private campus)",
+        "publisher": "Skybox Datacenters",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-26",
     "notes": "26MW, 96,129 SF, 20-acre campus at 22000 Franz Rd, Katy TX. Page explicitly describes it as home to some of the world's densest HPC compute environments serving oil & gas and cloud/HPC users, with DoubleDense cooling up to 1000W/SF immersion — real HPC evidence, so aiClassification=likely. AI/HPC (mixed_use): Skybox markets Houston as home to some of the world's densest HPC environments with DoubleDense immersion cooling up to 1000 W/PSF; its own news page confirms a named Skybox Houston I HPC immersion deployment (Shell Energy).",
     "energy": {
       "source": "grid",
@@ -58531,10 +61282,22 @@
         "label": "Louisiana Economic Development (LED) — official announcement",
         "retrievedAt": "2026-07-25",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/amazon-selects-louisiana-for-12-billion-data-center-campuses-in-major-u-s-expansion",
+        "label": "Amazon Selects Louisiana for $12 Billion Data Center Campuses in Major U.S. Expansion",
+        "publisher": "Louisiana Economic Development",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-26",
     "notes": "Companion site to the Blanchard/Caddo Parish campus; same ~$12,000,000,000 combined Amazon/STACK investment.",
+    "energy": {
+      "source": "grid",
+      "utility": "Southwestern Electric Power Company (SWEPCO)",
+      "notes": "Amazon is partnering with SWEPCO and states it pays 100% of the costs associated with the new data center campus in Louisiana."
+    },
     "subsidies": [
       {
         "program": "LED FastStart (workforce development)",
@@ -58555,7 +61318,8 @@
         "sourceIndex": 1
       }
     ],
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "stack-caddo-parish-la",
@@ -58608,10 +61372,22 @@
         "publisher": "KSLA",
         "retrievedAt": "2026-08-20",
         "kind": "press"
+      },
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/amazon-selects-louisiana-for-12-billion-data-center-campuses-in-major-u-s-expansion",
+        "label": "Amazon Selects Louisiana for $12 Billion Data Center Campuses in Major U.S. Expansion",
+        "publisher": "Louisiana Economic Development",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-20",
+    "lastUpdated": "2026-08-26",
     "notes": "Part of a ~$12,000,000,000 combined Amazon/STACK investment spanning this Caddo Parish campus and the companion Bossier Parish campus (Benton, LA).",
+    "energy": {
+      "source": "grid",
+      "utility": "Southwestern Electric Power Company (SWEPCO)",
+      "notes": "Amazon is partnering with SWEPCO and states it pays 100% of the costs associated with the new data center campus in Louisiana."
+    },
     "subsidies": [
       {
         "program": "LED FastStart (workforce development)",
@@ -58632,7 +61408,8 @@
         "sourceIndex": 1
       }
     ],
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "stack-chi01-il",
@@ -58680,6 +61457,73 @@
     "energy": {
       "utility": "ComEd"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "stack-dfw01-plano-tx",
+    "name": "STACK DFW01 (Plano)",
+    "operator": "STACK Infrastructure",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.0136764,
+      "lon": -96.6925096,
+      "city": "Plano",
+      "county": "Collin",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 80
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.stackinfra.com/locations/americas/dallas-fort-worth/",
+        "label": "Dallas/Ft. Worth Hyperscale Data Center Campus — operator location page",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Operator page lists DFW01 as two operational data centers totalling 80 MW with access to more than a dozen carrier networks, plus a further 48 MW of built-to-suit expansion capacity. No street address is published on the operator page, so coordinates are a city-level geocode.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "stack-dfw02-lancaster-tx",
+    "name": "STACK DFW02 (Lancaster)",
+    "operator": "STACK Infrastructure",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.5920798,
+      "lon": -96.7561083,
+      "city": "Lancaster",
+      "county": "Dallas",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.stackinfra.com/locations/americas/dallas-fort-worth/",
+        "label": "Dallas/Ft. Worth Hyperscale Data Center Campus — operator location page",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "193-acre campus in south Dallas County, described by the operator as under development with up to 500 MW available; earlier reporting described a 220 MW first build of six 36 MW data centers across roughly 1.5 million sq ft off E Belt Line Road. Status is recorded as under construction on the strength of the operator's 'under development' framing and committed substation; treat as provisional. Coordinates are a city-level geocode.",
+    "energy": {
+      "utility": "Oncor",
+      "notes": "Operator describes committed power from Oncor via a dedicated substation."
+    },
+    "landAcres": 193,
     "facilityType": "data_center"
   },
   {
@@ -63814,6 +66658,57 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "thad-hill-energy-center-clifton-bosque-tx",
+    "name": "Thad Hill Energy Center",
+    "operator": "Thad Hill Energy Center, LLC (Calpine)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.8594,
+      "lon": -97.3586,
+      "city": "Clifton",
+      "county": "Bosque",
+      "street": "557 Bosque County Rd 3610",
+      "postalCode": "76634",
+      "state": "TX",
+      "precision": "exact"
+    },
+    "announcedDate": "2000-07",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.gridinfo.com/plant/thad-hill-energy-center/55172",
+        "label": "Thad Hill Energy Center — plant record (EIA-860 derived)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.calpine.com/calpine-and-cyrusone-announce-phase-2-of-powered-land-agreement-to-support-hyperscale-data-center-at-thad-hill-energy-center-in-texas/",
+        "label": "Calpine and CyrusOne Announce Phase 2 of Powered Land Agreement at Thad Hill Energy Center",
+        "publisher": "Calpine",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Natural-gas plant in ERCOT, in service since July 2000, comprising five generators; formerly operated as Calpine Bosque Energy Center. Water source recorded by EIA as the Brazos River; interconnection at 345 kV / 138 kV via Brazos Electric Power Coop. No nameplate MW figure appears in the fetched sources, so capacityMw is deliberately omitted rather than estimated from generation totals.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Brazos Electric Power Coop Inc"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "CyrusOne",
+      "poweredFacilityIds": [
+        "cyrusone-bosque-county-thad-hill-tx"
+      ],
+      "unitCount": 5,
+      "notes": "Powered-land agreement with CyrusOne totalling 400 MW — 190 MW announced July 2025 and a further 210 MW in November 2025 — serving the adjacent DFW10 data center campus. Calpine states the power will be redirected to support ERCOT system reliability during periods of grid scarcity."
+    }
+  },
+  {
     "id": "thor-equities-augusta-township-mi",
     "name": "Thor Equities Augusta Township Data Center (Form8tion)",
     "operator": "Thor Equities",
@@ -64980,6 +67875,60 @@
     "notes": "Address confirmed: 1000 Adams Ave, Norristown, PA — matches TierPoint's own Pennsylvania directory listing.",
     "energy": {
       "utility": "PECO"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tigerdc-project-spero-spartanburg-county-sc",
+    "name": "Project Spero (TigerDC), Tyger River Industrial Park",
+    "operator": "TigerDC",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.9109275,
+      "lon": -82.092603,
+      "county": "Spartanburg",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11",
+        "note": "Spartanburg County Council adopted a resolution backing the project in November 2025.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-02-28",
+        "note": "TigerDC formally withdrew Project Spero from consideration in Spartanburg County after the council declined to offer tax incentives, stating that 'alignment has not been achieved' and that it would pursue alternative sites.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.foxcarolina.com/2026/02/27/company-withdraws-ai-data-center-spartanburg-county-consideration/",
+        "label": "Company withdraws AI data center from Spartanburg County consideration",
+        "publisher": "FOX Carolina",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Tyger+River+Industrial+Park%2C+Spartanburg+County%2C+South+Carolina&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for Tyger River Industrial Park area, Spartanburg County, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Proposed for Tyger River Industrial Park-North in Spartanburg County. Local coverage put the investment at roughly $3 billion, but the fetched source describes it only as 'multibillion-dollar', so no investment figure is asserted here. Coordinates are an approximate geocode of the Tyger River Industrial Park area. Distinct from both the tracked Greenidge Spartanburg record and the NorthMark/Valara site.",
+    "energy": {
+      "notes": "TigerDC described a self-contained power strategy designed to avoid straining the local residential grid."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "TigerDC documentation described a closed-loop cooling system with negligible water impact."
     },
     "facilityType": "data_center"
   },
@@ -66873,6 +69822,56 @@
     "lastUpdated": "2026-08-24",
     "notes": "Modular edge-computing facility with a starting capacity of 0.5-0.6MW, expandable by stacking additional nodes. As of Feb 2026 construction had not yet begun despite a stated 2026 opening target.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "vc-summer-units-2-3-fairfield-county-sc",
+    "name": "V.C. Summer Units 2 and 3 (restart)",
+    "operator": "Santee Cooper",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.2955736,
+      "lon": -81.3149669,
+      "city": "Jenkinsville",
+      "county": "Fairfield",
+      "state": "SC",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 2200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-24",
+        "note": "Santee Cooper's board approved selection of Brookfield Asset Management to restart and complete Units 2 and 3, following a January 2025 request for proposals.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ans.org/news/article-7493/santee-cooper-opts-to-reboot-summer-reactor-project/",
+        "label": "Santee Cooper opts to reboot Summer reactor project",
+        "publisher": "American Nuclear Society — Nuclear Newswire",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Virgil+C.+Summer+Nuclear+Generating+Station&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim record for Virgil C. Summer Nuclear Generating Station, Fairfield County, SC",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-08-26",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Covers the two abandoned AP1000 units only, not the operating Unit 1. Ownership is in transition — Santee Cooper currently holds the assets and Brookfield was selected to complete them, with a feasibility study running to a decision point; the operator field records current ownership, not the eventual one. No named compute offtaker is sourced, so `generation.offtaker` is omitted despite widespread reporting that data center demand is the commercial premise. Coordinates are the OSM feature for the V.C. Summer site.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "unitCount": 2,
+      "notes": "Two partially built Westinghouse AP1000 reactors of about 1,100 MWe each, abandoned in July 2017 after roughly $9 billion in spending. Santee Cooper's board approved Brookfield Asset Management on 2025-10-24 to complete construction; the NRC terminated the original combined licenses in March 2019, so construction and operating licenses would have to be re-applied for."
+    }
   },
   {
     "id": "vermaland-la-osa-eloy-az",
