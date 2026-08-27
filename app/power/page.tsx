@@ -5,6 +5,7 @@ import {
   getPowerGenerationFacilities,
   getGenerationByOfftaker,
   getGenerationStats,
+  getGenerationBuildoutStats,
   getEnergySourceCounts,
   getFacilitiesByWaterUsage,
   getCoolingTypeCounts,
@@ -48,6 +49,7 @@ export const metadata: Metadata = {
 export default async function PowerPage() {
   const [
     stats,
+    buildout,
     offtakerGroups,
     projects,
     energySourceCounts,
@@ -55,6 +57,7 @@ export default async function PowerPage() {
     coolingTypeCounts,
   ] = await Promise.all([
     getGenerationStats(),
+    getGenerationBuildoutStats(),
     getGenerationByOfftaker(),
     getPowerGenerationFacilities(),
     getEnergySourceCounts(),
@@ -93,6 +96,17 @@ export default async function PowerPage() {
     (sum, { key }) => sum + coolingTypeCounts[key],
     0
   );
+
+  // Guarded against a zero denominator so a data state with no non-fossil
+  // capacity yet renders an em-dash instead of Infinity/NaN.
+  const buildoutRatioLabel =
+    buildout.nonFossilPlannedMw === 0
+      ? "—"
+      : `${(buildout.fossilPlannedMw / buildout.nonFossilPlannedMw).toFixed(1)} : 1`;
+  const nonFossilBarPct =
+    buildout.fossilPlannedMw > 0
+      ? (buildout.nonFossilPlannedMw / buildout.fossilPlannedMw) * 100
+      : 0;
 
   if (stats.count === 0) {
     return (
@@ -161,6 +175,99 @@ export default async function PowerPage() {
           and cited sources.
         </p>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* § The buildout                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        aria-labelledby="buildout-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <div className="space-y-2">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            § The buildout
+          </p>
+          <h2 id="buildout-heading" className="font-display text-2xl text-foreground">
+            What&apos;s being built
+          </h2>
+        </div>
+        <SurveyStatRow
+          stats={[
+            { value: formatPower(buildout.fossilPlannedMw), label: "Gas · planned" },
+            {
+              value: formatPower(buildout.nonFossilPlannedMw),
+              label: "Non-fossil · planned",
+            },
+            { value: buildoutRatioLabel, label: "Ratio" },
+            {
+              value: `${buildout.gas.operational} of ${buildout.gas.total}`,
+              label: "Gas plants running",
+            },
+          ]}
+        />
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <div className="flex items-baseline justify-between gap-2 text-sm">
+              <span className="text-foreground">Gas · planned</span>
+              <span className="font-mono tabular-nums text-muted-foreground">
+                {formatPower(buildout.fossilPlannedMw)}
+              </span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                aria-hidden="true"
+                className="h-full rounded-full"
+                style={{
+                  width: "100%",
+                  backgroundColor: "var(--primary)",
+                  opacity: 0.7,
+                }}
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex items-baseline justify-between gap-2 text-sm">
+              <span className="text-foreground">Non-fossil · planned</span>
+              <span className="font-mono tabular-nums text-muted-foreground">
+                {formatPower(buildout.nonFossilPlannedMw)}
+              </span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                aria-hidden="true"
+                className="h-full rounded-full"
+                style={{
+                  width: `${nonFossilBarPct.toFixed(2)}%`,
+                  backgroundColor: "var(--primary)",
+                  opacity: 0.35,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="max-w-2xl space-y-4">
+          <p className="text-base leading-relaxed text-muted-foreground">
+            On planned capacity alone, tracked natural-gas projects total{" "}
+            {formatPower(buildout.fossilPlannedMw)} against{" "}
+            {formatPower(buildout.nonFossilPlannedMw)} for every non-fossil
+            technology combined — nuclear, small modular reactors, solar,
+            wind, geothermal and fusion.
+          </p>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Only {buildout.gas.operational} of the {buildout.gas.total}{" "}
+            tracked gas plants are operational. {buildout.gas.proposed} are
+            proposed and {buildout.gas.permitted} are permitted but not yet
+            under way; {buildout.gas.underConstruction} are under
+            construction. Most of this fleet is not yet built.
+          </p>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            These figures compare planned capacity only, and planned capacity
+            is not interchangeable with the operational figures in the survey
+            row above. Projects with no disclosed technology, and battery
+            storage, are counted in neither total.
+          </p>
+        </div>
+      </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* § By offtaker                                                       */}

@@ -22,6 +22,7 @@ import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/d
 import { rowToFacility } from "@/lib/db/serialize";
 import type { DiffEntry } from "@/lib/doc-diff";
 import { operatorSlug, personSlug } from "@/lib/operator-slug";
+import { getGenerationFuelClass } from "@/lib/generation";
 
 /**
  * Validated view of the bundled JSON fallback, memoized for the process
@@ -1153,6 +1154,108 @@ export async function getGenerationStats(): Promise<GenerationStats> {
     plannedMw,
     offtakerCount: offtakers.size,
   };
+}
+
+/**
+ * Aggregate stats for the fossil-vs-non-fossil buildout comparison on
+ * /power's "What's being built" section.
+ *
+ * Deliberately **planned-MW only** — a forward-looking pipeline comparison,
+ * not a snapshot of what already runs — and must never be cross-quoted with
+ * the operational figures in {@link GenerationStats} above. Technologies that
+ * can't be classified either way (`battery`, storage rather than generation;
+ * `other`, an unknown mix — see `getGenerationFuelClass` in lib/generation.ts)
+ * contribute to neither bucket.
+ */
+export interface GenerationBuildoutStats {
+  /** Sum of capacityMw.planned across non-cancelled natural_gas projects. */
+  fossilPlannedMw: number;
+  /** Sum of capacityMw.planned across non-cancelled non-fossil projects. */
+  nonFossilPlannedMw: number;
+  /** Count of non-cancelled natural_gas projects. */
+  fossilPlants: number;
+  /** Count of non-cancelled non-fossil projects. */
+  nonFossilPlants: number;
+  /** Status split for non-cancelled natural_gas projects. */
+  gas: {
+    total: number;
+    operational: number;
+    proposed: number;
+    permitted: number;
+    underConstruction: number;
+  };
+}
+
+/**
+ * Structural input to {@link computeGenerationBuildoutStats} — narrowed via
+ * `Pick` to exactly the fields the computation reads, rather than requiring a
+ * full valid `PowerGenerationFacility` (id, location, sources, ...).
+ * `PowerGenerationFacility[]` satisfies this structurally, so
+ * `getGenerationBuildoutStats` below can pass its fetched data straight
+ * through, while a unit test can construct minimal fixtures instead.
+ */
+export type GenerationBuildoutInput = Pick<
+  PowerGenerationFacility,
+  "status" | "capacityMw" | "generation"
+>;
+
+/**
+ * Pure reducer over generation-shaped input — no data fetch, no I/O. Split out
+ * from `getGenerationBuildoutStats` so the cancelled-exclusion behavior can be
+ * exercised against a synthetic fixture: `data/facilities.json` currently has
+ * zero cancelled power_generation records, so a test that only ever reads the
+ * real dataset cannot prove this function excludes them — it would pass
+ * whether or not the exclusion filter existed at all (a false proxy).
+ *
+ * Mirrors getGenerationStats' non-cancelled filter; see
+ * {@link GenerationBuildoutStats} for why this is planned-MW only.
+ */
+export function computeGenerationBuildoutStats(
+  facilities: GenerationBuildoutInput[]
+): GenerationBuildoutStats {
+  const active = facilities.filter((f) => f.status !== "cancelled");
+
+  let fossilPlannedMw = 0;
+  let nonFossilPlannedMw = 0;
+  let fossilPlants = 0;
+  let nonFossilPlants = 0;
+  for (const f of active) {
+    const fuelClass = getGenerationFuelClass(f.generation?.technology);
+    const plannedMw = f.capacityMw?.planned ?? 0;
+    if (fuelClass === "fossil") {
+      fossilPlannedMw += plannedMw;
+      fossilPlants += 1;
+    } else if (fuelClass === "non_fossil") {
+      nonFossilPlannedMw += plannedMw;
+      nonFossilPlants += 1;
+    }
+  }
+
+  const gasPlants = active.filter((f) => f.generation?.technology === "natural_gas");
+  const gas = {
+    total: gasPlants.length,
+    operational: gasPlants.filter((f) => f.status === "operational").length,
+    proposed: gasPlants.filter((f) => f.status === "proposed").length,
+    permitted: gasPlants.filter((f) => f.status === "permitted").length,
+    underConstruction: gasPlants.filter((f) => f.status === "under_construction").length,
+  };
+
+  return {
+    fossilPlannedMw,
+    nonFossilPlannedMw,
+    fossilPlants,
+    nonFossilPlants,
+    gas,
+  };
+}
+
+/**
+ * Returns the fossil-vs-non-fossil buildout comparison for /power. Thin async
+ * wrapper: fetches the live data and delegates the math to
+ * {@link computeGenerationBuildoutStats}.
+ */
+export async function getGenerationBuildoutStats(): Promise<GenerationBuildoutStats> {
+  return computeGenerationBuildoutStats(await getPowerGenerationFacilities());
 }
 
 /**
