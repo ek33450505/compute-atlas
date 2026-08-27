@@ -68322,7 +68322,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-08-26",
     "energy": {
       "source": "mixed",
       "utility": "Memphis Light Gas & Water (MLGW) / TVA",
@@ -68339,6 +68339,16 @@
       "notes": "The NAACP (with SELC and Earthjustice) sued xAI over roughly 35 unpermitted methane gas turbines; the county permitted only 15, and the NAACP/SELC appeal to the Shelby County Air Pollution Control Board stays it. The permit drew 1,700+ public comments, most opposed, and South Memphis (Boxtown) residents already face elevated asthma and cancer rates. xAI did not pursue a Shelby County EDGE PILOT tax abatement; no public subsidy is on record.",
       "sourceIndex": 4
     },
+    "stakeholders": [
+      {
+        "name": "Elon Musk",
+        "role": "executive",
+        "via": "xAI",
+        "note": "Runs xAI, the company operating this facility; CNBC, reporting the Shelby County turbine-permit appeal, describes \"xAI, which is run by Elon Musk\" as having set up in Memphis in 2024.",
+        "sourceIndex": 4,
+        "asOf": "2026-08-26"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
