@@ -51,7 +51,9 @@ gate. Still run `npm run typecheck && npm test` locally before opening a PR.
 - **Domain schema:** `lib/schema.ts` — the Zod `facilitySchema`, a discriminated
   union on `facilityType` (`data_center` | `crypto_mining` | `power_generation`).
   This is the single source of truth for a facility's shape; validate against it
-  everywhere data enters the system.
+  everywhere data enters the system. Optional fields like `stakeholders` (named
+  people with a documented stake in a specific site) are site-level curated,
+  excluded from public intake and discovery enrichment.
 - **Map:** MapLibre GL (`components/map/*`), globe projection + vector/satellite
   basemaps. Optional overlays (waterways, transmission lines, drought, baseline
   water stress, groundwater decline, principal aquifers) are tinted,
