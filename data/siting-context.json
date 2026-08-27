@@ -257,6 +257,21 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "aligned-chillicothe-ross-oh": {
+    "nearestWater": {
+      "name": "Scioto River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "aligned-conesville-oh": {
     "nearestWater": {
       "name": "Morgan Run",
@@ -1542,6 +1557,25 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "avaio-appomattox-va": {
+    "nearestWater": {
+      "name": "Bent Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 12.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "avaio-digital-leo-little-rock-ar": {
     "nearestWater": {
       "name": "Little Fourche Creek",
@@ -2318,6 +2352,21 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "aws-sprigg-township-adams-county-oh": {
+    "nearestWater": {
+      "name": "Threemile Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "aws-summit-crossing-tech-campus-spotsylvania-va": {
@@ -7916,6 +7965,25 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "dulles-cloud-south-gainesville-prince-william-va": {
+    "nearestWater": {
+      "name": "Catharpin Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
     }
   },
   "eagle-rock-meridian-technology-park-taylorville-il": {
