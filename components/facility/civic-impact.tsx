@@ -1,9 +1,8 @@
-import type { ReactNode } from "react";
 import type { Facility } from "@/lib/schema";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink } from "lucide-react";
 import { formatUsdCompact } from "@/lib/format";
-import { safeExternalHref } from "@/lib/url";
+
+import { FactRow, SourceLink } from "./fact-row";
 
 // --- Enum label maps ---
 const energySourceLabels: Record<string, string> = {
@@ -79,45 +78,6 @@ export function hasCivicImpact(facility: Facility): boolean {
     facility.community ||
     (facility.facilityType === "crypto_mining" && facility.mining) ||
     (facility.facilityType !== "power_generation" && facility.environmental)
-  );
-}
-
-// --- Source link helper ---
-function SourceLink({
-  sourceIndex,
-  facility,
-}: {
-  sourceIndex?: number;
-  facility: Facility;
-}) {
-  const source =
-    sourceIndex !== undefined && sourceIndex < facility.sources.length
-      ? facility.sources[sourceIndex]
-      : null;
-  if (!source) return null;
-  return (
-    <a
-      href={safeExternalHref(source.url)}
-      target="_blank"
-      rel="noreferrer noopener"
-      aria-label={`${source.label} (opens in new tab)`}
-      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-    >
-      <ExternalLink className="size-3" aria-hidden="true" />
-      {source.label}
-    </a>
-  );
-}
-
-// --- DT/DD pair helper (wrapped in div so CSS grid treats each pair as one item) ---
-function FactRow({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div>
-      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </dt>
-      <dd className="mt-1 text-sm tabular-nums">{children}</dd>
-    </div>
   );
 }
 
