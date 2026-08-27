@@ -13,7 +13,37 @@ const BASELINE_SECURITY_HEADERS = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
 ];
 
+/**
+ * Permanent redirects for facility slugs that no longer exist.
+ *
+ * A retired facility id would otherwise 404 forever on a URL Google had
+ * already indexed. `db:sync` never deletes, so a retirement is always a
+ * deliberate out-of-band act — which makes this list short and hand-curated
+ * rather than generated.
+ *
+ * Point each retired slug at the successor a reader most likely wanted. Where
+ * a record was split into several, that is a judgement call: prefer the
+ * successor that inherits the original's primary location.
+ */
+const RETIRED_FACILITY_REDIRECTS = [
+  {
+    // Retired 2026-08-27. This record claimed to cover three Amazon campuses,
+    // but its own cited source (KSLA, 2026-02-24) states the Resilient Tech
+    // Park site "is not part of Monday's $12 billion investment". It was split
+    // into aws-blanchard-caddo-parish-la, aws-benton-bossier-parish-la and
+    // aws-resilient-technology-park-shreveport-la. Blanchard is the successor
+    // carrying the original's Caddo Parish location.
+    source: "/facilities/amazon-northwest-louisiana",
+    destination: "/facilities/aws-blanchard-caddo-parish-la",
+    permanent: true,
+  },
+];
+
 const nextConfig: NextConfig = {
+  async redirects() {
+    return RETIRED_FACILITY_REDIRECTS;
+  },
+
   async headers() {
     return [
       {
