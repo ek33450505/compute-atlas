@@ -64,6 +64,12 @@ const LENSES = [
       "Every company running tracked capacity, ranked by build-out.",
   },
   {
+    label: "Stakeholders",
+    href: "/stakeholders",
+    description:
+      "Named people with a documented, source-cited stake in a specific tracked facility — founders, owners, investors, executives, and public officials.",
+  },
+  {
     label: "Rankings",
     href: "/rankings",
     description:
