@@ -795,6 +795,52 @@
     "facilityType": "data_center"
   },
   {
+    "id": "aligned-chillicothe-ross-oh",
+    "name": "Aligned HPC Campus at Former Pixelle Paper Mill (Chillicothe)",
+    "operator": "Aligned Data Centers (in partnership with U.S. Paper Mill LLC / U.S. Medical Glove Company)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.3331,
+      "lon": -82.9824,
+      "city": "Chillicothe",
+      "county": "Ross",
+      "street": "232 E 8th St",
+      "postalCode": "45601",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-02",
+        "note": "Aligned confirmed as the HPC-campus developer within a multi-tenant redevelopment of the shuttered Pixelle Specialty Solutions paper mill.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://sciotovalleyguardian.com/2026/07/02/1-5-billion-high-performance-computing-campus-planned-for-former-chillicothe-paper-mill/",
+        "label": "$1.5 billion high-performance computing campus planned for former Chillicothe Paper Mill",
+        "publisher": "Scioto Valley Guardian",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wosu.org/2026-07-06/data-center-and-more-new-tenants-expected-for-shuttered-chillicothe-paper-mill-site",
+        "label": "Data center and more new tenants expected for shuttered Chillicothe paper mill site",
+        "publisher": "WOSU Public Media",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-27",
+    "notes": "Part of a multi-tenant redevelopment of the shuttered Pixelle paper mill (closed 2025) alongside Amphibian Aerospace Industries, U.S. Medical Glove Company, and U.S. Box Company. The widely-reported $1.5B figure covers the FULL multi-tenant campus (aerospace + medical device + box company + data center), not Aligned's data-center portion alone -- entity/campus-wide, not site-specific; omitted as investmentUsd for that reason. No street address specific to the data-center building has been reported; location uses the mill's mailing address as an approximate anchor.",
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "aligned-conesville-oh",
     "name": "Aligned Data Centers – Conesville Industrial Park",
     "operator": "Aligned Data Centers",
@@ -3137,6 +3183,7 @@
       "lon": -83.6290476,
       "city": "Middleton Township",
       "county": "Wood",
+      "street": "Mercer Road and Middleton Pike, Middleton Township",
       "state": "OH",
       "precision": "approximate"
     },
@@ -3172,10 +3219,21 @@
         "publisher": "BG Independent News",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sciotopost.com/ohio-power-siting-board-approves-new-350-mw-natural-gas-power-plant-in-wood-county/",
+        "label": "Ohio Power Siting Board approves new 350 MW natural gas power plant in Wood County",
+        "publisher": "Scioto Post",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-08-27",
     "notes": "147-acre site at the intersection of Ohio 582 and Mercer Road in Middleton Township. Coordinates are a road-level geocode, not a parcel centroid.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "~120 MW of co-located battery energy storage; plant operates behind-the-meter, not interconnected to the regional grid."
+    },
     "landAcres": 147,
     "community": {
       "status": "contested",
@@ -4679,10 +4737,20 @@
         "publisher": "Farm and Dairy",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.farmanddairy.com/news/opsb-schedules-local-hearings-for-2-proposed-natural-gas-plants-to-power-data-centers/922034.html",
+        "label": "OPSB schedules local hearings for 2 proposed natural gas plants to power data centers",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-08-27",
     "notes": "Not yet approved by OPSB as of this session; still in the public-hearing phase.",
+    "energy": {
+      "source": "on_site_gas"
+    },
     "landAcres": 110,
     "facilityType": "power_generation",
     "generation": {
@@ -5038,6 +5106,55 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "avaio-appomattox-va",
+    "name": "AVAIO Appomattox Data Center Campus",
+    "operator": "AVAIO Digital Partners",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.43,
+      "lon": -78.8,
+      "city": "Appomattox",
+      "county": "Appomattox County",
+      "street": "1098 Oakville Rd",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2024-12-10",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://virginiabusiness.com/developer-plans-3b-data-center-in-appomattox-county/",
+        "label": "Developer plans $3B data center in Appomattox County",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wdbj7.com/2026/03/24/board-answers-questions-future-data-center/",
+        "label": "Appomattox County answers questions for future data center",
+        "publisher": "WDBJ7",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/avaio-appomattox-va",
+        "label": "Avaio: Appomattox, VA Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-27",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-27",
+    "notes": "AVAIO Digital Partners (Stamford, CT) signed a purchase agreement with the Appomattox County EDA for a 452-acre site (also cited as 442 acres) north of the town of Appomattox, accessible via US 460 and VA 26. The site is zoned for data-center use; construction is planned in phases through 2027-2028. Power via Central Virginia Electric Cooperative and Dominion Energy. Not previously tracked under any name.",
+    "investmentUsd": 3000000000,
+    "landAcres": 452,
+    "facilityType": "data_center"
   },
   {
     "id": "avaio-digital-leo-little-rock-ar",
@@ -7694,6 +7811,82 @@
     "lastUpdated": "2026-07-26",
     "notes": "AWS's 3rd Hilliard campus, at 4120 Scioto Darby Rd. 152 acres across 6 parcels, up to 7 buildings plus 1 utility/security building; land bought January 2021 for $15.29M. Distinct from the tracked AWS Cosmos/Galaxy campuses and from the AWS Cosgray Road campus (also in Hilliard).",
     "landAcres": 152,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "aws-sprigg-township-adams-county-oh",
+    "name": "AWS Sprigg Township Data Center Campus (Buck Canyon)",
+    "operator": "Amazon Web Services (land held via Buck Canyon Properties)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.63778,
+      "lon": -83.69306,
+      "city": "Manchester",
+      "county": "Adams",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1300
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-02-18",
+        "note": "U.S. Army Corps of Engineers issued Nationwide Permit No. 39 for site work near the former Stuart/Killen power-plant sites.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://amazon.adamscountyoh.gov/",
+        "label": "AWS - Adams County, OH (official project page)",
+        "publisher": "Amazon / Adams County, OH",
+        "retrievedAt": "2026-08-27",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.wcpo.com/news/local-news/i-team/adams-county-data-center-gets-federal-permit-as-voters-sign-petitions-to-block-it",
+        "label": "Adams County data center gets federal permit, as voters sign petitions to block it",
+        "publisher": "WCPO",
+        "retrievedAt": "2026-08-27",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.wvxu.org/local-news/2026-08-25/adams-county-ohio-utility-costs-data-center-amazon",
+        "label": "Adams County residents fear environmental and utility costs of possible data center",
+        "publisher": "WVXU",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.foodandwaterwatch.org/2026/02/26/sprigg-township-oh-passes-data-center-moratorium/",
+        "label": "Sprigg Township, OH Passes Data Center Moratorium",
+        "publisher": "Food & Water Watch",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-27",
+    "notes": "No formal development proposal has been filed with Adams County per county officials as of Aug 2026, but a U.S. Army Corps of Engineers Nationwide Permit 39 was issued 2026-02-18 covering site work, and the county's own AWS project page states initial earthwork is expected in 2026 (general contractor not yet determined).",
+    "energy": {
+      "source": "grid",
+      "utility": "AES Ohio",
+      "notes": "AWS will fund, build, own, and operate an on-site substation; site sits on ~1,000 acres including a former DP&L landfill, near the retired J.M. Stuart coal plant."
+    },
+    "investmentUsd": 10000000000,
+    "landAcres": 1000,
+    "jobs": {
+      "permanent": 500,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Sprigg Township passed a 12-month data center moratorium (2026-02-26) after residents learned of the project; a resident-founded group (Conserve Ohio) is pushing a statewide ban on large-scale data centers, citing rising electricity costs and water/environmental concerns.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -24003,6 +24196,35 @@
     }
   },
   {
+    "id": "dulles-cloud-south-gainesville-prince-william-va",
+    "name": "Dulles Cloud South (Dulles South Innovation Center)",
+    "operator": "Undisclosed",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.83,
+      "lon": -77.61,
+      "city": "Gainesville",
+      "county": "Prince William County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.potomaclocal.com/2026/07/08/prince-william-board-rejects-dulles-south-data-center-proposal-in-gainesville/",
+        "label": "Prince William Board Rejects Dulles South Data Center Proposal in Gainesville",
+        "publisher": "Potomac Local",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-27",
+    "notes": "Proposed ~1,940-acre, up to 43M sq ft data center/industrial campus along Sanders Lane in the Gainesville District, near the Loudoun County border -- a geographically and procedurally distinct site from the also-cancelled Prince William Digital Gateway (Pageland Lane/Thoroughfare area, tracked separately as prince-william-digital-gateway-va). Prince William County Board of Supervisors voted 8-0 on 2026-07-07 to deny the comprehensive plan amendment needed to advance the project, citing infrastructure capacity, environmental impact, traffic, and land-use compatibility concerns. No named developer/operator was identified in the available source.",
+    "landAcres": 1940,
+    "facilityType": "data_center"
+  },
+  {
     "id": "eagle-rock-meridian-technology-park-taylorville-il",
     "name": "Meridian Technology Park",
     "operator": "Eagle Rock Partners",
@@ -27432,10 +27654,21 @@
         "publisher": "Farm and Dairy",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.farmanddairy.com/news/opsb-schedules-local-hearings-for-2-proposed-natural-gas-plants-to-power-data-centers/922034.html",
+        "label": "OPSB schedules local hearings for 2 proposed natural gas plants to power data centers",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-08-27",
     "notes": "Not yet approved by OPSB as of this session; still in the public-hearing phase.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "OPSB filing also proposes up to 1,000 MW of co-located battery energy storage alongside the gas generation."
+    },
     "landAcres": 100,
     "facilityType": "power_generation",
     "generation": {
@@ -32580,7 +32813,7 @@
     "id": "google-loch-midlothian-va",
     "name": "Google Project Loch",
     "operator": "Google",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "confirmed",
     "location": {
       "lat": 37.454,
@@ -32606,6 +32839,12 @@
         "status": "proposed",
         "date": "2026-05-14",
         "note": "Army Corps of Engineers (Norfolk District) permit application filed for impacts to ~5 acres of wetlands and 2,828 ft of stream channels near Tomahawk Creek"
+      },
+      {
+        "status": "permitted",
+        "date": "2026-08-27",
+        "note": "Chesterfield County Board of Supervisors has approved the local rezoning for Project Loch (Watkins Centre South site); Supervisor Jessica Schneider is quoted confirming she voted to approve Loch. US Army Corps of Engineers Clean Water Act and Virginia Marine Resources Commission permits for wetlands impact remain pending as of 2026-06-22/06-26.",
+        "sourceIndex": 6
       }
     ],
     "sources": [
@@ -32650,9 +32889,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.vpm.org/news/2026-06-22/google-data-centers-chesterfield-peanut-skye-loch-schneider-timmons",
+        "label": "Google's $9B bet on a trio of Chesterfield data center campuses",
+        "publisher": "VPM",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-27",
     "notes": "Codename Project Loch; land acquired via shell entity Aeris Investments LLC (~$29M for ~340 acres). Site: 750 Watkins Centre Pkwy (Watkins Centre South), west of Rt 288 and south of Rt 60, near Westchester Commons. Three data-center buildings planned, each with a dedicated on-site substation. Google stated in Aug 2025 it has no near-term plans to develop Loch. Capacity MW not disclosed. Virginia law bars per-company subsidy value disclosure, so the 30-year fixed tax agreement is recorded as a program label with no dollar value. Coordinates are an approximate site centroid (address-derived, not GPS-verified).",
     "energy": {
       "source": "grid",
@@ -33797,7 +34043,7 @@
     "id": "google-project-skye-midlothian-va",
     "name": "Project Skye",
     "operator": "Google",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "confirmed",
     "location": {
       "lat": 37.44741159,
@@ -33814,6 +34060,12 @@
         "date": "2026",
         "note": "887-acre parcel at 4201 Moseley Rd; part of Google's 3-campus $9B Chesterfield trio.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-08-27",
+        "note": "Chesterfield County Board of Supervisors has approved the local rezoning (887.7 acres, 879 for data-center use / 99 for advanced manufacturing) enabling Project Skye. US Army Corps of Engineers Clean Water Act and Virginia Marine Resources Commission permits remain pending as of 2026-06-22/06-26.",
+        "sourceIndex": 4
       }
     ],
     "sources": [
@@ -33842,9 +34094,16 @@
         "label": "Chesterfield Report — Chesterfield Residents Seek Clarity on Data Center Expansion Plans",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.vpm.org/news/2026-06-22/google-data-centers-chesterfield-peanut-skye-loch-schneider-timmons",
+        "label": "Google's $9B bet on a trio of Chesterfield data center campuses",
+        "publisher": "VPM",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-27",
     "notes": "887-acre parcel spanning Genito/Moseley/Duval Rds. Part of Google's 3-campus $9B Chesterfield County trio, alongside Project Peanut and Project Loch. Distinct from the separately tracked Project Loch (750 Watkins Centre Pkwy, 221 ac).",
     "landAcres": 887.7,
     "community": {
@@ -44394,6 +44653,7 @@
       "lon": -84.259053,
       "city": "Piqua",
       "county": "Miami",
+      "street": "Farrington Road & N County Road 25A, Piqua I-75 Business and Industrial Park",
       "state": "OH",
       "precision": "approximate"
     },
@@ -44426,13 +44686,34 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://stopohiodatacenters.org/miami-county",
+        "label": "Miami County: Project Klondike Meta Data Center",
+        "publisher": "stopohiodatacenters.org",
+        "retrievedAt": "2026-08-27",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-27",
     "notes": "Two 350,000 sq ft buildings on 607 acres, approved November 2025 under NDA via emergency resolution. Meta's identity confirmed by a Hunterbrook investigation (Nevada filing traced to Meta HQ address and an ex-Meta counsel as manager). Drew a petition with over 2,500 signatures in opposition. Via shell entity J5 LLC.",
     "energy": {
       "utility": "AES Ohio"
     },
+    "subsidies": [
+      {
+        "program": "15-year, 100% tax exemption on building-improvement valuation increase",
+        "jurisdiction": "Piqua, OH / Miami County",
+        "year": "2025",
+        "sourceIndex": 3
+      },
+      {
+        "program": "30-year, 100% real property tax exemption (PILOT/TIF)",
+        "jurisdiction": "Piqua, OH / Miami County",
+        "year": "2025",
+        "sourceIndex": 3
+      }
+    ],
     "investmentUsd": 1000000000,
     "landAcres": 607,
     "community": {
@@ -51794,6 +52075,7 @@
       "lon": -83.4614,
       "city": "Oregon",
       "county": "Lucas",
+      "street": "Corduroy Rd / Wynnscape Dr / Parkway Dr corridor, Oregon Industrial Park",
       "state": "OH",
       "precision": "approximate"
     },
@@ -51815,9 +52097,16 @@
         "publisher": "13abc WTVG",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://oregonohio.org/oregon-industrial-park-information-on-data-centers/",
+        "label": "Oregon Industrial Park: Information on Data Centers",
+        "publisher": "City of Oregon, OH",
+        "retrievedAt": "2026-08-27",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-27",
     "notes": "Proposed ~168-acre, up-to-8-building data-center campus at Wynn Rd & Corduroy Rd in the Oregon Industrial Park (Toledo area) — Lucas County's first tracked site. The city assembled parcels for site developer Capacity LLC (~$2–3B, ~500 MW at build-out); in late July 2026 officials publicly named Vantage Data Centers as the prospective operator, but the city administrator said no decisions are finalized and a citizen group ('United Neighbors of Oregon') is petitioning for a November 2026 referendum. Confidence 'reported' given operator-in-transition and unbuilt status; coordinates approximate.",
     "community": {
       "status": "contested",
@@ -57239,9 +57528,16 @@
         "label": "Henrico Citizen — Henrico supervisors approve rezoning for potential data center complex in Sandston (May 20, 2024; via NewsBreak syndication)",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://virginiabusiness.com/qts-finishes-purchase-of-rezoned-henrico-tech-park-land/",
+        "label": "QTS finishes $137M purchase of rezoned Henrico tech park land",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-27",
     "notes": "622-acre QTS expansion in Sandston/eastern Henrico adjacent to the existing White Oak Technology Park; conceptual plans show as many as 13 data center buildings (approved development plan ~7), on ~236 developed acres with ~386 acres open space. Distinct from Iron Mountain's White Oak campus. QTS is separately advancing a ~1,100-acre / 17-building expansion of its Henrico hub.",
     "energy": {
       "source": "grid",
@@ -58194,6 +58490,13 @@
         "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) Execute Letter of Intent to Advance Power Infrastructure for Major Data Center Development in Southwest Virginia",
         "publisher": "PR Newswire",
         "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/red-post-energy-and-wise-innovation-hub-venture-oasis-execute-letter-of-intent-to-advance-power-infrastructure-for-major-data-center-development-in-southwest-virginia-302645511.html",
+        "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) Execute Letter of Intent to Advance Power Infrastructure for Major Data Center Development in Southwest Virginia",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-27",
         "kind": "press"
       },
       {
@@ -72508,9 +72811,16 @@
         "publisher": "PR Newswire",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/red-post-energy-and-wise-innovation-hub-venture-oasis-execute-letter-of-intent-to-advance-power-infrastructure-for-major-data-center-development-in-southwest-virginia-302645511.html",
+        "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) Execute Letter of Intent to Advance Power Infrastructure for Major Data Center Development in Southwest Virginia",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-08-27",
     "notes": "Phased technology/data-center hub planned over ~10 years at the Lonesome Pine Regional Business & Technology Park (adjacent to Lonesome Pine Regional Airport) on former mined land in Wise County — a multi-tenant cluster co-located with the existing Mineral Gap data center. Developer Wise Innovation Hub Venture LLC (branded 'OASIS') signed a 2025-12-18 LOI with Red Post Energy for dedicated power; compute capacity and named end-users not yet disclosed, so capacity is omitted.",
     "energy": {
       "source": "other",
