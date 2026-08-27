@@ -7,6 +7,7 @@ import {
   formatUsdCompact,
   formatPower,
   formatMgd,
+  formatTonsPerYear,
   stripLegalSuffix,
   isOperatorRedundant,
   nameConveysType,
@@ -195,6 +196,26 @@ describe("formatMgd", () => {
 
   it("formats a whole MGD value with a trailing .0", () => {
     expect(formatMgd(10)).toBe("10.0 MGD");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatTonsPerYear
+// ---------------------------------------------------------------------------
+describe("formatTonsPerYear", () => {
+  it("formats a fractional tonnage with thousands separators", () => {
+    expect(formatTonsPerYear(245.5)).toBe("245.5 tons/yr");
+  });
+
+  it("formats a large tonnage with thousands separators", () => {
+    expect(formatTonsPerYear(1_250_000)).toBe("1,250,000 tons/yr");
+  });
+
+  // Regression: a permit can legitimately state a 0.0 limit for a pollutant a
+  // unit is prohibited from emitting. Collapsing that to an em dash or empty
+  // string would misreport a real regulatory fact.
+  it("formats 0 as '0 tons/yr', never an em dash or empty string", () => {
+    expect(formatTonsPerYear(0)).toBe("0 tons/yr");
   });
 });
 

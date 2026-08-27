@@ -154,6 +154,141 @@ describe("CivicImpactSection — Energy & water", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Air permit (emissions) sub-group
+// ---------------------------------------------------------------------------
+describe("CivicImpactSection — Air permit (emissions)", () => {
+  it("renders every pollutant with its value and unit", () => {
+    const facility = makeFacility({
+      emissions: {
+        permittedTpy: {
+          nox: 245.5,
+          co: 120,
+          pm25: 8,
+          pm10: 10,
+          so2: 5,
+          voc: 15,
+          co2e: 250_000,
+        },
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("NOx")).toBeInTheDocument();
+    expect(screen.getByText("245.5 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("CO")).toBeInTheDocument();
+    expect(screen.getByText("120 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("PM2.5")).toBeInTheDocument();
+    expect(screen.getByText("8 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("PM10")).toBeInTheDocument();
+    expect(screen.getByText("10 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("SO2")).toBeInTheDocument();
+    expect(screen.getByText("5 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("VOC")).toBeInTheDocument();
+    expect(screen.getByText("15 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("CO2e")).toBeInTheDocument();
+    expect(screen.getByText("250,000 tons/yr")).toBeInTheDocument();
+  });
+
+  // Regression: a `0` permitted limit is a real regulatory fact (a pollutant
+  // a unit is prohibited from emitting) and must render, never be hidden by
+  // a truthy check. This is the single most likely bug in this unit.
+  it("renders a 0 permitted limit as '0 tons/yr' rather than hiding it, alongside a non-zero sibling", () => {
+    // A non-zero sibling (co: 12) is included deliberately: it keeps
+    // `hasContent` true under a truthy-check regression, so a failure here
+    // can only mean the NOx row itself was hidden — not that the whole
+    // group unmounted for an unrelated reason.
+    const facility = makeFacility({
+      emissions: { permittedTpy: { nox: 0, co: 12 } },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("NOx")).toBeInTheDocument();
+    expect(screen.getByText("0 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("CO")).toBeInTheDocument();
+    expect(screen.getByText("12 tons/yr")).toBeInTheDocument();
+  });
+
+  it("renders the mandatory 'regulatory ceiling, not measured emissions' line whenever the group renders", () => {
+    const facility = makeFacility({
+      emissions: { permittedTpy: { nox: 10 } },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(
+      screen.getByText(/regulatory ceiling, not measured emissions/i)
+    ).toBeInTheDocument();
+  });
+
+  it("renders permit number, permit type label, issuing agency, and issued date", () => {
+    const facility = makeFacility({
+      emissions: {
+        permitNumber: "P0123456",
+        permitType: "title_v",
+        issuingAgency: "Texas Commission on Environmental Quality",
+        issuedDate: "2023-05-01",
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("Permit")).toBeInTheDocument();
+    expect(screen.getByText("P0123456")).toBeInTheDocument();
+    expect(screen.getByText("Permit type")).toBeInTheDocument();
+    expect(screen.getByText("Title V")).toBeInTheDocument();
+    expect(screen.getByText("Agency")).toBeInTheDocument();
+    expect(
+      screen.getByText("Texas Commission on Environmental Quality")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Issued")).toBeInTheDocument();
+    expect(screen.getByText("2023-05-01")).toBeInTheDocument();
+  });
+
+  it("renders emissions notes as a muted paragraph, with no pollutants or permit metadata", () => {
+    // Deliberately no permittedTpy/permitNumber/permitType/issuingAgency/
+    // issuedDate — isolates that the `!!emissions.notes` disjunct in
+    // `hasContent` is what renders the group, not an incidental pollutant.
+    const facility = makeFacility({
+      emissions: { notes: "Permit under renewal as of 2026." },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(
+      screen.getByText("Permit under renewal as of 2026.")
+    ).toBeInTheDocument();
+  });
+
+  it("omits the Air permit group when emissions is absent", () => {
+    const facility = makeFacility({ investmentUsd: 1_000_000 });
+    render(<CivicImpactSection facility={facility} />);
+    expect(screen.queryByText("Air permit")).not.toBeInTheDocument();
+  });
+
+  it("renders nothing for emissions: {} (no pollutants, no permit metadata, no notes)", () => {
+    const facility = makeFacility({ emissions: {} });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.queryByText("Air permit")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/regulatory ceiling, not measured emissions/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders a source link for the cited permit source", () => {
+    const facility = makeFacility({
+      emissions: {
+        permittedTpy: { nox: 10 },
+        sourceIndex: 0,
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    const link = screen.getByRole("link", {
+      name: /Subsidy Source \(opens in new tab\)/i,
+    });
+    expect(link).toHaveAttribute("href", "https://example.com/subsidy-source");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Public subsidies sub-group
 // ---------------------------------------------------------------------------
 describe("CivicImpactSection — Public subsidies", () => {
@@ -354,6 +489,13 @@ describe("hasCivicImpact", () => {
   it("returns true when only environmental is populated (regression: environmental was previously ignored)", () => {
     const facility = makeFacility({
       environmental: { pue: 1.3, waterStress: "unknown" },
+    });
+    expect(hasCivicImpact(facility)).toBe(true);
+  });
+
+  it("returns true when only emissions is populated", () => {
+    const facility = makeFacility({
+      emissions: { permittedTpy: { nox: 10 } },
     });
     expect(hasCivicImpact(facility)).toBe(true);
   });
