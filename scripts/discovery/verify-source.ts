@@ -65,11 +65,20 @@ export interface VerifyClaim {
 export interface VerificationResult {
   /**
    * `"verified"` — the claim checked out. `"rejected"` — we checked and it
-   * did not hold up (fabricated/vacuous/short quote, entity-misbinding,
-   * model said `"contradicts"`/`"not_mentioned"`, or Wayback failed to
-   * rescue a failed fetch). `"escalate"` — the source may be genuine but the
-   * fetcher could not structurally ingest it (size cap / content type),
-   * surfaced to a human reviewer rather than silently dropped.
+   * did not hold up: fabricated/vacuous/short quote, entity-misbinding,
+   * model said `"contradicts"`/`"not_mentioned"`, or (Wayback fallback) an
+   * archived snapshot fetched fine but its own content check failed the
+   * same way — UNLESS the ORIGINAL fetch was itself structurally unreadable,
+   * in which case that particular Wayback "rejected" is floored to
+   * `"escalate"` instead (see the next clause). `"escalate"` — the source
+   * may be genuine but could not be mechanically confirmed: either the
+   * fetcher could not structurally ingest the original page at all (size cap
+   * / content type), or — on the Wayback fallback path — the original was
+   * unreadable for that same reason AND the archived snapshot that WAS
+   * fetched did not contain the claim either (a chrome-only archived page
+   * proves nothing about the real one, so that "rejected" is floored here
+   * rather than trusted). Both cases are surfaced to a human reviewer rather
+   * than silently dropped or rejected.
    * `"unavailable"` — we could not check at all: the model call itself
    * failed for an infrastructure reason (connection refused, network error,
    * non-2xx, timeout, malformed/empty response).
@@ -87,16 +96,23 @@ export interface VerificationResult {
   viaWayback?: boolean;
   sourceUrl: string;
   /**
-   * Set ONLY when the verdict came from a failure to fetch the page at all
-   * (the direct fetch failed AND the Wayback fallback did not rescue it) —
-   * never when a page was actually read and checked. Lets a caller separate
-   * "we could not read this source" from "we read it and the claim did not
-   * hold up", which `verdict` alone cannot express: `unrecoverableVerdict`
-   * maps most fetch failures to `"rejected"` because for an untrusted,
-   * model-proposed candidate URL a dead link IS strong fabrication evidence.
-   * For a curated source with a `retrievedAt` date, the same 403 means a
-   * bot-wall. Additive and optional: existing callers that switch on
-   * `verdict` are unaffected.
+   * Set when the verdict came from a failure to read the ORIGINAL source's
+   * content at all, in any of three shapes: (1) the direct fetch failed and
+   * no Wayback snapshot could be found to rescue it; (2) a snapshot was
+   * found but its own fetch also failed; or (3) a snapshot fetched fine, but
+   * the original fetch was structurally unreadable (size cap / content
+   * type) and the snapshot's own content check came back "rejected" —
+   * floored to "escalate" rather than trusted, since an archived snapshot
+   * that never held the claim (Wayback's own navigation chrome, say) says
+   * nothing about whether the real page does. Never set when the original OR
+   * a rescuing snapshot was actually read and its content check trusted
+   * as-is. Lets a caller separate "we could not read this source" from "we
+   * read it and the claim did not hold up", which `verdict` alone cannot
+   * express: `unrecoverableVerdict` maps most fetch failures to `"rejected"`
+   * because for an untrusted, model-proposed candidate URL a dead link IS
+   * strong fabrication evidence. For a curated source with a `retrievedAt`
+   * date, the same 403 means a bot-wall. Additive and optional: existing
+   * callers that switch on `verdict` are unaffected.
    */
   transportFailure?: { reason: Extract<FetchPageTextResult, { ok: false }>["reason"]; httpStatus?: number };
 }
@@ -694,6 +710,35 @@ export async function verifySource(url: string, claim: VerifyClaim, deps: Verify
   }
 
   const outcome = await checkPageAgainstClaim(archivedFetch.text, claim, deps);
+
+  // The ORIGINAL fetch failure, not the snapshot's — same value
+  // `unrecoverableVerdict` keys on for the two branches above. If the
+  // original source was structurally unreadable (size cap / content type)
+  // and the Wayback snapshot's own content check came back "rejected", that
+  // "rejected" does not mean the claim was checked and failed to hold up —
+  // it means the archived snapshot (often just Wayback's own navigation
+  // chrome, not the document itself) never held the claim to check in the
+  // first place. Floor it at "escalate", the same outcome an unrecoverable
+  // original failure already gets on the no-snapshot and
+  // snapshot-fetch-failed paths above: this path must not quietly relax
+  // that floor just because the snapshot itself happened to fetch. Every
+  // other outcome — "verified", "unavailable" (see the comment on the
+  // fallthrough return below), or a model-derived "escalate" — passes
+  // through unchanged; this can only ever raise a "rejected" to "escalate",
+  // never touch anything else.
+  if (unrecoverableVerdict(fetchResult.reason) === "escalate" && outcome.outcome === "rejected") {
+    return {
+      verdict: "escalate",
+      reason:
+        `original fetch failed (${originalFailure}); Wayback snapshot fetched but did not contain the claim ` +
+        `(${outcome.reasonDetail}) — the original source could not be read at all, so this is surfaced for ` +
+        `human review rather than treated as a rejection.`,
+      viaWayback: true,
+      sourceUrl: url,
+      transportFailure: toTransportFailure(fetchResult),
+    };
+  }
+
   return {
     // Note this can legitimately be "unavailable" too: reaching this line
     // means the Wayback snapshot itself fetched fine, but the MODEL call

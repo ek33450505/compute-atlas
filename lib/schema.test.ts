@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { facilitySchema, sourceSchema } from "@/lib/schema";
+import { facilitySchema, sourceSchema, emissionsSchema } from "@/lib/schema";
 
 const baseSource = {
   url: "https://en.wikipedia.org/wiki/Test",
@@ -601,5 +601,163 @@ describe("facilitySchema — stakeholders", () => {
       stakeholders: [{ name: "Jane Doe", role: "founder", sourceIndex: 0 }],
     });
     expect(missingAsOf.success).toBe(false);
+  });
+});
+
+describe("facilitySchema — emissions", () => {
+  const fullEmissions = {
+    permittedTpy: {
+      nox: 45.2,
+      co: 12.1,
+      pm: 5.6,
+      pm25: 3.4,
+      pm10: 4.1,
+      so2: 0.5,
+      voc: 8.9,
+      co2e: 125000,
+      h2so4: 2.1,
+      nh3: 1.3,
+      formaldehyde: 0.8,
+      hapsTotal: 6.4,
+    },
+    basis: "facility_wide" as const,
+    averagingPeriod: "rolling_12_month" as const,
+    unitsCovered: "Units 1-4 (combustion turbines)",
+    permitNumber: "P0123456",
+    permitType: "psd" as const,
+    issuingAgency: "Texas Commission on Environmental Quality",
+    issuedDate: "2025-03-01",
+    notes: "Backup diesel generator fleet.",
+    sourceIndex: 0,
+  };
+
+  it("parses a facility with a full emissions block, and every field survives the round-trip", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: fullEmissions,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.emissions).toEqual(fullEmissions);
+    }
+  });
+
+  it("emissions is optional — a record without it still parses", () => {
+    const result = facilitySchema.safeParse(baseFacility);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.emissions).toBeUndefined();
+    }
+  });
+
+  it("strips unknown keys inside emissions", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { ...fullEmissions, madeUpField: "should not survive" },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.emissions).not.toHaveProperty("madeUpField");
+    }
+  });
+
+  it("rejects a negative permittedTpy value", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { permittedTpy: { nox: -1 } },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when emissions.sourceIndex is out of range, with issue path [\"emissions\", \"sourceIndex\"]", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { sourceIndex: 5 },
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["emissions", "sourceIndex"] })
+      );
+    }
+  });
+
+  it("accepts an in-range emissions.sourceIndex", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { sourceIndex: 0 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  // basis: real permits don't uniformly cap emissions facility-wide (the
+  // xAI/MZX permit caps every pollutant PER TURBINE) — a tonnage with no
+  // `basis` is ambiguous, so it's required whenever a pollutant is defined.
+  //
+  // Two tests cover this rule deliberately, at two different levels:
+  // - This one pins the exact refinement message/path in isolation, on
+  //   `emissionsSchema` directly.
+  // - The next one parses through `facilitySchema` — the ONLY path real
+  //   data ever takes (db:sync, db:export, lib/facility-write.ts all parse
+  //   the full facility, never `emissionsSchema` alone) — because wrapping
+  //   `emissionsSchema` in `.superRefine()` makes it a ZodEffects nested
+  //   inside a `z.discriminatedUnion` that itself carries a `.superRefine`,
+  //   and Zod composition in that shape is not something to assume works
+  //   without a direct test. A pass on the first test alone cannot rule out
+  //   the refinement silently being dropped when nested; only the second
+  //   test can.
+  it('rejects permittedTpy with a defined pollutant but no basis, with issue path ["basis"]', () => {
+    const result = emissionsSchema.safeParse({
+      permittedTpy: { nox: 10 },
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["basis"] })
+      );
+    }
+  });
+
+  it('enforces the basis requirement through facilitySchema, the path real data takes, with issue path ["emissions", "basis"]', () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { permittedTpy: { nox: 10 } },
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["emissions", "basis"] })
+      );
+    }
+  });
+
+  it("accepts permit metadata alone (no permittedTpy) without basis", () => {
+    const result = emissionsSchema.safeParse({
+      permitNumber: "P0123456",
+      permitType: "psd",
+      issuingAgency: "Texas Commission on Environmental Quality",
+      issuedDate: "2025-03-01",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts an empty permittedTpy object without basis — no defined value, so nothing is ambiguous", () => {
+    const result = emissionsSchema.safeParse({ permittedTpy: {} });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects basis and averagingPeriod values outside their enums", () => {
+    const badBasis = emissionsSchema.safeParse({
+      permittedTpy: { nox: 10 },
+      basis: "site_wide",
+    });
+    expect(badBasis.success).toBe(false);
+
+    const badAveragingPeriod = emissionsSchema.safeParse({
+      permittedTpy: { nox: 10 },
+      basis: "facility_wide",
+      averagingPeriod: "monthly",
+    });
+    expect(badAveragingPeriod.success).toBe(false);
   });
 });

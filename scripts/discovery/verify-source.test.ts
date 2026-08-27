@@ -582,6 +582,85 @@ describe("verifySource", () => {
     });
   });
 
+  describe("Wayback rejection floor — structurally-unreadable original + a snapshot that fetched but held nothing", () => {
+    // Measured regression (2026-08-26): a real Louisiana PSC filing 200s with
+    // a non-text content-type (a 125-page, 806 KB PDF), so the direct fetch
+    // fails "bad_content_type". Its Wayback snapshot DOES fetch successfully,
+    // but the archived body is Wayback's own navigation chrome, not the PDF's
+    // text — the model correctly reports "not_mentioned" about a page that
+    // never held the claim, which used to fall straight through to
+    // "rejected", indistinguishable in the log from a fabricated URL. Three
+    // genuine Entergy Louisiana power-generation records (including two
+    // AP1000 nuclear units) were dropped this way in one run.
+    it("floors a Wayback 'rejected' snapshot check to 'escalate' when the ORIGINAL fetch was structurally unreadable (measured regression: a PDF filing 200s as bad_content_type, and its Wayback snapshot is only navigation chrome)", async () => {
+      const sourceUrl = "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D";
+      const snapshotUrl = `https://web.archive.org/web/20260610000000/${sourceUrl}`;
+      const chromeOnlySnapshot = "Wayback Machine. This is an archived version of a page. The archive coverage for this page is incomplete.";
+      const fetchPageTextImpl = sequencedFetchPageText(pageFail("bad_content_type", 200), pageOk(chromeOnlySnapshot, snapshotUrl));
+      const deps = makeDeps({
+        fetchPageTextImpl,
+        callOllamaImpl: vi.fn(async () => notMentioned()),
+        fetchImpl: waybackAvailable(snapshotUrl),
+      });
+
+      const result = await verifySource(sourceUrl, CLAIM, deps);
+
+      expect(result.verdict).toBe("escalate");
+      expect(result.viaWayback).toBe(true);
+      expect(result.transportFailure).toStrictEqual({ reason: "bad_content_type", httpStatus: 200 });
+      expect(result.reason).toContain("bad_content_type");
+    });
+
+    it("does NOT float the floor to a genuinely dead link: original http_error 404 + a chrome-only snapshot + not_mentioned still rejects (the floor must not rescue an unreachable URL)", async () => {
+      const snapshotUrl = "https://web.archive.org/web/20260101000000/https://example.com/dead-link";
+      const chromeOnlySnapshot = "Wayback Machine navigation toolbar only — archive coverage incomplete.";
+      const fetchPageTextImpl = sequencedFetchPageText(pageFail("http_error", 404), pageOk(chromeOnlySnapshot, snapshotUrl));
+      const deps = makeDeps({
+        fetchPageTextImpl,
+        callOllamaImpl: vi.fn(async () => notMentioned()),
+        fetchImpl: waybackAvailable(snapshotUrl),
+      });
+
+      const result = await verifySource("https://example.com/dead-link", CLAIM, deps);
+
+      expect(result.verdict).toBe("rejected");
+      expect(result.viaWayback).toBe(true);
+      expect(result.transportFailure).toBeUndefined();
+    });
+
+    it("still verifies when the original was structurally unreadable but the Wayback snapshot genuinely supports the claim (the floor never downgrades a real pass)", async () => {
+      const archivedText = "Ridgeline Data Center plans a total capacity of 1200 MW once complete.";
+      const claim: VerifyClaim = { entityName: "Ridgeline Data Center", numericHints: [{ label: "capacity", value: 1200 }] };
+      const snapshotUrl = "https://web.archive.org/web/20260101000000/https://example.com/filing.pdf";
+      const fetchPageTextImpl = sequencedFetchPageText(pageFail("bad_content_type", 200), pageOk(archivedText, snapshotUrl));
+      const deps = makeDeps({
+        fetchPageTextImpl,
+        callOllamaImpl: vi.fn(async () => supports(archivedText)),
+        fetchImpl: waybackAvailable(snapshotUrl),
+      });
+
+      const result = await verifySource("https://example.com/filing.pdf", claim, deps);
+
+      expect(result.verdict).toBe("verified");
+      expect(result.transportFailure).toBeUndefined();
+    });
+
+    it("still reports 'unavailable' (never floored to escalate) when the original was structurally unreadable and the snapshot's own MODEL call fails", async () => {
+      const snapshotUrl = "https://web.archive.org/web/20260101000000/https://example.com/filing.pdf";
+      const fetchPageTextImpl = sequencedFetchPageText(pageFail("bad_content_type", 200), pageOk("some archived text", snapshotUrl));
+      const deps = makeDeps({
+        fetchPageTextImpl,
+        callOllamaImpl: vi.fn(async () => modelUnavailable("network_error")),
+        fetchImpl: waybackAvailable(snapshotUrl),
+      });
+
+      const result = await verifySource("https://example.com/filing.pdf", CLAIM, deps);
+
+      expect(result.verdict).toBe("unavailable");
+      expect(result.transportFailure).toBeUndefined();
+    });
+  });
+
   describe("model-call discipline", () => {
     it("calls the model exactly once on the normal (non-Wayback) path", async () => {
       const callOllamaImpl = vi.fn(async () => notMentioned());

@@ -244,6 +244,26 @@ export class VerificationGateUnavailableError extends Error {
 }
 
 /**
+ * One-line summary of why a single source's verification was not "verified",
+ * for the "skip unverified" log line and `rejectionDetail`. Distinguishes a
+ * source that could never be READ at all (`transportFailure` set — the URL
+ * was dead, blocked, or the fetcher/Wayback fallback could not structurally
+ * ingest or rescue it) from one that WAS actually read and mechanically
+ * checked against the claim and did not hold up (`result.reason` alone,
+ * sourced from the model's own reasonDetail) — the exact distinction the
+ * flat "no cited source could be mechanically verified" wording this
+ * replaces used to erase. See verify-source.ts's `VerificationResult`
+ * doc-comment for precisely what sets `transportFailure`.
+ */
+function describeRejectedSource(result: VerificationResult): string {
+  if (result.transportFailure) {
+    const status = result.transportFailure.httpStatus !== undefined ? `, http ${result.transportFailure.httpStatus}` : "";
+    return `${result.sourceUrl} (could not be read: ${result.transportFailure.reason}${status})`;
+  }
+  return `${result.sourceUrl} (${result.reason})`;
+}
+
+/**
  * Runs the verification gate over every URL in `sources` for `claim`. Never
  * called when `opts.dryRun` or `deps.verifyImpl` is absent — callers check
  * that before invoking this.
@@ -257,13 +277,22 @@ export class VerificationGateUnavailableError extends Error {
  *   summarizing the escalated URL(s)/reason(s) for the human reviewer (an
  *   escalated source is never silently dropped nor silently accepted).
  * - 0 `"verified"` and 0 `"escalate"` (every source rejected) -> does not
- *   survive.
+ *   survive, with `rejectionDetail` summarizing each rejected source's URL
+ *   and reason (`describeRejectedSource`) — including whether it was ever
+ *   actually read — so a human/log reader can tell "this URL is
+ *   unreadable/dead" from "we read the page and the claim was not there"
+ *   instead of a single undifferentiated "unverified".
+ * - `sources` is empty (the candidate cited nothing) -> does not survive,
+ *   with a `rejectionDetail` that says plainly that no sources were cited —
+ *   never the empty string `[].map(...).join("; ")` would otherwise produce,
+ *   which reads as a dangling "— " in the "skip unverified" log line and
+ *   wrongly implies a source was checked and rejected rather than never cited.
  */
 async function verifyCandidateSources(
   sources: string[],
   claim: VerifyClaim,
   verifyImpl: (url: string, claim: VerifyClaim) => Promise<VerificationResult>
-): Promise<{ survives: boolean; escalationNote?: string }> {
+): Promise<{ survives: boolean; escalationNote?: string; rejectionDetail?: string }> {
   const results: VerificationResult[] = [];
   for (const url of sources) {
     const result = await verifyImpl(url, claim);
@@ -287,7 +316,13 @@ async function verifyCandidateSources(
     };
   }
 
-  return { survives: false };
+  return {
+    survives: false,
+    rejectionDetail:
+      results.length === 0
+        ? "no sources were cited, so there was nothing to verify"
+        : results.map(describeRejectedSource).join("; "),
+  };
 }
 
 // --- core --------------------------------------------------------------------
@@ -381,7 +416,7 @@ export async function runSubmit(
           deps.verifyImpl
         );
         if (!gate.survives) {
-          console.log(`skip unverified: ${targetFacilityId} — no cited source could be mechanically verified`);
+          console.log(`skip unverified: ${targetFacilityId} — ${gate.rejectionDetail}`);
           summary.skippedUnverified++;
           continue;
         }
@@ -465,7 +500,7 @@ export async function runSubmit(
           deps.verifyImpl
         );
         if (!gate.survives) {
-          console.log(`skip unverified: ${targetFacilityId} — no cited source could be mechanically verified`);
+          console.log(`skip unverified: ${targetFacilityId} — ${gate.rejectionDetail}`);
           summary.skippedUnverified++;
           continue;
         }
@@ -541,7 +576,7 @@ export async function runSubmit(
     if (!opts.dryRun && deps.verifyImpl) {
       const gate = await verifyCandidateSources(sources, { entityName: doc.name }, deps.verifyImpl);
       if (!gate.survives) {
-        console.log(`skip unverified: ${doc.id} — no cited source could be mechanically verified`);
+        console.log(`skip unverified: ${doc.id} — ${gate.rejectionDetail}`);
         summary.skippedUnverified++;
         continue;
       }

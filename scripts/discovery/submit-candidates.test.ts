@@ -267,6 +267,44 @@ describe("runSubmit — verification gate (facility seam)", () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
+  it("produces a rejectionDetail (and skip-unverified log line) distinguishing an unreadable source from one that was read and rejected, never a generic 'could not be verified' message", async () => {
+    const fetchImpl = makeFetch([]);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const verifyImpl = makeVerifyImpl((url) =>
+      url.endsWith("/unreadable")
+        ? {
+            verdict: "rejected",
+            reason: "original fetch failed (bad_content_type (http 200)); Wayback snapshot check — not_mentioned",
+            transportFailure: { reason: "bad_content_type", httpStatus: 200 },
+          }
+        : { verdict: "rejected", reason: "quote fragment not found verbatim on the page" }
+    );
+    const candidate = {
+      facility: makeCandidate({ id: "all-rejected-1" }),
+      provenance: { sources: ["https://example.com/unreadable", "https://example.com/read-but-rejected"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [],
+      verifyImpl,
+    });
+
+    expect(summary.skippedUnverified).toBe(1);
+    expect(summary.submitted).toBe(0);
+    const skipLine = logSpy.mock.calls.map(([msg]) => msg).find((msg) => typeof msg === "string" && msg.startsWith("skip unverified:"));
+    expect(skipLine).toBeDefined();
+    // The transportFailure-carrying source reads as unreadable...
+    expect(skipLine).toContain("could not be read");
+    expect(skipLine).toContain("bad_content_type");
+    // ...while the genuinely-read-and-rejected source keeps its OWN reason,
+    // not lumped into the same "could not be read" bucket.
+    expect(skipLine).toContain("quote fragment not found verbatim on the page");
+    // The old blanket wording erased this distinction entirely — it must be gone.
+    expect(skipLine).not.toContain("no cited source could be mechanically verified");
+    logSpy.mockRestore();
+  });
+
   it("submits when at least one of several sources verifies, even if others reject", async () => {
     const fetchImpl = makeFetch([{ ok: true }]);
     const verifyImpl = makeVerifyImpl((url) => ({
@@ -576,6 +614,37 @@ describe("runSubmit — status_update intents", () => {
       "https://example.com/x",
       expect.objectContaining({ entityName: "Existing Facility" })
     );
+  });
+
+  it("gates the status_update seam — an EMPTY provenance.sources produces a non-empty skip-unverified reason, never a dangling '— '", async () => {
+    const fetchImpl = makeFetch([]);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    // provenance.sources is empty — the intent's own `sources` field (inside
+    // makeStatusUpdate()) is unrelated and stays non-empty so this candidate
+    // reaches the verification gate instead of failing schema validation.
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "rejected" }));
+    const candidate = { statusUpdate: makeStatusUpdate(), provenance: { sources: [] } };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+      verifyImpl,
+    });
+
+    expect(summary.skippedUnverified).toBe(1);
+    expect(summary.submitted).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    // Nothing to iterate over, so the injected verifyImpl is never reached.
+    expect(verifyImpl).not.toHaveBeenCalled();
+
+    const skipLine = logSpy.mock.calls
+      .map(([msg]) => msg)
+      .find((msg) => typeof msg === "string" && msg.startsWith("skip unverified:"));
+    expect(skipLine).toBeDefined();
+    const afterDash = (skipLine as string).split("—")[1]?.trim() ?? "";
+    expect(afterDash.length).toBeGreaterThan(0);
+    expect(afterDash.toLowerCase()).toContain("no sources");
+    logSpy.mockRestore();
   });
 });
 

@@ -67,6 +67,101 @@ export const waterSchema = z.object({
   notes: z.string().optional(),
 });
 
+// Permitted annual emissions limits from an air permit (PSD / Title V / state
+// construction permit) — a regulatory CEILING, not measured or actual
+// emissions. Never present one as the other, in copy or UI.
+// Values are recorded in short tons per year (tpy), exactly as the permit
+// states them. Never convert units, and never derive a tonnage from capacity
+// (MW -> tons needs a capacity factor and an emission rate; a derived figure
+// would be this project's first uncited number, which is not acceptable
+// here). If a permit states metric tonnes or a non-annual averaging period,
+// record what it says and explain the discrepancy in `notes` rather than
+// normalizing it.
+// `sourceIndex` must point at the permit document itself in `sources[]`.
+//
+// A pilot against three real air permits (Homer City PA, xAI/MZX MS,
+// Waterford LA) found real permits do NOT uniformly cap emissions at the
+// facility level: xAI's permit caps every pollutant PER TURBINE across three
+// equipment groups, with no facility-wide tonnage for most pollutants at
+// all. `basis`, `unitsCovered`, and `averagingPeriod` exist so a per-unit or
+// non-calendar-year number is never mistaken for a facility-wide annual one.
+export const emissionsSchema = z
+  .object({
+    // Values are recorded in the permit's own units, exactly as printed —
+    // never convert, never annualize a short-term limit, and never derive a
+    // tonnage from capacity (MW). See the field-level notes below for the
+    // pollutants where the pilot found real permits diverge from what a
+    // naive facility-wide annual reading would assume.
+    permittedTpy: z
+      .object({
+        nox: z.number().nonnegative().optional(),
+        co: z.number().nonnegative().optional(),
+        // Total particulate matter — distinct from the PM10/PM2.5
+        // size-fraction limits below; permits commonly state all three.
+        pm: z.number().nonnegative().optional(),
+        pm25: z.number().nonnegative().optional(),
+        pm10: z.number().nonnegative().optional(),
+        // Permits print this cap under either "SO2" or "SOx" — record the
+        // value here regardless of the permit's own label, and note that
+        // label in `notes` when it isn't "SO2". Never invent a second key
+        // for SOx.
+        so2: z.number().nonnegative().optional(),
+        voc: z.number().nonnegative().optional(),
+        // A missing `co2e` does NOT mean "no GHG limit." Some permits (e.g.
+        // xAI/MZX) cap GHG only as an efficiency RATE (lb/MMBtu), with no
+        // annual tonnage cap at all. Leave `co2e` undefined and explain the
+        // rate-only limit in `notes` — never derive a tonnage from a rate.
+        co2e: z.number().nonnegative().optional(),
+        // Sulfuric acid mist.
+        h2so4: z.number().nonnegative().optional(),
+        // Ammonia — seen as a voluntary limit tied to SCR/urea NOx controls.
+        nh3: z.number().nonnegative().optional(),
+        formaldehyde: z.number().nonnegative().optional(),
+        // Combined hazardous-air-pollutants cap. Individual HAPs other than
+        // formaldehyde go in `notes` — they are open-ended and cannot be
+        // enumerated as dedicated fields.
+        hapsTotal: z.number().nonnegative().optional(),
+      })
+      .optional(),
+    // What the tonnages in `permittedTpy` apply to. Required whenever
+    // `permittedTpy` carries at least one defined value (enforced by the
+    // superRefine below) — a tonnage with no `basis` is ambiguous between a
+    // facility total and a single unit's limit, and this project publishing
+    // one as the other would be a serious factual error.
+    basis: z.enum(["facility_wide", "per_unit"]).optional(),
+    // The averaging window the tonnages are measured over, as the permit
+    // states it. A 12-month ROLLING total is not the same as a calendar
+    // year — recording either as plain "annual" silently loses that
+    // distinction.
+    averagingPeriod: z.enum(["calendar_year", "rolling_12_month", "other"]).optional(),
+    // The equipment the permit covers, in the permit's own terms (e.g. "41
+    // combustion turbines" or "Units 1-3"). Fill this whenever the permit's
+    // scope might not match the tracked facility's own description — a
+    // permit can authorize a materially different unit count than the
+    // facility record states elsewhere, and this is the field that catches
+    // that mismatch.
+    unitsCovered: z.string().min(1).optional(),
+    permitNumber: z.string().min(1).optional(),
+    permitType: z.enum(["psd", "title_v", "minor_source", "state_construction", "other"]).optional(),
+    issuingAgency: z.string().min(1).optional(),
+    issuedDate: z.string().optional(),
+    notes: z.string().optional(),
+    sourceIndex: z.number().int().nonnegative().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const hasDefinedPollutant =
+      data.permittedTpy !== undefined &&
+      Object.values(data.permittedTpy).some((value) => value !== undefined);
+    if (hasDefinedPollutant && data.basis === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "a permitted tonnage is meaningless without knowing whether it applies facility-wide or per-unit — set basis",
+        path: ["basis"],
+      });
+    }
+  });
+
 export const subsidySchema = z.object({
   program: z.string().optional(),
   amountUsd: z.number().nonnegative().optional(),
@@ -161,6 +256,8 @@ const baseFacilityShape = {
   energy: energySchema.optional(),
   // water
   water: waterSchema.optional(),
+  // air emissions (permitted limits from an air permit, not measured)
+  emissions: emissionsSchema.optional(),
   // public money
   subsidies: z.array(subsidySchema).optional(),
   // economics
@@ -285,6 +382,7 @@ function checkSourceIndexBounds(
     stakeholders?: { sourceIndex?: number }[];
     jobs?: { sourceIndex?: number };
     community?: { sourceIndex?: number };
+    emissions?: { sourceIndex?: number };
   },
   ctx: z.RefinementCtx
 ) {
@@ -309,6 +407,7 @@ function checkSourceIndexBounds(
   );
   checkIndex(data.jobs?.sourceIndex, ["jobs", "sourceIndex"]);
   checkIndex(data.community?.sourceIndex, ["community", "sourceIndex"]);
+  checkIndex(data.emissions?.sourceIndex, ["emissions", "sourceIndex"]);
 }
 
 export const facilitySchema = z

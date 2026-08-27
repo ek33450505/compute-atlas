@@ -1,8 +1,12 @@
 import type { Facility } from "@/lib/schema";
 import { Badge } from "@/components/ui/badge";
-import { formatUsdCompact } from "@/lib/format";
+import { formatUsdCompact, formatTonsPerYear } from "@/lib/format";
 
 import { FactRow, SourceLink } from "./fact-row";
+
+// Shape of `facility.emissions.permittedTpy`, derived (not cast) from the
+// schema so the pollutant table below stays in sync with `lib/schema.ts`.
+type PermittedTpy = NonNullable<NonNullable<Facility["emissions"]>["permittedTpy"]>;
 
 // --- Enum label maps ---
 const energySourceLabels: Record<string, string> = {
@@ -66,11 +70,86 @@ const carbonIntensityBasisLabels: Record<string, string> = {
   unknown: "Unknown",
 };
 
+const permitTypeLabels: Record<string, string> = {
+  psd: "PSD",
+  title_v: "Title V",
+  minor_source: "Minor source",
+  state_construction: "State construction",
+  other: "Other",
+};
+
+// Distinct from `permitTypeLabels` above — what the tonnages in
+// `permittedTpy` apply to (facility total vs. a single unit's limit), not
+// what kind of permit issued them.
+const emissionsBasisLabels: Record<string, string> = {
+  facility_wide: "Facility-wide",
+  per_unit: "Per unit",
+};
+
+const averagingPeriodLabels: Record<string, string> = {
+  calendar_year: "Calendar year",
+  rolling_12_month: "12-month rolling",
+  other: "Other",
+};
+
+// Explicit display order — plain ASCII labels only (no Unicode subscripts)
+// for screen-reader safety. `satisfies` (not a type annotation) rejects an
+// invalid/misspelled key here while still preserving the literal tuple type
+// the exhaustiveness check below needs.
+const pollutantOrder = [
+  "nox",
+  "co",
+  "pm",
+  "pm10",
+  "pm25",
+  "so2",
+  "voc",
+  "co2e",
+  "h2so4",
+  "nh3",
+  "formaldehyde",
+  "hapsTotal",
+] as const satisfies readonly (keyof PermittedTpy)[];
+
+// `Record<keyof PermittedTpy, string>` forces this object to cover every
+// pollutant the schema defines — adding a pollutant to
+// `emissionsSchema.permittedTpy` (lib/schema.ts) without adding its label
+// here is a compile error.
+const pollutantLabels: Record<keyof PermittedTpy, string> = {
+  nox: "NOx",
+  co: "CO",
+  pm: "PM",
+  pm25: "PM2.5",
+  pm10: "PM10",
+  so2: "SO2",
+  voc: "VOC",
+  co2e: "CO2e",
+  h2so4: "H2SO4",
+  nh3: "NH3",
+  formaldehyde: "Formaldehyde",
+  hapsTotal: "Total HAPs",
+};
+
+// The Record above catches a missing LABEL; it can't catch `pollutantOrder`
+// independently omitting a key that both exists in the schema and already
+// has a label. Unlike lib/generation.ts's ORDER-tuple-defines-the-type
+// pattern, the direction here is reversed: the Zod schema (via
+// `PermittedTpy`) is authoritative, so `pollutantOrder` is checked for
+// completeness AGAINST it, not the other way around. If a pollutant is ever
+// added to the schema without adding it to `pollutantOrder`,
+// `MissingFromOrder` stops being `never` and the assignment below fails to
+// compile.
+type MissingFromOrder = Exclude<keyof PermittedTpy, (typeof pollutantOrder)[number]>;
+const pollutantOrderIsExhaustive: MissingFromOrder extends never ? true : MissingFromOrder =
+  true;
+void pollutantOrderIsExhaustive;
+
 // --- Predicate ---
 export function hasCivicImpact(facility: Facility): boolean {
   return !!(
     facility.energy ||
     facility.water ||
+    facility.emissions ||
     (facility.subsidies && facility.subsidies.length > 0) ||
     facility.investmentUsd ||
     facility.landAcres ||
@@ -144,6 +223,89 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
       )}
       {water?.notes && (
         <p className="mt-2 text-sm text-muted-foreground">{water.notes}</p>
+      )}
+    </div>
+  );
+}
+
+// --- Sub-section: Air permit (emissions) ---
+// `permittedTpy` values are regulatory CEILINGS from an air permit, never
+// measured/actual emissions — the editorial line below is mandatory
+// whenever this group renders. Every numeric check below is `!== undefined`,
+// never truthy: a permit can legitimately state a 0.0 limit for a pollutant a
+// unit is prohibited from emitting, and a truthy check would silently hide
+// that real regulatory fact.
+function EmissionsGroup({ facility }: { facility: Facility }) {
+  const { emissions } = facility;
+  if (!emissions) return null;
+
+  const permitTypeLabel = emissions.permitType
+    ? (permitTypeLabels[emissions.permitType] ?? emissions.permitType)
+    : null;
+
+  const pollutantEntries = pollutantOrder
+    .map((key) => ({ key, value: emissions.permittedTpy?.[key] }))
+    .filter(
+      (entry): entry is { key: keyof PermittedTpy; value: number } =>
+        entry.value !== undefined
+    );
+
+  const basisLabel = emissions.basis
+    ? (emissionsBasisLabels[emissions.basis] ?? emissions.basis)
+    : null;
+  const averagingPeriodLabel = emissions.averagingPeriod
+    ? (averagingPeriodLabels[emissions.averagingPeriod] ?? emissions.averagingPeriod)
+    : null;
+
+  const hasContent =
+    pollutantEntries.length > 0 ||
+    !!emissions.permitNumber ||
+    !!permitTypeLabel ||
+    !!emissions.issuingAgency ||
+    !!emissions.issuedDate ||
+    !!emissions.notes ||
+    !!basisLabel ||
+    !!emissions.unitsCovered ||
+    !!averagingPeriodLabel;
+
+  if (!hasContent) return null;
+
+  return (
+    <div>
+      <h3 className="text-sm font-semibold mb-3">Air permit</h3>
+      <p className="text-sm text-muted-foreground mb-3">
+        Permitted annual limits from this facility&apos;s air permit — a
+        regulatory ceiling, not measured emissions.
+      </p>
+      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+        {pollutantEntries.map(({ key, value }) => (
+          <FactRow key={key} label={pollutantLabels[key]}>
+            {formatTonsPerYear(value)}
+          </FactRow>
+        ))}
+        {basisLabel && <FactRow label="Limits apply to">{basisLabel}</FactRow>}
+        {emissions.unitsCovered && (
+          <FactRow label="Units covered">{emissions.unitsCovered}</FactRow>
+        )}
+        {averagingPeriodLabel && (
+          <FactRow label="Averaging period">{averagingPeriodLabel}</FactRow>
+        )}
+        {emissions.permitNumber && (
+          <FactRow label="Permit">{emissions.permitNumber}</FactRow>
+        )}
+        {permitTypeLabel && <FactRow label="Permit type">{permitTypeLabel}</FactRow>}
+        {emissions.issuingAgency && (
+          <FactRow label="Agency">{emissions.issuingAgency}</FactRow>
+        )}
+        {emissions.issuedDate && <FactRow label="Issued">{emissions.issuedDate}</FactRow>}
+      </dl>
+      {emissions.notes && (
+        <p className="mt-2 text-sm text-muted-foreground">{emissions.notes}</p>
+      )}
+      {emissions.sourceIndex !== undefined && (
+        <div className="mt-2">
+          <SourceLink sourceIndex={emissions.sourceIndex} facility={facility} />
+        </div>
       )}
     </div>
   );
@@ -333,6 +495,7 @@ export function CivicImpactSection({ facility }: { facility: Facility }) {
       </h2>
       <EconomicsGroup facility={facility} />
       <EnergyWaterGroup facility={facility} />
+      <EmissionsGroup facility={facility} />
       <MiningGroup facility={facility} />
       <EnvironmentalGroup facility={facility} />
       <SubsidiesGroup facility={facility} />

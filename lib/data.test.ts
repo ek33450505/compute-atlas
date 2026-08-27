@@ -42,6 +42,8 @@ import {
   normalizeOfftaker,
   getGenerationByOfftaker,
   getGenerationStats,
+  getGenerationBuildoutStats,
+  computeGenerationBuildoutStats,
   getCryptoMiningFacilities,
   getCryptoMiningStats,
   getFacilitiesByCommunityStatus,
@@ -58,11 +60,13 @@ import {
   aiClassificationEnum,
   confidenceEnum,
   type DataCenterFacility,
+  type PowerGenerationFacility,
 } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER } from "@/lib/community";
 import { STATUS_ORDER } from "@/lib/status";
 import { getFacilityMaxMw } from "@/lib/format";
+import { getGenerationFuelClass } from "@/lib/generation";
 
 describe("getAllFacilities", () => {
   it("returns a non-empty array including known seed ids", async () => {
@@ -1216,6 +1220,187 @@ describe("getGenerationStats", () => {
         .map(normalizeOfftaker)
     );
     expect((await getGenerationStats()).offtakerCount).toBe(distinct.size);
+  });
+});
+
+describe("getGenerationBuildoutStats", () => {
+  it("fossilPlannedMw equals an independently-computed sum over non-cancelled natural_gas planned MW", async () => {
+    const manual = (await getPowerGenerationFacilities())
+      .filter((f) => f.status !== "cancelled")
+      .filter((f) => f.generation?.technology === "natural_gas")
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    expect((await getGenerationBuildoutStats()).fossilPlannedMw).toBe(manual);
+  });
+
+  it("nonFossilPlannedMw equals an independently-computed sum over non-cancelled non-fossil planned MW", async () => {
+    const manual = (await getPowerGenerationFacilities())
+      .filter((f) => f.status !== "cancelled")
+      .filter(
+        (f) => getGenerationFuelClass(f.generation?.technology) === "non_fossil"
+      )
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    expect((await getGenerationBuildoutStats()).nonFossilPlannedMw).toBe(manual);
+  });
+
+  it("fossilPlants and nonFossilPlants match independently-filtered counts", async () => {
+    const active = (await getPowerGenerationFacilities()).filter(
+      (f) => f.status !== "cancelled"
+    );
+    const fossilPlants = active.filter(
+      (f) => getGenerationFuelClass(f.generation?.technology) === "fossil"
+    ).length;
+    const nonFossilPlants = active.filter(
+      (f) => getGenerationFuelClass(f.generation?.technology) === "non_fossil"
+    ).length;
+    const stats = await getGenerationBuildoutStats();
+    expect(stats.fossilPlants).toBe(fossilPlants);
+    expect(stats.nonFossilPlants).toBe(nonFossilPlants);
+  });
+
+  // NOTE ON NAMING: this mirrors the cancelled-exclusion computation, but it
+  // cannot currently prove exclusion — data/facilities.json has zero
+  // cancelled power_generation records today, so `cancelledGasPlannedMw`/
+  // `cancelledGasCount` are always 0 and this reduces to "matches the
+  // all-status total," which would pass whether or not the implementation
+  // actually filters cancelled plants. It's kept as a real-data regression
+  // check on the live async pipeline (getGenerationBuildoutStats →
+  // getPowerGenerationFacilities); the actual cancelled-exclusion proof is
+  // the synthetic-fixture test in the computeGenerationBuildoutStats
+  // describe block below.
+  it("fossilPlannedMw and gas.total match the real dataset's natural_gas totals (does not currently prove cancelled-exclusion — see the fixture test below)", async () => {
+    const generation = await getPowerGenerationFacilities();
+    const stats = await getGenerationBuildoutStats();
+
+    const allGasPlannedMw = generation
+      .filter((f) => f.generation?.technology === "natural_gas")
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    const cancelledGasPlannedMw = generation
+      .filter(
+        (f) =>
+          f.status === "cancelled" && f.generation?.technology === "natural_gas"
+      )
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    expect(stats.fossilPlannedMw).toBe(allGasPlannedMw - cancelledGasPlannedMw);
+
+    const allGasCount = generation.filter(
+      (f) => f.generation?.technology === "natural_gas"
+    ).length;
+    const cancelledGasCount = generation.filter(
+      (f) =>
+        f.status === "cancelled" && f.generation?.technology === "natural_gas"
+    ).length;
+    expect(stats.gas.total).toBe(allGasCount - cancelledGasCount);
+  });
+
+  it("unclassified technologies (battery, other, undisclosed) contribute to neither bucket", async () => {
+    const active = (await getPowerGenerationFacilities()).filter(
+      (f) => f.status !== "cancelled"
+    );
+    const totalPlannedMw = active.reduce(
+      (sum, f) => sum + (f.capacityMw?.planned ?? 0),
+      0
+    );
+    const stats = await getGenerationBuildoutStats();
+    expect(stats.fossilPlannedMw + stats.nonFossilPlannedMw).toBeLessThanOrEqual(
+      totalPlannedMw
+    );
+  });
+
+  it("the gas status split components each match an independent filter", async () => {
+    const gasPlants = (await getPowerGenerationFacilities()).filter(
+      (f) => f.status !== "cancelled" && f.generation?.technology === "natural_gas"
+    );
+    const stats = await getGenerationBuildoutStats();
+    expect(stats.gas.total).toBe(gasPlants.length);
+    expect(stats.gas.operational).toBe(
+      gasPlants.filter((f) => f.status === "operational").length
+    );
+    expect(stats.gas.proposed).toBe(
+      gasPlants.filter((f) => f.status === "proposed").length
+    );
+    expect(stats.gas.permitted).toBe(
+      gasPlants.filter((f) => f.status === "permitted").length
+    );
+    expect(stats.gas.underConstruction).toBe(
+      gasPlants.filter((f) => f.status === "under_construction").length
+    );
+  });
+});
+
+describe("computeGenerationBuildoutStats", () => {
+  /**
+   * Minimal valid PowerGenerationFacility fixture — only `status`,
+   * `capacityMw`, and `generation` vary per call site. Mirrors the
+   * makeFacility() pattern in lib/filters.test.ts (every required
+   * baseFacilityShape field supplied directly, no `as` cast).
+   */
+  function makeGenerationFacility(
+    overrides: Partial<PowerGenerationFacility> & {
+      status: PowerGenerationFacility["status"];
+    }
+  ): PowerGenerationFacility {
+    return {
+      id: "test-plant",
+      name: "Test Plant",
+      operator: "Test Operator",
+      confidence: "confirmed",
+      location: { lat: 35, lon: -90, state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [
+        {
+          url: "https://example.com",
+          label: "Source",
+          retrievedAt: "2024-01-01",
+          kind: "press",
+        },
+      ],
+      lastUpdated: "2024-01-01",
+      facilityType: "power_generation",
+      ...overrides,
+    };
+  }
+
+  // data/facilities.json currently holds zero cancelled power_generation
+  // records, so this exclusion can't be proven against the real dataset —
+  // it would pass whether or not the implementation actually filters
+  // cancelled plants. A synthetic fixture is required to give the assertion
+  // real teeth.
+  it("excludes a cancelled natural_gas plant's planned MW and count from both the fossil bucket and the gas status split", () => {
+    const cancelledGas = makeGenerationFacility({
+      id: "cancelled-gas",
+      status: "cancelled",
+      capacityMw: { planned: 9999 },
+      generation: { technology: "natural_gas" },
+    });
+    const activeGas = makeGenerationFacility({
+      id: "active-gas",
+      status: "proposed",
+      capacityMw: { planned: 500 },
+      generation: { technology: "natural_gas" },
+    });
+    const activeNuclear = makeGenerationFacility({
+      id: "active-nuclear",
+      status: "operational",
+      capacityMw: { operational: 100, planned: 100 },
+      generation: { technology: "nuclear" },
+    });
+
+    const stats = computeGenerationBuildoutStats([cancelledGas, activeGas, activeNuclear]);
+
+    // The cancelled plant's distinctive 9999 MW and its count must not
+    // appear anywhere — if the cancelled-exclusion filter were removed,
+    // fossilPlannedMw would be 10499 and fossilPlants/gas.total would be 2.
+    expect(stats.fossilPlannedMw).toBe(500);
+    expect(stats.fossilPlants).toBe(1);
+    expect(stats.gas.total).toBe(1);
+    expect(stats.gas.proposed).toBe(1);
+    expect(stats.gas.operational).toBe(0);
+    expect(stats.gas.permitted).toBe(0);
+    expect(stats.gas.underConstruction).toBe(0);
+
+    // Sanity: the non-cancelled non-fossil plant is still counted normally.
+    expect(stats.nonFossilPlannedMw).toBe(100);
+    expect(stats.nonFossilPlants).toBe(1);
   });
 });
 

@@ -182,3 +182,14 @@ export function formatPower(mw: number): string {
 export function formatMgd(mgd: number): string {
   return `${mgd.toFixed(1)} MGD`;
 }
+
+/**
+ * Formats a permitted annual emissions tonnage (short tons per year, "tpy")
+ * from an air permit. A permit can legitimately state a 0.0 limit for a
+ * pollutant a unit is prohibited from emitting, so 0 must render as
+ * "0 tons/yr", never as an em dash or empty string — collapsing it to
+ * "absent" would misreport a real regulatory fact.
+ */
+export function formatTonsPerYear(tpy: number): string {
+  return `${tpy.toLocaleString()} tons/yr`;
+}
