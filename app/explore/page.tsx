@@ -122,7 +122,8 @@ export default async function ExplorePage() {
             Explore
           </h1>
           <p className="max-w-2xl text-base text-muted-foreground">
-            {LENSES.length} lenses on the same source-cited dataset — by
+            {LENSES.length}{" "}
+            lenses on the same source-cited dataset — by
             geography, lifecycle stage, power and facility type, community
             reception, and who&rsquo;s building it, plus rankings, the glossary,
             and the API directly.

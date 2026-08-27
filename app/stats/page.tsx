@@ -656,7 +656,8 @@ export default async function StatsPage() {
             Top states
           </h2>
           <p className="text-sm text-muted-foreground">
-            {stats.states} state{stats.states !== 1 ? "s" : ""} covered &middot; top 10 by
+            {stats.states} state{stats.states !== 1 ? "s" : ""}{" "}
+            covered &middot; top 10 by
             facility count
           </p>
           <ul className="space-y-2 text-sm">

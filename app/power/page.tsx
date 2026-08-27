@@ -157,7 +157,8 @@ export default async function PowerPage() {
       {/* ------------------------------------------------------------------ */}
       <div className="max-w-2xl space-y-4">
         <p className="text-base leading-relaxed text-muted-foreground">
-          Compute Atlas tracks {stats.count} dedicated-generation projects —
+          Compute Atlas tracks {stats.count}{" "}
+          dedicated-generation projects —
           plants and reactors financed or contracted specifically to power a
           data center&apos;s compute load, rather than drawn from the general
           grid. {formatPower(stats.operationalMw)} of that capacity is
@@ -192,6 +193,7 @@ export default async function PowerPage() {
           </h2>
         </div>
         <SurveyStatRow
+          spacing="wide"
           stats={[
             { value: formatPower(buildout.fossilPlannedMw), label: "Gas · planned" },
             {
