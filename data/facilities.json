@@ -1422,9 +1422,9 @@
     "statusHistory": [
       {
         "status": "cancelled",
-        "date": "2026-08-27",
-        "note": "Pataskala City Council voted on Aug. 26, 2026 to block the Aligned Data Centers application, accepting the Planning and Zoning Commission's recommendation to deny it. A separate citizen petition (500+ signatures) puts a data center ban before Pataskala voters in November 2026.",
-        "sourceIndex": 2
+        "date": "2026-08-25",
+        "note": "Pataskala City Council voted 7-0 on Aug. 25, 2026 to reject the site plan, accepting the Planning and Zoning Commission's recommendation to deny it. Aligned has not withdrawn — its general counsel said only that the company would “reflect and regroup.” A separate citizen charter amendment banning data centers over 25 MW goes to Pataskala and Granville voters on Nov. 3, 2026.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -1448,14 +1448,21 @@
         "publisher": "ABC 6 / WSYX",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://www.thereportingproject.org/pataskala-residents-cheer-city-council-vote-to-reject-site-plan-for-proposed-large-scale-data-center/",
+        "label": "The Reporting Project: City Council rejected the site plan 7-0 on 2026-08-25; Aligned GC David Robinson — “We’ll reflect and regroup”; 89 acres, 200 MW, three buildings; Nov. 3 ballot in Pataskala and Granville",
+        "publisher": "The Reporting Project (Denison University)",
+        "retrievedAt": "2026-08-27",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-08-27",
-    "notes": "Proposed 200 MW campus (89 acres, 3 planned buildings, down from 4) at Broad St & Mink St in the Pataskala industrial park, powered by on-site Bloom Energy natural-gas fuel cells. Contested: the Planning & Zoning Commission voted 5–2 on 2026-06-03 to recommend City Council reject it (staff had recommended approval); Council's final vote is scheduled 2026-08-25, and a separate ballot measure to ban hyperscale (>25 MW) data centers is headed to the November 2026 ballot. Coordinates approximate (Pataskala city-center).",
+    "notes": "Blocked 200 MW campus (89 acres, 3 planned buildings, down from 4) at Broad St & Mink St in the Pataskala industrial park, which would have run on on-site Bloom Energy natural-gas fuel cells. The Planning & Zoning Commission voted 5–2 on 2026-06-03 to recommend rejection (staff had recommended approval), and City Council rejected the site plan 7-0 on 2026-08-25. Recorded as cancelled because the city denied the application; note that Aligned itself has not abandoned the project — its general counsel said the company would “reflect and regroup.” A citizen charter amendment banning data centers over 25 MW goes to Pataskala and Granville voters on Nov. 3, 2026. Coordinates approximate (Pataskala city-center).",
     "community": {
       "status": "contested",
-      "notes": "P&Z recommended rejection 5–2; a citizen-driven November 2026 ballot measure would ban data centers over 25 MW in Pataskala.",
-      "sourceIndex": 0
+      "notes": "Sustained resident opposition: rallies at City Hall and a citizen petition drive. P&Z recommended rejection 5–2 on 2026-06-03; City Council then rejected the site plan 7-0 on 2026-08-25. A citizen-driven charter amendment banning data centers over 25 MW is on the Nov. 3, 2026 ballot in Pataskala and Granville.",
+      "sourceIndex": 3
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
