@@ -286,6 +286,74 @@ describe("CivicImpactSection — Air permit (emissions)", () => {
     });
     expect(link).toHaveAttribute("href", "https://example.com/subsidy-source");
   });
+
+  it("renders 'Per unit' for basis alongside the tonnages", () => {
+    const facility = makeFacility({
+      emissions: {
+        permittedTpy: { nox: 5.6 },
+        basis: "per_unit",
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("Limits apply to")).toBeInTheDocument();
+    expect(screen.getByText("Per unit")).toBeInTheDocument();
+  });
+
+  it("renders 'Facility-wide' for basis alongside the tonnages", () => {
+    const facility = makeFacility({
+      emissions: {
+        permittedTpy: { nox: 1142.8 },
+        basis: "facility_wide",
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("Limits apply to")).toBeInTheDocument();
+    expect(screen.getByText("Facility-wide")).toBeInTheDocument();
+  });
+
+  it("renders unitsCovered and averagingPeriod when present", () => {
+    const facility = makeFacility({
+      emissions: {
+        permittedTpy: { nox: 1142.8 },
+        basis: "facility_wide",
+        unitsCovered: "Units 1-4 (combustion turbines)",
+        averagingPeriod: "rolling_12_month",
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("Units covered")).toBeInTheDocument();
+    expect(
+      screen.getByText("Units 1-4 (combustion turbines)")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Averaging period")).toBeInTheDocument();
+    expect(screen.getByText("12-month rolling")).toBeInTheDocument();
+  });
+
+  // Fixture shaped like the real xAI/MZX permit from the pilot: every
+  // tonnage is per-turbine, the permit names the covered equipment, and GHG
+  // is capped only as a rate — there is no facility-wide CO2e tonnage at
+  // all. This must render the pollutants it has and must NOT render a CO2e
+  // row, and must not crash despite `co2e` being absent.
+  it("renders an xAI-shaped per-unit permit without a CO2e row and without crashing", () => {
+    const facility = makeFacility({
+      emissions: {
+        permittedTpy: { nox: 15.47, formaldehyde: 0.9 },
+        basis: "per_unit",
+        unitsCovered: "41 combustion turbines",
+        notes: "GHG capped only as a rate (<=120 lb/MMBtu), not an annual tonnage.",
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("NOx")).toBeInTheDocument();
+    expect(screen.getByText("Formaldehyde")).toBeInTheDocument();
+    expect(screen.getByText("Per unit")).toBeInTheDocument();
+    expect(screen.getByText("41 combustion turbines")).toBeInTheDocument();
+    expect(screen.queryByText("CO2e")).not.toBeInTheDocument();
+  });
 });
 
 // ---------------------------------------------------------------------------

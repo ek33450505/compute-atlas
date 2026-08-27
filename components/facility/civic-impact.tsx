@@ -78,6 +78,20 @@ const permitTypeLabels: Record<string, string> = {
   other: "Other",
 };
 
+// Distinct from `permitTypeLabels` above — what the tonnages in
+// `permittedTpy` apply to (facility total vs. a single unit's limit), not
+// what kind of permit issued them.
+const emissionsBasisLabels: Record<string, string> = {
+  facility_wide: "Facility-wide",
+  per_unit: "Per unit",
+};
+
+const averagingPeriodLabels: Record<string, string> = {
+  calendar_year: "Calendar year",
+  rolling_12_month: "12-month rolling",
+  other: "Other",
+};
+
 // Explicit display order — plain ASCII labels only (no Unicode subscripts)
 // for screen-reader safety. `satisfies` (not a type annotation) rejects an
 // invalid/misspelled key here while still preserving the literal tuple type
@@ -85,11 +99,16 @@ const permitTypeLabels: Record<string, string> = {
 const pollutantOrder = [
   "nox",
   "co",
-  "pm25",
+  "pm",
   "pm10",
+  "pm25",
   "so2",
   "voc",
   "co2e",
+  "h2so4",
+  "nh3",
+  "formaldehyde",
+  "hapsTotal",
 ] as const satisfies readonly (keyof PermittedTpy)[];
 
 // `Record<keyof PermittedTpy, string>` forces this object to cover every
@@ -99,11 +118,16 @@ const pollutantOrder = [
 const pollutantLabels: Record<keyof PermittedTpy, string> = {
   nox: "NOx",
   co: "CO",
+  pm: "PM",
   pm25: "PM2.5",
   pm10: "PM10",
   so2: "SO2",
   voc: "VOC",
   co2e: "CO2e",
+  h2so4: "H2SO4",
+  nh3: "NH3",
+  formaldehyde: "Formaldehyde",
+  hapsTotal: "Total HAPs",
 };
 
 // The Record above catches a missing LABEL; it can't catch `pollutantOrder`
@@ -226,13 +250,23 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
         entry.value !== undefined
     );
 
+  const basisLabel = emissions.basis
+    ? (emissionsBasisLabels[emissions.basis] ?? emissions.basis)
+    : null;
+  const averagingPeriodLabel = emissions.averagingPeriod
+    ? (averagingPeriodLabels[emissions.averagingPeriod] ?? emissions.averagingPeriod)
+    : null;
+
   const hasContent =
     pollutantEntries.length > 0 ||
     !!emissions.permitNumber ||
     !!permitTypeLabel ||
     !!emissions.issuingAgency ||
     !!emissions.issuedDate ||
-    !!emissions.notes;
+    !!emissions.notes ||
+    !!basisLabel ||
+    !!emissions.unitsCovered ||
+    !!averagingPeriodLabel;
 
   if (!hasContent) return null;
 
@@ -249,6 +283,13 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
             {formatTonsPerYear(value)}
           </FactRow>
         ))}
+        {basisLabel && <FactRow label="Limits apply to">{basisLabel}</FactRow>}
+        {emissions.unitsCovered && (
+          <FactRow label="Units covered">{emissions.unitsCovered}</FactRow>
+        )}
+        {averagingPeriodLabel && (
+          <FactRow label="Averaging period">{averagingPeriodLabel}</FactRow>
+        )}
         {emissions.permitNumber && (
           <FactRow label="Permit">{emissions.permitNumber}</FactRow>
         )}
