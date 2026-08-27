@@ -25911,6 +25911,101 @@
     }
   },
   {
+    "id": "entergy-pointe-coupee-cccts-la",
+    "name": "Entergy Pointe Coupee CCCT Units 1-3",
+    "operator": "Entergy Louisiana",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.7288063,
+      "lon": -91.3693885,
+      "city": "New Roads",
+      "county": "Pointe Coupee",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2262
+    },
+    "announcedDate": "2026-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03",
+        "note": "Certification sought in Entergy Louisiana's Project Evest application to the LPSC.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
+        "label": "Direct Testimony of Laura K. Beauchamp, Entergy Louisiana application for certification of generation and transmission resources (Project Evest), March 2026 — public redacted version",
+        "publisher": "Louisiana Public Service Commission",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Planned MW is 3 x 754 MW nameplate as stated in the filing. Coordinates are an OpenStreetMap geocode of the existing Big Cajun site the filing names as the siting reference, flagged approximate — the new units' parcel has not been published.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Entergy Louisiana"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Evest LLC (identified by Entergy as a Meta Platforms subsidiary)",
+      "unitCount": 3,
+      "notes": "Three of the seven new 754 MW 1x1 combined-cycle combustion turbines in Entergy Louisiana's March 2026 Project Evest application, 'sited within ELL's Southeast Louisiana Planning Region (SELPA) near the existing Big Cajun site' in Pointe Coupee Parish. Entergy asks that they be certified as system resources serving total system load, not as dedicated units."
+    }
+  },
+  {
+    "id": "entergy-river-bend-ap1000-west-feliciana-la",
+    "name": "River Bend Station AP1000 Expansion (pre-FEED)",
+    "operator": "Entergy Louisiana",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.7550442,
+      "lon": -91.3323105,
+      "city": "St. Francisville",
+      "county": "West Feliciana",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03",
+        "note": "Pre-FEED study for two AP1000 units funded under the Project Evest agreements; no construction commitment.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
+        "label": "Direct Testimony of Laura K. Beauchamp, Entergy Louisiana (Project Evest), March 2026 — River Bend pre-FEED study for two new AP1000 generators",
+        "publisher": "Louisiana Public Service Commission",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Very early stage: a funded engineering study only. Distinct from the tracked Hut 8 'River Bend' AI data center campus, which is a different operator and a different site in the same parish — this record is Entergy's existing River Bend nuclear station site. Coordinates are the OpenStreetMap point for River Bend Nuclear Generating Station, flagged approximate for the proposed expansion.",
+    "energy": {
+      "source": "nuclear",
+      "utility": "Entergy Louisiana"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Evest LLC (identified by Entergy as a Meta Platforms subsidiary)",
+      "unitCount": 2,
+      "notes": "Entergy's March 2026 Project Evest testimony states the customer 'agreed to fund all actual, direct costs, up to a maximum amount of [redacted] ... to perform a preliminary Front-End Engineering and Design study (the \"River Bend pre-FEED Study\") for construction and operation of two new AP1000 nuclear generators at the Company's existing River Bend Station site.' Only the study is funded — no construction decision, no MW certification, no capacity figure in the filing."
+    }
+  },
+  {
     "id": "entergy-waterford-power-station-st-charles-la",
     "name": "Waterford Power Station (new combined-cycle units for Meta)",
     "operator": "Entergy Louisiana",
@@ -25995,6 +26090,50 @@
         "meta-hyperion-richland-parish-la"
       ],
       "notes": "The third of three combined-cycle plants (2,260 MW total) approved in LPSC Docket U-37425 (Aug 2025) for Meta's Hyperion campus; the other two are the Richland Parish units tracked as entergy-franklin-farms-power-station-la (~1,500 MW). This Waterford unit's individual capacity is not itemized by Entergy — roughly 760 MW is a derived estimate (2,260 minus 1,500). A separate, larger Phase 2 buildout (Docket U-37882: seven unsited plants, >5,200 MW) remains unapproved and is not tracked."
+    }
+  },
+  {
+    "id": "entergy-westlake-power-station-calcasieu-la",
+    "name": "Westlake Power Station",
+    "operator": "Entergy Louisiana",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.2421496,
+      "lon": -93.2507099,
+      "city": "Westlake",
+      "county": "Calcasieu",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "Application filed with the LPSC for approval to construct.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
+        "label": "Direct Testimony of Laura K. Beauchamp, Entergy Louisiana application for certification of generation and transmission resources (Project Evest), March 2026 — public redacted version",
+        "publisher": "Louisiana Public Service Commission",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "New gas-fired station proposed on undeveloped land near Entergy Louisiana's existing Westlake site in Calcasieu Parish. Entergy's testimony is explicit that the need for this capacity 'exists independent of the anticipated load associated with Project Evest' — it is part of the utility's base supply plan amid large-load growth, not a plant dedicated to a single named campus. Coordinates are a Westlake city geocode, flagged approximate.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Entergy Louisiana"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Entergy Louisiana filed for approval to construct the Westlake Power Station together with the Waterford 6 Power Station in February 2026 (LPSC Docket No. U-37853); the testimony states the two 'when completed, will add approximately 1,500 MW of additional capacity to ELL's base supply plan'. No per-station MW split is given in the fetched filing, so capacityMw is omitted rather than guessed."
     }
   },
   {

@@ -8611,6 +8611,52 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "entergy-pointe-coupee-cccts-la": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "entergy-river-bend-ap1000-west-feliciana-la": {
+    "nearestWater": {
+      "name": "Grants Bayou",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "entergy-waterford-power-station-st-charles-la": {
     "nearestWater": {
       "name": "Mississippi River",
@@ -8624,6 +8670,29 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "entergy-westlake-power-station-calcasieu-la": {
+    "nearestWater": {
+      "name": "Calcasieu River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     },
     "groundwaterDecline": {
       "cat": 1,
