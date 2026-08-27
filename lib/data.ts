@@ -1187,20 +1187,7 @@ export interface GenerationBuildoutStats {
 }
 
 /**
- * Structural input to {@link computeGenerationBuildoutStats} — narrowed via
- * `Pick` to exactly the fields the computation reads, rather than requiring a
- * full valid `PowerGenerationFacility` (id, location, sources, ...).
- * `PowerGenerationFacility[]` satisfies this structurally, so
- * `getGenerationBuildoutStats` below can pass its fetched data straight
- * through, while a unit test can construct minimal fixtures instead.
- */
-export type GenerationBuildoutInput = Pick<
-  PowerGenerationFacility,
-  "status" | "capacityMw" | "generation"
->;
-
-/**
- * Pure reducer over generation-shaped input — no data fetch, no I/O. Split out
+ * Pure reducer over generation facilities — no data fetch, no I/O. Split out
  * from `getGenerationBuildoutStats` so the cancelled-exclusion behavior can be
  * exercised against a synthetic fixture: `data/facilities.json` currently has
  * zero cancelled power_generation records, so a test that only ever reads the
@@ -1211,7 +1198,7 @@ export type GenerationBuildoutInput = Pick<
  * {@link GenerationBuildoutStats} for why this is planned-MW only.
  */
 export function computeGenerationBuildoutStats(
-  facilities: GenerationBuildoutInput[]
+  facilities: PowerGenerationFacility[]
 ): GenerationBuildoutStats {
   const active = facilities.filter((f) => f.status !== "cancelled");
 

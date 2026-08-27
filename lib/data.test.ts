@@ -44,7 +44,6 @@ import {
   getGenerationStats,
   getGenerationBuildoutStats,
   computeGenerationBuildoutStats,
-  type GenerationBuildoutInput,
   getCryptoMiningFacilities,
   getCryptoMiningStats,
   getFacilitiesByCommunityStatus,
@@ -61,6 +60,7 @@ import {
   aiClassificationEnum,
   confidenceEnum,
   type DataCenterFacility,
+  type PowerGenerationFacility,
 } from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER } from "@/lib/community";
@@ -1257,6 +1257,41 @@ describe("getGenerationBuildoutStats", () => {
     expect(stats.nonFossilPlants).toBe(nonFossilPlants);
   });
 
+  // NOTE ON NAMING: this mirrors the cancelled-exclusion computation, but it
+  // cannot currently prove exclusion — data/facilities.json has zero
+  // cancelled power_generation records today, so `cancelledGasPlannedMw`/
+  // `cancelledGasCount` are always 0 and this reduces to "matches the
+  // all-status total," which would pass whether or not the implementation
+  // actually filters cancelled plants. It's kept as a real-data regression
+  // check on the live async pipeline (getGenerationBuildoutStats →
+  // getPowerGenerationFacilities); the actual cancelled-exclusion proof is
+  // the synthetic-fixture test in the computeGenerationBuildoutStats
+  // describe block below.
+  it("fossilPlannedMw and gas.total match the real dataset's natural_gas totals (does not currently prove cancelled-exclusion — see the fixture test below)", async () => {
+    const generation = await getPowerGenerationFacilities();
+    const stats = await getGenerationBuildoutStats();
+
+    const allGasPlannedMw = generation
+      .filter((f) => f.generation?.technology === "natural_gas")
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    const cancelledGasPlannedMw = generation
+      .filter(
+        (f) =>
+          f.status === "cancelled" && f.generation?.technology === "natural_gas"
+      )
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+    expect(stats.fossilPlannedMw).toBe(allGasPlannedMw - cancelledGasPlannedMw);
+
+    const allGasCount = generation.filter(
+      (f) => f.generation?.technology === "natural_gas"
+    ).length;
+    const cancelledGasCount = generation.filter(
+      (f) =>
+        f.status === "cancelled" && f.generation?.technology === "natural_gas"
+    ).length;
+    expect(stats.gas.total).toBe(allGasCount - cancelledGasCount);
+  });
+
   it("unclassified technologies (battery, other, undisclosed) contribute to neither bucket", async () => {
     const active = (await getPowerGenerationFacilities()).filter(
       (f) => f.status !== "cancelled"
@@ -1293,36 +1328,69 @@ describe("getGenerationBuildoutStats", () => {
 });
 
 describe("computeGenerationBuildoutStats", () => {
+  /**
+   * Minimal valid PowerGenerationFacility fixture — only `status`,
+   * `capacityMw`, and `generation` vary per call site. Mirrors the
+   * makeFacility() pattern in lib/filters.test.ts (every required
+   * baseFacilityShape field supplied directly, no `as` cast).
+   */
+  function makeGenerationFacility(
+    overrides: Partial<PowerGenerationFacility> & {
+      status: PowerGenerationFacility["status"];
+    }
+  ): PowerGenerationFacility {
+    return {
+      id: "test-plant",
+      name: "Test Plant",
+      operator: "Test Operator",
+      confidence: "confirmed",
+      location: { lat: 35, lon: -90, state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [
+        {
+          url: "https://example.com",
+          label: "Source",
+          retrievedAt: "2024-01-01",
+          kind: "press",
+        },
+      ],
+      lastUpdated: "2024-01-01",
+      facilityType: "power_generation",
+      ...overrides,
+    };
+  }
+
   // data/facilities.json currently holds zero cancelled power_generation
   // records, so this exclusion can't be proven against the real dataset —
   // it would pass whether or not the implementation actually filters
   // cancelled plants. A synthetic fixture is required to give the assertion
-  // real teeth. See the mutation check in the PR description.
+  // real teeth.
   it("excludes a cancelled natural_gas plant's planned MW and count from both the fossil bucket and the gas status split", () => {
-    const fixture: GenerationBuildoutInput[] = [
-      {
-        status: "cancelled",
-        capacityMw: { planned: 500 },
-        generation: { technology: "natural_gas" },
-      },
-      {
-        status: "proposed",
-        capacityMw: { planned: 200 },
-        generation: { technology: "natural_gas" },
-      },
-      {
-        status: "operational",
-        capacityMw: { operational: 100, planned: 100 },
-        generation: { technology: "nuclear" },
-      },
-    ];
+    const cancelledGas = makeGenerationFacility({
+      id: "cancelled-gas",
+      status: "cancelled",
+      capacityMw: { planned: 9999 },
+      generation: { technology: "natural_gas" },
+    });
+    const activeGas = makeGenerationFacility({
+      id: "active-gas",
+      status: "proposed",
+      capacityMw: { planned: 500 },
+      generation: { technology: "natural_gas" },
+    });
+    const activeNuclear = makeGenerationFacility({
+      id: "active-nuclear",
+      status: "operational",
+      capacityMw: { operational: 100, planned: 100 },
+      generation: { technology: "nuclear" },
+    });
 
-    const stats = computeGenerationBuildoutStats(fixture);
+    const stats = computeGenerationBuildoutStats([cancelledGas, activeGas, activeNuclear]);
 
-    // The cancelled plant's 500 MW and its count must not appear anywhere —
-    // if the cancelled-exclusion filter were removed, these would be 700 and
-    // 2/2 instead.
-    expect(stats.fossilPlannedMw).toBe(200);
+    // The cancelled plant's distinctive 9999 MW and its count must not
+    // appear anywhere — if the cancelled-exclusion filter were removed,
+    // fossilPlannedMw would be 10499 and fossilPlants/gas.total would be 2.
+    expect(stats.fossilPlannedMw).toBe(500);
     expect(stats.fossilPlants).toBe(1);
     expect(stats.gas.total).toBe(1);
     expect(stats.gas.proposed).toBe(1);
