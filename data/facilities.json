@@ -2227,6 +2227,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "amazon-bridgefield-tech-center-ashburn-loudoun-va",
+    "name": "Bridgefield Tech Center",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.029784,
+      "lon": -77.4744148,
+      "city": "Ashburn",
+      "county": "Loudoun",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-08-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-03",
+        "note": "Amazon filed plans with Loudoun County for a four-building, 800,000 sq ft data center campus on the former GWU Virginia Science and Technology Campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/aws-looks-to-build-800000-sq-ft-data-center-campus-at-gwu-site-in-ashburn-virginia/",
+        "label": "AWS looks to build 800,000 sq ft data center campus at GWU site in Ashburn, Virginia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://virginiabusiness.com/amazon-data-centers-gwu-ashburn/",
+        "label": "Amazon data center campus plan for Ashburn hits Loudoun opposition",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://wtop.com/loudoun-county/2026/08/concrete-jungle-as-amazon-details-plans-for-new-ashburn-data-centers-some-residents-are-fed-up/",
+        "label": "'Concrete jungle': As Amazon details plans for new Ashburn data centers, some residents are fed up",
+        "publisher": "WTOP News",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "investmentUsd": 427000000,
+    "landAcres": 122,
+    "facilityType": "data_center"
+  },
+  {
     "id": "amazon-devlin-tech-park-va",
     "name": "Amazon Devlin Technology Park",
     "operator": "Amazon Web Services",
@@ -4017,7 +4068,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-08-26",
     "notes": "~$25B proposed data center campus led by Arizona Land Consulting (Anita Verma-Lallian) with investor Chamath Palihapitiya, on ~2,000 acres of far-western Maricopa County near Tonopah (acquired in a ~$51M deal). Maricopa County approved industrial rezoning Dec 10, 2025; zoning applications pending. Coordinates are an approximate town-level geocode near Tonopah, not a parcel-confirmed point.",
     "investmentUsd": 25000000000,
     "landAcres": 2000,
@@ -4026,6 +4077,24 @@
       "notes": "Maricopa County Board of Supervisors unanimously approved the industrial rezoning (Dec 10, 2025) despite two resident-led petitions totaling roughly 300 signatures opposing the project over well-water impacts.",
       "sourceIndex": 1
     },
+    "stakeholders": [
+      {
+        "name": "Anita Verma-Lallian",
+        "role": "founder",
+        "via": "Arizona Land Consulting",
+        "note": "Founder and CEO of Arizona Land Consulting; bought the Hassayampa Ranch tract in May 2025 for $51 million and is selling investment stakes in the resulting data-center project.",
+        "sourceIndex": 1,
+        "asOf": "2026-08-26"
+      },
+      {
+        "name": "Chamath Palihapitiya",
+        "role": "investor",
+        "via": "Arizona Land Consulting",
+        "note": "Investor in the Hassayampa Ranch project alongside developer Anita Verma-Lallian; he has described it as his first data-center investment and the size of his stake is undisclosed.",
+        "sourceIndex": 1,
+        "asOf": "2026-08-26"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -4430,6 +4499,45 @@
     "mining": {
       "coolingType": "air",
       "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "ashville-energy-center-pickaway-oh",
+    "name": "Ashville Energy Center",
+    "operator": "EdgeConneX (PowerConneX)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.71833,
+      "lon": -82.94833,
+      "county": "Pickaway",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 800
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.farmanddairy.com/news/opsb-schedules-local-hearings-for-2-proposed-natural-gas-plants-to-power-data-centers/922034.html",
+        "label": "Farm and Dairy: OPSB schedules local hearings for 2 proposed natural gas plants to power data centers",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Not yet approved by OPSB as of this session; still in the public-hearing phase.",
+    "landAcres": 110,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "EdgeConneX",
+      "poweredFacilityIds": [
+        "edgeconnex-ashville-oh"
+      ],
+      "notes": "OPSB Case No. 26-196-EL-BGN; local public information hearing held Aug 19, 2026 at Teays Valley High School. Intended to power the adjacent, co-located EdgeConneX Ashville Campus data center."
     }
   },
   {
@@ -5538,9 +5646,16 @@
         "publisher": "Public Evidence Project",
         "retrievedAt": "2026-07-30",
         "kind": "other"
+      },
+      {
+        "url": "http://www.fredericksburgfreepress.com/2026/06/04/deq-issued-air-pollution-violations-on-spotsylvania-data-center-campus-in-2025/",
+        "label": "DEQ issued air pollution violations on Spotsylvania data center campus in 2025",
+        "publisher": "Fredericksburg Free Press",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-26",
     "notes": "329 acres in Massaponax, ~1.9M sq ft; one of four AWS Spotsylvania/Caroline campuses (Summit Crossing, Carter's Store, Cosner, Orrock). Spotsylvania case ST23-0031.",
     "energy": {
       "utility": "Rappahannock Electric Co-op"
@@ -11218,6 +11333,45 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cipher-digital-hashworks-waterford-washington-oh",
+    "name": "HashWorks Powered Land — Waterford Site",
+    "operator": "HashWorks Powered Land Waterford LLC (land entity tied to Cipher Digital / Sabre 56)",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 39.55139,
+      "lon": -81.64944,
+      "county": "Washington",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://woub.org/2026/05/22/waterford-resident-calls-trustee-step-down-data-center-development/",
+        "label": "WOUB: Waterford resident calls for trustee to step down over data center land deals",
+        "publisher": "WOUB Public Media",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newsandsentinel.com/news/community-news/2026/07/waterford-resident-asks-washington-county-commissioners-for-help-regarding-data-center-project/",
+        "label": "News and Sentinel: Waterford resident asks Washington County commissioners for help on data center project",
+        "publisher": "News and Sentinel",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "HashWorks Powered Land Waterford LLC has assembled just over 500 acres in Waterford Township and filed for a 25 MGD Muskingum River surface-water withdrawal; local reporting ties the leasing LLCs to Sabre 56 and Cipher Digital for a potential 200MW crypto-mining/HPC/AI facility, but Washington County commissioners stated no deal has been finalized and Cipher's ownership stake is undocumented -- confidence kept at rumored. Distinct site from the Center Township/Morgan County 'Ulysses' project.",
+    "landAcres": 500,
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "cipher-digital-odessa-tx",
     "name": "Cipher Digital Odessa Facility",
     "operator": "Cipher Digital",
@@ -11265,6 +11419,50 @@
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
+  },
+  {
+    "id": "cipher-digital-ulysses-center-township-morgan-oh",
+    "name": "Cipher Digital Ulysses",
+    "operator": "Cipher Digital (formerly Cipher Mining)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.63028,
+      "lon": -81.64694,
+      "county": "Morgan",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "announcedDate": "2025-12-23",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://theenergymag.com/news/2025-12-23/cipher-ohio-hpc-pjm",
+        "label": "Cipher's Ulysses Ohio site: 200MW, 195 acres, AEP power, PJM interconnection, Q4 2027 energization",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.facebook.com/MorganCountyHerald/posts/last-nights-meeting-regarding-the-proposed-data-center-in-center-township-morgan/1611931394270139/",
+        "label": "Morgan County Herald: public meeting on the proposed Cipher Digital data center in Center Township",
+        "publisher": "Morgan County Herald",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Site publicly confirmed by Cipher (200MW, 195 acres, AEP Ohio, PJM, Q4 2027 energization) without a stated county; local reporting on a June 2026 public meeting in Center Township, Morgan County ties Cipher Digital to a proposed data center there, matching the same MW/timeline facts. Distinct from a separate Cipher-linked land assembly in Waterford Township, Washington County (see cipher-digital-hashworks-waterford-washington-oh).",
+    "energy": {
+      "source": "grid",
+      "utility": "AEP Ohio",
+      "notes": "Secured power capacity from AEP Ohio with direct PJM interconnection; all required utility agreements reported in place."
+    },
+    "landAcres": 195,
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "cipher-mclennan-county-tx",
@@ -23818,9 +24016,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.wavy.com/wp-content/uploads/sites/3/2025/05/PLN-REZ-2025-002-Etheridge-Lakes-Data-Center_1.pdf",
+        "label": "PLN-REZ-2025-002 Etheridge Lakes Data Center rezoning application (mirror)",
+        "publisher": "WAVY-TV",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-26",
     "notes": "22.6-acre parcel on west side of Centerville Turnpike, south of Etheridge Manor Boulevard, Great Bridge area of Chesapeake. Developer Doug Fuller (Emerald Lakes Estates) sought rezoning from agricultural to light industrial; proposed 350,000 sq ft, 35 ft tall, 24/7 staffed facility. City Council denied the rezoning request unanimously. Separately, in July 2026 the Chesapeake Planning Commission recommended a citywide data-center zoning ordinance/policy (conditional use in industrial districts + Fentress Airfield Overlay only) — this is a POLICY change, not a site-specific candidate, and is not included here. No other active Chesapeake DC site rezoning was found this session. Coordinates are approximate (Centerville Turnpike/Great Bridge area); exact parcel not geocoded from GIS this session. Chesapeake City Council denied the rezoning 7-0 on 2025-06-17 (Planning Commission had recommended denial 6-1). Recorded as a cancelled proposal.",
     "energy": {
       "utility": "Dominion Energy Virginia"
@@ -24211,9 +24416,16 @@
         "publisher": "Holland & Knight",
         "retrievedAt": "2026-07-06",
         "kind": "other"
+      },
+      {
+        "url": "https://www.equinix.com/data-centers/americas-colocation/united-states-colocation/washington-dc-data-centers",
+        "label": "Washington D.C. (Ashburn) Data Centers",
+        "publisher": "Equinix",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-26",
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy",
@@ -25216,6 +25428,45 @@
     "facilityType": "data_center"
   },
   {
+    "id": "fairfield-energy-center-millersport-fairfield-oh",
+    "name": "Fairfield Energy Center",
+    "operator": "Advanced Power",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.89806,
+      "lon": -82.53861,
+      "county": "Fairfield",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1300
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.farmanddairy.com/news/opsb-schedules-local-hearings-for-2-proposed-natural-gas-plants-to-power-data-centers/922034.html",
+        "label": "Farm and Dairy: OPSB schedules local hearings for 2 proposed natural gas plants to power data centers",
+        "publisher": "Farm and Dairy",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "notes": "Not yet approved by OPSB as of this session; still in the public-hearing phase.",
+    "landAcres": 100,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Vantage Data Centers",
+      "poweredFacilityIds": [
+        "vantage-oh2-millersport-fairfield-oh"
+      ],
+      "notes": "OPSB Case No. 26-160-EL-BGN; ~1,000 MW of battery energy storage included; local public hearing held Aug 17, 2026 at Millersport Junior/Senior High School. Vantage is leasing land to Advanced Power to build the plant, which would not connect to the regional grid and would serve the adjacent Vantage OH2 Millersport data center campus directly."
+    }
+  },
+  {
     "id": "fermi-matador-amarillo-tx",
     "name": "Project Matador",
     "operator": "Fermi America",
@@ -25308,9 +25559,23 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/2071778/000121390025094424/ea0252333-11.htm",
+        "label": "Fermi Inc. IPO prospectus (Form 424B4) — beneficial ownership table",
+        "publisher": "U.S. Securities and Exchange Commission",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/2071778/000121390026070601/ea0295478-defa14a_fermi.htm",
+        "label": "Fermi Inc. proxy solicitation materials (DEFA14A), June 2026",
+        "publisher": "U.S. Securities and Exchange Commission",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-26",
     "notes": "11GW is the long-term ceiling for the HyperGrid campus; near-term company targets include 1GW by end of 2026 and 2.3GW first-phase delivery — these are company goals, not firm commitments. Land acreage reported variously (5,769 acres per DCD July 2025 and 5,855 acres per other sources; later company materials cite 7,570 acres on 7,570 acres); using 5,769 as the earliest confirmed figure, sourced from the gas turbine acquisition announcement. Coordinates approximate (seed-provided; site in Carson County ~12 miles NE of Amarillo, adjacent to DOE Pantex Plant). Fermi America co-founded January 2025 by former Texas Governor and U.S. Energy Secretary Rick Perry, Toby Neugebauer (CEO, departed April 2026 after being fired 'without cause'), and Griffin Perry. IPO raised $682M on Nasdaq under ticker FRMI (October 2025), valuing company at ~$19B at opening; market cap collapsed to ~$3.4B by April 2026 after leadership exits and loss of anchor tenant ($150M LOI canceled December 2025). Company organized as a REIT; had zero revenue at IPO. Investment: equipment financing commitments exceed $600M ($500M MUFG turbine warehouse + $200M Keystone/Cape facility); projected total project cost $70–90B is a range/projection, not a firm figure — omitted from investmentUsd per data-rigor policy. Jobs: 50,000+ projected across campus lifetime — projection only, omitted from jobs field. Nuclear campus name in NRC COLA filings: 'President Donald J. Trump Advanced Energy and Intelligence Campus'; publicly marketed as Project Matador / HyperGrid.",
     "energy": {
       "source": "mixed",
@@ -25327,6 +25592,32 @@
       "notes": "TCEQ air permit process (for 93 planned gas turbines) drew 279+ public comments, majority opposed. 63 contested case hearing requests filed before State Office of Administrative Hearings; 21 additional public meeting requests. Primary opposition group: Panhandle Taxpayers for Transparency. Key concerns: air quality (modeled 2,140 tpy CO and 1,591 tpy NOx), water demand, impacts on farmland and nearby cattle operations (Tyson Foods facility adjacent). Fermi bused in college students to a December 2025 public meeting, stoking further controversy.",
       "sourceIndex": 5
     },
+    "stakeholders": [
+      {
+        "name": "Rick Perry",
+        "role": "founder",
+        "via": "Fermi America",
+        "note": "Co-founder and director of Fermi America, developer of this campus, holding 2.5% of common stock after the October 2025 IPO. Former Texas governor (2000-2015) and U.S. Energy Secretary (2017-2019).",
+        "sourceIndex": 9,
+        "asOf": "2026-08-26"
+      },
+      {
+        "name": "Griffin Perry",
+        "role": "founder",
+        "via": "Fermi America",
+        "note": "Co-founder of Fermi America, developer of this campus, holding 19.4% of common stock after the October 2025 IPO — the second-largest individual holding.",
+        "sourceIndex": 9,
+        "asOf": "2026-08-26"
+      },
+      {
+        "name": "Toby Neugebauer",
+        "role": "founder",
+        "via": "Fermi America",
+        "note": "Co-founder and former CEO of Fermi America, developer of this campus. As of June 2026 he was soliciting shareholder consents to call a special meeting, which the company publicly opposed.",
+        "sourceIndex": 10,
+        "asOf": "2026-08-26"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -32705,9 +32996,16 @@
         "label": "King George County official Parcels GIS layer — Tax Map 21 Parcels 49 & 73, Tax Map 22 Parcels 46A & 49A, per the county's own voluntary proffer statement",
         "retrievedAt": "2026-07-18",
         "kind": "other"
+      },
+      {
+        "url": "https://kinggeorgetechnologycenter.com/wp-content/uploads/2026/01/12.12.25-Clean-Proffers-GEV.pdf",
+        "label": "King George Technology Center Voluntary Proffer Statement (Dec 12, 2025)",
+        "publisher": "Green Energy Ventures / J2 Engineers",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-26",
     "notes": "352 acres (40 already industrial-zoned) in the Route 3 West Settlement Area, bordering Stafford; rezoning pending.",
     "landAcres": 352,
     "community": {
@@ -34569,10 +34867,27 @@
         "publisher": "SEC EDGAR",
         "retrievedAt": "2026-07-17",
         "kind": "filing"
+      },
+      {
+        "url": "https://fortune.com/article/eric-trump-donald-trump-american-bitcoin-newest-arm-trump-crypto-empire/",
+        "label": "Eric Trump's American Bitcoin: Inside the newest arm of the Trump crypto empire",
+        "publisher": "Fortune",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-17",
+    "lastUpdated": "2026-08-26",
     "notes": "205 MW ASIC colocation, energized June-July 2025; hosts American Bitcoin. Enumerated in Hut 8's 10-Q site list.",
+    "stakeholders": [
+      {
+        "name": "Eric Trump",
+        "role": "founder",
+        "via": "American Bitcoin",
+        "note": "Co-founder and chief strategy officer of American Bitcoin, which mines at this site; he toured the Vega facility in person shortly after it came online in mid-2025.",
+        "sourceIndex": 1,
+        "asOf": "2026-08-26"
+      }
+    ],
     "facilityType": "crypto_mining"
   },
   {
@@ -36069,16 +36384,40 @@
         "publisher": "KATV",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.casemine.com/judgement/us/67679616818b345f27ef3c1b",
+        "label": "Jones Eagle LLC v. Ward, 4:24-cv-00990-KGB (E.D. Ark.), order of Dec. 9, 2024",
+        "publisher": "CaseMine (republishing U.S. District Court, E.D. Ark.)",
+        "retrievedAt": "2026-08-26",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.courthousenews.com/arkansas-defends-ban-on-foreign-owned-farmland-and-digital-assets/",
+        "label": "Arkansas defends ban on foreign-owned farmland and digital assets (8th Cir. oral argument)",
+        "publisher": "Courthouse News Service",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
-    "notes": "Owner Qimin 'Jimmy' Chen (Eagle Asset Holding Inc.) is a naturalized U.S. citizen born in China. Operates ~2,800 mining computers per Arkansas Business reporting; investment reported >$1.4M excl. Entergy deposits/land lease. Jones Eagle sued the State of Arkansas (AG Tim Griffin, Ag Secretary Wes Ward) over Act 636 (foreign ownership of ag land) and Act 174 (foreign-party-controlled businesses); U.S. District Judge Kristine Baker granted a TRO/preliminary injunction in Nov 2024 blocking enforcement, finding Jones Eagle likely to prevail. Arkansas County residents/quorum court fought the facility over noise, water use, and grid strain (Act 851 'Right to Mine' backlash).",
+    "lastUpdated": "2026-08-26",
+    "notes": "Jones Eagle is controlled by Eagle Asset Holding Inc., whose sole owner — and Jones Eagle's manager — is Qimin 'Jimmy' Chen. Chen, a naturalized U.S. citizen born in China, sued the State of Arkansas (AG Tim Griffin, Ag Secretary Wes Ward) over Act 636 (foreign ownership of ag land) and Act 174 (foreign-party-controlled businesses), whose restrictions reach owners with ties to certain countries including China, arguing the laws were unconstitutional and were applied to retaliate against his business. U.S. District Judge Kristine Baker granted a TRO in Nov 2024 and a preliminary injunction in Dec 2024, finding Jones Eagle likely to prevail; Arkansas's appeal was argued before the 8th Circuit in Jan 2026 and remains undecided. Operates ~2,800 mining computers per Arkansas Business reporting; investment reported >$1.4M excl. Entergy deposits/land lease. Arkansas County residents/quorum court fought the facility over noise, water use, and grid strain (Act 851 'Right to Mine' backlash).",
     "energy": {
       "source": "grid"
     },
     "community": {
       "status": "litigation"
     },
+    "stakeholders": [
+      {
+        "name": "Qimin \"Jimmy\" Chen",
+        "role": "controlling_owner",
+        "via": "Eagle Asset Holding Inc.",
+        "note": "A federal court found Chen is Jones Eagle's manager and sole owner of Eagle Asset Holding Inc., which holds a controlling interest in Jones Eagle LLC.",
+        "sourceIndex": 3,
+        "asOf": "2026-08-26"
+      }
+    ],
     "facilityType": "crypto_mining",
     "mining": {
       "powerArrangement": "grid"
@@ -39119,6 +39458,47 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "mesh-capital-cabin-field-road-data-center-campbell-va",
+    "name": "Cabin Field Road Data Center",
+    "operator": "Mesh Capital LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.3407675,
+      "lon": -78.9909489,
+      "county": "Campbell",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "County zoning administrator determined three scaled-back conceptual site plans (three data center buildings, ~450,000 sq ft) comply with the parcel's existing protective proffer, clearing a by-right path despite the Board's October 2025 rezoning denial.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wdbj7.com/2025/11/03/data-center-could-still-be-coming-campbell-county-despite-denial-vote-supervisors/",
+        "label": "Data center could still be coming to Campbell County despite denial vote from supervisors",
+        "publisher": "WDBJ7",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://wset.com/news/local/campbell-county-faces-data-center-proposals-as-residents-call-for-stricter-regulations-route-460-concord-cabin-field-road-mesh-capital-llc-supervisor-matthew-kline-november-2025",
+        "label": "Campbell County faces data center proposals as residents call for stricter regulations",
+        "publisher": "WSET",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "landAcres": 57,
+    "facilityType": "data_center"
   },
   {
     "id": "meta-aiken-county-sc",
@@ -49534,9 +49914,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/powerhouse-breaks-ground-on-800mw-data-center-campus-in-spotsylvania-county-virginia/",
+        "label": "PowerHouse breaks ground on 800MW data center campus in Spotsylvania County, Virginia",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-26",
     "notes": "Campus located at approximately 4189 Turner Ct, Spotsylvania County, VA along the I-95/Hwy 17 corridor; coordinates are approximate. Three 300 MW substations planned (800 MW total); first substation delivering 150 MW targeted for Q4 2025. Up to 8 buildings, 3.5 million sq ft. Phased delivery Q3 2025–Q4 2027. Joint venture between PowerHouse/AREP and Harrison Street. Harrison Street managing director explicitly cited 'high-powered computing, AI, and other advancements' as the demand driver for this campus class, supporting likely AI classification. Named tenant not disclosed. Dominion Energy utility attribution is inferred from service territory: Dominion's Tributary 230 kV project was approved by Virginia SCC (June 30, 2024) specifically to serve growing Spotsylvania data center demand; PH95 press materials do not name the utility directly. Investment amount, job figures, and water draw not disclosed in any sourced press materials. Joint venture: American Real Estate Partners (AREP) and Harrison Street.",
     "energy": {
       "source": "grid",
@@ -54274,9 +54661,16 @@
         "publisher": "Appalachian Voices",
         "retrievedAt": "2026-07-13",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/red-post-energy-and-wise-innovation-hub-venture-oasis-execute-letter-of-intent-to-advance-power-infrastructure-for-major-data-center-development-in-southwest-virginia-302645511.html",
+        "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) Execute Letter of Intent to Advance Power Infrastructure for Major Data Center Development in Southwest Virginia",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-13",
+    "lastUpdated": "2026-08-26",
     "notes": "Dedicated phased power project (up to 600 MW) anchoring a planned Wise County data-center hub; coordinates approximate to the Lonesome Pine Regional Business & Technology Park.",
     "energy": {
       "source": "other",
@@ -57520,10 +57914,30 @@
         "publisher": "Farm and Dairy",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.dailysignal.com/2026/06/29/central-ohio-data-center-will-have-its-own-power-plant/",
+        "label": "The Daily Signal: Central Ohio data center will have its own power plant",
+        "publisher": "The Daily Signal",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.publicpower.org/periodical/article/ohio-power-siting-board-approves-construction-power-plant-serve-load-adjacent-data-center",
+        "label": "American Public Power Association: Ohio Power Siting Board approves construction of power plant to serve load of adjacent data center",
+        "publisher": "American Public Power Association",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-08-26",
     "notes": "A third Williams (Will-Power OH) on-site gas plant, 250 MW, serving Meta's New Albany operations (offtaker Sidecat LLC), approved by the Ohio Power Siting Board (Case 26-0169-EL-BLN) and operating behind-the-meter for an adjacent data center. Coordinates approximate.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 250,
+      "notes": "Includes 116 MW of battery energy storage; behind-the-meter, serves Sidecat LLC (a Meta Platforms affiliate); not connected to the electric grid."
+    },
+    "landAcres": 109,
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -58054,12 +58468,27 @@
         "publisher": "WSET (ABC13)",
         "retrievedAt": "2026-08-19",
         "kind": "press"
+      },
+      {
+        "url": "https://virginiabusiness.com/stack-100b-berry-hill-data-center-project/",
+        "label": "$100B data center project proposed at Berry Hill megasite advances",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-08-26",
     "notes": "Performance agreement caps investment at up to $73.5B over 30 years (2,050 jobs); parallel reporting cites a ~$100B project scope. ~2,990 acres of the Southern Virginia Megasite; land deal ~$737.8M. investmentUsd reflects the conservative $73B figure from the March 2026 draft performance agreement (2,050 jobs, 30-year span, not yet signed); a May 2026 'final document' revised it upward to $100B / 2,500 jobs.",
+    "water": {
+      "reportedMgd": 7,
+      "notes": "Performance agreement references 7 million gallons per day of water capacity allocated from the Dan River for the megasite buildout."
+    },
     "investmentUsd": 73000000000,
     "landAcres": 2990,
+    "jobs": {
+      "permanent": 2050,
+      "sourceIndex": 5
+    },
     "community": {
       "status": "mixed",
       "notes": "The Pittsylvania County Board of Supervisors passed a resolution supporting the project, and Regional Industrial Facility Authority chair Vic Ingram publicly championed it, calling the investment historic. Erin Hall, a resident living four miles from the megasite, spoke against the project during public comment, questioning water and power safeguards and saying county meetings had been kept 'hush-hush.'",
@@ -65309,9 +65738,16 @@
         "label": "Goochland County: Tuckahoe Technology Park official project page",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://virginiabusiness.com/tract-planning-872-acre-data-center-campus-in-goochland/",
+        "label": "Tract planning 872-acre data center campus in Goochland",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-26",
     "notes": "Eastern Goochland County, west of West Creek Business Park; 13 parcels, up to 7 development areas/buildings. $3B+ construction spending projected over a 5-7 year buildout. Pre-application for a conditional-use permit filed June 10, 2026 - the first project under Goochland's new Technology Overlay District. Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -65320,6 +65756,11 @@
     },
     "investmentUsd": 3000000000,
     "landAcres": 872,
+    "jobs": {
+      "construction": 1200,
+      "permanent": 350,
+      "sourceIndex": 4
+    },
     "community": {
       "status": "litigation",
       "notes": "Tuckahoe is the first project filed under Goochland's new Technology Overlay District, which is itself the subject of an active lawsuit by four residents alleging the county violated state notice requirements when adopting it; the overlay's adoption also drew broader resident backlash.",
@@ -66764,6 +67205,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "virginia-technology-park-clear-brook-frederick-va",
+    "name": "Virginia Technology Park",
+    "operator": "Equus Capital Partners",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.2564912,
+      "lon": -78.096111,
+      "city": "Clear Brook",
+      "county": "Frederick",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06",
+        "note": "Rezoning application for a 10-11 building data center campus near I-81 Exit 323; Frederick County Planning Commission voted 10-0 to recommend denial, with the matter referred to the Board of Supervisors.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nvdaily.com/nvdaily/frederick-county-planners-vote-down-clear-brook-data-center-campus/article_8e6c14d9-ce6f-51fd-9c04-e46953e6b6e5.html",
+        "label": "Frederick County planners vote down Clear Brook data center campus",
+        "publisher": "Northern Virginia Daily",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.winchesterstar.com/winchester_star/new-technology-park-proposal-begins-review-process-in-frederick-county/article_b90887cd-5145-5494-8eb0-ade0edc35288.html",
+        "label": "New technology park proposal begins review process in Frederick County",
+        "publisher": "Winchester Star",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "landAcres": 220,
+    "facilityType": "data_center"
+  },
+  {
     "id": "viridian-apecs-janesville-wi",
     "name": "APECS Data Center Campus (Former GM Assembly Plant)",
     "operator": "Viridian Acquisitions LLC",
@@ -67514,6 +67997,48 @@
     "facilityType": "power_generation"
   },
   {
+    "id": "winchester-gateway-data-center-frederick-va",
+    "name": "Winchester Gateway",
+    "operator": "Winchester Gateway LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.1442224,
+      "lon": -78.1980384,
+      "city": "Winchester",
+      "county": "Frederick",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08",
+        "note": "Conditional-use permit application for three data center buildings, a substation, and a stormwater pond on M1-zoned land in the Kernstown area; Frederick County's Historic Resources Advisory Board recommended denial, with a Planning Commission vote scheduled for September 2, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nvdaily.com/nvdaily/panel-recommends-denial-of-winchester-gateway-data-center-proposal/article_228ead16-7a9b-5e08-bf16-54cd65670acc.html",
+        "label": "Panel recommends denial of Winchester Gateway data center proposal",
+        "publisher": "Northern Virginia Daily",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenter.fyi/public-record/winchester-gateway-llc-cef8563d",
+        "label": "Winchester Gateway LLC — public record",
+        "publisher": "datacenter.fyi",
+        "retrievedAt": "2026-08-26",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-26",
+    "landAcres": 72,
+    "facilityType": "data_center"
+  },
+  {
     "id": "wiscasset-proposed-me",
     "name": "Wiscasset Data Center (Old Ferry Road Site)",
     "operator": "Unnamed developer (NDA with town)",
@@ -67643,9 +68168,16 @@
         "publisher": "Cardinal News",
         "retrievedAt": "2026-08-16",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/red-post-energy-and-wise-innovation-hub-venture-oasis-execute-letter-of-intent-to-advance-power-infrastructure-for-major-data-center-development-in-southwest-virginia-302645511.html",
+        "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) Execute Letter of Intent to Advance Power Infrastructure for Major Data Center Development in Southwest Virginia",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-08-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-08-26",
     "notes": "Phased technology/data-center hub planned over ~10 years at the Lonesome Pine Regional Business & Technology Park (adjacent to Lonesome Pine Regional Airport) on former mined land in Wise County — a multi-tenant cluster co-located with the existing Mineral Gap data center. Developer Wise Innovation Hub Venture LLC (branded 'OASIS') signed a 2025-12-18 LOI with Red Post Energy for dedicated power; compute capacity and named end-users not yet disclosed, so capacity is omitted.",
     "energy": {
       "source": "other",
@@ -67889,7 +68421,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-08-26",
     "notes": "Address: 2400 Stateline Road, Southaven, MS 38671 (near Tennessee border); coordinates are approximate for that address. The $20B investment figure covers total xAI Mississippi commitments including adjacent power plant site, not only this building. Facility is distinct from the already-tracked Colossus supercomputer clusters in Memphis, TN. Combined with Memphis facilities, xAI aims for nearly 2 GW total compute capacity. Fix: jobs.sourceIndex corrected from 0 to 1; the specific 145-person figure is reported by Mississippi Free Press (source 1), not the governor's press release (source 0) which states only 'hundreds of permanent jobs.'",
     "energy": {
       "source": "on_site_gas",
@@ -67914,6 +68446,16 @@
       "notes": "Safe and Sound Coalition (lifelong residents) cited lack of transparency; NAACP raised environmental concerns about pollution affecting Southaven and neighboring Memphis communities; residents allege public was not consulted prior to expansion.",
       "sourceIndex": 1
     },
+    "stakeholders": [
+      {
+        "name": "Elon Musk",
+        "role": "founder",
+        "via": "xAI",
+        "note": "Founder of xAI, the company building this data center; named as such in the Mississippi Governor's Office announcement of the Southaven investment.",
+        "sourceIndex": 0,
+        "asOf": "2026-08-26"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },

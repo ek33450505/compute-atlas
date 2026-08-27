@@ -21,7 +21,7 @@ import { getDb, hasDatabaseUrl } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 import type { DiffEntry } from "@/lib/doc-diff";
-import { operatorSlug } from "@/lib/operator-slug";
+import { operatorSlug, personSlug } from "@/lib/operator-slug";
 
 /**
  * Validated view of the bundled JSON fallback, memoized for the process
@@ -1346,7 +1346,10 @@ export async function getFacilitiesByMetro(slug: string): Promise<Facility[]> {
 // `next/cache` (see that file's header comment). Re-exported here so
 // existing importers of `@/lib/data` (app/facilities/[slug]/page.tsx,
 // components/facility/related-facilities.tsx) keep working unchanged.
-export { operatorSlug };
+// `personSlug` is re-exported alongside it for the same reason: route files
+// import both from this one module rather than reaching into the leaf
+// directly (see app/stakeholders/**).
+export { operatorSlug, personSlug };
 
 interface OperatorIndex {
   /** Operator name -> that operator's facilities, pre-sorted by max MW desc, then name A→Z. */
@@ -1519,6 +1522,153 @@ export async function getOperatorSummary(name: string): Promise<OperatorSummary 
     byStatus,
     stateCount: states.size,
   };
+}
+
+// ============================================================
+// Per-stakeholder helpers (used by /stakeholders pages)
+// ============================================================
+//
+// Unlike operators, stakeholders live inside each facility's jsonb `doc`
+// with no indexed DB column — there is no equivalent of
+// `fetchFacilitiesByOperatorUncached`'s indexed query, and no new cache tag
+// (the `lib/cache-tags.ts` allowlist stays closed to a `stakeholder:` tag;
+// `db:sync` exits 1 on any tag outside it). The index below is built
+// entirely in memory on top of the shared `loadFacilities()` read (tag
+// `"facilities"`, `revalidate: 3600`) rather than a new `unstable_cache`
+// reader.
+
+interface StakeholderIndex {
+  /** Person name -> that person's facilities, pre-sorted by max MW desc, then name A→Z. */
+  byPerson: Map<string, Facility[]>;
+  /** personSlug(name) -> person name, for case-insensitive reverse slug lookup. */
+  slugToPerson: Map<string, string>;
+}
+
+const stakeholderIndexCache = new WeakMap<Facility[], StakeholderIndex>();
+
+/**
+ * Builds the stakeholder index from a facility list. A pure function of its
+ * `facilities` argument — exported (like `withJsonFallback` above) so it can
+ * be unit-tested directly against synthetic fixtures, since the real
+ * dataset's `stakeholders` field is still mostly unpopulated (see
+ * lib/schema.ts) and has no multi-facility person to exercise the grouping
+ * logic against yet.
+ *
+ * A person can appear more than once in the same facility's `stakeholders`
+ * array (e.g. both "founder" and "executive") — deduped here so their
+ * facility list never lists the same site twice. A person can also hold
+ * different roles at different facilities; this index groups by name only,
+ * `getStakeholders()` derives the de-duplicated role union.
+ */
+export function buildStakeholderIndex(facilities: Facility[]): StakeholderIndex {
+  const cached = stakeholderIndexCache.get(facilities);
+  if (cached) return cached;
+
+  const byPerson = new Map<string, Facility[]>();
+  const seenFacilityIdsByPerson = new Map<string, Set<string>>();
+  for (const f of facilities) {
+    for (const s of f.stakeholders ?? []) {
+      let seenIds = seenFacilityIdsByPerson.get(s.name);
+      if (!seenIds) {
+        seenIds = new Set<string>();
+        seenFacilityIdsByPerson.set(s.name, seenIds);
+      }
+      if (seenIds.has(f.id)) continue;
+      seenIds.add(f.id);
+
+      const bucket = byPerson.get(s.name);
+      if (bucket) bucket.push(f);
+      else byPerson.set(s.name, [f]);
+    }
+  }
+
+  const slugToPerson = new Map<string, string>();
+  for (const [name, bucket] of byPerson) {
+    bucket.sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+    slugToPerson.set(personSlug(name), name);
+  }
+
+  const index: StakeholderIndex = { byPerson, slugToPerson };
+  stakeholderIndexCache.set(facilities, index);
+  return index;
+}
+
+/** Loads the facility list and returns its memoized stakeholder index. */
+async function getStakeholderIndex(): Promise<StakeholderIndex> {
+  return buildStakeholderIndex(await loadFacilities());
+}
+
+/** Aggregate summary of one named stakeholder, across every facility they're linked to. */
+export interface StakeholderSummary {
+  name: string;
+  slug: string;
+  /** De-duplicated union of every role recorded for this person, across all their facilities. */
+  roles: string[];
+  facilityCount: number;
+  /** Distinct location.state codes across the person's facilities, sorted A→Z. */
+  states: string[];
+}
+
+/**
+ * Returns one summary entry per named stakeholder, sorted by facility count
+ * desc, then name A→Z. Backs the /stakeholders index page and the
+ * per-person hub's role/state display. A person's `roles` is the
+ * de-duplicated union of every role recorded for them across their
+ * facilities — the same person can be a "founder" at one site and an
+ * "investor" at another.
+ */
+export async function getStakeholders(): Promise<StakeholderSummary[]> {
+  const { byPerson } = await getStakeholderIndex();
+  const summaries: StakeholderSummary[] = [];
+
+  for (const [name, facilities] of byPerson) {
+    const roles = new Set<string>();
+    const states = new Set<string>();
+    for (const f of facilities) {
+      states.add(f.location.state);
+      for (const s of f.stakeholders ?? []) {
+        if (s.name === name) roles.add(s.role);
+      }
+    }
+    summaries.push({
+      name,
+      slug: personSlug(name),
+      roles: [...roles].sort(),
+      facilityCount: facilities.length,
+      states: [...states].sort(),
+    });
+  }
+
+  return summaries.sort(
+    (a, b) => b.facilityCount - a.facilityCount || a.name.localeCompare(b.name)
+  );
+}
+
+/**
+ * Returns the stakeholder name for a URL slug (case-insensitive), or
+ * undefined if unknown. Backed by the memoized stakeholder index — an O(1)
+ * map lookup, same shape as `getOperatorBySlug`.
+ */
+export async function getStakeholderBySlug(slug: string): Promise<string | undefined> {
+  const { slugToPerson } = await getStakeholderIndex();
+  return slugToPerson.get(slug.toLowerCase());
+}
+
+/**
+ * Returns all facilities where `name` appears in `stakeholders`, sorted by
+ * max capacity (operational or planned) desc, then name A→Z. Unlike
+ * `getFacilitiesByOperator`, there is no indexed DB query behind this — it
+ * reads the memoized stakeholder index (itself built on the shared,
+ * already-cached `loadFacilities()` list) and returns a fresh array copy so
+ * callers may not mutate the cached bucket.
+ */
+export async function getFacilitiesByStakeholder(name: string): Promise<Facility[]> {
+  const { byPerson } = await getStakeholderIndex();
+  return [...(byPerson.get(name) ?? [])];
 }
 
 // ============================================================

@@ -32,6 +32,11 @@ import {
   getOperatorBySlug,
   getFacilitiesByOperator,
   getOperatorSummary,
+  personSlug,
+  buildStakeholderIndex,
+  getStakeholders,
+  getStakeholderBySlug,
+  getFacilitiesByStakeholder,
   getPowerGenerationFacilities,
   loadPowerGenerationCached,
   normalizeOfftaker,
@@ -47,7 +52,13 @@ import {
   getRecentActivity,
   getQuarterlyPipelineSummary,
 } from "@/lib/data";
-import { facilitySchema, facilitiesSchema, aiClassificationEnum, confidenceEnum } from "@/lib/schema";
+import {
+  facilitySchema,
+  facilitiesSchema,
+  aiClassificationEnum,
+  confidenceEnum,
+  type DataCenterFacility,
+} from "@/lib/schema";
 import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER } from "@/lib/community";
 import { STATUS_ORDER } from "@/lib/status";
@@ -928,6 +939,117 @@ describe("operatorSlug", () => {
 describe("getOperatorBySlug", () => {
   it("returns undefined for an unknown slug", async () => {
     expect(await getOperatorBySlug("not-a-real-operator")).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Stakeholders — the `stakeholders` field is a brand-new, still-mostly-
+// unpopulated part of the schema (see lib/schema.ts), so the real bundled
+// dataset currently has zero facilities with a stakeholder on file. The
+// round-trip/empty-state tests below assert real, currently-true behavior
+// against the live dataset; `buildStakeholderIndex` is additionally
+// unit-tested directly against synthetic fixtures (it's a pure function of
+// its `facilities` argument, exported for exactly this reason — see its doc
+// comment) since there is no real multi-facility person yet to exercise the
+// grouping logic against.
+// ---------------------------------------------------------------------------
+
+function makeFacility(overrides: Partial<DataCenterFacility> = {}): DataCenterFacility {
+  return {
+    id: "test-facility",
+    name: "Test Facility",
+    operator: "Acme Corp",
+    status: "operational",
+    confidence: "confirmed",
+    facilityType: "data_center",
+    location: { lat: 40, lon: -90, state: "IL", precision: "exact" },
+    statusHistory: [],
+    sources: [
+      { url: "https://example.com", label: "Example source", retrievedAt: "2026-01-01", kind: "press" },
+    ],
+    lastUpdated: "2026-01-01",
+    ...overrides,
+  };
+}
+
+describe("personSlug", () => {
+  it("slugifies a multi-word person name", () => {
+    expect(personSlug("Jane Q. Doe")).toBe("jane-q-doe");
+  });
+});
+
+describe("buildStakeholderIndex", () => {
+  it("groups one person across multiple facilities, sorted by max MW desc", () => {
+    const small = makeFacility({
+      id: "site-a",
+      capacityMw: { operational: 50 },
+      stakeholders: [{ name: "Jane Doe", role: "founder", sourceIndex: 0, asOf: "2026-01-01" }],
+    });
+    const big = makeFacility({
+      id: "site-b",
+      capacityMw: { operational: 200 },
+      stakeholders: [{ name: "Jane Doe", role: "investor", sourceIndex: 0, asOf: "2026-01-01" }],
+    });
+
+    const { byPerson, slugToPerson } = buildStakeholderIndex([small, big]);
+
+    expect(byPerson.get("Jane Doe")?.map((f) => f.id)).toEqual(["site-b", "site-a"]);
+    expect(slugToPerson.get(personSlug("Jane Doe"))).toBe("Jane Doe");
+  });
+
+  it("dedupes a person listed twice at the same facility (e.g. two roles)", () => {
+    const facility = makeFacility({
+      id: "site-a",
+      stakeholders: [
+        { name: "Jane Doe", role: "founder", sourceIndex: 0, asOf: "2026-01-01" },
+        { name: "Jane Doe", role: "executive", sourceIndex: 0, asOf: "2026-01-01" },
+      ],
+    });
+
+    const { byPerson } = buildStakeholderIndex([facility]);
+
+    expect(byPerson.get("Jane Doe")).toHaveLength(1);
+  });
+});
+
+describe("getStakeholders", () => {
+  // Invariant-based rather than an exact array/count: `stakeholders` is a
+  // brand-new field that back-fills over time (see lib/schema.ts), so a
+  // hardcoded "returns []" assertion would go stale the moment real sourced
+  // entries land — and did, mid-development of this lens. Holds vacuously
+  // true (0 iterations) on a sparse dataset and becomes a real check once
+  // entries exist, in either case.
+  it("every summary reflects at least one facility, with de-duplicated roles and states", async () => {
+    for (const person of await getStakeholders()) {
+      expect(person.facilityCount).toBeGreaterThan(0);
+      expect(person.roles.length).toBeGreaterThan(0);
+      expect(person.states.length).toBeGreaterThan(0);
+      expect(person.slug).toBe(personSlug(person.name));
+      expect(new Set(person.roles).size).toBe(person.roles.length);
+      expect(new Set(person.states).size).toBe(person.states.length);
+    }
+  });
+});
+
+describe("getStakeholderBySlug", () => {
+  it("returns undefined for an unknown slug", async () => {
+    expect(await getStakeholderBySlug("not-a-real-stakeholder")).toBeUndefined();
+  });
+
+  // Exercises the same round-trip contract as the operatorSlug describe block
+  // above. Currently a 0-iteration loop against the live dataset — it becomes
+  // a real, mutation-testable assertion the moment the first sourced
+  // stakeholder entry lands, rather than a vacuous placeholder.
+  it("round-trips through personSlug for every tracked stakeholder", async () => {
+    for (const person of await getStakeholders()) {
+      expect(await getStakeholderBySlug(personSlug(person.name))).toBe(person.name);
+    }
+  });
+});
+
+describe("getFacilitiesByStakeholder", () => {
+  it("returns [] for a name with zero facilities", async () => {
+    expect(await getFacilitiesByStakeholder("Not A Real Person")).toEqual([]);
   });
 });
 

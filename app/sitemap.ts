@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
+import { getAllFacilities, getStates, getOperators, operatorSlug, getStakeholders } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
 import { METROS } from "@/lib/metros";
@@ -204,6 +204,39 @@ export async function buildOperatorRoutes(): Promise<MetadataRoute.Sitemap> {
 }
 
 /**
+ * Builds the /stakeholders index + per-person route entries for the
+ * sitemap. Structurally mirrors buildOperatorRoutes above: `lastModified`
+ * for each per-person entry is that person's OWN facilities' max
+ * `lastUpdated` (not the whole dataset), because a stakeholder hub, like an
+ * operator hub, only changes when one of THEIR facilities changes. The
+ * index entry uses the whole dataset's max `lastUpdated` since `/stakeholders`
+ * has no dedicated entry in buildStaticRoutes (unlike `/operators`).
+ * Exported separately so it can be unit-tested without Next.js.
+ */
+export async function buildStakeholderRoutes(): Promise<MetadataRoute.Sitemap> {
+  const [people, facilities] = await Promise.all([getStakeholders(), getAllFacilities()]);
+  return [
+    {
+      url: `${siteConfig.url}/stakeholders`,
+      lastModified: maxLastUpdated(facilities),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    ...people.map((p) => {
+      const personFacilities = facilities.filter((f) =>
+        (f.stakeholders ?? []).some((s) => s.name === p.name)
+      );
+      return {
+        url: `${siteConfig.url}/stakeholders/${p.slug}`,
+        lastModified: maxLastUpdated(personFacilities),
+        changeFrequency: "weekly" as const,
+        priority: 0.5,
+      };
+    }),
+  ];
+}
+
+/**
  * Builds the /status index + 5 per-status route entries for the sitemap.
  * `lastModified` uses the whole dataset's max `lastUpdated` (not a
  * per-status max like buildStateRoutes/buildOperatorRoutes) — each status
@@ -293,6 +326,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     learnRoutes,
     stateRoutes,
     operatorRoutes,
+    stakeholderRoutes,
     facilityRoutes,
     statusRoutes,
     metroRoutes,
@@ -301,6 +335,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     buildLearnRoutes(),
     buildStateRoutes(),
     buildOperatorRoutes(),
+    buildStakeholderRoutes(),
     buildFacilityRoutes(),
     buildStatusRoutes(),
     buildMetroRoutes(),
@@ -310,6 +345,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...learnRoutes,
     ...stateRoutes,
     ...operatorRoutes,
+    ...stakeholderRoutes,
     ...facilityRoutes,
     ...statusRoutes,
     ...metroRoutes,

@@ -117,7 +117,8 @@ jobs:
             public/data/water-stress.geojson \
             public/data/groundwater-decline.geojson \
             public/data/aquifers.geojson \
-            public/data/map-layers.json
+            public/data/map-layers.json \
+            public/data/hero-points.json
 
       # Heredoc form of $GITHUB_OUTPUT, not `key=value`: the note contains
       # backticks, quotes and emoji, and key=value is single-line-only — a stray
@@ -175,3 +176,4 @@ jobs:
             public/data/groundwater-decline.geojson
             public/data/aquifers.geojson
             public/data/map-layers.json
+            public/data/hero-points.json

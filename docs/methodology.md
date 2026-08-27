@@ -219,6 +219,39 @@ Put together: follow the `sources`, weigh the `confidence`, and read the
 `statusHistory` — that is what "source-cited" means here, and it is the whole
 point of the project.
 
+## Stakeholders
+
+An optional `stakeholders[]` array names people with a documented stake in a
+specific facility. Coverage is deliberately sparse — not because data is missing,
+but because the field follows a strict site-level standard that excludes most
+candidates.
+
+**The site-level standard:** A source must name the person in connection with
+THIS facility, not merely its operator. "Zuckerberg runs Meta and Meta owns this
+site" does not qualify. The person must have a stake documented through a
+verifiable public source tied directly to the facility. This is why a record with
+20 executives named in operator-level filings may carry zero stakeholders.
+
+**Why `sourceIndex` and `asOf` are required:** Both are mandatory, unlike the
+optional `sourceIndex` on `jobs` and `community`. A name without a citation is
+not acceptable in a public record, and stakes change — a person's title or role
+at a facility may have shifted since a source was published, so `asOf` marks
+when that stake was documented.
+
+**Role categories:**
+
+- **Financial interests:** `founder`, `controlling_owner`, `investor`, `executive`,
+  `board_member`, `landowner`.
+- **Governmental role:** `public_official` — a person with a documented approval,
+  permit, or incentive role (e.g., a regulator issuing a permit, an official who
+  approved a subsidy). This is NOT a financial interest; the facility page renders
+  it as a separate group with a caption saying listing does not imply financial
+  involvement.
+
+The field is excluded from both the automated discovery pipeline and public
+corrections. Stakeholders are added through maintainer research and human review
+only — a local model must never be able to name a private individual.
+
 ## See also
 
 - [`README.md`](../README.md) — what the dataset is and the public API.

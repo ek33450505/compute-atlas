@@ -78,6 +78,35 @@ export const subsidySchema = z.object({
   sourceIndex: z.number().int().nonnegative().optional(),
 });
 
+export const stakeholderRoleEnum = z.enum([
+  // financial interest
+  "founder",
+  "controlling_owner",
+  "investor",
+  // corporate role
+  "executive",
+  "board_member",
+  // site-specific
+  "landowner",
+  // governmental role — NOT a financial interest
+  "public_official",
+]);
+
+// A named person with a documented stake in THIS facility. Site-level only:
+// a source must tie the person to this site, never merely to its operator.
+// `sourceIndex` and `asOf` are required — unlike jobs/community, where they are
+// optional — because naming a real person without a citation is not acceptable.
+export const stakeholderSchema = z.object({
+  name: z.string().min(1),
+  role: stakeholderRoleEnum,
+  /** The entity the stake runs through, e.g. "xAI". Makes the chain explicit. */
+  via: z.string().min(1).optional(),
+  /** One neutral sentence stating the documented relationship. */
+  note: z.string().max(300).optional(),
+  sourceIndex: z.number().int().nonnegative(),
+  asOf: z.string().min(4),
+});
+
 export const communityStatusEnum = z.enum([
   "supported",
   "mixed",
@@ -152,6 +181,8 @@ const baseFacilityShape = {
       sourceIndex: z.number().int().nonnegative().optional(),
     })
     .optional(),
+  // named people with a documented stake in this specific site
+  stakeholders: z.array(stakeholderSchema).optional(),
 };
 
 // Data-center-specific environmental metrics.
@@ -251,6 +282,7 @@ function checkSourceIndexBounds(
     sources: { url: string }[];
     statusHistory: { sourceIndex?: number }[];
     subsidies?: { sourceIndex?: number }[];
+    stakeholders?: { sourceIndex?: number }[];
     jobs?: { sourceIndex?: number };
     community?: { sourceIndex?: number };
   },
@@ -271,6 +303,9 @@ function checkSourceIndexBounds(
   );
   data.subsidies?.forEach((s, i) =>
     checkIndex(s.sourceIndex, ["subsidies", i, "sourceIndex"])
+  );
+  data.stakeholders?.forEach((s, i) =>
+    checkIndex(s.sourceIndex, ["stakeholders", i, "sourceIndex"])
   );
   checkIndex(data.jobs?.sourceIndex, ["jobs", "sourceIndex"]);
   checkIndex(data.community?.sourceIndex, ["community", "sourceIndex"]);
