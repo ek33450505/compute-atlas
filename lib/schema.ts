@@ -67,6 +67,37 @@ export const waterSchema = z.object({
   notes: z.string().optional(),
 });
 
+// Permitted annual emissions limits from an air permit (PSD / Title V / state
+// construction permit) — a regulatory CEILING, not measured or actual
+// emissions. Never present one as the other, in copy or UI.
+// Values are recorded in short tons per year (tpy), exactly as the permit
+// states them. Never convert units, and never derive a tonnage from capacity
+// (MW -> tons needs a capacity factor and an emission rate; a derived figure
+// would be this project's first uncited number, which is not acceptable
+// here). If a permit states metric tonnes or a non-annual averaging period,
+// record what it says and explain the discrepancy in `notes` rather than
+// normalizing it.
+// `sourceIndex` must point at the permit document itself in `sources[]`.
+export const emissionsSchema = z.object({
+  permittedTpy: z
+    .object({
+      nox: z.number().nonnegative().optional(),
+      co: z.number().nonnegative().optional(),
+      pm25: z.number().nonnegative().optional(),
+      pm10: z.number().nonnegative().optional(),
+      so2: z.number().nonnegative().optional(),
+      voc: z.number().nonnegative().optional(),
+      co2e: z.number().nonnegative().optional(),
+    })
+    .optional(),
+  permitNumber: z.string().min(1).optional(),
+  permitType: z.enum(["psd", "title_v", "minor_source", "state_construction", "other"]).optional(),
+  issuingAgency: z.string().min(1).optional(),
+  issuedDate: z.string().optional(),
+  notes: z.string().optional(),
+  sourceIndex: z.number().int().nonnegative().optional(),
+});
+
 export const subsidySchema = z.object({
   program: z.string().optional(),
   amountUsd: z.number().nonnegative().optional(),
@@ -161,6 +192,8 @@ const baseFacilityShape = {
   energy: energySchema.optional(),
   // water
   water: waterSchema.optional(),
+  // air emissions (permitted limits from an air permit, not measured)
+  emissions: emissionsSchema.optional(),
   // public money
   subsidies: z.array(subsidySchema).optional(),
   // economics
@@ -285,6 +318,7 @@ function checkSourceIndexBounds(
     stakeholders?: { sourceIndex?: number }[];
     jobs?: { sourceIndex?: number };
     community?: { sourceIndex?: number };
+    emissions?: { sourceIndex?: number };
   },
   ctx: z.RefinementCtx
 ) {
@@ -309,6 +343,7 @@ function checkSourceIndexBounds(
   );
   checkIndex(data.jobs?.sourceIndex, ["jobs", "sourceIndex"]);
   checkIndex(data.community?.sourceIndex, ["community", "sourceIndex"]);
+  checkIndex(data.emissions?.sourceIndex, ["emissions", "sourceIndex"]);
 }
 
 export const facilitySchema = z

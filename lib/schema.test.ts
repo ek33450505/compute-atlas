@@ -603,3 +603,82 @@ describe("facilitySchema — stakeholders", () => {
     expect(missingAsOf.success).toBe(false);
   });
 });
+
+describe("facilitySchema — emissions", () => {
+  const fullEmissions = {
+    permittedTpy: {
+      nox: 45.2,
+      co: 12.1,
+      pm25: 3.4,
+      pm10: 4.1,
+      so2: 0.5,
+      voc: 8.9,
+      co2e: 125000,
+    },
+    permitNumber: "P0123456",
+    permitType: "psd" as const,
+    issuingAgency: "Texas Commission on Environmental Quality",
+    issuedDate: "2025-03-01",
+    notes: "Backup diesel generator fleet.",
+    sourceIndex: 0,
+  };
+
+  it("parses a facility with a full emissions block, and every field survives the round-trip", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: fullEmissions,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.emissions).toEqual(fullEmissions);
+    }
+  });
+
+  it("emissions is optional — a record without it still parses", () => {
+    const result = facilitySchema.safeParse(baseFacility);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.emissions).toBeUndefined();
+    }
+  });
+
+  it("strips unknown keys inside emissions", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { ...fullEmissions, madeUpField: "should not survive" },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.emissions).not.toHaveProperty("madeUpField");
+    }
+  });
+
+  it("rejects a negative permittedTpy value", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { permittedTpy: { nox: -1 } },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when emissions.sourceIndex is out of range, with issue path [\"emissions\", \"sourceIndex\"]", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { sourceIndex: 5 },
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["emissions", "sourceIndex"] })
+      );
+    }
+  });
+
+  it("accepts an in-range emissions.sourceIndex", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      emissions: { sourceIndex: 0 },
+    });
+    expect(result.success).toBe(true);
+  });
+});
