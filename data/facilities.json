@@ -795,6 +795,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "aligned-atl-01-lithia-springs-ga",
+    "name": "Aligned Data Centers ATL-01",
+    "operator": "Aligned Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.7943,
+      "lon": -84.6602,
+      "city": "Lithia Springs",
+      "county": "Douglas",
+      "street": "1551 N River Road",
+      "postalCode": "30122",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-28",
+        "note": "Aligned's own location page lists ATL-01 as an operational facility with 24x7x365 access.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://aligneddc.com/atlanta-data-centers/",
+        "label": "Atlanta Data Centers — Aligned Data Centers (ATL-01)",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-08-28",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Capacity intentionally omitted: a 100 MW figure appears in third-party directories but was not stated on any page fetched and read this session.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Delta³ air-cooling arrays in dedicated mechanical galleries on a closed-loop chilled-water system, with secondary loops supporting DeltaFlow liquid cooling for high-density GPU racks."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "aligned-chillicothe-ross-oh",
     "name": "Aligned HPC Campus at Former Pixelle Paper Mill (Chillicothe)",
     "operator": "Aligned Data Centers (in partnership with U.S. Paper Mill LLC / U.S. Medical Glove Company)",
@@ -4991,6 +5033,55 @@
     }
   },
   {
+    "id": "atlas-project-springbank-adairsville-ga",
+    "name": "Project Springbank (Atlas Development Bartow County Campus)",
+    "operator": "Atlas Development LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.369,
+      "lon": -84.9341,
+      "city": "Adairsville",
+      "county": "Bartow",
+      "street": "Barnsley Gardens Road at Horseshoe Loop",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 432
+    },
+    "announcedDate": "2025-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-02",
+        "note": "Preliminary plans disclosed in a Development of Regional Impact filing; rezoning from A-1 to I-1 still required.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.northwestgeorgianews.com/rome/news/local/new-data-center-proposal-in-bartow-would-require-as-much-power-as-324k-homes/article_05152f0c-ee11-11ef-9470-5b8da755f367.html",
+        "label": "New data center proposal in Bartow would require as much power as 324K homes",
+        "publisher": "Rome News-Tribune / Northwest Georgia News",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.connectcre.com/stories/data-center-operator-planning-4-5b-bartow-county-campus/",
+        "label": "Data Center Operator Planning $4.5B Bartow County Campus",
+        "publisher": "Connect CRE",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Six buildings of about 379,000 sq ft each (2.27M sq ft total), each drawing up to 78 MW for a 432 MW campus total. Anticipated completion December 2031. No named end-user operator is attached to the project.",
+    "investmentUsd": 4500000000,
+    "landAcres": 588,
+    "facilityType": "data_center"
+  },
+  {
     "id": "atmosphere-dickerson-montgomery-md",
     "name": "Dickerson Data Center",
     "operator": "Atmosphere Data Centers",
@@ -5910,6 +6001,50 @@
       "notes": "Morrow County Planning Commission approved Amazon's 'PDX154' land-use application (816,000 sq ft / 4 buildings, part of the broader campus) on March 31, 2026 with conditions attached (stormwater/wastewater mitigation, airport-lighting restrictions).",
       "sourceIndex": 4
     },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "aws-butts-county-ga",
+    "name": "AWS Butts County Data Center Campus",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.2946,
+      "lon": -83.9663,
+      "city": "Jackson",
+      "county": "Butts",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-01-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01-07",
+        "note": "AWS announced at least $11B of new data center capacity in Georgia, naming Butts and Douglas counties.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.aboutamazon.com/news/aws/aws-investment-georgia-ai-cloud-infrastructure",
+        "label": "AWS plans to invest at least $11 billion in Georgia to expand infrastructure to support AI and cloud technologies",
+        "publisher": "Amazon",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ajc.com/news/amazon-plans-11-billion-data-center-expansion-in-georgia/4L34LL7RM5DTPBX67KUD5PCJUI/",
+        "label": "Amazon plans $11 billion data center expansion in Georgia",
+        "publisher": "The Atlanta Journal-Constitution",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Deliberately no site-level investment or job figure: the $11B and the \"at least 550 new high-skilled jobs\" in Amazon's release are entity-level totals covering BOTH the Butts County and Douglas County projects, and cannot be attributed to either site alone.",
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -19769,6 +19904,58 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cyrusone-project-peach-palmetto-ga",
+    "name": "Project Peach (CyrusOne Palmetto Data Center Campus)",
+    "operator": "CyrusOne (joint venture with North Coweta Investors)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.5182,
+      "lon": -84.6693,
+      "city": "Palmetto",
+      "county": "Coweta",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-04-15",
+        "note": "Coweta County Board of Commissioners approved the rezoning of ~320 acres from rural conservation to industrial by a 3-2 vote.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.fox5atlanta.com/news/coweta-county-concerns-project-peach-data-center-palmetto",
+        "label": "Coweta County residents concerned over proposed 320-acre data center",
+        "publisher": "FOX 5 Atlanta",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.desmog.com/2026/04/07/how-data-center-developers-staked-their-claim-in-rural-georgia/",
+        "label": "How Data Center Developers Staked Their Claim in Rural Georgia",
+        "publisher": "DeSmog",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Eight buildings planned, completion projected 2036. Distinct from the tracked T5 @ Atlanta IV, which is also at Palmetto but a different operator, site and jurisdiction (Fulton County).",
+    "water": {
+      "coolingType": "air",
+      "notes": "Reported as air-cooled rather than water-cooled."
+    },
+    "landAcres": 320,
+    "community": {
+      "status": "opposed",
+      "notes": "Residents packed the rezoning hearing in opposition; Palmetto's mayor asked commissioners to weigh the long-term cost to quality of life, environment and residents. Coweta County later imposed a six-month moratorium on new data center proposals.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cyrusone-sangamon-talkington-township-il",
     "name": "CyrusOne Sangamon County Data Center Campus",
     "operator": "CyrusOne",
@@ -25301,6 +25488,52 @@
     },
     "investmentUsd": 17000000000,
     "landAcres": 697,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "edged-atlanta-tilford-yard-ga",
+    "name": "Edged Atlanta (ATL01)",
+    "operator": "Edged Energy (Endeavour)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.749,
+      "lon": -84.388,
+      "city": "Atlanta",
+      "county": "Fulton",
+      "street": "1800 Thomas Street NW",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 168,
+      "operational": 27
+    },
+    "announcedDate": "2024-08-21",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-08-21",
+        "note": "Grand opening of the first building on the campus, built on the former Tilford Yard site.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/edged-data-centers-celebrates-grand-opening-of-new-ultra-efficient-sustainable-data-center-in-atlanta-302228778.html",
+        "label": "Edged Data Centers Celebrates Grand Opening of New Ultra-Efficient, Sustainable Data Center in Atlanta",
+        "publisher": "Edged Energy via PR Newswire",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "First of three planned buildings on the campus; building one is 27 MW, full campus planned at 168 MW. Supports up to 70 kW/rack air-cooled and 200 kW/rack with liquid cooling.",
+    "water": {
+      "coolingType": "air",
+      "notes": "ThermalWorks waterless cooling; the company claims roughly 664 million gallons/year avoided versus a comparable conventionally water-cooled facility."
+    },
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -44999,6 +45232,48 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "meta-stanton-springs-newton-ga",
+    "name": "Meta Newton Data Center (Stanton Springs)",
+    "operator": "Meta Platforms",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.6551,
+      "lon": -83.7182,
+      "city": "Social Circle",
+      "county": "Newton",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2021-03-14",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-03-14",
+        "note": "Meta's own data center site describes the Newton County (Stanton Springs) facility as built, at 970,000 sq ft.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacenters.atmeta.com/2021/03/hello-georgia/",
+        "label": "Hello, Georgia! — Meta Data Centers (Newton County / Stanton Springs)",
+        "publisher": "Meta",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "970,000 sq ft as described by Meta. Single operator-primary source this session, so confidence is 'reported' rather than 'confirmed'; the campus has since been reported as expanded, but no expansion figure is asserted here.",
+    "energy": {
+      "source": "grid",
+      "utility": "Walton Electric Membership Corporation",
+      "notes": "Meta partnered with Walton EMC to bring hundreds of MW of new Georgia solar onto the grid and committed to matching the site with 100% clean and renewable energy."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "meta-temple-tx",
     "name": "Meta Temple Data Center",
     "operator": "Meta",
@@ -49499,6 +49774,7 @@
     "capacityMw": {
       "planned": 10000
     },
+    "poweredBy": "Natural Gas",
     "statusHistory": [
       {
         "status": "under_construction",
@@ -49525,8 +49801,16 @@
     ],
     "lastUpdated": "2026-07-26",
     "notes": "10GW campus on 3,700-acre former Portsmouth Gaseous Diffusion Plant site; 9.2GW on-site natural gas. $10B confirmed initial phase (broader totals softer — Bloomberg puts the data-center portion at $30-40B; a $67.2B FAST-41 total is cited). Groundbreaking March 2026. Distinct from the tracked Oklo Aurora-Piketon reactor project on the same broader site.",
+    "energy": {},
+    "water": {},
+    "subsidies": [],
     "landAcres": 3700,
-    "facilityType": "data_center"
+    "jobs": {},
+    "community": {},
+    "facilityType": "data_center",
+    "environmental": {
+      "waterStress": "unknown"
+    }
   },
   {
     "id": "new-era-energy-digital-lea-county-data-center-nm",
@@ -51703,6 +51987,90 @@
       ],
       "notes": "Oklo owns/operates; Meta prepays for power + funds development (not equity). Powers Meta's New Albany 'Prometheus' supercluster (meta-prometheus-new-albany-oh). Site is the former Portsmouth Gaseous Diffusion Plant, 206 acres bought from DOE for ~$5.15M in Dec 2025."
     }
+  },
+  {
+    "id": "openai-project-camellia-effingham-ga",
+    "name": "Project Camellia (OpenAI Effingham County Campus)",
+    "operator": "OpenAI",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.296,
+      "lon": -81.2354,
+      "city": "Rincon",
+      "county": "Effingham",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 3200
+    },
+    "announcedDate": "2026-07-22",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-22",
+        "note": "OpenAI and Effingham County announced a four-building campus at the Savannah Gateway Industrial Hub; a Development of Regional Impact application followed on 2026-07-24.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.effinghamcounty.org/902/Project-Camellia-OpenAI-Data-Center",
+        "label": "Project Camellia (OpenAI Data Center) — official county project page",
+        "publisher": "Effingham County, Georgia",
+        "retrievedAt": "2026-08-28",
+        "kind": "other"
+      },
+      {
+        "url": "https://thecurrentga.org/2026/07/22/20-billion-openai-data-center-to-open-in-effingham-county/",
+        "label": "$20 billion OpenAI data center to open in Effingham County",
+        "publisher": "The Current",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://thecurrentga.org/2026/07/25/as-effingham-county-data-center-plan-advances-next-step-is-state-evaluation-process/",
+        "label": "As Effingham County data center plan advances, next step is state evaluation process",
+        "publisher": "The Current",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://w.media/openai-plans-to-build-its-own-3-2-gw-data-center-campus-in-georgia/",
+        "label": "OpenAI plans to build its own 3.2 GW data center campus in Georgia",
+        "publisher": "W.Media",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Four data center buildings on roughly 1,400 acres inside the 2,600-acre Savannah Gateway Industrial Hub near Rincon. Effingham County values the project at $20B; OpenAI's VP of Compute Strategy has said full build-out will exceed $30B. Permanent staffing is described as ~400 at the 2028 opening rising to about 1,000 by 2032. Part of OpenAI's Stargate program.",
+    "energy": {
+      "source": "grid",
+      "utility": "Georgia Power",
+      "notes": "OpenAI contracted 3.2 GW with Georgia Power, to be delivered in phases between 2028 and 2032; the county says power generation is kept offsite and no diesel backup generators are planned post-completion."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "County materials describe a closed-loop cooling system drawing treated surface water only — not groundwater or the Floridan aquifer. The DRI form itself left water-use figures blank."
+    },
+    "subsidies": [
+      {
+        "program": "Property tax abatement (50% for 15 years)",
+        "jurisdiction": "Effingham County, GA",
+        "year": "2026",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 20000000000,
+    "landAcres": 1400,
+    "jobs": {
+      "permanent": 400,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "oppd-pierce-county-energy-center-ne",
@@ -70739,6 +71107,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "vantage-douglasville-campus-ga",
+    "name": "Vantage Data Centers Douglasville Campus",
+    "operator": "Vantage Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.7515,
+      "lon": -84.7477,
+      "city": "Douglasville",
+      "county": "Douglas",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-08",
+        "note": "Vantage submitted plans for a three-building campus in Douglas County.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.bisnow.com/atlanta/news/data-center/two-more-players-planning-major-data-center-campuses-in-metro-atlanta-121440",
+        "label": "2 Huge New Data Center Campuses Planned In Metro Atlanta (Vantage filed for a three-building Douglas County campus)",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://insidetowers.com/vantage-data-centers-plans-two-new-sites-in-georgia/",
+        "label": "Vantage Data Centers Plans Two New Sites in Georgia",
+        "publisher": "Inside Towers",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Reported as roughly 1.7 million sq ft across three buildings, filed August 2023. MW capacity omitted — no fetched source stated one.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "vantage-frontier-shackelford-county-tx",
     "name": "Vantage Frontier Campus",
     "operator": "Vantage Data Centers",
@@ -71346,6 +71757,41 @@
       "utility": "PUD No 2 of Grant County"
     },
     "landAcres": 68,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "vantage-westlake-south-fulton-ga",
+    "name": "Vantage Data Centers Westlake",
+    "operator": "Vantage Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.6273,
+      "lon": -84.5646,
+      "city": "South Fulton",
+      "county": "Fulton",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-28",
+        "note": "Development of Regional Impact application filed with the Georgia Department of Community Affairs for a 754,000 sq ft data center, completion targeted January 2028.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://insidetowers.com/vantage-data-centers-plans-two-new-sites-in-georgia/",
+        "label": "Vantage Data Centers Plans Two New Sites in Georgia (Westlake and Stacks Road, Fulton County)",
+        "publisher": "Inside Towers",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "754,000 sq ft, targeted completion January 2028. Vantage filed a second Fulton County DRI the same period (Stacks Road, ~697,000 sq ft, January 2027) which is not recorded separately here because no fetched source gave it a distinguishable location.",
     "facilityType": "data_center"
   },
   {

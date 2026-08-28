@@ -257,6 +257,25 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "aligned-atl-01-lithia-springs-ga": {
+    "nearestWater": {
+      "name": "Sweetwater Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "aligned-chillicothe-ross-oh": {
     "nearestWater": {
       "name": "Scioto River",
@@ -1519,6 +1538,25 @@
       "rock": "Sandstone"
     }
   },
+  "atlas-project-springbank-adairsville-ga": {
+    "nearestWater": {
+      "name": "Oothkalooga Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "atmosphere-dickerson-montgomery-md": {
     "nearestWater": {
       "name": "Potomac River",
@@ -1802,6 +1840,25 @@
     },
     "aquifer": {
       "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "aws-butts-county-ga": {
+    "nearestWater": {
+      "name": "Town Branch",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
     }
   },
@@ -6256,6 +6313,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "cyrusone-project-peach-palmetto-ga": {
+    "nearestWater": {
+      "name": "Little Bear Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "cyrusone-sangamon-talkington-township-il": {
     "nearestWater": {
       "name": "South Fork Lick Creek",
@@ -8368,6 +8444,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "edged-atlanta-tilford-yard-ga": {
+    "nearestWater": {
+      "name": "Intrenchment Creek",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     },
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
@@ -14623,6 +14718,25 @@
       "label": "Low (<10%)"
     }
   },
+  "meta-stanton-springs-newton-ga": {
+    "nearestWater": {
+      "name": "Means Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "meta-temple-tx": {
     "nearestWater": {
       "name": "Pepper Creek",
@@ -16669,6 +16783,29 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "openai-project-camellia-effingham-ga": {
+    "nearestWater": {
+      "name": "Rincon Branch",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "oppd-pierce-county-energy-center-ne": {
@@ -22617,6 +22754,25 @@
       "rock": "Sandstone"
     }
   },
+  "vantage-douglasville-campus-ga": {
+    "nearestWater": {
+      "name": "Slater Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "vantage-frontier-shackelford-county-tx": {
     "nearestWater": {
       "name": "North Fork Salt Prong Hubbard Creek",
@@ -22824,6 +22980,25 @@
     "aquifer": {
       "name": "Columbia Plateau Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "vantage-westlake-south-fulton-ga": {
+    "nearestWater": {
+      "name": "Big Branch",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "vaultas-st-cloud-mn": {
