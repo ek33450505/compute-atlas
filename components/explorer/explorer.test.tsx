@@ -1,9 +1,28 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { Explorer } from "./explorer";
 import type { Facility } from "@/lib/schema";
+
+// jsdom can't render the real FacilityMap (MapLibre/WebGL — see the
+// render-in-table-view note below). Explorer's OWN logic for what it passes
+// down as `isFiltered` is ordinary React state derived from `filtered`/
+// `facilities`, though, so mocking only this leaf component lets that
+// wiring run for real and be asserted on without a WebGL-capable
+// environment — same idiom facility-map.test.tsx itself uses one level
+// down (globalThis.__popupProps etc.) to inspect props passed to a mocked
+// child.
+declare global {
+  var __facilityMapProps: { isFiltered?: boolean; facilities?: unknown[] } | undefined;
+}
+
+vi.mock("@/components/map/facility-map-dynamic", () => ({
+  FacilityMap: (props: { isFiltered?: boolean; facilities?: unknown[] }) => {
+    globalThis.__facilityMapProps = props;
+    return <div data-testid="mock-facility-map" />;
+  },
+}));
 
 // ---------------------------------------------------------------------------
 // Fixtures — ≥4 records across statuses and states
@@ -238,5 +257,60 @@ describe("Explorer — map empty state", () => {
     expect(
       screen.queryByRole("region", { name: "Interactive datacenter map" })
     ).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isFiltered wiring (M5) — with a non-empty result set the real FacilityMap
+// mounts, which the "map empty state" describe block above avoids entirely.
+// FacilityMap is mocked at the module boundary (see the top of this file) so
+// this exercises Explorer's own prop-passing logic for real, in both render
+// modes that reach the map branch, without needing WebGL.
+// ---------------------------------------------------------------------------
+
+describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
+  it("map mode: isFiltered starts false, flips true once a filter narrows the set, and back to false once that filter is cleared", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} mode="map" />
+      </NuqsTestingAdapter>
+    );
+
+    expect(await screen.findByTestId("mock-facility-map")).toBeInTheDocument();
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+
+    // MapFilterSubheader's FilterBar body starts collapsed under the global
+    // matchMedia mock (matches: false for every query, vitest.setup.ts) —
+    // expand it to reach the status checkboxes.
+    await user.click(screen.getByRole("button", { name: "Expand filter controls" }));
+    await user.click(screen.getByRole("checkbox", { name: "Operational" }));
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(true);
+
+    // Toggling the SAME checkbox off — not a separate "Clear all" control —
+    // is the exact "unchecking the last box" repro path from the original
+    // bug report: it's the only filter active, so this returns to zero.
+    await user.click(screen.getByRole("checkbox", { name: "Operational" }));
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+  });
+
+  it("toggle mode: isFiltered starts false, flips true once a filter narrows the set, and back to false after Clear all", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} />
+      </NuqsTestingAdapter>
+    );
+
+    expect(await screen.findByTestId("mock-facility-map")).toBeInTheDocument();
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+
+    await user.click(screen.getByRole("checkbox", { name: "Operational" }));
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(true);
+
+    await user.click(screen.getByRole("button", { name: /clear all/i }));
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
   });
 });

@@ -60,6 +60,41 @@ interface FacilityMapProps {
    * Default false: a fresh unfiltered visit lands on the default US view.
    */
   surveyOnMount?: boolean;
+  /**
+   * Whether `facilities` is a filtered subset of a larger dataset, rather than
+   * the full dataset itself. Defaults to true, which preserves the existing
+   * "always fit bounds to `facilities`" survey-pass behavior.
+   *
+   * This component only ever receives the already-filtered array — it has no
+   * way to tell "a broad filter matched almost everything" apart from "no
+   * filter is active at all" on its own. Pass `false` when `facilities` IS
+   * the complete, unfiltered dataset (e.g. right after "Clear all filters")
+   * so the survey pass returns the camera to INITIAL_VIEW_STATE instead of
+   * fitting a bounding box. For the full dataset that box spans from Alaska
+   * (Stak Energy North Slope, ~70°N) to Hawaii (Servpac Mililani, ~158°W),
+   * so fitBounds zooms out to a near-global view (measured: zoom ~2.1,
+   * centered over the north Pacific at 51.6°N/-112.95°) instead of the
+   * expected "back to the atlas" framing.
+   *
+   * Wired from `components/explorer/explorer.tsx`'s two <FacilityMap> call
+   * sites as `isFiltered={filtered.length !== facilities.length}` (the same
+   * expression already used for `surveyOnMount` there — the "is this a real
+   * subset" question means the same thing in every render mode). Any other
+   * caller that doesn't pass it gets the default (true), i.e. unchanged
+   * fit-bounds behavior — that's a deliberate fallback for callers that
+   * haven't been updated, not a statement that omitting it is fine going
+   * forward.
+   *
+   * KNOWN LIMITATION: this only catches the *zero-filters* case. A filter
+   * that's merely broad — e.g. a status filter that still happens to match
+   * both the Alaska and Hawaii outlier facilities — hits the identical
+   * bounds-spanning bug with `isFiltered` correctly `true`, because the
+   * component still has no way to distinguish "broad but real" from "zero
+   * filters" once the caller says a filter IS active. Fixing that generally
+   * (e.g. clamping the fitted zoom to a floor regardless of `isFiltered`)
+   * is a separate, larger change than this prop — not done here.
+   */
+  isFiltered?: boolean;
 }
 
 /**
@@ -85,6 +120,7 @@ export function FacilityMap({
   facilities,
   heightClass = "h-[70vh] min-h-[420px]",
   surveyOnMount = false,
+  isFiltered = true,
 }: FacilityMapProps) {
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(
     null
@@ -282,21 +318,37 @@ export function FacilityMap({
    * more sweeping ease than the 600 ms marker-selection or cluster-zoom motions, part
    * of the "atlas being surveyed" conceit. Fired when the filtered facility set changes
    * (see the effect below) and optionally on mount when `surveyOnMount` is set.
+   *
+   * When `isFiltered` is false, `facilities` is the complete, unfiltered dataset —
+   * fitting its bounds would zoom out to fit Alaska-to-Hawaii (a near-global view,
+   * see the `isFiltered` doc comment on FacilityMapProps for the measured numbers).
+   * That's not a "survey pass" over a real result set, it's "no filter is active",
+   * so the honest move is back to the default CONUS framing, not a bounds fit.
    */
   const surveyToFacilities = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
 
+    const duration = reducedMotion ? 0 : 1400; // slower, deliberate "survey pass"
+
+    if (!isFiltered) {
+      map.easeTo({
+        center: [INITIAL_VIEW_STATE.longitude, INITIAL_VIEW_STATE.latitude],
+        zoom: INITIAL_VIEW_STATE.zoom,
+        duration,
+      });
+      return;
+    }
+
     const b = computeFacilitiesBounds(facilities);
     if (!b) return; // empty filtered set — leave the camera where it is
 
-    const duration = reducedMotion ? 0 : 1400; // slower, deliberate "survey pass"
     if (b.isCoincident) {
       map.easeTo({ center: b.center, zoom: 9, duration });
     } else {
       map.fitBounds(b.bounds, { padding: 96, maxZoom: 9, duration });
     }
-  }, [facilities, reducedMotion]);
+  }, [facilities, isFiltered, reducedMotion]);
 
   /** Resets map bearing and pitch to north-up. */
   const handleResetNorth = useCallback(() => {
@@ -498,7 +550,14 @@ export function FacilityMap({
 
   // Survey-pass on filter changes (facilities identity change), skipping the
   // initial mount — that's handled by handleMapLoad above (once, gated on
-  // surveyOnMount) so a fresh mount never double-fires the camera move.
+  // surveyOnMount) so a fresh mount never double-fires the camera move. This
+  // is also what fires when filters are CLEARED (facilities grows back to
+  // the full dataset) — surveyToFacilities itself branches on `isFiltered`
+  // to return to INITIAL_VIEW_STATE rather than fitting bounds in that case.
+  // `surveyToFacilities`'s identity already changes when `isFiltered` alone
+  // flips (see its useCallback deps), so this effect re-fires correctly even
+  // in the hypothetical case where a caller changes `isFiltered` without
+  // also changing `facilities`.
   const didMountRef = useRef(false);
   useEffect(() => {
     if (!didMountRef.current) {
@@ -532,6 +591,182 @@ export function FacilityMap({
        * separates map from content below the fold.
        */}
       <div className="relative h-full w-full overflow-hidden border-b">
+        {/*
+         * Rendered BEFORE <Map> below — not after, despite being visually "on
+         * top" via position:absolute + a positive z-index — so these two
+         * interactive overlays land earlier in DOM/tab order than the ~27+
+         * facility marker buttons that mount as <Map> children. Previously,
+         * with this JSX placed after </Map>, keyboard users had to tab
+         * through every visible marker before reaching LocationSearch or the
+         * Tools column (measured at 320×568: LocationSearch was tab stop 37,
+         * with markers starting at stop 8). Positioning is unaffected — both
+         * wrappers use `absolute`, computed against the outer `.relative`
+         * container, not against sibling DOM order; and their explicit
+         * z-20/z-30 already paint them above <Map>'s implicit (z-index:auto)
+         * stacking level regardless of DOM order, so this is a pure tab-order
+         * fix with no visual change. Do not move this back after <Map> "for
+         * readability" — that silently regresses tab order again.
+         */}
+        {/* Top-left: location search widget */}
+        <div className="absolute top-3 left-3 z-20 max-w-[calc(100%-1rem)]">
+          <LocationSearch onSelect={handleGoToPlace} />
+        </div>
+
+        {/*
+         * Top-right: custom compass rose, stacked below NavigationControl.
+         * NavigationControl (~29 px buttons × 2 = ~70 px) + margin → top-20 (~80 px).
+         * Not a MapLibre control — a plain positioned element so it doesn't fight
+         * MapLibre's ctrl-group z-index stacking.
+         */}
+        <div className="absolute top-20 right-2 z-30 flex flex-col items-end gap-2">
+          {/* Single disclosure toggle for the compass/3D/basemap/layers/radius
+              stack below — collapsed by default to maximize the visible map.
+              NavigationControl (zoom +/-, top-2) is separate and always shown.
+              `items-end` on this column (and the panel below) right-aligns
+              every child regardless of its own width — without it, the
+              default flex `stretch` cross-alignment left-anchors fixed-width
+              buttons inside the wider box the MapLayerControl/radius-caption
+              panels create when expanded, so the Tools toggle and icon
+              buttons visibly drift left off the right-2 edge. */}
+          <button
+            type="button"
+            onClick={() => setShowTools((s) => !s)}
+            aria-expanded={showTools}
+            aria-controls={TOOLS_PANEL_ID}
+            aria-label={showTools ? "Hide map tools" : "Show map tools"}
+            title="Map tools"
+            className={[
+              "flex h-11 w-11 items-center justify-center",
+              "rounded-sm bg-popover border border-border",
+              "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+              "cursor-pointer transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+              showTools ? "ring-1 ring-primary/50" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <SlidersHorizontal
+              aria-hidden="true"
+              className={["size-4", showTools ? "text-primary" : "text-foreground"].join(
+                " "
+              )}
+            />
+          </button>
+
+          {showTools && (
+            <div
+              id={TOOLS_PANEL_ID}
+              ref={toolsPanelRef}
+              style={
+                toolsPanelMaxHeight !== undefined
+                  ? { maxHeight: `${toolsPanelMaxHeight}px` }
+                  : undefined
+              }
+              className="flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+            >
+              <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
+              <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
+              <BasemapToggle
+                isSatellite={isSatellite}
+                onToggle={() => setIsSatellite((s) => !s)}
+              />
+
+              {/* Radius-ring measurement tool toggle. Reuses BasemapToggle's
+                  parchment button styling: ≥44px hit target, aria-pressed,
+                  focus-visible ring, primary-tinted icon when active. */}
+              <button
+                type="button"
+                onClick={handleToggleRings}
+                aria-pressed={ringsEnabled}
+                aria-label="Toggle radius rings tool"
+                title="Radius rings"
+                className={[
+                  "flex h-11 w-11 items-center justify-center",
+                  "rounded-sm bg-popover border border-border",
+                  "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+                  "cursor-pointer transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  ringsEnabled ? "ring-1 ring-primary/50" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <Radius
+                  aria-hidden="true"
+                  className={[
+                    "size-4",
+                    ringsEnabled ? "text-primary" : "text-foreground",
+                  ].join(" ")}
+                />
+              </button>
+              {ringsEnabled && (
+                <p className="max-w-[8.5rem] rounded-sm border border-border bg-popover px-2 py-1 font-mono text-[9px] leading-tight tabular-nums text-muted-foreground shadow-[0_1px_4px_rgba(0,0,0,0.12)]">
+                  rings: 5 · 10 · 25 mi
+                  {!ringCenter && (
+                    <>
+                      <br />
+                      click map to place
+                    </>
+                  )}
+                </p>
+              )}
+
+              {/* Keyboard/SR-accessible counterpart to the bottom-center
+                  hover-only coordinate readout (which is aria-hidden and
+                  mouse-only — unaffected by this). Toggling this on shows a
+                  focusable, non-hidden live readout of the current map
+                  center, which updates on keyboard pan/zoom same as mouse
+                  drag (both fire onMoveEnd). */}
+              <button
+                type="button"
+                onClick={() => setCoordsLocked((s) => !s)}
+                aria-pressed={coordsLocked}
+                aria-label={
+                  coordsLocked ? "Hide map coordinates readout" : "Show map coordinates readout"
+                }
+                title="Lock coordinates"
+                className={[
+                  "flex h-11 w-11 items-center justify-center",
+                  "rounded-sm bg-popover border border-border",
+                  "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+                  "cursor-pointer transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  coordsLocked ? "ring-1 ring-primary/50" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <Crosshair
+                  aria-hidden="true"
+                  className={["size-4", coordsLocked ? "text-primary" : "text-foreground"].join(
+                    " "
+                  )}
+                />
+              </button>
+
+              {/* Layers control is last in the stack — its own root
+                  right-aligns itself independently (see map-layer-control.tsx),
+                  so its position here doesn't depend on being narrowest. */}
+              <MapLayerControl
+                showWater={showWater}
+                onToggleWater={() => setShowWater((s) => !s)}
+                showPower={showPower}
+                onTogglePower={() => setShowPower((s) => !s)}
+                showDrought={showDrought}
+                onToggleDrought={() => setShowDrought((s) => !s)}
+                showWaterStress={showWaterStress}
+                onToggleWaterStress={() => setShowWaterStress((s) => !s)}
+                showGroundwater={showGroundwater}
+                onToggleGroundwater={() => setShowGroundwater((s) => !s)}
+                showAquifers={showAquifers}
+                onToggleAquifers={() => setShowAquifers((s) => !s)}
+                isSatellite={isSatellite}
+              />
+            </div>
+          )}
+        </div>
+
         <Map
           ref={mapRef}
           mapStyle={BASEMAP_STYLE_URL}
@@ -889,166 +1124,6 @@ export function FacilityMap({
             </Popup>
           )}
         </Map>
-
-        {/* Top-left: location search widget */}
-        <div className="absolute top-3 left-3 z-20 max-w-[calc(100%-1rem)]">
-          <LocationSearch onSelect={handleGoToPlace} />
-        </div>
-
-        {/*
-         * Top-right: custom compass rose, stacked below NavigationControl.
-         * NavigationControl (~29 px buttons × 2 = ~70 px) + margin → top-20 (~80 px).
-         * Not a MapLibre control — a plain positioned element so it doesn't fight
-         * MapLibre's ctrl-group z-index stacking.
-         */}
-        <div className="absolute top-20 right-2 z-30 flex flex-col items-end gap-2">
-          {/* Single disclosure toggle for the compass/3D/basemap/layers/radius
-              stack below — collapsed by default to maximize the visible map.
-              NavigationControl (zoom +/-, top-2) is separate and always shown.
-              `items-end` on this column (and the panel below) right-aligns
-              every child regardless of its own width — without it, the
-              default flex `stretch` cross-alignment left-anchors fixed-width
-              buttons inside the wider box the MapLayerControl/radius-caption
-              panels create when expanded, so the Tools toggle and icon
-              buttons visibly drift left off the right-2 edge. */}
-          <button
-            type="button"
-            onClick={() => setShowTools((s) => !s)}
-            aria-expanded={showTools}
-            aria-controls={TOOLS_PANEL_ID}
-            aria-label={showTools ? "Hide map tools" : "Show map tools"}
-            title="Map tools"
-            className={[
-              "flex h-11 w-11 items-center justify-center",
-              "rounded-sm bg-popover border border-border",
-              "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
-              "cursor-pointer transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-              showTools ? "ring-1 ring-primary/50" : "",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            <SlidersHorizontal
-              aria-hidden="true"
-              className={["size-4", showTools ? "text-primary" : "text-foreground"].join(
-                " "
-              )}
-            />
-          </button>
-
-          {showTools && (
-            <div
-              id={TOOLS_PANEL_ID}
-              ref={toolsPanelRef}
-              style={
-                toolsPanelMaxHeight !== undefined
-                  ? { maxHeight: `${toolsPanelMaxHeight}px` }
-                  : undefined
-              }
-              className="flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
-            >
-              <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
-              <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
-              <BasemapToggle
-                isSatellite={isSatellite}
-                onToggle={() => setIsSatellite((s) => !s)}
-              />
-
-              {/* Radius-ring measurement tool toggle. Reuses BasemapToggle's
-                  parchment button styling: ≥44px hit target, aria-pressed,
-                  focus-visible ring, primary-tinted icon when active. */}
-              <button
-                type="button"
-                onClick={handleToggleRings}
-                aria-pressed={ringsEnabled}
-                aria-label="Toggle radius rings tool"
-                title="Radius rings"
-                className={[
-                  "flex h-11 w-11 items-center justify-center",
-                  "rounded-sm bg-popover border border-border",
-                  "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
-                  "cursor-pointer transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                  ringsEnabled ? "ring-1 ring-primary/50" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                <Radius
-                  aria-hidden="true"
-                  className={[
-                    "size-4",
-                    ringsEnabled ? "text-primary" : "text-foreground",
-                  ].join(" ")}
-                />
-              </button>
-              {ringsEnabled && (
-                <p className="max-w-[8.5rem] rounded-sm border border-border bg-popover px-2 py-1 font-mono text-[9px] leading-tight tabular-nums text-muted-foreground shadow-[0_1px_4px_rgba(0,0,0,0.12)]">
-                  rings: 5 · 10 · 25 mi
-                  {!ringCenter && (
-                    <>
-                      <br />
-                      click map to place
-                    </>
-                  )}
-                </p>
-              )}
-
-              {/* Keyboard/SR-accessible counterpart to the bottom-center
-                  hover-only coordinate readout (which is aria-hidden and
-                  mouse-only — unaffected by this). Toggling this on shows a
-                  focusable, non-hidden live readout of the current map
-                  center, which updates on keyboard pan/zoom same as mouse
-                  drag (both fire onMoveEnd). */}
-              <button
-                type="button"
-                onClick={() => setCoordsLocked((s) => !s)}
-                aria-pressed={coordsLocked}
-                aria-label={
-                  coordsLocked ? "Hide map coordinates readout" : "Show map coordinates readout"
-                }
-                title="Lock coordinates"
-                className={[
-                  "flex h-11 w-11 items-center justify-center",
-                  "rounded-sm bg-popover border border-border",
-                  "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
-                  "cursor-pointer transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                  coordsLocked ? "ring-1 ring-primary/50" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                <Crosshair
-                  aria-hidden="true"
-                  className={["size-4", coordsLocked ? "text-primary" : "text-foreground"].join(
-                    " "
-                  )}
-                />
-              </button>
-
-              {/* Layers control is last in the stack — its own root
-                  right-aligns itself independently (see map-layer-control.tsx),
-                  so its position here doesn't depend on being narrowest. */}
-              <MapLayerControl
-                showWater={showWater}
-                onToggleWater={() => setShowWater((s) => !s)}
-                showPower={showPower}
-                onTogglePower={() => setShowPower((s) => !s)}
-                showDrought={showDrought}
-                onToggleDrought={() => setShowDrought((s) => !s)}
-                showWaterStress={showWaterStress}
-                onToggleWaterStress={() => setShowWaterStress((s) => !s)}
-                showGroundwater={showGroundwater}
-                onToggleGroundwater={() => setShowGroundwater((s) => !s)}
-                showAquifers={showAquifers}
-                onToggleAquifers={() => setShowAquifers((s) => !s)}
-                isSatellite={isSatellite}
-              />
-            </div>
-          )}
-        </div>
 
         {/* Bottom-left: map legend (unchanged position) */}
         <MapLegend />

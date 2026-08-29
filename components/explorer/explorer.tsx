@@ -141,6 +141,15 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
                 facilities={filtered}
                 heightClass="h-full"
                 surveyOnMount={filtered.length !== facilities.length}
+                // Same "is this a real subset of the full dataset" question
+                // surveyOnMount already answers above — isFiltered feeds the
+                // SAME expression to the ongoing (post-mount) survey-pass
+                // effect, so clearing the last filter returns the camera to
+                // the default CONUS view instead of fitting bounds around
+                // the full AK-to-HI dataset. See the isFiltered doc comment
+                // on FacilityMapProps (components/map/facility-map.tsx) for
+                // the full rationale and its known limitation.
+                isFiltered={filtered.length !== facilities.length}
               />
             </section>
           </div>
@@ -263,7 +272,13 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
         </div>
       ) : (
         <section aria-label="Interactive datacenter map">
-          <FacilityMap facilities={filtered} />
+          {/* isFiltered mirrors the map-mode branch above — same `filtered`/
+              `facilities` computed once at the top of this component, so the
+              "is this a real subset" question means the same thing in every
+              mode. This branch intentionally does NOT pass surveyOnMount or
+              heightClass: those are unrelated to isFiltered and specific to
+              the map-only route's full-bleed, deep-link-aware layout. */}
+          <FacilityMap facilities={filtered} isFiltered={filtered.length !== facilities.length} />
         </section>
       )}
     </div>

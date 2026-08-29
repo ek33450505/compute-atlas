@@ -1014,4 +1014,171 @@ describe("FacilityMap", () => {
       });
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // M5: clearing the last filter previously threw the camera to a near-global
+  // view (fitBounds over the full Alaska-to-Hawaii dataset — measured zoom
+  // ~2.146, centered at 51.6N/-112.95, i.e. over Canada/the north Pacific).
+  // `isFiltered` tells the ongoing survey-pass effect (not just the mount-time
+  // one) whether `facilities` is a real filtered subset (fit its bounds) or
+  // the complete unfiltered dataset (reset to INITIAL_VIEW_STATE instead).
+  // ---------------------------------------------------------------------------
+  describe("Survey pass — camera reset when filters clear (M5)", () => {
+    /** Waits until handleMapLoad has run (mapReadyRef is set), so the
+     *  post-mount `facilities`-change effect is armed before we rerender. */
+    async function waitForMapReady() {
+      await waitFor(() => {
+        expect(globalThis.__mockMapLibreInstance.dragPan.enable).toHaveBeenCalled();
+      });
+    }
+
+    it("still fits bounds to the new facilities set on an ordinary filter change (isFiltered true)", async () => {
+      const mockMapInstance = globalThis.__mockMapInstance;
+      const { rerender } = render(
+        <FacilityMap facilities={[facilityA, facilityB]} isFiltered={true} />
+      );
+      await waitForMapReady();
+      mockMapInstance.fitBounds.mockClear();
+      mockMapInstance.easeTo.mockClear();
+
+      // Narrowing a filter: facilities shrinks, isFiltered stays true.
+      rerender(<FacilityMap facilities={[facilityA]} isFiltered={true} />);
+
+      await waitFor(() => {
+        expect(mockMapInstance.fitBounds).toHaveBeenCalledWith(
+          expect.any(Array),
+          expect.objectContaining({ padding: 96, maxZoom: 9, duration: 1400 })
+        );
+      });
+    });
+
+    it("returns to INITIAL_VIEW_STATE instead of fitting bounds when isFiltered flips to false (Clear all filters)", async () => {
+      const mockMapInstance = globalThis.__mockMapInstance;
+      const { rerender } = render(
+        <FacilityMap facilities={[facilityA]} isFiltered={true} />
+      );
+      await waitForMapReady();
+      mockMapInstance.fitBounds.mockClear();
+      mockMapInstance.easeTo.mockClear();
+
+      // "Clear all filters": facilities grows back to the full set AND
+      // isFiltered flips to false — the exact M5 repro. Before this fix,
+      // this called fitBounds over a US+AK+HI box and zoomed out to a
+      // near-global view instead of the default CONUS framing.
+      rerender(
+        <FacilityMap facilities={[facilityA, facilityB]} isFiltered={false} />
+      );
+
+      // INITIAL_VIEW_STATE is mocked to { zoom: 4, latitude: 38, longitude: -100 }.
+      await waitFor(() => {
+        expect(mockMapInstance.easeTo).toHaveBeenCalledWith({
+          center: [-100, 38],
+          zoom: 4,
+          duration: 1400,
+        });
+      });
+      expect(mockMapInstance.fitBounds).not.toHaveBeenCalled();
+    });
+
+    it("uses duration 0 for the reset when prefers-reduced-motion is enabled", async () => {
+      Object.defineProperty(window, "matchMedia", {
+        writable: true,
+        configurable: true,
+        value: (query: string) => ({
+          matches: query === "(prefers-reduced-motion: reduce)",
+          media: query,
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+          dispatchEvent: () => false,
+        }),
+      });
+
+      const mockMapInstance = globalThis.__mockMapInstance;
+      const { rerender } = render(
+        <FacilityMap facilities={[facilityA]} isFiltered={true} />
+      );
+      await waitForMapReady();
+      mockMapInstance.fitBounds.mockClear();
+      mockMapInstance.easeTo.mockClear();
+
+      rerender(
+        <FacilityMap facilities={[facilityA, facilityB]} isFiltered={false} />
+      );
+
+      await waitFor(() => {
+        expect(mockMapInstance.easeTo).toHaveBeenCalledWith({
+          center: [-100, 38],
+          zoom: 4,
+          duration: 0,
+        });
+      });
+    });
+
+    it("defaults isFiltered to true when the prop is omitted, preserving existing fitBounds behavior for callers that don't pass it yet", async () => {
+      const mockMapInstance = globalThis.__mockMapInstance;
+      const { rerender } = render(<FacilityMap facilities={[facilityA]} />);
+      await waitForMapReady();
+      mockMapInstance.fitBounds.mockClear();
+      mockMapInstance.easeTo.mockClear();
+
+      rerender(<FacilityMap facilities={[facilityA, facilityB]} />);
+
+      await waitFor(() => {
+        expect(mockMapInstance.fitBounds).toHaveBeenCalledWith(
+          expect.any(Array),
+          expect.objectContaining({ padding: 96, maxZoom: 9, duration: 1400 })
+        );
+      });
+      expect(mockMapInstance.easeTo).not.toHaveBeenCalledWith(
+        expect.objectContaining({ zoom: 4, center: [-100, 38] })
+      );
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // M6: tab order previously put ~27+ marker buttons (rendered inside <Map>)
+  // before every overlay control — LocationSearch and the Tools column render
+  // as JSX siblings AFTER </Map>, which put them after every marker in DOM/tab
+  // order. Both are position:absolute with explicit z-20/z-30, so moving them
+  // before <Map> in JSX changes tab order without changing paint order.
+  // ---------------------------------------------------------------------------
+  describe("Tab order — overlay controls precede map markers in DOM order (M6)", () => {
+    it("renders LocationSearch and the Tools toggle before the map (and its marker buttons) in DOM order", () => {
+      render(<FacilityMap facilities={[facilityA, facilityB]} />);
+
+      const locationSearch = screen.getByTestId("location-search");
+      const toolsToggle = screen.getByRole("button", { name: /hide map tools/i });
+      const map = screen.getByTestId("mock-map");
+
+      // DOCUMENT_POSITION_FOLLOWING (bit 4) on the map, read from each
+      // overlay's perspective, confirms the overlay is earlier in DOM/tab
+      // order. Visually they still render "on top" of the map (position:
+      // absolute + positive z-index paints above <Map>'s implicit stacking
+      // level regardless of DOM order) — only the tab sequence changes.
+      expect(
+        locationSearch.compareDocumentPosition(map) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy();
+      expect(
+        toolsToggle.compareDocumentPosition(map) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy();
+    });
+
+    it("keeps marker buttons reachable only after the overlay controls, never interleaved before them", async () => {
+      render(<FacilityMap facilities={[facilityA, facilityB]} />);
+
+      const locationSearch = screen.getByTestId("location-search");
+      const toolsToggle = screen.getByRole("button", { name: /hide map tools/i });
+      const marker = await screen.findByTestId("marker-fac-a");
+
+      expect(
+        locationSearch.compareDocumentPosition(marker) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy();
+      expect(
+        toolsToggle.compareDocumentPosition(marker) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy();
+    });
+  });
 });
