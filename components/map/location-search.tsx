@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from "react";
 import { Search } from "lucide-react";
 import { geocodeUS, type GeocodeResult } from "@/lib/geocode";
 
@@ -35,6 +35,53 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
       abortRef.current?.abort();
     };
   }, []);
+
+  // Measured-top cap for the results dropdown, mirroring FacilityMap's Tools
+  // panel (components/map/facility-map.tsx, toolsPanelMaxHeight effect): the
+  // static max-h-[min(14rem,calc(100dvh-10rem))] class below assumes a fixed
+  // top offset that doesn't hold on every viewport — on landscape phones
+  // (e.g. 844×390) that let the dropdown claim more height than was actually
+  // left below it, clipping the bottom result row with no way to scroll it
+  // into view (the map's ancestor is overflow-hidden). This measures the
+  // real gap from the dropdown's own top to the viewport bottom and
+  // overrides the static class once known; the static class remains as the
+  // pre-measurement fallback. Capped at 224px (14rem) so the dropdown
+  // doesn't needlessly balloon on very tall viewports — same soft ceiling
+  // the static class already used.
+  const [resultsMaxHeight, setResultsMaxHeight] = useState<number | undefined>(
+    undefined
+  );
+  useLayoutEffect(() => {
+    if (results.length === 0) return;
+    const el = resultsRef.current;
+    if (!el) return;
+
+    function recompute() {
+      const node = resultsRef.current;
+      if (!node) return;
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      const top = node.getBoundingClientRect().top;
+      // 16px is a visual-extent reserve, NOT measured trailing chrome — it is
+      // a different kind of number from facility-popup.tsx's 20px body buffer,
+      // which reserves specific padding/border that sits after the measured
+      // node. getBoundingClientRect() includes this element's border but NOT
+      // its box-shadow, and the dropdown carries
+      // shadow-[0_2px_8px_rgba(0,0,0,0.15)] — 2px offset + 8px blur, so ~10px
+      // of it paints below the border box — plus a few px so the list does not
+      // sit flush against the viewport edge. Re-measure if that shadow or the
+      // border changes; the symptom of it being too small is the last result
+      // row's shadow clipping at the bottom of short viewports.
+      setResultsMaxHeight(Math.max(0, Math.min(224, viewportHeight - top - 16)));
+    }
+
+    recompute();
+    window.addEventListener("resize", recompute);
+    window.visualViewport?.addEventListener("resize", recompute);
+    return () => {
+      window.removeEventListener("resize", recompute);
+      window.visualViewport?.removeEventListener("resize", recompute);
+    };
+  }, [results.length]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -116,6 +163,15 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
         "relative",
         "bg-background/95 backdrop-blur-sm border border-border rounded-sm",
         "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
+        // Focus indicator for the search input lives HERE, not on the input
+        // itself: the input has no border/gap before this wrapper's own
+        // rounded-sm edge, so a ring drawn directly on the input would clip
+        // against (or visually clash with) the wrapper's border/shadow and
+        // the adjacent submit button. has-[#location-search-input:focus-visible]
+        // scopes this to the input specifically — not the submit button,
+        // which already carries its own focus-visible ring below — so the
+        // two controls never double up a ring at once.
+        "has-[#location-search-input:focus-visible]:ring-2 has-[#location-search-input:focus-visible]:ring-ring has-[#location-search-input:focus-visible]:ring-offset-1",
         className,
       ]
         .filter(Boolean)
@@ -142,6 +198,12 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
           placeholder="Go to city or ZIP"
           autoComplete="off"
           className={[
+            // outline-none suppresses the browser's native ring on the input
+            // itself — intentional here (not the missing-indicator bug this
+            // replaces): the visible focus cue is the wrapper's
+            // has-[...]:ring-* above, not this element. Never remove
+            // outline-none without also removing/replacing the wrapper's
+            // ring, or this input goes back to having NO focus indicator.
             "h-11 w-48 sm:w-56 bg-transparent px-2 text-sm outline-none",
             "font-mono placeholder:text-muted-foreground/60",
           ].join(" ")}
@@ -176,6 +238,11 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
         <ul
           aria-label="Location search results"
           ref={resultsRef}
+          style={
+            resultsMaxHeight !== undefined
+              ? { maxHeight: `${resultsMaxHeight}px` }
+              : undefined
+          }
           className={[
             "absolute left-0 right-0 top-full z-30 mt-0.5",
             "max-h-[min(14rem,calc(100dvh-10rem))] overflow-y-auto overscroll-contain",

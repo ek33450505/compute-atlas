@@ -105,6 +105,78 @@ describe("LocationSearch", () => {
     expect(screen.getByLabelText("Go to city or ZIP")).toBeInTheDocument();
   });
 
+  it("gives the search input a focus indicator via the wrapper's has-[]:ring, not a native outline", () => {
+    const { container } = render(<LocationSearch onSelect={() => {}} />);
+    const input = screen.getByLabelText("Go to city or ZIP");
+    // The input itself suppresses its native ring — the visible cue is on
+    // the wrapper, scoped specifically to this input's id so the submit
+    // button (which has its own separate ring) never doubles up.
+    expect(input.className).toContain("outline-none");
+    const wrapper = container.firstElementChild as HTMLElement;
+    expect(wrapper.className).toContain(
+      "has-[#location-search-input:focus-visible]:ring-2"
+    );
+  });
+
+  it("caps the results dropdown height to the measured space below it, not just the static class", async () => {
+    // Mirrors facility-map.test.tsx's "Tools Panel — measured-top scroll
+    // cap" convention. Dropdown top pinned at 356px on a 390px-tall
+    // viewport (the measured 844×390 landscape-phone regression) -> the
+    // static max-h-[min(14rem,calc(100dvh-10rem))] class would allow far
+    // more than the 26px actually left below it.
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      top: 356,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(390);
+
+    mockGeocode.mockResolvedValue([RESULT_A, RESULT_B]);
+    render(<LocationSearch onSelect={() => {}} />);
+
+    await userEvent.type(screen.getByLabelText("Go to city or ZIP"), "New York");
+    await userEvent.click(screen.getByRole("button", { name: "Search location" }));
+
+    const list = await screen.findByRole("list", { name: "Location search results" });
+    // Math.max(0, Math.min(224, 390 - 356 - 16)) = 18
+    expect(list.style.maxHeight).toBe("18px");
+
+    vi.restoreAllMocks();
+  });
+
+  it("does not exceed the 224px (14rem) soft ceiling on a tall viewport", async () => {
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      top: 60,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(900);
+
+    mockGeocode.mockResolvedValue([RESULT_A, RESULT_B]);
+    render(<LocationSearch onSelect={() => {}} />);
+
+    await userEvent.type(screen.getByLabelText("Go to city or ZIP"), "New York");
+    await userEvent.click(screen.getByRole("button", { name: "Search location" }));
+
+    const list = await screen.findByRole("list", { name: "Location search results" });
+    // Math.max(0, Math.min(224, 900 - 60 - 16)) = 224
+    expect(list.style.maxHeight).toBe("224px");
+
+    vi.restoreAllMocks();
+  });
+
   it("pressing Escape while results are open closes the list and returns focus to the input", async () => {
     mockGeocode.mockResolvedValue([RESULT_A, RESULT_B]);
     render(<LocationSearch onSelect={() => {}} />);
