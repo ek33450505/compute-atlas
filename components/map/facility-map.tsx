@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from "react";
 import Map, {
   Marker,
   Popup,
@@ -120,6 +120,20 @@ export function FacilityMap({
   const [showTools, setShowTools] = useState<boolean>(
     () => !window.matchMedia("(max-width: 768px)").matches
   );
+  // Measured-top cap for the Tools panel's own scroll container, mirroring
+  // MapLayerControl's approach (see the comment above its scrollMaxHeight
+  // effect): the panel is the last thing in a stacked right-side column, so
+  // its top offset varies a lot with viewport height, and a purely
+  // viewport-relative max-height (the static max-h-[calc(100dvh-8rem)] class
+  // below) is frequently taller than the space actually left below it —
+  // content then overflows the viewport bottom with no way to scroll it into
+  // view, because the ancestor layout is overflow-hidden. `toolsPanelRef` is
+  // the container being measured; `toolsPanelMaxHeight` is applied as an
+  // inline style that overrides the static class once known.
+  const toolsPanelRef = useRef<HTMLDivElement>(null);
+  const [toolsPanelMaxHeight, setToolsPanelMaxHeight] = useState<number | undefined>(
+    undefined
+  );
   // Optional overlay layers (Layers control) — off by default, lazy-loaded:
   // each corresponding <Source> only mounts (and fetches its GeoJSON) once
   // its flag flips true, so the 1.9 MB power.geojson never loads unrequested.
@@ -178,6 +192,35 @@ export function FacilityMap({
     return () => mq.removeEventListener("change", handler);
   }, []);
 
+  // Cap the Tools panel's scroll container to exactly what's left above the
+  // viewport bottom, measured from its real top offset — never more than
+  // that, even if that means shrinking below what a fixed floor would have
+  // given it. Math.max(0, ...) (not some larger floor like MapLayerControl's
+  // old Math.max(120, ...)) is deliberate: any positive floor can still
+  // exceed genuinely small available space near the viewport bottom, which
+  // is exactly what was pushing content past the fold with no way to scroll
+  // it into view.
+  useLayoutEffect(() => {
+    if (!showTools) return;
+    const el = toolsPanelRef.current;
+    if (!el) return;
+
+    function recompute() {
+      const node = toolsPanelRef.current;
+      if (!node) return;
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      const top = node.getBoundingClientRect().top;
+      setToolsPanelMaxHeight(Math.max(0, viewportHeight - top - 16));
+    }
+
+    recompute();
+    window.addEventListener("resize", recompute);
+    window.visualViewport?.addEventListener("resize", recompute);
+    return () => {
+      window.removeEventListener("resize", recompute);
+      window.visualViewport?.removeEventListener("resize", recompute);
+    };
+  }, [showTools]);
 
   const handleSelectFacility = useCallback(
     (facility: Facility) => {
@@ -816,8 +859,21 @@ export function FacilityMap({
               onClose={handleClosePopup}
               closeOnClick={false}
               closeButton={false}
-              anchor="bottom"
+              // No fixed `anchor` — MapLibre dynamically picks whichever anchor
+              // (bottom/top/left/right/corners) keeps the popup inside the map
+              // container, preferring "bottom" when there's room (matches the
+              // old fixed behavior on every viewport that isn't short). A
+              // hardcoded anchor="bottom" always opened the popup ABOVE the
+              // marker regardless of available space, which clipped its top
+              // (name, operator, status, Close button) on short/landscape-phone
+              // maps. `offset={16}` still applies correctly to whichever anchor
+              // is chosen — MapLibre derives a symmetric per-anchor offset from
+              // a single number (always pushing the popup further away from the
+              // marker), so this isn't a fixed-anchor-only behavior. `padding`
+              // keeps the chosen anchor's box clear of the map's own edges, the
+              // "clamp within the container" half of the fix.
               offset={16}
+              padding={{ top: 16, bottom: 16, left: 16, right: 16 }}
               className="atlas-popup"
               maxWidth="none"
             >
@@ -879,6 +935,12 @@ export function FacilityMap({
           {showTools && (
             <div
               id={TOOLS_PANEL_ID}
+              ref={toolsPanelRef}
+              style={
+                toolsPanelMaxHeight !== undefined
+                  ? { maxHeight: `${toolsPanelMaxHeight}px` }
+                  : undefined
+              }
               className="flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
             >
               <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />

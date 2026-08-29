@@ -128,9 +128,18 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
           // min-h-0 prevents the flex child from overflowing its parent
           <div className="relative flex-1 min-h-0">
             <section aria-label="Interactive datacenter map" className="h-full">
+              {/* heightClass is plain h-full — NOT min-h-[something] — on purpose.
+                  This box already IS the flex-1 remainder of a fixed-height column
+                  (h-[calc(100dvh-4rem)] minus the subheader above), so h-full gives
+                  it exactly the space that's really there. An arbitrary min-height
+                  floor here would force the map taller than that remainder on short
+                  viewports (landscape phones: as little as ~187px available), and
+                  since the ancestor column is overflow-hidden, the excess doesn't
+                  scroll into view — it silently pushes the legend/scale bar/OSM
+                  attribution below the fold instead. */}
               <FacilityMap
                 facilities={filtered}
-                heightClass="h-full min-h-[320px]"
+                heightClass="h-full"
                 surveyOnMount={filtered.length !== facilities.length}
               />
             </section>

@@ -36,12 +36,19 @@ interface LayerProps {
   paint?: Record<string, unknown>;
 }
 
+interface PopupProps {
+  anchor?: string;
+  offset?: number | Record<string, [number, number]>;
+  padding?: { top?: number; bottom?: number; left?: number; right?: number };
+}
+
 declare global {
   var __mockMapInstance: MockMapInstance;
   var __mockMapLibreInstance: MockMapLibreInstance;
   var __layerPropsById: Record<string, LayerProps>;
   var __lastLayerProps: LayerProps;
   var __mapGestureProps: { dragRotate?: boolean; touchPitch?: boolean };
+  var __popupProps: PopupProps;
 }
 
 // Mock react-map-gl/maplibre at the module boundary.
@@ -141,15 +148,24 @@ vi.mock("react-map-gl/maplibre", () => {
   const Popup = ({
     children,
     onClose,
-  }: {
+    anchor,
+    offset,
+    padding,
+  }: PopupProps & {
     children: React.ReactNode;
     onClose: () => void;
-  }): React.ReactElement => (
-    <div data-testid="mock-popup" role="region" aria-label="Popup">
-      {children}
-      <button onClick={onClose}>Close</button>
-    </div>
-  );
+  }): React.ReactElement => {
+    // Capture the positioning props facility-map.tsx passes so a test can
+    // assert on them without a real MapLibre instance to inspect (same
+    // synchronous-global-write pattern as __mapGestureProps above).
+    globalThis.__popupProps = { anchor, offset, padding };
+    return (
+      <div data-testid="mock-popup" role="region" aria-label="Popup">
+        {children}
+        <button onClick={onClose}>Close</button>
+      </div>
+    );
+  };
   Popup.displayName = "Popup";
 
   const NavigationControl = (): React.ReactElement => (
@@ -421,6 +437,31 @@ describe("FacilityMap", () => {
       expect(await screen.findByTestId("facility-popup-content")).toBeInTheDocument();
     });
 
+    it("does not pin the popup to a fixed anchor, so MapLibre can flip it to stay inside the map on short viewports", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[facilityA]} />);
+
+      const marker = await screen.findByTestId("marker-fac-a");
+      await user.click(marker);
+      await screen.findByTestId("mock-popup");
+
+      // A hardcoded anchor="bottom" always opens the popup ABOVE the marker
+      // regardless of available space, clipping its top (name/operator/
+      // status/Close button) on short maps — omitting `anchor` lets MapLibre
+      // choose whichever side actually fits.
+      expect(globalThis.__popupProps.anchor).toBeUndefined();
+      // The 16px gap still applies (MapLibre derives a symmetric per-anchor
+      // offset from a single number), and padding keeps whichever anchor is
+      // chosen clear of the map's own edges.
+      expect(globalThis.__popupProps.offset).toBe(16);
+      expect(globalThis.__popupProps.padding).toEqual({
+        top: 16,
+        bottom: 16,
+        left: 16,
+        right: 16,
+      });
+    });
+
     it("closes the popup when the close button is clicked", async () => {
       const user = userEvent.setup();
       render(<FacilityMap facilities={[facilityA]} />);
@@ -669,6 +710,64 @@ describe("FacilityMap", () => {
 
       await user.click(screen.getByRole("button", { name: /show map tools/i }));
       expect(screen.getByTestId("compass-rose")).toBeInTheDocument();
+    });
+  });
+
+  describe("Tools Panel — measured-top scroll cap", () => {
+    // Same pattern as MapLayerControl's scrollMaxHeight tests: the panel's
+    // real top offset (not just the viewport height) determines how much
+    // room is actually left below it, since it's the last thing in a
+    // stacked right-side column.
+    it("applies a position-aware inline maxHeight based on the panel's real top offset", () => {
+      // Mirrors the measured landscape-phone regression at 320x568: the
+      // panel opens at y=242 -> expected maxHeight = 568 - 242 - 16 = 310px.
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+        top: 242,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => {},
+      } as DOMRect);
+      vi.spyOn(window, "innerHeight", "get").mockReturnValue(568);
+
+      render(<FacilityMap facilities={[]} />);
+
+      const panel = document.getElementById("map-tools-panel");
+      expect(panel).not.toBeNull();
+      expect(panel!.style.maxHeight).toBe("310px");
+
+      vi.restoreAllMocks();
+    });
+
+    it("clamps the inline maxHeight to 0 rather than exceeding the real available space", () => {
+      // The panel's own top offset already leaves negative room before the
+      // viewport bottom (390 - 500 - 16 = -126) — the old static
+      // max-h-[calc(100dvh-8rem)] class would have forced far more height
+      // than this and relied on the ancestor's overflow-hidden to hide the
+      // rest, unreachably.
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+        top: 500,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => {},
+      } as DOMRect);
+      vi.spyOn(window, "innerHeight", "get").mockReturnValue(390);
+
+      render(<FacilityMap facilities={[]} />);
+
+      const panel = document.getElementById("map-tools-panel");
+      expect(panel!.style.maxHeight).toBe("0px");
+
+      vi.restoreAllMocks();
     });
   });
 
