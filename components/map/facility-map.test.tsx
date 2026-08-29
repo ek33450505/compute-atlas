@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React, { forwardRef } from "react";
 import { FacilityMap } from "./facility-map";
@@ -17,6 +17,13 @@ interface MockMapInstance {
 // The object returned by getMap() — real MapLibre's interaction handlers,
 // mocked so handleMapLoad's enable()/disableRotation() calls have something
 // to hit.
+interface MockLngLatBounds {
+  getWest: () => number;
+  getSouth: () => number;
+  getEast: () => number;
+  getNorth: () => number;
+}
+
 interface MockMapLibreInstance {
   setProjection: ReturnType<typeof vi.fn>;
   dragPan: { enable: ReturnType<typeof vi.fn> };
@@ -28,7 +35,21 @@ interface MockMapLibreInstance {
   boxZoom: { enable: ReturnType<typeof vi.fn> };
   keyboard: { enable: ReturnType<typeof vi.fn> };
   doubleClickZoom: { enable: ReturnType<typeof vi.fn> };
+  getBounds: ReturnType<typeof vi.fn<() => MockLngLatBounds>>;
+  getCanvasContainer: ReturnType<typeof vi.fn<() => HTMLElement>>;
 }
+
+// A generous default viewport box — comfortably contains every fixture used
+// in this file (facilityA/B, and the mocked INITIAL_VIEW_STATE center) so
+// existing tests that don't care about culling keep seeing every marker
+// they always have. Tests that specifically exercise culling override this
+// via mockMapLibreInstance.getBounds.mockReturnValueOnce(...).
+const DEFAULT_MOCK_BOUNDS: MockLngLatBounds = {
+  getWest: () => -130,
+  getSouth: () => 20,
+  getEast: () => -60,
+  getNorth: () => 55,
+};
 
 interface LayerProps {
   id?: string;
@@ -42,13 +63,33 @@ interface PopupProps {
   padding?: { top?: number; bottom?: number; left?: number; right?: number };
 }
 
+interface MockLngLat {
+  lat: number;
+  lng: number;
+}
+
+interface MockMoveEndEvent {
+  viewState: { bearing: number; pitch: number; latitude: number; longitude: number; zoom: number };
+}
+
 declare global {
   var __mockMapInstance: MockMapInstance;
   var __mockMapLibreInstance: MockMapLibreInstance;
+  var __mockCanvasContainer: HTMLElement;
   var __layerPropsById: Record<string, LayerProps>;
   var __lastLayerProps: LayerProps;
   var __mapGestureProps: { dragRotate?: boolean; touchPitch?: boolean };
   var __popupProps: PopupProps;
+  // Latest onMoveEnd/onMouseMove/onMouseOut/onResize callbacks passed to
+  // <Map> — captured synchronously on every render (same pattern as
+  // __mapGestureProps above) so a test can invoke them directly to simulate
+  // a gesture/camera-settle without a real MapLibre instance.
+  var __mapCallbacks: {
+    onMoveEnd?: (e: MockMoveEndEvent) => void;
+    onMouseMove?: (e: { lngLat: MockLngLat }) => void;
+    onMouseOut?: () => void;
+    onResize?: () => void;
+  };
 }
 
 // Mock react-map-gl/maplibre at the module boundary.
@@ -59,6 +100,12 @@ declare global {
 vi.mock("react-map-gl/maplibre", () => {
   // Create a persistent container element for all tests to use
   const mockContainer = document.createElement("div");
+  // Separate detached element standing in for map.getCanvasContainer() —
+  // real MapLibre appends marker divs directly under this, distinct from
+  // getContainer()'s outer element. MutationObserver/querySelectorAll work
+  // fine on a detached subtree, so it doesn't need to be attached to
+  // document.body for the marker-role-stripping tests below.
+  const mockCanvasContainer = document.createElement("div");
 
   // Stable object (not recreated per getMap() call, like the real MapLibre
   // Map instance isn't) so a test can hold a reference to `disableRotation`
@@ -71,6 +118,8 @@ vi.mock("react-map-gl/maplibre", () => {
     boxZoom: { enable: vi.fn() },
     keyboard: { enable: vi.fn() },
     doubleClickZoom: { enable: vi.fn() },
+    getBounds: vi.fn(() => DEFAULT_MOCK_BOUNDS),
+    getCanvasContainer: vi.fn(() => mockCanvasContainer),
   };
 
   const mockMapInstance: MockMapInstance = {
@@ -84,12 +133,17 @@ vi.mock("react-map-gl/maplibre", () => {
   // Expose mock instances globally for tests to inspect spies
   globalThis.__mockMapInstance = mockMapInstance;
   globalThis.__mockMapLibreInstance = mockMapLibreInstance;
+  globalThis.__mockCanvasContainer = mockCanvasContainer;
 
   // Layer mock that tracks props passed to it by layer id
   interface MapMockProps {
     onLoad?: (instance: MockMapInstance) => void;
     dragRotate?: boolean;
     touchPitch?: boolean;
+    onMoveEnd?: (e: MockMoveEndEvent) => void;
+    onMouseMove?: (e: { lngLat: MockLngLat }) => void;
+    onMouseOut?: () => void;
+    onResize?: () => void;
     children?: React.ReactNode;
   }
 
@@ -114,7 +168,7 @@ vi.mock("react-map-gl/maplibre", () => {
   const MapMock = forwardRef<
     MockMapInstance,
     MapMockProps & { children?: React.ReactNode }
-  >(({ onLoad, dragRotate, touchPitch, children }, ref) => {
+  >(({ onLoad, dragRotate, touchPitch, onMoveEnd, onMouseMove, onMouseOut, onResize, children }, ref) => {
     React.useImperativeHandle(ref, () => mockMapInstance, []);
 
     // Simulate map load with the mock instance
@@ -128,6 +182,11 @@ vi.mock("react-map-gl/maplibre", () => {
     // test can assert drag never tilts/rotates (see LayerMock above for the
     // same synchronous-global-write pattern).
     globalThis.__mapGestureProps = { dragRotate, touchPitch };
+
+    // Capture the latest camera/pointer callbacks so a test can invoke them
+    // directly to simulate moveend/mousemove/mouseout/resize without a real
+    // MapLibre instance — same synchronous-global-write pattern as above.
+    globalThis.__mapCallbacks = { onMoveEnd, onMouseMove, onMouseOut, onResize };
 
     return (
       <div
@@ -198,17 +257,28 @@ vi.mock("react-map-gl/maplibre", () => {
   };
 });
 
-// Mock utility functions to keep tests focused on component behavior, not data logic
-vi.mock("@/lib/cluster", () => ({
-  clusterFacilities: vi.fn((facilities) =>
-    facilities.map((f: Facility) => ({
-      id: f.id,
-      lon: f.location.lon,
-      lat: f.location.lat,
-      members: [f],
-    }))
-  ),
-}));
+// Mock utility functions to keep tests focused on component behavior, not
+// data logic — but keep the REAL cullClustersToViewport (via importActual)
+// rather than mocking it too. clusterFacilities's own zoom/pixel-clustering
+// behavior is already thoroughly covered in lib/cluster.test.ts; what these
+// component tests care about is whether facility-map.tsx correctly wires
+// viewport bounds into the real culling function, which requires exercising
+// the real implementation, not a stub that would make every marker "always
+// visible" regardless of what the component actually passes in.
+vi.mock("@/lib/cluster", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/cluster")>();
+  return {
+    ...actual,
+    clusterFacilities: vi.fn((facilities) =>
+      facilities.map((f: Facility) => ({
+        id: f.id,
+        lon: f.location.lon,
+        lat: f.location.lat,
+        members: [f],
+      }))
+    ),
+  };
+});
 
 // vi.mock calls are hoisted above regular statements, so a plain `const`
 // declared here (even `mock`-prefixed) would still be read before it's
@@ -248,19 +318,28 @@ vi.mock("@/lib/graticule", () => ({
   formatLatLon: vi.fn((lat: number, lon: number) => `${lat}, ${lon}`),
 }));
 
-vi.mock("@/components/map/facility-marker", () => ({
-  FacilityMarker: ({
-    facility,
-    onSelect,
-  }: {
-    facility: Facility;
-    onSelect: (f: Facility) => void;
-  }) => (
-    <button onClick={() => onSelect(facility)} data-testid={`marker-${facility.id}`}>
+vi.mock("@/components/map/facility-marker", () => {
+  // forwardRef here (not a plain function component) to faithfully mirror
+  // the real FacilityMarker, which forwards its ref to the underlying
+  // <button> — facility-map.tsx's marker ref callback (markerRefs +
+  // markerIdByElement, used by handleClosePopup's focus-return and the
+  // viewport-culling focus-preservation logic) depends on that ref actually
+  // reaching a real DOM node.
+  const FacilityMarkerMock = forwardRef<
+    HTMLButtonElement,
+    { facility: Facility; onSelect: (f: Facility) => void }
+  >(({ facility, onSelect }, ref) => (
+    <button
+      ref={ref}
+      onClick={() => onSelect(facility)}
+      data-testid={`marker-${facility.id}`}
+    >
       {facility.name}
     </button>
-  ),
-}));
+  ));
+  FacilityMarkerMock.displayName = "FacilityMarkerMock";
+  return { FacilityMarker: FacilityMarkerMock };
+});
 
 vi.mock("@/components/map/cluster-marker", () => ({
   ClusterMarker: ({
@@ -429,6 +508,27 @@ describe("FacilityMap", () => {
     it("includes a link to the data table alternative in sr-only text", () => {
       render(<FacilityMap facilities={[]} />);
       expect(screen.getByRole("link", { name: "data table page" })).toBeInTheDocument();
+    });
+
+    // Viewport culling (below) mounts a buffered band of markers around the
+    // visible area, not just the strictly-visible ones
+    // (VIEWPORT_CULL_BUFFER_RATIO in lib/cluster.ts) — so "each location is
+    // a focusable button" still overstates it (most of the dataset is
+    // culled entirely), but so would "only in-view locations are
+    // focusable" (some focusable markers are in the buffered band, not
+    // actually on screen). The guidance text says "nearby" instead, and
+    // promises that tabbing to one brings it into view — see the
+    // "Keyboard focus pans the camera into view" tests further below,
+    // which are what make that promise true rather than aspirational.
+    it("describes nearby locations as focusable, not every location, and promises tabbing brings one into view", () => {
+      const { container } = render(<FacilityMap facilities={[]} />);
+      const srOnlyText = container.querySelector(".sr-only");
+      expect(srOnlyText?.textContent).toMatch(/Nearby locations are focusable/);
+      expect(srOnlyText?.textContent).toMatch(
+        /moves the camera to bring it into view/
+      );
+      expect(srOnlyText?.textContent).toMatch(/pan or zoom/i);
+      expect(srOnlyText?.textContent).not.toMatch(/Each location is a focusable button/);
     });
   });
 
@@ -1179,6 +1279,491 @@ describe("FacilityMap", () => {
       expect(
         toolsToggle.compareDocumentPosition(marker) & Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Viewport marker culling: at zoom >= UNCLUSTER_ZOOM every facility is its
+  // own marker (~1,227 in the real dataset), and MapLibre's Marker._update
+  // repositions every one of them on every animation frame during a drag,
+  // regardless of whether it's on screen (verified in the installed
+  // maplibre-gl 5.24.0 dist — see facility-map.tsx's updateViewportBounds
+  // comment). These tests exercise the REAL cullClustersToViewport (mocked
+  // in via importOriginal above) to confirm facility-map.tsx wires viewport
+  // bounds into it correctly — the buffer math itself is covered precisely
+  // in lib/cluster.test.ts.
+  // ---------------------------------------------------------------------------
+  describe("Viewport marker culling", () => {
+    afterEach(() => {
+      // getBounds uses mockReturnValue (persistent, not "once") in several
+      // tests below — clearMocks only clears call history, not that
+      // override (see the vitest.config.ts clearMocks comment), so restore
+      // the generous default explicitly rather than leaking a tight box
+      // into a later test in this file.
+      globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(DEFAULT_MOCK_BOUNDS);
+    });
+
+    // A tight box around facilityA (35, -90) only. Even with the 25%
+    // VIEWPORT_CULL_BUFFER_RATIO applied, facilityB (30, -97) — 5-7 degrees
+    // away — stays well outside it.
+    const TIGHT_BOUNDS_AROUND_FACILITY_A: MockLngLatBounds = {
+      getWest: () => -91,
+      getSouth: () => 34,
+      getEast: () => -89,
+      getNorth: () => 36,
+    };
+
+    it("does not mount a marker for a facility outside the current viewport bounds", async () => {
+      globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+        TIGHT_BOUNDS_AROUND_FACILITY_A
+      );
+
+      render(<FacilityMap facilities={[facilityA, facilityB]} />);
+
+      expect(await screen.findByTestId("marker-fac-a")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.queryByTestId("marker-fac-b")).not.toBeInTheDocument();
+      });
+    });
+
+    it("mounts every facility when the viewport comfortably contains all of them", async () => {
+      globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(DEFAULT_MOCK_BOUNDS);
+
+      render(<FacilityMap facilities={[facilityA, facilityB]} />);
+
+      expect(await screen.findByTestId("marker-fac-a")).toBeInTheDocument();
+      expect(await screen.findByTestId("marker-fac-b")).toBeInTheDocument();
+    });
+
+    it("recomputes the culled marker set on moveend (pan settles), not before", async () => {
+      globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+        TIGHT_BOUNDS_AROUND_FACILITY_A
+      );
+
+      render(<FacilityMap facilities={[facilityA, facilityB]} />);
+      expect(await screen.findByTestId("marker-fac-a")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.queryByTestId("marker-fac-b")).not.toBeInTheDocument();
+      });
+
+      // Simulate the camera settling somewhere that now covers both — real
+      // MapLibre would fire this on drag release, zoom end, or any
+      // easeTo/fitBounds/flyTo completing.
+      globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(DEFAULT_MOCK_BOUNDS);
+      act(() => {
+        globalThis.__mapCallbacks.onMoveEnd?.({
+          viewState: { bearing: 0, pitch: 0, latitude: 32, longitude: -93, zoom: 4 },
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("marker-fac-b")).toBeInTheDocument();
+      });
+    });
+
+    // ---------------------------------------------------------------------
+    // Focus-management decision: a marker/cluster that currently holds DOM
+    // focus (or has an open popup) is force-kept mounted regardless of
+    // bounds — see cullClustersToViewport's keepIds in lib/cluster.ts and
+    // the clusters memo in facility-map.tsx. Without this, panning a
+    // focused marker off-screen would unmount it and the browser would
+    // strand focus on <body> with no visible indicator; a facility with an
+    // open popup could similarly break handleClosePopup's focus-return.
+    // ---------------------------------------------------------------------
+    describe("Focus and selection are preserved through culling", () => {
+      it("keeps a focused marker mounted even after a pan that would otherwise cull it", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(DEFAULT_MOCK_BOUNDS);
+
+        render(<FacilityMap facilities={[facilityA, facilityB]} />);
+        const markerB = await screen.findByTestId("marker-fac-b");
+        act(() => markerB.focus());
+        await waitFor(() => expect(markerB).toHaveFocus());
+
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+          TIGHT_BOUNDS_AROUND_FACILITY_A
+        );
+        act(() => {
+          globalThis.__mapCallbacks.onMoveEnd?.({
+            viewState: { bearing: 0, pitch: 0, latitude: 35, longitude: -90, zoom: 4 },
+          });
+        });
+
+        // Still mounted, and focus was never yanked to <body> — the whole
+        // point of force-keeping it.
+        await waitFor(() => {
+          expect(screen.getByTestId("marker-fac-b")).toBeInTheDocument();
+        });
+        expect(screen.getByTestId("marker-fac-b")).toHaveFocus();
+      });
+
+      it("releases a force-kept marker once focus moves away, so a later pan can cull it", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(DEFAULT_MOCK_BOUNDS);
+
+        render(<FacilityMap facilities={[facilityA, facilityB]} />);
+        const markerB = await screen.findByTestId("marker-fac-b");
+        act(() => markerB.focus());
+        await waitFor(() => expect(markerB).toHaveFocus());
+        act(() => markerB.blur());
+
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+          TIGHT_BOUNDS_AROUND_FACILITY_A
+        );
+        act(() => {
+          globalThis.__mapCallbacks.onMoveEnd?.({
+            viewState: { bearing: 0, pitch: 0, latitude: 35, longitude: -90, zoom: 4 },
+          });
+        });
+
+        await waitFor(() => {
+          expect(screen.queryByTestId("marker-fac-b")).not.toBeInTheDocument();
+        });
+      });
+
+      it("keeps the selected (popup-open) facility's marker mounted even after a pan that would otherwise cull it", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(DEFAULT_MOCK_BOUNDS);
+        const user = userEvent.setup();
+
+        render(<FacilityMap facilities={[facilityA, facilityB]} />);
+        const markerB = await screen.findByTestId("marker-fac-b");
+        await user.click(markerB);
+        expect(await screen.findByTestId("facility-popup-content")).toBeInTheDocument();
+
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+          TIGHT_BOUNDS_AROUND_FACILITY_A
+        );
+        act(() => {
+          globalThis.__mapCallbacks.onMoveEnd?.({
+            viewState: { bearing: 0, pitch: 0, latitude: 35, longitude: -90, zoom: 4 },
+          });
+        });
+
+        // handleClosePopup focuses markerRefs.current[id] on close — if this
+        // marker had been culled, that ref would already be null and focus
+        // return would silently no-op.
+        await waitFor(() => {
+          expect(screen.getByTestId("marker-fac-b")).toBeInTheDocument();
+        });
+      });
+    });
+
+    // -----------------------------------------------------------------
+    // Keyboard-focus-pan: a marker inside the buffered-but-not-strictly-
+    // visible band is mounted and Tab-reachable, but not actually on
+    // screen. findOffscreenTarget + the focusin handler in
+    // facility-map.tsx ease the camera to it when that happens — these
+    // tests exercise that against the REAL cullClustersToViewport (see the
+    // vi.mock at the top of this file), not a stub.
+    // -----------------------------------------------------------------
+    describe("Keyboard focus pans the camera into view", () => {
+      // Excludes facilityA (lat 35, lon -90) from the STRICT box (north
+      // caps at 34) while the 25% buffer (latPad = 14 * 0.25 = 3.5,
+      // buffered north = 37.5) still comfortably includes it — mounted and
+      // focusable, but off-screen: the exact gap Task 1 closes.
+      const BOUNDS_WITH_FACILITY_A_IN_BUFFER_BAND: MockLngLatBounds = {
+        getWest: () => -100,
+        getSouth: () => 20,
+        getEast: () => -80,
+        getNorth: () => 34,
+      };
+
+      it("eases the camera to bring an off-screen-but-mounted marker into view on keyboard focus", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+          BOUNDS_WITH_FACILITY_A_IN_BUFFER_BAND
+        );
+        const mockMapInstance = globalThis.__mockMapInstance;
+
+        render(<FacilityMap facilities={[facilityA]} />);
+        const markerA = await screen.findByTestId("marker-fac-a");
+        mockMapInstance.easeTo.mockClear();
+
+        act(() => markerA.focus());
+
+        await waitFor(() => {
+          expect(mockMapInstance.easeTo).toHaveBeenCalledWith({
+            center: [-90, 35],
+            duration: 600,
+          });
+        });
+      });
+
+      it("does not pan the camera when the focused marker is already inside the visible viewport", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(DEFAULT_MOCK_BOUNDS);
+        const mockMapInstance = globalThis.__mockMapInstance;
+
+        render(<FacilityMap facilities={[facilityA]} />);
+        const markerA = await screen.findByTestId("marker-fac-a");
+        mockMapInstance.easeTo.mockClear();
+
+        act(() => markerA.focus());
+        await waitFor(() => expect(markerA).toHaveFocus());
+
+        expect(mockMapInstance.easeTo).not.toHaveBeenCalled();
+      });
+
+      it("uses duration 0 for the auto-pan when prefers-reduced-motion is enabled", async () => {
+        Object.defineProperty(window, "matchMedia", {
+          writable: true,
+          configurable: true,
+          value: (query: string) => ({
+            matches: query === "(prefers-reduced-motion: reduce)",
+            media: query,
+            onchange: null,
+            addListener: () => {},
+            removeListener: () => {},
+            addEventListener: () => {},
+            removeEventListener: () => {},
+            dispatchEvent: () => false,
+          }),
+        });
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+          BOUNDS_WITH_FACILITY_A_IN_BUFFER_BAND
+        );
+        const mockMapInstance = globalThis.__mockMapInstance;
+
+        render(<FacilityMap facilities={[facilityA]} />);
+        const markerA = await screen.findByTestId("marker-fac-a");
+        mockMapInstance.easeTo.mockClear();
+
+        act(() => markerA.focus());
+
+        await waitFor(() => {
+          expect(mockMapInstance.easeTo).toHaveBeenCalledWith({
+            center: [-90, 35],
+            duration: 0,
+          });
+        });
+      });
+
+      it("does not auto-pan when the focus was mouse-driven, even if the marker is off-screen (focus-visible semantics, not mouse)", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+          BOUNDS_WITH_FACILITY_A_IN_BUFFER_BAND
+        );
+        const mockMapInstance = globalThis.__mockMapInstance;
+
+        render(<FacilityMap facilities={[facilityA]} />);
+        const markerA = await screen.findByTestId("marker-fac-a");
+        mockMapInstance.easeTo.mockClear();
+
+        // Real browser sequence for a pointer-driven focus: mousedown fires
+        // before the resulting focus event.
+        act(() => {
+          markerA.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+          markerA.focus();
+        });
+        await waitFor(() => expect(markerA).toHaveFocus());
+
+        expect(mockMapInstance.easeTo).not.toHaveBeenCalled();
+      });
+
+      it("auto-pans once a keydown re-arms keyboard modality after a prior mousedown", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+          BOUNDS_WITH_FACILITY_A_IN_BUFFER_BAND
+        );
+        const mockMapInstance = globalThis.__mockMapInstance;
+
+        render(<FacilityMap facilities={[facilityA]} />);
+        const markerA = await screen.findByTestId("marker-fac-a");
+        mockMapInstance.easeTo.mockClear();
+
+        act(() => {
+          // Flip modality to "pointer" first, so a subsequent pan can only
+          // be explained by the keydown re-arming it — not by the ref's
+          // default-true initial value.
+          markerA.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+          markerA.focus();
+        });
+
+        await waitFor(() => {
+          expect(mockMapInstance.easeTo).toHaveBeenCalledWith({
+            center: [-90, 35],
+            duration: 600,
+          });
+        });
+      });
+
+      it("does not click-then-double-pan: a mouse click still moves the camera exactly once", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(DEFAULT_MOCK_BOUNDS);
+        const user = userEvent.setup();
+        const mockMapInstance = globalThis.__mockMapInstance;
+
+        render(<FacilityMap facilities={[facilityA]} />);
+        const markerA = await screen.findByTestId("marker-fac-a");
+        mockMapInstance.easeTo.mockClear();
+
+        await user.click(markerA);
+
+        await waitFor(() => {
+          expect(mockMapInstance.easeTo).toHaveBeenCalledWith(
+            expect.objectContaining({ center: [-90, 35], duration: 600 })
+          );
+        });
+        // handleSelectFacility's own easeTo is the ONLY camera move a click
+        // should produce — the focus-pan path must not add a second one.
+        expect(mockMapInstance.easeTo).toHaveBeenCalledTimes(1);
+      });
+
+      it("does not loop: a moveend settling after the auto-pan does not trigger another pan", async () => {
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(
+          BOUNDS_WITH_FACILITY_A_IN_BUFFER_BAND
+        );
+        const mockMapInstance = globalThis.__mockMapInstance;
+
+        render(<FacilityMap facilities={[facilityA]} />);
+        const markerA = await screen.findByTestId("marker-fac-a");
+        mockMapInstance.easeTo.mockClear();
+
+        act(() => markerA.focus());
+        await waitFor(() => expect(mockMapInstance.easeTo).toHaveBeenCalledTimes(1));
+
+        // Simulate the pan completing: real MapLibre fires onMoveEnd with
+        // the new (now-containing) bounds, same as any easeTo settling.
+        const SETTLED_BOUNDS: MockLngLatBounds = {
+          getWest: () => -95,
+          getSouth: () => 25,
+          getEast: () => -85,
+          getNorth: () => 40,
+        };
+        globalThis.__mockMapLibreInstance.getBounds.mockReturnValue(SETTLED_BOUNDS);
+        act(() => {
+          globalThis.__mapCallbacks.onMoveEnd?.({
+            viewState: { bearing: 0, pitch: 0, latitude: 35, longitude: -90, zoom: 4 },
+          });
+        });
+
+        // Same DOM node keeps focus (no unmount/remount), so no new focusin
+        // fires and the camera doesn't move a second time.
+        expect(screen.getByTestId("marker-fac-a")).toHaveFocus();
+        expect(mockMapInstance.easeTo).toHaveBeenCalledTimes(1);
+      });
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Narrowed MutationObserver: markers are direct children of
+  // map.getCanvasContainer() (verified in the maplibre-gl 5.24.0 dist —
+  // Marker.addTo() calls `map.getCanvasContainer().appendChild(...)`), and
+  // role="button"/aria-label are set BEFORE that append — so observing just
+  // the canvas container's childList (no subtree, no attributeFilter) and
+  // stripping from each mutation's addedNodes is enough; the observer no
+  // longer needs to re-query the whole container on every mutation.
+  // ---------------------------------------------------------------------------
+  describe("Marker role/aria-label stripping (narrowed MutationObserver)", () => {
+    it("observes the canvas container (via getCanvasContainer), not just the outer map element", async () => {
+      render(<FacilityMap facilities={[]} />);
+      await waitFor(() => {
+        expect(globalThis.__mockMapLibreInstance.getCanvasContainer).toHaveBeenCalled();
+      });
+    });
+
+    it("strips role and aria-label from a marker node added to the canvas container", async () => {
+      render(<FacilityMap facilities={[]} />);
+      await waitFor(() =>
+        expect(globalThis.__mockMapLibreInstance.getCanvasContainer).toHaveBeenCalled()
+      );
+
+      const canvasContainer = globalThis.__mockCanvasContainer;
+      const marker = document.createElement("div");
+      marker.className = "maplibregl-marker";
+      marker.setAttribute("role", "button");
+      marker.setAttribute("aria-label", "Marker");
+      canvasContainer.appendChild(marker);
+
+      await waitFor(() => {
+        expect(marker.hasAttribute("role")).toBe(false);
+        expect(marker.hasAttribute("aria-label")).toBe(false);
+      });
+    });
+
+    it("leaves a non-marker child's role attribute alone (scoped to .maplibregl-marker, same as before)", async () => {
+      render(<FacilityMap facilities={[]} />);
+      await waitFor(() =>
+        expect(globalThis.__mockMapLibreInstance.getCanvasContainer).toHaveBeenCalled()
+      );
+
+      const canvasContainer = globalThis.__mockCanvasContainer;
+      const other = document.createElement("div");
+      other.setAttribute("role", "button"); // no maplibregl-marker class
+      canvasContainer.appendChild(other);
+
+      // MutationObserver callbacks run as a microtask — flush a couple of
+      // ticks rather than a real timer wait, then assert the negative.
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(other.getAttribute("role")).toBe("button");
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // rAF-throttled pointer-coordinate readout: raw mousemove can fire faster
+  // than the display refresh rate, and every setCursor re-renders this
+  // component (including every currently-mounted marker). requestAnimationFrame
+  // is stubbed locally (not in the shared vitest.setup.ts) because jsdom
+  // doesn't implement it at all in this project's installed version.
+  // ---------------------------------------------------------------------------
+  describe("Pointer coordinate readout (rAF-throttled)", () => {
+    type RafCallback = (t: number) => void;
+    let pendingRaf: Map<number, RafCallback>;
+    let nextRafId: number;
+    let rafSpy: ReturnType<typeof vi.fn>;
+    let cafSpy: ReturnType<typeof vi.fn>;
+
+    function flushRaf() {
+      const callbacks = Array.from(pendingRaf.values());
+      pendingRaf.clear();
+      callbacks.forEach((cb) => cb(performance.now()));
+    }
+
+    beforeEach(() => {
+      pendingRaf = new Map();
+      nextRafId = 0;
+      rafSpy = vi.fn((cb: RafCallback) => {
+        nextRafId += 1;
+        pendingRaf.set(nextRafId, cb);
+        return nextRafId;
+      });
+      cafSpy = vi.fn((handle: number) => {
+        pendingRaf.delete(handle);
+      });
+      vi.stubGlobal("requestAnimationFrame", rafSpy);
+      vi.stubGlobal("cancelAnimationFrame", cafSpy);
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("coalesces multiple mousemove events into a single scheduled update per animation frame", async () => {
+      render(<FacilityMap facilities={[]} />);
+      await waitFor(() => expect(globalThis.__mapCallbacks.onMouseMove).toBeDefined());
+
+      const { onMouseMove } = globalThis.__mapCallbacks;
+      onMouseMove!({ lngLat: { lat: 10, lng: -80 } });
+      onMouseMove!({ lngLat: { lat: 11, lng: -81 } });
+      onMouseMove!({ lngLat: { lat: 12, lng: -82 } });
+
+      // Three raw pointer events, but only ONE frame scheduled — later
+      // calls before the frame fires just update the pending value.
+      expect(rafSpy).toHaveBeenCalledTimes(1);
+
+      act(() => flushRaf());
+      // Last value wins (formatLatLon is mocked as `${lat}, ${lon}`).
+      expect(screen.getByText("12, -82")).toBeInTheDocument();
+    });
+
+    it("cancels a pending scheduled update on mouseout so a stale coordinate can't flash in on the next frame", async () => {
+      render(<FacilityMap facilities={[]} />);
+      await waitFor(() => expect(globalThis.__mapCallbacks.onMouseMove).toBeDefined());
+
+      const { onMouseMove, onMouseOut } = globalThis.__mapCallbacks;
+      onMouseMove!({ lngLat: { lat: 10, lng: -80 } });
+      expect(rafSpy).toHaveBeenCalledTimes(1);
+
+      act(() => onMouseOut!());
+      expect(cafSpy).toHaveBeenCalledTimes(1);
+
+      act(() => flushRaf()); // the cancelled frame was removed from pendingRaf — a no-op
+      expect(screen.queryByText("10, -80")).not.toBeInTheDocument();
     });
   });
 });

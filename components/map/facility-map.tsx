@@ -25,7 +25,12 @@ import {
   WIDE_AND_TALL_VIEWPORT_QUERY,
   computeFacilitiesBounds,
 } from "@/lib/map";
-import { clusterFacilities, type Cluster } from "@/lib/cluster";
+import {
+  clusterFacilities,
+  cullClustersToViewport,
+  type Cluster,
+  type ViewportBounds,
+} from "@/lib/cluster";
 import { buildGraticuleGeoJSON, formatLatLon } from "@/lib/graticule";
 import { FacilityMarker } from "@/components/map/facility-marker";
 import { ClusterMarker } from "@/components/map/cluster-marker";
@@ -95,6 +100,35 @@ interface FacilityMapProps {
    * is a separate, larger change than this prop — not done here.
    */
   isFiltered?: boolean;
+}
+
+/**
+ * Returns `id`'s marker/cluster anchor coordinates if it's currently
+ * outside `bounds` — the map's TRUE, unbuffered visible viewport (what
+ * `updateViewportBounds` below reads straight from `map.getBounds()`), NOT
+ * the 25%-padded box `cullClustersToViewport` uses to decide what stays
+ * mounted (`VIEWPORT_CULL_BUFFER_RATIO` in lib/cluster.ts). A marker can be
+ * mounted and keyboard-focusable while still failing this check — that gap
+ * (measured at 375×667: 170 of 441 mounted markers genuinely off-screen)
+ * is exactly what the keyboard-focus-pan effect in FacilityMap uses this
+ * for. Returns null when the target is already visible, when `id` isn't in
+ * `clusters` (culled or unknown), or when there's no real viewport box yet
+ * (`bounds` null, before the map's first load/moveend).
+ */
+function findOffscreenTarget(
+  id: string,
+  clusters: Cluster[],
+  bounds: ViewportBounds | null
+): { lon: number; lat: number } | null {
+  if (!bounds) return null;
+  const target = clusters.find((c) => c.id === id);
+  if (!target) return null;
+  const visible =
+    target.lon >= bounds.west &&
+    target.lon <= bounds.east &&
+    target.lat >= bounds.south &&
+    target.lat <= bounds.north;
+  return visible ? null : { lon: target.lon, lat: target.lat };
 }
 
 /**
@@ -195,14 +229,48 @@ export function FacilityMap({
   );
 
   const markerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  // Reverse lookup from a rendered marker/cluster <button> DOM node back to
+  // its facility/cluster id — populated by the same ref callbacks that fill
+  // markerRefs above (see the JSX below). Used only by the document-level
+  // focusin/focusout listener further down to identify which marker
+  // currently holds DOM focus, for the viewport-culling memo's keepIds.
+  // WeakMap: entries fall out on their own once a button unmounts and
+  // nothing else references it — no manual cleanup needed.
+  const markerIdByElement = useRef<WeakMap<HTMLButtonElement, string>>(
+    new WeakMap()
+  );
   const lastSelectedIdRef = useRef<string | null>(null);
   const mapRef = useRef<MapRef>(null);
 
-  // Recompute clusters only when facilities or zoom changes (pan-invariant).
-  const clusters = useMemo(
-    () => clusterFacilities(facilities, zoom),
-    [facilities, zoom]
+  // Current map viewport in lon/lat, used to cull off-screen markers below.
+  // null until the map's first `load`/`moveend` (see updateViewportBounds) —
+  // cullClustersToViewport treats null as "cull nothing" so there's no gap
+  // where markers are wrongly hidden before a real box exists to test them
+  // against.
+  const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(
+    null
   );
+  // Id of the marker/cluster button that currently holds DOM focus, if any —
+  // see the focusin/focusout effect below. Force-kept in view by the
+  // culling memo so a keyboard user's focus is never yanked out from under
+  // them by an off-screen unmount.
+  const [focusedMarkerId, setFocusedMarkerId] = useState<string | null>(null);
+
+  // Recompute clusters when facilities, zoom (pan-invariant clustering),
+  // the current viewport, or focus/selection state changes. Clustering
+  // itself never depends on viewportBounds — only which of its results are
+  // actually mounted does, via cullClustersToViewport below — so a cluster's
+  // membership never jitters as you pan without zooming, only its
+  // visibility does. The focused marker and any facility with an open
+  // popup are always force-kept (see cullClustersToViewport's keepIds and
+  // the ViewportBounds comment above).
+  const clusters = useMemo(() => {
+    const all = clusterFacilities(facilities, zoom);
+    const keepIds = new Set<string>();
+    if (focusedMarkerId) keepIds.add(focusedMarkerId);
+    if (selectedFacility) keepIds.add(selectedFacility.id);
+    return cullClustersToViewport(all, viewportBounds, keepIds);
+  }, [facilities, zoom, viewportBounds, focusedMarkerId, selectedFacility]);
 
   // Static graticule GeoJSON — built once, independent of facilities/zoom.
   const graticuleData = useMemo(() => buildGraticuleGeoJSON(), []);
@@ -232,6 +300,40 @@ export function FacilityMap({
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
+
+  // "Latest ref" mirrors of clusters/viewportBounds/reducedMotion, synced
+  // via their own LAYOUT effects rather than a plain assignment during
+  // render — mutating a ref's `.current` during render is disallowed
+  // (react-hooks/refs: render must stay pure) even though the mutation
+  // itself doesn't trigger a re-render. useLayoutEffect (not useEffect) is
+  // load-bearing here, not a style preference: useEffect is scheduled AFTER
+  // the browser paints, but a just-mounted marker becomes Tab-reachable
+  // AT paint time — so a passive effect leaves a real window where the DOM
+  // (and focus order) has already updated but the ref hasn't caught up
+  // yet. Confirmed as a real, reproducible bug during browser verification
+  // (not just theoretical): with useEffect, rapidly tabbing straight into a
+  // just-panned-into-buffer marker occasionally read a stale clustersRef
+  // that didn't contain it yet, so findOffscreenTarget silently returned
+  // null and the camera never moved — reproduced via a raw Tab-walk
+  // sequence (see the "1623 Farnam" stop) and confirmed fixed by switching
+  // to useLayoutEffect, which runs synchronously in the same commit, before
+  // the browser paints and the new marker becomes focusable. The
+  // keyboard-focus-pan effect further below is still subscribed once (empty
+  // deps, same as the focusin/focusout effect it extends) so IT never has
+  // to remove/re-add document listeners on every pan or zoom settle — it
+  // reads these refs instead of closing over possibly-stale state.
+  const clustersRef = useRef(clusters);
+  useLayoutEffect(() => {
+    clustersRef.current = clusters;
+  }, [clusters]);
+  const viewportBoundsRef = useRef(viewportBounds);
+  useLayoutEffect(() => {
+    viewportBoundsRef.current = viewportBounds;
+  }, [viewportBounds]);
+  const reducedMotionRef = useRef(reducedMotion);
+  useLayoutEffect(() => {
+    reducedMotionRef.current = reducedMotion;
+  }, [reducedMotion]);
 
   // Cap the Tools panel's scroll container to exactly what's left above the
   // viewport bottom, measured from its real top offset — never more than
@@ -425,6 +527,31 @@ export function FacilityMap({
   // both gate on this.
   const mapReadyRef = useRef(false);
 
+  /**
+   * Reads the map's current lon/lat bounds into `viewportBounds`, which the
+   * `clusters` memo above uses to cull off-screen markers. Called on `load`
+   * (to seed an initial box) and on `moveend`/`resize` — deliberately NOT on
+   * `move`, which fires on every animation frame during a drag/zoom gesture
+   * and would make recomputing the culled marker set itself part of the
+   * per-frame cost this is meant to reduce.
+   */
+  const updateViewportBounds = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    try {
+      const b = map.getBounds();
+      setViewportBounds({
+        west: b.getWest(),
+        south: b.getSouth(),
+        east: b.getEast(),
+        north: b.getNorth(),
+      });
+    } catch {
+      // getBounds unavailable on this maplibre version — fail soft; culling
+      // stays disabled (viewportBounds stays null => cull nothing).
+    }
+  }, []);
+
   const handleMapLoad = useCallback(() => {
     const mapEl = mapRef.current?.getContainer();
     if (!mapEl) return;
@@ -518,24 +645,70 @@ export function FacilityMap({
       // doubleClickZoom unavailable on this maplibre version — fail soft.
     }
 
-    const strip = () => {
-      mapEl
-        .querySelectorAll<HTMLElement>('.maplibregl-marker[role="button"]')
-        .forEach((el) => {
-          el.removeAttribute("role");
-          el.removeAttribute("aria-label");
-        });
+    // Strips a single marker element's role/aria-label if present. Scoped to
+    // exactly the maplibregl-marker class + role="button" the CSS selector
+    // below used to match, so narrowing this to addedNodes (below) changes
+    // *how* elements are found, not *which* elements get stripped.
+    const stripMarkerRole = (node: Node) => {
+      if (
+        node instanceof HTMLElement &&
+        node.classList.contains("maplibregl-marker") &&
+        node.getAttribute("role") === "button"
+      ) {
+        node.removeAttribute("role");
+        node.removeAttribute("aria-label");
+      }
     };
 
-    strip();
+    // Markers are appended as DIRECT children of the map's canvas container,
+    // and role/aria-label are set on the marker element BEFORE that append —
+    // verified directly in the installed maplibre-gl 5.24.0 dist
+    // (node_modules/maplibre-gl/dist/maplibre-gl.js), where Marker.addTo()
+    // reads (minified; reformatted here for readability, not a literal
+    // multi-line quote):
+    //   this._element.hasAttribute("aria-label") ||
+    //     this._element.setAttribute("aria-label", e._getUIString("Marker.Title")),
+    //   this._element.hasAttribute("role") ||
+    //     this._element.setAttribute("role", "button"),
+    //   e.getCanvasContainer().appendChild(this._element)
+    // i.e. both attributes are set (if not already present) before the
+    // appendChild call, in the same synchronous statement — so a childList
+    // mutation record's addedNodes already carry the attribute; there's no
+    // async gap where a node could be observed pre-attribute. Re-verify this
+    // exact ordering against the new dist on any maplibre-gl upgrade — the
+    // narrowed observer below (no `subtree`, no `attributeFilter`) depends
+    // on it holding. That means: no `subtree` (markers never nest deeper than a
+    // direct child) and no `attributeFilter` (the attribute is already
+    // present by the time the addedNodes record fires) — narrower than the
+    // previous whole-container/subtree/attribute-watching observer, and the
+    // callback below strips only the nodes actually added in each batch
+    // instead of re-querying every marker in the container on every
+    // mutation. This observer is load-bearing, not just an optimization:
+    // MapLibre sets role="button" unconditionally on every addTo() call
+    // (guarded only by "skip if already present," not by draggable/popup
+    // state — there is no such gating in this maplibre-gl version), so any
+    // newly-mounted marker (new upload, re-cluster, or a previously culled
+    // marker panned back into view) needs this to run again, not just the
+    // initial pass.
+    const canvasContainer = mapRef.current?.getMap().getCanvasContainer?.();
+    if (canvasContainer) {
+      canvasContainer
+        .querySelectorAll<HTMLElement>('.maplibregl-marker[role="button"]')
+        .forEach(stripMarkerRole);
 
-    const mo = new MutationObserver(strip);
-    mo.observe(mapEl, {
-      childList: true,
-      subtree: true,
-      attributeFilter: ["role"],
-    });
-    moRef.current = mo;
+      const mo = new MutationObserver((mutations) => {
+        for (const record of mutations) {
+          record.addedNodes.forEach(stripMarkerRole);
+        }
+      });
+      mo.observe(canvasContainer, { childList: true });
+      moRef.current = mo;
+    }
+
+    // Seed the initial viewport bounds for the marker-culling memo above —
+    // without this, viewportBounds stays null (culling disabled) until the
+    // first moveend, which would briefly mount every facility on load.
+    updateViewportBounds();
 
     // Deep-linked arrival with an active filter: run the survey-pass once the
     // map is ready, rather than starting on the default US view then jumping.
@@ -543,10 +716,102 @@ export function FacilityMap({
       surveyToFacilities();
     }
     mapReadyRef.current = true;
-  }, [surveyOnMount, surveyToFacilities]);
+  }, [surveyOnMount, surveyToFacilities, updateViewportBounds]);
 
   // Disconnect observer on unmount
   useEffect(() => () => moRef.current?.disconnect(), []);
+
+  // Tracks whether the most recent user interaction was keyboard-driven
+  // (Tab/Shift+Tab), so the focus-tracking effect below can tell a
+  // Tab-driven focusin from a mouse/touch-driven one and only auto-pan the
+  // camera for the former — mirroring the browser's own :focus-visible
+  // heuristic, tracked by hand (rather than
+  // `element.matches(":focus-visible")`) so the check is a plain boolean
+  // read synchronously, independent of any CSS engine's support for that
+  // pseudo-class. Defaults true so a marker focused before any prior
+  // pointer interaction (e.g. the very first Tab press on the page) still
+  // counts as keyboard focus. Listeners are capture-phase on `document` so
+  // they see every keydown/mousedown/pointerdown/touchstart regardless of
+  // where in the tree it originates, same delegation approach as the
+  // focusin/focusout listeners below.
+  const hadKeyboardEventRef = useRef(true);
+  useEffect(() => {
+    const markKeyboard = () => {
+      hadKeyboardEventRef.current = true;
+    };
+    const markPointer = () => {
+      hadKeyboardEventRef.current = false;
+    };
+    document.addEventListener("keydown", markKeyboard, true);
+    document.addEventListener("mousedown", markPointer, true);
+    document.addEventListener("pointerdown", markPointer, true);
+    document.addEventListener("touchstart", markPointer, true);
+    return () => {
+      document.removeEventListener("keydown", markKeyboard, true);
+      document.removeEventListener("mousedown", markPointer, true);
+      document.removeEventListener("pointerdown", markPointer, true);
+      document.removeEventListener("touchstart", markPointer, true);
+    };
+  }, []);
+
+  // Tracks which marker/cluster button (if any) currently holds DOM focus,
+  // so the culling memo above can force-keep it mounted (see its comment,
+  // and the ViewportBounds/keepIds doc comments in lib/cluster.ts). Wired on
+  // `document` — not the map container — because focus tracking only needs
+  // markerIdByElement (populated by the marker ref callbacks below,
+  // regardless of map-load state) and works the same however many times the
+  // map itself (re)loads. `focusin`/`focusout` (not `focus`/`blur`) so this
+  // one delegated pair covers every marker button without attaching a
+  // listener per marker.
+  //
+  // Extended (not paralleled) for keyboard-focus-pan: a marker inside the
+  // buffered-but-not-strictly-visible band is mounted and reachable by Tab
+  // but not actually on screen (see findOffscreenTarget's doc comment
+  // above) — a gap that doesn't exist for mouse clicks, which can only ever
+  // land on a marker that's already painted inside the map's overflow-
+  // hidden container. So this only auto-pans for keyboard-driven focusin
+  // (hadKeyboardEventRef) — belt-and-braces against ever double-moving the
+  // camera on a click (handleSelectFacility already eases to it), not a
+  // case this has been observed to hit.
+  useEffect(() => {
+    const handleMarkerFocusChange = (e: FocusEvent) => {
+      if (!(e.target instanceof HTMLButtonElement)) return;
+      const id = markerIdByElement.current.get(e.target);
+      if (!id) return;
+      if (e.type === "focusin") {
+        setFocusedMarkerId(id);
+        if (hadKeyboardEventRef.current) {
+          const target = findOffscreenTarget(
+            id,
+            clustersRef.current,
+            viewportBoundsRef.current
+          );
+          // This easeTo settles via onMoveEnd -> updateViewportBounds -> the
+          // clusters memo recomputing with the new (now-containing) bounds
+          // — which cannot loop back into another auto-pan. `id` is already
+          // force-kept mounted via focusedMarkerId in keepIds (set by
+          // setFocusedMarkerId just above, in the same event), so the
+          // marker keeps its DOM identity across that re-render — React
+          // reconciles the same <button> by key instead of unmounting/
+          // remounting it, and a re-render alone never fires a new focusin.
+          if (target) {
+            mapRef.current?.easeTo({
+              center: [target.lon, target.lat],
+              duration: reducedMotionRef.current ? 0 : 600,
+            });
+          }
+        }
+      } else {
+        setFocusedMarkerId((cur) => (cur === id ? null : cur));
+      }
+    };
+    document.addEventListener("focusin", handleMarkerFocusChange);
+    document.addEventListener("focusout", handleMarkerFocusChange);
+    return () => {
+      document.removeEventListener("focusin", handleMarkerFocusChange);
+      document.removeEventListener("focusout", handleMarkerFocusChange);
+    };
+  }, []);
 
   // Survey-pass on filter changes (facilities identity change), skipping the
   // initial mount — that's handled by handleMapLoad above (once, gated on
@@ -568,17 +833,79 @@ export function FacilityMap({
     surveyToFacilities();
   }, [facilities, surveyToFacilities]);
 
+  // rAF-throttled pointer-coordinate readout. Raw `mousemove` can fire far
+  // faster than the display's refresh rate (well above 60Hz on a
+  // high-poll-rate mouse/trackpad), and every `setCursor` call re-renders
+  // this component — including the .map() over every currently-mounted
+  // marker. Coalescing to at most one `setCursor` per animation frame caps
+  // that re-render rate to the display's own, instead of the raw input
+  // rate. Desktop-only in effect (touch has no hover; no touch handlers are
+  // wired here), so this doesn't touch the touch/drag path at all.
+  const cursorRafRef = useRef<number | null>(null);
+  const pendingCursorRef = useRef<{ lat: number; lon: number } | null>(null);
+
+  const handleMapMouseMove = useCallback((e: MapLayerMouseEvent) => {
+    pendingCursorRef.current = { lat: e.lngLat.lat, lon: e.lngLat.lng };
+    if (cursorRafRef.current !== null) return; // an update is already scheduled this frame
+    cursorRafRef.current = requestAnimationFrame(() => {
+      cursorRafRef.current = null;
+      setCursor(pendingCursorRef.current);
+    });
+  }, []);
+
+  const handleMapMouseOut = useCallback(() => {
+    // Cancel any already-scheduled update so a stale coordinate can't flash
+    // in on the next frame after the pointer has already left the map.
+    if (cursorRafRef.current !== null) {
+      cancelAnimationFrame(cursorRafRef.current);
+      cursorRafRef.current = null;
+    }
+    pendingCursorRef.current = null;
+    setCursor(null);
+  }, []);
+
+  // Cancel any in-flight rAF on unmount so it doesn't call setCursor on an
+  // unmounted component.
+  useEffect(() => {
+    return () => {
+      if (cursorRafRef.current !== null) {
+        cancelAnimationFrame(cursorRafRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div
       role="region"
       aria-label="Map of data centers in the United States"
       className={heightClass}
     >
-      {/* Visually-hidden guidance for screen reader users */}
+      {/* Visually-hidden guidance for screen reader users. Every clause
+          here is load-bearing and has been wrong twice already — keep it
+          describing MECHANISM, not outcome.
+          "Nearby locations" (not "in view", and not "each location"): the
+          viewport-culling memo above mounts a buffered band of markers
+          around the visible area (VIEWPORT_CULL_BUFFER_RATIO in
+          lib/cluster.ts), so a focusable marker isn't always already on
+          screen — "each location" was false once culling landed, and
+          "currently in view" was false because the buffer band is
+          focusable while off screen.
+          "Moves the camera to bring it into view" (NOT "brings it fully
+          into view"): the focus-pan effect above eases to any marker
+          outside the true unbuffered viewport at focus time, but it tests
+          visibility against map.getBounds(), which under this app's globe
+          projection is an APPROXIMATE lon/lat rectangle rather than the
+          true pixel viewport — measured: a marker read as visible by
+          bounds while sitting 14px off a 375px-wide canvas. So the camera
+          move is guaranteed; full visibility afterwards is not. Promising
+          the outcome would overstate what the code can deliver to exactly
+          the users who cannot check it for themselves. */}
       <p className="sr-only">
         Interactive map showing data center locations across the United
-        States. Each location is a focusable button. A data table alternative
-        is available at the{" "}
+        States. Nearby locations are focusable buttons — tabbing to one
+        moves the camera to bring it into view; pan or zoom the map to
+        reach other areas. A data table alternative listing every location is
+        available at the{" "}
         <a href="/table" className="underline">
           data table page
         </a>
@@ -790,11 +1117,16 @@ export function FacilityMap({
             setBearing(e.viewState.bearing);
             setIs3D(e.viewState.pitch > 5);
             setMapCenter({ lat: e.viewState.latitude, lon: e.viewState.longitude });
+            // Recompute the culled marker set's viewport box. moveend covers
+            // pan, zoom, rotate and pitch settling (MapLibre fires it for
+            // any camera transform, not just drag) plus every programmatic
+            // easeTo/fitBounds/flyTo elsewhere in this file — deliberately
+            // not `onMove`, which fires every animation frame mid-gesture.
+            updateViewportBounds();
           }}
-          onMouseMove={(e) =>
-            setCursor({ lat: e.lngLat.lat, lon: e.lngLat.lng })
-          }
-          onMouseOut={() => setCursor(null)}
+          onResize={updateViewportBounds}
+          onMouseMove={handleMapMouseMove}
+          onMouseOut={handleMapMouseOut}
         >
           {/* Zoom controls — compass arrow hidden (replaced by custom CompassRose below) */}
           <NavigationControl
@@ -1067,6 +1399,10 @@ export function FacilityMap({
                   <FacilityMarker
                     ref={(el) => {
                       markerRefs.current[facility.id] = el;
+                      // See the focusin/focusout effect above: reverse
+                      // lookup from the DOM node so the culling memo can
+                      // tell which cluster currently holds focus.
+                      if (el) markerIdByElement.current.set(el, facility.id);
                     }}
                     facility={facility}
                     isSelected={selectedFacility?.id === facility.id}
@@ -1084,6 +1420,10 @@ export function FacilityMap({
                 anchor="center"
               >
                 <ClusterMarker
+                  ref={(el) => {
+                    markerRefs.current[cluster.id] = el;
+                    if (el) markerIdByElement.current.set(el, cluster.id);
+                  }}
                   count={cluster.members.length}
                   label={`Cluster of ${cluster.members.length} datacenters — activate to zoom in`}
                   onSelect={() => zoomToCluster(cluster)}
