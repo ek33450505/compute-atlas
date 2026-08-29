@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
@@ -312,5 +312,101 @@ describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
 
     await user.click(screen.getByRole("button", { name: /clear all/i }));
     expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Map shell height (m13) — the shell used to subtract a hardcoded `4rem`
+// (64px) for the sticky site header, but the real header is `h-16` (64px)
+// PLUS a `border-b` (1px) = 65px, leaving a 1px scrollHeight/clientHeight
+// mismatch on every viewport. Explorer now measures the real `<header>` at
+// runtime and overrides the static Tailwind height via an inline style —
+// these tests render a stand-in `<header>` (the real SiteHeader lives in the
+// root layout, outside what these component tests mount) to exercise that
+// measurement, and confirm the static classes remain as the pre-measurement
+// fallback.
+// ---------------------------------------------------------------------------
+
+describe("Explorer — map shell height (m13)", () => {
+  afterEach(() => {
+    document.querySelectorAll("header[data-test-header]").forEach((el) => el.remove());
+    vi.restoreAllMocks();
+  });
+
+  it("overrides the static height with the real measured header height (dvh, when svh unsupported)", async () => {
+    const header = document.createElement("header");
+    header.setAttribute("data-test-header", "");
+    document.body.appendChild(header);
+    vi.spyOn(header, "getBoundingClientRect").mockReturnValue({
+      height: 65,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 65,
+      width: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} mode="map" />
+      </NuqsTestingAdapter>
+    );
+
+    await screen.findByTestId("mock-facility-map");
+    const shell = screen.getByTestId("map-shell");
+
+    // jsdom has no `CSS.supports` — the effect's guard falls back to "dvh",
+    // exactly the branch that runs whenever the API is unavailable.
+    expect(shell.style.height).toBe("calc(100dvh - 65px)");
+    // The static Tailwind classes (today's `4rem` fallback) stay in place —
+    // the inline style is meant to override them, not replace them, so a
+    // pre-measurement render (or a header-less page) still gets a sane value.
+    expect(shell.className).toContain("h-[calc(100dvh-4rem)]");
+    expect(shell.className).toContain("supports-[height:100svh]:h-[calc(100svh-4rem)]");
+  });
+
+  it("prefers svh when CSS.supports reports it available", async () => {
+    const header = document.createElement("header");
+    header.setAttribute("data-test-header", "");
+    document.body.appendChild(header);
+    vi.spyOn(header, "getBoundingClientRect").mockReturnValue({
+      height: 65,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 65,
+      width: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+    vi.stubGlobal("CSS", { supports: vi.fn(() => true) });
+
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} mode="map" />
+      </NuqsTestingAdapter>
+    );
+
+    await screen.findByTestId("mock-facility-map");
+    const shell = screen.getByTestId("map-shell");
+    expect(shell.style.height).toBe("calc(100svh - 65px)");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("leaves the static classes as the only height source when no header is present", async () => {
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} mode="map" />
+      </NuqsTestingAdapter>
+    );
+
+    await screen.findByTestId("mock-facility-map");
+    const shell = screen.getByTestId("map-shell");
+    expect(shell.style.height).toBe("");
   });
 });

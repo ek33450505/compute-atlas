@@ -14,7 +14,7 @@ import {
   orderedWaterStressDistribution,
 } from "@/lib/map-overlays";
 
-const PANEL_ID = "map-layer-control-panel";
+export const PANEL_ID = "map-layer-control-panel";
 const SATELLITE_HINT = "shown on standard basemap only";
 
 export interface MapLayerControlProps {

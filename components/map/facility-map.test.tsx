@@ -865,17 +865,31 @@ describe("FacilityMap", () => {
     it("applies a position-aware inline maxHeight based on the panel's real top offset", () => {
       // Mirrors the measured landscape-phone regression at 320x568: the
       // panel opens at y=242 -> expected maxHeight = 568 - 242 - 16 = 310px.
-      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
-        top: 242,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: 0,
-        height: 0,
-        x: 0,
-        y: 0,
-        toJSON: () => {},
-      } as DOMRect);
+      // Element-aware (not a blanket mockReturnValue): the m12 attribution/
+      // legend clearance floors also call getBoundingClientRect, on
+      // different elements further down the viewport — giving every
+      // element the same y=242 as the panel itself would wrongly make
+      // those floors bind instead of the panel-top floor this test exists
+      // to verify (attributionTop/legendTop - 8 < panel's own computed
+      // bottomLimit). Only #map-tools-panel gets the fixture's y=242; every
+      // other element reports a generous below-the-fold top so it never
+      // constrains tighter than the floor under test.
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
+        function (this: HTMLElement) {
+          const top = this.id === "map-tools-panel" ? 242 : 9999;
+          return {
+            top,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: 0,
+            height: 0,
+            x: 0,
+            y: top,
+            toJSON: () => {},
+          } as DOMRect;
+        }
+      );
       vi.spyOn(window, "innerHeight", "get").mockReturnValue(568);
 
       render(<FacilityMap facilities={[]} />);
@@ -912,6 +926,200 @@ describe("FacilityMap", () => {
       expect(panel!.style.maxHeight).toBe("0px");
 
       vi.restoreAllMocks();
+    });
+  });
+
+  describe("Tools Panel — Escape (m8)", () => {
+    it("closes the Tools panel and returns focus to its toggle button on Escape", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      // Tools column defaults open on desktop (matchMedia mocked in beforeEach).
+      expect(screen.getByRole("button", { name: "Hide map tools" })).toHaveAttribute(
+        "aria-expanded",
+        "true"
+      );
+
+      await user.keyboard("{Escape}");
+
+      const closedButton = screen.getByRole("button", { name: "Show map tools" });
+      expect(closedButton).toHaveAttribute("aria-expanded", "false");
+      expect(closedButton).toHaveFocus();
+    });
+
+    it("defers to the nested Layers panel: one Escape closes only the Layers panel, a second closes the Tools column", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
+      expect(screen.getByRole("button", { name: "Hide map layers panel" })).toHaveAttribute(
+        "aria-expanded",
+        "true"
+      );
+
+      await user.keyboard("{Escape}");
+
+      // MapLayerControl's own Escape handler closed the Layers panel...
+      expect(screen.getByRole("button", { name: "Show map layers panel" })).toHaveAttribute(
+        "aria-expanded",
+        "false"
+      );
+      // ...but the Tools column itself must still be open — one keystroke
+      // must not collapse both at once.
+      expect(screen.getByRole("button", { name: "Hide map tools" })).toHaveAttribute(
+        "aria-expanded",
+        "true"
+      );
+
+      // A second Escape now closes the Tools column, focus returning to its
+      // own toggle.
+      await user.keyboard("{Escape}");
+      const closedToolsButton = screen.getByRole("button", { name: "Show map tools" });
+      expect(closedToolsButton).toHaveAttribute("aria-expanded", "false");
+      expect(closedToolsButton).toHaveFocus();
+    });
+
+    it("does nothing when the Tools panel is already closed — no listener attached, so it doesn't steal focus", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[]} />);
+
+      await user.click(screen.getByRole("button", { name: "Hide map tools" }));
+      const toolsToggle = screen.getByRole("button", { name: "Show map tools" });
+      expect(toolsToggle).toHaveAttribute("aria-expanded", "false");
+
+      // Move focus off the Tools toggle first — otherwise it's already
+      // focused from the click above, and a wrongly-still-attached listener
+      // calling .focus() on it again would be unobservable.
+      const locationSearch = screen.getByTestId("location-search");
+      locationSearch.focus();
+      expect(locationSearch).toHaveFocus();
+
+      await user.keyboard("{Escape}");
+
+      expect(toolsToggle).toHaveAttribute("aria-expanded", "false");
+      expect(locationSearch).toHaveFocus();
+    });
+  });
+
+  describe("Tools Panel — buttons keep their height under the scroll cap (m10)", () => {
+    it("marks every direct child of the Tools panel non-shrinking so they scroll rather than squash", () => {
+      render(<FacilityMap facilities={[]} />);
+      const panel = document.getElementById("map-tools-panel");
+      expect(panel).not.toBeNull();
+      expect(panel!.className).toContain("[&>*]:shrink-0");
+    });
+  });
+
+  describe("Tools Panel — attribution/legend clearance (m12)", () => {
+    // Element-aware getBoundingClientRect: distinguishes the Tools panel
+    // itself (id="map-tools-panel"), the basemap attribution (its
+    // distinctive "bottom-1" class token — see facility-map.tsx, both the
+    // satellite and standard variants share it), and the mocked MapLegend
+    // root (data-testid="map-legend", from the module mock above) so each
+    // of the three clearance floors can be independently exercised. Anything
+    // else defaults far down the viewport so it never becomes the binding
+    // constraint (mirrors the technique in the "measured-top scroll cap"
+    // tests above).
+    function mockRectsFor(overrides: {
+      panelTop: number;
+      attributionTop: number;
+      legendTop: number;
+    }) {
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
+        function (this: HTMLElement) {
+          let top = 9999;
+          if (this.id === "map-tools-panel") top = overrides.panelTop;
+          else if (this.getAttribute("data-testid") === "map-legend") top = overrides.legendTop;
+          else if (this.className.split(" ").includes("bottom-1")) top = overrides.attributionTop;
+          return {
+            top,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: 0,
+            height: 0,
+            x: 0,
+            y: top,
+            toJSON: () => {},
+          } as DOMRect;
+        }
+      );
+    }
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    });
+
+    it("caps the Tools panel at the attribution's top edge when that's the tightest constraint", () => {
+      mockRectsFor({ panelTop: 50, attributionTop: 300, legendTop: 500 });
+      vi.spyOn(window, "innerHeight", "get").mockReturnValue(900);
+
+      render(<FacilityMap facilities={[]} />);
+
+      // bottomLimit = min(900-16=884, 300-8=292, 500-8=492) = 292
+      // maxHeight = 292 - 50 = 242
+      const panel = document.getElementById("map-tools-panel");
+      expect(panel!.style.maxHeight).toBe("242px");
+    });
+
+    it("caps the Tools panel at MapLegend's top edge when that's the tightest constraint", () => {
+      mockRectsFor({ panelTop: 50, attributionTop: 600, legendTop: 200 });
+      vi.spyOn(window, "innerHeight", "get").mockReturnValue(900);
+
+      render(<FacilityMap facilities={[]} />);
+
+      // bottomLimit = min(900-16=884, 600-8=592, 200-8=192) = 192
+      // maxHeight = 192 - 50 = 142
+      const panel = document.getElementById("map-tools-panel");
+      expect(panel!.style.maxHeight).toBe("142px");
+    });
+
+    it("re-caps when MapLegend's own height changes while the Tools panel stays open", () => {
+      let capturedCallback: ResizeObserverCallback | undefined;
+      // Tracks real observe() calls (target included) — a mock whose
+      // observe() is a plain no-op would let this test pass even if
+      // production code never actually called observe() on anything, since
+      // the callback is captured at construction regardless. Asserting on
+      // observedTargets below is what makes a dropped `ro.observe(...)`
+      // call in production actually fail this test.
+      const observedTargets: Element[] = [];
+      class MockResizeObserver {
+        constructor(cb: ResizeObserverCallback) {
+          capturedCallback = cb;
+        }
+        observe(target: Element) {
+          observedTargets.push(target);
+        }
+        unobserve() {}
+        disconnect() {}
+      }
+      vi.stubGlobal("ResizeObserver", MockResizeObserver);
+
+      // Legend starts far away — the viewport floor alone is binding.
+      mockRectsFor({ panelTop: 50, attributionTop: 800, legendTop: 800 });
+      vi.spyOn(window, "innerHeight", "get").mockReturnValue(900);
+
+      render(<FacilityMap facilities={[]} />);
+      const panel = document.getElementById("map-tools-panel");
+      // bottomLimit = min(884, 792, 792) = 792; maxHeight = 792 - 50 = 742
+      expect(panel!.style.maxHeight).toBe("742px");
+
+      // The observer must actually be watching MapLegend's real rendered
+      // root, not just be constructed with the right callback.
+      expect(observedTargets).toHaveLength(1);
+      expect(observedTargets[0].getAttribute("data-testid")).toBe("map-legend");
+
+      // Legend expands (its top edge moves up) without any window resize —
+      // simulate via the captured ResizeObserver callback, same as a real
+      // observer firing when MapLegend's own disclosure opens.
+      mockRectsFor({ panelTop: 50, attributionTop: 800, legendTop: 150 });
+      act(() => {
+        capturedCallback?.([] as unknown as ResizeObserverEntry[], {} as ResizeObserver);
+      });
+
+      // bottomLimit = min(884, 792, 142) = 142; maxHeight = 142 - 50 = 92
+      expect(panel!.style.maxHeight).toBe("92px");
     });
   });
 

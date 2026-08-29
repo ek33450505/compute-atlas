@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import type { FilterValues, FilterSetters } from "@/components/explorer/filter-bar";
@@ -97,6 +97,28 @@ export function MapFilterSubheader({
   // Manual toggle overrides the viewport-derived default until unmount.
   const [override, setOverride] = useState<boolean | null>(null);
   const isOpen = override ?? prefersExpanded;
+  // Focus target for the Escape handler below (m8) — same "return focus to
+  // the trigger" contract as MapLayerControl's own Escape handler
+  // (components/map/map-layer-control.tsx), which this mirrors.
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  // m8: Escape collapses the filter body and returns focus to the toggle.
+  // Only attached while actually open (matching the MapLayerControl
+  // precedent's `if (!expanded) return` guard). Sets `override` to the
+  // explicit `false` — not `null` — because `null` means "defer to the
+  // viewport-derived default," which would silently re-open this on a wide
+  // viewport where `prefersExpanded` is true; Escape must mean closed
+  // regardless of viewport.
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      setOverride(false);
+      toggleRef.current?.focus();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   // Build the "View as table" href from the current filter values so filters
   // carry to /table via the URL. Derived from `values` (not useSearchParams)
@@ -166,6 +188,7 @@ export function MapFilterSubheader({
 
         {/* Collapse / expand toggle — ≥44 px touch target */}
         <button
+          ref={toggleRef}
           type="button"
           onClick={() => setOverride((o) => !(o ?? prefersExpanded))}
           aria-expanded={isOpen}

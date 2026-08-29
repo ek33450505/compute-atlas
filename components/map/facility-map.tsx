@@ -40,7 +40,10 @@ import { CompassRose } from "@/components/map/compass-rose";
 import { LocationSearch } from "@/components/map/location-search";
 import { ViewToggle3D } from "@/components/map/view-toggle-3d";
 import { BasemapToggle } from "@/components/map/basemap-toggle";
-import { MapLayerControl } from "@/components/map/map-layer-control";
+import {
+  MapLayerControl,
+  PANEL_ID as LAYER_CONTROL_PANEL_ID,
+} from "@/components/map/map-layer-control";
 import {
   AQUIFER_FILL_COLOR,
   AQUIFER_OUTLINE_COLOR,
@@ -209,6 +212,20 @@ export function FacilityMap({
   const [toolsPanelMaxHeight, setToolsPanelMaxHeight] = useState<number | undefined>(
     undefined
   );
+  // Toggle button for the Tools disclosure — focus target for the Escape
+  // handler below (m8), same "return focus to the trigger" contract as
+  // MapLayerControl's own Escape handler (map-layer-control.tsx).
+  const toolsToggleRef = useRef<HTMLButtonElement>(null);
+  // m12: live DOM handles for the two other bottom-anchored overlays that
+  // share the Tools column's corner of the map — the basemap attribution
+  // (owned directly below, in this file) and MapLegend's actual rendered
+  // root (a separate component with no className/ref prop to target
+  // directly, reached via the wrapper's firstElementChild instead). Used by
+  // the toolsPanelMaxHeight effect to keep the Tools panel from ever
+  // overlapping either, rather than a static offset that only happens to
+  // clear them at the viewport size this was measured against.
+  const attributionRef = useRef<HTMLParagraphElement>(null);
+  const legendWrapperRef = useRef<HTMLDivElement>(null);
   // Optional overlay layers (Layers control) — off by default, lazy-loaded:
   // each corresponding <Source> only mounts (and fetches its GeoJSON) once
   // its flag flips true, so the 1.9 MB power.geojson never loads unrequested.
@@ -353,16 +370,80 @@ export function FacilityMap({
       if (!node) return;
       const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
       const top = node.getBoundingClientRect().top;
-      setToolsPanelMaxHeight(Math.max(0, viewportHeight - top - 16));
+      // Floor 1: the original flat 16px clearance above the viewport bottom.
+      let bottomLimit = viewportHeight - 16;
+
+      // Floor 2 (m12): never extend past the basemap attribution — an ODbL
+      // obligation that must stay legible whenever it's on screen, not just
+      // when the Tools panel happens to be closed.
+      const attributionTop = attributionRef.current?.getBoundingClientRect().top;
+      if (attributionTop !== undefined) {
+        bottomLimit = Math.min(bottomLimit, attributionTop - 8);
+      }
+
+      // Floor 3 (m12): never extend past MapLegend's "Key to symbols"
+      // panel either. Measured live (not a hardcoded offset) because
+      // MapLegend's own height changes when ITS disclosure is expanded —
+      // a fixed number would only clear it at the height it happened to
+      // have when this was written.
+      const legendEl = legendWrapperRef.current?.firstElementChild as HTMLElement | null;
+      const legendTop = legendEl?.getBoundingClientRect().top;
+      if (legendTop !== undefined) {
+        bottomLimit = Math.min(bottomLimit, legendTop - 8);
+      }
+
+      setToolsPanelMaxHeight(Math.max(0, bottomLimit - top));
     }
 
     recompute();
     window.addEventListener("resize", recompute);
     window.visualViewport?.addEventListener("resize", recompute);
+
+    // MapLegend's height can change (its own disclosure toggling) without
+    // any window/visualViewport resize firing — watch it directly so the
+    // Tools panel's cap self-corrects if a visitor opens both panels at
+    // once, instead of only reflecting whatever height the legend happened
+    // to be when the Tools panel was opened. Guarded: not every test/older
+    // browser environment provides ResizeObserver.
+    const legendElForObserver = legendWrapperRef.current?.firstElementChild as HTMLElement | null;
+    const ro =
+      legendElForObserver && typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(recompute)
+        : null;
+    ro?.observe(legendElForObserver as HTMLElement);
+
     return () => {
       window.removeEventListener("resize", recompute);
       window.visualViewport?.removeEventListener("resize", recompute);
+      ro?.disconnect();
     };
+  }, [showTools]);
+
+  // m8: Escape closes the Tools disclosure and returns focus to its trigger
+  // button — same contract as MapLayerControl's own Escape handler
+  // (map-layer-control.tsx), which this mirrors. Only attached while the
+  // panel is actually open (matching that precedent's `if (!expanded)
+  // return` guard). Deliberately defers to the Layers panel nested inside
+  // this column: if MapLayerControl's own panel is currently in the DOM (it
+  // mounts only while ITS `expanded` state is true, which is local to
+  // that component and not lifted up here, so DOM presence is the only
+  // available signal), a single Escape closes the nested Layers panel
+  // only, via MapLayerControl's own listener; a second Escape then closes
+  // this Tools column. Without this check, both listeners fire on the
+  // same keydown and one keystroke would collapse the whole column out
+  // from under the panel the user was just looking at.
+  // LAYER_CONTROL_PANEL_ID is MapLayerControl's own exported PANEL_ID, so
+  // this check can't drift from the id it's actually looking for.
+  useEffect(() => {
+    if (!showTools) return;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      if (document.getElementById(LAYER_CONTROL_PANEL_ID)) return;
+      setShowTools(false);
+      toolsToggleRef.current?.focus();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [showTools]);
 
   const handleSelectFacility = useCallback(
@@ -956,6 +1037,7 @@ export function FacilityMap({
               panels create when expanded, so the Tools toggle and icon
               buttons visibly drift left off the right-2 edge. */}
           <button
+            ref={toolsToggleRef}
             type="button"
             onClick={() => setShowTools((s) => !s)}
             aria-expanded={showTools}
@@ -990,7 +1072,7 @@ export function FacilityMap({
                   ? { maxHeight: `${toolsPanelMaxHeight}px` }
                   : undefined
               }
-              className="flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+              className="flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain [&>*]:shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
             >
               <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
               <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
@@ -1465,8 +1547,14 @@ export function FacilityMap({
           )}
         </Map>
 
-        {/* Bottom-left: map legend (unchanged position) */}
-        <MapLegend />
+        {/* Bottom-left: map legend (unchanged position). Wrapped in a plain,
+            unstyled div purely so the toolsPanelMaxHeight effect (m12) has a
+            stable DOM handle onto MapLegend's real rendered root via
+            firstElementChild — MapLegend is absolutely positioned, so this
+            wrapper contributes no box of its own and doesn't affect layout. */}
+        <div ref={legendWrapperRef}>
+          <MapLegend />
+        </div>
 
         {/* Bottom-center: surveyor-style pointer coordinate readout, part of
             the "atlas being surveyed" conceit. Hover-only instrument — not
@@ -1505,7 +1593,10 @@ export function FacilityMap({
          * flow links, not interactive controls.
          */}
         {isSatellite ? (
-          <p className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm">
+          <p
+            ref={attributionRef}
+            className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm"
+          >
             Imagery ©{" "}
             <a
               href="https://www.esri.com/"
@@ -1518,7 +1609,10 @@ export function FacilityMap({
             , Vantor, Earthstar Geographics
           </p>
         ) : (
-          <p className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm">
+          <p
+            ref={attributionRef}
+            className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm"
+          >
             <a
               href="https://openfreemap.org"
               target="_blank"

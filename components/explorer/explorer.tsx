@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -87,6 +87,43 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
     [facilities, status, state, operator, facilityType, minMw]
   );
 
+  // m13: the map-mode shell below subtracts a hardcoded header height
+  // (`4rem` = 64px) from the viewport height, but the real sticky header
+  // (components/site-header.tsx) is `h-16` (64px) PLUS a `border-b` (1px)
+  // = 65px — so `scrollHeight` was 1px taller than `clientHeight` on every
+  // viewport, enough to trigger iOS's address-bar bounce on a route built
+  // to be exactly one viewport tall. Measured live (not just corrected to
+  // `4rem + 1px`) so this self-heals if the header's own height ever
+  // changes again — the failure mode this is meant to avoid is a second
+  // hardcoded number quietly drifting out of sync with a file this
+  // component doesn't own. Only relevant to the "map" shell below, so
+  // gated on `mode` to skip the DOM query in the other render modes; still
+  // declared unconditionally (before any early return) per the rules of
+  // hooks. Falls back to the original `4rem` constant (today's slightly-off
+  // value) via the `mapShellHeight` ternary below until this resolves, or
+  // if no `<header>` is ever found.
+  const [mapShellHeight, setMapShellHeight] = useState<string | null>(null);
+  useLayoutEffect(() => {
+    if (mode !== "map") return;
+    const header = document.querySelector("header");
+    if (!header) return;
+    function recompute() {
+      const headerHeight = header!.getBoundingClientRect().height;
+      // Mirrors the `supports-[height:100svh]` CSS variant this replaces:
+      // prefer the stable `svh` unit where supported (avoids reflow as a
+      // mobile browser's chrome shows/hides), falling back to `dvh`.
+      const svhSupported =
+        typeof CSS !== "undefined" && typeof CSS.supports === "function"
+          ? CSS.supports("height", "100svh")
+          : false;
+      const unit = svhSupported ? "svh" : "dvh";
+      setMapShellHeight(`calc(100${unit} - ${headerHeight}px)`);
+    }
+    recompute();
+    window.addEventListener("resize", recompute);
+    return () => window.removeEventListener("resize", recompute);
+  }, [mode]);
+
   const clearAll = () => {
     setStatus([]);
     setState([]);
@@ -102,7 +139,11 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
   // -------------------------------------------------------------------------
   if (mode === "map") {
     return (
-      <div className="flex flex-col overflow-hidden h-[calc(100dvh-4rem)] supports-[height:100svh]:h-[calc(100svh-4rem)]">
+      <div
+        data-testid="map-shell"
+        className="flex flex-col overflow-hidden h-[calc(100dvh-4rem)] supports-[height:100svh]:h-[calc(100svh-4rem)]"
+        style={mapShellHeight !== null ? { height: mapShellHeight } : undefined}
+      >
         <MapFilterSubheader
           facilities={facilities}
           values={{ status, state, operator, facilityType, minMw }}
