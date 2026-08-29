@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import type { FilterValues, FilterSetters } from "@/components/explorer/filter-bar";
+import { WIDE_AND_TALL_VIEWPORT_QUERY } from "@/lib/map";
 import type { Facility } from "@/lib/schema";
 
 // ---------------------------------------------------------------------------
@@ -39,13 +40,13 @@ function countActiveFilters(values: FilterValues): number {
 const BODY_ID = "map-filter-subheader-body";
 
 function subscribeWideViewport(onChange: () => void) {
-  const mql = window.matchMedia("(min-width: 640px)");
+  const mql = window.matchMedia(WIDE_AND_TALL_VIEWPORT_QUERY);
   mql.addEventListener("change", onChange);
   return () => mql.removeEventListener("change", onChange);
 }
 
 function getWideViewportSnapshot() {
-  return window.matchMedia("(min-width: 640px)").matches;
+  return window.matchMedia(WIDE_AND_TALL_VIEWPORT_QUERY).matches;
 }
 
 function getWideViewportServerSnapshot() {
@@ -63,8 +64,14 @@ function getWideViewportServerSnapshot() {
  * - Summary row is always visible: ⌖ glyph, title, active-count badge, live
  *   result count, "View as table →" cross-link, and the collapse/expand toggle.
  * - FilterBar body appears below the summary row only when expanded.
- * - Default: expanded on ≥640 px (sm), collapsed on mobile. A `typeof window`
- *   guard makes the matchMedia initializer SSR-safe; server renders expanded.
+ * - Default: expanded only when the viewport is both wide AND tall
+ *   (WIDE_AND_TALL_VIEWPORT_QUERY in lib/map.ts, shared with FacilityMap's
+ *   Tools column default so the two thresholds can't drift apart again) —
+ *   collapsed otherwise, including on landscape phones, which are wide but
+ *   short and would wrongly default open under a width-only query.
+ *   useSyncExternalStore's getServerSnapshot argument reports expanded
+ *   unconditionally so server and first client render agree (avoids a
+ *   hydration mismatch); see the comment on `prefersExpanded` below.
  * - Toggle button is ≥44 px (h-11 w-11) to meet the project's touch-target rule.
  * - Chevron rotation transition respects prefers-reduced-motion via
  *   `motion-reduce:transition-none`.
@@ -80,7 +87,8 @@ export function MapFilterSubheader({
   // so server and first client render agree (avoids hydration mismatch).
   // useSyncExternalStore then reads the real viewport-appropriate state once
   // the client has access to matchMedia, and stays subscribed to further
-  // viewport changes (e.g. window resize across the 640px boundary).
+  // viewport changes (e.g. window resize across the WIDE_AND_TALL_VIEWPORT_QUERY
+  // width/height boundary).
   const prefersExpanded = useSyncExternalStore(
     subscribeWideViewport,
     getWideViewportSnapshot,

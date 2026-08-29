@@ -22,6 +22,7 @@ import {
   SATELLITE_TILE_URL,
   SATELLITE_ATTRIBUTION,
   SATELLITE_MAX_ZOOM,
+  WIDE_AND_TALL_VIEWPORT_QUERY,
   computeFacilitiesBounds,
 } from "@/lib/map";
 import { clusterFacilities, type Cluster } from "@/lib/cluster";
@@ -109,16 +110,20 @@ export function FacilityMap({
   // hover readout is aria-hidden and mouse-only (unaffected by this).
   const [coordsLocked, setCoordsLocked] = useState<boolean>(false);
   // Right-side control stack (compass/3D/basemap/layers/radius) is behind a
-  // "Tools" disclosure toggle. Defaults OPEN on desktop so visitors discover
-  // the controls without hunting for the toggle, but collapsed on small
-  // viewports where screen space is scarcer. Lazy initializer (same pattern
-  // as `reducedMotion` below) is safe here: this component only renders
+  // "Tools" disclosure toggle. Defaults OPEN when the viewport is both wide
+  // and tall (WIDE_AND_TALL_VIEWPORT_QUERY in lib/map.ts, shared with
+  // MapFilterSubheader's default-expanded state so the two thresholds can't
+  // drift apart again), collapsed otherwise. A landscape phone is wide but
+  // short and would satisfy a width-only query, defaulting this column open
+  // and squeezing the map to roughly half the viewport — the height term
+  // keeps it collapsed there too. Lazy initializer (same pattern as
+  // `reducedMotion` below) is safe here: this component only renders
   // client-side via the ssr:false dynamic wrapper, so window is always
   // defined at init — no hydration mismatch, and no setState-in-effect
   // cascading render. NavigationControl (zoom +/-, top-right) is unaffected —
   // always visible regardless of this toggle.
   const [showTools, setShowTools] = useState<boolean>(
-    () => !window.matchMedia("(max-width: 768px)").matches
+    () => window.matchMedia(WIDE_AND_TALL_VIEWPORT_QUERY).matches
   );
   // Measured-top cap for the Tools panel's own scroll container, mirroring
   // MapLayerControl's approach (see the comment above its scrollMaxHeight
@@ -1078,8 +1083,11 @@ export function FacilityMap({
 
         {/*
          * Bottom-right: basemap attribution as a small semi-opaque overlay, stacked
-         * beneath the MapLibre ScaleControl. Inline text links are EXEMPT from
-         * WCAG 2.5.8 target-size — these are inline flow links, not interactive controls.
+         * BELOW the MapLibre ScaleControl — `.maplibregl-ctrl-bottom-right` is shifted
+         * up in globals.css to clear this element (see the comment there); the two
+         * used to occupy the same bottom-right corner and overlap at every viewport.
+         * Inline text links are EXEMPT from WCAG 2.5.8 target-size — these are inline
+         * flow links, not interactive controls.
          */}
         {isSatellite ? (
           <p className="absolute bottom-1 right-2 z-10 rounded-sm px-1 py-0.5 text-[10px] leading-tight text-muted-foreground bg-background/85 backdrop-blur-sm">

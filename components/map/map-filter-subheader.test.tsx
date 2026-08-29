@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MapFilterSubheader } from "./map-filter-subheader";
+import { WIDE_AND_TALL_VIEWPORT_QUERY } from "@/lib/map";
 import type { Facility } from "@/lib/schema";
 
 // ---------------------------------------------------------------------------
@@ -189,5 +190,74 @@ describe("MapFilterSubheader — active count badge", () => {
   it("uses singular label for exactly one active filter", () => {
     renderSubheader({ values: { state: ["TX"] } });
     expect(screen.getByLabelText("1 active filter")).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Shared viewport query (WIDE_AND_TALL_VIEWPORT_QUERY, lib/map.ts) — the
+// module-level default is mocked to `matches: false` by vitest.setup.ts, so
+// the tests above exercise the collapsed-by-default path. These tests
+// locally override matchMedia to also cover the expanded-by-default path and
+// to guard against the two consumers (this file and FacilityMap's Tools
+// column) drifting onto different hardcoded query strings again.
+// ---------------------------------------------------------------------------
+
+describe("MapFilterSubheader — shared viewport query", () => {
+  const originalMatchMedia = window.matchMedia;
+
+  afterEach(() => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: originalMatchMedia,
+    });
+  });
+
+  it("defaults to expanded when the viewport satisfies WIDE_AND_TALL_VIEWPORT_QUERY", () => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: (query: string) => ({
+        matches: query === WIDE_AND_TALL_VIEWPORT_QUERY,
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }),
+    });
+
+    renderSubheader();
+
+    expect(
+      screen.getByRole("button", { name: "Collapse filter controls" })
+    ).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("queries the shared WIDE_AND_TALL_VIEWPORT_QUERY constant from lib/map, so this can't drift from FacilityMap's Tools-column threshold", () => {
+    const calls: string[] = [];
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: (query: string) => {
+        calls.push(query);
+        return {
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+          dispatchEvent: () => false,
+        };
+      },
+    });
+
+    renderSubheader();
+
+    expect(calls).toContain(WIDE_AND_TALL_VIEWPORT_QUERY);
   });
 });

@@ -210,12 +210,21 @@ vi.mock("@/lib/cluster", () => ({
   ),
 }));
 
+// vi.mock calls are hoisted above regular statements, so a plain `const`
+// declared here (even `mock`-prefixed) would still be read before it's
+// initialized — vi.hoisted() is the mechanism that actually hoists this
+// value alongside vi.mock itself.
+const { mockWideAndTallQuery } = vi.hoisted(() => ({
+  mockWideAndTallQuery: "(min-width: 640px) and (min-height: 600px)",
+}));
+
 vi.mock("@/lib/map", () => ({
   BASEMAP_STYLE_URL: "/basemap/parchment.json",
   INITIAL_VIEW_STATE: { zoom: 4, latitude: 38, longitude: -100, bearing: 0, pitch: 0 },
   SATELLITE_TILE_URL: "https://example.com/satellite/{z}/{x}/{y}.png",
   SATELLITE_ATTRIBUTION: "© Satellite Provider",
   SATELLITE_MAX_ZOOM: 18,
+  WIDE_AND_TALL_VIEWPORT_QUERY: mockWideAndTallQuery,
   computeFacilitiesBounds: vi.fn((facilities) => {
     if (facilities.length === 0) return null;
     return {
@@ -373,12 +382,17 @@ const facilityB: Facility = {
 describe("FacilityMap", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset matchMedia for each test
+    // Reset matchMedia for each test. Defaults to a "wide and tall" (desktop)
+    // viewport — matches: true only for the shared WIDE_AND_TALL_VIEWPORT_QUERY
+    // (mocked to mockWideAndTallQuery above), false for every other query
+    // (e.g. prefers-reduced-motion), mirroring the old unconditional-false
+    // default's effect now that showTools reads a positive "is roomy enough"
+    // query directly instead of negating a "(max-width: 768px)" one.
     Object.defineProperty(window, "matchMedia", {
       writable: true,
       configurable: true,
       value: (query: string) => ({
-        matches: false,
+        matches: query === mockWideAndTallQuery,
         media: query,
         onchange: null,
         addListener: () => {},
@@ -677,12 +691,17 @@ describe("FacilityMap", () => {
       ).toBeInTheDocument();
     });
 
-    it("collapses the Tools column on mount when matchMedia reports a small viewport", () => {
+    it("collapses the Tools column on mount when matchMedia reports the viewport as narrow or short (fails WIDE_AND_TALL_VIEWPORT_QUERY)", () => {
+      // A landscape phone (e.g. 844×390) is wide but short, which — like a
+      // narrow portrait phone — fails the combined width-AND-height query.
+      // The mock here can't simulate real CSS width/height evaluation (see
+      // the drift-prevention test below); it stands in for "the query
+      // failed for whatever reason" by returning false unconditionally.
       Object.defineProperty(window, "matchMedia", {
         writable: true,
         configurable: true,
         value: (query: string) => ({
-          matches: query === "(max-width: 768px)",
+          matches: false,
           media: query,
           onchange: null,
           addListener: () => {},
@@ -699,6 +718,31 @@ describe("FacilityMap", () => {
       expect(
         screen.getByRole("button", { name: /show map tools/i })
       ).toBeInTheDocument();
+    });
+
+    it("queries the shared WIDE_AND_TALL_VIEWPORT_QUERY constant (not a hardcoded literal), so this can't drift from MapFilterSubheader's threshold", () => {
+      const calls: string[] = [];
+      Object.defineProperty(window, "matchMedia", {
+        writable: true,
+        configurable: true,
+        value: (query: string) => {
+          calls.push(query);
+          return {
+            matches: query === mockWideAndTallQuery,
+            media: query,
+            onchange: null,
+            addListener: () => {},
+            removeListener: () => {},
+            addEventListener: () => {},
+            removeEventListener: () => {},
+            dispatchEvent: () => false,
+          };
+        },
+      });
+
+      render(<FacilityMap facilities={[]} />);
+
+      expect(calls).toContain(mockWideAndTallQuery);
     });
 
     it("still toggles the Tools column closed and back open via the disclosure button", async () => {
