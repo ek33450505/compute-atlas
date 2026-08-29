@@ -90,6 +90,21 @@ describe("MobileNav — initial render", () => {
   });
 });
 
+describe("MobileNav — responsive breakpoint", () => {
+  // Companion to the PrimaryNav breakpoint test: PrimaryNav now only reveals
+  // at md: (768px) — see components/primary-nav.test.tsx — so this toggle
+  // must stay visible through the whole sub-768px range (it used to hide at
+  // sm:, 640px). A stale "sm:hidden" here would reopen a dead zone from
+  // 640-767px where NEITHER the inline nav NOR the hamburger is reachable.
+  it("hides at the md: (768px) breakpoint, not sm: (640px)", () => {
+    render(<MobileNav groups={GROUPS} />);
+    const toggle = screen.getByRole("button", { name: "Open navigation menu" });
+
+    expect(toggle).toHaveClass("md:hidden");
+    expect(toggle).not.toHaveClass("sm:hidden");
+  });
+});
+
 describe("MobileNav — open state", () => {
   it("clicking the button opens the panel: aria-expanded becomes true and links appear", async () => {
     const user = userEvent.setup();
