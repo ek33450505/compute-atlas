@@ -1,9 +1,28 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { Explorer } from "./explorer";
 import type { Facility } from "@/lib/schema";
+
+// jsdom can't render the real FacilityMap (MapLibre/WebGL — see the
+// render-in-table-view note below). Explorer's OWN logic for what it passes
+// down as `isFiltered` is ordinary React state derived from `filtered`/
+// `facilities`, though, so mocking only this leaf component lets that
+// wiring run for real and be asserted on without a WebGL-capable
+// environment — same idiom facility-map.test.tsx itself uses one level
+// down (globalThis.__popupProps etc.) to inspect props passed to a mocked
+// child.
+declare global {
+  var __facilityMapProps: { isFiltered?: boolean; facilities?: unknown[] } | undefined;
+}
+
+vi.mock("@/components/map/facility-map-dynamic", () => ({
+  FacilityMap: (props: { isFiltered?: boolean; facilities?: unknown[] }) => {
+    globalThis.__facilityMapProps = props;
+    return <div data-testid="mock-facility-map" />;
+  },
+}));
 
 // ---------------------------------------------------------------------------
 // Fixtures — ≥4 records across statuses and states
@@ -238,5 +257,156 @@ describe("Explorer — map empty state", () => {
     expect(
       screen.queryByRole("region", { name: "Interactive datacenter map" })
     ).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isFiltered wiring (M5) — with a non-empty result set the real FacilityMap
+// mounts, which the "map empty state" describe block above avoids entirely.
+// FacilityMap is mocked at the module boundary (see the top of this file) so
+// this exercises Explorer's own prop-passing logic for real, in both render
+// modes that reach the map branch, without needing WebGL.
+// ---------------------------------------------------------------------------
+
+describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
+  it("map mode: isFiltered starts false, flips true once a filter narrows the set, and back to false once that filter is cleared", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} mode="map" />
+      </NuqsTestingAdapter>
+    );
+
+    expect(await screen.findByTestId("mock-facility-map")).toBeInTheDocument();
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+
+    // MapFilterSubheader's FilterBar body starts collapsed under the global
+    // matchMedia mock (matches: false for every query, vitest.setup.ts) —
+    // expand it to reach the status checkboxes.
+    await user.click(screen.getByRole("button", { name: "Expand filter controls" }));
+    await user.click(screen.getByRole("checkbox", { name: "Operational" }));
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(true);
+
+    // Toggling the SAME checkbox off — not a separate "Clear all" control —
+    // is the exact "unchecking the last box" repro path from the original
+    // bug report: it's the only filter active, so this returns to zero.
+    await user.click(screen.getByRole("checkbox", { name: "Operational" }));
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+  });
+
+  it("toggle mode: isFiltered starts false, flips true once a filter narrows the set, and back to false after Clear all", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} />
+      </NuqsTestingAdapter>
+    );
+
+    expect(await screen.findByTestId("mock-facility-map")).toBeInTheDocument();
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+
+    await user.click(screen.getByRole("checkbox", { name: "Operational" }));
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(true);
+
+    await user.click(screen.getByRole("button", { name: /clear all/i }));
+    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Map shell height (m13) — the shell used to subtract a hardcoded `4rem`
+// (64px) for the sticky site header, but the real header is `h-16` (64px)
+// PLUS a `border-b` (1px) = 65px, leaving a 1px scrollHeight/clientHeight
+// mismatch on every viewport. Explorer now measures the real `<header>` at
+// runtime and overrides the static Tailwind height via an inline style —
+// these tests render a stand-in `<header>` (the real SiteHeader lives in the
+// root layout, outside what these component tests mount) to exercise that
+// measurement, and confirm the static classes remain as the pre-measurement
+// fallback.
+// ---------------------------------------------------------------------------
+
+describe("Explorer — map shell height (m13)", () => {
+  afterEach(() => {
+    document.querySelectorAll("header[data-test-header]").forEach((el) => el.remove());
+    vi.restoreAllMocks();
+  });
+
+  it("overrides the static height with the real measured header height (dvh, when svh unsupported)", async () => {
+    const header = document.createElement("header");
+    header.setAttribute("data-test-header", "");
+    document.body.appendChild(header);
+    vi.spyOn(header, "getBoundingClientRect").mockReturnValue({
+      height: 65,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 65,
+      width: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} mode="map" />
+      </NuqsTestingAdapter>
+    );
+
+    await screen.findByTestId("mock-facility-map");
+    const shell = screen.getByTestId("map-shell");
+
+    // jsdom has no `CSS.supports` — the effect's guard falls back to "dvh",
+    // exactly the branch that runs whenever the API is unavailable.
+    expect(shell.style.height).toBe("calc(100dvh - 65px)");
+    // The static Tailwind classes (today's `4rem` fallback) stay in place —
+    // the inline style is meant to override them, not replace them, so a
+    // pre-measurement render (or a header-less page) still gets a sane value.
+    expect(shell.className).toContain("h-[calc(100dvh-4rem)]");
+    expect(shell.className).toContain("supports-[height:100svh]:h-[calc(100svh-4rem)]");
+  });
+
+  it("prefers svh when CSS.supports reports it available", async () => {
+    const header = document.createElement("header");
+    header.setAttribute("data-test-header", "");
+    document.body.appendChild(header);
+    vi.spyOn(header, "getBoundingClientRect").mockReturnValue({
+      height: 65,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 65,
+      width: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+    vi.stubGlobal("CSS", { supports: vi.fn(() => true) });
+
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} mode="map" />
+      </NuqsTestingAdapter>
+    );
+
+    await screen.findByTestId("mock-facility-map");
+    const shell = screen.getByTestId("map-shell");
+    expect(shell.style.height).toBe("calc(100svh - 65px)");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("leaves the static classes as the only height source when no header is present", async () => {
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "map" }}>
+        <Explorer facilities={fixtures} mode="map" />
+      </NuqsTestingAdapter>
+    );
+
+    await screen.findByTestId("mock-facility-map");
+    const shell = screen.getByTestId("map-shell");
+    expect(shell.style.height).toBe("");
   });
 });

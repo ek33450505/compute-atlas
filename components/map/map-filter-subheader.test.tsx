@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MapFilterSubheader } from "./map-filter-subheader";
+import { WIDE_AND_TALL_VIEWPORT_QUERY } from "@/lib/map";
 import type { Facility } from "@/lib/schema";
 
 // ---------------------------------------------------------------------------
@@ -172,6 +173,56 @@ describe("MapFilterSubheader — collapsed state (default in jsdom, matchMedia �
 });
 
 // ---------------------------------------------------------------------------
+// Escape closes the filter body (m8)
+// ---------------------------------------------------------------------------
+
+describe("MapFilterSubheader — Escape (m8)", () => {
+  it("closes the filter body and returns focus to the toggle on Escape", async () => {
+    const user = userEvent.setup();
+    renderSubheader();
+
+    await user.click(screen.getByRole("button", { name: "Expand filter controls" }));
+    expect(
+      screen.getByRole("button", { name: "Collapse filter controls" })
+    ).toHaveAttribute("aria-expanded", "true");
+
+    // Move focus into the now-expanded body first — otherwise focus is
+    // already on the toggle from the click above (it's the same DOM node,
+    // just re-labeled), which would make a dropped .focus() call in the
+    // Escape handler unobservable.
+    const firstCheckbox = screen.getAllByRole("checkbox")[0];
+    firstCheckbox.focus();
+    expect(firstCheckbox).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+
+    const closedButton = screen.getByRole("button", { name: "Expand filter controls" });
+    expect(closedButton).toHaveAttribute("aria-expanded", "false");
+    expect(closedButton).toHaveFocus();
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+  });
+
+  it("does nothing when already collapsed — no listener attached, so it doesn't steal focus", async () => {
+    const user = userEvent.setup();
+    renderSubheader();
+
+    const toggle = screen.getByRole("button", { name: "Expand filter controls" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    // Move focus off the toggle first — otherwise a wrongly-still-attached
+    // listener re-focusing it would be unobservable (nothing else has
+    // moved focus away from it yet at this point in the test).
+    toggle.focus();
+    toggle.blur();
+    expect(toggle).not.toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(toggle).not.toHaveFocus();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Active filter count badge
 // ---------------------------------------------------------------------------
 
@@ -189,5 +240,108 @@ describe("MapFilterSubheader — active count badge", () => {
   it("uses singular label for exactly one active filter", () => {
     renderSubheader({ values: { state: ["TX"] } });
     expect(screen.getByLabelText("1 active filter")).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Shared viewport query (WIDE_AND_TALL_VIEWPORT_QUERY, lib/map.ts) — the
+// module-level default is mocked to `matches: false` by vitest.setup.ts, so
+// the tests above exercise the collapsed-by-default path. These tests
+// locally override matchMedia to also cover the expanded-by-default path and
+// to guard against the two consumers (this file and FacilityMap's Tools
+// column) drifting onto different hardcoded query strings again.
+// ---------------------------------------------------------------------------
+
+describe("MapFilterSubheader — shared viewport query", () => {
+  const originalMatchMedia = window.matchMedia;
+
+  afterEach(() => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: originalMatchMedia,
+    });
+  });
+
+  it("defaults to expanded when the viewport satisfies WIDE_AND_TALL_VIEWPORT_QUERY", () => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: (query: string) => ({
+        matches: query === WIDE_AND_TALL_VIEWPORT_QUERY,
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }),
+    });
+
+    renderSubheader();
+
+    expect(
+      screen.getByRole("button", { name: "Collapse filter controls" })
+    ).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("queries the shared WIDE_AND_TALL_VIEWPORT_QUERY constant from lib/map, so this can't drift from FacilityMap's Tools-column threshold", () => {
+    const calls: string[] = [];
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: (query: string) => {
+        calls.push(query);
+        return {
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+          dispatchEvent: () => false,
+        };
+      },
+    });
+
+    renderSubheader();
+
+    expect(calls).toContain(WIDE_AND_TALL_VIEWPORT_QUERY);
+  });
+
+  it("Escape sets an explicit closed override, not null — stays closed even though the wide-viewport default would reopen it (m8)", async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: (query: string) => ({
+        matches: query === WIDE_AND_TALL_VIEWPORT_QUERY,
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }),
+    });
+
+    renderSubheader();
+
+    // Starts expanded: prefersExpanded=true (wide viewport), override=null.
+    expect(
+      screen.getByRole("button", { name: "Collapse filter controls" })
+    ).toHaveAttribute("aria-expanded", "true");
+
+    await user.keyboard("{Escape}");
+
+    // If Escape had reset override to null instead of an explicit false,
+    // isOpen would fall back to prefersExpanded (still true here) and this
+    // would still read expanded — the explicit false is what this proves.
+    expect(
+      screen.getByRole("button", { name: "Expand filter controls" })
+    ).toHaveAttribute("aria-expanded", "false");
   });
 });

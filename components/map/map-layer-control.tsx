@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Layers } from "lucide-react";
 
 import mapLayers from "@/public/data/map-layers.json";
@@ -14,7 +14,7 @@ import {
   orderedWaterStressDistribution,
 } from "@/lib/map-overlays";
 
-const PANEL_ID = "map-layer-control-panel";
+export const PANEL_ID = "map-layer-control-panel";
 const SATELLITE_HINT = "shown on standard basemap only";
 
 export interface MapLayerControlProps {
@@ -207,16 +207,19 @@ function DroughtKeyLegend() {
  * panel opens downward (`mt-2`, later in flex-col order) with its right
  * edge matching the button's — i.e. it grows to the left.
  *
- * The panel's inner content is its own scroll container
- * (`overflow-y-auto`, with a static `max-h-[calc(100dvh-8rem)]` fallback
- * class for first paint). Because the button lives low in a stacked Tools
- * column, its top offset varies a lot — a purely viewport-relative cap is
- * often taller than the actual space left below the panel, which leaves
- * content overflowing the viewport with no scrollbar. A `useLayoutEffect`
- * measures the container's real top via `getBoundingClientRect()` on
- * expand/resize and applies an inline `maxHeight` (viewport height minus
- * top offset minus a small margin) that overrides the static class, so the
- * panel scrolls internally and never exceeds the viewport bottom.
+ * The panel does NOT scroll itself. It used to be its own scroll container,
+ * measuring its top offset via `getBoundingClientRect()` and capping an
+ * inline `maxHeight` against the viewport — but the panel always renders
+ * inside `#map-tools-panel` (FacilityMap), which is now a scroll container
+ * in its own right once the Tools column grew past a single viewport. Two
+ * independently viewport-relative caps nested inside one another is worse
+ * than either alone: on short viewports this panel's own (correct, small)
+ * cap could compute to 0 while the ancestor's cap was still positive, so
+ * the panel sat in the DOM at zero height with no visible signal that
+ * content existed. Sizing naturally here and letting `#map-tools-panel` be
+ * the single scroll container (see its `toolsPanelMaxHeight` effect in
+ * facility-map.tsx) removes that failure mode structurally — content can
+ * only be clipped by, and revealed by scrolling, the one ancestor scroller.
  */
 export function MapLayerControl({
   showWater,
@@ -235,8 +238,6 @@ export function MapLayerControl({
 }: MapLayerControlProps) {
   const [expanded, setExpanded] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [scrollMaxHeight, setScrollMaxHeight] = useState<number | undefined>(undefined);
   const anyOn =
     showWater ||
     showPower ||
@@ -257,35 +258,6 @@ export function MapLayerControl({
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [expanded]);
-
-  // The panel can open low in the viewport (it's the last of several
-  // stacked tool buttons), so a static viewport-relative max-height
-  // (e.g. `100dvh - 8rem`) is frequently taller than the space actually
-  // remaining below the panel — content then overflows the viewport
-  // bottom with no scrollbar, because it's shorter than the (too-generous)
-  // static cap. Measure the panel's real top offset instead and cap the
-  // scroll container to exactly what's left above the viewport bottom.
-  useLayoutEffect(() => {
-    if (!expanded) return;
-    const el = scrollRef.current;
-    if (!el) return;
-
-    function recompute() {
-      const node = scrollRef.current;
-      if (!node) return;
-      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-      const top = node.getBoundingClientRect().top;
-      setScrollMaxHeight(Math.max(120, viewportHeight - top - 16));
-    }
-
-    recompute();
-    window.addEventListener("resize", recompute);
-    window.visualViewport?.addEventListener("resize", recompute);
-    return () => {
-      window.removeEventListener("resize", recompute);
-      window.visualViewport?.removeEventListener("resize", recompute);
-    };
   }, [expanded]);
 
   const waterStressDisabled = fillOnlyDisabled && FILL_ONLY_OVERLAY_IDS.includes("waterStress");
@@ -324,11 +296,7 @@ export function MapLayerControl({
           id={PANEL_ID}
           className="mt-2 rounded-sm border border-border bg-popover p-[3px]"
         >
-          <div
-            ref={scrollRef}
-            style={scrollMaxHeight !== undefined ? { maxHeight: `${scrollMaxHeight}px` } : undefined}
-            className="max-h-[calc(100dvh-8rem)] min-w-[190px] overflow-y-auto overscroll-contain rounded-[1px] border border-border/50 px-3 py-2.5"
-          >
+          <div className="min-w-[190px] rounded-[1px] border border-border/50 px-3 py-2.5">
             <p className="mb-2 border-b border-border/60 pb-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Optional layers
             </p>

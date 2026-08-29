@@ -13,7 +13,7 @@ export function PrimaryNav({ links }: PrimaryNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Primary" className="hidden sm:flex items-center gap-1 ml-2 lg:ml-4">
+    <nav aria-label="Primary" className="hidden md:flex items-center gap-0.5 lg:gap-1 ml-2 lg:ml-4">
       {links.map(({ label, href }) => {
         const isActive = pathname === href;
         return (
@@ -22,8 +22,8 @@ export function PrimaryNav({ links }: PrimaryNavProps) {
             href={href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "relative flex h-11 items-center px-1.5 lg:px-3 font-mono text-xs uppercase tracking-normal lg:tracking-wider text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
-              "after:absolute after:inset-x-1.5 after:bottom-1.5 after:h-px after:origin-left after:scale-x-0 after:bg-primary after:transition-transform motion-reduce:after:transition-none",
+              "relative flex h-11 items-center px-1 lg:px-3 font-mono text-xs uppercase tracking-normal lg:tracking-wider text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
+              "after:absolute after:inset-x-1 lg:after:inset-x-1.5 after:bottom-1.5 after:h-px after:origin-left after:scale-x-0 after:bg-primary after:transition-transform motion-reduce:after:transition-none",
               isActive ? "text-foreground after:scale-x-100" : "hover:after:scale-x-100"
             )}
           >

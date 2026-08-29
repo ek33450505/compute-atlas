@@ -1,5 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { clusterFacilities, lonToX, latToY, UNCLUSTER_ZOOM } from "@/lib/cluster";
+import {
+  clusterFacilities,
+  cullClustersToViewport,
+  lonToX,
+  latToY,
+  UNCLUSTER_ZOOM,
+  VIEWPORT_CULL_BUFFER_RATIO,
+  type Cluster,
+  type ViewportBounds,
+} from "@/lib/cluster";
 import { getAllFacilities } from "@/lib/data";
 import { INITIAL_VIEW_STATE } from "@/lib/map";
 import type { Facility } from "@/lib/schema";
@@ -166,5 +175,101 @@ describe("clusterFacilities", () => {
         expect(dist).toBeGreaterThanOrEqual(radiusPx);
       }
     }
+  });
+});
+
+// --- cullClustersToViewport ---
+
+/** A minimal Cluster fixture — members content doesn't matter for culling,
+ * only id/lon/lat (the anchor point culling tests against). */
+function makeCluster(id: string, lon: number, lat: number): Cluster {
+  return { id, lon, lat, members: [] };
+}
+
+describe("cullClustersToViewport", () => {
+  const bounds: ViewportBounds = { west: -100, south: 30, east: -90, north: 40 };
+  // width = 10deg, height = 10deg -> default 0.25 buffer = 2.5deg each side
+  // => buffered box: west -102.5, east -87.5, south 27.5, north 42.5
+
+  it("returns clusters unchanged when bounds is null (fails open before the map has a real viewport box)", () => {
+    const clusters = [makeCluster("a", -200, 89), makeCluster("b", 0, 0)];
+    expect(cullClustersToViewport(clusters, null)).toBe(clusters);
+  });
+
+  it("keeps a cluster whose anchor is inside the raw bounds", () => {
+    const inside = makeCluster("inside", -95, 35);
+    expect(cullClustersToViewport([inside], bounds)).toEqual([inside]);
+  });
+
+  it("drops a cluster whose anchor is far outside bounds, even with the buffer applied", () => {
+    const farAway = makeCluster("far", 40, -10); // nowhere near the box or its buffer
+    expect(cullClustersToViewport([farAway], bounds)).toEqual([]);
+  });
+
+  it("keeps a cluster just outside the raw bounds but within the buffered box", () => {
+    // 1deg past the east edge (-90) — inside the 2.5deg buffer.
+    const justOutside = makeCluster("buffered", -89, 35);
+    expect(cullClustersToViewport([justOutside], bounds)).toEqual([justOutside]);
+  });
+
+  it("drops a cluster just outside the buffered box", () => {
+    // 3deg past the east edge — outside the 2.5deg buffer.
+    const pastBuffer = makeCluster("past-buffer", -87, 35);
+    expect(cullClustersToViewport([pastBuffer], bounds)).toEqual([]);
+  });
+
+  it("treats the buffered edge as inclusive (>=/<=, not strictly inside)", () => {
+    // Exactly on the buffered east edge (-90 + 2.5 = -87.5).
+    const onEdge = makeCluster("on-edge", -87.5, 35);
+    expect(cullClustersToViewport([onEdge], bounds)).toEqual([onEdge]);
+  });
+
+  it("respects a custom bufferRatio", () => {
+    const justOutsideDefaultBuffer = makeCluster("custom-buffer", -87, 35); // 3deg past east
+    // Default 0.25 buffer (2.5deg) would drop this; a wider 0.5 buffer (5deg) keeps it.
+    expect(cullClustersToViewport([justOutsideDefaultBuffer], bounds, undefined, 0.5)).toEqual([
+      justOutsideDefaultBuffer,
+    ]);
+    expect(cullClustersToViewport([justOutsideDefaultBuffer], bounds)).toEqual([]);
+  });
+
+  it("force-keeps a cluster whose id is in keepIds, even far outside the buffered box", () => {
+    const farAway = makeCluster("focused-cluster", 40, -10);
+    const keepIds = new Set(["focused-cluster"]);
+    expect(cullClustersToViewport([farAway], bounds, keepIds)).toEqual([farAway]);
+  });
+
+  it("does not force-keep a cluster whose id is not in keepIds", () => {
+    const farAway = makeCluster("other-cluster", 40, -10);
+    const keepIds = new Set(["some-other-id"]);
+    expect(cullClustersToViewport([farAway], bounds, keepIds)).toEqual([]);
+  });
+
+  it("filters a mixed list to only in-bounds and force-kept clusters, preserving relative order", () => {
+    const inside = makeCluster("inside", -95, 35);
+    const outside = makeCluster("outside", 40, -10);
+    const forced = makeCluster("forced", 40, -10);
+    const result = cullClustersToViewport(
+      [outside, inside, forced],
+      bounds,
+      new Set(["forced"])
+    );
+    expect(result).toEqual([inside, forced]);
+  });
+
+  it("returns an empty array for an empty clusters input", () => {
+    expect(cullClustersToViewport([], bounds)).toEqual([]);
+  });
+
+  it("VIEWPORT_CULL_BUFFER_RATIO is the actual default applied when bufferRatio is omitted", () => {
+    const lonPad = (bounds.east - bounds.west) * VIEWPORT_CULL_BUFFER_RATIO;
+    const justInsideDefaultBuffer = makeCluster(
+      "at-default-buffer-edge",
+      bounds.east + lonPad,
+      35
+    );
+    expect(cullClustersToViewport([justInsideDefaultBuffer], bounds)).toEqual([
+      justInsideDefaultBuffer,
+    ]);
   });
 });

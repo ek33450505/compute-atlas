@@ -289,81 +289,41 @@ describe("MapLayerControl", () => {
     expect(closedButton).toHaveFocus();
   });
 
-  it("wraps the panel's scrollable content in a bounded, scrollable container", async () => {
+  it("does not cap its own scroll height — no local overflow/max-height, so the ancestor Tools panel is the single scroll container", async () => {
     const user = userEvent.setup();
     renderControl();
 
     await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
 
     const heading = screen.getByText("Optional layers");
-    const scrollContainer = heading.parentElement;
-    expect(scrollContainer).not.toBeNull();
-    expect(scrollContainer?.className).toContain("overflow-y-auto");
-    expect(scrollContainer?.className).toContain("max-h-[calc(100dvh-8rem)]");
+    const panelContent = heading.parentElement as HTMLElement;
+    expect(panelContent).not.toBeNull();
+    // Regression guard: this panel used to measure its own top offset and
+    // cap an inline maxHeight against the viewport. Once it started
+    // rendering inside #map-tools-panel (itself a viewport-capped scroll
+    // container in FacilityMap), two independently viewport-relative caps
+    // nested inside one another could compute this panel's cap to 0 on a
+    // short viewport while the ancestor's cap was still positive — the
+    // panel sat in the DOM but was entirely invisible, with no scrollbar to
+    // reveal it. Rendering at natural height with no local overflow/height
+    // styling makes that impossible structurally.
+    expect(panelContent.className).not.toContain("overflow-y-auto");
+    expect(panelContent.className).not.toMatch(/max-h(-|\[)/);
+    expect(panelContent.getAttribute("style")).toBeNull();
   });
 
-  it("applies a position-aware inline maxHeight to the scroll container once expanded, and clears it on collapse", async () => {
+  it("leaves the panel mounted at natural height across viewport-height changes, with no inline maxHeight ever applied", async () => {
     const user = userEvent.setup();
-
-    // Simulate the panel opening low in the viewport: top offset 400px,
-    // viewport 800px tall -> expected maxHeight = 800 - 400 - 16 = 384px.
-    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
-      top: 400,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-      toJSON: () => {},
-    } as DOMRect);
-    vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
-
-    renderControl();
-
-    const toggle = screen.getByRole("button", { name: "Show map layers panel" });
-    // Before expansion, no inline maxHeight has been applied anywhere.
-    expect(toggle.parentElement?.querySelector('[style*="max-height"]')).toBeNull();
-
-    await user.click(toggle);
-
-    const heading = screen.getByText("Optional layers");
-    const scrollContainer = heading.parentElement as HTMLElement;
-    expect(scrollContainer.style.maxHeight).toBe("384px");
-
-    await user.click(screen.getByRole("button", { name: "Hide map layers panel" }));
-
-    // Collapsed: the panel (and its inline-styled container) is unmounted.
-    expect(screen.queryByText("Optional layers")).not.toBeInTheDocument();
-
-    vi.restoreAllMocks();
-  });
-
-  it("floors the computed maxHeight at 120px when the panel opens very low in the viewport", async () => {
-    const user = userEvent.setup();
-
-    // top offset (760px) is close to the viewport height (800px), so the
-    // naive computation (800 - 760 - 16 = 24) would be uselessly tiny.
-    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
-      top: 760,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-      toJSON: () => {},
-    } as DOMRect);
-    vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(320);
 
     renderControl();
     await user.click(screen.getByRole("button", { name: "Show map layers panel" }));
 
+    expect(screen.getByText("Optional layers")).toBeInTheDocument();
+    expect(screen.getByText("Water")).toBeInTheDocument();
+    expect(screen.getByText("Geology")).toBeInTheDocument();
     const heading = screen.getByText("Optional layers");
-    const scrollContainer = heading.parentElement as HTMLElement;
-    expect(scrollContainer.style.maxHeight).toBe("120px");
+    expect((heading.parentElement as HTMLElement).getAttribute("style")).toBeNull();
 
     vi.restoreAllMocks();
   });

@@ -29,7 +29,27 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      // The mobile-only touch spec runs exclusively under "Mobile Chrome"
+      // below — excluded here so it doesn't ALSO run (redundantly, and
+      // against a non-touch context where its CDP touch-dispatch assertions
+      // don't mean anything) on desktop.
+      testIgnore: /map-mobile\.spec\.ts$/,
       use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "Mobile Chrome",
+      // Scoped to ONLY e2e/map-mobile.spec.ts — intentionally not the full
+      // suite. Running every existing desktop-authored spec a second time
+      // under mobile emulation would roughly double CI runtime for no new
+      // signal (most assertions don't depend on touch/viewport) and would
+      // likely surface unrelated layout failures that belong to a dedicated
+      // responsive-layout audit, not this regression-cover unit.
+      // devices["Pixel 5"], not an iPhone preset: it's Chromium-backed with
+      // realistic hasTouch/isMobile/DPR, and the touch-drag assertion drives
+      // MapLibre via CDP's Input.dispatchTouchEvent, which only exists for
+      // Chromium — a WebKit (iPhone) preset can't run it at all.
+      testMatch: /map-mobile\.spec\.ts$/,
+      use: { ...devices["Pixel 5"] },
     },
   ],
   webServer: {

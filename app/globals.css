@@ -335,6 +335,29 @@
   padding: 2px 5px;
 }
 
+/* Shift MapLibre's bottom-right control corner up so the scale bar (the
+   only control ever mounted there — attributionControl={false} on <Map>
+   disables MapLibre's own attribution control) clears facility-map.tsx's
+   custom attribution overlay, a separate absolutely-positioned <p> sitting
+   at the true bottom-right corner below it. Without this the two occupied
+   the same corner and overlapped by ~10px at every viewport measured
+   (including desktop); at 844×390 the attribution sat entirely over the
+   scale bar. 20px clears the scale bar's own ~16px rendered height plus
+   MapLibre's built-in 10px corner margin (.maplibregl-ctrl-bottom-right
+   .maplibregl-ctrl { margin: 0 10px 10px 0 }, from maplibre-gl.css) with a
+   few px to spare. Re-verify this value if the scale bar's padding/border
+   above or the attribution overlay's own height changes.
+   !important: same specificity as maplibre-gl.css's own
+   `.maplibregl-ctrl-bottom-right { bottom: 0; right: 0 }` — as with the
+   .maplibregl-ctrl-scale border above, stylesheet import order between
+   globals.css and maplibre-gl.css (imported per-component, e.g.
+   facility-map.tsx) isn't guaranteed, so a plain override can silently
+   lose the cascade (confirmed: without !important this compiled correctly
+   but a live-browser check still read the computed `bottom` as 0px). */
+.maplibregl-ctrl-bottom-right {
+  bottom: 20px !important;
+}
+
 /* ── MapLibre popup — themed as a parchment atlas card (Track B, Phase 1b) ─────
    Overrides maplibre-gl.css defaults (imported in components/map/facility-map.tsx).
    Scoped via `.atlas-popup` (the react-map-gl <Popup className>) so it only skins
