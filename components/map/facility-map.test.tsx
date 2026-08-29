@@ -14,11 +14,20 @@ interface MockMapInstance {
   getMap: ReturnType<typeof vi.fn>;
 }
 
-// The object returned by getMap() — real MapLibre's touchZoomRotate handler,
-// mocked so handleMapLoad's disableRotation() call has something to hit.
+// The object returned by getMap() — real MapLibre's interaction handlers,
+// mocked so handleMapLoad's enable()/disableRotation() calls have something
+// to hit.
 interface MockMapLibreInstance {
   setProjection: ReturnType<typeof vi.fn>;
-  touchZoomRotate: { disableRotation: ReturnType<typeof vi.fn> };
+  dragPan: { enable: ReturnType<typeof vi.fn> };
+  touchZoomRotate: {
+    enable: ReturnType<typeof vi.fn>;
+    disableRotation: ReturnType<typeof vi.fn>;
+  };
+  scrollZoom: { enable: ReturnType<typeof vi.fn> };
+  boxZoom: { enable: ReturnType<typeof vi.fn> };
+  keyboard: { enable: ReturnType<typeof vi.fn> };
+  doubleClickZoom: { enable: ReturnType<typeof vi.fn> };
 }
 
 interface LayerProps {
@@ -49,7 +58,12 @@ vi.mock("react-map-gl/maplibre", () => {
   // and assert calls made to it across the component's lifecycle.
   const mockMapLibreInstance: MockMapLibreInstance = {
     setProjection: vi.fn(),
-    touchZoomRotate: { disableRotation: vi.fn() },
+    dragPan: { enable: vi.fn() },
+    touchZoomRotate: { enable: vi.fn(), disableRotation: vi.fn() },
+    scrollZoom: { enable: vi.fn() },
+    boxZoom: { enable: vi.fn() },
+    keyboard: { enable: vi.fn() },
+    doubleClickZoom: { enable: vi.fn() },
   };
 
   const mockMapInstance: MockMapInstance = {
@@ -515,6 +529,36 @@ describe("FacilityMap", () => {
       // disableRotation) while removing the touch-rotate half of the gesture.
       await waitFor(() => {
         expect(mockMapLibreInstance.touchZoomRotate.disableRotation).toHaveBeenCalled();
+      });
+    });
+
+    it("force-enables every interaction handler on load, so a reused/never-enabled maplibre instance still works", async () => {
+      // Regression test for: single-finger drag-pan (and pinch-zoom,
+      // wheel-zoom, box-zoom, double-click-zoom, keyboard pan) silently dead
+      // after visiting a facility page (FacilityMiniMap used to pass
+      // reuseMaps + interactive={false}, no other handler props) then
+      // navigating to /map. `reuseMaps` pools maplibre-gl Map instances in a
+      // GLOBAL stack shared by every <Map reuseMaps> in the app;
+      // interactive={false} suppresses maplibre-gl's one-time initial
+      // handler.enable() calls, and react-map-gl's prop-diffing
+      // (`prop ?? true` on both sides) can't detect anything changed when
+      // neither component sets a given handler prop explicitly — so a
+      // recycled instance's handlers never get (re-)enabled. handleMapLoad
+      // must call .enable() on each directly, independent of the <Map> prop
+      // values, so the real handler state is correct regardless of prior
+      // reuse — belt-and-braces alongside FacilityMiniMap no longer passing
+      // reuseMaps at all (components/facility/facility-mini-map.tsx).
+      const mockMapLibreInstance = globalThis.__mockMapLibreInstance;
+
+      render(<FacilityMap facilities={[]} />);
+
+      await waitFor(() => {
+        expect(mockMapLibreInstance.dragPan.enable).toHaveBeenCalled();
+        expect(mockMapLibreInstance.touchZoomRotate.enable).toHaveBeenCalled();
+        expect(mockMapLibreInstance.scrollZoom.enable).toHaveBeenCalled();
+        expect(mockMapLibreInstance.boxZoom.enable).toHaveBeenCalled();
+        expect(mockMapLibreInstance.keyboard.enable).toHaveBeenCalled();
+        expect(mockMapLibreInstance.doubleClickZoom.enable).toHaveBeenCalled();
       });
     });
 

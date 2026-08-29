@@ -337,6 +337,42 @@ export function FacilityMap({
       // Globe projection unsupported (older maplibre) — fall back to mercator silently.
     }
 
+    // Force-enable every interaction handler this map needs (dragPan,
+    // touchZoomRotate below, plus scrollZoom/boxZoom/keyboard/doubleClickZoom
+    // further down) rather than trusting the <Map> prop defaults, all of
+    // which are left unset, relying on MapLibre's own default-true.
+    // `reuseMaps` (on <Map> below) pools maplibre-gl Map instances in a
+    // GLOBAL stack shared by every <Map reuseMaps> in the app —
+    // historically including FacilityMiniMap's (components/facility/
+    // facility-mini-map.tsx) `interactive={false}` map on facility pages
+    // (that component no longer passes reuseMaps, specifically to stop this,
+    // but this defensive block is deliberate belt-and-braces against any
+    // future/other pooled consumer). `interactive:false` suppresses
+    // maplibre-gl's one-time initial handler.enable() calls at construction,
+    // so a map built that way never truly enables ANY of its handlers. When
+    // such an instance is later recycled into /map, react-map-gl's
+    // prop-diffing (`nextProp ?? true` vs `prevProp ?? true`) can't detect a
+    // change for any handler prop neither component sets explicitly — both
+    // sides silently default to "true" — so it never (re-)enables them
+    // either. Net effect: after visiting a facility page and navigating to
+    // /map, single-finger drag-pan, pinch-zoom (masked by the browser's
+    // native page-zoom fallback), wheel-zoom, box-zoom, double-click-zoom,
+    // and keyboard pan were ALL silently dead. Root-caused via reproduction:
+    // /facilities/[slug] -> in-page nav to /map reliably reproduced it
+    // (mobile AND desktop viewports — engine-independent). Calling .enable()
+    // directly bypasses that unreliable prop diff and makes the real handler
+    // state correct regardless of what any other <Map reuseMaps> consumer
+    // left behind. (One cosmetic side effect this does NOT fix: the
+    // `maplibregl-interactive` class — and with it the grab/grabbing cursor
+    // affordance — is added only at construction in maplibre-gl's own
+    // _setupContainer and is never restored on a recycled instance. Harmless
+    // and not worth chasing; the handlers themselves are what matter.)
+    try {
+      mapRef.current?.getMap().dragPan.enable();
+    } catch {
+      // dragPan unavailable on this maplibre version — fail soft.
+    }
+
     // Drag always pans; tilt and rotation are reachable only through the
     // explicit ViewToggle3D (pitch) and CompassRose (bearing reset) controls —
     // never through a drag/touch gesture. This is deliberate: don't restore the
@@ -347,11 +383,39 @@ export function FacilityMap({
     // The `?.` guards the (unexpected) case where touchZoomRotate isn't
     // present on this maplibre build rather than throwing — do NOT disable
     // touchZoomRotate wholesale, as that also carries pinch-to-zoom, which
-    // must keep working on mobile.
+    // must keep working on mobile. enable() (see comment above dragPan) is
+    // called first, before disableRotation(), so a reused/never-enabled
+    // instance's rotation ends up correctly disabled rather than briefly
+    // re-enabled by the generic enable() call.
     try {
+      mapRef.current?.getMap().touchZoomRotate?.enable();
       mapRef.current?.getMap().touchZoomRotate?.disableRotation();
     } catch {
       // touchZoomRotate unavailable on this maplibre version — fail soft.
+    }
+
+    // Remaining handlers this map wants enabled — same reuseMaps-poisoning
+    // fix as dragPan/touchZoomRotate above, each independently guarded so a
+    // missing/renamed API on one doesn't block the others.
+    try {
+      mapRef.current?.getMap().scrollZoom.enable();
+    } catch {
+      // scrollZoom unavailable on this maplibre version — fail soft.
+    }
+    try {
+      mapRef.current?.getMap().boxZoom.enable();
+    } catch {
+      // boxZoom unavailable on this maplibre version — fail soft.
+    }
+    try {
+      mapRef.current?.getMap().keyboard.enable();
+    } catch {
+      // keyboard unavailable on this maplibre version — fail soft.
+    }
+    try {
+      mapRef.current?.getMap().doubleClickZoom.enable();
+    } catch {
+      // doubleClickZoom unavailable on this maplibre version — fail soft.
     }
 
     const strip = () => {
