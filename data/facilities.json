@@ -578,6 +578,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "advanced-internet-technologies-fayetteville-nc",
+    "name": "Advanced Internet Technologies (AIT) Fayetteville Data Center",
+    "operator": "Advanced Internet Technologies, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.085,
+      "lon": -78.97722,
+      "city": "Fayetteville",
+      "county": "Cumberland",
+      "street": "421 Maiden Lane",
+      "postalCode": "28301",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-01",
+        "note": "Listed among Fayetteville's existing, established data centers.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacentercatalog.com/usa/aitcom-fayetteville-nc",
+        "label": "AIT.com — Fayetteville, NC Data Center",
+        "publisher": "Data Center Catalog",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cityviewnc.com/stories/how-to-learn-more-about-data-centers-in-fayetteville/",
+        "label": "Data Centers Are Eyeing Fayetteville. Here's How to Learn More (names AIT on Hay Street/Maiden Lane as an existing facility)",
+        "publisher": "CityView (Fayetteville, NC)",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "93,000 sq ft colocation and hosting facility co-located with the company's headquarters. No megawatt figure was found in the sources read, so capacity is omitted.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "agriforce-east-palestine-columbiana-oh",
     "name": "AgriFORCE Bitcoin Mining Facility — East Palestine",
     "operator": "AgriFORCE Growing Systems Ltd.",
@@ -1733,9 +1777,16 @@
         "label": "ConstructConnect — Aligned Data Centers Breaks Ground on PHX-13 Facility",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.constructconnect.com/construction-economic-news/aligned-data-centers-breaks-ground-on-phx-13-facility-expanding-arizona-infrastructure",
+        "label": "Aligned Data Centers Breaks Ground on PHX-13 Facility, Expanding Arizona Infrastructure",
+        "publisher": "ConstructConnect",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-08-28",
     "notes": "PHX-13, a 72 MW campus in Glendale, Maricopa County. Coordinates are the Glendale area centroid. Land acquired for $86.5M (100 acres at 8785 N Reems Rd, Dec 2024, from LXP Industrial Trust) - land cost, not campus capex -> investmentUsd omitted. No job counts disclosed -> jobs honest-zero. The campus likely uses Arizona's statutory data-center TPT exemption (A.R.S. 41-1519), but no ACA certification or GPLET agreement for this campus is public -> subsidy honest-zero.",
     "energy": {
       "source": "grid",
@@ -4118,6 +4169,54 @@
     "facilityType": "data_center"
   },
   {
+    "id": "aps-cholla-natural-gas-conversion-joseph-city-az",
+    "name": "Cholla Power Plant Natural Gas Conversion",
+    "operator": "Arizona Public Service (APS)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.94,
+      "lon": -110.3,
+      "city": "Joseph City",
+      "county": "Navajo",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 380
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-02",
+        "note": "APS announced plans to convert two retired Cholla coal units to natural gas.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.utilitydive.com/news/aps-convert-coal-units-adding-380-mw-natural-gas/824471/",
+        "label": "APS to convert retired coal units, adding 380 MW of natural gas",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "APS cites Arizona's rising around-the-clock demand and long lead times for new generation as the rationale. Data center load is context in the reporting for statewide growth but is not named as the driver for this specific conversion, and no offtaker is identified.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Arizona Public Service"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2,
+      "notes": "Conversion of two retired coal units at the Cholla Power Plant to natural gas, adding up to 380 MW. Construction expected to begin in 2028 with a 2029 in-service target. Still requires formal permitting and planning processes with public comment."
+    }
+  },
+  {
     "id": "aps-desert-sun-power-plant-gila-bend-az",
     "name": "Desert Sun Power Plant",
     "operator": "Arizona Public Service (APS)",
@@ -4259,6 +4358,42 @@
     "landAcres": 7.5,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "arizona-land-consulting-camelback-creek-tonopah-az",
+    "name": "Camelback Creek",
+    "operator": "Arizona Land Consulting",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.509,
+      "lon": -112.962,
+      "city": "Tonopah",
+      "county": "Maricopa",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-06",
+        "note": "County planning staff recommended approval of the General Comprehensive Plan amendment and rezoning from Rural-43 to IND-2 IUPD; scheduled for the Maricopa County Planning and Zoning Commission hearing on August 6, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://azbex.com/planning-development/320-acre-warehouse-data-center-master-plan-proposed-in-far-west-valley/",
+        "label": "320-Acre Warehouse & Data Center Master Plan Proposed in Far West Valley",
+        "publisher": "AZBEX",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Northwest corner of 411th Avenue and Camelback Road near Tonopah. Mixed-use master plan with warehouse and data center emphasis; the rezoning request includes a building-height increase from 40 to 85 feet for data center clearance. No end users signed and no square footage or MW disclosed. Distinct site from the tracked Arizona Land Consulting Hassayampa Ranch parcel, which is a separate ~2,000-acre holding; reporting describes ALC holding roughly 4,000 acres across three Tonopah-corridor sites.",
+    "landAcres": 320,
+    "facilityType": "data_center"
   },
   {
     "id": "arizona-land-consulting-hassayampa-ranch-tonopah-az",
@@ -4901,6 +5036,55 @@
     "facilityType": "data_center"
   },
   {
+    "id": "atlas-coosa-project-gracie-floyd-ga",
+    "name": "Coosa Data Center (Project Gracie)",
+    "operator": "Atlas Development LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.257,
+      "lon": -85.1647,
+      "city": "Rome",
+      "county": "Floyd",
+      "street": "Vann Road",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-05-27",
+        "note": "Floyd County Commission voted 4-0 to rezone more than 200 acres off Vann Road from Suburban Residential to Heavy Industrial.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.northwestgeorgianews.com/rome/news/local/county-commission-approves-coosa-data-center-request/article_a6062a6a-e6f2-4302-818d-83ee2bb09bf9.html",
+        "label": "County Commission Approves Coosa Data Center Request",
+        "publisher": "Rome News-Tribune / Northwest Georgia News",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.bisnow.com/atlanta/news/data-center/developer-pitches-24m-sf-georgia-data-center-campus-129233",
+        "label": "Developer Pitches 2.4M SF Georgia Data Center Campus",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "About 2.4–2.5 million sq ft across seven buildings, target completion December 2032; land previously owned by the Floyd County school system. Filed with the state as Project Gracie.",
+    "landAcres": 200,
+    "community": {
+      "status": "opposed",
+      "notes": "A raucous crowd spoke against the rezoning over noise, night lighting and water-draw concerns; commissioners doubled public-comment time. Approval carried conditions: data-center-only heavy industrial use, dark-sky lighting, 65 dB day / 55 dB night limits at the property line, a 100-foot undisturbed setback, and fines up to $1,000/day.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "atlas-power-butte-mt",
     "name": "Atlas Power Butte Data Center",
     "operator": "Atlas Power",
@@ -5031,6 +5215,93 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "atlas-project-bus-temple-ga",
+    "name": "Project Bus (Atlas Development Temple Data Center Campus)",
+    "operator": "Atlas Development LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.7376,
+      "lon": -85.0327,
+      "city": "Temple",
+      "county": "Carroll",
+      "street": "Vaughn Road / Center Point Road / Terrell Road / Mandeville Road",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01-26",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-26",
+        "note": "Development of Regional Impact form filed with the Georgia Department of Community Affairs for a 350-acre data center in Temple; rezoning, annexation and sewer extension still required.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.times-georgian.com/news/local/data-center-proposed-for-temple/article_843207fd-622f-5c76-b5b9-0a999e07bff5.html",
+        "label": "Data center proposed for Temple",
+        "publisher": "Times-Georgian",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://gradickcommunications.com/data-center-planned-for-development-in-carroll-county/",
+        "label": "Data Center Planned For Development In Carroll County",
+        "publisher": "Gradick Communications",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "12 buildings and 2 substations on properties with Temple addresses north and south of I-20; estimated completion 2036 and over $42M/year in combined ad valorem tax to Carroll County.",
+    "investmentUsd": 11000000000,
+    "landAcres": 350,
+    "jobs": {
+      "permanent": 275,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "atlas-project-sassy-rome-ga",
+    "name": "Project Sassy (Atlas Development Rome Campus)",
+    "operator": "Atlas Development LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.257,
+      "lon": -85.1647,
+      "city": "Rome",
+      "county": "Floyd",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01",
+        "note": "Atlas submitted initial state filings for a 178-acre campus in Rome and applied to rezone the property for data center use.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.bisnow.com/atlanta/news/data-center/developer-pitches-24m-sf-georgia-data-center-campus-129233",
+        "label": "Developer Pitches 2.4M SF Georgia Data Center Campus (Project Sassy named as Atlas's first Floyd County filing)",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Explicitly the second of two Atlas projects in Floyd County per the source — a distinct site from the Coosa / Project Gracie campus on Vann Road. Atlas has not disclosed building counts or capacity, and hopes to add 15 more acres to the site.",
+    "landAcres": 178,
+    "facilityType": "data_center"
   },
   {
     "id": "atlas-project-springbank-adairsville-ga",
@@ -7813,6 +8084,7 @@
       "lon": -79.775,
       "city": "Rockingham",
       "county": "Richmond",
+      "street": "Airport Road",
       "state": "NC",
       "precision": "exact"
     },
@@ -7851,9 +8123,23 @@
         "publisher": "Cardinal & Pine (reporting by Inside Climate News)",
         "retrievedAt": "2026-08-15",
         "kind": "press"
+      },
+      {
+        "url": "https://www.deq.nc.gov/news/press-releases/2026/06/26/deq-announces-joint-public-hearing-amazon-data-center-and-duke-energy-air-quality-permits-richmond",
+        "label": "DEQ announces joint public hearing on Amazon data center and Duke Energy air quality permits in Richmond County",
+        "publisher": "North Carolina Department of Environmental Quality",
+        "retrievedAt": "2026-08-29",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.wunc.org/2026-08-29/amazons-richmond-county-data-center-gets-green-light-on-air-quality-permits",
+        "label": "Amazon's Richmond County data center gets green light on air quality permits",
+        "publisher": "WUNC",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-08-29",
     "notes": "Energy Way Industrial Park, Rockingham, NC. Up to 20 buildings each 200,000-225,000 sq ft at full build. No state incentives; only local county tax breaks. MW capacity not publicly disclosed. Coordinates are Rockingham city centroid. Original secondary source (richmondnc.com/CivicAlerts.aspx?AID=168) returned HTTP 404 and was replaced with Business NC article. poweredBy field removed: DCD reports the method of powering has not been publicly confirmed.",
     "energy": {
       "source": "grid",
@@ -8676,14 +8962,39 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.kold.com/2026/04/25/construction-begins-first-hyper-scale-data-center-pima-county/",
+        "label": "Construction begins on first hyper-scale data center in Pima County",
+        "publisher": "KOLD News 13",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kjzz.org/fronteras-desk/2026-04-27/as-project-blue-data-center-construction-starts-near-tucson-protesters-rally-outside",
+        "label": "As Project Blue data center construction starts near Tucson, protesters rally outside",
+        "publisher": "KJZZ Fronteras Desk",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-28",
     "notes": "Unincorporated Pima County, west of Houghton Rd, near Tucson. 500-700MW planned across 13M sq ft (a range, so omitted from capacityMw). AWS confirmed as end-customer via an NDA obtained by AZ Luminaria. Distinct site from Beale Infrastructure's Fremont Peak Properties/Luckett Road project in the Town of Marana (also AZ, also tracked this session) - same developer family, different parcel. Coordinates are approximate.",
     "energy": {
+      "source": "grid",
       "utility": "Tucson Electric Power (TEP)"
     },
     "investmentUsd": 3600000000,
+    "landAcres": 290,
+    "jobs": {
+      "permanent": 180,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Dozens of protesters organized as the No Desert Data Center Coalition rallied at the site as construction began in late April 2026, holding \"Not One Drop For Data\" signs and briefly attempting to block construction vehicles before Pima County sheriff's deputies moved them out of the roadway.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -15486,6 +15797,78 @@
     "facilityType": "data_center"
   },
   {
+    "id": "colovore-reno-1-storey-county-nv",
+    "name": "Colovore Reno 1 (RN01)",
+    "operator": "Colovore",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5341121,
+      "lon": -119.4771513,
+      "city": "McCarran",
+      "county": "Storey",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-12",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-12-24",
+        "note": "NDEP Bureau of Air Pollution Control issued a preliminary determination to approve new Class II Air Quality Operating Permit AP7374-5002 (FIN A2675) for the Colovore Reno 1 LLC facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ndep.nv.gov/uploads/documents/ap7374-5002-directors-review.pdf",
+        "label": "Director's review, Class II Air Quality Operating Permit AP7374-5002, Colovore Reno 1 LLC, Storey County",
+        "publisher": "Nevada Division of Environmental Protection, Bureau of Air Pollution Control",
+        "retrievedAt": "2026-08-29",
+        "kind": "permit"
+      },
+      {
+        "url": "https://nevbex.com/2026/08/13/nevada-goed-tax-abatements-nine-companies/",
+        "label": "Governor's Office of Economic Development announces tax abatements for nine companies",
+        "publisher": "NVBEX",
+        "retrievedAt": "2026-08-29",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.colovore.com/",
+        "label": "Colovore - markets served, including Reno, NV",
+        "publisher": "Colovore",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Air permit places the project on the southeast corner of Italy Drive and SR 439, about 2.8 miles south of the I-80/439 interchange, in Section 11, T19N, R22E MDB&M (Air Quality Hydrographic Area 83, Tracy Segment). GOED approved $4,076,970 in abatements in August 2026 against a stated $30 million in capital-equipment investment and 10 jobs at an average $59/hour within five years; the $30M is an equipment figure, not total site capex, so it is not recorded as investmentUsd. Capacity is not recorded: no source read this session states a site MW figure.",
+    "energy": {
+      "source": "grid",
+      "notes": "Five 3,490 kW emergency generators permitted as the only combustion equipment at the site (NDEP Class II minor stationary source)."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Colovore builds high-density liquid-cooled colocation; reporting on the Storey County site describes a design that avoids water-intensive cooling. Colovore's own site advertises 5-600+ kW per rack with liquid cooling."
+    },
+    "subsidies": [
+      {
+        "program": "Nevada GOED data center tax abatement",
+        "amountUsd": 4076970,
+        "jurisdiction": "Nevada",
+        "year": "2026",
+        "sourceIndex": 1
+      }
+    ],
+    "jobs": {
+      "permanent": 10,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "comanche-circle-sailfish-hood-county-tx",
     "name": "Comanche Circle",
     "operator": "Sailfish Digital Ventures (SDV)",
@@ -20628,6 +21011,47 @@
     "aiClassification": "likely"
   },
   {
+    "id": "databank-las1-las-vegas-nv",
+    "name": "DataBank LAS1",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0597501,
+      "lon": -115.1470938,
+      "city": "Las Vegas",
+      "county": "Clark",
+      "street": "7185 Pollock Drive",
+      "postalCode": "89119",
+      "state": "NV",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 3.35
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-29",
+        "note": "DataBank lists LAS1 as an operating colocation facility with 57,364 IT square feet and 3.35 MW of critical IT load.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/las-vegas/",
+        "label": "DataBank Las Vegas LAS1 - 7185 Pollock Drive, 57,364 IT sq ft, 3.35 MW critical IT load",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Carrier-dense edge colocation facility with 2N power redundancy and 11 on-site carriers. The building is mapped in OpenStreetMap as 'DataBank Las Vegas LAS1' at this address, which is how the coordinates were confirmed. A general-purpose colocation site rather than a dedicated AI campus.",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "databank-mem1-memphis-tn",
     "name": "DataBank MEM1 (Memphis)",
     "operator": "DataBank",
@@ -21443,6 +21867,54 @@
       "status": "opposed"
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "deep-river-data-cumnock-lee-county-nc",
+    "name": "Deep River Data AI Data Center (Cumnock, Lee County)",
+    "operator": "Deep River Data",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.555,
+      "lon": -79.23778,
+      "city": "Cumnock",
+      "county": "Lee",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-03",
+        "note": "Company's continued contact with the state geologist confirmed at the NC Oil & Gas Commission meeting; application still being prepared.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.theassemblync.com/business/commercial-natural-gas-well-ai-datacenter/",
+        "label": "Natural Gas To Power AI May Be Coming To North Carolina",
+        "publisher": "The Assembly",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://cwfnc.org/nofracklee/",
+        "label": "Lee County: No Fracking Data Center",
+        "publisher": "Clean Water for North Carolina",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Deep River Data is majority-managed by HM Tech, which runs an existing bitcoin mining and ASIC repair facility in Graham, NC. The company says the North Carolina site would serve AI workloads rather than crypto mining. As of the reporting cited, the project is pre-feasibility: nothing has been approved, permitted or built, and no capacity figure has been published. Site is south of U.S. 421 near the Lee–Chatham county line; coordinates are the Cumnock community, not a parcel.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Company proposes to power the site with methane produced on-site from Butler Well No. 3, a 1998 vertical well drilled to 2,655 feet in the Triassic Basin; it would be the first commercial gas well in that basin if approved."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "diamond-farms-gateway-digital-villa-ridge-mo",
@@ -24302,6 +24774,99 @@
     }
   },
   {
+    "id": "duke-energy-belews-creek-smr-stokes-county-nc",
+    "name": "Duke Energy Belews Creek Advanced Nuclear Site (SMR early site permit)",
+    "operator": "Duke Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.28139,
+      "lon": -80.06028,
+      "county": "Stokes",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "announcedDate": "2025-12-30",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-30",
+        "note": "Early site permit application submitted to the U.S. Nuclear Regulatory Commission.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://news.duke-energy.com/releases/duke-energy-submits-early-site-permit-application-for-potential-new-nuclear-development-in-north-carolina",
+        "label": "Duke Energy submits early site permit application for potential new nuclear development in North Carolina",
+        "publisher": "Duke Energy",
+        "retrievedAt": "2026-08-29",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Coordinates are those of the existing Belews Creek Steam Station; the permit covers a site near that station, not a parcel-confirmed reactor footprint. An early site permit confirms site suitability only — it is not a construction authorization and no reactor technology has been selected.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear_smr",
+      "notes": "Technology-neutral early site permit application covering six candidate designs — four small modular reactor designs and two non-light-water designs; large light-water reactors are excluded. Duke targets 600 MW of advanced nuclear by 2037 with a first unit online in 2036."
+    }
+  },
+  {
+    "id": "duke-energy-buck-combustion-turbines-rowan-county-nc",
+    "name": "Duke Energy Buck Combustion Turbines (Rowan County)",
+    "operator": "Duke Energy Carolinas",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.71194,
+      "lon": -80.37694,
+      "city": "Salisbury",
+      "county": "Rowan",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 850
+    },
+    "announcedDate": "2025-07-24",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07-25",
+        "note": "Preliminary filing with the North Carolina Utilities Commission ahead of a certificate of public convenience and necessity application.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.salisburypost.com/2025/07/25/powering-on-duke-energy-signals-plans-for-two-rowan-county-generation-units/",
+        "label": "Powering on: Duke Energy signals plans for two Rowan County generation units",
+        "publisher": "Salisbury Post",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://finance.yahoo.com/news/duke-energy-proposes-natural-gas-162909412.html",
+        "label": "Duke Energy proposes natural gas project at site of former coal plant",
+        "publisher": "Yahoo Finance",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Site is east of I-85 off Long Ferry Road in Rowan County — the same road as the separately tracked Long Ferry Road data center campus, but a distinct facility with a different owner and type. Reported construction start ranges from 2028 with in-service around 2030; a CPCN from the NC Utilities Commission is still pending.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2,
+      "notes": "Two natural gas combustion turbines totalling about 850 MW on the former Buck Steam Station footprint, adjacent to the existing 718 MW Buck combined-cycle plant, using the pipeline already serving the site."
+    }
+  },
+  {
     "id": "duke-energy-davidson-county-cc4-nc",
     "name": "Duke Energy Davidson County Combined Cycle (CC4)",
     "operator": "Duke Energy",
@@ -24344,6 +24909,76 @@
     }
   },
   {
+    "id": "duke-energy-marshall-combustion-turbines-catawba-county-nc",
+    "name": "Duke Energy Marshall Combustion Turbines (Catawba County)",
+    "operator": "Duke Energy Carolinas",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.5975,
+      "lon": -80.96472,
+      "city": "Sherrills Ford",
+      "county": "Catawba",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 850
+    },
+    "announcedDate": "2024-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-03",
+        "note": "Certificate of public convenience and necessity application filed with the NC Utilities Commission.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2024-12",
+        "note": "NC Utilities Commission issued its order in early December 2024 and the NC Department of Environmental Quality issued the air permit on Dec. 20, 2024.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://charlotteregion.com/news/duke-energy-applies-to-build-new-natural-gas-plant-at-marshall-steam-station-site-in-catawba-county/",
+        "label": "Duke Energy applies to build new natural gas plant at Marshall Steam Station site in Catawba County",
+        "publisher": "Charlotte Regional Business Alliance",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/gas/turbines/duke-energy-unveils-plans-for-new-natural-gas-plant-in-north-carolina/",
+        "label": "Duke Energy unveils plans for new natural gas plant in North Carolina",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/duke-energy-receives-key-approvals-120000547.html",
+        "label": "Duke Energy receives key approvals for new gas plants at 2 North Carolina sites",
+        "publisher": "Yahoo News / Charlotte Observer",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Permits condition the units on retiring the first two Marshall coal units by the end of 2028. Construction was targeted to start in the second half of 2026 with in-service in early 2029; this record does not assert that construction has begun.",
+    "landAcres": 20,
+    "jobs": {
+      "construction": 800,
+      "permanent": 10,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2,
+      "notes": "Two hydrogen-capable 425 MW simple-cycle combustion turbines on a roughly 20-acre parcel inside the existing Marshall Steam Station property, about a mile northeast of the coal units, with ultra-low-sulfur diesel as backup fuel."
+    }
+  },
+  {
     "id": "duke-energy-person-county-energy-complex-cc-nc",
     "name": "Duke Energy Person County Energy Complex Combined Cycle",
     "operator": "Duke Energy",
@@ -24380,6 +25015,65 @@
       "technology": "natural_gas",
       "unitCount": 2,
       "notes": "Two combined-cycle units at the Person County Energy Complex, using GE Vernova advanced gas turbines (four turbines total for the project). First turbine arrived on site 2026-07-23; the steam turbine generator was expected later in 2026. Duke's adjacent Mayo coal units are expected to retire by 2031 and Roxboro (Hyco) coal units by 2034. Duke has attributed its gas buildout in the Carolinas in part to fast-growing data center load."
+    }
+  },
+  {
+    "id": "duke-energy-progress-richmond-county-bridge-power-nc",
+    "name": "Duke Energy Progress Richmond County Bridge Power (Energy Way Tech Campus)",
+    "operator": "Duke Energy Progress",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.88917,
+      "lon": -79.71,
+      "city": "Hamlet",
+      "county": "Richmond",
+      "street": "Airport Road",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06-26",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-26",
+        "note": "NC DEQ announced a joint public hearing on the permit modification; hearing held July 30, 2026 in Rockingham.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-08-29",
+        "note": "NC Division of Air Quality issued the air quality permit for Duke Energy's construction-phase generators.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.deq.nc.gov/news/press-releases/2026/06/26/deq-announces-joint-public-hearing-amazon-data-center-and-duke-energy-air-quality-permits-richmond",
+        "label": "DEQ announces joint public hearing on Amazon data center and Duke Energy air quality permits in Richmond County",
+        "publisher": "North Carolina Department of Environmental Quality",
+        "retrievedAt": "2026-08-29",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.wunc.org/2026-08-29/amazons-richmond-county-data-center-gets-green-light-on-air-quality-permits",
+        "label": "Amazon's Richmond County data center gets green light on air quality permits",
+        "publisher": "WUNC",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "This is a modification of Duke Energy Progress's existing Richmond County Combustion Turbine Facility air permit, but the permitted engines are a distinct, temporary generating installation sited on the Amazon campus and dedicated to it. Permitted as a Title V major source. No megawatt rating was stated in the sources read, so capacity is omitted; do not infer one from the engine count. Coordinates are the Hamlet town centroid, not a parcel.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "offtaker": "Amazon Web Services",
+      "poweredFacilityIds": [
+        "aws-richmond-county-nc"
+      ],
+      "unitCount": 57,
+      "notes": "57 new diesel-fired reciprocating engines permitted on Amazon's Energy Way Tech Campus property to supply 'bridge power' while the data center campus is built. Duke Energy Progress is required to retire the bridge-power engines within one year after the data center begins operation."
     }
   },
   {
@@ -25415,6 +26109,72 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "edgecore-reno-campus-storey-county-nv",
+    "name": "EdgeCore Reno Data Center Campus",
+    "operator": "EdgeCore Digital Infrastructure",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5429755,
+      "lon": -119.4851422,
+      "city": "McCarran",
+      "county": "Storey",
+      "street": "3000 NV-439",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 216
+    },
+    "announcedDate": "2023-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-08-10",
+        "note": "EdgeCore announced the purchase of 136 acres in the greater Reno market for a campus capable of supporting over 400 MW of critical load.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-01",
+        "note": "EdgeCore reported active construction under way on the first of three data centers at the Greater Reno campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://edgecore.com/locations/reno-data-center",
+        "label": "EdgeCore Reno data center campus - 56 acres, 216 MW critical IT load across three buildings in the Tahoe-Reno Industrial Center",
+        "publisher": "EdgeCore Digital Infrastructure",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://edgecore.com/resources/press-releases/edgecore-digital-infrastructure-announces-development-of-reno-nevada-data-center-campus",
+        "label": "EdgeCore Digital Infrastructure announces development of Reno, Nevada data center campus",
+        "publisher": "EdgeCore Digital Infrastructure",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/edgecore-reno",
+        "label": "EdgeCore Reno data center - 3000 NV-439, under construction",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Three hyperscale buildings totalling nearly 1 million sq ft at roughly 72 MW each. Sources diverge on framing: the 2023 announcement describes 136 acres in 'north Reno' supporting 400+ MW, while EdgeCore's current location page describes a 56-acre, 216 MW developed phase in the Tahoe-Reno Industrial Center (Storey County). The current page is treated as authoritative for the developed campus; the larger land position is recorded here rather than as capacity.",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "EdgeCore states a flexible cooling design supporting both air-cooled and direct-to-chip liquid-cooled servers, with a WUE rating below 0.01 L/kWh."
+    },
+    "landAcres": 56,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "edgecore-shannon-hill-louisa-va",
     "name": "EdgeCore Shannon Hill Data Center Campus",
     "operator": "EdgeCore Digital Infrastructure",
@@ -25753,6 +26513,56 @@
     },
     "landAcres": 17.5,
     "facilityType": "data_center"
+  },
+  {
+    "id": "edged-mesa-az",
+    "name": "Edged Mesa Data Center",
+    "operator": "Edged US",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.4152,
+      "lon": -111.8315,
+      "city": "Mesa",
+      "county": "Maricopa",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 36
+    },
+    "announcedDate": "2026-04-01",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-04-01",
+        "note": "Facility opened; ribbon cutting held April 2, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://edged.us/news/edged-us-opens-waterless-ai-ready-data-center-in-the-heart-of-arizonas-silicon-desert-tech-corridor",
+        "label": "Edged US Opens Waterless, AI-Ready Data Center in Arizona's Silicon Desert Tech Corridor",
+        "publisher": "Edged US",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Operator-stated densities of 400+ kW per rack with liquid cooling and 120+ kW per rack with air cooling support an AI-capable classification, though no named AI tenant is disclosed. PUE, water-savings and density figures are the operator's own claims from its launch release and are not independently verified. Street address not published.",
+    "water": {
+      "coolingType": "air",
+      "reportedMgd": 0,
+      "notes": "ThermalWorks waterless cooling. Operator states zero water used for cooling and roughly 138 million gallons a year conserved versus a conventional facility."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely",
+    "environmental": {
+      "pue": 1.15,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
   },
   {
     "id": "element-critical-austin-one-tx",
@@ -30976,6 +31786,9 @@
       "state": "AZ",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 1500
+    },
     "announcedDate": "2025-10",
     "statusHistory": [
       {
@@ -31026,9 +31839,16 @@
         "publisher": "KGUN9",
         "retrievedAt": "2026-07-09",
         "kind": "press"
+      },
+      {
+        "url": "https://news.azpm.org/p/news-articles/2026/1/8/227908-marana-town-council-approves-rezoning-for-luckett-road-project-600-acre-hyperscale-data-center/",
+        "label": "Marana Town Council approves rezoning for Luckett Road Project, 600-acre hyperscale data center",
+        "publisher": "Arizona Public Media (AZPM)",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-09",
+    "lastUpdated": "2026-08-28",
     "notes": "Two parcels along Luckett Road: north parcel owned by the Church of Jesus Christ of Latter-day Saints (borders Pinal County); south parcel owned by the Kai Family Trust. Fremont Peak Properties LLC (also referenced as 'Humphrey's Peak Properties' in some coverage) is a subsidiary of Beale Infrastructure, backed by Blue Owl Capital; connected to, but a distinct site from, the separately-tracked 'Project Blue' Beale/Blue Owl effort in unincorporated Pima County near Tucson, and from Beale's separately-tracked Project Pilot in De Soto, KS. Developer projects ~400 permanent and ~4,200 temporary construction jobs (Chamber of Southern Arizona estimate) - not yet delivered, so omitted from the jobs field. No explicit AI/GPU branding found in coverage; classified 'likely' given Blue Owl Capital's profile as a major AI-datacenter-era infrastructure investor. Coordinates are approximate for the Luckett Road parcels.",
     "energy": {
       "source": "grid",
@@ -35622,6 +36442,46 @@
       "notes": "Clifton Township supervisors unanimously approved a zoning settlement with the developer on January 3, 2026 after the developer appealed a zoning board decision on November 26, 2025; residents said they plan to take the supervisors to court. An earlier settlement was rejected in September 2025.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "grandilla-foot-creek-491st-thomas-tonopah-az",
+    "name": "491st Avenue and Thomas Road Data Center / Solar Site",
+    "operator": "Grandilla (Arizona) Inc. and Foot Creek Corporation",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.481,
+      "lon": -113.134,
+      "city": "Tonopah",
+      "county": "Maricopa",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-02-18",
+        "note": "Maricopa County Board of Supervisors approved the comprehensive plan amendment (Rural Development Area to Utilities) and rezoning from Rural-43 to Light Industrial (IND-2) with an Industrial Unit Plan Overlay.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://azbex.com/planning-development/maricopa-county-board-approves-rezoning-for-638-acre-data-center-solar-site/",
+        "label": "Maricopa County Board Approves Rezoning for 638-Acre Data Center/Solar Site",
+        "publisher": "AZBEX",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Northeast corner of 491st Avenue and Thomas Road near Tonopah. Concept is nine industrial buildings of roughly 250,000 sq ft each, about 2.25 million sq ft total, plus solar and BESS. No formal development plan is on file; the applicant describes phased build-out sequenced to market demand, with initial development over the southern portion of the property.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Approved uses include on-site solar power generation and battery energy storage alongside the data center campus. No MW figures disclosed."
+    },
+    "landAcres": 638,
     "facilityType": "data_center"
   },
   {
@@ -40737,6 +41597,48 @@
     }
   },
   {
+    "id": "lpi-group-project-midway-casa-grande-az",
+    "name": "Project Midway Data Center",
+    "operator": "LPI Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.84,
+      "lon": -111.79,
+      "city": "Casa Grande",
+      "county": "Pinal",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-11-19",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-19",
+        "note": "Pinal County Board of Supervisors voted 5-0 to approve the comprehensive plan amendment changing 215 acres from Moderate Low Density Residential to Employment. Rezoning approval is still required before construction.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pinalpost.com/supervisors-approve-project-midway-data-center-near-casa-grande/",
+        "label": "Project Midway Data Center Approved by Pinal County Supervisors",
+        "publisher": "Pinal Post",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Unincorporated Pinal County at the southwest corner of Selma Highway and Midway Road, roughly two miles south of the Casa Grande city limits but inside its planning area. The applicant projects about 225 permanent jobs at an average salary near $93,000 and $150 million in annual utility spend at full build-out. Reported acreage differs between sources (215 acres in the Pinal Post account, 294 acres in a same-day Pinal Central report); the 215-acre figure matches the comprehensive plan amendment as described. Capacity in MW has not been publicly stated.",
+    "investmentUsd": 6600000000,
+    "landAcres": 215,
+    "jobs": {
+      "permanent": 225,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumen-akron-2-oh",
     "name": "Lumen Akron 2",
     "operator": "Lumen Technologies",
@@ -41693,6 +42595,65 @@
       "pueConfidence": "reported",
       "waterStress": "unknown"
     }
+  },
+  {
+    "id": "manse-technology-campus-pahrump-nv",
+    "name": "Manse Technology Campus",
+    "operator": "Manse Technology Campus LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1925194,
+      "lon": -115.9758446,
+      "city": "Pahrump",
+      "county": "Nye",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-25",
+        "note": "Manse Technology Campus LLC, incorporated July 15, 2026, held a community Q&A at the Nye County Commission chambers.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mansetechcampus.com/about",
+        "label": "About the Project - Manse Technology Campus (capital investment, taxes, jobs, water)",
+        "publisher": "Manse Technology Campus",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://pvc.news/understanding-the-proposed-pahrump-data-center-a-closer-look-at-the-proposal/",
+        "label": "Understanding the proposed Pahrump data center: a closer look at the proposal",
+        "publisher": "Pahrump Valley Community News",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Formerly referred to as Project Blackjack; sited on the Manse Road corridor near the southern entrance to Pahrump along Highway 160, roughly 1,100 feet from the nearest homes. Developer states $18.4 billion of capital investment at full buildout and $114 million in annual Nye County property taxes; a separate figure of $8.4 billion appeared in other reporting and was not resolved this session, so the developer's own $18.4B is recorded. Design features include screening berms, rooftop parapets for sound reduction and a target of roughly 55 dB at the property line. No megawatt capacity has been disclosed. Construction is anticipated to begin in 2027 with a five-year buildout, pending approvals that the county moratorium currently blocks.",
+    "water": {
+      "notes": "Developer states water consumption of less than 300 acre-feet annually. Nye County's water district approved an emergency ban on new data centers in Pahrump's water basin to preserve groundwater."
+    },
+    "investmentUsd": 18400000000,
+    "landAcres": 900,
+    "jobs": {
+      "construction": 1600,
+      "permanent": 380,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Residents packed a July 2026 Nye County town hall and a subsequent county forum to object; a public petition opposing the project is circulating. Nye County adopted a moratorium on data center applications in June 2026 and a ban in water basin 162 on August 18, 2026.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "mara-findlay-oh",
@@ -48218,6 +49179,67 @@
     "aiClassification": "likely"
   },
   {
+    "id": "microsoft-silver-springs-lyon-county-nv",
+    "name": "Microsoft Silver Springs Data Center Campus",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.373597,
+      "lon": -119.2267443,
+      "city": "Silver Springs",
+      "county": "Lyon",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-05",
+        "note": "Lyon County approved conditional use permits for the two Microsoft-affiliated substations serving the Silver Springs campus; a parcel map consolidating six Microsoft-owned parcels totalling about 274 acres into three was also approved.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://citizenportal.ai/articles/7417886/nevada/lyon-county/planning-commission-recommends-approval-of-two-microsoft-substations-in-silver-springs-amid-neighbor-concerns",
+        "label": "Planning commission recommends approval of two Microsoft substations in Silver Springs amid neighbor concerns",
+        "publisher": "Citizen Portal",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.basinandrangewatch2.org/data-centers",
+        "label": "Data Centers - Silver Springs data center and Silver Springs 345 kV transmission line, ROW application September 2024, revised plan of development April 2026",
+        "publisher": "Basin and Range Watch",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.blm.gov/announcement/blm-issues-decision-silver-springs-345kv-fold",
+        "label": "BLM issues decision for Silver Springs 345kV Fold",
+        "publisher": "U.S. Bureau of Land Management",
+        "retrievedAt": "2026-08-29",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "A distinct Microsoft site from the Victory Logistics District land in Fernley that the tracker already carries. Microsoft owns roughly 274 acres in Silver Springs, restructured into three parcels of about 223.18, 32.6 and 18.7 acres. The BLM decision notice for the 345 kV fold names NV Energy as applicant and does not mention Microsoft or a data center; the Microsoft linkage comes from the county proceedings and the Basin and Range Watch summary. No building programme, capacity figure or construction start has been sourced. Coordinates are the Silver Springs reference point, not a parcel.",
+    "energy": {
+      "source": "grid",
+      "utility": "NV Energy",
+      "notes": "Served by two approved substations north of U.S. Highway 50: the roughly 32.59-acre 'Nighthawk' 345/120 kV regional substation, which NV Energy will own and operate as part of its Greenlink interconnection plans, and a separate roughly 18.7-acre 120 kV substation stepping power down for the adjacent data center. A 345 kV transmission fold connecting to Greenlink West and the Nighthawk substation received a BLM decision on June 18, 2026."
+    },
+    "landAcres": 274,
+    "community": {
+      "status": "contested",
+      "notes": "Nearby property owners objected at the Lyon County Planning Commission over proximity to residential land, structure heights of up to roughly 150 feet, noise and notice. Proposed mitigations include setbacks, limited night lighting and perimeter security structures.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "microsoft-skipwith-road-campus-mecklenburg-va",
     "name": "Microsoft Skipwith Road Campus (LYH03)",
     "operator": "Microsoft",
@@ -48766,6 +49788,178 @@
       "notes": "Application drew heavy opposition from residents and business owners at the Plymouth Township Zoning Board hearing (June 2026).",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "monarch-data-center-yerington-nv",
+    "name": "Monarch Data Center",
+    "operator": "Copia Power",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.9855429,
+      "lon": -119.162989,
+      "city": "Yerington",
+      "county": "Lyon",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "announcedDate": "2025-07",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-08-06",
+        "note": "Lyon County Board of Commissioners voted 3-1 to approve the planned unit development rezoning. Final PUD design approval, state permits (NDEP, State Engineer) and land purchase are still outstanding.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kolotv.com/2026/08/07/lyon-county-commissioners-approve-monarch-data-center/",
+        "label": "Lyon County Commissioners approve Monarch Data Center",
+        "publisher": "KOLO 8 News Now",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.carsonnow.org/08/09/2026/massive-data-center-in-lyon-county-is-one-step-closer-to-being-built",
+        "label": "Massive data center in Lyon County is one step closer to being built",
+        "publisher": "Carson Now / The Nevada Independent",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://nevbex.com/2026/08/12/monarch-data-center-lyon-county-rezoning/",
+        "label": "Lyon County Commissioners approve rezoning for Monarch Data Center",
+        "publisher": "NVBEX",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Roughly 505 acres in Mason Valley near Yerington; a 4.6 million-square-foot campus with north and south sub-campuses, a battery energy storage system, a natural gas plant, a substation and power lines across two parcels. First phase would provide 150 MW of the 1,000 MW total. Copia Power has one year to file its final PUD. Lyon County is drafting a stricter data center ordinance that will not apply retroactively to Monarch.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "NV Energy",
+      "onSiteGenerationMw": 500,
+      "notes": "Copia Power would initially self-supply from an on-site 500 MW natural gas plant plus battery energy storage, phasing in NV Energy grid supply later. Project representatives cited NV Energy's resource plan commitment of 2,550 MW to data centers."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Air-cooled closed-loop design. Application materials estimate under 100 acre-feet annually; the county staff report cites under 800 acre-feet yearly. The Sierra Club and the Walker River Paiute and Yerington Paiute tribes object that the site would rely on groundwater in an over-appropriated basin."
+    },
+    "landAcres": 505,
+    "community": {
+      "status": "opposed",
+      "notes": "Nearly 300 people attended the August 2026 commission meeting, a strong majority speaking in opposition. The Walker River Paiute and Yerington Paiute tribes passed formal resolutions opposing the project and stated they would pursue legal action over cultural resources and sacred sites.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "monarch-on-site-generation-yerington-nv",
+    "name": "Monarch Data Center On-Site Generation",
+    "operator": "Copia Power",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9855429,
+      "lon": -119.162989,
+      "city": "Yerington",
+      "county": "Lyon",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "announcedDate": "2026-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-06",
+        "note": "Included in the planned unit development rezoning approved 3-1 by the Lyon County Board of Commissioners; still requires final design approval and state permits.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.carsonnow.org/08/09/2026/massive-data-center-in-lyon-county-is-one-step-closer-to-being-built",
+        "label": "Massive data center in Lyon County is one step closer to being built - describes the 500 MW natural gas plant and battery storage",
+        "publisher": "Carson Now / The Nevada Independent",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://nevbex.com/2026/08/12/monarch-data-center-lyon-county-rezoning/",
+        "label": "Lyon County Commissioners approve rezoning for Monarch Data Center - initial self-supply from own gas plant and BESS",
+        "publisher": "NVBEX",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Recorded as a separate generation record following the same pattern the tracker already uses for the Fleet Data Centers self-generation projects in Storey County. Sources differ on framing (backup plant vs. initial primary supply); both readings are recorded rather than resolved.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Opposition to the Monarch project as a whole, including the gas plant, was voiced by a strong majority of the roughly 300 attendees at the August 2026 Lyon County commission meeting; two Paiute tribes passed resolutions opposing it.",
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Copia Power",
+      "poweredFacilityIds": [
+        "monarch-data-center-yerington-nv"
+      ],
+      "notes": "Reported both as a 500 MW natural gas backup plant and as the initial self-supply source for the Monarch campus, alongside a battery energy storage system, before NV Energy grid supply phases in. Turbine count and permits are not yet sourced; state environmental permits remain outstanding."
+    }
+  },
+  {
+    "id": "montana-property-group-high-falls-road-spalding-ga",
+    "name": "High Falls Road Data Center Campus (Montana Property Group)",
+    "operator": "Montana Property Group LLC (developer; end user undisclosed)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.2468,
+      "lon": -84.2641,
+      "city": "Griffin",
+      "county": "Spalding",
+      "street": "High Falls Road at Alicia Drive (north side)",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-07",
+        "note": "Spalding County Board of Commissioners approved rezonings and special exceptions with conditions on two adjoining parcels totalling 132.9 acres.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.griffindailynews.com/news/data-centers-could-bring-high-tax-revenue-to-spalding-county/article_fe0871d7-695d-5ea7-924f-d89b2aeb6b33.html",
+        "label": "Data centers could bring high tax revenue to Spalding County",
+        "publisher": "Griffin Daily News",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Spalding County's first approved data center campus: three two-story buildings (two at 936,460 sq ft, one at 686,737 sq ft) totalling 2,559,500 sq ft, plus two detached administrative buildings. Property owner listed as Alan R. Mobley. Build-out scheduled for 2030; estimated local tax revenue at build-out $26.859M. As of April 2026 none of Spalding's approved campuses had requested a land disturbance permit.",
+    "energy": {
+      "notes": "Approved site plan includes a power substation and a proposed on-site solar farm."
+    },
+    "landAcres": 132.9,
     "facilityType": "data_center"
   },
   {
@@ -53283,6 +54477,61 @@
     "facilityType": "data_center"
   },
   {
+    "id": "plan-c-crypto-fayetteville-cumberland-county-nc",
+    "name": "Plan C Crypto Fayetteville (Dedication Drive)",
+    "operator": "Plan C Crypto",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.085,
+      "lon": -78.97722,
+      "city": "Fayetteville",
+      "county": "Cumberland",
+      "street": "223 Dedication Drive",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "announcedDate": "2022-02",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-08-01",
+        "note": "Operations began Aug. 1, 2022 in a renovated warehouse; grand opening Sept. 10, 2022.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://bizfayetteville.com/technology/2022/9/13/plan-c-crypto-thrives-during-first-month-in-fayetteville-ceo-looks-forward-to-continued-growth-in-the-community/1192",
+        "label": "Plan C Crypto thrives during first month in Fayetteville",
+        "publisher": "Greater Fayetteville Business Journal",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://fcedc.com/fayetteville-welcomes-new-data-mining-operation-first-of-its-kind-for-cumberland-county/",
+        "label": "Fayetteville Welcomes New Data Mining Operation, First of Its Kind for Cumberland County",
+        "publisher": "Fayetteville Cumberland Economic Development Corporation",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "California-based operator; described at launch as its fourth North Carolina mining facility and as using demand-response proof-of-work mining served by Fayetteville PWC. The company said in 2022 it planned to rebrand as 'Planned Capacity' and relocate its corporate headquarters to Fayetteville; current ownership and branding were not re-verified this session. No megawatt figure was published in the sources read.",
+    "energy": {
+      "source": "grid",
+      "utility": "Fayetteville Public Works Commission"
+    },
+    "jobs": {
+      "permanent": 19,
+      "sourceIndex": 1
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "grid"
+    }
+  },
+  {
     "id": "platteview-solar-saunders-ne",
     "name": "Platteview Solar",
     "operator": "AES Corporation",
@@ -53333,6 +54582,65 @@
       "offtaker": "Omaha Public Power District",
       "notes": "Spread across roughly 500 acres of privately owned land near Yutan in Saunders County. \"OPPD has a power purchase agreement with the facility's developer and owner/operator, the AES Corporation.\" Described as OPPD's first utility-scale solar project and the largest in Nebraska to date."
     }
+  },
+  {
+    "id": "pointone-lower-moncure-road-lee-county-nc",
+    "name": "PointOne Lower Moncure Road Data Center (Lee County)",
+    "operator": "PointOne",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.48778,
+      "lon": -79.17833,
+      "city": "Sanford",
+      "county": "Lee",
+      "street": "4079 Lower Moncure Road",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 90
+    },
+    "announcedDate": "2026-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-08",
+        "note": "Permit application under preliminary review by the Sanford–Lee County Technical Review Committee.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://sandhills.news/2026/06/08/lee-county-pointone-data-center/",
+        "label": "Lee County to review proposal for PointOne Data Center",
+        "publisher": "Sandhills News",
+        "retrievedAt": "2026-08-29",
+        "kind": "permit"
+      },
+      {
+        "url": "https://rantnc.com/2026/06/08/data-center-proposed-in-northern-lee-county/",
+        "label": "Data center proposed in northern Lee County",
+        "publisher": "The Rant (Sanford, NC)",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Applicant of record Jonathon Rhine; property owned by Cary-based Helix Ventures; the campus is reported to be operated by Dallas-headquartered CyrusOne. Phase 1 is roughly 56 acres and 300,000 sq ft of the 428.85-acre application, with a 90 MW IT load. About 150 residents spoke against it at a July 2026 county commissioners meeting. The $900M figure is the reported value of the Phase 1 building, not the whole 430-acre program.",
+    "energy": {
+      "source": "grid",
+      "utility": "Central Electric Membership Corporation",
+      "notes": "Central Electric Membership Corporation issued a 'will serve' letter; the application does not include on-site power generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer describes a one-time 250,000-gallon fill for a closed-loop system with no discharge, served by TriRiver Water; additional water for internal plumbing only."
+    },
+    "investmentUsd": 900000000,
+    "landAcres": 428.85,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "pointone-remington-technology-park-fauquier-va",
@@ -54234,6 +55542,48 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "powerhouse-reno-storey-county-nv",
+    "name": "PowerHouse Reno Campus",
+    "operator": "PowerHouse Data Centers",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5602824,
+      "lon": -119.4990959,
+      "city": "McCarran",
+      "county": "Storey",
+      "street": "600 Britain Drive",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 65
+    },
+    "announcedDate": "2024-10",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2024-10",
+        "note": "PowerHouse broke ground on the 49-acre, three-building, 900,000 sq ft campus at the Tahoe Reno Industrial Center; first building targeted for Q3 2025 and full campus completion in 2028.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.powerhousedata.com/news/powerhouse-breaks-ground-on-reno-data-center",
+        "label": "PowerHouse breaks ground on Reno data center",
+        "publisher": "PowerHouse Data Centers",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Three two-story powered-shell buildings totalling 900,000 sq ft on 49 acres, developed with parent American Real Estate Partners (AREP). The 65 MW figure is the campus figure in PowerHouse's own groundbreaking release; a facility directory separately lists a 200 MW figure for the site, which is not recorded here because it was not read on a primary page this session.",
+    "landAcres": 49,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "powerhouse-uhland-caldwell-county-tx",
@@ -58072,6 +59422,69 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "quiet-data-centers-enfield-halifax-county-nc",
+    "name": "Project Q — Quiet Data Centers Enfield (Halifax County)",
+    "operator": "Quiet Data Centers Halifax Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.18,
+      "lon": -77.66889,
+      "city": "Enfield",
+      "county": "Halifax",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 88
+    },
+    "announcedDate": "2025-11",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-26",
+        "note": "Halifax County held a special meeting on the conveyance; property closing expected Sept. 18, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.rrdailyherald.com/news/local/data-center-proposal-draws-questions-concerns-at-public-hearing/article_adb332bd-e1fd-52f6-b8af-32e9a86d475e.html",
+        "label": "Data center proposal draws questions, concerns at public hearing",
+        "publisher": "Rocky Mount / Roanoke Rapids Daily Herald",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wral.com/news/local/central-north-carolina-data-center-plans-april-2026/",
+        "label": "Data centers on hold: how each county in central NC is handling data center plans (Halifax County, 251-acre site, Quiet Data Centers)",
+        "publisher": "WRAL",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "County-owned 251-acre industrial site off Trestle Road near U.S. 301 outside Enfield; the data center campus itself is described as roughly 14–15 acres with a 90,000–100,000 sq ft building. Phase 1 about 38 MW, final about 88 MW. Minimum contractual commitment is a $250M taxable investment and 50 permanent jobs; the company said the eventual investment could approach $1 billion — that larger figure is aspirational, not committed.",
+    "energy": {
+      "source": "grid",
+      "utility": "Dominion",
+      "notes": "Company said electricity would be sourced through Dominion, with the company covering transmission/substation costs and no rate subsidy from residential customers."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.0025,
+      "notes": "Developer described roughly 2,500 gallons per day in a closed-loop cooling system."
+    },
+    "investmentUsd": 250000000,
+    "landAcres": 251,
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "qumulusai-denton-tx",
     "name": "QumulusAI Denton Modular Data Center",
     "operator": "QumulusAI, Inc.",
@@ -61314,6 +62727,130 @@
     "facilityType": "data_center"
   },
   {
+    "id": "segra-charlotte-international-airport-drive-nc",
+    "name": "Segra Charlotte Data Center (International Airport Drive)",
+    "operator": "Segra",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.22722,
+      "lon": -80.84306,
+      "city": "Charlotte",
+      "county": "Mecklenburg",
+      "street": "3100 International Airport Drive",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-29",
+        "note": "Listed as an operating Segra colocation facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-centers/segra",
+        "label": "Segra Data Centers (facility list, incl. Charlotte at 3100 and 3101 International Airport Drive)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Segra lists two adjacent Charlotte addresses — 3100 and 3101 International Airport Drive — recorded here as one campus to avoid emitting a duplicate. Single directory source; no capacity or footprint figures were available.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "segra-raleigh-garner-station-data-center-nc",
+    "name": "Segra Raleigh Data Center (Garner Station Boulevard)",
+    "operator": "Segra",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.85417,
+      "lon": -78.76194,
+      "city": "Raleigh",
+      "county": "Wake",
+      "street": "2100 Garner Station Boulevard",
+      "postalCode": "27603",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-29",
+        "note": "Listed as an operating Segra colocation facility; opened 2013 under NorthState.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-centers/segra",
+        "label": "Segra Data Centers (facility list, incl. Raleigh, 2100 Garner Station Boulevard)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://cloudandcolocation.com/colocation-provider/northstate/",
+        "label": "NorthState Data Center Locations (Raleigh Data Center, 2100 Garner Station Blvd, opened 2013)",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Formerly a NorthState facility; now listed under Segra. No megawatt figure appeared in the sources read, so capacity is omitted.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "segra-winston-salem-data-center-nc",
+    "name": "Segra Winston-Salem Data Center",
+    "operator": "Segra",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.10278,
+      "lon": -80.26083,
+      "city": "Winston-Salem",
+      "county": "Forsyth",
+      "street": "3310 Old Lexington Road",
+      "postalCode": "27107",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-29",
+        "note": "Listed as fully operational colocation space.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/segra-winston-salem",
+        "label": "Segra: Winston-Salem Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://cloudandcolocation.com/colocation-provider/northstate/",
+        "label": "NorthState Data Center Locations (Salem Data Center, 3310 Old Lexington Road)",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Built 2002 as DataChambers; acquired by North State Communications and now operated under the Segra brand. Directory listings disagree on capacity (about 3.5 MW versus 8 MW) and on building size (about 120,000–140,000 sq ft with roughly 26,000–27,000 sq ft of raised floor), so no capacity figure is asserted here.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "seminoe-generating-station-carbon-county-wy",
     "name": "Seminoe Generating Station",
     "operator": "Power Company of Wyoming",
@@ -62901,6 +64438,98 @@
     "facilityType": "crypto_mining",
     "mining": {
       "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "spalding-investments-high-falls-road-campus-ga",
+    "name": "Spalding Investments Data Center Campus (High Falls Road)",
+    "operator": "Spalding Investments, LLC (developer; end user undisclosed)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.2468,
+      "lon": -84.2641,
+      "city": "Griffin",
+      "county": "Spalding",
+      "street": "High Falls Road at South McDonough Road (south side)",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-10-23",
+        "note": "Spalding County commissioners approved rezonings and special exceptions with conditions for the campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.griffindailynews.com/news/data-centers-could-bring-high-tax-revenue-to-spalding-county/article_fe0871d7-695d-5ea7-924f-d89b2aeb6b33.html",
+        "label": "Data centers could bring high tax revenue to Spalding County",
+        "publisher": "Griffin Daily News",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Six two-story buildings totalling 1.42 million sq ft plus a power transfer station, on 127.45 acres bounded by High Falls Road, South McDonough Road and Highway 16 / Arthur K. Bolton Parkway. Build-out dated 2030; estimated local tax revenue at build-out $22.9M.",
+    "landAcres": 127.45,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "srp-marigold-energy-center-stanfield-az",
+    "name": "Marigold Energy Center",
+    "operator": "Salt River Project",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.8834,
+      "lon": -111.964,
+      "city": "Stanfield",
+      "county": "Pinal",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1675
+    },
+    "announcedDate": "2026-07-23",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-23",
+        "note": "SRP announced the proposal and held public open houses; board approval targeted for September 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kjzz.org/business/2026-07-23/proposed-srp-center-to-use-solar-battery-power-and-natural-gas-it-aims-to-keep-up-with-demand",
+        "label": "Proposed SRP center to use solar, battery power and natural gas. It aims to keep up with demand",
+        "publisher": "KJZZ",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/srp-marigold-project-board-energy-storage/825813/",
+        "label": "SRP to propose up to 1.7-GW mixed-resource project to its board in September",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Proposed near Stanfield in Pinal County, roughly 45 miles south of Phoenix, to serve growing demand in Maricopa and Pinal counties. SRP has not named a specific offtaker; the data-center link is SRP's stated load-growth rationale, not a signed campus-level agreement.",
+    "energy": {
+      "source": "mixed",
+      "utility": "Salt River Project",
+      "notes": "600 MW solar, 400 MW of lithium-ion battery storage at 8-hour duration, and up to 675 MW of natural gas generation intended for peak hours, plus a new substation and about four miles of 230 kV transmission line."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "notes": "Hybrid solar + storage + gas energy center. SRP sited it for existing infrastructure including a 500 kV transmission line and proximity to El Paso and Transwestern gas pipelines, and frames the need as load growth driven largely by data centers and other large users. SRP planned to seek board approval in September 2026 and still requires regulatory approvals."
     }
   },
   {
@@ -65504,6 +67133,51 @@
     "facilityType": "data_center"
   },
   {
+    "id": "switch-apex-industrial-park-north-las-vegas-nv",
+    "name": "Switch Apex Industrial Park Land Position",
+    "operator": "Switch",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.329138,
+      "lon": -114.9277774,
+      "city": "North Las Vegas",
+      "county": "Clark",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-18",
+        "note": "Switch closed on roughly 140 acres in Apex Industrial Park for $95 million, following 176 acres for $85.5 million in December 2025, bringing its holdings there to more than 300 acres.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.reviewjournal.com/business/switch-buys-more-land-in-nlv-apex-park-for-95m-3731350/",
+        "label": "Las Vegas data-center owner Switch purchased 140 acres in North Las Vegas' Apex Industrial Park for $95M",
+        "publisher": "Las Vegas Review-Journal",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://thenevadaindependent.com/article/henderson-considers-data-center-pause-amid-construction-boom-across-clark-county",
+        "label": "Henderson considers data center pause amid construction boom across Clark County - notes Switch's 300+ acres in Apex Industrial Park",
+        "publisher": "The Nevada Independent",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "This is a land position, not an announced facility. Switch declined to describe its development strategy and reporting indicates North Las Vegas had received no plans or applications for the Apex parcels. The investmentUsd figure is the combined recorded land price ($85.5M plus $95M), not a project capex. Apex Industrial Park sits about 25 miles northeast of the Las Vegas Strip near the I-15 / U.S. 93 interchange. Recorded so the site is trackable if a project is filed; a maintainer may prefer to hold it until an application exists. Distinct from the Novva 205-acre Apex holding the tracker already carries.",
+    "investmentUsd": 180500000,
+    "landAcres": 316,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "switch-atlanta-the-keep-ga",
     "name": "Switch Atlanta: The KEEP",
     "operator": "Switch",
@@ -65995,6 +67669,50 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "switch-las-vegas-14-nv",
+    "name": "Switch Las Vegas 14",
+    "operator": "Switch",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0629139,
+      "lon": -115.2213882,
+      "city": "Las Vegas",
+      "county": "Clark",
+      "street": "5680 Badura Avenue",
+      "postalCode": "89118",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025",
+        "note": "Listed as a fully operational Switch facility with year built 2025.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/switch-las-vegas-14",
+        "label": "Switch: Las Vegas 14 data center - 5680 Badura Ave, Las Vegas, operational, year built 2025",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cleanview.co/data-centers/nevada",
+        "label": "Data centers in Nevada - project list (Switch Las Vegas 14, Clark County, operating 2025)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Located about 0.70 miles from the Switch Las Vegas CORE Campus and 0.10 miles from Switch Las Vegas 15. Capacity is deliberately omitted: sources conflict badly, with one directory listing 100 MW and another 495 MW, the latter appearing to be the whole-campus figure Switch publishes for 'The Core'. No MW value was read on a Switch page for this building.",
+    "facilityType": "data_center"
   },
   {
     "id": "switch-las-vegas-5-nv",
@@ -67152,15 +68870,41 @@
         "publisher": "Takanock, LLC",
         "retrievedAt": "2026-07-09",
         "kind": "other"
+      },
+      {
+        "url": "https://www.azcc.gov/news/home/2026/02/06/february-4--2026-open-meeting-highlights",
+        "label": "Arizona Corporation Commission February 4, 2026 Open Meeting Highlights — Certificate of Environmental Compatibility for Project Baccara",
+        "publisher": "Arizona Corporation Commission",
+        "retrievedAt": "2026-08-28",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.maricopa.gov/AgendaCenter/ViewFile/Item/10264?fileID=100345",
+        "label": "Maricopa County Planning and Zoning Hearing Agenda, May 6, 2026 — case MCP250007, Project Baccara Military Compatibility Permit",
+        "publisher": "Maricopa County",
+        "retrievedAt": "2026-08-28",
+        "kind": "permit"
+      },
+      {
+        "url": "https://azbex.com/planning-development/2-data-center-projects-advancing-in-metro-phoenix/",
+        "label": "2 Data Center Projects Advancing in Metro Phoenix",
+        "publisher": "AZBEX",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-09",
+    "lastUpdated": "2026-08-28",
     "notes": "Unincorporated Maricopa County near Surprise, AZ, north of Luke AFB. Construction targeted Q3 2026, first building online 2028. Coordinates are approximate.",
     "energy": {
       "source": "on_site_gas",
+      "onSiteGenerationMw": 700,
       "notes": "~700MW on-site natural gas generation. Still needs EPA air-quality sign-off."
     },
+    "water": {
+      "notes": "Commission materials describe water conservation measures using cooled chillers and reclaimed wastewater. No cooling type is stated definitively and no withdrawal volume has been published."
+    },
     "investmentUsd": 36000000000,
+    "landAcres": 160,
     "community": {
       "status": "contested",
       "notes": "Board of Supervisors approved 4-1 (May 2026).",
@@ -68353,6 +70097,57 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "terra-nexus-custer-avenue-fayetteville-cumberland-county-nc",
+    "name": "Terra Nexus Custer Avenue Data Center (Fayetteville)",
+    "operator": "Terra Nexus Ventures",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.085,
+      "lon": -78.97722,
+      "city": "Fayetteville",
+      "county": "Cumberland",
+      "street": "Custer Avenue",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "Plans submitted to the City of Fayetteville for a data center on Custer Avenue near the PWC generation plant.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cityviewnc.com/stories/how-to-learn-more-about-data-centers-in-fayetteville/",
+        "label": "Data Centers Are Eyeing Fayetteville. Here's How to Learn More",
+        "publisher": "CityView (Fayetteville, NC)",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cityviewnc.com/stories/data-center-proposal-emerges-as-county-holds-hearing-on-moratorium/",
+        "label": "Data Center Proposal Emerges as County Holds Hearing on Moratorium",
+        "publisher": "CityView (Fayetteville, NC)",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Capacity is deliberately omitted: the same publisher reports this project at 200 MW in one story and 300 MW in another, and that conflict is unresolved from the sources read. Reported to include 102 diesel generators and on-site wetlands, sited near the Fayetteville Public Works Commission generation plant and the town of Eastover. Distinct from Terra Nexus's Rockingham (Richmond County) site and from the separately tracked PRSM Group and Energy Storage Solutions Cumberland County proposals.",
+    "landAcres": 180,
+    "community": {
+      "status": "contested",
+      "notes": "The Eastover Town Council wrote to Fayetteville officials opposing the project; residents organised locally around noise, water demand and the diesel generator count.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "terra-nexus-rockingham-richmond-county-nc",
@@ -69809,6 +71604,67 @@
     "facilityType": "data_center"
   },
   {
+    "id": "townsite-solar-2-boulder-city-nv",
+    "name": "Townsite Solar 2 Boulder City Data Center",
+    "operator": "Townsite Solar 2 LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.9787649,
+      "lon": -114.8337574,
+      "city": "Boulder City",
+      "county": "Clark",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 167
+    },
+    "announcedDate": "2026-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-06",
+        "note": "Townsite Solar 2 withdrew its application to build on approximately 88.5 acres of Boulder City-owned land; reporting indicates the developer intends to pursue a nearby federally owned parcel instead.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://bcnv.org/1174/TS2-Data-Center-Proposal",
+        "label": "TS2 Data Center Proposal (withdrawn 7.6.2026) - official Boulder City project page",
+        "publisher": "City of Boulder City, Nevada",
+        "retrievedAt": "2026-08-29",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.cleanview.co/data-centers/nevada",
+        "label": "Data centers in Nevada - project list (Townsite Solar 2 Boulder City Data Center, Clark County, 170 MW, planned)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Proposed as two warehouse-style server buildings plus a 230 kV substation, battery energy storage and perimeter fencing, maximum 40-foot height with dark-sky-compliant lighting. The city page states 200-300 construction/testing jobs and 25-40 permanent technical positions; these ranges are not recorded as point values in the jobs field. Reported as a joint venture of Skylar Capital, Arevon Energy and Overwatch Capital, but that ownership was read only in a search summary and is not asserted here. Status is kept at proposed rather than cancelled: the withdrawal was of the city-land application, not of the project.",
+    "energy": {
+      "source": "grid",
+      "notes": "Self-supplied through a dedicated project-funded 230 kV line from the Mead substation, completely separate from Boulder City's power distribution system, with on-site battery storage for peak management. Peak demand stated as 167 MW, under 2% of Mead substation capacity."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Air-cooled closed-loop design. Potable water limited to restrooms and an employee kitchen, with roughly 90% of water used returning to the city wastewater treatment system."
+    },
+    "landAcres": 88.5,
+    "community": {
+      "status": "opposed",
+      "notes": "Public pushback in Boulder City preceded the applicant's withdrawal of its application for the city-owned parcel on July 6, 2026.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "tpa-social-circle-technology-park-ga",
     "name": "Social Circle Technology Park",
     "operator": "TPA Group (developer; end tenant undisclosed)",
@@ -70501,6 +72357,47 @@
     "aiClassification": "likely"
   },
   {
+    "id": "tract-project-range-buckeye-goodyear-az",
+    "name": "Project Range",
+    "operator": "Tract",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.435,
+      "lon": -112.512,
+      "city": "Buckeye",
+      "county": "Maricopa",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-28",
+        "note": "Under review by Maricopa County planning staff; comprehensive plan amendment and rezoning requests in progress, no hearing dates scheduled as of this retrieval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://azbex.com/planning-development/massive-data-center-master-plan-proposed-in-west-valley/",
+        "label": "Massive Data Center Master Plan Proposed in West Valley",
+        "publisher": "AZBEX",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "A Maricopa County island between Buckeye and Goodyear, on both sides of Yuma Road between Perryville Road and Jackrabbit Trail. Plan is 28 buildings across two campuses totalling about 5.6 million sq ft, individual buildings 149,000-260,000 sq ft, with roughly 100 acres set aside for parks and public uses and a 15+ year build-out. No MW figure disclosed. Distinct from Tract's tracked Buckeye Tech Corridor site, which is a separate ~1,700-acre holding inside the Buckeye city limits in the Cipriani area south of I-10 — the two neighbouring cities' formal objections to Project Range confirm it is not the campus they already entitled.",
+    "landAcres": 1000,
+    "community": {
+      "status": "contested",
+      "notes": "The cities of Buckeye and Goodyear both raised significant concerns over building heights, noise and deviation from surrounding land use, and area residents circulated a petition opposing the project. The applicant lowered proposed heights from 110 to 60 feet and increased setbacks from 100 to 500 feet.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "tract-silver-springs-nv",
     "name": "Tract Silver Springs Data Center Park",
     "operator": "Tract",
@@ -70641,6 +72538,53 @@
       "notes": "Tuckahoe is the first project filed under Goochland's new Technology Overlay District, which is itself the subject of an active lawsuit by four residents alleging the county violated state notice requirements when adopting it; the overlay's adoption also drew broader resident backlash.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "tract-virginia-highlands-storey-county-nv",
+    "name": "Tract Virginia Highlands Technology Park",
+    "operator": "Tract",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5071009,
+      "lon": -119.6464691,
+      "city": "Lockwood",
+      "county": "Storey",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-29",
+        "note": "Tract lists the site as owned and in development: 8,590 acres across 11 parcels with 2,500 MW of planned capacity.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tract.com/project/virginia-highlands/",
+        "label": "Virginia Highlands - Tract project page (8,590 acres, 11 parcels, 2,500 MW, owned and in development)",
+        "publisher": "Tract",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cleanview.co/data-centers/nevada",
+        "label": "Data centers in Nevada - project list and locations (Tract Virginia Highlands, Storey County, 2,500 MW, planned)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-29",
+    "notes": "Land is positioned between the Tahoe-Reno Industrial Center and the Virginia City Highlands, just southeast of Lockwood, with parcels ranging from 250 to 1,200 acres and existing industrial zoning. This is a land-and-power park with no named tenant or building programme disclosed; the 2,500 MW is Tract's stated site capacity, not a built or contracted figure. Coordinates are the Lockwood reference point, not a parcel boundary. Distinct from Tract's Silver Springs / Sapphire site in Lyon County, which the tracker already carries.",
+    "landAcres": 8590,
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -71881,7 +73825,7 @@
     "id": "vermaland-la-osa-eloy-az",
     "name": "La Osa Data Center Park",
     "operator": "Vermaland LLC",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 32.75,
@@ -71911,6 +73855,12 @@
         "date": "2026",
         "note": "May 2026: Operator announces 80% scale-back after all ~60 public comments opposed the project — revised plan reduces to 11 data centers and a 1 GW energy demand ceiling (down from 59 DCs / 3 GW). Board of Supervisors hearing rescheduled to August 26, 2026.",
         "sourceIndex": 2
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-08-28",
+        "note": "The Pinal County Board of Supervisors voted 4-1 on August 26, 2026 to reject the La Osa Energy Center rezoning request and development plans, after the developer had already scaled the proposal back roughly 80% (from 59 data center buildings and 3 GW of demand to 11 buildings, a 500 MW gas plant, battery storage and a 1 GW cap) in response to opposition over aquifer drawdown and incomplete energy sourcing plans. Supervisor Stephen Miller cast the lone dissent. Recorded as cancelled because the entitlement the project required was denied; Vermaland has not publicly announced a withdrawal or a refiling, so this reflects the county's denial rather than a developer decision.",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -71948,9 +73898,23 @@
         "publisher": "Commercial Property Executive",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kjzz.org/politics/2026-08-26/pinal-county-rejects-massive-la-osa-data-center-residents-want-more-rules-for-future-projects",
+        "label": "Pinal County rejects massive La Osa data center. Residents want more rules for future projects",
+        "publisher": "KJZZ",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sonorandesert.org/2026/08/26/data-centers-update/",
+        "label": "Data centers in the Sonoran Desert — update (La Osa rezoning denied August 26, 2026)",
+        "publisher": "Coalition for Sonoran Desert Protection",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
+    "lastUpdated": "2026-08-28",
     "notes": "Vermaland LLC is a Phoenix-area land developer and land-banking company (CEO Kuldip 'Ken' Verma, founded 2006, controls ~25,000 acres of metro Phoenix land). DCD explicitly noted 'it is unclear whether Vermaland would operate its own data center facilities' — Vermaland plans to sell or rent parcels/buildings to tenants. No end tenants or hyperscaler operators have been named as of July 2026. Original plan: 59 data centers, up to 3 GW capacity ceiling, up to $33B investment ceiling, 3,300-acre site south of Eloy along the Greene Canal. A separate adjacent 1,700-acre parcel already holds Industrial-2 zoning for data centers, gas plants, battery storage, and solar. After strong public opposition (all ~60 public comments opposed), operator announced May 2026 scale-back to 11 data centers and 1 GW ceiling. Board of Supervisors hearing scheduled August 26, 2026; no permits issued as of record date. Site lies adjacent to a Qualified Opportunity Zone (investor tax benefit; not a direct subsidy to Vermaland — no subsidy award confirmed, omitted). Coordinates are approximate (parcel south of Eloy city center along Greene Canal; no precise APN published). $33B investment and all GW figures are announced ceilings, not firm commitments.",
     "energy": {
       "source": "mixed",
@@ -72486,6 +74450,67 @@
     "facilityType": "data_center"
   },
   {
+    "id": "w-holdings-energy-generation-technology-campus-maricopa-az",
+    "name": "Energy Generation and Technology Campus",
+    "operator": "W Holdings",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.945,
+      "lon": -112.035,
+      "city": "Maricopa",
+      "county": "Pinal",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-10-16",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-20",
+        "note": "Pinal County Board of Supervisors unanimously approved the major comprehensive plan land-use amendment; rezoning still required.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://inmaricopa.com/data-center-okd/",
+        "label": "$10 billion data center campus OK'd south of Maricopa",
+        "publisher": "InMaricopa",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://pinalpost.com/commission-recommends-data-center-campus-despite-resident-tribal-pushback/",
+        "label": "Commission Recommends Data Center Campus Despite Resident, Tribal Pushback",
+        "publisher": "Pinal Post",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Located south of the City of Maricopa, east of State Route 347 and west of the Nissan test track, abutting the southern boundary of the Ak-Chin Indian Community. Investment is recorded as the itemized $4B construction plus $5.5B equipment figure presented to the Planning and Zoning Commission; a separate report rounds the total to $10B. Acreage is also reported as 500 and, in one account, 656 acres. Some coverage associates the site with Copia Power; the applicant of record in commission and board coverage is W Holdings, represented by the same attorney who has appeared for Copia projects, so the corporate relationship is not established here.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Plan pairs data centers with an on-site natural gas power plant and battery energy storage. The applicant told the commission the campus would be powered primarily by the Griffin Energy Project (solar, gas and battery). No MW figure has been stated publicly."
+    },
+    "water": {
+      "notes": "Applicant projects roughly 500 acre-feet of water use annually. Cooling method not stated."
+    },
+    "investmentUsd": 9500000000,
+    "landAcres": 495,
+    "jobs": {
+      "permanent": 500,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "The Ak-Chin Indian Community, whose southern boundary abuts the site, opposes the location. Vice-chairwoman Delia Carlyle cited a high concentration of cultural artifacts and concern that ground disturbance would affect ancestral remains, while saying the community does not oppose development generally.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "wahawk-power-waterloo-ia",
     "name": "Wahawk Power Data Center",
     "operator": "Wahawk Power, LLC",
@@ -72535,6 +74560,55 @@
     "community": {
       "status": "contested",
       "notes": "Protests at city hall and a push for a data-center moratorium followed the December 2025 development agreement; opponents cite water, power, noise and economic-benefit concerns.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "wallace-jackson-data-center-campus-spalding-ga",
+    "name": "Wallace Jackson Data Center Campus",
+    "operator": "Wallace Jackson, LLC (developer; end user undisclosed)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.2468,
+      "lon": -84.2641,
+      "city": "Griffin",
+      "county": "Spalding",
+      "street": "Jackson Road at Wallace Road",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-01-22",
+        "note": "Spalding County Board of Commissioners approved the campus.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ajc.com/business/2026/01/whats-37b-and-larger-than-3-malls-georgias-next-potential-data-center/",
+        "label": "What's $3.7B and larger than 3 malls? Georgia's next potential data center.",
+        "publisher": "The Atlanta Journal-Constitution",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.griffindailynews.com/news/data-centers-could-bring-high-tax-revenue-to-spalding-county/article_fe0871d7-695d-5ea7-924f-d89b2aeb6b33.html",
+        "label": "Data centers could bring high tax revenue to Spalding County",
+        "publisher": "Griffin Daily News",
+        "retrievedAt": "2026-08-28",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Ten two-story buildings ranging from 297,000 to 780,000 sq ft, 4.986 million sq ft total, on roughly 190 acres along the I-75 corridor. The DRI puts value at build-out in 2035 at $3.65B with $51.656M in estimated annual local tax revenue. Acreage omitted as a precise figure — the source says \"nearly 190 acres.\"",
+    "investmentUsd": 3700000000,
+    "community": {
+      "status": "litigation",
+      "notes": "Two lawsuits were filed in Spalding County Superior Court against the Board of Commissioners' Jan. 22, 2026 approval, alleging the county ignored its own procedural requirements and data center rules and seeking to have the zoning decision vacated.",
       "sourceIndex": 1
     },
     "facilityType": "data_center"
@@ -72958,9 +75032,16 @@
         "publisher": "WhiteFiber",
         "retrievedAt": "2026-08-16",
         "kind": "press"
+      },
+      {
+        "url": "https://www.whitefiber.com/blog/nc-1-data-center",
+        "label": "Announcing NC-1: New Flagship Data Center in North Carolina",
+        "publisher": "WhiteFiber",
+        "retrievedAt": "2026-08-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-08-29",
     "notes": "Operator is WhiteFiber (Bit Digital's AI unit); Nscale is the 40 MW anchor tenant (10-year, ~$865M total contract value = revenue, not capex — in notes). ~1M sq ft, up to 150 kW/cabinet, 99 MW secured from Duke Energy, 200 MW eventual site potential (planned figure). $150M WhiteFiber equity. Madison is in Rockingham County, NC. Coordinates are the Madison town centroid. Property acquired for $45M (2025, from Unifi); the total buildout described as 'over $1B' is conditional on reaching 200 MW -> investmentUsd omitted. ~60 permanent jobs (~$67k avg) were pledged (Rockingham County) - a commitment, with the facility still under construction -> jobs honest-zero. Cooling type not publicly disclosed -> water honest-zero.",
     "energy": {
       "source": "grid",
@@ -72975,6 +75056,11 @@
         "sourceIndex": 2
       }
     ],
+    "landAcres": 96,
+    "jobs": {
+      "permanent": 60,
+      "sourceIndex": 6
+    },
     "community": {
       "status": "supported",
       "notes": "Officials welcomed the project at the June 2025 announcement (Governor, Rockingham County commissioners, Madison mayor); the site is a converted former Unifi textile plant (brownfield reuse). No documented opposition found.",
@@ -73118,6 +75204,45 @@
     ],
     "lastUpdated": "2026-08-26",
     "landAcres": 72,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "wintersburg-313-tonopah-az",
+    "name": "Wintersburg 313",
+    "operator": "313 Wintersburg LLC and Wintersburg Four LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.472,
+      "lon": -112.911,
+      "city": "Tonopah",
+      "county": "Maricopa",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-07",
+        "note": "Maricopa County Planning and Zoning Commission voted 7-0 to recommend approval of comprehensive plan amendment CPA250011 (Community Retail Center to Industrial in the Tonopah/Arlington Area Plan) and zone change Z250034 (Rural-43 to IND-3 IUPD); placed on the June 10, 2026 Board of Supervisors consent agenda.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.maricopa.gov/AgendaCenter/ViewFile/Item/10316?fileID=100604",
+        "label": "Maricopa County Board of Supervisors' Hearing Planning and Zoning Agenda, June 10, 2026 (cases CPA250011 and Z250034, Wintersburg 313)",
+        "publisher": "Maricopa County",
+        "retrievedAt": "2026-08-28",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-28",
+    "notes": "Northwest corner of Encanto Boulevard and Wintersburg Road in the Tonopah area. Data center use is established by the zoning conditions themselves, which set data-center-specific loading (1 space per 250,000 sq ft) and parking (1 space per 5,000 sq ft) standards. Conditions also require at least 20 acres preserved for commercial development and an archaeological/historical review filed with the Arizona State Historic Preservation Office before ground disturbance. Total acreage is not stated in the agenda text; recorded status reflects the commission recommendation, not a confirmed Board vote.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Zoning conditions set a 150-foot maximum height for energy production structures and exclude solar panels, battery energy storage containers and ancillary electric generation structures from lot-coverage calculations, indicating on-site solar and storage alongside the data center use. No MW figures in the case record."
+    },
     "facilityType": "data_center"
   },
   {
