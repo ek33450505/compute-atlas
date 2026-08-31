@@ -59,6 +59,33 @@ const SEPARATOR = "<!-- -->";
 const SENTINEL = "\u0000";
 const JOINED_WORD_PATTERN = /[0-9a-zA-Z]\u0000[a-zA-Z][a-zA-Z-]{2,}/g;
 
+// WARNING - BLIND SPOT the pattern above cannot see: it only fires when a
+// LETTER follows the separator. A text chunk that BEGINS with an entity renders
+// as `word·` - the character after the separator is the GLYPH, so a dropped
+// space there goes undetected. Not hypothetical: /rankings carries three
+// `&middot;` sites immediately after an interpolation, and /crypto one more.
+//
+// Correct output always keeps a real space on each side of the glyph - verified
+// against rendered SSR HTML 2026-08-31:
+//   Riot Platforms<!-- --> · <!-- -->Corsicana, TX
+// so the separator sitting DIRECTLY against the glyph is the anomaly. The glyphs
+// listed are the ones this codebase actually emits from entities (&middot;,
+// &middot;) - see the exclusions below.
+//
+// EXCLUDED ON PURPOSE - do not add these back without evidence:
+//   ' and ' (&rsquo;/&lsquo;) - a possessive is legitimately unspaced. If the
+//     space before `'s` dropped, `Google's` is the CORRECT rendering, not a bug,
+//     and `{operator}&rsquo;s` is natural English someone will write.
+//   - (&mdash;) - legitimately unspaced in a range, e.g. `{start}-{end}`.
+// The principle: this only guards glyphs where a space SHOULD be there. A
+// middot used as a separator always needs its spaces; the others often must not
+// have them. Including them would guarantee a false positive, and a gate that
+// cries wolf gets loosened - which is how it becomes theatre.
+//
+// No allow-list applies here: unlike the word case there is nothing to rejoin,
+// because a glyph is never half of a legitimately-split word.
+const JOINED_ENTITY_PATTERN = /[0-9a-zA-Z]\u0000[·]/g;
+
 // A separator may also legitimately sit INSIDE a single word, where a ternary
 // splits it into stem + suffix — e.g.
 //   {count} facilit{count === 1 ? "y" : "ies"} tracked
@@ -87,19 +114,28 @@ function findJoinedWords(html: string): string[] {
   // Swap the separator for a single sentinel char so index arithmetic stays
   // simple and the pattern can't accidentally match across other markup.
   const marked = html.split(SEPARATOR).join(SENTINEL);
-  return [...marked.matchAll(JOINED_WORD_PATTERN)]
+
+  const contextAround = (match: RegExpMatchArray) => {
+    const start = Math.max(0, match.index! - 30);
+    const end = Math.min(marked.length, match.index! + match[0].length + 30);
+    const context = marked.slice(start, end).split(SENTINEL).join(SEPARATOR);
+    return `...${context}...`;
+  };
+
+  const wordOffenders = [...marked.matchAll(JOINED_WORD_PATTERN)]
     .filter(
       (match) =>
         !LEGITIMATE_REJOINED_WORDS.has(
           rejoinedWordAt(marked, match.index!).toLowerCase()
         )
     )
-    .map((match) => {
-      const start = Math.max(0, match.index! - 30);
-      const end = Math.min(marked.length, match.index! + match[0].length + 30);
-      const context = marked.slice(start, end).split(SENTINEL).join(SEPARATOR);
-      return `...${context}...`;
-    });
+    .map(contextAround);
+
+  const entityOffenders = [...marked.matchAll(JOINED_ENTITY_PATTERN)].map(
+    contextAround
+  );
+
+  return [...wordOffenders, ...entityOffenders];
 }
 
 for (const route of ROUTES) {
