@@ -169,3 +169,55 @@ describe("StatsPage — § Data coverage dimension count", () => {
     expect(prose.textContent).toContain(`all ${dimensionLabels.length} dimensions.`);
   });
 });
+
+describe("StatsPage — disclosedCapacityCount excludes cancelled facilities", () => {
+  it("excludes a cancelled facility from the disclosed capacity count even if it discloses capacity", async () => {
+    mockGetAllFacilities.mockReset().mockResolvedValue([
+      { facilityType: "data_center", capacityMw: { operational: 120 }, status: "operational" },
+      { facilityType: "data_center", capacityMw: { operational: 100 }, status: "cancelled" },
+      { facilityType: "crypto_mining", capacityMw: { planned: 40 }, status: "proposed" },
+    ] as never);
+    mockGetStats.mockReset().mockResolvedValue({
+      count: 3,
+      states: 1,
+      operationalMw: 120,
+      plannedMw: 40,
+      underConstructionMw: 0,
+    });
+
+    const page = await StatsPage();
+    render(page);
+
+    // The denominator is total (3), but the numerator should be 2 — only
+    // non-cancelled facilities with disclosed capacity (operational 120 and
+    // planned 40), not the cancelled facility even though it discloses 100 MW.
+    expect(
+      screen.getByText(/Capacity is disclosed for 2 of the 3 tracked sites/)
+    ).toBeInTheDocument();
+  });
+
+  it("includes non-cancelled facilities with disclosed capacity in the count", async () => {
+    mockGetAllFacilities.mockReset().mockResolvedValue([
+      { facilityType: "data_center", capacityMw: { operational: 120 }, status: "operational" },
+      { facilityType: "data_center", capacityMw: {}, status: "operational" },
+      { facilityType: "crypto_mining", capacityMw: { planned: 40 }, status: "proposed" },
+    ] as never);
+    mockGetStats.mockReset().mockResolvedValue({
+      count: 3,
+      states: 1,
+      operationalMw: 120,
+      plannedMw: 40,
+      underConstructionMw: 0,
+    });
+
+    const page = await StatsPage();
+    render(page);
+
+    // Should show 2 of 3: the operational facility with capacity and the
+    // proposed facility with capacity, but not the operational facility
+    // without disclosed capacity.
+    expect(
+      screen.getByText(/Capacity is disclosed for 2 of the 3 tracked sites/)
+    ).toBeInTheDocument();
+  });
+});
