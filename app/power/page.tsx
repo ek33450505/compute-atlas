@@ -70,6 +70,16 @@ export default async function PowerPage() {
       a.name.localeCompare(b.name)
   );
 
+  // stats.operationalMw/plannedMw (getGenerationStats) sum only non-cancelled
+  // projects, while stats.count is unfiltered — so this denominator must
+  // apply the same non-cancelled guard, not just "has a capacity figure at
+  // all", or the "N of M" line could silently drift from the population the
+  // sums above it actually cover. Same predicate as app/stats/page.tsx and
+  // app/crypto/page.tsx: getFacilityMaxMw is the canonical disclosure check.
+  const capacityDisclosedCount = allProjects.filter(
+    (f) => f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined
+  ).length;
+
   const technologyCounts = new Map<GenerationTechnology, number>();
   for (const f of allProjects) {
     const tech = f.generation?.technology;
@@ -172,7 +182,9 @@ export default async function PowerPage() {
           data center&apos;s compute load, rather than drawn from the general
           grid. {formatPower(stats.operationalMw)} of that capacity is
           already operational, with {formatPower(stats.plannedMw)} more in
-          the pipeline.
+          the pipeline. Capacity is disclosed for {capacityDisclosedCount} of
+          the {stats.count} tracked projects; both figures sum those records
+          only — a floor, not a dataset total.
         </p>
         <p className="text-base leading-relaxed text-muted-foreground">
           {stats.offtakerCount} distinct offtakers — the hyperscalers and

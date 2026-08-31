@@ -29,7 +29,7 @@ const CRUMBS = [{ label: "Explore", href: "/explore" }, { label: "Rankings" }];
 export const metadata: Metadata = {
   title: "Data center rankings",
   description:
-    "The biggest tracked data center projects, largest operators, and states with the most capacity — ranked by tracked capacity, each entry source-cited.",
+    "The biggest tracked data center projects, and the operators and states with the most disclosed capacity — ranked by tracked megawatts, each entry source-cited.",
   alternates: { canonical: "/rankings" },
 };
 
@@ -37,8 +37,11 @@ export const metadata: Metadata = {
  * /rankings — capacity rankings hub. Static server component.
  *
  * Three ranked dimensions over the same dataset: biggest individual projects
- * by planned capacity, largest operators by combined capacity, and states
- * with the most tracked capacity. Deliberately a single page (not
+ * by disclosed planned capacity, and the operators and states with the most
+ * disclosed capacity. Note the operator/state rankings sum only the sites
+ * that publish a figure (capacity is disclosed on ~52% of records), so they
+ * rank disclosure as much as size — the headings say "disclosed" for exactly
+ * that reason; do not retitle them back. Deliberately a single page (not
  * /rankings/[dimension] routes) — mirrors /power's masthead + stat-row +
  * repeated-section structure rather than /ai's single-dimension shape.
  */
@@ -90,7 +93,7 @@ export default async function RankingsPage() {
       {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Rankings"
-        title="Biggest data center projects, largest operators, top states"
+        title="Biggest data center projects, operators and states by disclosed capacity"
         dek="The compute buildout, ranked by tracked capacity."
       />
 
@@ -108,8 +111,8 @@ export default async function RankingsPage() {
               Three views over the same{" "}
               {stats.count.toLocaleString("en-US")}-facility dataset: the
               single largest projects by disclosed planned capacity, the
-              operators with the most capacity across all their sites, and
-              the states hosting the most capacity overall. Each ranking is
+              operators with the most disclosed capacity across their sites,
+              and the states with the most disclosed capacity. Each ranking is
               ordered by tracked megawatts — not by press coverage or
               announcement size — and reflects only what a cited source
               discloses. These rankings cover only the facilities that disclose
@@ -191,7 +194,7 @@ export default async function RankingsPage() {
           </section>
 
           {/* ------------------------------------------------------------------ */}
-          {/* § Largest operators                                                */}
+          {/* § Operators with the most disclosed capacity                       */}
           {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="operators-heading"
@@ -199,10 +202,10 @@ export default async function RankingsPage() {
           >
             <div className="space-y-2">
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                § Largest operators
+                § Operators with the most disclosed capacity
               </p>
               <h2 id="operators-heading" className="font-display text-2xl text-foreground">
-                Largest data center operators
+                Operators with the most disclosed capacity
               </h2>
             </div>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
@@ -243,7 +246,7 @@ export default async function RankingsPage() {
           </section>
 
           {/* ------------------------------------------------------------------ */}
-          {/* § States with the most capacity                                    */}
+          {/* § States with the most disclosed capacity                          */}
           {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="states-heading"
@@ -251,10 +254,10 @@ export default async function RankingsPage() {
           >
             <div className="space-y-2">
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                § States with the most capacity
+                § States with the most disclosed capacity
               </p>
               <h2 id="states-heading" className="font-display text-2xl text-foreground">
-                States with the most data center capacity
+                States with the most disclosed capacity
               </h2>
             </div>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
