@@ -139,6 +139,13 @@ export default async function OperatorPage({
         ]}
       />
 
+      <p className="text-sm leading-relaxed text-muted-foreground">
+        Capacity is disclosed for {summary.capacityReporting} of the{" "}
+        {summary.count} sites operated by {operatorName}. The megawatt
+        figures above sum those records only — read them as a floor, not an
+        operator total.
+      </p>
+
       {/* ------------------------------------------------------------------ */}
       {/* § By type                                                           */}
       {/* ------------------------------------------------------------------ */}

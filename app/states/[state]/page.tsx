@@ -182,6 +182,13 @@ export default async function StatePage({
         ]}
       />
 
+      <p className="text-sm leading-relaxed text-muted-foreground">
+        Capacity is disclosed for {summary.capacityReporting} of the{" "}
+        {summary.count} sites tracked in {stateName}. The megawatt figures
+        above sum those records only — read them as a floor, not a state
+        total.
+      </p>
+
       {/* ------------------------------------------------------------------ */}
       {/* § By type                                                           */}
       {/* ------------------------------------------------------------------ */}

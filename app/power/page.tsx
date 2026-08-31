@@ -97,6 +97,15 @@ export default async function PowerPage() {
     0
   );
 
+  // getGenerationByOfftaker() silently drops projects with no
+  // generation.offtaker — name that gap here rather than let the § By
+  // offtaker breakdown read as if it covers every tracked project.
+  const offtakerReporting = offtakerGroups.reduce(
+    (sum, group) => sum + group.facilities.length,
+    0
+  );
+  const offtakerTotal = allProjects.length;
+
   // Guarded against a zero denominator so a data state with no non-fossil
   // capacity yet renders an em-dash instead of Infinity/NaN.
   const buildoutRatioLabel =
@@ -286,6 +295,12 @@ export default async function PowerPage() {
             Who&apos;s buying the power
           </h2>
         </div>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          {offtakerReporting} of the {offtakerTotal} tracked power-generation
+          projects name a specific offtaker; the groups below cover those
+          projects only — the rest have a technology and location on record
+          but no disclosed buyer.
+        </p>
         <div className="space-y-8">
           {offtakerGroups.map((group) => (
             <div key={group.offtaker} className="space-y-3">

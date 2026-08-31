@@ -106,9 +106,12 @@ export default async function StatsPage() {
   ).length;
   // Capacity is optional in the schema — every GW figure on this page sums only
   // the records that publish an operational or planned figure, so state that
-  // denominator rather than implying the sums cover the whole dataset.
+  // denominator rather than implying the sums cover the whole dataset. Also
+  // excludes cancelled facilities: the GW sums above exclude them too, so a
+  // cancelled record that happens to disclose a figure must not inflate this
+  // count — otherwise "disclosed for N of M" would be false.
   const disclosedCapacityCount = allFacilities.filter(
-    (f) => getFacilityMaxMw(f) !== undefined
+    (f) => f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined
   ).length;
   const unclassifiedCount =
     dataCenterCount - (aiCounts.confirmed + aiCounts.likely + aiCounts.mixed_use);

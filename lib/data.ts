@@ -965,6 +965,14 @@ export interface StateSummary {
   communityFriction: number;
   /** Count with any community.status set (sourced, including "unknown"). */
   communityReporting: number;
+  /**
+   * Count of non-cancelled facilities with a disclosed operational or
+   * planned capacityMw figure. Restricted to non-cancelled so this matches
+   * the population `operationalMw`/`plannedMw` sum over — otherwise the
+   * rendered "disclosed for N of M" sentence would be false whenever a
+   * cancelled facility happens to disclose a figure.
+   */
+  capacityReporting: number;
   /** In-state operators, count desc then operator A→Z (deterministic tie-break). */
   topOperators: { operator: string; count: number }[];
 }
@@ -1004,6 +1012,7 @@ function computeStateSummary(upper: string, stateFacilities: Facility[]): StateS
   ) as Record<Status, number>;
   let communityFriction = 0;
   let communityReporting = 0;
+  let capacityReporting = 0;
   const opCounts = new Map<string, number>();
 
   for (const f of stateFacilities) {
@@ -1018,6 +1027,9 @@ function computeStateSummary(upper: string, stateFacilities: Facility[]): StateS
       ) {
         communityFriction++;
       }
+    }
+    if (f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined) {
+      capacityReporting++;
     }
     opCounts.set(f.operator, (opCounts.get(f.operator) ?? 0) + 1);
   }
@@ -1036,6 +1048,7 @@ function computeStateSummary(upper: string, stateFacilities: Facility[]): StateS
     byStatus,
     communityFriction,
     communityReporting,
+    capacityReporting,
     topOperators,
   };
 }
@@ -1573,6 +1586,14 @@ export interface OperatorSummary {
   byStatus: Record<Status, number>;
   /** Distinct location.state values across the operator's facilities. */
   stateCount: number;
+  /**
+   * Count of non-cancelled facilities with a disclosed operational or
+   * planned capacityMw figure. Restricted to non-cancelled so this matches
+   * the population `operationalMw`/`plannedMw` sum over — otherwise the
+   * rendered "disclosed for N of M" sentence would be false whenever a
+   * cancelled facility happens to disclose a figure.
+   */
+  capacityReporting: number;
 }
 
 /**
@@ -1605,11 +1626,15 @@ export async function getOperatorSummary(name: string): Promise<OperatorSummary 
     STATUS_ORDER.map((k) => [k, 0])
   ) as Record<Status, number>;
   const states = new Set<string>();
+  let capacityReporting = 0;
 
   for (const f of operatorFacilities) {
     byType[f.facilityType]++;
     byStatus[f.status]++;
     states.add(f.location.state);
+    if (f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined) {
+      capacityReporting++;
+    }
   }
 
   return {
@@ -1620,6 +1645,7 @@ export async function getOperatorSummary(name: string): Promise<OperatorSummary 
     byType,
     byStatus,
     stateCount: states.size,
+    capacityReporting,
   };
 }
 
