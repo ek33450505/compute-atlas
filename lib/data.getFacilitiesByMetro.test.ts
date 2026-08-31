@@ -10,10 +10,11 @@ import type { Facility, DataCenterFacility } from "@/lib/schema";
 // spread copy is a distinct export binding, not the closure loadFacilities
 // resolves internally. Instead this mocks the DB-client boundary
 // loadFacilities reads through, the same as the established pattern, and
-// forces the DB branch (hasDatabaseUrl() === true) so `mockDb` fixture rows
-// are what loadFacilities ultimately returns.
+// forces the DB branch (hasDatabaseUrl()/readsUseDatabase() === true) so
+// `mockDb` fixture rows are what loadFacilities ultimately returns.
 vi.mock("@/lib/db/client", () => ({
   hasDatabaseUrl: () => true,
+  readsUseDatabase: () => true,
   getDb: () => mockDb,
 }));
 

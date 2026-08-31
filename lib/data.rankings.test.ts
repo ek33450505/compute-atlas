@@ -7,6 +7,7 @@ import type { Facility, DataCenterFacility } from "@/lib/schema";
 // loadFacilities be seen by the ranking helpers' own internal call to it.
 vi.mock("@/lib/db/client", () => ({
   hasDatabaseUrl: () => true,
+  readsUseDatabase: () => true,
   getDb: () => mockDb,
 }));
 
