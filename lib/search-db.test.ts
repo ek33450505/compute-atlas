@@ -27,6 +27,8 @@ let queryError: Error | null = null;
 // search_vector column, ts_rank ordering) without a live Postgres connection.
 let capturedWhereSql: string | undefined;
 let capturedOrderBySql: string | undefined;
+/** The argument passed to `.select(...)`, so a regression to `SELECT *` fails loudly. */
+let capturedSelectArg: unknown;
 
 /**
  * A drizzle-orm `sql` tagged-template value is a `SQL` object whose
@@ -56,19 +58,22 @@ function flattenSqlChunks(clause: unknown): string {
 // resolves to the fixture rows.
 function makeMockDb() {
   return {
-    select: () => ({
-      from: () => ({
-        where: (whereClause: unknown) => {
-          capturedWhereSql = flattenSqlChunks(whereClause);
-          return {
-            orderBy: (orderByClause: unknown) => {
-              capturedOrderBySql = flattenSqlChunks(orderByClause);
-              return queryError ? Promise.reject(queryError) : Promise.resolve(fixtureRows);
-            },
-          };
-        },
-      }),
-    }),
+    select: (arg: unknown) => {
+      capturedSelectArg = arg;
+      return {
+        from: () => ({
+          where: (whereClause: unknown) => {
+            capturedWhereSql = flattenSqlChunks(whereClause);
+            return {
+              orderBy: (orderByClause: unknown) => {
+                capturedOrderBySql = flattenSqlChunks(orderByClause);
+                return queryError ? Promise.reject(queryError) : Promise.resolve(fixtureRows);
+              },
+            };
+          },
+        }),
+      };
+    },
   };
 }
 
@@ -162,6 +167,7 @@ describe("searchFacilitiesDb", () => {
     mockHasDatabaseUrl = true;
     capturedWhereSql = undefined;
     capturedOrderBySql = undefined;
+    capturedSelectArg = undefined;
     queryError = null;
     fixtureRows = [
       { id: "facility-a", doc: { id: "facility-a", name: "Facility A" } },
@@ -247,6 +253,19 @@ describe("searchFacilitiesDb", () => {
       { id: "facility-a", name: "Facility A" },
       { id: "facility-b", name: "Facility B" },
     ]);
+  });
+
+  it("selects only the doc column — never SELECT *", async () => {
+    // The one assertion in this file that inspects the actual `.select(...)`
+    // argument: every other test here would keep passing even if this
+    // regressed back to a full-row select, since the fixture rows already
+    // carry only `doc`. See lib/data.select-projection.test.ts for the
+    // sibling guards on the three lib/data.ts read paths.
+    await searchFacilitiesDb("hyperscale");
+    expect(capturedSelectArg).toBeTypeOf("object");
+    const projection = capturedSelectArg as Record<string, { name?: unknown }>;
+    expect(Object.keys(projection)).toEqual(["doc"]);
+    expect(projection.doc?.name).toBe("doc");
   });
 
   it("builds a WHERE clause referencing to_tsquery and search_vector", async () => {

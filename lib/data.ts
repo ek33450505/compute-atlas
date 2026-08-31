@@ -17,7 +17,7 @@ import { getFacilityMaxMw } from "@/lib/format";
 import { getMetroBySlug, metroCountyKey } from "@/lib/metros";
 import facilitiesRaw from "@/data/facilities.json";
 import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
-import { getDb, hasDatabaseUrl } from "@/lib/db/client";
+import { getDb, hasDatabaseUrl, readsUseDatabase } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 import type { DiffEntry } from "@/lib/doc-diff";
@@ -91,12 +91,15 @@ export async function withJsonFallback<T>(
  * `withJsonFallback`), shared by every reader below that needs the whole
  * facility set from the DB branch (`loadFacilitiesUncached`,
  * `fetchFacilitiesByStateUncached`, `loadPowerGenerationUncached`). Callers
- * still gate on `hasDatabaseUrl()` themselves and call `loadFromJson()`
+ * still gate on `readsUseDatabase()` themselves and call `loadFromJson()`
  * directly (no retry) when it's false — this only wraps the DB branch.
  */
 async function selectAllFacilitiesResilient(): Promise<Facility[]> {
   return withJsonFallback(
-    async () => (await getDb().select().from(facilitiesTable)).map(rowToFacility),
+    async () =>
+      (await getDb().select({ doc: facilitiesTable.doc }).from(facilitiesTable)).map(
+        rowToFacility
+      ),
     loadFromJson
   );
 }
@@ -110,7 +113,7 @@ async function selectAllFacilitiesResilient(): Promise<Facility[]> {
  * failures before degrading to the JSON snapshot (see `withJsonFallback`).
  */
 async function loadFacilitiesUncached(): Promise<Facility[]> {
-  const list = hasDatabaseUrl() ? await selectAllFacilitiesResilient() : loadFromJson();
+  const list = readsUseDatabase() ? await selectAllFacilitiesResilient() : loadFromJson();
   return [...list].sort((a, b) => a.id.localeCompare(b.id));
 }
 
@@ -232,10 +235,13 @@ export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VI
  * record in the JSON snapshot (see `withJsonFallback`).
  */
 async function fetchFacilityByIdUncached(id: string): Promise<Facility | undefined> {
-  if (hasDatabaseUrl()) {
+  if (readsUseDatabase()) {
     return withJsonFallback(
       async () => {
-        const rows = await getDb().select().from(facilitiesTable).where(eq(facilitiesTable.id, id));
+        const rows = await getDb()
+          .select({ doc: facilitiesTable.doc })
+          .from(facilitiesTable)
+          .where(eq(facilitiesTable.id, id));
         return rows[0] ? rowToFacility(rows[0]) : undefined;
       },
       () => loadFromJson().find((f) => f.id === id)
@@ -264,7 +270,7 @@ export const getFacilityByIdCached = (id: string): Promise<Facility | undefined>
  */
 async function fetchFacilitiesByStateUncached(code: string): Promise<Facility[]> {
   const upper = code.toUpperCase();
-  const list = hasDatabaseUrl() ? await selectAllFacilitiesResilient() : loadFromJson();
+  const list = readsUseDatabase() ? await selectAllFacilitiesResilient() : loadFromJson();
   return list
     .filter((f) => f.location.state === upper)
     .sort(
@@ -321,7 +327,7 @@ export const getStateSummaryCached = (code: string): Promise<StateSummary | null
  * `withJsonFallback`/`selectAllFacilitiesResilient`).
  */
 async function loadPowerGenerationUncached(): Promise<PowerGenerationFacility[]> {
-  const list = hasDatabaseUrl() ? await selectAllFacilitiesResilient() : loadFromJson();
+  const list = readsUseDatabase() ? await selectAllFacilitiesResilient() : loadFromJson();
   return list.filter(
     (f): f is PowerGenerationFacility => f.facilityType === "power_generation"
   );
@@ -354,7 +360,7 @@ export async function getAllFacilities(): Promise<Facility[]> {
  * per-request, so there's no cache entry — and therefore no tag — to add.
  */
 async function fetchFacilityIdsUncached(): Promise<string[]> {
-  const ids = hasDatabaseUrl()
+  const ids = readsUseDatabase()
     ? await withJsonFallback(
         async () =>
           (await getDb().select({ id: facilitiesTable.id }).from(facilitiesTable)).map(
@@ -1509,11 +1515,14 @@ export async function getOperatorBySlug(slug: string): Promise<string | undefine
  * snapshot (see `withJsonFallback`).
  */
 async function fetchFacilitiesByOperatorUncached(name: string): Promise<Facility[]> {
-  const list = hasDatabaseUrl()
+  const list = readsUseDatabase()
     ? await withJsonFallback(
         async () =>
           (
-            await getDb().select().from(facilitiesTable).where(eq(facilitiesTable.operator, name))
+            await getDb()
+              .select({ doc: facilitiesTable.doc })
+              .from(facilitiesTable)
+              .where(eq(facilitiesTable.operator, name))
           ).map(rowToFacility),
         () => loadFromJson().filter((f) => f.operator === name)
       )

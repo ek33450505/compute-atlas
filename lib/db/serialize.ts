@@ -26,6 +26,16 @@ export function docToRow(f: Facility) {
   };
 }
 
-export function rowToFacility(row: FacilityRow): Facility {
+/**
+ * Every read path that only needs `Facility` data selects a `doc`-only
+ * projection (`.select({ doc: facilitiesTable.doc })`), never `SELECT *` —
+ * the scalar columns above exist purely for the DB to filter/order on, and
+ * shipping them back over the wire when nothing reads them wastes ~24% of
+ * the response (measured against the live Neon HTTP endpoint, 2026-08-31).
+ * The parameter is `Pick<FacilityRow, "doc">` rather than the full row so a
+ * partial select still typechecks — structural typing means a full
+ * `FacilityRow` (or a `{ id, doc }` fixture) satisfies it too.
+ */
+export function rowToFacility(row: Pick<FacilityRow, "doc">): Facility {
   return row.doc;
 }

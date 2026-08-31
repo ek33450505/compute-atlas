@@ -74,6 +74,10 @@ beforeAll(async () => {
   tdb = await makeTestDb();
   vi.mocked(dbClient.getDb).mockReturnValue(tdb.db as never);
   vi.mocked(dbClient.hasDatabaseUrl).mockReturnValue(true);
+  // lib/lead-dedupe.ts reads via getAllFacilities -> loadFacilities, which
+  // now gates on readsUseDatabase() (see lib/db/client.ts) rather than
+  // hasDatabaseUrl() directly.
+  vi.mocked(dbClient.readsUseDatabase).mockReturnValue(true);
 });
 
 beforeEach(async () => {

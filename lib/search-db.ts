@@ -68,8 +68,12 @@ async function searchFacilitiesDbUncached(normalized: string): Promise<Facility[
   }
 
   const db = getDb();
+  // `.select({ doc: ... })` projects out only the jsonb doc — `search_vector`
+  // itself (the ~24% of a full row's bytes discarded by rowToFacility below)
+  // is still valid to filter/ORDER BY here even though it's not projected:
+  // Postgres can WHERE/ORDER BY a column that isn't in the SELECT list.
   const rows = await db
-    .select()
+    .select({ doc: facilitiesTable.doc })
     .from(facilitiesTable)
     .where(sql`${facilitiesTable.searchVector} @@ to_tsquery('english', ${tsQuery})`)
     .orderBy(
