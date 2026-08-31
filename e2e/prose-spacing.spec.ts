@@ -41,6 +41,13 @@ const ROUTES = [
   "/states/texas",
   "/operators/google",
   "/learn/data-center-water-use",
+  // Added 2026-08-31: both pages carry entity-after-interpolation prose
+  // (`&middot;`, `&apos;` immediately following `{...}`) — /rankings has
+  // three `&middot;` sites in the operator/state rows, /crypto has a
+  // disclosure sentence adjacent to `Atlas&apos;s`. Exactly the shape that
+  // shipped the original bug.
+  "/rankings",
+  "/crypto",
 ] as const;
 
 // A word/digit character, then React's SSR text-node separator, then the
