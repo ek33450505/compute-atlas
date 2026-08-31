@@ -1105,16 +1105,55 @@ interface FacilitySourcesResult {
 }
 
 /**
- * Defect 4's fix: iterates a facility's cited sources IN ORDER, reading as
- * many as it takes to fill every field in `fields` — not just the first
- * readable one. A field is dropped from consideration the moment it's
- * filled, so it is never re-attempted against a later source; the whole loop
- * stops early the moment every field is filled, or when sources are
- * exhausted. PDFs are skipped by extension up front (a belt-and-braces pair
- * with `fetchPageText`'s own content-type allowlist, which rejects PDFs
- * again even if the extension check misses one — e.g. a `.ashx` download
- * link). Never regexes a PDF's bytes (measured: produced a phantom "93, 4"
- * across ~10 records in an earlier pass of this project).
+ * Source kinds that are a primary document (the filing/permit/queue entry
+ * itself) rather than someone else's paraphrase of one. Everything else
+ * (`press`, `osm`, `other`) is secondary.
+ */
+const PRIMARY_SOURCE_KINDS = new Set<Source["kind"]>(["permit", "filing", "iso_queue", "subsidy"]);
+
+/**
+ * F2's fix: reorders a facility's cited sources so primary documents
+ * (`permit`, `filing`, `iso_queue`, `subsidy`) are read before secondary ones
+ * (`press`, `osm`, `other`) — a press release's paraphrase of an engineering
+ * detail can be wrong in ways the underlying filing isn't (e.g. novva-mesa-az:
+ * a press release said "water-free air-cooling" while the City of Mesa filing
+ * it paraphrased said "closed-loop water cooling"; whichever was cited first
+ * used to win by accident of array order).
+ *
+ * Stable by construction (sorts on `[rank, originalIndex]`, not `rank`
+ * alone): sources within the same group keep their original relative order.
+ * Returns a new array — never mutates `facility.sources` — so
+ * `processFacilitySources` iterating the copy cannot affect anything that
+ * still reads `facility.sources` directly. Safe to reorder because
+ * provenance is carried by source OBJECT REFERENCE, not position:
+ * `toEnrichmentIntents` builds `sources[]` from `item.source` and
+ * `provenance.note` prints `item.source.url` per accepted extraction, so
+ * reading sources in a different order cannot misattribute which source
+ * backed which value.
+ */
+export function sortSourcesPrimaryFirst(sources: Source[]): Source[] {
+  return sources
+    .map((source, index) => ({ source, index }))
+    .sort((a, b) => {
+      const rank = (s: Source) => (PRIMARY_SOURCE_KINDS.has(s.kind) ? 0 : 1);
+      const rankDiff = rank(a.source) - rank(b.source);
+      return rankDiff !== 0 ? rankDiff : a.index - b.index;
+    })
+    .map(({ source }) => source);
+}
+
+/**
+ * Defect 4's fix: iterates a facility's cited sources IN ORDER (F2: primary
+ * documents first, see `sortSourcesPrimaryFirst`), reading as many as it
+ * takes to fill every field in `fields` — not just the first readable one. A
+ * field is dropped from consideration the moment it's filled, so it is never
+ * re-attempted against a later source; the whole loop stops early the moment
+ * every field is filled, or when sources are exhausted. PDFs are skipped by
+ * extension up front (a belt-and-braces pair with `fetchPageText`'s own
+ * content-type allowlist, which rejects PDFs again even if the extension
+ * check misses one — e.g. a `.ashx` download link). Never regexes a PDF's
+ * bytes (measured: produced a phantom "93, 4" across ~10 records in an
+ * earlier pass of this project).
  */
 async function processFacilitySources(
   facility: Facility,
@@ -1128,7 +1167,7 @@ async function processFacilitySources(
   let sawAnyReadable = false;
   let sawAnyUnreadable = false;
 
-  for (const source of facility.sources) {
+  for (const source of sortSourcesPrimaryFirst(facility.sources)) {
     if (unfilled.size === 0) break; // every requested field is already filled — stop reading further sources
     if (isLikelyPdf(source.url)) continue;
 
