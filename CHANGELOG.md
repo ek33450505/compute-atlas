@@ -5,6 +5,31 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.30.0](https://github.com/ek33450505/compute-atlas/compare/v1.29.0...v1.30.0) (2026-08-31)
+
+
+### Features
+
+* **data:** publish the 2026-08-26 discovery wave and split Amazon's northwest Louisiana aggregate ([#186](https://github.com/ek33450505/compute-atlas/issues/186)) ([77c677a](https://github.com/ek33450505/compute-atlas/commit/77c677ad0c2ed4fea28be71a4ac493cc5a7dd2e3))
+* **data:** publish the VA and OH discovery wave ([#188](https://github.com/ek33450505/compute-atlas/issues/188)) ([e59ea53](https://github.com/ek33450505/compute-atlas/commit/e59ea535854192541e335e5b4996f0180e0651fc))
+* **funding:** add Ko-fi as a second support path and a dedicated /support page ([#183](https://github.com/ek33450505/compute-atlas/issues/183)) ([1899938](https://github.com/ek33450505/compute-atlas/commit/189993844ed154c2b489d8ff51fd4ada0d74b43b))
+* **learn:** add cited prose explainers for four remaining /learn topics ([#175](https://github.com/ek33450505/compute-atlas/issues/175)) ([fbb1ebd](https://github.com/ek33450505/compute-atlas/commit/fbb1ebdb13c008cc18facd37a52491d73a7573c7))
+* **learn:** answer the topic questions with cited explanations, not just stats ([#172](https://github.com/ek33450505/compute-atlas/issues/172)) ([a8b4705](https://github.com/ek33450505/compute-atlas/commit/a8b4705eb38febd07f6e8f588508cd486d3892ac))
+* **stakeholders:** tag named people with a documented stake in specific facilities ([#185](https://github.com/ek33450505/compute-atlas/issues/185)) ([8cfe44c](https://github.com/ek33450505/compute-atlas/commit/8cfe44ccd30af37063d9389bc4203bba2bf406e9))
+
+
+### Bug Fixes
+
+* **alerts:** scope email alerts to one facility, and add real traffic measurement ([#176](https://github.com/ek33450505/compute-atlas/issues/176)) ([8860ca6](https://github.com/ek33450505/compute-atlas/commit/8860ca63227c34972a5412084eddde7a5e04085e))
+* close the audit backlog and wire Playwright into CI ([#181](https://github.com/ek33450505/compute-atlas/issues/181)) ([dd18b53](https://github.com/ek33450505/compute-atlas/commit/dd18b539dc588740079db8b79347f359f03145c0))
+* **data:** correct eight mis-tagged community.status records ([#173](https://github.com/ek33450505/compute-atlas/issues/173)) ([40a63ed](https://github.com/ek33450505/compute-atlas/commit/40a63ed8f21d161515e22d68c26cf72ea2f9c429))
+* **docs,web:** correct docs drift and false claims across site and repo ([#170](https://github.com/ek33450505/compute-atlas/issues/170)) ([bbef899](https://github.com/ek33450505/compute-atlas/commit/bbef899fa4d3b49853a7a5f567f4fc040ec5534d))
+* **map:** make dragging always pan instead of tilting into 3D ([#182](https://github.com/ek33450505/compute-atlas/issues/182)) ([a2a3081](https://github.com/ek33450505/compute-atlas/commit/a2a3081440ec34fe1e597bb82d9d4a9c1c71fa90))
+* redirect the retired Amazon aggregate slug, and unblock the /table a11y gate ([#187](https://github.com/ek33450505/compute-atlas/issues/187)) ([b51b0e1](https://github.com/ek33450505/compute-atlas/commit/b51b0e100a5fc773b0783376ca519854e4578102))
+* **seo:** de-duplicate facility titles and stop hourly sitemap lastmod churn ([#177](https://github.com/ek33450505/compute-atlas/issues/177)) ([4812508](https://github.com/ek33450505/compute-atlas/commit/48125080fd8e75109bbfca4fc8ee10b719c7cab3))
+* **seo:** stop churning learn-routes lastModified on each build ([#179](https://github.com/ek33450505/compute-atlas/issues/179)) ([65a08b7](https://github.com/ek33450505/compute-atlas/commit/65a08b7197ce81d1d3d904c1982591a1d6e9e535))
+* **web:** remove loading.tsx from dynamic routes to fix soft-404 responses ([#180](https://github.com/ek33450505/compute-atlas/issues/180)) ([07571ba](https://github.com/ek33450505/compute-atlas/commit/07571ba42c639851d3408e08add839bc44111e0f))
+
 ## [1.29.0](https://github.com/ek33450505/compute-atlas/compare/v1.28.0...v1.29.0) (2026-08-22)
 
 
