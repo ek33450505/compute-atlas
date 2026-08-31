@@ -41,11 +41,22 @@ const ROUTES = [
   "/states/texas",
   "/operators/google",
   "/learn/data-center-water-use",
-  // Added 2026-08-31: both pages carry entity-after-interpolation prose
-  // (`&middot;`, `&apos;` immediately following `{...}`) — /rankings has
-  // three `&middot;` sites in the operator/state rows, /crypto has a
-  // disclosure sentence adjacent to `Atlas&apos;s`. Exactly the shape that
-  // shipped the original bug.
+  // Added 2026-08-31: both pages carry the entity-after-interpolation shape
+  // that shipped the original bug — an interpolation followed by a text chunk
+  // containing `&middot;`. Verified sites at the time of writing:
+  //   app/rankings/page.tsx:230,:283,:299 — `tracked{" "}` then a chunk
+  //     beginning `&middot; {disclosedCount}` (operator row + two state rows)
+  //   app/rankings/page.tsx:176 and app/crypto/page.tsx:161 —
+  //     `{f.operator} &middot; {formatLocation(f)}`
+  // Both routes are here for those MIDDOT sites, which JOINED_ENTITY_PATTERN
+  // below is what guards.
+  //
+  // ⚠️ Do NOT re-justify these routes by pointing at `Atlas&apos;s`
+  // (app/crypto/page.tsx:111). An earlier version of this comment did, and it
+  // was wrong twice over: `&apos;` is deliberately excluded from the entity
+  // pattern, AND that apostrophe sits in static prose with no interpolation
+  // before it, so the bug cannot occur there in the first place. The bug needs
+  // a text chunk that FOLLOWS an interpolation; static prose is never at risk.
   "/rankings",
   "/crypto",
 ] as const;
@@ -68,9 +79,9 @@ const JOINED_WORD_PATTERN = /[0-9a-zA-Z]\u0000[a-zA-Z][a-zA-Z-]{2,}/g;
 // Correct output always keeps a real space on each side of the glyph - verified
 // against rendered SSR HTML 2026-08-31:
 //   Riot Platforms<!-- --> · <!-- -->Corsicana, TX
-// so the separator sitting DIRECTLY against the glyph is the anomaly. The glyphs
-// listed are the ones this codebase actually emits from entities (&middot;,
-// &middot;) - see the exclusions below.
+// so the separator sitting DIRECTLY against the glyph is the anomaly. The class
+// below is a SINGLE glyph - the middot (&middot;) - because it is the only one
+// this codebase emits where a space is always required. See the exclusions.
 //
 // EXCLUDED ON PURPOSE - do not add these back without evidence:
 //   ' and ' (&rsquo;/&lsquo;) - a possessive is legitimately unspaced. If the
@@ -84,6 +95,13 @@ const JOINED_WORD_PATTERN = /[0-9a-zA-Z]\u0000[a-zA-Z][a-zA-Z-]{2,}/g;
 //
 // No allow-list applies here: unlike the word case there is nothing to rejoin,
 // because a glyph is never half of a legitimately-split word.
+//
+// MUTATION-PROVEN 2026-08-31, both directions, with this final pattern:
+// baseline 11 passed / exit 0; with a `{" "}` removed so an interpolation sits
+// directly before a `&middot;` chunk, exit 1 with 9 offenders of the shape
+// `Vistra<!-- -->·` - a shape JOINED_WORD_PATTERN structurally cannot match.
+// Re-probe if the pattern changes: an earlier plant failed via the WORD pattern
+// (`facilities<!-- -->tracked`) and never exercised this one at all.
 const JOINED_ENTITY_PATTERN = /[0-9a-zA-Z]\u0000[·]/g;
 
 // A separator may also legitimately sit INSIDE a single word, where a ternary
