@@ -172,12 +172,36 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       ];
       const result = await getTopOperatorsByCapacity(10);
       expect(result).toEqual([
-        { operator: "Beta", operationalMw: 500, plannedMw: 0, count: 1 },
-        { operator: "Acme", operationalMw: 100, plannedMw: 250, count: 2 },
+        { operator: "Beta", operationalMw: 500, plannedMw: 0, count: 1, disclosedCount: 1 },
+        { operator: "Acme", operationalMw: 100, plannedMw: 250, count: 2, disclosedCount: 2 },
       ]);
     });
 
-    it("excludes cancelled facilities' MW from the sum but still counts them", async () => {
+    it("counts only facilities with a disclosed capacity figure in disclosedCount, leaving a non-disclosing site in count but not disclosedCount", async () => {
+      fixtureFacilities = [
+        makeFacility({
+          id: "disclosed-1",
+          name: "D1",
+          state: "TX",
+          operator: "Acme",
+          capacityMw: { operational: 100 },
+        }),
+        makeFacility({
+          id: "disclosed-2",
+          name: "D2",
+          state: "OH",
+          operator: "Acme",
+          capacityMw: { planned: 50 },
+        }),
+        makeFacility({ id: "undisclosed", name: "U1", state: "NY", operator: "Acme" }),
+      ];
+      const result = await getTopOperatorsByCapacity(10);
+      expect(result).toEqual([
+        { operator: "Acme", operationalMw: 100, plannedMw: 50, count: 3, disclosedCount: 2 },
+      ]);
+    });
+
+    it("excludes cancelled facilities' MW from the sum but still counts them — and excludes their disclosed figure from disclosedCount too (Unit-1 bug class: the counter must match the population the MW sum covers)", async () => {
       fixtureFacilities = [
         makeFacility({
           id: "live",
@@ -196,7 +220,9 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
         }),
       ];
       const result = await getTopOperatorsByCapacity(10);
-      expect(result).toEqual([{ operator: "Acme", operationalMw: 100, plannedMw: 0, count: 2 }]);
+      expect(result).toEqual([
+        { operator: "Acme", operationalMw: 100, plannedMw: 0, count: 2, disclosedCount: 1 },
+      ]);
     });
 
     it("ties are broken by operator A→Z", async () => {
@@ -229,6 +255,10 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       const result = await getTopOperatorsByCapacity(10);
       expect(result.map((r) => r.operator)).toEqual(["Real Operator"]);
       expect(result.find((r) => r.operator === "Outlier Corp")).toBeUndefined();
+      // The outlier is skipped via `continue` before the disclosedCount
+      // accumulation, so it must not inflate — or appear in — any operator's
+      // disclosedCount either.
+      expect(result[0].disclosedCount).toBe(1);
     });
 
     it("respects the n parameter and defaults to 10", async () => {
@@ -255,8 +285,36 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       ];
       const result = await getTopStatesByCapacity(10);
       expect(result).toEqual([
-        { state: "TX", operationalMw: 200, plannedMw: 100, count: 2 },
-        { state: "OH", operationalMw: 50, plannedMw: 0, count: 1 },
+        { state: "TX", operationalMw: 200, plannedMw: 100, count: 2, disclosedCount: 2 },
+        { state: "OH", operationalMw: 50, plannedMw: 0, count: 1, disclosedCount: 1 },
+      ]);
+    });
+
+    it("counts only facilities with a disclosed capacity figure in disclosedCount, leaving a non-disclosing site in count but not disclosedCount", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "tx-disclosed", name: "TX Disclosed", state: "TX", capacityMw: { operational: 200 } }),
+        makeFacility({ id: "tx-undisclosed", name: "TX Undisclosed", state: "TX" }),
+      ];
+      const result = await getTopStatesByCapacity(10);
+      expect(result).toEqual([
+        { state: "TX", operationalMw: 200, plannedMw: 0, count: 2, disclosedCount: 1 },
+      ]);
+    });
+
+    it("excludes a cancelled facility's disclosed figure from disclosedCount, matching the population the MW sum covers (Unit-1 bug class)", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "tx-live", name: "TX Live", state: "TX", capacityMw: { operational: 100 } }),
+        makeFacility({
+          id: "tx-cancelled-disclosed",
+          name: "TX Cancelled Disclosed",
+          state: "TX",
+          status: "cancelled",
+          capacityMw: { planned: 700 },
+        }),
+      ];
+      const result = await getTopStatesByCapacity(10);
+      expect(result).toEqual([
+        { state: "TX", operationalMw: 100, plannedMw: 0, count: 2, disclosedCount: 1 },
       ]);
     });
 
@@ -295,7 +353,9 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       // The state's summed total excludes the outlier's 8,000 MW but still
       // reflects the two legitimate facilities (150 operational + 350 planned).
       const stateRanking = await getTopStatesByCapacity(10);
-      expect(stateRanking).toEqual([{ state: "UT", operationalMw: 150, plannedMw: 350, count: 2 }]);
+      expect(stateRanking).toEqual([
+        { state: "UT", operationalMw: 150, plannedMw: 350, count: 2, disclosedCount: 2 },
+      ]);
     });
 
     it("ties are broken by state A→Z", async () => {

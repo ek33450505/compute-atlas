@@ -739,6 +739,14 @@ export interface OperatorCapacityRanking {
   plannedMw: number;
   /** Count of the operator's non-outlier facilities (any status) — mirrors getTopOperators' unfiltered count. */
   count: number;
+  /**
+   * Count of the operator's non-cancelled, non-outlier facilities with a
+   * disclosed operational or planned capacityMw figure — i.e. exactly the
+   * population `operationalMw`/`plannedMw` sum over. Lets a page distinguish
+   * "49 facilities tracked, 4 disclose capacity" from a ranking that implies
+   * every tracked site contributed to the MW total.
+   */
+  disclosedCount: number;
 }
 
 /**
@@ -753,15 +761,20 @@ export async function getTopOperatorsByCapacity(n = 10): Promise<OperatorCapacit
   const facilities = await loadFacilities();
   const byOperator = new Map<
     string,
-    { operationalMw: number; plannedMw: number; count: number }
+    { operationalMw: number; plannedMw: number; count: number; disclosedCount: number }
   >();
   for (const f of facilities) {
     if (isUnverifiedMegaproject(f)) continue;
-    const entry = byOperator.get(f.operator) ?? { operationalMw: 0, plannedMw: 0, count: 0 };
+    const entry =
+      byOperator.get(f.operator) ??
+      { operationalMw: 0, plannedMw: 0, count: 0, disclosedCount: 0 };
     entry.count++;
     if (f.status !== "cancelled") {
       entry.operationalMw += f.capacityMw?.operational ?? 0;
       entry.plannedMw += f.capacityMw?.planned ?? 0;
+      if (getFacilityMaxMw(f) !== undefined) {
+        entry.disclosedCount++;
+      }
     }
     byOperator.set(f.operator, entry);
   }
@@ -784,6 +797,13 @@ export interface StateCapacityRanking {
   plannedMw: number;
   /** Count of the state's non-outlier facilities (any status) — mirrors getTopOperators' unfiltered count. */
   count: number;
+  /**
+   * Count of the state's non-cancelled, non-outlier facilities with a
+   * disclosed operational or planned capacityMw figure — i.e. exactly the
+   * population `operationalMw`/`plannedMw` sum over. Mirrors
+   * `OperatorCapacityRanking.disclosedCount`.
+   */
+  disclosedCount: number;
 }
 
 /**
@@ -796,16 +816,20 @@ export async function getTopStatesByCapacity(n = 10): Promise<StateCapacityRanki
   const facilities = await loadFacilities();
   const byState = new Map<
     string,
-    { operationalMw: number; plannedMw: number; count: number }
+    { operationalMw: number; plannedMw: number; count: number; disclosedCount: number }
   >();
   for (const f of facilities) {
     if (isUnverifiedMegaproject(f)) continue;
     const state = f.location.state;
-    const entry = byState.get(state) ?? { operationalMw: 0, plannedMw: 0, count: 0 };
+    const entry =
+      byState.get(state) ?? { operationalMw: 0, plannedMw: 0, count: 0, disclosedCount: 0 };
     entry.count++;
     if (f.status !== "cancelled") {
       entry.operationalMw += f.capacityMw?.operational ?? 0;
       entry.plannedMw += f.capacityMw?.planned ?? 0;
+      if (getFacilityMaxMw(f) !== undefined) {
+        entry.disclosedCount++;
+      }
     }
     byState.set(state, entry);
   }

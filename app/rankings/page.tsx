@@ -114,7 +114,10 @@ export default async function RankingsPage() {
               announcement size — and reflects only what a cited source
               discloses. These rankings cover only the facilities that disclose
               a capacity figure — a site absent from them may be large but
-              undisclosed, not small.
+              undisclosed, not small. In the operator and state rankings
+              below, a large facility count beside a modest megawatt total
+              usually means most of that operator&apos;s or state&apos;s
+              sites publish no figure at all, not that they are small.
             </p>
             <p className="text-base leading-relaxed text-muted-foreground">
               Every entry below links through to its full facility, operator,
@@ -204,7 +207,8 @@ export default async function RankingsPage() {
             </div>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
               Operators ranked by combined capacity — operational plus
-              planned — summed across every site they run in the dataset.
+              planned — summed across the sites they run that disclose a
+              figure.
             </p>
             {operatorRows.length > 0 ? (
               <ol className="divide-y divide-border">
@@ -219,7 +223,9 @@ export default async function RankingsPage() {
                           {o.operator}
                         </span>
                         <span className="text-xs text-muted-foreground truncate">
-                          {o.count} {o.count === 1 ? "facility" : "facilities"} tracked
+                          {o.count} {o.count === 1 ? "facility" : "facilities"} tracked{" "}
+                          &middot; {o.disclosedCount}{" "}
+                          {o.disclosedCount === 1 ? "discloses" : "disclose"} capacity
                         </span>
                       </span>
                       <span className="font-mono tabular-nums text-xs text-muted-foreground shrink-0">
@@ -253,7 +259,8 @@ export default async function RankingsPage() {
             </div>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
               States ranked by combined capacity — operational plus planned —
-              summed across every facility tracked there.
+              summed across the facilities tracked there that disclose a
+              figure.
             </p>
             {stateRows.length > 0 ? (
               <ol className="divide-y divide-border">
@@ -269,7 +276,9 @@ export default async function RankingsPage() {
                             {s.name}
                           </span>
                           <span className="text-xs text-muted-foreground truncate">
-                            {s.count} {s.count === 1 ? "facility" : "facilities"} tracked
+                            {s.count} {s.count === 1 ? "facility" : "facilities"} tracked{" "}
+                            &middot; {s.disclosedCount}{" "}
+                            {s.disclosedCount === 1 ? "discloses" : "disclose"} capacity
                           </span>
                         </span>
                         <span className="font-mono tabular-nums text-xs text-muted-foreground shrink-0">
@@ -283,7 +292,9 @@ export default async function RankingsPage() {
                             {s.name}
                           </span>
                           <span className="text-xs text-muted-foreground truncate">
-                            {s.count} {s.count === 1 ? "facility" : "facilities"} tracked
+                            {s.count} {s.count === 1 ? "facility" : "facilities"} tracked{" "}
+                            &middot; {s.disclosedCount}{" "}
+                            {s.disclosedCount === 1 ? "discloses" : "disclose"} capacity
                           </span>
                         </span>
                         <span className="font-mono tabular-nums text-xs text-muted-foreground shrink-0">
