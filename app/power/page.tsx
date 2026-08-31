@@ -163,6 +163,7 @@ export default async function PowerPage() {
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
+        spacing="wide"
         stats={[
           { value: stats.count, label: "Projects" },
           { value: formatPower(stats.operationalMw), label: "Operational" },
