@@ -41,6 +41,24 @@ const ROUTES = [
   "/states/texas",
   "/operators/google",
   "/learn/data-center-water-use",
+  // Added 2026-08-31: both pages carry the entity-after-interpolation shape
+  // that shipped the original bug — an interpolation followed by a text chunk
+  // containing `&middot;`. Verified sites at the time of writing:
+  //   app/rankings/page.tsx:230,:283,:299 — `tracked{" "}` then a chunk
+  //     beginning `&middot; {disclosedCount}` (operator row + two state rows)
+  //   app/rankings/page.tsx:176 and app/crypto/page.tsx:161 —
+  //     `{f.operator} &middot; {formatLocation(f)}`
+  // Both routes are here for those MIDDOT sites, which JOINED_ENTITY_PATTERN
+  // below is what guards.
+  //
+  // ⚠️ Do NOT re-justify these routes by pointing at `Atlas&apos;s`
+  // (app/crypto/page.tsx:111). An earlier version of this comment did, and it
+  // was wrong twice over: `&apos;` is deliberately excluded from the entity
+  // pattern, AND that apostrophe sits in static prose with no interpolation
+  // before it, so the bug cannot occur there in the first place. The bug needs
+  // a text chunk that FOLLOWS an interpolation; static prose is never at risk.
+  "/rankings",
+  "/crypto",
 ] as const;
 
 // A word/digit character, then React's SSR text-node separator, then the
@@ -51,6 +69,40 @@ const ROUTES = [
 const SEPARATOR = "<!-- -->";
 const SENTINEL = "\u0000";
 const JOINED_WORD_PATTERN = /[0-9a-zA-Z]\u0000[a-zA-Z][a-zA-Z-]{2,}/g;
+
+// WARNING - BLIND SPOT the pattern above cannot see: it only fires when a
+// LETTER follows the separator. A text chunk that BEGINS with an entity renders
+// as `word·` - the character after the separator is the GLYPH, so a dropped
+// space there goes undetected. Not hypothetical: /rankings carries three
+// `&middot;` sites immediately after an interpolation, and /crypto one more.
+//
+// Correct output always keeps a real space on each side of the glyph - verified
+// against rendered SSR HTML 2026-08-31:
+//   Riot Platforms<!-- --> · <!-- -->Corsicana, TX
+// so the separator sitting DIRECTLY against the glyph is the anomaly. The class
+// below is a SINGLE glyph - the middot (&middot;) - because it is the only one
+// this codebase emits where a space is always required. See the exclusions.
+//
+// EXCLUDED ON PURPOSE - do not add these back without evidence:
+//   ' and ' (&rsquo;/&lsquo;) - a possessive is legitimately unspaced. If the
+//     space before `'s` dropped, `Google's` is the CORRECT rendering, not a bug,
+//     and `{operator}&rsquo;s` is natural English someone will write.
+//   - (&mdash;) - legitimately unspaced in a range, e.g. `{start}-{end}`.
+// The principle: this only guards glyphs where a space SHOULD be there. A
+// middot used as a separator always needs its spaces; the others often must not
+// have them. Including them would guarantee a false positive, and a gate that
+// cries wolf gets loosened - which is how it becomes theatre.
+//
+// No allow-list applies here: unlike the word case there is nothing to rejoin,
+// because a glyph is never half of a legitimately-split word.
+//
+// MUTATION-PROVEN 2026-08-31, both directions, with this final pattern:
+// baseline 11 passed / exit 0; with a `{" "}` removed so an interpolation sits
+// directly before a `&middot;` chunk, exit 1 with 9 offenders of the shape
+// `Vistra<!-- -->·` - a shape JOINED_WORD_PATTERN structurally cannot match.
+// Re-probe if the pattern changes: an earlier plant failed via the WORD pattern
+// (`facilities<!-- -->tracked`) and never exercised this one at all.
+const JOINED_ENTITY_PATTERN = /[0-9a-zA-Z]\u0000[·]/g;
 
 // A separator may also legitimately sit INSIDE a single word, where a ternary
 // splits it into stem + suffix — e.g.
@@ -80,19 +132,28 @@ function findJoinedWords(html: string): string[] {
   // Swap the separator for a single sentinel char so index arithmetic stays
   // simple and the pattern can't accidentally match across other markup.
   const marked = html.split(SEPARATOR).join(SENTINEL);
-  return [...marked.matchAll(JOINED_WORD_PATTERN)]
+
+  const contextAround = (match: RegExpMatchArray) => {
+    const start = Math.max(0, match.index! - 30);
+    const end = Math.min(marked.length, match.index! + match[0].length + 30);
+    const context = marked.slice(start, end).split(SENTINEL).join(SEPARATOR);
+    return `...${context}...`;
+  };
+
+  const wordOffenders = [...marked.matchAll(JOINED_WORD_PATTERN)]
     .filter(
       (match) =>
         !LEGITIMATE_REJOINED_WORDS.has(
           rejoinedWordAt(marked, match.index!).toLowerCase()
         )
     )
-    .map((match) => {
-      const start = Math.max(0, match.index! - 30);
-      const end = Math.min(marked.length, match.index! + match[0].length + 30);
-      const context = marked.slice(start, end).split(SENTINEL).join(SEPARATOR);
-      return `...${context}...`;
-    });
+    .map(contextAround);
+
+  const entityOffenders = [...marked.matchAll(JOINED_ENTITY_PATTERN)].map(
+    contextAround
+  );
+
+  return [...wordOffenders, ...entityOffenders];
 }
 
 for (const route of ROUTES) {

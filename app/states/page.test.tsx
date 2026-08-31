@@ -56,6 +56,7 @@ function makeStateSummary(overrides: Partial<StateSummary> = {}): StateSummary {
     },
     communityFriction: 0,
     communityReporting: 0,
+    capacityReporting: 0,
     topOperators: [],
     ...overrides,
   };

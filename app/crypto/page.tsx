@@ -40,6 +40,14 @@ export default async function CryptoPage() {
       (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
       a.name.localeCompare(b.name)
   );
+  // Restricted to non-cancelled so this matches the population
+  // stats.operationalMw/plannedMw sum over (getCryptoMiningStats excludes
+  // cancelled facilities from both) — otherwise the rendered "disclosed for
+  // N of M" sentence would be false whenever a cancelled facility happens to
+  // disclose a figure. Mirrors disclosedCapacityCount in app/stats/page.tsx.
+  const disclosedCapacityCount = allFacilities.filter(
+    (f) => f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined
+  ).length;
 
   return (
     <div
@@ -116,6 +124,14 @@ export default async function CryptoPage() {
               { value: stats.stateCount, label: "States" },
             ]}
           />
+
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Capacity is disclosed for {disclosedCapacityCount.toLocaleString("en-US")}{" "}
+            of the {stats.count.toLocaleString("en-US")} tracked crypto-mining
+            sites. The operational and pipeline figures above sum those
+            records only — read them as a floor, not a total across every
+            tracked site.
+          </p>
 
           {/* ------------------------------------------------------------------ */}
           {/* § Facilities                                                        */}

@@ -56,6 +56,8 @@ import {
   getFacilitiesRankedByPlannedMw,
   getTopOperatorsByCapacity,
   getTopStatesByCapacity,
+  getStateSummary,
+  getOperatorSummary,
 } from "@/lib/data";
 
 describe("capacity-ranking helpers (outlier sanity guard)", () => {
@@ -170,12 +172,36 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       ];
       const result = await getTopOperatorsByCapacity(10);
       expect(result).toEqual([
-        { operator: "Beta", operationalMw: 500, plannedMw: 0, count: 1 },
-        { operator: "Acme", operationalMw: 100, plannedMw: 250, count: 2 },
+        { operator: "Beta", operationalMw: 500, plannedMw: 0, count: 1, disclosedCount: 1 },
+        { operator: "Acme", operationalMw: 100, plannedMw: 250, count: 2, disclosedCount: 2 },
       ]);
     });
 
-    it("excludes cancelled facilities' MW from the sum but still counts them", async () => {
+    it("counts only facilities with a disclosed capacity figure in disclosedCount, leaving a non-disclosing site in count but not disclosedCount", async () => {
+      fixtureFacilities = [
+        makeFacility({
+          id: "disclosed-1",
+          name: "D1",
+          state: "TX",
+          operator: "Acme",
+          capacityMw: { operational: 100 },
+        }),
+        makeFacility({
+          id: "disclosed-2",
+          name: "D2",
+          state: "OH",
+          operator: "Acme",
+          capacityMw: { planned: 50 },
+        }),
+        makeFacility({ id: "undisclosed", name: "U1", state: "NY", operator: "Acme" }),
+      ];
+      const result = await getTopOperatorsByCapacity(10);
+      expect(result).toEqual([
+        { operator: "Acme", operationalMw: 100, plannedMw: 50, count: 3, disclosedCount: 2 },
+      ]);
+    });
+
+    it("excludes cancelled facilities' MW from the sum but still counts them — and excludes their disclosed figure from disclosedCount too (Unit-1 bug class: the counter must match the population the MW sum covers)", async () => {
       fixtureFacilities = [
         makeFacility({
           id: "live",
@@ -194,7 +220,9 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
         }),
       ];
       const result = await getTopOperatorsByCapacity(10);
-      expect(result).toEqual([{ operator: "Acme", operationalMw: 100, plannedMw: 0, count: 2 }]);
+      expect(result).toEqual([
+        { operator: "Acme", operationalMw: 100, plannedMw: 0, count: 2, disclosedCount: 1 },
+      ]);
     });
 
     it("ties are broken by operator A→Z", async () => {
@@ -227,6 +255,10 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       const result = await getTopOperatorsByCapacity(10);
       expect(result.map((r) => r.operator)).toEqual(["Real Operator"]);
       expect(result.find((r) => r.operator === "Outlier Corp")).toBeUndefined();
+      // The outlier is skipped via `continue` before the disclosedCount
+      // accumulation, so it must not inflate — or appear in — any operator's
+      // disclosedCount either.
+      expect(result[0].disclosedCount).toBe(1);
     });
 
     it("respects the n parameter and defaults to 10", async () => {
@@ -253,8 +285,36 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       ];
       const result = await getTopStatesByCapacity(10);
       expect(result).toEqual([
-        { state: "TX", operationalMw: 200, plannedMw: 100, count: 2 },
-        { state: "OH", operationalMw: 50, plannedMw: 0, count: 1 },
+        { state: "TX", operationalMw: 200, plannedMw: 100, count: 2, disclosedCount: 2 },
+        { state: "OH", operationalMw: 50, plannedMw: 0, count: 1, disclosedCount: 1 },
+      ]);
+    });
+
+    it("counts only facilities with a disclosed capacity figure in disclosedCount, leaving a non-disclosing site in count but not disclosedCount", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "tx-disclosed", name: "TX Disclosed", state: "TX", capacityMw: { operational: 200 } }),
+        makeFacility({ id: "tx-undisclosed", name: "TX Undisclosed", state: "TX" }),
+      ];
+      const result = await getTopStatesByCapacity(10);
+      expect(result).toEqual([
+        { state: "TX", operationalMw: 200, plannedMw: 0, count: 2, disclosedCount: 1 },
+      ]);
+    });
+
+    it("excludes a cancelled facility's disclosed figure from disclosedCount, matching the population the MW sum covers (Unit-1 bug class)", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "tx-live", name: "TX Live", state: "TX", capacityMw: { operational: 100 } }),
+        makeFacility({
+          id: "tx-cancelled-disclosed",
+          name: "TX Cancelled Disclosed",
+          state: "TX",
+          status: "cancelled",
+          capacityMw: { planned: 700 },
+        }),
+      ];
+      const result = await getTopStatesByCapacity(10);
+      expect(result).toEqual([
+        { state: "TX", operationalMw: 100, plannedMw: 0, count: 2, disclosedCount: 1 },
       ]);
     });
 
@@ -293,7 +353,9 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       // The state's summed total excludes the outlier's 8,000 MW but still
       // reflects the two legitimate facilities (150 operational + 350 planned).
       const stateRanking = await getTopStatesByCapacity(10);
-      expect(stateRanking).toEqual([{ state: "UT", operationalMw: 150, plannedMw: 350, count: 2 }]);
+      expect(stateRanking).toEqual([
+        { state: "UT", operationalMw: 150, plannedMw: 350, count: 2, disclosedCount: 2 },
+      ]);
     });
 
     it("ties are broken by state A→Z", async () => {
@@ -316,6 +378,152 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
       );
       expect((await getTopStatesByCapacity()).length).toBe(10);
       expect((await getTopStatesByCapacity(4)).length).toBe(4);
+    });
+  });
+});
+
+// capacityReporting: the disclosed-capacity denominator surfaced on the
+// /states/[state] and /operators/[operator] detail pages (Track A honest
+// denominators). Mirrors the existing communityReporting counter — see
+// computeStateSummary / getOperatorSummary in lib/data.ts. Uses the same
+// mocked-DB fixture pattern as the ranking suite above so mix/all/none
+// scenarios are deterministic rather than sampled off the real dataset.
+describe("capacityReporting (disclosed-capacity denominator)", () => {
+  beforeEach(() => {
+    fixtureFacilities = [];
+  });
+
+  describe("getStateSummary", () => {
+    it("counts a mix of disclosed and undisclosed capacity", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "op", name: "Op", state: "TX", capacityMw: { operational: 100 } }),
+        makeFacility({ id: "planned", name: "Planned", state: "TX", capacityMw: { planned: 50 } }),
+        makeFacility({ id: "none", name: "None", state: "TX" }),
+      ];
+      const summary = (await getStateSummary("TX"))!;
+      expect(summary.count).toBe(3);
+      expect(summary.capacityReporting).toBe(2);
+    });
+
+    it("counts every facility when all disclose capacity", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "a", name: "A", state: "TX", capacityMw: { operational: 10 } }),
+        makeFacility({ id: "b", name: "B", state: "TX", capacityMw: { planned: 20 } }),
+      ];
+      const summary = (await getStateSummary("TX"))!;
+      expect(summary.capacityReporting).toBe(summary.count);
+      expect(summary.capacityReporting).toBe(2);
+    });
+
+    it("counts zero when no facility discloses capacity", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "a", name: "A", state: "TX" }),
+        makeFacility({ id: "b", name: "B", state: "TX" }),
+      ];
+      const summary = (await getStateSummary("TX"))!;
+      expect(summary.capacityReporting).toBe(0);
+      expect(summary.count).toBe(2);
+    });
+
+    it("does not count a cancelled facility even when it discloses capacity", async () => {
+      fixtureFacilities = [
+        makeFacility({
+          id: "cancelled",
+          name: "Cancelled",
+          state: "TX",
+          status: "cancelled",
+          capacityMw: { planned: 200 },
+        }),
+      ];
+      const summary = (await getStateSummary("TX"))!;
+      expect(summary.count).toBe(1);
+      expect(summary.capacityReporting).toBe(0);
+    });
+
+    it("excludes a disclosed-cancelled facility from the denominator while counting it toward count", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "a", name: "A", state: "TX", capacityMw: { operational: 10 } }),
+        makeFacility({ id: "b", name: "B", state: "TX", capacityMw: { planned: 20 } }),
+        makeFacility({
+          id: "c",
+          name: "C",
+          state: "TX",
+          status: "cancelled",
+          capacityMw: { planned: 30 },
+        }),
+        makeFacility({ id: "d", name: "D", state: "TX" }),
+      ];
+      const summary = (await getStateSummary("TX"))!;
+      expect(summary.capacityReporting).toBe(2);
+      expect(summary.count).toBe(4);
+    });
+  });
+
+  describe("getOperatorSummary", () => {
+    it("counts a mix of disclosed and undisclosed capacity", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "op", name: "Op", state: "TX", operator: "Acme", capacityMw: { operational: 100 } }),
+        makeFacility({ id: "planned", name: "Planned", state: "OH", operator: "Acme", capacityMw: { planned: 50 } }),
+        makeFacility({ id: "none", name: "None", state: "NY", operator: "Acme" }),
+      ];
+      const summary = (await getOperatorSummary("Acme"))!;
+      expect(summary.count).toBe(3);
+      expect(summary.capacityReporting).toBe(2);
+    });
+
+    it("counts every facility when all disclose capacity", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "a", name: "A", state: "TX", operator: "Acme", capacityMw: { operational: 10 } }),
+        makeFacility({ id: "b", name: "B", state: "OH", operator: "Acme", capacityMw: { planned: 20 } }),
+      ];
+      const summary = (await getOperatorSummary("Acme"))!;
+      expect(summary.capacityReporting).toBe(summary.count);
+      expect(summary.capacityReporting).toBe(2);
+    });
+
+    it("counts zero when no facility discloses capacity", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "a", name: "A", state: "TX", operator: "Acme" }),
+        makeFacility({ id: "b", name: "B", state: "OH", operator: "Acme" }),
+      ];
+      const summary = (await getOperatorSummary("Acme"))!;
+      expect(summary.capacityReporting).toBe(0);
+      expect(summary.count).toBe(2);
+    });
+
+    it("does not count a cancelled facility even when it discloses capacity", async () => {
+      fixtureFacilities = [
+        makeFacility({
+          id: "cancelled",
+          name: "Cancelled",
+          state: "TX",
+          operator: "Acme",
+          status: "cancelled",
+          capacityMw: { planned: 200 },
+        }),
+      ];
+      const summary = (await getOperatorSummary("Acme"))!;
+      expect(summary.count).toBe(1);
+      expect(summary.capacityReporting).toBe(0);
+    });
+
+    it("excludes a disclosed-cancelled facility from the denominator while counting it toward count", async () => {
+      fixtureFacilities = [
+        makeFacility({ id: "a", name: "A", state: "TX", operator: "Acme", capacityMw: { operational: 10 } }),
+        makeFacility({ id: "b", name: "B", state: "OH", operator: "Acme", capacityMw: { planned: 20 } }),
+        makeFacility({
+          id: "c",
+          name: "C",
+          state: "NY",
+          operator: "Acme",
+          status: "cancelled",
+          capacityMw: { planned: 30 },
+        }),
+        makeFacility({ id: "d", name: "D", state: "FL", operator: "Acme" }),
+      ];
+      const summary = (await getOperatorSummary("Acme"))!;
+      expect(summary.capacityReporting).toBe(2);
+      expect(summary.count).toBe(4);
     });
   });
 });

@@ -1,7 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { getAiClassificationByState, getAiClassificationCounts } from "@/lib/data";
+import {
+  getAiClassificationByState,
+  getAiClassificationCounts,
+  getFacilityTypeCounts,
+} from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
@@ -42,13 +46,20 @@ export const metadata: Metadata = {
  * classification explainer, block-Link state list).
  */
 export default async function AiPage() {
-  const [aiCounts, statesData] = await Promise.all([
+  const [aiCounts, statesData, facilityTypeCounts] = await Promise.all([
     getAiClassificationCounts(),
     getAiClassificationByState(),
+    getFacilityTypeCounts(),
   ]);
 
   const totalAiClassified =
     aiCounts.confirmed + aiCounts.likely + aiCounts.mixed_use;
+  // getAiClassificationCounts() covers data-center facilities only, so pair
+  // it with the data-center total (not all tracked facilities) for an
+  // honest coverage figure — mirrors app/stats/page.tsx's unclassifiedCount.
+  const dataCenterCount = facilityTypeCounts.data_center;
+  const classifiedPct =
+    dataCenterCount > 0 ? (totalAiClassified / dataCenterCount) * 100 : 0;
 
   const stateRows = statesData.map(({ state, counts }) => ({
     code: state,
@@ -123,11 +134,12 @@ export default async function AiPage() {
               ))}
             </dl>
             <p className="text-base leading-relaxed text-muted-foreground">
-              Not every data center has a classification — general-purpose
-              facilities with no discernible AI angle carry none, which is
-              itself meaningful information, not a gap in the data. Each
-              record below links through to its full facility list and cited
-              sources.
+              An AI classification is on file for {totalAiClassified} of the{" "}
+              {dataCenterCount} tracked data centers ({classifiedPct.toFixed(0)}%).
+              Absence is not itself a finding — it usually means the record
+              is thinner, with no sourced basis yet for a classification, not
+              that the site was reviewed and found non-AI. Each record below
+              links through to its full facility list and cited sources.
             </p>
           </div>
 

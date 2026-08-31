@@ -70,6 +70,16 @@ export default async function PowerPage() {
       a.name.localeCompare(b.name)
   );
 
+  // stats.operationalMw/plannedMw (getGenerationStats) sum only non-cancelled
+  // projects, while stats.count is unfiltered — so this denominator must
+  // apply the same non-cancelled guard, not just "has a capacity figure at
+  // all", or the "N of M" line could silently drift from the population the
+  // sums above it actually cover. Same predicate as app/stats/page.tsx and
+  // app/crypto/page.tsx: getFacilityMaxMw is the canonical disclosure check.
+  const capacityDisclosedCount = allProjects.filter(
+    (f) => f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined
+  ).length;
+
   const technologyCounts = new Map<GenerationTechnology, number>();
   for (const f of allProjects) {
     const tech = f.generation?.technology;
@@ -96,6 +106,15 @@ export default async function PowerPage() {
     (sum, { key }) => sum + coolingTypeCounts[key],
     0
   );
+
+  // getGenerationByOfftaker() silently drops projects with no
+  // generation.offtaker — name that gap here rather than let the § By
+  // offtaker breakdown read as if it covers every tracked project.
+  const offtakerReporting = offtakerGroups.reduce(
+    (sum, group) => sum + group.facilities.length,
+    0
+  );
+  const offtakerTotal = allProjects.length;
 
   // Guarded against a zero denominator so a data state with no non-fossil
   // capacity yet renders an em-dash instead of Infinity/NaN.
@@ -144,6 +163,7 @@ export default async function PowerPage() {
       {/* Survey stats row                                                    */}
       {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
+        spacing="wide"
         stats={[
           { value: stats.count, label: "Projects" },
           { value: formatPower(stats.operationalMw), label: "Operational" },
@@ -163,7 +183,9 @@ export default async function PowerPage() {
           data center&apos;s compute load, rather than drawn from the general
           grid. {formatPower(stats.operationalMw)} of that capacity is
           already operational, with {formatPower(stats.plannedMw)} more in
-          the pipeline.
+          the pipeline. Capacity is disclosed for {capacityDisclosedCount} of
+          the {stats.count} tracked projects; both figures sum those records
+          only — a floor, not a dataset total.
         </p>
         <p className="text-base leading-relaxed text-muted-foreground">
           {stats.offtakerCount} distinct offtakers — the hyperscalers and
@@ -286,6 +308,12 @@ export default async function PowerPage() {
             Who&apos;s buying the power
           </h2>
         </div>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          {offtakerReporting} of the {offtakerTotal} tracked power-generation
+          projects name a specific offtaker; the groups below cover those
+          projects only — the rest have a technology and location on record
+          but no disclosed buyer.
+        </p>
         <div className="space-y-8">
           {offtakerGroups.map((group) => (
             <div key={group.offtaker} className="space-y-3">
