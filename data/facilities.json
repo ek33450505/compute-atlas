@@ -11290,13 +11290,29 @@
         "publisher": "Iron County, Utah",
         "retrievedAt": "2026-08-25",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.stgeorgeutah.com/news/ai-campus-proposed-in-iron-county-could-bring-500-jobs-on-site-power-generation-public/article_bcfedf59-aa3f-4ff8-92c0-438f38266f72.html",
+        "label": "AI campus proposed in Iron County could bring 500 jobs, on-site power generation",
+        "publisher": "St. George News",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-09-01",
     "notes": "Approximately 8 miles north of Newcastle, roughly 20 miles from Cedar City; application on hold pending the county's data-center moratorium.",
     "energy": {
       "source": "mixed",
       "notes": "Planned hybrid power: 300MW solar, 1,200MWh battery storage, and 1.5GW natural gas generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "\"expected to rely primarily on air-cooled and closed-loop cooling systems designed to reduce water consumption.\" Recorded as closed_loop per the methodology tie-breaker: air-cooled chillers over a recirculating circuit are closed_loop; `air` is reserved for designs with no cooling water circuit at all."
+    },
+    "landAcres": 2600,
+    "jobs": {
+      "permanent": 500,
+      "sourceIndex": 2
     },
     "facilityType": "data_center"
   },
@@ -18933,7 +18949,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-09-01",
     "notes": "Claims to be world's largest planned AI data center campus at 20M sq ft. 1,143 acres owned; 13,000-acre SITLA lease for solar (largest solar lease in Utah history — record previously stated 30,000 acres, corrected to 13,000 acres per March 2026 BusinessWire announcement and multiple independent sources). Initial customer BluSky AI allocated up to 50MW. Adjacent to Intermountain Power Project. 10GW is full-buildout target; first 300MW gas delivery H1 2027. Coordinates at Delta city centroid; site is southeast of Delta.",
     "energy": {
       "source": "mixed",
@@ -18955,6 +18971,10 @@
     ],
     "investmentUsd": 17000000000,
     "landAcres": 1143,
+    "jobs": {
+      "permanent": 106,
+      "sourceIndex": 1
+    },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -38763,14 +38783,45 @@
         "publisher": "Axios",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://files.dep.state.pa.us/RegionalResources/NWRO/NWROPortalFiles/Homer-City/Air/Final-AQ-Plan-Approval/FINAL%20PLAN%20APPROVAL%2032-00457A.pdf",
+        "label": "PA DEP Air Quality Plan Approval 32-00457A — Homer City Generation LP",
+        "publisher": "Pennsylvania Department of Environmental Protection",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-04",
+    "lastUpdated": "2026-09-01",
     "notes": "Dedicated on-site power generation for the co-located Homer City Energy Campus data centers (tracked separately as homer-city-energy-campus-pa). Redevelopment of Pennsylvania's largest former coal plant into up to 4.5 GW of natural-gas generation via seven GE Vernova turbines; PA DEP air-quality plan approval issued 2025-11-20, first power targeted 2027. Same-site companion to the data-center record.",
     "energy": {
       "source": "on_site_gas",
       "utility": "PJM (interconnects with FirstEnergy Pennsylvania Electric); site also touches NYISO",
       "notes": "Behind-the-meter baseload for the on-site data-center campus, with surplus delivered to the local grid. Fueled by Marcellus natural gas (EQT supply) via the nearby Texas Eastern pipeline."
+    },
+    "emissions": {
+      "permittedTpy": {
+        "nox": 1142.8,
+        "co": 1104.8,
+        "pm": 843.19,
+        "pm25": 840.02,
+        "pm10": 842.23,
+        "so2": 211.76,
+        "voc": 332.16,
+        "co2e": 17551454,
+        "h2so4": 165.73,
+        "formaldehyde": 32.2,
+        "hapsTotal": 57.1
+      },
+      "basis": "facility_wide",
+      "averagingPeriod": "rolling_12_month",
+      "unitsCovered": "seven (7) combined-cycle combustion turbines (CCs) and up to ten (10) simple cycle aeroderivative gas turbines (ADGTs)",
+      "permitNumber": "32-00457A",
+      "permitType": "state_construction",
+      "issuingAgency": "Pennsylvania Department of Environmental Protection",
+      "issuedDate": "2025-11-18",
+      "notes": "Permitted CEILINGS from the plan approval, not measured emissions. Stated at site level under \"SECTION C. Site Level Plan Approval Requirements\", each \"Based on a 12-month rolling total\". The permit prints the sulfur cap as \"Sulfur Oxides (SOx)\" - recorded here under so2 with no conversion. Individual HAPs beyond formaldehyde, also tpy: acetaldehyde 2.94, ethylbenzene 2.35, propylene oxide 2.13, toluene 9.58, xylene 4.72. Permit issued 2025-11-18, expires 2027-05-31; it is a Pennsylvania plan approval (a pre-construction authorisation), NOT a Title V operating permit and not styled a PSD permit - the string \"PSD\" does not appear in it. SCOPE CAVEAT: the permit authorises up to 17 combustion turbines (7 CC + up to 10 ADGT), while this record’s generation.unitCount of 7 describes only the seven GE Vernova 7HA.02 combined-cycle machines - the two counts measure different things and must not be reconciled by editing either. The permittee is \"HOMER CITY GENERATION LP\"; this record’s operator is the developer, Homer City Redevelopment. Twelve emergency generators carry no tpy limit at all (Tier 4 plus a 500 hr/yr cap). Two other figure sets exist in the project record and are NOT these caps and must never be merged with them: the PSD net emissions increase, and emission reduction credits from the retired coal units.",
+      "sourceIndex": 4
     },
     "facilityType": "power_generation",
     "generation": {
@@ -39873,11 +39924,22 @@
         "publisher": "Mitsubishi Power Americas",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://daqpermitting.utah.gov/DocViewer?IntDocID=158288&contentType=application/pdf",
+        "label": "Utah DAQ Approval Order DAQE-AN103270031-25 — Intermountain Power Agency",
+        "publisher": "Utah Division of Air Quality",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-09-01",
     "energy": {
       "notes": "IPA's own page states the replacement units deliver '840 megawatts net generation output' and began commercial operation in July 2025, running '30 percent hydrogen fuel at start-up, transitioning to 100 percent hydrogen fuel by 2045.' Mitsubishi Power describes the plant as an '840 MW class GTCC' built on two M501JAC gas turbines plus two steam turbines and two generators, replacing a coal facility of 'about 1.8 GW'. Hydrogen is to be stored in solution-mined geologic salt caverns at the adjacent Advanced Clean Energy Storage project, which Mitsubishi describes as a '220 MW water electrolysis unit' producing 'up to 100 tons of green hydrogen per day'. LADWP is the largest purchaser and acts as Operating Agent and Project Manager; other participants are municipal utilities and rural cooperatives across six states."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Utah DAQ Approval Order DAQE-AN103270031-25 lists under \"II.A.6 Cooling Towers\": \"Two six-cell linear mechanical draft cooling towers (LMDCTs)\" at \"88,341 gpm of cooling water per tower\", directly beneath the two 487 MW combined-cycle turbines. Mechanical-draft cooling towers reject heat by evaporation, which is the methodology’s canonical `evaporative` case. The permit contains no closed-loop, dry-cooler or air-cooled-condenser language anywhere (verified: zero occurrences). This describes the POWER PLANT’s own cooling, not a data centre load."
     },
     "landAcres": 4614,
     "facilityType": "power_generation"
@@ -53176,9 +53238,10 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-09-01",
     "energy": {
-      "notes": "Utah DAQ Approval Order DAQE-AN160660003-24 (issued December 19, 2024, to Novva SLC Common, LLC - West Jordan Data Center) permits seventy-two (72) natural gas-fired Jenbacher JGS 620 J715 engines rated 3271.8 kW (4,601 hp) each, controlled with Selective Catalytic Reduction and an oxidation catalyst. The permit's project description states the engines 'will power generators providing primary power for the site's two (2) new data center buildings' — this is dedicated on-site generation, not a merchant plant. 72 x 3271.8 kW is about 235.6 MW of gross engine nameplate; Grist reports the plant as 200 MW, which is the figure recorded here. The order also reclassifies the source as a major CO and HAP source subject to Title V and requires 47 tpy of NOx emission reduction credits to satisfy R307-421 offsets. Permitted potential emissions total 997,261 TPY CO2-equivalent, 51.28 TPY NOx, and 202.72 TPY CO. Grist reports Novva turned to self-generation because Rocky Mountain Power could not supply the campus until 2031, and that Novva sought a two-year Clean Air Act exemption in March to run diesel generators while the gas plant is built."
+      "source": "on_site_gas",
+      "notes": "Utah DAQ Approval Order DAQE-AN160660003-24 (issued December 19, 2024, to Novva SLC Common, LLC - West Jordan Data Center) permits seventy-two (72) natural gas-fired Jenbacher JGS 620 J715 engines rated 3271.8 kW (4,601 hp) each, controlled with Selective Catalytic Reduction and an oxidation catalyst. The permit's project description states the engines 'will power generators providing primary power for the site's two (2) new data center buildings' — this is dedicated on-site generation, not a merchant plant. 72 x 3271.8 kW is about 235.6 MW of gross engine nameplate; Grist reports the plant as 200 MW, which is the figure recorded here. The order also reclassifies the source as a major CO and HAP source subject to Title V and requires 47 tpy of NOx emission reduction credits to satisfy R307-421 offsets. Permitted potential emissions total 997,261 TPY CO2-equivalent, 51.28 TPY NOx, and 202.72 TPY CO. Grist reports Novva turned to self-generation because Rocky Mountain Power could not supply the campus until 2031, and that Novva sought a two-year Clean Air Act exemption in March to run diesel generators while the gas plant is built. Utah DAQ Approval Order authorises \"Seventy-two (72) Jenbacher Model: JGS 620 J715\" gas-fired reciprocating engines at the site."
     },
     "facilityType": "power_generation"
   },
@@ -58765,13 +58828,24 @@
         "publisher": "Iron County, Utah",
         "retrievedAt": "2026-08-25",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.ksl.com/article/51463149/planning-commission-considers-ai-data-center-near-cedar-city",
+        "label": "Planning commission considers AI data center near Cedar City",
+        "publisher": "KSL.com",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-09-01",
     "notes": "West of Cedar City along Antelope Springs Road; permit deemed vested ahead of the county's 180-day data center moratorium; development planned in phases over 8-10 years; up to 6.75M sq ft at full buildout.",
     "energy": {
       "source": "on_site_gas",
       "notes": "On-site natural gas-fired power plant planned to serve the campus."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "\"data center would use what is called a closed-loop cooling system, which is designed to circulate and reuse water.\""
     },
     "landAcres": 640,
     "facilityType": "data_center"
@@ -76362,10 +76436,23 @@
         "publisher": "Basin Now",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://duchesne.utah.gov/wp-content/uploads/2026/03/Wells-Draw-Energy-LLC-Natural-Gas-Power-Plant-Findings-Report-040226.pdf",
+        "label": "Duchesne County Planning Commission Findings Report — Wells Draw Energy LLC natural gas power plant",
+        "publisher": "Duchesne County, Utah",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-25",
-    "notes": "400MW natural gas plant sited to power the adjacent Nine Mile Data Center; not previously tracked as a distinct facility.",
+    "lastUpdated": "2026-09-01",
+    "notes": "400MW natural gas plant sited to power the adjacent Nine Mile Data Center; not previously tracked as a distinct facility. Findings Report states the site is \"200 acres within a larger 609-acre area along Wells Draw Road\" — landAcres records the 200-acre project footprint, not the larger area.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Moon Lake Electric Association",
+      "notes": "Duchesne County Planning Commission Findings Report names \"Moon Lake Electric Association as a retail electric provider\"; the on-site plant is the primary supply, with the co-op as the interconnect."
+    },
+    "landAcres": 200,
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
