@@ -99,6 +99,7 @@ import type { Facility, Source } from "../../lib/schema";
 import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
+import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
 
 // ============================================================================
 // Fields covered
@@ -950,6 +951,12 @@ export function toEnrichmentIntents(
 
 export interface RunExtractDeps {
   fetchPageTextImpl: (url: string) => Promise<FetchPageTextResult>;
+  /** Required, not optional: an optional field would default to silently
+   * skipping every PDF source, which is exactly the silent-no-op failure
+   * family this pipeline exists to prevent. Making it required forces every
+   * `RunExtractDeps` construction site (real or test) to decide what happens
+   * to PDF sources instead of inheriting a default nobody chose. */
+  fetchPdfTextImpl: (url: string) => Promise<FetchPdfTextResult>;
   callOllamaImpl: (opts: Omit<CallOllamaOptions, "fetchImpl">) => Promise<CallOllamaResult<ModelExtraction>>;
   now: () => Date;
 }
@@ -1142,23 +1149,112 @@ export function sortSourcesPrimaryFirst(sources: Source[]): Source[] {
     .map(({ source }) => source);
 }
 
+/** Per-run mutable state threaded through `processFacilitySources` /
+ * `fetchSourceText` so the `pdf_extractor_unavailable` warning below fires at
+ * most once per `runExtract` call — never once per PDF source, which on a
+ * PDF-heavy run would drown the log in copies of the same fact. A fresh
+ * instance is created once per `runExtract` call (never module-scoped), so
+ * it can never leak "already warned" state between independent runs or
+ * tests. */
+interface FetchState {
+  pdfExtractorUnavailableWarned: boolean;
+}
+
+/**
+ * Fires a loud, one-time warning the first time any source in this run comes
+ * back `pdf_extractor_unavailable` (poppler / `pdftotext` not installed).
+ * Degraded, not fatal — the run does not abort for it, and this is the only
+ * place the consequence is spelled out (every PDF source from here on will
+ * simply fall through as an ordinary fetch failure), so it fires exactly
+ * once per run rather than being buried inside a `fetch-failed:` line per
+ * source.
+ */
+function warnIfPdfExtractorUnavailable(result: FetchPdfTextResult, fetchState: FetchState): void {
+  if (result.ok || result.reason !== "pdf_extractor_unavailable" || fetchState.pdfExtractorUnavailableWarned) {
+    return;
+  }
+  fetchState.pdfExtractorUnavailableWarned = true;
+  console.error(
+    "pdf-extractor-unavailable: pdftotext (poppler) is not installed — every PDF source in this run is going " +
+      "unread. This run is DEGRADED, not aborted: PDF-only facilities will fall through as ordinary fetch " +
+      "failures for every field they cite a PDF for. Install poppler (e.g. `brew install poppler`) and re-run " +
+      "to read them."
+  );
+}
+
+/**
+ * Routes a single source URL to the right fetcher and returns a common
+ * result shape (`ok`/`text`/`reason`/...) regardless of which one served it.
+ * `.pdf`-extension URLs go straight to `fetchPdfTextImpl`. Everything else
+ * goes to `fetchPageTextImpl` first — but many county-portal PDFs are served
+ * from extensionless download endpoints (e.g. Legistar's
+ * `View.ashx?M=F&ID=…&GUID=…`), so a `bad_content_type` result from
+ * `fetchPageTextImpl` (it declared `application/pdf`, which the page fetcher
+ * rejects on principle) is retried EXACTLY ONCE via `fetchPdfTextImpl`. If
+ * that retry also fails, the ORIGINAL `bad_content_type` result is returned
+ * — never the retry's own failure reason — so `fetchFailures` accounting
+ * stays stable regardless of which path a source took; the retry attempt and
+ * its outcome are logged either way so the choice is never silent.
+ */
+async function fetchSourceText(
+  url: string,
+  deps: RunExtractDeps,
+  fetchState: FetchState
+): Promise<FetchPageTextResult | FetchPdfTextResult> {
+  if (isLikelyPdf(url)) {
+    const result = await deps.fetchPdfTextImpl(url);
+    warnIfPdfExtractorUnavailable(result, fetchState);
+    return result;
+  }
+
+  const pageResult = await deps.fetchPageTextImpl(url);
+  if (pageResult.ok || pageResult.reason !== "bad_content_type") {
+    return pageResult;
+  }
+
+  console.log(`pdf-retry: ${url} — fetchPageTextImpl rejected bad_content_type; retrying via fetchPdfTextImpl`);
+  const retryResult = await deps.fetchPdfTextImpl(url);
+  warnIfPdfExtractorUnavailable(retryResult, fetchState);
+  console.log(
+    `pdf-retry-result: ${url} — ${retryResult.ok ? `ok, ${retryResult.text.length} chars` : `failed (${retryResult.reason})`}`
+  );
+  // Retry succeeded: use it. Retry failed too: surface the ORIGINAL
+  // bad_content_type result, not the retry's reason — see doc-comment above.
+  return retryResult.ok ? retryResult : pageResult;
+}
+
 /**
  * Defect 4's fix: iterates a facility's cited sources IN ORDER (F2: primary
  * documents first, see `sortSourcesPrimaryFirst`), reading as many as it
  * takes to fill every field in `fields` — not just the first readable one. A
  * field is dropped from consideration the moment it's filled, so it is never
  * re-attempted against a later source; the whole loop stops early the moment
- * every field is filled, or when sources are exhausted. PDFs are skipped by
- * extension up front (a belt-and-braces pair with `fetchPageText`'s own
- * content-type allowlist, which rejects PDFs again even if the extension
- * check misses one — e.g. a `.ashx` download link). Never regexes a PDF's
- * bytes (measured: produced a phantom "93, 4" across ~10 records in an
- * earlier pass of this project).
+ * every field is filled, or when sources are exhausted.
+ *
+ * F1's fix: PDFs are now READ, not skipped — routed through `fetchSourceText`
+ * to `fetchPdfText`/`pdftotext -layout` (`.pdf`-extension URLs directly, plus
+ * extensionless download links that turn out to declare `application/pdf`,
+ * e.g. Legistar's `View.ashx?M=F&ID=…&GUID=…`). `-layout` mode specifically
+ * matters, and not just inside `fetchPdfText` itself: measured on two real
+ * source PDFs, raw `pdftotext` spliced hyphenated line-break words together
+ * (`droughttolerant`, `highdemand`, `onstreet`) and broke a spec table's
+ * `CRITICAL IT LOAD    240MW` into a detached label and a detached value;
+ * `-layout` produced zero splice artifacts on either. That's why this loop
+ * can safely regex a PDF's content at all — it only ever regexes the TEXT
+ * `fetchPdfText` already extracted with `-layout`, still never a PDF's raw
+ * bytes (regexing raw bytes measurably produced a phantom "93, 4" across ~10
+ * records in an earlier pass of this project). A spliced (non-`-layout`)
+ * extraction would not reproduce that mechanical garbage — it would instead
+ * silently yield a false "the source does not state this" verdict, the same
+ * couldn't-fetch/isn't-there conflation this project has separately lost
+ * good citations to before. `-layout` is what keeps PDF reading from
+ * reopening that failure family.
  */
 async function processFacilitySources(
   facility: Facility,
   fields: ExtractableField[],
-  deps: RunExtractDeps
+  deps: RunExtractDeps,
+  fetchState: FetchState
 ): Promise<FacilitySourcesResult> {
   const unfilled = new Set(fields);
   const accepted: AcceptedExtraction[] = [];
@@ -1169,7 +1265,6 @@ async function processFacilitySources(
 
   for (const source of sortSourcesPrimaryFirst(facility.sources)) {
     if (unfilled.size === 0) break; // every requested field is already filled — stop reading further sources
-    if (isLikelyPdf(source.url)) continue;
 
     if (process.env.TRACK5_DEBUG_MEM) {
       const mem = process.memoryUsage();
@@ -1182,7 +1277,7 @@ async function processFacilitySources(
       );
     }
     const fetchAttemptStart = Date.now();
-    const fetchResult = await deps.fetchPageTextImpl(source.url);
+    const fetchResult = await fetchSourceText(source.url, deps, fetchState);
     if (!fetchResult.ok) {
       // Previously silent — a per-source fetch failure never printed
       // anything at all, so `fetchPageText`'s (now-surfaced) errorCode/
@@ -1476,8 +1571,13 @@ export async function runExtract(
   // and `outcomes` so far.
   let abortReason: string | null = null;
 
+  // One instance per `runExtract` call — see `FetchState`'s doc-comment —
+  // so the pdf_extractor_unavailable warning's "once per run" guarantee
+  // can never leak across independent runs or tests.
+  const fetchState: FetchState = { pdfExtractorUnavailableWarned: false };
+
   for (const { facility, fields } of byFacility.values()) {
-    const result = await processFacilitySources(facility, fields, deps);
+    const result = await processFacilitySources(facility, fields, deps, fetchState);
     summary.sourcesRead += result.sourcesRead;
 
     if (!result.sawAnyReadable) {
@@ -1771,6 +1871,7 @@ function printSummary(summary: RunExtractSummary): void {
 function buildRealDeps(): RunExtractDeps {
   return {
     fetchPageTextImpl: (url) => fetchPageText(url, { fetchImpl: fetch }),
+    fetchPdfTextImpl: (url) => fetchPdfText(url, { fetchImpl: fetch }),
     callOllamaImpl: (opts) => callOllama<ModelExtraction>({ ...opts, fetchImpl: fetch }),
     now: () => new Date(),
   };

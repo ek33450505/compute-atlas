@@ -21,6 +21,13 @@ import {
 } from "./extract-fields";
 import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
 import type { Facility, Source } from "../../lib/schema";
+import type { FetchPdfTextResult } from "./fetch-pdf-text";
+
+// Shared across every `RunExtractDeps` literal below that isn't exercising
+// PDF behavior directly — an honest declaration that those tests run
+// without poppler, not a silent default (see `RunExtractDeps.fetchPdfTextImpl`'s
+// doc-comment on why the field is required rather than optional).
+const pdfUnavailable = async (): Promise<FetchPdfTextResult> => ({ ok: false, reason: "pdf_extractor_unavailable" });
 
 function makeFacility(overrides: {
   id?: string;
@@ -336,6 +343,7 @@ describe("runExtract — near-empty fetch guard", () => {
     let ollamaCalls = 0;
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: "short", finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => {
         ollamaCalls++;
         return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "n/a" } };
@@ -359,6 +367,7 @@ describe("runExtract — near-empty fetch guard", () => {
 
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: longEnoughText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "not stated" } }),
       now: () => new Date("2026-08-15T00:00:00.000Z"),
     };
@@ -412,6 +421,7 @@ describe("runExtract — duplicate-of-recorded-sibling guard", () => {
     const pageText = `The facility has a ${quote}. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
     return {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: extractedValue, verbatimQuote: quote, reasonIfNull: null },
@@ -477,6 +487,7 @@ describe("runExtract — status/field contradiction guard (Guard 1)", () => {
     const pageText = `The facility has an ${quote}. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
     return {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: extractedValue, verbatimQuote: quote, reasonIfNull: null },
@@ -550,6 +561,7 @@ describe("runExtract — status/field contradiction guard (Guard 1)", () => {
     const pageText = `The facility had a ${quote} before the project was cancelled. ${"Filler sentence about the site. ".repeat(20)}`;
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: quote, reasonIfNull: null } }),
       now: () => new Date("2026-08-16T00:00:00.000Z"),
     };
@@ -634,6 +646,7 @@ describe("runExtract — sibling value collision guard (Guard 2)", () => {
     const pageText = `The site has a ${quote}. ${"Filler sentence about the site. ".repeat(20)}`;
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({ ok: true, data: { value: 640, verbatimQuote: quote, reasonIfNull: null } }),
       now: () => new Date("2026-08-16T00:00:00.000Z"),
     };
@@ -654,6 +667,7 @@ describe("runExtract — sibling value collision guard (Guard 2)", () => {
     const pageText = `The facility has an operational capacity of 40 MW and a planned capacity of 90 MW. ${"Filler sentence about the site. ".repeat(20)}`;
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async (opts) => {
         if (opts.userPrompt.includes("CURRENTLY OPERATIONAL")) {
           return { ok: true, data: { value: 40, verbatimQuote: "operational capacity of 40 MW", reasonIfNull: null } };
@@ -704,6 +718,7 @@ describe("runExtract — sibling value collision guard (Guard 2)", () => {
         }
         return { ok: true, text: `The facility has an operational capacity of 75 MW. ${filler}`, finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async (opts) => {
         if (opts.userPrompt.includes("CURRENTLY OPERATIONAL")) {
           return { ok: true, data: { value: 75, verbatimQuote: "operational capacity of 75 MW", reasonIfNull: null } };
@@ -771,6 +786,7 @@ describe("runExtract — sibling value collision guard (Guard 2)", () => {
         }
         return { ok: true, text: `The facility has a planned capacity of 55 MW. ${filler}`, finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async (opts) => {
         if (opts.userPrompt.includes("Combo Contradiction")) {
           return { ok: true, data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null } };
@@ -867,6 +883,7 @@ describe("runExtract — reads through multiple cited sources (defect 4)", () =>
         const text = url.endsWith("source-3") ? pageWithCapacity : noMentionPage;
         return { ok: true, text, finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: 22, verbatimQuote: "operational capacity of 22 MW", reasonIfNull: null },
@@ -896,6 +913,7 @@ describe("runExtract — reads through multiple cited sources (defect 4)", () =>
         fetchCalls++;
         return { ok: true, text: pageWithEverything, finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async (callOpts) => {
         // buildUserPrompt embeds the field description; branch on it so both
         // requested fields resolve correctly from the SAME stubbed page.
@@ -933,6 +951,7 @@ describe("runExtract — reads through multiple cited sources (defect 4)", () =>
         const text = url.endsWith("source-2") ? withCapacity : noCapacityMention;
         return { ok: true, text, finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: 18, verbatimQuote: "planned capacity of 18 MW", reasonIfNull: null },
@@ -980,6 +999,7 @@ describe("runExtract — unreadable/fetchFailures reconcile per field, not per f
     const facility = makeSingleSourceFacility("thin-multi-field-facility", "Thin Multi Field Corp", "https://example.com/thin");
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: "short", finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "n/a" } }),
       now: () => new Date("2026-08-15T00:00:00.000Z"),
     };
@@ -1002,6 +1022,7 @@ describe("runExtract — unreadable/fetchFailures reconcile per field, not per f
     );
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async () => ({ ok: false, reason: "network_error" }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "n/a" } }),
       now: () => new Date("2026-08-15T00:00:00.000Z"),
     };
@@ -1067,6 +1088,7 @@ describe("runExtract — unreadable/fetchFailures reconcile per field, not per f
         if (url === "https://example.com/f1") return { ok: false, reason: "network_error" };
         return { ok: true, text: pageTextByUrl[url], finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async (callOpts) => {
         if (callOpts.userPrompt.includes("Model Null Corp")) {
           return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "not stated for this facility" } };
@@ -1182,6 +1204,7 @@ describe("runExtract — aborts loudly on a consecutive total-fetch-failure stre
 
   const alwaysFailDeps: RunExtractDeps = {
     fetchPageTextImpl: async () => ({ ok: false, reason: "network_error", errorCode: "ECONNRESET" }),
+    fetchPdfTextImpl: pdfUnavailable,
     callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "unused" } }),
     now: () => new Date("2026-08-16T00:00:00.000Z"),
   };
@@ -1219,6 +1242,7 @@ describe("runExtract — aborts loudly on a consecutive total-fetch-failure stre
         }
         return { ok: false, reason: "network_error", errorCode: "ECONNRESET" };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async (opts) => {
         if (opts.userPrompt.includes("Good Facility a")) {
           return { ok: true, data: { value: 100, verbatimQuote: "planned capacity of 100 MW", reasonIfNull: null } };
@@ -1314,6 +1338,7 @@ describe("runExtract — aborts loudly on a consecutive total-fetch-failure stre
         }
         return { ok: false, reason: "network_error", errorCode: "ECONNRESET" };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: alwaysFailDeps.callOllamaImpl,
       now: alwaysFailDeps.now,
     };
@@ -1407,6 +1432,7 @@ describe("runExtract — combined real-shape edge cases reconcile (defect 7, ret
         }
         throw new Error(`unexpected fetch: ${url}`);
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async (callOpts) => {
         if (callOpts.userPrompt.includes("Early Exit Corp")) {
           if (callOpts.userPrompt.includes("CURRENTLY OPERATIONAL")) {
@@ -1550,6 +1576,7 @@ describe("runExtract — primary documents outrank press for field extraction (F
         const text = url.endsWith("city-filing") ? permitText : pressText;
         return { ok: true, text, finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async (opts) => {
         // Branch on the embedded page text (buildUserPrompt inlines it
         // verbatim) so each source resolves to its OWN stated value.
@@ -1585,6 +1612,7 @@ describe("runExtract — primary documents outrank press for field extraction (F
         finalUrl: url,
         httpStatus: 200,
       }),
+      fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: 40, verbatimQuote: "operational capacity of 40 MW", reasonIfNull: null },
@@ -1600,5 +1628,181 @@ describe("runExtract — primary documents outrank press for field extraction (F
     // First-cited press source still wins when there is no primary doc to
     // prefer — the reorder is rank-based, not a blanket source-1 penalty.
     expect(summary.candidates[0]?.enrichmentUpdate.sources[0]?.url).toBe("https://example.com/press-a");
+  });
+});
+
+// F1: PDFs used to be skipped entirely (`if (isLikelyPdf(source.url))
+// continue;`), which silently converted "we never read this source" into a
+// facility-level `fetchFailures` outcome — indistinguishable from a genuine
+// dead link. `fetchSourceText` now routes `.pdf`-extension sources straight
+// to `fetchPdfTextImpl`, and retries a non-PDF `bad_content_type` result
+// through it once (many county-portal PDFs are served from extensionless
+// links, e.g. Legistar's `View.ashx?...`).
+describe("runExtract — PDF source routing (F1)", () => {
+  const filler = "Filler sentence about the site and its operations. ".repeat(20);
+
+  it("routes a .pdf source to fetchPdfTextImpl and never to fetchPageTextImpl, and its text reaches extraction", async () => {
+    const facility: Facility = {
+      ...makeFacility({ id: "pdf-source-facility" }),
+      sources: [{ url: "https://example.com/filing.pdf", label: "County filing", retrievedAt: "2026-01-01", kind: "filing" }],
+    };
+    const pdfText = `The facility has an operational capacity of 60 MW. ${filler}`;
+    let pageTextCalls = 0;
+    let pdfTextCalls = 0;
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async () => {
+        pageTextCalls++;
+        return { ok: false, reason: "bad_content_type" };
+      },
+      fetchPdfTextImpl: async (url) => {
+        pdfTextCalls++;
+        return { ok: true, text: pdfText, finalUrl: url, httpStatus: 200, contentType: "application/pdf" };
+      },
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 60, verbatimQuote: "operational capacity of 60 MW", reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-31T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(pdfTextCalls).toBe(1);
+    expect(pageTextCalls).toBe(0); // a .pdf URL never goes through fetchPageTextImpl at all
+    expect(summary.extracted).toBe(1);
+    expect(summary.candidates).toHaveLength(1);
+    expect(summary.candidates[0]?.enrichmentUpdate.fields.capacityMw?.operational).toBe(60);
+  });
+
+  it("retries exactly once via fetchPdfTextImpl when a non-PDF URL fetch returns bad_content_type, and uses a successful retry", async () => {
+    const facility: Facility = {
+      ...makeFacility({ id: "retry-success-facility" }),
+      sources: [
+        { url: "https://example.com/View.ashx?M=F&ID=123&GUID=abc", label: "Legistar filing", retrievedAt: "2026-01-01", kind: "filing" },
+      ],
+    };
+    const pdfText = `The facility has an operational capacity of 90 MW. ${filler}`;
+    let pageTextCalls = 0;
+    let pdfTextCalls = 0;
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async () => {
+        pageTextCalls++;
+        return { ok: false, reason: "bad_content_type", httpStatus: 200 };
+      },
+      fetchPdfTextImpl: async (url) => {
+        pdfTextCalls++;
+        return { ok: true, text: pdfText, finalUrl: url, httpStatus: 200, contentType: "application/pdf" };
+      },
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 90, verbatimQuote: "operational capacity of 90 MW", reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-31T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(pageTextCalls).toBe(1);
+    expect(pdfTextCalls).toBe(1); // retried EXACTLY once, never re-tried again after succeeding
+    expect(summary.extracted).toBe(1);
+    expect(summary.fetchFailures).toBe(0);
+    expect(summary.candidates).toHaveLength(1);
+    expect(summary.candidates[0]?.enrichmentUpdate.fields.capacityMw?.operational).toBe(90);
+  });
+
+  it("surfaces the ORIGINAL bad_content_type reason (not the retry's own reason) when the PDF retry also fails", async () => {
+    const facility: Facility = {
+      ...makeFacility({ id: "retry-fail-facility" }),
+      sources: [{ url: "https://example.com/download?id=1", label: "Download link", retrievedAt: "2026-01-01", kind: "filing" }],
+    };
+    let pdfTextCalls = 0;
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const deps: RunExtractDeps = {
+        fetchPageTextImpl: async () => ({ ok: false, reason: "bad_content_type", httpStatus: 200 }),
+        fetchPdfTextImpl: async () => {
+          pdfTextCalls++;
+          return { ok: false, reason: "pdf_extract_failed", errorMessage: "pdftotext produced no extractable text" };
+        },
+        callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "n/a" } }),
+        now: () => new Date("2026-08-31T00:00:00.000Z"),
+      };
+
+      const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+      expect(pdfTextCalls).toBe(1);
+      expect(summary.fetchFailures).toBe(1);
+      const failLine = logSpy.mock.calls.map((args) => String(args[0])).find((line) => line.startsWith("fetch-failed:"));
+      expect(failLine).toBeDefined();
+      expect(failLine).toContain("bad_content_type");
+      expect(failLine).not.toContain("pdf_extract_failed");
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
+  it("logs the pdf-extractor-unavailable warning exactly once across multiple PDF sources and does not abort the run", async () => {
+    const facilities: Facility[] = ["pdf-unavail-a", "pdf-unavail-b", "pdf-unavail-c"].map((id) => ({
+      ...makeFacility({ id }),
+      sources: [{ url: `https://example.com/${id}.pdf`, label: "Filing", retrievedAt: "2026-01-01", kind: "filing" }],
+    }));
+
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const deps: RunExtractDeps = {
+        fetchPageTextImpl: async () => ({ ok: false, reason: "bad_content_type" }),
+        fetchPdfTextImpl: async () => ({
+          ok: false,
+          reason: "pdf_extractor_unavailable",
+          errorMessage: "pdftotext binary not found (poppler not installed)",
+        }),
+        callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "n/a" } }),
+        now: () => new Date("2026-08-31T00:00:00.000Z"),
+      };
+
+      const summary = await runExtract(facilities, { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+      const warnings = errorSpy.mock.calls.filter((args) => String(args[0]).includes("pdf-extractor-unavailable"));
+      expect(warnings).toHaveLength(1);
+      expect(summary.aborted).toBe(false);
+      expect(summary.fetchFailures).toBe(3);
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
+  it("yields a candidate for a facility whose only source is a readable PDF (previously counted as a fetch failure before F1)", async () => {
+    const facility: Facility = {
+      ...makeFacility({ id: "pdf-only-facility" }),
+      sources: [{ url: "https://example.com/only-source.pdf", label: "Filing", retrievedAt: "2026-01-01", kind: "filing" }],
+    };
+    const pdfText = `The facility has a planned capacity of 120 MW. ${filler}`;
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async () => {
+        throw new Error("fetchPageTextImpl must never be called for a .pdf source");
+      },
+      fetchPdfTextImpl: async (url) => ({
+        ok: true,
+        text: pdfText,
+        finalUrl: url,
+        httpStatus: 200,
+        contentType: "application/pdf",
+      }),
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 120, verbatimQuote: "planned capacity of 120 MW", reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-31T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.planned"], runId: "test-run" }, deps);
+
+    expect(summary.fetchFailures).toBe(0);
+    expect(summary.extracted).toBe(1);
+    expect(summary.candidates).toHaveLength(1);
+    expect(summary.candidates[0]?.enrichmentUpdate.fields.capacityMw?.planned).toBe(120);
   });
 });
