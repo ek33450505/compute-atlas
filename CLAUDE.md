@@ -145,7 +145,12 @@ fetched and mechanically verified before staging, using a **local Ollama** model
 (`scripts/discovery/verify-source.ts`); the gate is on by default and, if Ollama is
 unreachable or `OLLAMA_VERIFY_MODEL` is not pulled, the run **aborts loudly** rather
 than staging unverified candidates (`VERIFY_SOURCES_ENABLED=false` is the only
-opt-out). Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics
+opt-out). A separate, **unscheduled** field-extraction lane (`extract-fields.ts` /
+`verify-fields.ts`, run by hand) fills missing structured fields on existing facilities; it reads
+PDF sources via `pdftotext -layout` and so **requires poppler** — without it every PDF source goes
+unread, loudly warned but not fatal. ⛔ Always invoke it with an explicit `--fields` list: the bare
+default is all five fields, two of which the bench measured as not safe to ship.
+Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics
 (launchd, `ollama pull`, running it by hand): `docs/discovery-runbook.md`. It uses the Claude Code subscription (not the metered
 API) and runs via `launchd` on the maintainer's machine — treat it as an operator
 tool, not part of the deployed app.

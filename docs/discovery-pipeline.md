@@ -317,6 +317,11 @@ what the BATS suite pins so cursor tests survive the next rebalance.
 using a local Ollama model. This is an enrichment tool, not a discovery tool —
 it never proposes new facilities and it never overwrites a curated value.
 
+⚠️ **This lane is NOT scheduled.** The architecture diagram above is the whole of
+what `run.sh` invokes; `extract-fields.ts` and `verify-fields.ts` are run by hand.
+Anything scheduling them later must pass `--fields` explicitly (the bare default is
+the unsafe five-field set) and must not weaken the `pending` staging gate.
+
 ### Provenance and review workflow
 
 Every candidate carries `provenance.note` with the format:
@@ -348,6 +353,12 @@ caught in seconds only because the quote travelled with the value.
   headline — it is retracted. Re-run a sweep before drawing yield conclusions.
 - **Enum fields** (`energy.source`, `energy.utility`): the bench covers only
   numeric fields. Enum extraction is not measured and should be treated as alpha.
+- **PDF sources were unreadable until PR #199**, and the yield figure above was
+  measured while they were. Every `.pdf` source was skipped outright — 96 of them
+  across the dataset, disproportionately the permits and filings most likely to
+  state a figure — so "most remaining gaps are real absences" was partly a
+  statement about the fetcher, not about the world. They are now read via
+  `pdftotext -layout`; re-measure before citing any yield number.
 - **No batching:** asking for several fields in one model call was measured at
   2/7 recall against 4/4 for one-field-per-call. The reason is recall, not
   determinism — do not conflate this with the `OLLAMA_NUM_PARALLEL`
