@@ -43,6 +43,13 @@
       "when": 1787184508766,
       "tag": "0005_aspiring_captain_cross",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788290430025,
+      "tag": "0006_lovely_johnny_blaze",
+      "breakpoints": true
     }
   ]
 }

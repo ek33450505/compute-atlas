@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { and, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
-import { submissionsTable, subscriptionsTable, leadsTable } from "@/lib/db/schema";
+import { submissionsTable, subscriptionsTable, leadsTable, contactMessagesTable } from "@/lib/db/schema";
 
 export const RATE_LIMIT_MAX = 5;
 export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -15,6 +15,50 @@ export function extractClientIp(request: Request): string {
   }
   const realIp = request.headers.get("x-real-ip");
   if (realIp) return realIp.trim();
+  return "unknown";
+}
+
+/**
+ * Derives the client IP the way `extractClientIp` above deliberately does
+ * NOT: on Vercel the leftmost `x-forwarded-for` entry is client-suppliable
+ * (Vercel appends the real client IP rather than replacing one the client
+ * already sent), so an attacker can rotate XFF per request to get a fresh
+ * `ipHash` bucket every request and bypass any limiter keyed on
+ * `extractClientIp`'s result entirely. This prefers `x-real-ip` instead —
+ * assumed to be set by Vercel's edge to the true client-connection IP,
+ * single-valued and not attacker-controllable — falling back to the
+ * RIGHTMOST `x-forwarded-for` entry (the one appended by the trusted proxy,
+ * on the same assumption) if `x-real-ip` is absent, then to a fixed
+ * sentinel.
+ *
+ * Prefer this over `extractClientIp` for security-sensitive paths where a
+ * spoofed bucket has a real cost if bypassed — auth lockout, and anything
+ * that sends email or costs money on every accepted request (e.g. the
+ * contact endpoint). `extractClientIp` remains the default for the read-API
+ * and other limiters that don't need this stronger guarantee; do not switch
+ * them over without a reason, since it's marginally stricter (a genuine
+ * multi-hop proxy chain with no `x-real-ip` set will resolve to a different
+ * entry than before).
+ *
+ * Takes `Headers` directly (not a `Request`) so both a route handler
+ * (`request.headers`) and a Server Action (`await headers()` from
+ * `next/headers`, whose `ReadonlyHeaders` type is a structural superset of
+ * `Headers`) can call this without wrapping or casting.
+ */
+export function extractTrustedClientIp(headers: Headers): string {
+  const realIp = headers.get("x-real-ip");
+  if (realIp) {
+    const trimmed = realIp.trim();
+    if (trimmed) return trimmed;
+  }
+  const forwardedFor = headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    const parts = forwardedFor
+      .split(",")
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
   return "unknown";
 }
 
@@ -69,6 +113,22 @@ export async function checkLeadRateLimit(ipHash: string): Promise<{ ok: boolean 
     .select({ c: sql<number>`count(*)::int` })
     .from(leadsTable)
     .where(and(gt(leadsTable.createdAt, windowStart), eq(leadsTable.submitterIpHash, ipHash)));
+  return rateLimitDecision(Number(rows[0]?.c ?? 0));
+}
+
+/**
+ * Per-IP rate limit for the contact endpoint (`POST /api/contact`), counting
+ * `contactMessagesTable` rows via its own `submitterIpHash` column — its own
+ * counter (own table, same MAX/WINDOW), same reasoning as `checkLeadRateLimit`:
+ * contact messages, leads, and facility submissions must not share a budget,
+ * or a burst against one silently starves the others.
+ */
+export async function checkContactRateLimit(ipHash: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(contactMessagesTable)
+    .where(and(gt(contactMessagesTable.createdAt, windowStart), eq(contactMessagesTable.submitterIpHash, ipHash)));
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
 }
 

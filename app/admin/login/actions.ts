@@ -5,7 +5,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { SESSION_COOKIE_NAME, createSessionValue } from "@/lib/admin-session";
-import { hashIp } from "@/lib/rate-limit";
+import { extractTrustedClientIp, hashIp } from "@/lib/rate-limit";
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
@@ -38,40 +38,6 @@ const loginAttempts = new Map<string, AttemptBucket>();
 
 export interface LoginState {
   error?: string;
-}
-
-/**
- * Derives the client IP for the login-lockout bucket key. Deliberately NOT
- * the same order as `lib/rate-limit.ts`'s best-effort `extractClientIp`
- * (leftmost `x-forwarded-for`): on Vercel the leftmost XFF entry is
- * client-suppliable (Vercel appends the real client IP rather than
- * replacing one the client already sent — see `lib/api-rate-limit.ts:36`),
- * so an attacker can rotate XFF per request to get a fresh `ipHash` bucket
- * every attempt and bypass the 5-attempt lockout below entirely. This path
- * is security-critical (auth), so it prefers `x-real-ip` instead — assumed
- * here to be set by Vercel's edge to the true client-connection IP,
- * single-valued and not attacker-controllable. Falls back to the
- * RIGHTMOST `x-forwarded-for` entry (the one appended by the trusted
- * proxy, on the same assumption) if `x-real-ip` is absent, then to a fixed
- * sentinel. This is a local helper — the shared rate-limit libs are
- * intentionally left as-is since the read-API limiter they serve doesn't
- * need this stronger guarantee.
- */
-function getClientIp(hdrs: Headers): string {
-  const realIp = hdrs.get("x-real-ip");
-  if (realIp) {
-    const trimmed = realIp.trim();
-    if (trimmed) return trimmed;
-  }
-  const forwardedFor = hdrs.get("x-forwarded-for");
-  if (forwardedFor) {
-    const parts = forwardedFor
-      .split(",")
-      .map((p) => p.trim())
-      .filter((p) => p.length > 0);
-    if (parts.length > 0) return parts[parts.length - 1];
-  }
-  return "unknown";
 }
 
 /** True if `ipHash` is currently at or over the failed-attempt cap for the active window. */
@@ -137,7 +103,7 @@ export async function login(
   // Same generic error on both the rate-limited and wrong-password paths —
   // an attacker probing the endpoint can't distinguish "locked out" from
   // "bad guess" from the response text alone.
-  const ipHash = hashIp(getClientIp(await headers()));
+  const ipHash = hashIp(extractTrustedClientIp(await headers()));
   if (isLoginRateLimited(ipHash)) {
     // Still run the same constant-time password check as the wrong-password
     // branch below (result discarded) so response latency doesn't leak

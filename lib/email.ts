@@ -72,6 +72,54 @@ export async function sendConfirmEmail(input: {
   }
 }
 
+export async function sendContactEmail(input: {
+  name: string;
+  email: string;
+  topic: string;
+  message: string;
+}): Promise<{ sent: boolean }> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn("RESEND_API_KEY not set — skipping contact email send");
+    return { sent: false };
+  }
+
+  const to = process.env.CONTACT_TO_EMAIL;
+  if (!to) {
+    // The message is already durably stored (the route inserts the row
+    // before calling this), so nothing is lost — just log so the gap is
+    // visible in server logs rather than silently swallowed.
+    console.warn("CONTACT_TO_EMAIL not set — skipping contact email send");
+    return { sent: false };
+  }
+
+  const subject = `Compute Atlas contact — ${input.topic}`;
+  const text = `New contact form submission.\n\nName: ${input.name}\nEmail: ${input.email}\nTopic: ${input.topic}\n\n${input.message}`;
+  const html = `<p><strong>New contact form submission</strong></p><p>Name: ${escapeHtml(input.name)}<br>Email: ${escapeHtml(input.email)}<br>Topic: ${escapeHtml(input.topic)}</p><p>${escapeHtml(input.message).replace(/\n/g, "<br>")}</p>`;
+
+  try {
+    const result = await resend.emails.send({
+      from: fromAddress(),
+      to,
+      replyTo: input.email,
+      subject,
+      text,
+      html,
+    });
+    if (result.error) {
+      // Log only the error type, not the raw Resend error object — it can
+      // echo the recipient address back on a validation failure (s65
+      // security review, Fix 3).
+      console.error("sendContactEmail failed:", result.error?.name ?? "unknown");
+      return { sent: false };
+    }
+    return { sent: true };
+  } catch (error) {
+    console.error("sendContactEmail failed:", error instanceof Error ? error.name : "unknown");
+    return { sent: false };
+  }
+}
+
 export async function sendChangeNotification(input: {
   email: string;
   facilityName: string;
