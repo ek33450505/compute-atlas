@@ -20,8 +20,10 @@ log() {
 # extract-fields.ts and verify-fields.ts both parse an unparseable --limit as
 # `undefined`, and an undefined limit means the bounding gaps.slice(0, limit)
 # is SKIPPED ENTIRELY — turning a ~60-value bounded lane into an unattended
-# sweep of ~2,525 gap values, roughly 12 hours of third-party-source
-# crawling. This matters specifically because this lane now runs unattended
+# sweep of ~3,629 gap values, roughly 17 hours of third-party-source
+# crawling (proportional rescale of the previously measured 12h/2,525-gap
+# figure to the current 4-field gap count — not a fresh measurement).
+# This matters specifically because this lane now runs unattended
 # via launchd, not by hand: a hand-run operator would see the runtime blow
 # up and kill it; a scheduled job will not. submit-candidates.ts already
 # guards this exact bug class for its own --max (see its "unsafe" branch
@@ -515,38 +517,58 @@ fi
 if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
   log "DISCOVERY_DRY_RUN=true — skipping field-extraction/verification lane"
 else
-  # Bounded, not swept-to-completion: ~2,525 gap values exist across the
-  # three fields below, and each takes ~6-7s per source check with ~3 checks
-  # per value — an unbounded run is roughly 12 hours. Env-overridable so an
-  # operator can widen the sweep by hand without editing this script.
+  # Bounded, not swept-to-completion: the four fields below total 3,629 gap
+  # values (measured 2026-09-01: capacityMw.operational 1,052 + energy.source
+  # 753 + energy.utility 718 + water.coolingType 1,106, over 1,309 records),
+  # and each takes ~6-7s per source check with ~3 checks per value — an
+  # unbounded run is roughly 17 hours (proportional rescale of the
+  # previously measured 12h/2,525-gap figure to the current 3,629-gap
+  # total, not a fresh measurement). Env-overridable so an operator can
+  # widen the sweep by hand without editing this script.
+  #
+  # ⚠️ Adding a 4th field does NOT lengthen the run. selectGaps() iterates
+  # facilities outer × fields inner, and ENRICHMENT_LIMIT bounds the TOTAL
+  # number of gaps filled per run, not a per-field count — so a 4th field
+  # shifts the mix within the same fixed budget: fewer facilities get covered
+  # per night, but wall-clock time is unchanged.
   ENRICHMENT_LIMIT="$(validate_positive_int_env ENRICHMENT_LIMIT 60)"
   VERIFY_LIMIT="$(validate_positive_int_env VERIFY_LIMIT 40)"
   ENRICHMENT_RUN_ID="$(date '+%Y%m%dT%H%M%S')-enrichment"
 
   # ⛔⛔ CRITICAL for extract-fields: --fields MUST be passed explicitly.
-  # parseFieldsArg() returns the FULL five-field default set when --fields is
-  # omitted, and two of those five failed the project's accuracy bench
+  # parseFieldsArg() returns the FULL six-field default set when --fields is
+  # omitted, and two of those six failed the project's accuracy bench
   # (capacityMw.planned 75% precision, energy.onSiteGenerationMw 50%) — not
   # safe to STAGE unattended. So the bare invocation is precisely the unsafe
   # one, which is why this lane was never wired in before F0 step 3. Do not
   # remove --fields from the extract-fields call to "simplify" it.
   #
-  # ⚠️ But do NOT read this list as "three fields that passed the bench". Only
-  # capacityMw.operational is bench-measured (P=100%/R=100%). Until 2026-09-01
-  # the bench could score only NUMERIC fields, so energy.source (enum) and
-  # energy.utility (free text) have never been scored at all — no label in
-  # truth.json, no row in any result file. Pinning this list EXCLUDES the two
-  # fields the bench rejected; it does not certify the two it never measured.
-  # See docs/discovery-runbook.md's per-field table, which records this with "—".
+  # ⚠️ But do NOT read this list as "four fields that passed the bench". Of
+  # the four fields pinned here, only TWO are bench-measured:
+  # capacityMw.operational (P=100%/R=100%) and water.coolingType (P=95%/R=95%,
+  # measured 2026-09-01 over 69 pages). energy.source (enum) and
+  # energy.utility (free text) remain unmeasured — no label in truth.json, no
+  # row in any result file. Pinning this list EXCLUDES the fields the bench
+  # rejected; it does not certify the ones it never measured. See
+  # docs/discovery-runbook.md's per-field table, which records this with "—".
+  #
+  # ⚠️ water.coolingType's 95% belongs to the PROMPT, not the field. With a
+  # bare vocabulary list and no decision rule, the same model on the same 69
+  # pages scored P=53%/R=42%. extract-fields.ts's
+  # FIELD_DESCRIPTIONS["water.coolingType"] carries
+  # docs/methodology.md#cooling-type's definitions and tie-breaker verbatim
+  # (byte-identical to scripts/discovery/bench/run.mjs); a drift test guards
+  # it. `hybrid` is in the prompt vocabulary but REFUSED at validation because
+  # it has zero positive bench labels.
   #
   # verify-fields takes the SAME list for a DIFFERENT reason — it is read-only
   # and stages nothing, so the ship-safety caveat above does not apply to it
   # (docs/discovery-runbook.md says so explicitly, which is why the `npm run
   # verify-fields` wrapper deliberately bakes in no field list). Here the list
-  # is a SCOPE bound: it keeps the nightly check on the same three fields the
+  # is a SCOPE bound: it keeps the nightly check on the same four fields the
   # fill lane populates, and keeps the run inside its time budget. Widening it
   # for verify-fields is a cost question, not a safety one.
-  ENRICHMENT_FIELDS="capacityMw.operational,energy.source,energy.utility"
+  ENRICHMENT_FIELDS="capacityMw.operational,energy.source,energy.utility,water.coolingType"
 
   if ! command -v pdftotext >/dev/null 2>&1; then
     log "WARN: pdftotext not on PATH (poppler not installed) — every PDF source in this lane will go unread; continuing degraded"

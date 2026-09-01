@@ -151,12 +151,15 @@ discovery and source-liveness lanes) and can also be run by hand; everything it 
 stages as `pending`. It reads
 PDF sources via `pdftotext -layout` and so **requires poppler** — without it every PDF source goes
 unread, loudly warned but not fatal. ⛔ Always invoke it with an explicit `--fields` list: the bare
-default is all five fields, two of which the bench measured as not safe to ship. ⚠️ Note the
-converse is NOT established: of the three pinned fields only `capacityMw.operational` is
-bench-measured; `energy.source` and `energy.utility` are unmeasured (the bench could not score
-non-numeric fields until 2026-09-01). The scheduled
+default is all six fields, two of which the bench measured as not safe to ship. ⚠️ Note the
+converse is NOT established: of the four pinned fields only `capacityMw.operational` and
+`water.coolingType` are bench-measured; `energy.source` and `energy.utility` are unmeasured (the
+bench could not score non-numeric fields until 2026-09-01). ⚠️ `water.coolingType`'s 95% belongs to
+the PROMPT, not the field — it is 53% without the decision rule, which `extract-fields.ts` carries
+verbatim from `docs/methodology.md#cooling-type` under a drift test. The scheduled
 invocation bakes that list in, and bounds each tool with `ENRICHMENT_LIMIT` (60) / `VERIFY_LIMIT`
-(40) — a full sweep is ~12 hours, and an unparseable limit would otherwise disable the bound
+(40) — a full sweep is ~17 hours (rescaled from the measured 12h/2,525-gap figure now that the
+pinned list totals 3,629 gaps), and an unparseable limit would otherwise disable the bound
 entirely, so `run.sh` validates both before use.
 Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics
 (launchd, `ollama pull`, running it by hand): `docs/discovery-runbook.md`. It uses the Claude Code subscription (not the metered
