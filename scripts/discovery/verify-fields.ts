@@ -819,7 +819,40 @@ interface CliArgs {
   runId: string;
 }
 
-function parseArgs(argv: string[]): CliArgs {
+/**
+ * Fallback used when `--limit` is PRESENT on the command line but not
+ * parseable as a positive integer (`--limit=abc`, `--limit=0`,
+ * `--limit=-5`, an empty value). Kept as a named constant, not a bare
+ * literal, so the "why 500" reasoning stays attached to the value.
+ */
+const INVALID_LIMIT_FALLBACK = 500;
+
+/**
+ * Parses a `--limit` value that was actually supplied. `limit === undefined`
+ * means "no bound" downstream — see `if (opts.limit !== undefined) { checks
+ * = checks.slice(0, opts.limit); }` — and that is the correct, deliberate
+ * meaning of OMITTING `--limit` entirely (an operator asking for a full
+ * sweep). `raw === undefined` here reflects exactly that omission, so it is
+ * the only input allowed to return `undefined`.
+ *
+ * A PRESENT-but-invalid value must never collapse to that same `undefined`:
+ * doing so is the bug this function exists to close — `--limit=abc` used to
+ * silently produce an unbounded, ~12-hour sweep over the full check set.
+ * Clamp it to `INVALID_LIMIT_FALLBACK` instead, and say so loudly on stderr.
+ */
+function parseLimitArg(raw: string | undefined): number | undefined {
+  if (raw === undefined) return undefined;
+  const parsed = Number(raw);
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return Math.floor(parsed);
+  }
+  console.warn(
+    `--limit: invalid value ${JSON.stringify(raw)} (expected a positive integer) — falling back to ${INVALID_LIMIT_FALLBACK}.`
+  );
+  return INVALID_LIMIT_FALLBACK;
+}
+
+export function parseArgs(argv: string[]): CliArgs {
   let outPath: string | undefined;
   let limit: number | undefined;
   let fields: ExtractableField[] = [...EXTRACTABLE_FIELDS];
@@ -833,11 +866,23 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (flag.startsWith("--out=")) {
       outPath = flag.slice("--out=".length);
     } else if (flag === "--limit") {
-      const parsed = Number(argv[++i]);
-      limit = Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : undefined;
+      // A bare trailing `--limit`, or `--limit` immediately followed by
+      // another flag (`--limit --fields=x`), supplies no value. Do NOT
+      // consume the next token as the value in that case — that would both
+      // swallow a real flag and (via parseLimitArg's own `raw === undefined`
+      // contract) silently produce the unbounded sweep this whole function
+      // exists to prevent. Treat "no value supplied" the same as the already
+      // -handled `--limit=` empty-string case instead, and don't advance `i`
+      // past a token we didn't consume.
+      const next = argv[i + 1];
+      if (next !== undefined && !next.startsWith("--")) {
+        limit = parseLimitArg(next);
+        i++;
+      } else {
+        limit = parseLimitArg("");
+      }
     } else if (flag.startsWith("--limit=")) {
-      const parsed = Number(flag.slice("--limit=".length));
-      limit = Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : undefined;
+      limit = parseLimitArg(flag.slice("--limit=".length));
     } else if (flag === "--fields") {
       fields = parseFieldsArg(argv[++i]);
     } else if (flag.startsWith("--fields=")) {

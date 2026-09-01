@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import {
   selectValuesToVerify,
   valuesReconcile,
   runVerify,
+  parseArgs,
   type VerifyFieldsDeps,
 } from "./verify-fields";
 import { CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD } from "./extract-fields";
@@ -784,5 +785,77 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
     expect(summary.confirmed).toBe(1);
     expect(summary.uncheckedValues[0]?.facilityId).toBe("unchecked-in-mix");
     expect(summary.uncheckedValues[0]?.reason).toBe("noSources");
+  });
+});
+
+describe("parseArgs — --limit fail-open regression guard", () => {
+  it("falls back to 500 (not undefined) for a non-numeric --limit=value", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const args = parseArgs(["--limit=abc"]);
+      expect(args.limit).toBe(500);
+      expect(args.limit).not.toBeUndefined();
+      expect(warnSpy).toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("falls back to 500 for --limit=0 and --limit=-5", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      expect(parseArgs(["--limit=0"]).limit).toBe(500);
+      expect(parseArgs(["--limit=-5"]).limit).toBe(500);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("leaves limit undefined (unbounded) when --limit is omitted entirely", () => {
+    const args = parseArgs(["--fields=capacityMw.operational"]);
+    expect(args.limit).toBeUndefined();
+  });
+
+  it("accepts a valid --limit=25 unchanged", () => {
+    const args = parseArgs(["--limit=25"]);
+    expect(args.limit).toBe(25);
+  });
+
+  it("applies the same fallback to the space-separated form (--limit abc)", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const args = parseArgs(["--limit", "abc"]);
+      expect(args.limit).toBe(500);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("falls back to 500 (not undefined) for a bare trailing --limit with no value at all", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const args = parseArgs(["--limit"]);
+      expect(args.limit).toBe(500);
+      expect(args.limit).not.toBeUndefined();
+      expect(warnSpy).toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("falls back to 500 for --limit immediately followed by another flag, and does not swallow that flag", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const args = parseArgs(["--limit", "--fields=energy.source"]);
+      expect(args.limit).toBe(500);
+      expect(args.fields).toEqual(["energy.source"]);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("still leaves limit undefined (unbounded) when --limit is omitted entirely — the over-correction guard", () => {
+    const args = parseArgs([]);
+    expect(args.limit).toBeUndefined();
   });
 });
