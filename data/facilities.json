@@ -39750,10 +39750,7 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
-      "poweredFacilityIds": [
-        "iep-project-hummingbird-greene-county-pa"
-      ],
-      "notes": "Behind-the-meter combined-cycle gas turbines with battery storage and backup from an existing grid interconnection. Manufacturing slots secured with turbine delivery expected in 2028; expected operational Q1 2029. IEP's own page describes the plant as approximately 910 MW."
+      "notes": "Behind-the-meter combined-cycle gas turbines with battery storage and backup from an existing grid interconnection. Manufacturing slots secured with turbine delivery expected in 2028; expected operational Q1 2029. IEP's own page describes the plant as approximately 910 MW. The plant is proposed to serve a co-located Project Hummingbird compute campus, which Compute Atlas does not track as a separate facility record; no powered-facility link is recorded rather than pointing at an id that does not exist."
     }
   },
   {
