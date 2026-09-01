@@ -8,6 +8,12 @@ import { FactRow, SourceLink } from "./fact-row";
 // schema so the pollutant table below stays in sync with `lib/schema.ts`.
 type PermittedTpy = NonNullable<NonNullable<Facility["emissions"]>["permittedTpy"]>;
 
+// Shape of one entry in `facility.emissions.unitGroups` — a per-equipment-
+// group set of limits, for permits (Crusoe Abilene, xAI/MZX MS) that cap
+// pollutants per group with different limits per group instead of one
+// facility-wide number.
+type EmissionsUnitGroup = NonNullable<NonNullable<Facility["emissions"]>["unitGroups"]>[number];
+
 // --- Enum label maps ---
 const energySourceLabels: Record<string, string> = {
   grid: "Grid",
@@ -86,6 +92,15 @@ const emissionsBasisLabels: Record<string, string> = {
   per_unit: "Per unit",
 };
 
+// Distinct enum from `emissionsBasisLabels` above — "group_wide" is a value
+// that exists ONLY on an equipment group's own `basis` (a group entry always
+// carries limits for something, so it never omits `basis`) and never on the
+// top-level `emissions.basis`. Do not merge with emissionsBasisLabels.
+const emissionsGroupBasisLabels: Record<EmissionsUnitGroup["basis"], string> = {
+  per_unit: "Per unit",
+  group_wide: "Group total",
+};
+
 const averagingPeriodLabels: Record<string, string> = {
   calendar_year: "Calendar year",
   rolling_12_month: "12-month rolling",
@@ -143,6 +158,18 @@ type MissingFromOrder = Exclude<keyof PermittedTpy, (typeof pollutantOrder)[numb
 const pollutantOrderIsExhaustive: MissingFromOrder extends never ? true : MissingFromOrder =
   true;
 void pollutantOrderIsExhaustive;
+
+// Shared by the facility-wide `permittedTpy` and each equipment group's own
+// `permittedTpy` — same ordering, same `!== undefined` check (a 0 tpy value
+// is a real regulatory fact, never hidden by a truthy check).
+function pollutantEntriesFor(tpy: PermittedTpy | undefined) {
+  return pollutantOrder
+    .map((key) => ({ key, value: tpy?.[key] }))
+    .filter(
+      (entry): entry is { key: keyof PermittedTpy; value: number } =>
+        entry.value !== undefined
+    );
+}
 
 // --- Predicate ---
 export function hasCivicImpact(facility: Facility): boolean {
@@ -243,12 +270,7 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
     ? (permitTypeLabels[emissions.permitType] ?? emissions.permitType)
     : null;
 
-  const pollutantEntries = pollutantOrder
-    .map((key) => ({ key, value: emissions.permittedTpy?.[key] }))
-    .filter(
-      (entry): entry is { key: keyof PermittedTpy; value: number } =>
-        entry.value !== undefined
-    );
+  const pollutantEntries = pollutantEntriesFor(emissions.permittedTpy);
 
   const basisLabel = emissions.basis
     ? (emissionsBasisLabels[emissions.basis] ?? emissions.basis)
@@ -257,6 +279,13 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
     ? (averagingPeriodLabels[emissions.averagingPeriod] ?? emissions.averagingPeriod)
     : null;
 
+  const unitGroups = emissions.unitGroups ?? [];
+
+  // Groups-only permits (e.g. xAI/MZX MS, which caps most pollutants only
+  // per turbine group with no facility-wide tonnage at all) must still
+  // render the panel — without this disjunct, a record with `unitGroups`
+  // but no top-level pollutants/permit metadata would compute `hasContent`
+  // false and the whole "Air permit" panel would silently render nothing.
   const hasContent =
     pollutantEntries.length > 0 ||
     !!emissions.permitNumber ||
@@ -266,7 +295,8 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
     !!emissions.notes ||
     !!basisLabel ||
     !!emissions.unitsCovered ||
-    !!averagingPeriodLabel;
+    !!averagingPeriodLabel ||
+    unitGroups.length > 0;
 
   if (!hasContent) return null;
 
@@ -306,6 +336,67 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
         <div className="mt-2">
           <SourceLink sourceIndex={emissions.sourceIndex} facility={facility} />
         </div>
+      )}
+      {unitGroups.length > 0 && (
+        <div className="mt-4 space-y-4">
+          {unitGroups.map((group) => (
+            <EmissionsUnitGroupCard
+              key={group.label}
+              group={group}
+              // A group without its own `averagingPeriod` inherits the
+              // top-level one (per lib/schema.ts). Resolved and rendered
+              // HERE, on the group, rather than once at panel level — a
+              // groups-only record (item 1's xAI/MZX case) may have no
+              // top-level averaging period row to point back to at all, and
+              // a reader looking at one group's numbers shouldn't have to
+              // cross-reference facility-wide metadata to know what window
+              // they cover.
+              averagingPeriodLabel={
+                group.averagingPeriod
+                  ? (averagingPeriodLabels[group.averagingPeriod] ?? group.averagingPeriod)
+                  : averagingPeriodLabel
+              }
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// One equipment group's own limits, rendered as its own heading + `<dl>`
+// rather than nested inside the facility-wide `<dl>` above — a `<dl>` cannot
+// validly contain another `<dl>` or a heading, so each group gets its own
+// section instead of being interleaved into the parent list.
+function EmissionsUnitGroupCard({
+  group,
+  averagingPeriodLabel,
+}: {
+  group: EmissionsUnitGroup;
+  averagingPeriodLabel: string | null;
+}) {
+  const pollutantEntries = pollutantEntriesFor(group.permittedTpy);
+  const basisLabel = emissionsGroupBasisLabels[group.basis] ?? group.basis;
+
+  return (
+    <div>
+      <h4 className="text-xs font-semibold mb-2">{group.label}</h4>
+      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+        {group.unitCount !== undefined && (
+          <FactRow label="Units">{group.unitCount.toLocaleString()} units</FactRow>
+        )}
+        <FactRow label="Limits apply to">{basisLabel}</FactRow>
+        {pollutantEntries.map(({ key, value }) => (
+          <FactRow key={key} label={pollutantLabels[key]}>
+            {formatTonsPerYear(value)}
+          </FactRow>
+        ))}
+        {averagingPeriodLabel && (
+          <FactRow label="Averaging period">{averagingPeriodLabel}</FactRow>
+        )}
+      </dl>
+      {group.notes && (
+        <p className="mt-2 text-sm text-muted-foreground">{group.notes}</p>
       )}
     </div>
   );
