@@ -23,6 +23,15 @@
 
 import { readFileSync, readdirSync } from "node:fs";
 import { quoteGrounded } from "./quote.mjs";
+// Field-kind map lives in fields.mjs -- shared with run.mjs -- so the
+// scorer can't drift from what was actually asked. Same rationale as the
+// quote.mjs split (see that file's header): the gate must be fixable
+// without re-spending a model run.
+import {
+  KIND, fieldKind, FIELD_ENUM_VALUES,
+  normalizeEnum, normalizeText, isInVocabulary,
+  numericValue, numericClose,
+} from "./fields.mjs";
 const D = new URL("./", import.meta.url).pathname;
 const TRUTH = JSON.parse(readFileSync(D + "truth.json", "utf8"));
 // Grounding is RECOMPUTED here, not trusted from the stored result: the run that
@@ -32,16 +41,30 @@ const PAGETEXT = Object.fromEntries(
   JSON.parse(readFileSync(D + "pages.json", "utf8")).map((p) => [p.facilityId, p.text]),
 );
 
-const num = (v) => {
-  if (v === null || v === undefined) return null;
-  if (typeof v === "number") return v;
-  const m = String(v).match(/-?[\d,.]+/);
-  if (!m) return null;
-  const n = Number(m[0].replace(/,/g, ""));
-  return Number.isFinite(n) ? n : null;
-};
-const close = (a, b) => a !== null && b !== null && Math.abs(a - b) / Math.max(Math.abs(a), Math.abs(b), 1) < 0.05;
 const pct = (x) => (x === null ? "  n/a" : `${String(Math.round(x * 100)).padStart(3)}%`);
+
+// Kind-dispatched extraction/comparison. NUMERIC routes through
+// numericValue()/numericClose() -- moved to fields.mjs verbatim from this
+// file's former local num()/close(), unchanged -- see rescore-BASELINE
+// regression requirement (numeric scoring must stay byte-identical).
+// ENUM/TEXT route through fields.mjs's normalisers.
+//
+// IMPORTANT for ENUM: an out-of-vocabulary answer must normalise to a
+// non-null string (never coerced to null the way numericValue() coerces an
+// unparseable string) -- otherwise it would be silently miscounted as a
+// "miss" instead of the WRONG it actually is. normalizeEnum already has
+// this property: it only returns null for a genuinely null/undefined/empty
+// input, never for a value merely outside the declared vocabulary.
+const extractGot = (kind, raw) => {
+  if (kind === KIND.ENUM) return normalizeEnum(raw);
+  if (kind === KIND.TEXT) return normalizeText(raw);
+  return numericValue(raw);
+};
+const valuesEqual = (kind, got, exp) => {
+  if (kind === KIND.ENUM) return got === normalizeEnum(exp);
+  if (kind === KIND.TEXT) return got === normalizeText(exp);
+  return numericClose(got, exp);
+};
 
 const files = readdirSync(D).filter((x) => x.startsWith("result-") && x.endsWith(".json")).sort();
 if (!files.length) { console.log("no result-*.json — run: node run.mjs <model-tag>"); process.exit(0); }
@@ -65,7 +88,8 @@ for (const f of files) {
     const exp = tt[r.field] ?? null;
     r.accept = tt[`accept${r.field[0].toUpperCase()}${r.field.slice(1)}`] ?? null;
     if (exp === "AMBIG") { ambig++; continue; }
-    const got = num(r.got);
+    const kind = fieldKind(r.field);
+    const got = extractGot(kind, r.got);
     const pf = (perField[r.field] ??= { tp: 0, tn: 0, miss: 0, wrong: 0, hall: 0 });
 
     let v;
@@ -75,13 +99,21 @@ for (const f of files) {
     } else {
       const accepts = r.accept && r.accept.length ? r.accept : [exp];
       if (got === null) { v = "miss"; miss++; pf.miss++; }
-      else if (accepts.some((a) => close(got, a))) { v = "value-ok"; tp++; pf.tp++; }
+      else if (accepts.some((a) => valuesEqual(kind, got, a))) { v = "value-ok"; tp++; pf.tp++; }
       else { v = "WRONG"; wrong++; pf.wrong++; }
     }
     if (v !== "value-ok" && v !== "abstain-ok") {
-      const why = v === "HALLUCINATION" || v === "WRONG"
+      let why = v === "HALLUCINATION" || v === "WRONG"
         ? `  quote=${JSON.stringify(String(r.quote ?? "").slice(0, 70))} grounded=${r.grounded}`
         : `  reason=${JSON.stringify(String(r.reasonIfNull ?? "").slice(0, 70))}`;
+      // ENUM-only: flag an out-of-vocabulary answer explicitly. It's already
+      // scored WRONG above (never silently downgraded to a miss -- see
+      // extractGot's comment) -- this just makes the reason legible, since
+      // an out-of-vocab value is a real defect the extractor would then try
+      // to write into a Zod enum field.
+      if (kind === KIND.ENUM && v === "WRONG" && got !== null && !isInVocabulary(got, FIELD_ENUM_VALUES[r.field])) {
+        why += `  OUT-OF-VOCABULARY`;
+      }
       detail.push(`${v.padEnd(14)} ${r.facility}/${r.field} exp=${exp} got=${r.got}${why}`);
     }
     if (r.quote) {

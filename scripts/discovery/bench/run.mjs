@@ -23,6 +23,9 @@
 // Deterministic: seed changes nothing, this is not sampling noise.
 
 import { readFileSync, writeFileSync } from "node:fs";
+// Field-kind map lives in fields.mjs -- shared with rescore.mjs -- so the
+// prompt and the scorer can't drift apart. Same rationale as quote.mjs.
+import { KIND, FIELD_KINDS, FIELD_ENUM_VALUES } from "./fields.mjs";
 
 const PAGES = JSON.parse(readFileSync(new URL("./pages.json", import.meta.url).pathname, "utf8"));
 const TRUTH = JSON.parse(readFileSync(new URL("./truth.json", import.meta.url).pathname, "utf8"));
@@ -35,6 +38,22 @@ const FIELDS = {
   capacityPlanned: "PLANNED, designed, entitled, or future electrical capacity in megawatts for this facility",
   capacityOperational: "electrical capacity in megawatts ALREADY BUILT or currently in service at this facility",
   onSiteGenerationMw: "capacity in megawatts of ON-SITE or behind-the-meter POWER GENERATION at this facility (not grid supply, and not standby/backup generators)",
+  // coolingType is genuinely ambiguous in this dataset: waterSchema.coolingType
+  // (the data-centre cooling system, scored here) and miningSchema.coolingType
+  // (a SEPARATE crypto-mining field whose vocabulary includes "immersion" and
+  // "hydro") share two values ("air", "hybrid"), so a mining page saying
+  // "air-cooled" could wrongly land here and still validate against the
+  // vocabulary below. The description below is written to target the
+  // data-centre cooling system specifically, not mining rig cooling.
+  coolingType:
+    "the DATA CENTER FACILITY's cooling system for its IT/electrical load (NOT a crypto-mining rig's " +
+    "cooling method -- ignore any 'immersion' or rig-level cooling description). " +
+    `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.coolingType.join(", ")} -- or null if not stated for this facility.`,
+  energySource:
+    "the facility's primary power source category. " +
+    `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.energySource.join(", ")} -- or null if not stated for this facility.`,
+  energyUtility:
+    "the name of the electric utility company that supplies, or is contracted to supply, power to this facility, or null if not stated",
 };
 const RUN_FIELDS = process.argv[3] ? process.argv[3].split(",") : Object.keys(FIELDS);
 
@@ -48,17 +67,26 @@ const SCHEMA = {
   required: ["value", "verbatimQuote", "reasonIfNull"],
 };
 
-const SYS =
+// Composed per-field (see sysFor below) so the GW/MW unit-conversion
+// guidance -- correct and necessary for the four NUMERIC fields -- is not
+// sent for a categorical field, where it would be actively misleading. The
+// three SYS_* pieces concatenate to byte-identical text for numeric fields
+// (verified against the pre-split SYS string this replaced).
+const SYS_BASE =
   "You extract ONE field about ONE named facility from a web page. " +
   "Return the value ONLY if the page explicitly states it FOR THAT SPECIFIC FACILITY. " +
   "If the page does not state it, or states it for a different site/company-wide total, return null. " +
-  "Never estimate, never infer, never use outside knowledge. " +
+  "Never estimate, never infer, never use outside knowledge. ";
+const SYS_UNITS =
   "UNITS: capacity fields are in MEGAWATTS (MW). If the page states capacity in gigawatts (GW), " +
   "convert it and return megawatts: 1 GW = 1000 MW (e.g. '1GW' -> 1000, '2.5 GW' -> 2500). " +
-  "Converting a stated unit is not inference; report the converted number. " +
+  "Converting a stated unit is not inference; report the converted number. ";
+const SYS_TAIL =
   "verbatimQuote must be text copied exactly from the page (quote the ORIGINAL units as written); " +
   "null if value is null. " +
   "If you return null, set reasonIfNull to a one-sentence explanation.";
+const sysFor = (field) =>
+  (FIELD_KINDS[field] ?? KIND.NUMERIC) === KIND.NUMERIC ? SYS_BASE + SYS_UNITS + SYS_TAIL : SYS_BASE + SYS_TAIL;
 
 // LOOSE quote grounding lives in quote.mjs so rescore.mjs can RECOMPUTE it —
 // a gate bug must be fixable without spending another model run.
@@ -83,7 +111,7 @@ for (const p of PAGES) {
           model: MODEL, stream: false, format: SCHEMA,
           options: { temperature: 0, num_ctx: 16384 },
           messages: [
-            { role: "system", content: SYS },
+            { role: "system", content: sysFor(field) },
             { role: "user", content:
               `Facility: ${p.name} — ${p.city}, ${p.state}\n` +
               `Field: ${field} — ${FIELDS[field]}\n\nPAGE TEXT:\n${p.text}` },
