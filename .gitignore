@@ -58,3 +58,6 @@ next-env.d.ts
 /discovery-logs/
 # leftover local logs from the removed seo-runner
 /seo-runner-logs/
+
+# Banner build intermediate — regenerate with scripts/make-banner.py
+docs/media/banner.svg
