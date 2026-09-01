@@ -224,7 +224,9 @@ quote gate; a PDF's raw bytes are never regexed.
 > the per-field table below). The three benched-safe fields are
 > `capacityMw.operational`, `energy.source`, `energy.utility`. The `npm run`
 > wrapper below bakes that list in so it cannot be forgotten; treat a bare
-> `extract-fields.ts` invocation as an operator error, and never schedule one.
+> `extract-fields.ts` invocation as an operator error. The nightly `run.sh` lane is
+> scheduled, but never bare — it pins the field list explicitly, and a BATS test
+> fails if that flag is ever removed.
 
 Dry run (prints a summary, writes nothing) — the packaged form, with the safe
 field list already applied:

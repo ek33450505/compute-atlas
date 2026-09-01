@@ -11,6 +11,39 @@ log() {
   echo "[$(date '+%Y-%m-%dT%H:%M:%S%z')] $*"
 }
 
+# validate_positive_int_env: coerce an env-overridable limit to a positive
+# integer, falling back to a documented default when it isn't one.
+#
+# Why this exists (fail-open hazard, verified): bash's ${VAR:-default} only
+# substitutes when VAR is UNSET or EMPTY. A malformed-but-non-empty value
+# (e.g. ENRICHMENT_LIMIT=abc) passes straight through to --limit=abc.
+# extract-fields.ts and verify-fields.ts both parse an unparseable --limit as
+# `undefined`, and an undefined limit means the bounding gaps.slice(0, limit)
+# is SKIPPED ENTIRELY — turning a ~60-value bounded lane into an unattended
+# sweep of ~2,525 gap values, roughly 12 hours of third-party-source
+# crawling. This matters specifically because this lane now runs unattended
+# via launchd, not by hand: a hand-run operator would see the runtime blow
+# up and kill it; a scheduled job will not. submit-candidates.ts already
+# guards this exact bug class for its own --max (see its "unsafe" branch
+# near line 700); extract-fields.ts and verify-fields.ts do not, which is
+# why the guard belongs here at the call site.
+#
+# Usage: result="$(validate_positive_int_env VAR_NAME default_value)"
+validate_positive_int_env() {
+  local var_name="$1" default_val="$2" val
+  val="${!var_name:-}"
+  if [[ -z "$val" ]]; then
+    val="$default_val"
+  elif [[ ! "$val" =~ ^[1-9][0-9]*$ ]]; then
+    # Callers capture this function's stdout via $(...) to get the validated
+    # value, so the WARN must go to stderr — a stdout WARN would splice into
+    # the captured value itself and corrupt it.
+    log "WARN: ${var_name}=${val} is not a positive integer — falling back to default ${default_val}" >&2
+    val="$default_val"
+  fi
+  printf '%s' "$val"
+}
+
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO_ROOT"
 
@@ -472,6 +505,87 @@ done
 log "checking source liveness"
 if ! npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_DIR/check-sources.err"; then
   log "WARN: source-liveness check failed — continuing (see check-sources.err)"
+fi
+
+# --- field-extraction + field-verification lane (Track F0 step 3) ----------
+# Global, not per-state — same rationale as source-liveness above. Skipped
+# entirely on a dry run because, unlike check-sources, this lane writes a
+# candidates file and stages rows to the submissions queue; a dry run should
+# stay fast and side-effect-free.
+if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
+  log "DISCOVERY_DRY_RUN=true — skipping field-extraction/verification lane"
+else
+  # Bounded, not swept-to-completion: ~2,525 gap values exist across the
+  # three fields below, and each takes ~6-7s per source check with ~3 checks
+  # per value — an unbounded run is roughly 12 hours. Env-overridable so an
+  # operator can widen the sweep by hand without editing this script.
+  ENRICHMENT_LIMIT="$(validate_positive_int_env ENRICHMENT_LIMIT 60)"
+  VERIFY_LIMIT="$(validate_positive_int_env VERIFY_LIMIT 40)"
+  ENRICHMENT_RUN_ID="$(date '+%Y%m%dT%H%M%S')-enrichment"
+
+  # ⛔⛔ CRITICAL for extract-fields: --fields MUST be passed explicitly.
+  # parseFieldsArg() returns the FULL five-field default set when --fields is
+  # omitted, and two of those five failed the project's accuracy bench
+  # (capacityMw.planned 75% precision, energy.onSiteGenerationMw 50%) — not
+  # safe to STAGE unattended. So the bare invocation is precisely the unsafe
+  # one, which is why this lane was never wired in before F0 step 3. Do not
+  # remove --fields from the extract-fields call to "simplify" it.
+  #
+  # verify-fields takes the SAME list for a DIFFERENT reason — it is read-only
+  # and stages nothing, so the ship-safety caveat above does not apply to it
+  # (docs/discovery-runbook.md says so explicitly, which is why the `npm run
+  # verify-fields` wrapper deliberately bakes in no field list). Here the list
+  # is a SCOPE bound: it keeps the nightly check on the same three fields the
+  # fill lane populates, and keeps the run inside its time budget. Widening it
+  # for verify-fields is a cost question, not a safety one.
+  ENRICHMENT_FIELDS="capacityMw.operational,energy.source,energy.utility"
+
+  if ! command -v pdftotext >/dev/null 2>&1; then
+    log "WARN: pdftotext not on PATH (poppler not installed) — every PDF source in this lane will go unread; continuing degraded"
+  fi
+
+  ENRICHMENT_OUTFILE="$LOG_DIR/enrichment-${ENRICHMENT_RUN_ID}.json"
+  log "extracting fields (limit=${ENRICHMENT_LIMIT} fields=${ENRICHMENT_FIELDS})"
+  EXTRACT_OK=true
+  if ! npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
+    --out "$ENRICHMENT_OUTFILE" \
+    --limit="$ENRICHMENT_LIMIT" \
+    --fields="$ENRICHMENT_FIELDS" \
+    --run-id="$ENRICHMENT_RUN_ID" \
+    2>>"$LOG_DIR/extract-fields.err"; then
+    log "WARN: extract-fields failed for $ENRICHMENT_RUN_ID — skipping submit (see extract-fields.err)"
+    FAILURES+=("enrichment: extract-fields failed")
+    EXTRACT_OK=false
+  fi
+
+  if [[ "$EXTRACT_OK" == "true" ]] && [[ -s "$ENRICHMENT_OUTFILE" ]]; then
+    log "submitting enrichment candidates from $ENRICHMENT_OUTFILE"
+    if ! npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$ENRICHMENT_OUTFILE" \
+      --run-id="$ENRICHMENT_RUN_ID" \
+      --max="${MAX_CANDIDATES:-$CAP}" \
+      ${API_BASE_URL:+--base-url="$API_BASE_URL"}; then
+      log "WARN: submit-candidates failed for $ENRICHMENT_RUN_ID — continuing"
+      FAILURES+=("enrichment: submit failed")
+    fi
+  else
+    log "WARN: no enrichment candidates written for $ENRICHMENT_RUN_ID — skipping submit (nothing to stage)"
+  fi
+
+  # verify-fields is read-only (never writes dataset data) and writes its
+  # --out file only at the very end of the run, so its stdout is redirected
+  # to a log file here — a crash without this would lose the whole run's
+  # findings instead of just the tail.
+  VERIFY_OUTFILE="$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.json"
+  log "verifying fields (limit=${VERIFY_LIMIT} fields=${ENRICHMENT_FIELDS})"
+  if ! npx tsx --env-file=.env.local scripts/discovery/verify-fields.ts \
+    --limit="$VERIFY_LIMIT" \
+    --fields="$ENRICHMENT_FIELDS" \
+    --out "$VERIFY_OUTFILE" \
+    --run-id="$ENRICHMENT_RUN_ID" \
+    >"$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.log" 2>>"$LOG_DIR/verify-fields.err"; then
+    log "WARN: verify-fields failed for $ENRICHMENT_RUN_ID — continuing (see verify-fields.err)"
+    FAILURES+=("enrichment: verify-fields failed")
+  fi
 fi
 
 log "discovery batch complete: states=${BATCH_STATES[*]} run_ids=${RUN_IDS[*]}"
