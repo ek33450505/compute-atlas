@@ -181,6 +181,22 @@ Fills these structured fields:
 
 One field per model call (deliberately not batched). It reads the facility's existing source URLs in order, stopping early the instant all requested fields are filled. Different fields can be sourced from different pages. Dry run (no `--out`) is the DEFAULT: it prints a summary and writes nothing.
 
+Sources are read **primary documents first** (`permit` / `filing` / `iso_queue` /
+`subsidy` before `press` / `osm` / `other`), so a press release's paraphrase cannot
+beat the filing it paraphrases to a field.
+
+**PDF sources are read** (since PR #199). `.pdf` URLs — and extensionless download
+links that turn out to serve `application/pdf` — are extracted with
+`pdftotext -layout` and only the extracted TEXT is ever handed to the model or the
+quote gate; a PDF's raw bytes are never regexed.
+
+> **Requires poppler:** `brew install poppler`. Without it every PDF source goes
+> unread — the run prints one loud `pdf-extractor-unavailable` warning and continues
+> DEGRADED rather than aborting, so read for that line before trusting a run's
+> coverage. `-layout` is not optional: raw mode splices hyphenated line-breaks
+> (`droughttolerant`, `highdemand`) and detaches spec-table labels from their values,
+> which yields false "the source does not state this" outcomes.
+
 ### Safety properties
 
 - **Staging-only:** never writes live data. The only side effect is a candidates
@@ -202,10 +218,30 @@ One field per model call (deliberately not batched). It reads the facility's exi
 
 ### Usage
 
-Dry run (prints a summary, writes nothing):
+> ⛔ **Always pass `--fields` explicitly.** Omitting it does NOT mean "the safe
+> default" — it means all five fields, including the two the bench measured as NOT
+> safe to ship (`capacityMw.planned` P=75%, `energy.onSiteGenerationMw` P=50%; see
+> the per-field table below). The three benched-safe fields are
+> `capacityMw.operational`, `energy.source`, `energy.utility`. The `npm run`
+> wrapper below bakes that list in so it cannot be forgotten; treat a bare
+> `extract-fields.ts` invocation as an operator error, and never schedule one.
+
+Dry run (prints a summary, writes nothing) — the packaged form, with the safe
+field list already applied:
 
 ```bash
-npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts
+npm run extract-fields                              # all gaps, safe fields only
+npm run extract-fields -- --facility=<facility-id>  # one facility
+```
+
+The `extract-fields` script entry carries `--fields=capacityMw.operational,energy.source,energy.utility`;
+`npm run verify-fields` deliberately does NOT bake in a field list, because it only
+re-checks values already recorded and writes nothing — the ship-safety caveat above
+is about staging new values, so it does not apply there.
+
+Equivalent long form, if you need a field list the wrapper doesn't cover:
+
+```bash
 npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
   --fields capacityMw.operational,energy.source
 ```
@@ -214,7 +250,7 @@ Real run (stages candidates for review):
 
 ```bash
 npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
-  --out /tmp/candidates.json --fields capacityMw.operational,capacityMw.planned
+  --out /tmp/candidates.json --fields capacityMw.operational,energy.source
 npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts /tmp/candidates.json
 npm run submissions -- list pending
 npm run submissions -- approve <id> "reviewed and verified"
@@ -222,7 +258,7 @@ npm run submissions -- approve <id> "reviewed and verified"
 
 **Flags:**
 - `--out <path>` — write candidates to a file (omit for dry run)
-- `--fields <list>` — comma-separated field names; defaults to all five fields
+- `--fields <list>` — comma-separated field names. **Defaults to all five fields, which is the unsafe set** — see the warning above; always pass it explicitly. An unknown name exits 1 rather than silently falling back to all five.
 - `--limit N` — cap the run at N *gaps*, not N facilities. A gap is one missing field on one facility, so `--limit 100` with two fields requested covers roughly 50–67 facilities. Size runs accordingly.
 - `--facility <id>` — restrict the run to one facility. Composes with `--limit` rather than overriding it: facilities are filtered first, then the gap cap still applies to what remains.
 - `--run-id=<id>` — custom run ID (defaults to `track5-${timestamp}`)
