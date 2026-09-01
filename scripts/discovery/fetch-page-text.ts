@@ -156,8 +156,12 @@ async function isUnsafeToConnect(url: string, resolveDeps?: ResolveDeps): Promis
  * count exceeds `maxBytes`. Never buffers the full body before checking the
  * cap — returns null the instant the cap is crossed, cancelling the
  * underlying stream rather than continuing to drain it.
+ *
+ * Returns the raw bytes, not a decoded string — a PDF caller needs the bytes
+ * verbatim (writing them to disk for `pdftotext`); callers that want text
+ * decode with `.toString("utf-8")` themselves.
  */
-async function readBodyWithCap(res: Response, maxBytes: number): Promise<string | null> {
+async function readBodyWithCap(res: Response, maxBytes: number): Promise<Buffer | null> {
   if (!res.body) {
     // Reached only for a genuinely body-less response (204 No Content, 304
     // Not Modified) or a minimal test double — never for a 200, even one
@@ -165,7 +169,8 @@ async function readBodyWithCap(res: Response, maxBytes: number): Promise<string 
     // Safe: `res.text()` on a body-less response resolves instantly to "",
     // far under `maxBytes`.
     const text = await res.text();
-    return Buffer.byteLength(text, "utf-8") > maxBytes ? null : text;
+    const buf = Buffer.from(text, "utf-8");
+    return buf.byteLength > maxBytes ? null : buf;
   }
 
   const reader = res.body.getReader();
@@ -187,7 +192,7 @@ async function readBodyWithCap(res: Response, maxBytes: number): Promise<string 
     reader.releaseLock?.();
   }
 
-  return Buffer.concat(chunks.map((chunk) => Buffer.from(chunk))).toString("utf-8");
+  return Buffer.concat(chunks.map((chunk) => Buffer.from(chunk)));
 }
 
 // --- HTML -> plain text (dependency-free) ----------------------------------
@@ -245,15 +250,46 @@ function baseContentType(header: string | null): string | null {
   return header.split(";")[0].trim().toLowerCase();
 }
 
-// --- main entry point --------------------------------------------------------
+// --- guarded body fetch (shared core) ---------------------------------------
+
+/** Options for {@link fetchGuardedBody}: which base content-types are
+ * accepted (checked with the same charset-stripping as `fetchPageText`) and
+ * the response-size cap. `maxBytes` defaults to `MAX_RESPONSE_BYTES` — a PDF
+ * caller passes a larger cap (documents legitimately exceed 2 MB). */
+export interface GuardedBodyOptions {
+  allowedContentTypes: readonly string[];
+  maxBytes?: number;
+}
+
+export type GuardedBodyResult =
+  | { ok: true; bytes: Buffer; contentType: string; finalUrl: string; httpStatus: number }
+  | {
+      ok: false;
+      reason: "blocked" | "too_large" | "bad_content_type" | "http_error" | "network_error" | "redirect_limit";
+      httpStatus?: number;
+      errorCode?: string;
+      errorMessage?: string;
+    };
 
 /**
- * Fetches `url` and returns its body as plain text, or a discriminated
- * failure reason. SSRF-safe (per-hop re-validated), size-capped, and
- * content-type-restricted — see the file doc-comment.
+ * The guarded fetch core shared by `fetchPageText` (HTML/plain-text) and the
+ * PDF fetcher in `fetch-pdf-text.ts`: per-hop SSRF re-validation, redirect
+ * and wall-clock budgets, a content-type allowlist, and a size-capped,
+ * never-fully-buffered-before-checked body read. See the file doc-comment
+ * for why per-hop (not first-hop-only) re-validation is load-bearing.
+ *
+ * Returns raw bytes, not decoded text — callers that want HTML/plain text
+ * decode with `.toString("utf-8")`; a PDF caller writes the bytes to disk
+ * unchanged.
  */
-export async function fetchPageText(url: string, deps: FetchPageTextDeps): Promise<FetchPageTextResult> {
+export async function fetchGuardedBody(
+  url: string,
+  deps: FetchPageTextDeps,
+  options: GuardedBodyOptions,
+): Promise<GuardedBodyResult> {
   const { fetchImpl, resolveDeps } = deps;
+  const { allowedContentTypes } = options;
+  const maxBytes = options.maxBytes ?? MAX_RESPONSE_BYTES;
   const timeoutMs = deps.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   // Wall-clock deadline across the WHOLE hop loop — see FetchPageTextDeps's
   // `totalTimeoutMs` doc comment. `undefined` (no budget passed) yields
@@ -337,38 +373,64 @@ export async function fetchPageText(url: string, deps: FetchPageTextDeps): Promi
       }
 
       const contentType = baseContentType(res.headers.get("content-type"));
-      if (!contentType || !ALLOWED_CONTENT_TYPES.includes(contentType)) {
+      if (!contentType || !allowedContentTypes.includes(contentType)) {
         return { ok: false, reason: "bad_content_type", httpStatus: res.status };
       }
 
       const declaredLength = Number(res.headers.get("content-length"));
-      if (Number.isFinite(declaredLength) && declaredLength > MAX_RESPONSE_BYTES) {
+      if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
         return { ok: false, reason: "too_large", httpStatus: res.status };
       }
 
-      let rawBody: string | null;
+      let bytes: Buffer | null;
       try {
-        rawBody = await readBodyWithCap(res, MAX_RESPONSE_BYTES);
+        bytes = await readBodyWithCap(res, maxBytes);
       } catch (err) {
         // The timer above stays armed through this call, so a body that
         // sends headers immediately and then stalls mid-stream lands here
         // as an abort — not an unbounded hang and not an uncaught throw.
         return { ok: false, reason: "network_error", ...describeNetworkError(err) };
       }
-      if (rawBody === null) {
+      if (bytes === null) {
         return { ok: false, reason: "too_large", httpStatus: res.status };
       }
 
-      return {
-        ok: true,
-        text: htmlToText(rawBody),
-        finalUrl: currentUrl,
-        httpStatus: res.status,
-        contentType,
-        ...(contentType === "text/html" ? { rawHtml: rawBody } : {}),
-      };
+      return { ok: true, bytes, contentType, finalUrl: currentUrl, httpStatus: res.status };
     } finally {
       clearTimeout(timer);
     }
   }
+}
+
+// --- main entry point --------------------------------------------------------
+
+/**
+ * Fetches `url` and returns its body as plain text, or a discriminated
+ * failure reason. SSRF-safe (per-hop re-validated), size-capped, and
+ * content-type-restricted — a thin wrapper over the shared
+ * {@link fetchGuardedBody} core; see the file doc-comment.
+ */
+export async function fetchPageText(url: string, deps: FetchPageTextDeps): Promise<FetchPageTextResult> {
+  const maxBytes = MAX_RESPONSE_BYTES;
+  const result = await fetchGuardedBody(url, deps, { allowedContentTypes: ALLOWED_CONTENT_TYPES, maxBytes });
+
+  if (!result.ok) {
+    return {
+      ok: false,
+      reason: result.reason,
+      ...(result.httpStatus !== undefined ? { httpStatus: result.httpStatus } : {}),
+      ...(result.errorCode !== undefined ? { errorCode: result.errorCode } : {}),
+      ...(result.errorMessage !== undefined ? { errorMessage: result.errorMessage } : {}),
+    };
+  }
+
+  const rawBody = result.bytes.toString("utf-8");
+  return {
+    ok: true,
+    text: htmlToText(rawBody),
+    finalUrl: result.finalUrl,
+    httpStatus: result.httpStatus,
+    contentType: result.contentType,
+    ...(result.contentType === "text/html" ? { rawHtml: rawBody } : {}),
+  };
 }
