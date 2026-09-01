@@ -51,7 +51,7 @@
 
 import { writeFileSync, mkdirSync, readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 import simplify from '@turf/simplify';
 import bboxClip from '@turf/bbox-clip';
@@ -157,13 +157,22 @@ const FACILITIES_PATH = resolve(repoRoot, 'data', 'facilities.json');
 // ---------------------------------------------------------------------------
 // Fetch helpers
 // ---------------------------------------------------------------------------
-async function fetchJSON(url, { label = url, retries = 1 } = {}) {
+export async function fetchJSON(url, { label = url, retries = 1 } = {}) {
   let lastErr;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-      return await res.json();
+      const body = await res.json();
+      // ArcGIS REST services report failures in the response BODY with an HTTP
+      // 200 status — e.g. `{"error":{"code":400,"message":"Unable to complete
+      // operation."}}` — so `res.ok` alone cannot detect them. Undetected, this
+      // silently nulled nearestWater on all 1,309 records on 2026-08-31.
+      if (body && typeof body === 'object' && body.error) {
+        const { code, message } = body.error;
+        throw new Error(`ArcGIS error ${code}: ${message}`);
+      }
+      return body;
     } catch (err) {
       lastErr = err;
       console.error(`  [warn] fetch failed (attempt ${attempt + 1}/${retries + 1}) for ${label}: ${err.message}`);
@@ -982,7 +991,9 @@ async function main() {
   console.log('\nDone.');
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
