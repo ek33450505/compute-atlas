@@ -10,6 +10,9 @@ const ROUTES = [
   "/about",
   "/support",
   "/facilities/meta-prineville-or",
+  "/contact",
+  "/methodology",
+  "/api",
 ] as const;
 
 // Tags covering WCAG 2.x AA + 2.2 AA
