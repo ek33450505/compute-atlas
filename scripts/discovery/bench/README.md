@@ -22,6 +22,21 @@ real citation.
 
 To refresh the page cache: `node scripts/discovery/bench/fetch-pages.mjs` (re-fetches from `targets.json`).
 
+⚠️ **Refreshing the corpus now changes the cached text, even for a page whose
+HTML hasn't changed.** `fetch-pages.mjs` extracts through `html.mjs`'s
+`htmlToText` (a hand-ported copy of the shipped `fetch-page-text.ts`), which
+decodes HTML entities (`&amp; &lt; &gt; &quot; &#39; &nbsp;` and decimal
+numeric entities) that the bench's prior inline chain left raw. The labels in
+`truth.json` were assigned by reading the CURRENT (pre-decode) cached text, so
+re-running `fetch-pages.mjs` — even in its default additive mode, for any
+target it re-fetches — will shift entity-bearing spans in ways a label may no
+longer describe verbatim. **Do not refresh any part of the corpus without
+re-verifying the labels it affects.** The existing result files
+(`result-gpt-oss_20b*.json`) were measured against the pre-decode text and are
+not invalidated by this change — a full re-check of every real model quote in
+every result file against the decoded text found 0 verdict flips — but a
+fresh fetch from here forward will not match them byte-for-byte.
+
 ## Why this is version-controlled
 
 This directory is the calibration evidence behind the shipped Track 5 tool's
