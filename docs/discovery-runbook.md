@@ -275,9 +275,10 @@ Unknown field names exit 1 and print the valid list.
 
 ### Benchmark
 
-`scripts/discovery/bench/` holds 31 real cached pages × 4 fields with
-hand-verified ground truth. Current measured performance (re-run scoring with
-`node scripts/discovery/bench/rescore.mjs`):
+`scripts/discovery/bench/` holds 69 real cached pages with hand-verified ground
+truth: the original 31 are labeled for the four numeric fields, and all 69 are
+labeled for `water.coolingType`. Current measured performance of the four numeric
+fields (re-run scoring with `node scripts/discovery/bench/rescore.mjs`):
 
 | Metric | Score |
 |---|---|
@@ -299,6 +300,7 @@ hand-verified ground truth. Current measured performance (re-run scoring with
 | `energy.onSiteGenerationMw` | 50% | 100% | Weak precision; review each |
 | `energy.source` | — | — | Enum (`grid`/`on_site_gas`/`nuclear`/…); not bench-scored |
 | `energy.utility` | — | — | Free-text string; not bench-scored |
+| `water.coolingType` | 95% | 95% | **Not an extractable field yet** — measured 2026-09-01 over all 69 pages (18 correct, 45 correct abstentions, 1 wrong, 0 hallucinations). ⚠️ The score is 53%/42% if the prompt omits the decision rule, so it holds ONLY for a prompt that carries `docs/methodology.md#cooling-type` verbatim. `hybrid` is unmeasured (zero positive labels). |
 
 The bench deliberately duplicates the shipped quote-gate logic (see
 `scripts/discovery/bench/quote.mjs` vs. the gate in `extract-fields.ts`), and

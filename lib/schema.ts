@@ -70,7 +70,10 @@ export const energySchema = z.object({
 //   - "evaporative" — heat is rejected by evaporating water (cooling towers,
 //     adiabatic/evaporative assist). Water is consumed continuously.
 //   - "hybrid" — the design switches between evaporative and dry modes (e.g.
-//     wet cooling in summer, dry in winter). Water is consumed seasonally.
+//     wet cooling in summer, dry in winter). Water is consumed seasonally. NOT
+//     "a mix of air and liquid cooling" — that is rack-level heat capture, not
+//     heat rejection, and it is the misreading a local model made repeatedly
+//     when the rule was absent from its prompt (bench, 2026-09-01).
 //   - "closed_loop" — a recirculating water/coolant circuit that is not
 //     evaporated; water is consumed only as occasional makeup.
 //   - "air" — NO cooling water circuit at all: dry/direct air cooling,

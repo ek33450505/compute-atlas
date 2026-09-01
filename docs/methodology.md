@@ -309,7 +309,9 @@ values existed but curators had no documented standard to apply them against.
   tower or adiabatic/evaporative assist. Water is consumed continuously.
 - **`hybrid`** — the design switches between evaporative and dry modes, for
   example wet cooling in summer and dry cooling in winter. Water is consumed
-  seasonally.
+  seasonally. It does **not** mean a mix of air and liquid cooling inside the
+  building: that describes how heat is captured at the rack, not how it leaves
+  the site, and every value here classifies heat rejection.
 - **`closed_loop`** — a recirculating water or coolant circuit that is not
   evaporated. Water is consumed only as occasional makeup.
 - **`air`** — no cooling water circuit at all: dry or direct air cooling,

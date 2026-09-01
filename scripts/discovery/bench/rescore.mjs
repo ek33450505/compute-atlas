@@ -66,28 +66,33 @@ const valuesEqual = (kind, got, exp) => {
   return numericClose(got, exp);
 };
 
-// UNLABELED-FACILITY GUARD (do not remove — see the block below for why).
+// UNLABELED-CELL GUARD (do not remove — see the block below for why).
 //
-// truth.json's per-facility lookup is `TRUTH[facility] ?? {}` followed by
-// `tt[field] ?? null`. A facility with NO entry at all in truth.json therefore
-// collapses to exp === null for every field — which is *indistinguishable* from
-// a genuine "the page states nothing, correctly expect null" abstention label.
-// Downstream, exp === null + a model value is scored HALLUCINATION. So running
-// this bench over a page that has not been labeled yet reports every one of the
-// model's correct extractions as a hallucination: silence reads as data, and the
-// resulting precision number means nothing. The corpus is being extended from 31
-// labeled pages to ~69, and the ~38 new pages have no truth.json entries yet
-// (labels are hand-assigned later) — so this is no longer a hypothetical.
+// truth.json's lookup is `TRUTH[facility] ?? {}` followed by `tt[field] ?? null`.
+// A MISSING LABEL therefore collapses to exp === null — which is *indistinguishable*
+// from a genuine "the page states nothing, correctly expect null" abstention label.
+// Downstream, exp === null + a model value is scored HALLUCINATION. So scoring a
+// cell that was never labeled reports the model's correct extractions as
+// hallucinations: silence reads as data, and the resulting precision number means
+// nothing.
+//
+// The guard is per CELL, not per facility, because a missing FIELD is the live
+// case now. All 69 facilities are labeled, but the 38 pages added for the
+// coolingType corpus carry a coolingType label ONLY — running the four numeric
+// fields over them would score every correct capacity as a hallucination. The
+// same hole already existed for energySource/energyUtility, which no page has
+// ever been labeled for even though both fields ship in the nightly pipeline.
+//
+// A field counts as labeled only if the key is PRESENT on the entry; a genuine
+// "expect nothing" label is written as an explicit `null`. Absent means unmeasured,
+// which fails toward under-reporting coverage rather than inventing a verdict.
 //
 // truth.json also carries documentation-only top-level keys (e.g. "_README",
 // an array of strings) that are NOT facility labels. Only a key whose value is
 // a non-null, non-array OBJECT counts as a real label entry.
-const LABELED_FACILITIES = new Set(
-  Object.keys(TRUTH).filter((k) => {
-    const v = TRUTH[k];
-    return v !== null && typeof v === "object" && !Array.isArray(v);
-  }),
-);
+const isLabelEntry = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+const hasLabel = (facility, field) =>
+  isLabelEntry(TRUTH[facility]) && Object.prototype.hasOwnProperty.call(TRUTH[facility], field);
 
 const files = readdirSync(D).filter((x) => x.startsWith("result-") && x.endsWith(".json")).sort();
 if (!files.length) { console.log("no result-*.json — run: node run.mjs <model-tag>"); process.exit(0); }
@@ -100,16 +105,18 @@ for (const f of files) {
   const perField = {};
   const detail = [];
   const unlabeledFacilities = new Set();
+  const unlabeledFields = new Set();
   let unlabeledCells = 0;
 
   for (const r of rows) {
     ms += r.ms || 0;
     if (r.error) { errs++; continue; }
-    // Facility has no real truth.json entry — exclude entirely rather than let
-    // it silently fall through as expect-null (see guard comment above the
-    // files loop). Never counted as tn/hallucination/miss/anything.
-    if (!LABELED_FACILITIES.has(r.facility)) {
+    // No label for this facility+field — exclude entirely rather than let it
+    // silently fall through as expect-null (see guard comment above the files
+    // loop). Never counted as tn/hallucination/miss/anything.
+    if (!hasLabel(r.facility, r.field)) {
       unlabeledFacilities.add(r.facility);
+      unlabeledFields.add(r.field);
       unlabeledCells++;
       continue;
     }
@@ -163,12 +170,15 @@ for (const f of files) {
   const score = tp + tn - 2 * (wrong + hall);
 
   console.log(`\n${"=".repeat(94)}`);
-  console.log(`${R.model}   ${scored} scored cells (${ambig} AMBIG excluded, ${errs} errors)  avg ${Math.round(ms / (rows.length || 1))}ms`);
+  // Name the FILE, not just the model: subset runs mean several result files can
+  // carry the same model tag, and two identically-headed blocks are unreadable.
+  console.log(`${R.model}  [${f}]   ${scored} scored cells (${ambig} AMBIG excluded, ${errs} errors)  avg ${Math.round(ms / (rows.length || 1))}ms`);
   // Loud and separate from the scoring section below — these facilities were NOT
   // measured (no truth.json label to measure against), not measured-and-fine.
   // Worded so a reader skimming for a pass/fail can't mistake this for either.
-  console.log(`  UNLABELED (not scored, NOT measured — no truth.json entry): ` +
-    `${unlabeledFacilities.size} facilities / ${unlabeledCells} cells excluded` +
+  console.log(`  UNLABELED (not scored, NOT measured — no truth.json label): ` +
+    `${unlabeledCells} cells excluded across ${unlabeledFacilities.size} facilities` +
+    (unlabeledFields.size ? `\n    fields: ${[...unlabeledFields].sort().join(", ")}` : "") +
     (unlabeledFacilities.size ? `\n    ids: ${[...unlabeledFacilities].sort().join(", ")}` : ""));
   console.log(`  PRECISION ${pct(precision)}   RECALL ${pct(recall)}   ABSTENTION-ACC ${pct(abstAcc)}   score ${score}`);
   console.log(`  correct=${tp}  correctAbstain=${tn}  miss=${miss}  WRONG=${wrong}  HALLUC=${hall}`);

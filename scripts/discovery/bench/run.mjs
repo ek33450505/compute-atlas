@@ -45,9 +45,31 @@ const FIELDS = {
   // "air-cooled" could wrongly land here and still validate against the
   // vocabulary below. The description below is written to target the
   // data-centre cooling system specifically, not mining rig cooling.
+  // The VALUE DEFINITIONS below are not decoration. Measured 2026-09-01 over 69
+  // pages: with the bare vocabulary list and no rule, gpt-oss:20b scored
+  // P=53% / R=42%, and EIGHT of its twelve error cells were the same case --
+  // a page whose true value is `closed_loop`, a recirculating circuit that the
+  // operator markets as "air cooling", answered `air`, `hybrid` or null. Only
+  // 4 of 12 closed_loop pages were right; with the rule below, 12 of 12 were.
+  // That is the exact error a human curator made on edgecore-mesa-az, which is
+  // why the rule was written down in docs/methodology.md#cooling-type +
+  // lib/schema.ts at all. A model cannot apply a rule it was never given; the
+  // definitions here are copied from that methodology section and must not
+  // drift from it -- including the "hybrid is not air+liquid" clarification,
+  // which was added to the methodology and the schema comment alongside this.
   coolingType:
     "the DATA CENTER FACILITY's cooling system for its IT/electrical load (NOT a crypto-mining rig's " +
     "cooling method -- ignore any 'immersion' or rig-level cooling description). " +
+    "Classify BY WATER CONSUMPTION: " +
+    "'evaporative' = heat rejected by evaporating water (cooling towers, adiabatic/evaporative assist); " +
+    "'hybrid' = the design SWITCHES between evaporative and dry modes (e.g. wet in summer, dry in winter) -- " +
+    "it does NOT mean a mix of air and liquid cooling; " +
+    "'closed_loop' = a recirculating water/coolant circuit that is not evaporated (chilled-water loop, " +
+    "direct-to-chip liquid loop, air-cooled chillers over a closed circuit); " +
+    "'air' = NO cooling water circuit at all (dry/direct air cooling, 'waterless', 'zero water for cooling'). " +
+    "TIE-BREAKER: if a recirculating water or coolant circuit is present, answer 'closed_loop' EVEN IF the page " +
+    "calls the design 'air-cooled' -- operators market closed-loop designs that way, so the phrase does not decide it; " +
+    "'air' requires the absence of a cooling water circuit. " +
     `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.coolingType.join(", ")} -- or null if not stated for this facility.`,
   energySource:
     "the facility's primary power source category. " +
@@ -94,12 +116,25 @@ import { quoteGrounded } from "./quote.mjs";
 
 const rows = [];
 let n = 0;
-const total = PAGES.length * RUN_FIELDS.length;
+// Denominator counts only cells that will actually run -- PAGES x FIELDS would
+// print a progress bar that never reaches its own total once cells are skipped.
+const total = PAGES.reduce((acc, p) => {
+  const t = TRUTH[p.facilityId];
+  return acc + (t ? RUN_FIELDS.filter((f) => Object.prototype.hasOwnProperty.call(t, f)).length : 0);
+}, 0);
 
+// Skipping an UNLABELED cell is not an optimisation, it is the same guard
+// rescore.mjs applies (see its UNLABELED-CELL GUARD): a cell with no label in
+// truth.json cannot be scored, so spending a model call on it only produces a
+// row the scorer must throw away. Skipped cells are counted and reported at the
+// end -- a silent skip would make "the bench ran clean" and "the bench measured
+// nothing" look identical, which is how a field ships unmeasured.
+const skipped = [];
 for (const p of PAGES) {
   const t = TRUTH[p.facilityId];
   if (!t) { console.log(`  (no truth entry) ${p.facilityId}`); continue; }
   for (const field of RUN_FIELDS) {
+    if (!Object.prototype.hasOwnProperty.call(t, field)) { skipped.push(`${p.facilityId}/${field}`); continue; }
     n++;
     const t0 = Date.now();
     let out = null, err = null;
@@ -143,6 +178,19 @@ for (const p of PAGES) {
   }
 }
 
-writeFileSync(new URL(`./result-${MODEL.replace(/[:/]/g, "_")}.json`, import.meta.url).pathname,
-  JSON.stringify({ model: MODEL, fields: RUN_FIELDS, pages: PAGES.length, rows }, null, 2));
-console.log(`\nwrote result-${MODEL.replace(/[:/]/g, "_")}.json — now run: node rescore.mjs`);
+// A PARTIAL run must not clobber a full run's evidence. result-<model>.json is the
+// calibration artifact behind the shipped tool's headline P/R numbers (see README);
+// re-running with a field subset used to overwrite it in place, silently replacing
+// four fields of measurement with one. Subset runs get their own file, and
+// rescore.mjs scores every result-*.json, so both keep being reported.
+const RESULT_FILE = `result-${MODEL.replace(/[:/]/g, "_")}` +
+  (process.argv[3] ? `-${RUN_FIELDS.join("+").replace(/[^A-Za-z0-9+]/g, "")}` : "") + ".json";
+writeFileSync(new URL(`./${RESULT_FILE}`, import.meta.url).pathname,
+  JSON.stringify({ model: MODEL, fields: RUN_FIELDS, pages: PAGES.length, skipped, rows }, null, 2));
+if (skipped.length) {
+  const byField = {};
+  for (const s2 of skipped) { const f = s2.split("/").pop(); byField[f] = (byField[f] ?? 0) + 1; }
+  console.log(`\n  SKIPPED (no truth.json label — NOT measured): ${skipped.length} cells` +
+    `\n    ${Object.entries(byField).map(([f, c]) => `${f}: ${c}`).join("  ")}`);
+}
+console.log(`\nwrote ${RESULT_FILE} — now run: node rescore.mjs`);
