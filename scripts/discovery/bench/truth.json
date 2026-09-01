@@ -25,70 +25,120 @@
     "            EXCLUDED from scoring and reported separately. Marking these honestly is",
     "            better than inventing a label -- and the AMBIG count is itself a finding:",
     "            it measures how often a source even supports the planned/operational split.",
-    "  accept[]  set of defensible values (e.g. a stated RANGE); any member scores correct."
+    "  accept[]  set of defensible values (e.g. a stated RANGE); any member scores correct.",
+    "",
+    "COOLING TYPE (added 2026-09-01, s121). coolingType is an ENUM field, scored against the",
+    "vocabulary in fields.mjs and the decision rule in docs/methodology.md#cooling-type +",
+    "lib/schema.ts (waterSchema). All 69 cached pages carry a coolingType label; the 24",
+    "non-null ones each quote the sentence they were read from, verified verbatim against",
+    "pages.json.",
+    "",
+    "  <value>   the page states, FOR THIS FACILITY, a mechanism that the methodology rule",
+    "            maps to exactly one of evaporative/hybrid/closed_loop/air.",
+    "  null      the page does not state a mechanism for this facility. This deliberately",
+    "            INCLUDES water-use volumes ('billions of gallons for cooling'), bare",
+    "            redundancy or density specs ('Cooling N+1'), site navigation, company-wide",
+    "            statements, crypto-mining RIG cooling, and IT-side liquid-vs-air delivery.",
+    "            None of those identify a heat-rejection method, so the pipeline must write",
+    "            nothing -- prefer a gap to a fabrication.",
+    "  \"AMBIG\"   the page says something about THIS facility's cooling that two values could",
+    "            each defensibly claim, or says only what the design is NOT. 5 of 69.",
+    "",
+    "\"unknown\" is a real value in the Zod enum but is NEVER a label here. In the dataset it",
+    "records a CURATOR's assessment that a source discussed cooling without identifying the",
+    "method; an extractor writing it from a passing mention would be manufacturing that",
+    "assessment. A model answering \"unknown\" on a null-labeled page therefore scores as a",
+    "hallucination, on purpose.",
+    "",
+    "The DB-value-is-a-hint rule bites hard here. Targets were selected for BALANCE using",
+    "the DB's water.coolingType, but the cached page frequently comes from a different",
+    "source than the curated value: of 8 facilities the DB records as `hybrid`, ZERO pages",
+    "state hybrid, so this corpus cannot measure that value at all. Three labels also",
+    "disagree with the DB and are re-curation candidates for a human: edgecore-mesa-az",
+    "(DB air -> page says closed_loop), h5-la-vista-ne (DB hybrid -> page says cooling",
+    "towers), beltline-luther-horizon-technology-park-ok and global-ai-windsor-co (DB",
+    "unknown -> both pages state closed-loop)."
   ],
   "flexential-hillsboro-5-or": {
     "capacityAny": 36,
     "capacityPlanned": null,
     "capacityOperational": 36,
     "onSiteGenerationMw": null,
-    "note": "'Hillsboro 5 is 358,000 square feet with 36 megawatts capacity' - an existing facility being acquired. TRAP: 360 MW is company-wide across 40 data centers; 108 MW is a Dallas campus in a related-posts sidebar."
+    "note": "'Hillsboro 5 is 358,000 square feet with 36 megawatts capacity' - an existing facility being acquired. TRAP: 360 MW is company-wide across 40 data centers; 108 MW is a Dallas campus in a related-posts sidebar.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "qts-hillsboro-2-or": {
     "capacityAny": 180,
     "capacityPlanned": "AMBIG",
     "capacityOperational": "AMBIG",
     "onSiteGenerationMw": null,
-    "note": "'Powering the campus 180 MW+' / 'Critical campus capacity 180 MW+'. No tense marker anywhere, so built-vs-planned is genuinely unresolvable from this page."
+    "note": "'Powering the campus 180 MW+' / 'Critical campus capacity 180 MW+'. No tense marker anywhere, so built-vs-planned is genuinely unresolvable from this page.",
+    "coolingType": null,
+    "coolingTypeNote": "Only links to a generic QTS article 'Do Data Centers Use a Lot of Water?'; nothing about this facility's cooling."
   },
   "crane-pdx02-forest-grove-or": {
     "capacityAny": 48,
     "capacityPlanned": "AMBIG",
     "capacityOperational": "AMBIG",
     "onSiteGenerationMw": null,
-    "note": "'Data Center PDX02: ~48 MW and ~150,000 sf' in a site-spec list, no tense. TRAP: sibling PDX01 Phase 1 = 24 MW and Phase 2 = additional 24 MW."
+    "note": "'Data Center PDX02: ~48 MW and ~150,000 sf' in a site-spec list, no tense. TRAP: sibling PDX01 Phase 1 = 24 MW and Phase 2 = additional 24 MW.",
+    "coolingType": "air",
+    "coolingTypeNote": "\"air-based cooling\" -- CORRECTED 2026-09-01: first labeled null. The phrase sits mid-run in the \"Innovative & sustainable design\" list (\"PUE of 1.3 or lower, air-based cooling, rainwater harvesting\"), which my sentence-splitting label aid truncated before reaching. The MODEL found it and was scored a hallucination for being right -- the exact failure this file's header warns about. Sibling page crane-pdx01 states the same design in full."
   },
   "tract-altoona-ia": {
     "capacityAny": 1000,
     "capacityPlanned": 1000,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "'Fully entitled property can support a 1GW+ technology park' / 'over time, will be capable of supporting over 1GW'. Explicitly forward-looking => planned. GW->MW conversion required. TRAP: four further 1GW mentions in the sidebar belong to a different Tract site in Morris, ILLINOIS."
+    "note": "'Fully entitled property can support a 1GW+ technology park' / 'over time, will be capable of supporting over 1GW'. Explicitly forward-looking => planned. GW->MW conversion required. TRAP: four further 1GW mentions in the sidebar belong to a different Tract site in Morris, ILLINOIS.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "1623-farnam-omaha-ne": {
     "capacityAny": 8,
     "capacityPlanned": null,
     "capacityOperational": 8,
     "onSiteGenerationMw": null,
-    "note": "'The nine-story facility offers around 8MW of capacity across 75,000 sq ft' - present tense, whole facility. TRAP: 1.5MW is the increment just added, not the total. NOTE: the s96 bench labeled this an abstention case (null); that was WRONG - the page states it plainly. Corroborates the carried-forward note that this record's 8 MW was stripped in error."
+    "note": "'The nine-story facility offers around 8MW of capacity across 75,000 sq ft' - present tense, whole facility. TRAP: 1.5MW is the increment just added, not the total. NOTE: the s96 bench labeled this an abstention case (null); that was WRONG - the page states it plainly. Corroborates the carried-forward note that this record's 8 MW was stripped in error.",
+    "coolingType": null,
+    "coolingTypeNote": "Only DCD site navigation ('Data Center Cooling' topic links) - no statement about this facility."
   },
   "aligned-west-jordan-ut": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "No capacity for the SLC campus. TRAP: 540 MW belongs to Project Caprock in TEXAS (site-wide nav banner); 3 MW back-up generators and 2 MW UPS line-ups are equipment specs, not site capacity."
+    "note": "No capacity for the SLC campus. TRAP: 540 MW belongs to Project Caprock in TEXAS (site-wide nav banner); 3 MW back-up generators and 2 MW UPS line-ups are equipment specs, not site capacity.",
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"Closed-loop chilled water system design\" -- Delta³™ air cooling arrays ... Closed-loop chilled water system design. Recirculating circuit => closed_loop under the methodology tie-breaker, despite the 'air cooling arrays' phrasing."
   },
   "summit-ridge-santaquin-ut": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "KSL article on resident concerns. No capacity figure anywhere."
+    "note": "KSL article on resident concerns. No capacity figure anywhere.",
+    "coolingType": null,
+    "coolingTypeNote": "'low water and sewer usage' is a consumption claim; no method stated."
   },
   "applied-digital-polaris-forge-1-ellendale-nd": {
     "capacityAny": 400,
     "capacityPlanned": 400,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "'Applied Digital's Ellendale campus is designed to host 400 MW of critical IT load'. Operational is NOT stated: the 100 MW building is 'expected to be ready for service', future tense. TRAP-RICH: 250 MW lease, 150 MW option, 150 MW second building, 1 gigawatt scale-up, 1+ GW under load study."
+    "note": "'Applied Digital's Ellendale campus is designed to host 400 MW of critical IT load'. Operational is NOT stated: the 100 MW building is 'expected to be ready for service', future tense. TRAP-RICH: 250 MW lease, 150 MW option, 150 MW second building, 1 gigawatt scale-up, 1+ GW under load study.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "aws-cumulus-salem-township-pa": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "Talen/Amazon PPA release. TRAP: 1,920 MW is contracted nuclear POWER SUPPLY to Amazon, not this campus's capacity; 10.7 GW and 2.2 GW are Talen's whole fleet. The DB's 960/48 appear nowhere on this page."
+    "note": "Talen/Amazon PPA release. TRAP: 1,920 MW is contracted nuclear POWER SUPPLY to Amazon, not this campus's capacity; 10.7 GW and 2.2 GW are Talen's whole fleet. The DB's 960/48 appear nowhere on this page.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "bitfarms-panther-creek-nesquehoning-pa": {
     "capacityAny": 350,
@@ -99,84 +149,108 @@
     "acceptCapacityAny": [
       350,
       500
-    ]
+    ],
+    "coolingType": null,
+    "coolingTypeNote": "10-K says 'all of our sites are located in cooler climates that support extended free-cooling periods' - company-wide, and free cooling is not one of the four values."
   },
   "big-watt-digital-onida-sd": {
     "capacityAny": "AMBIG",
     "capacityPlanned": "AMBIG",
     "capacityOperational": "AMBIG",
     "onSiteGenerationMw": null,
-    "note": "'expected to use 12.5 megawatts of electricity annually' is a CONSUMPTION figure; a reasonable extractor might or might not report it as capacity, so capacityAny is AMBIG. The DB's 300/30 are supported nowhere on this page. s97: planned/operational set AMBIG for the same reason capacityAny already was - \"expected to use 12.5 megawatts\" is a consumption figure with no tense marker, so any sub-field assignment is a guess."
+    "note": "'expected to use 12.5 megawatts of electricity annually' is a CONSUMPTION figure; a reasonable extractor might or might not report it as capacity, so capacityAny is AMBIG. The DB's 300/30 are supported nowhere on this page. s97: planned/operational set AMBIG for the same reason capacityAny already was - \"expected to use 12.5 megawatts\" is a consumption figure with no tense marker, so any sub-field assignment is a guess.",
+    "coolingType": null,
+    "coolingTypeNote": "'Twenty-four liquid-cooled, containerized processors' is MINING RIG cooling (miningSchema.coolingType), not the facility water system."
   },
   "atlas-power-williston-nd": {
     "capacityAny": 700,
     "capacityPlanned": 700,
     "capacityOperational": 240,
     "onSiteGenerationMw": null,
-    "note": "BEST planned-vs-operational case: 'plans for a 700 MW capacity to be built in three phases. The Atlas facility currently consumes about 240 megawatts.' TRAP: 5MW/100MW (Applied Digital), 200MW (Bitzero), 0MW placeholder - all other operators' news items on the same page."
+    "note": "BEST planned-vs-operational case: 'plans for a 700 MW capacity to be built in three phases. The Atlas facility currently consumes about 240 megawatts.' TRAP: 5MW/100MW (Applied Digital), 200MW (Bitzero), 0MW placeholder - all other operators' news items on the same page.",
+    "coolingType": null,
+    "coolingTypeNote": "CORRECTED 2026-09-01: first labeled closed_loop off \"These facilities will utilize a closed-loop cooling system with direct-to-chip liquid cooling\". That sentence is in baxtel's NEARBY-FACILITIES sidebar and belongs to Critical Data House's Project Fighting Pike, a DIFFERENT operator in the same city -- the cross-operator trap this record's capacity note already warned about. The model abstained and was scored a miss for being right."
   },
   "aligned-iad-01-va": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "Same Aligned template as West Jordan. TRAP: 540 MW = Caprock, TEXAS; 3 MW / 2 MW are generator and UPS specs. The DB's operational 60 is not on this page."
+    "note": "Same Aligned template as West Jordan. TRAP: 540 MW = Caprock, TEXAS; 3 MW / 2 MW are generator and UPS specs. The DB's operational 60 is not on this page.",
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"Closed-loop chilled water system design\" -- Same Aligned spec block as the other Aligned location pages."
   },
   "aaim-data-centers-blue-earth-mn": {
     "capacityAny": 15,
     "capacityPlanned": "AMBIG",
     "capacityOperational": 15,
     "onSiteGenerationMw": null,
-    "note": "'Minnesota 1 ... Building Size 15 MW ... In Service Date June 2025' and 'our 15 MW facility' (present tense). TRAP: 80 MW appears in a staff biography ('secured more than 80 MW of hosting space'), not as this site's capacity. s97: capacityPlanned set AMBIG - the page says both \"our 15 MW facility\" (present) and \"nearing the completion of a significant 15 MW expansion\" (forward-looking), so 15 is defensible under either sub-field."
+    "note": "'Minnesota 1 ... Building Size 15 MW ... In Service Date June 2025' and 'our 15 MW facility' (present tense). TRAP: 80 MW appears in a staff biography ('secured more than 80 MW of hosting space'), not as this site's capacity. s97: capacityPlanned set AMBIG - the page says both \"our 15 MW facility\" (present) and \"nearing the completion of a significant 15 MW expansion\" (forward-looking), so 15 is defensible under either sub-field.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "ark-data-centers-akron-i-summit-county-oh": {
     "capacityAny": 1,
     "capacityPlanned": null,
     "capacityOperational": 1,
     "onSiteGenerationMw": "AMBIG",
-    "note": "CORRECTED s97 (was null/null/null). The facility spec table states \"Capacity 1,000 kW\" for Akron I = 1 MW; the model found it and converted kW->MW while my label-aid regex (MW|GW only) never surfaced it. RETRACTION: the live DB's operational:1 is CORRECT, not a misread of the 1MW diesel generator as previously surfaced. The diesel genset remains a distractor for onSiteGenerationMw (standby, not generation) -> AMBIG."
+    "note": "CORRECTED s97 (was null/null/null). The facility spec table states \"Capacity 1,000 kW\" for Akron I = 1 MW; the model found it and converted kW->MW while my label-aid regex (MW|GW only) never surfaced it. RETRACTION: the live DB's operational:1 is CORRECT, not a misread of the 1MW diesel generator as previously surfaced. The diesel genset remains a distractor for onSiteGenerationMw (standby, not generation) -> AMBIG.",
+    "coolingType": "AMBIG",
+    "coolingTypeNote": "A waterside economizer normally implies cooling towers (evaporative), but the page states only a chilled-water plant (closed_loop). Two defensible values."
   },
   "applied-digital-jamestown-nd": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "HALLUCINATION TRAP. The 10-Q extract is raw XBRL tagging noise with no prose and no MW token, yet the bare string '106' (the DB's recorded operational value) occurs incidentally. Any returned number here is ungrounded by construction."
+    "note": "HALLUCINATION TRAP. The 10-Q extract is raw XBRL tagging noise with no prose and no MW token, yet the bare string '106' (the DB's recorded operational value) occurs incidentally. Any returned number here is ungrounded by construction.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "5c-group-vultr-prime-ohio-springfield-oh": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "WYSO article. Verified: no MW/GW token anywhere. The DB's planned 150 comes from another source. Matches the s90 probe, which correctly returned null for capacityMwPlanned on this same page."
+    "note": "WYSO article. Verified: no MW/GW token anywhere. The DB's planned 150 comes from another source. Matches the s90 probe, which correctly returned null for capacityMwPlanned on this same page.",
+    "coolingType": null,
+    "coolingTypeNote": "States 300,000 gallons/day of water use - a volume, not a method."
   },
   "aligned-project-caprock-hale-county-tx": {
     "capacityAny": 540,
     "capacityPlanned": 540,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "'a new 540 MW, 313-acre data center campus, located in Hale County just outside of Abernathy, Texas' - breaking ground, so planned. Also the >=500 MW human-review trigger case."
+    "note": "'a new 540 MW, 313-acre data center campus, located in Hale County just outside of Abernathy, Texas' - breaking ground, so planned. Also the >=500 MW human-review trigger case.",
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"advanced air-cooled heat rejection system paired with a closed-loop design\" -- 'the system recirculates the same water' - the tie-breaker case: air-cooled heat rejection over a recirculating circuit is closed_loop, not air."
   },
   "alterra-development-marshall-mi": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "Verified: no MW/GW token anywhere despite being a gas-generation story. The DB's 1400 planned / 1000 on-site come from other sources."
+    "note": "Verified: no MW/GW token anywhere despite being a gas-generation story. The DB's 1400 planned / 1000 on-site come from other sources.",
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"closed-loop liquid cooling system to minimize water use\" -- Stated by the developer at the LDFA meeting."
   },
   "aligned-neo-01-oh": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "Aligned template again. TRAP: 540 MW = Caprock TX nav banner; 3 MW / 2 MW equipment specs. The DB's planned 96 is not on this page."
+    "note": "Aligned template again. TRAP: 540 MW = Caprock TX nav banner; 3 MW / 2 MW equipment specs. The DB's planned 96 is not on this page.",
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"Closed-loop chilled water system design\" -- Same Aligned spec block as the other Aligned location pages."
   },
   "aligned-phx13-glendale-az": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "No capacity token. The DB's planned 72 comes from another source."
+    "note": "No capacity token. The DB's planned 72 comes from another source.",
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"closed-loop cooling system, recycling water\" -- 'Aligned will use its closed-loop cooling system, recycling water to significantly reduce water consumption.'"
   },
   "google-nebraska-ai-campus-proposed": {
     "capacityAny": 1000,
@@ -191,69 +265,241 @@
       1000,
       3000
     ],
-    "note": "'The data center itself, which could require 1,000 to 3,000 megawatts of power' - a stated RANGE, so either endpoint is defensible. TRAP-RICH: 800 MW (utility's summer peak), 1,365 MW (Gerald Gentleman Station), 9,000 MW (Tenaska nationwide build), 423 MW (wind for a different Google DC in Lincoln). onSite is null on purpose: the DB's 2,730 was DERIVED as 2 x 1,365 from 'could produce more than twice the 1,365 megawatts' - never stated, so returning it would be arithmetic invention."
+    "note": "'The data center itself, which could require 1,000 to 3,000 megawatts of power' - a stated RANGE, so either endpoint is defensible. TRAP-RICH: 800 MW (utility's summer peak), 1,365 MW (Gerald Gentleman Station), 9,000 MW (Tenaska nationwide build), 423 MW (wind for a different Google DC in Lincoln). onSite is null on purpose: the DB's 2,730 was DERIVED as 2 x 1,365 from 'could produce more than twice the 1,365 megawatts' - never stated, so returning it would be arithmetic invention.",
+    "coolingType": null,
+    "coolingTypeNote": "Cooling water appears only in reader comments and general context; no method for this campus."
   },
   "fleet-data-centers-storey-county-nv": {
     "capacityAny": 400,
     "capacityPlanned": 400,
     "capacityOperational": null,
     "onSiteGenerationMw": 144,
-    "note": "'South Valley and Peru Ridge will have a combined 400 megawatts of critical compute power'. TRAP-RICH: 30 MW/campus utility computing, 50MW comparison, 1215MW developable at South Valley, 1,040MW Peru Shelf, 700MW Silver Springs, 2,500MW Virginia City Highlands - all potential, not this campus's stated capacity. CORRECTED s97: onSiteGenerationMw was wrongly labeled null. The page states a PUCN permit application for \"a temporary power facility at South Valley capable of generating 144MW\" using 90 natural-gas engines, described as \"turnkey behind-the-meter power generation\" - explicitly on-site generation. I missed it because my evidence dump truncated at the first 6 distinct MW figures."
+    "note": "'South Valley and Peru Ridge will have a combined 400 megawatts of critical compute power'. TRAP-RICH: 30 MW/campus utility computing, 50MW comparison, 1215MW developable at South Valley, 1,040MW Peru Shelf, 700MW Silver Springs, 2,500MW Virginia City Highlands - all potential, not this campus's stated capacity. CORRECTED s97: onSiteGenerationMw was wrongly labeled null. The page states a PUCN permit application for \"a temporary power facility at South Valley capable of generating 144MW\" using 90 natural-gas engines, described as \"turnkey behind-the-meter power generation\" - explicitly on-site generation. I missed it because my evidence dump truncated at the first 6 distinct MW figures.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "aligned-phx-01-02-03-az": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "Aligned template. TRAP: 540 MW Caprock nav; 3 MW / 2 MW equipment. The DB's on-site 63 MW is not on this page."
+    "note": "Aligned template. TRAP: 540 MW Caprock nav; 3 MW / 2 MW equipment. The DB's on-site 63 MW is not on this page.",
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"Closed-loop chilled water system design\" -- Same Aligned spec block as the other Aligned location pages."
   },
   "apple-maiden-nc": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "KEY METHOD CASE: the cited page is Apple's $500B US-investment release and never mentions Maiden. The DB record carries onSite 10 MW, 183 acres and Duke Energy from OTHER sources. Labeling from the DB would have scored three false misses here."
+    "note": "KEY METHOD CASE: the cited page is Apple's $500B US-investment release and never mentions Maiden. The DB record carries onSite 10 MW, 183 acres and Duke Energy from OTHER sources. Labeling from the DB would have scored three false misses here.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "creekstone-delta-ut": {
     "capacityAny": 10000,
     "capacityPlanned": 10000,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "SECOND GW->MW case: 'the world's largest AI-optimized data center, with a capacity of 10 gigawatts'. Requires the same conversion as Altoona. The DB's on-site 300 MW is not stated here despite the 'behind-the-meter' language."
+    "note": "SECOND GW->MW case: 'the world's largest AI-optimized data center, with a capacity of 10 gigawatts'. Requires the same conversion as Altoona. The DB's on-site 300 MW is not stated here despite the 'behind-the-meter' language.",
+    "coolingType": "AMBIG",
+    "coolingTypeNote": "Identifies what the design is NOT; air and closed_loop both remain open."
   },
   "a1-data-center-millville-nj": {
     "capacityAny": 1400,
     "capacityPlanned": 1400,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "THIRD GW->MW case: 'The proposed data center would have drawn 1.4 gigawatts from the grid'. Facility is cancelled, so planned. NOTE: the live record has NO capacity - this page supports adding one (surfaced, not fixed)."
+    "note": "THIRD GW->MW case: 'The proposed data center would have drawn 1.4 gigawatts from the grid'. Facility is cancelled, so planned. NOTE: the live record has NO capacity - this page supports adding one (surfaced, not fixed).",
+    "coolingType": null,
+    "coolingTypeNote": "'used billions of gallons of water each year for cooling' is a volume claim; no mechanism stated."
   },
   "air-products-cetronia-road-upper-macungie-pa": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "No capacity token."
+    "note": "No capacity token.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "adp-ladysmith-data-hub-caroline-va": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "County special-exception page. No capacity token."
+    "note": "County special-exception page. No capacity token.",
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
   },
   "aligned-conesville-oh": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "Aligned template. Only MW present is the 540 MW Caprock TX nav banner."
+    "note": "Aligned template. Only MW present is the 540 MW Caprock TX nav banner.",
+    "coolingType": null,
+    "coolingTypeNote": "Aligned press release; 'Cooling Innovation' appears only in site navigation. TRAP: other Aligned pages in this corpus DO state closed_loop, so a model that pattern-matches the operator rather than the page will hallucinate here."
   },
   "32-avenue-of-the-americas-ny": {
     "capacityAny": null,
     "capacityPlanned": null,
     "capacityOperational": null,
     "onSiteGenerationMw": null,
-    "note": "No capacity token."
+    "note": "No capacity token.",
+    "coolingType": null,
+    "coolingTypeNote": "'Cooling redundancy : N+1' is a redundancy spec, not a method."
+  },
+  "aws-galaxy-sidney-oh": {
+    "coolingType": null,
+    "coolingTypeNote": "Water-capacity dispute plus 'Cooling-tower hum' in an unrelated resident-guide nav list; nothing about this facility's method."
+  },
+  "coresite-de3-denver-co": {
+    "coolingType": null,
+    "coolingTypeNote": "Only the 'Power & Cooling' nav item."
+  },
+  "google-bosc-lima-oh": {
+    "coolingType": null,
+    "coolingTypeNote": "Mentions regional wastewater/water-supply upgrades; no cooling method."
+  },
+  "google-cedar-rapids-ia": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "ivcm-imperial-county-ca": {
+    "coolingType": null,
+    "coolingTypeNote": "6 MGD of reclaimed water proposed and 750,000 gal/day use - volumes, not a mechanism."
+  },
+  "lunavi-cheyenne-wy": {
+    "coolingType": "evaporative",
+    "coolingTypeNote": "\"custom indirect evaporative units from Vertiv\" -- Indirect evaporative cooling consumes water continuously."
+  },
+  "markley-lowell-ma": {
+    "coolingType": "evaporative",
+    "coolingTypeNote": "\"16 cooling towers\" -- Also 'cooling tower mist settling on properties'."
+  },
+  "meta-altoona-ia": {
+    "coolingType": null,
+    "coolingTypeNote": "Only Data Center Frontier site navigation and sponsored links."
+  },
+  "cloudhq-manassas-mcc-va": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "corscale-gainesville-crossing-va": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "crane-pdx01-forest-grove-or": {
+    "coolingType": "air",
+    "coolingTypeNote": "\"it will rely on air-based cooling, limiting water consumption to typical plumbing needs\" -- 'the company has not applied to use water cooling for its first building' - no cooling water circuit at all, which is exactly what 'air' is reserved for."
+  },
+  "cyrusone-project-peach-palmetto-ga": {
+    "coolingType": "air",
+    "coolingTypeNote": "\"the buildings would be air-cooled, not water-cooled\" -- Also 'use air for cooling'."
+  },
+  "dc-blox-atlanta-west-ga": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "dcblox-atlanta-east-conyers-ga": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "edgecore-mesa-az": {
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"air-cooled design in its Mesa data centers, including an ultra-efficient closed-loop chilled water system\" -- TIE-BREAKER CASE (this is the record cited in PR #205 as inconsistently curated 'air'): a recirculating chilled-water circuit is closed_loop even though the operator markets it as an air-cooled design."
+  },
+  "edged-atlanta-tilford-yard-ga": {
+    "coolingType": "air",
+    "coolingTypeNote": "\"waterless cooling system which uses no water for cooling\" -- 'zero water usage for cooling'; ThermalWorks waterless system."
+  },
+  "avaio-taurus-brandon-ms": {
+    "coolingType": null,
+    "coolingTypeNote": "'water-efficient cooling, rainwater recapture, and cooling system economization' names attributes, not a heat-rejection mechanism."
+  },
+  "dartpoints-greenville-sc": {
+    "coolingType": null,
+    "coolingTypeNote": "'a mix of air and liquid cooling options' is company-wide and describes IT-side heat capture, not heat rejection. TRAP: invites a wrong 'hybrid', which in this schema means evaporative/dry switching."
+  },
+  "equinix-ashburn-va": {
+    "coolingType": null,
+    "coolingTypeNote": "Wikipedia article source markup; no cooling method for the campus."
+  },
+  "h5-buffalo-i-lockport-ny": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "h5-la-vista-ne": {
+    "coolingType": "evaporative",
+    "coolingTypeNote": "\"N+1 cooling towers\" -- Spec block: 'Cooling N+1 chillers N+1 cooling towers'. DB curates this record 'hybrid'; the page states towers and no dry mode - re-curation candidate."
+  },
+  "lambda-chicago-edgeconnex-il": {
+    "coolingType": "AMBIG",
+    "coolingTypeNote": "The same page also describes 'hybrid cooling technologies that combine liquid-to-the-chip direct cooling and air cooling' - a recirculating chip loop would make it closed_loop under the tie-breaker. Two defensible values."
+  },
+  "microsoft-el-mirage-az": {
+    "coolingType": null,
+    "coolingTypeNote": "'cooling ponds' appears only in a conditional Luke AFB bird-strike note, not as a design statement; no method claimed for the building."
+  },
+  "microsoft-ginger-west-ia": {
+    "coolingType": null,
+    "coolingTypeNote": "Only Microsoft Local site navigation ('Water use at Microsoft datacenters')."
+  },
+  "applied-digital-delta-forge-1-la": {
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"closed-loop cooling technology\" -- Facility-specific sentence wins over the company boilerplate's 'proprietary waterless cooling'."
+  },
+  "beale-project-blue-pima-county-az": {
+    "coolingType": "AMBIG",
+    "coolingTypeNote": "'low-water' implies a circuit; 'air-cooling' is exactly the marketing phrase the methodology says must not decide the value. air vs closed_loop both defensible."
+  },
+  "cerebras-oklahoma-city-ok": {
+    "coolingType": "AMBIG",
+    "coolingTypeNote": "Water-cooled, but the page never states how heat is rejected: evaporative and closed_loop both defensible."
+  },
+  "cleanarc-ruther-glen-va": {
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"closed-loop systems that minimize water use\" -- Also: 'prohibition of the use of potable water for industrial cooling'."
+  },
+  "cloudburst-san-marcos-tx": {
+    "coolingType": null,
+    "coolingTypeNote": "'advanced cooling technologies', a 'roadmap for ... liquid and hybrid cooling' testbeds and 'water-efficient cooling options' - all forward-looking, none decides a value. TRAP for 'hybrid'."
+  },
+  "cloverleaf-project-open-sky-piedmont-ok": {
+    "coolingType": null,
+    "coolingTypeNote": "Only 'Own the water cooler conversation' newsletter blurb."
+  },
+  "cologix-johnstown-oh": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "colovore-reno-1-storey-county-nv": {
+    "coolingType": null,
+    "coolingTypeNote": "Tax-abatement article; cooling never discussed."
+  },
+  "beltline-luther-horizon-technology-park-ok": {
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"Air-cooled Chillers (Closed Loop)\" -- 'requiring only minimal makeup water for the closed chilled water loop' + direct-to-chip water 'circulates in a sealed' system rather than open evaporative towers. DB curates this record 'unknown' - re-curation candidate."
+  },
+  "compass-lauderdale-meridian-ms": {
+    "coolingType": null,
+    "coolingTypeNote": "Water/sewer investment mentioned as site infrastructure; no cooling method."
+  },
+  "cyrusone-nas-lemoore-ca": {
+    "coolingType": null,
+    "coolingTypeNote": "Only Ameresco site navigation ('HVAC & Air Quality', 'Water Management')."
+  },
+  "fermi-matador-amarillo-tx": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "galaxy-helios-dickens-county-tx": {
+    "coolingType": null,
+    "coolingTypeNote": "Page never mentions cooling or water."
+  },
+  "global-ai-windsor-co": {
+    "coolingType": "closed_loop",
+    "coolingTypeNote": "\"closed loop\" -- Town of Windsor project page: 'Understanding the company's \"closed loop\" approach to cooling while limiting water consumption.' DB curates this record 'unknown' - re-curation candidate."
   }
 }

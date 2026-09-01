@@ -27,7 +27,10 @@ To refresh the page cache: `node scripts/discovery/bench/fetch-pages.mjs` (re-fe
 This directory is the calibration evidence behind the shipped Track 5 tool's
 (`scripts/discovery/extract-fields.ts`) headline claim — PRECISION 90% / RECALL
 84% / ABSTENTION-ACC 96%, reproduced by `rescore.mjs` against 31 real cached
-pages. A claim like that is only worth anything if the harness that produced it
+pages. (The corpus is now 69 pages; those headline numbers come from the four
+NUMERIC fields, which are labeled on the original 31 only — the 38 pages added
+for `coolingType` carry a coolingType label and nothing else, and `rescore.mjs`
+excludes and names every unlabeled cell rather than scoring it as an abstention.) A claim like that is only worth anything if the harness that produced it
 stays inspectable and re-runnable, so `pages.json`, `truth.json`,
 `result-gpt-oss_20b.json`, and the scoring/fetch/build scripts all live here in
 git rather than in a gitignored scratch directory.
@@ -44,3 +47,43 @@ model quotes (from `result-gpt-oss_20b.json`) and hand-curated edge cases, and
 fails the moment they disagree. Run it after touching either gate:
 
     npx vitest run scripts/discovery/bench/quote-parity.test.ts
+
+## coolingType, and why two result files for one model
+
+`result-gpt-oss_20b-coolingType.json` and `result-gpt-oss_20b-coolingType-norule.json`
+are the same 69 pages, the same model and the same labels, run against two versions of
+the `coolingType` prompt. They are kept side by side because the difference between them
+is the finding:
+
+| | prompt lists the vocabulary only | prompt also states the decision rule |
+|---|---|---|
+| PRECISION | 53% | **95%** |
+| RECALL | 42% | **95%** |
+| ABSTENTION-ACC | 98% | **100%** |
+| WRONG / HALLUC | 6 / 1 | **1 / 0** |
+
+Eight of the twelve error cells in the rule-free run were one case: a page whose true
+value is `closed_loop` — a recirculating circuit that the operator markets as "air
+cooling" — answered `air`, `hybrid`, or nothing at all. Only 4 of the 12 `closed_loop`
+pages came out right without the rule; all 12 did with it. That is the same misreading a human curator made on `edgecore-mesa-az`,
+and it is why the rule was written into `docs/methodology.md` and `lib/schema.ts` in the
+first place. The model could not apply a rule it was never given. **A categorical field's
+score measures the prompt as much as the model** — do not quote an enum field's number
+without saying which prompt produced it.
+
+`-norule` is a frozen artifact: `run.mjs` will never write that filename, so re-running
+the bench updates the with-rule file and leaves the comparison intact.
+
+⚠️ Two things this corpus does NOT measure. `hybrid` has **zero** positive labels — no
+cached page states a design that switches between evaporative and dry modes — so a
+`hybrid` answer is unverified by construction even though the model can emit one. And
+five pages (7%) are labeled `AMBIG` and excluded: they say what a design is *not*, or
+support two values at once.
+
+**Both label corrections in this corpus came from the model disagreeing with me.**
+`crane-pdx02-forest-grove-or` really does say "air-based cooling" — buried mid-run in a
+comma-separated design list my sentence-splitting label aid truncated — and was scored a
+hallucination for being right. `atlas-power-williston-nd`'s "closed-loop cooling system"
+sentence belongs to a *different operator's* project in baxtel's nearby-facilities
+sidebar; the model abstained and was scored a miss for being right. Read every
+disagreement as a possible label bug before recording it as a model error.
