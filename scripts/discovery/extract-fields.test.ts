@@ -13,13 +13,14 @@ import {
   isDuplicateOfRecordedSibling,
   isOperationalStatusContradiction,
   detectSiblingValueCollision,
+  sortSourcesPrimaryFirst,
   EXTRACTABLE_FIELDS,
   CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD,
   type AcceptedExtraction,
   type RunExtractDeps,
 } from "./extract-fields";
 import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
-import type { Facility } from "../../lib/schema";
+import type { Facility, Source } from "../../lib/schema";
 
 function makeFacility(overrides: {
   id?: string;
@@ -1472,5 +1473,132 @@ describe("runExtract — combined real-shape edge cases reconcile (defect 7, ret
       summary.fetchFailures +
       summary.unclassified;
     expect(reconciled).toBe(summary.gapsConsidered);
+  });
+});
+
+// F2: a facility's cited sources used to be read in raw array order with no
+// source-kind preference, so whichever source happened to be cited FIRST won
+// every field — a press release's paraphrase of an engineering detail can be
+// wrong in ways the underlying primary document isn't (novva-mesa-az: a
+// press release said "water-free air-cooling"; the City of Mesa filing it
+// paraphrased said "closed-loop water cooling"). `sortSourcesPrimaryFirst`
+// reorders primary-document kinds (permit, filing, iso_queue, subsidy) ahead
+// of secondary ones (press, osm, other) before `processFacilitySources`
+// iterates them.
+describe("sortSourcesPrimaryFirst", () => {
+  it("moves primary-kind sources ahead of secondary-kind sources", () => {
+    const sources: Source[] = [
+      { url: "https://example.com/a-press", label: "A", retrievedAt: "2026-01-01", kind: "press" },
+      { url: "https://example.com/b-permit", label: "B", retrievedAt: "2026-01-01", kind: "permit" },
+      { url: "https://example.com/c-osm", label: "C", retrievedAt: "2026-01-01", kind: "osm" },
+      { url: "https://example.com/d-filing", label: "D", retrievedAt: "2026-01-01", kind: "filing" },
+    ];
+
+    expect(sortSourcesPrimaryFirst(sources).map((s) => s.url)).toEqual([
+      "https://example.com/b-permit",
+      "https://example.com/d-filing",
+      "https://example.com/a-press",
+      "https://example.com/c-osm",
+    ]);
+  });
+
+  it("preserves relative order within each rank group (stable reorder)", () => {
+    const sources: Source[] = [
+      { url: "https://example.com/press-1", label: "P1", retrievedAt: "2026-01-01", kind: "press" },
+      { url: "https://example.com/permit-1", label: "Permit1", retrievedAt: "2026-01-01", kind: "permit" },
+      { url: "https://example.com/press-2", label: "P2", retrievedAt: "2026-01-01", kind: "press" },
+      { url: "https://example.com/permit-2", label: "Permit2", retrievedAt: "2026-01-01", kind: "permit" },
+    ];
+
+    expect(sortSourcesPrimaryFirst(sources).map((s) => s.url)).toEqual([
+      "https://example.com/permit-1",
+      "https://example.com/permit-2",
+      "https://example.com/press-1",
+      "https://example.com/press-2",
+    ]);
+  });
+
+  it("returns a new array and does not mutate the input", () => {
+    const sources: Source[] = [
+      { url: "https://example.com/press", label: "P", retrievedAt: "2026-01-01", kind: "press" },
+      { url: "https://example.com/permit", label: "Permit", retrievedAt: "2026-01-01", kind: "permit" },
+    ];
+    const original = [...sources];
+
+    const reordered = sortSourcesPrimaryFirst(sources);
+
+    expect(sources).toEqual(original); // input untouched
+    expect(reordered).not.toBe(sources); // a distinct array was returned
+  });
+});
+
+describe("runExtract — primary documents outrank press for field extraction (F2)", () => {
+  it("takes the permit's value over a differing press value for the same field (novva-mesa-az shape)", async () => {
+    const facility: Facility = {
+      ...makeFacility({ id: "novva-mesa-az-like" }),
+      sources: [
+        { url: "https://example.com/press-release", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+        { url: "https://example.com/city-filing", label: "City of Mesa filing", retrievedAt: "2026-01-01", kind: "permit" },
+      ],
+    };
+    const filler = "Filler sentence about the site and its operations. ".repeat(20);
+    const pressText = `The facility has an operational capacity of 50 MW. ${filler}`;
+    const permitText = `The facility has an operational capacity of 75 MW. ${filler}`;
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        const text = url.endsWith("city-filing") ? permitText : pressText;
+        return { ok: true, text, finalUrl: url, httpStatus: 200 };
+      },
+      callOllamaImpl: async (opts) => {
+        // Branch on the embedded page text (buildUserPrompt inlines it
+        // verbatim) so each source resolves to its OWN stated value.
+        if (opts.userPrompt.includes("75 MW")) {
+          return { ok: true, data: { value: 75, verbatimQuote: "operational capacity of 75 MW", reasonIfNull: null } };
+        }
+        return { ok: true, data: { value: 50, verbatimQuote: "operational capacity of 50 MW", reasonIfNull: null } };
+      },
+      now: () => new Date("2026-08-31T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(summary.extracted).toBe(1);
+    expect(summary.candidates).toHaveLength(1);
+    expect(summary.candidates[0]?.enrichmentUpdate.fields.capacityMw?.operational).toBe(75);
+    expect(summary.candidates[0]?.enrichmentUpdate.sources[0]?.url).toBe("https://example.com/city-filing");
+  });
+
+  it("still extracts normally when a facility cites only press sources (no primary-doc regression)", async () => {
+    const facility: Facility = {
+      ...makeFacility({ id: "press-only-facility" }),
+      sources: [
+        { url: "https://example.com/press-a", label: "Press A", retrievedAt: "2026-01-01", kind: "press" },
+        { url: "https://example.com/press-b", label: "Press B", retrievedAt: "2026-01-01", kind: "press" },
+      ],
+    };
+    const filler = "Filler sentence about the site and its operations. ".repeat(20);
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => ({
+        ok: true,
+        text: `The facility has an operational capacity of 40 MW. ${filler}`,
+        finalUrl: url,
+        httpStatus: 200,
+      }),
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 40, verbatimQuote: "operational capacity of 40 MW", reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-31T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(summary.extracted).toBe(1);
+    expect(summary.candidates).toHaveLength(1);
+    expect(summary.candidates[0]?.enrichmentUpdate.fields.capacityMw?.operational).toBe(40);
+    // First-cited press source still wins when there is no primary doc to
+    // prefer — the reorder is rank-based, not a blanket source-1 penalty.
+    expect(summary.candidates[0]?.enrichmentUpdate.sources[0]?.url).toBe("https://example.com/press-a");
   });
 });
