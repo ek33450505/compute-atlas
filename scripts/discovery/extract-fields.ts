@@ -949,14 +949,20 @@ export function toEnrichmentIntents(
 // Pipeline driver — runExtract: the testable core (no CLI/process concerns)
 // ============================================================================
 
-export interface RunExtractDeps {
+/** The two fetchers `fetchSourceText` routes a source URL to, shared verbatim
+ * by `verify-fields.ts` so that tool's PDF handling can never drift from this
+ * one's — see `fetchSourceText`'s doc-comment for the routing rule itself. */
+export interface SourceFetchDeps {
   fetchPageTextImpl: (url: string) => Promise<FetchPageTextResult>;
   /** Required, not optional: an optional field would default to silently
    * skipping every PDF source, which is exactly the silent-no-op failure
    * family this pipeline exists to prevent. Making it required forces every
-   * `RunExtractDeps` construction site (real or test) to decide what happens
+   * `SourceFetchDeps` construction site (real or test) to decide what happens
    * to PDF sources instead of inheriting a default nobody chose. */
   fetchPdfTextImpl: (url: string) => Promise<FetchPdfTextResult>;
+}
+
+export interface RunExtractDeps extends SourceFetchDeps {
   callOllamaImpl: (opts: Omit<CallOllamaOptions, "fetchImpl">) => Promise<CallOllamaResult<ModelExtraction>>;
   now: () => Date;
 }
@@ -1156,8 +1162,17 @@ export function sortSourcesPrimaryFirst(sources: Source[]): Source[] {
  * instance is created once per `runExtract` call (never module-scoped), so
  * it can never leak "already warned" state between independent runs or
  * tests. */
-interface FetchState {
+export interface FetchState {
   pdfExtractorUnavailableWarned: boolean;
+}
+
+/** Constructs a fresh `FetchState` — exported so `verify-fields.ts` (and any
+ * other caller of the shared `fetchSourceText` router) creates its own
+ * per-run instance the same way `runExtract` does below, rather than
+ * hand-rolling `{ pdfExtractorUnavailableWarned: false }` at each call site.
+ * See `FetchState`'s doc-comment: one per top-level run, never module-scoped. */
+export function createFetchState(): FetchState {
+  return { pdfExtractorUnavailableWarned: false };
 }
 
 /**
@@ -1196,9 +1211,9 @@ function warnIfPdfExtractorUnavailable(result: FetchPdfTextResult, fetchState: F
  * stays stable regardless of which path a source took; the retry attempt and
  * its outcome are logged either way so the choice is never silent.
  */
-async function fetchSourceText(
+export async function fetchSourceText(
   url: string,
-  deps: RunExtractDeps,
+  deps: SourceFetchDeps,
   fetchState: FetchState
 ): Promise<FetchPageTextResult | FetchPdfTextResult> {
   if (isLikelyPdf(url)) {
