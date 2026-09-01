@@ -601,10 +601,10 @@ else
     log "WARN: no enrichment candidates written for $ENRICHMENT_RUN_ID — skipping submit (nothing to stage)"
   fi
 
-  # verify-fields is read-only (never writes dataset data) and writes its
-  # --out file only at the very end of the run, so its stdout is redirected
-  # to a log file here — a crash without this would lose the whole run's
-  # findings instead of just the tail.
+  # verify-fields is read-only (never writes dataset data). Crash durability
+  # for its --out file is handled by its own per-facility checkpoint, not by
+  # this redirect; stdout is still sent to a log file here so a long run's
+  # progress output doesn't scroll off the terminal/launchd log buffer.
   VERIFY_OUTFILE="$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.json"
   log "verifying fields (limit=${VERIFY_LIMIT} fields=${ENRICHMENT_FIELDS})"
   if ! npx tsx --env-file=.env.local scripts/discovery/verify-fields.ts \

@@ -171,6 +171,7 @@ import type { Facility } from "../../lib/schema";
 import {
   CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD,
   EXTRACTABLE_FIELDS,
+  atomicWriteJson,
   createFetchState,
   extractField,
   fetchSourceText,
@@ -407,6 +408,19 @@ async function classifyReadableSource(
 
 export interface VerifyFieldsDeps extends ExtractFieldModelDeps, SourceFetchDeps {
   now: () => Date;
+  /**
+   * Optional crash-durability hook — mirrors `RunExtractDeps.checkpoint` in
+   * extract-fields.ts (see its doc-comment for the full design rationale).
+   * Called once per facility processed (never per gap) with the summary
+   * accumulated so far. Unlike extract-fields.ts, `VerifyFieldsSummary`'s
+   * per-outcome counts ARE tallied incrementally inside the facility loop
+   * (only `valuesChecked`/`valuesUnchecked`/`uncheckedValues` are filled in
+   * afterward, in the reconciliation pass), so a checkpoint here can safely
+   * persist the whole summary object, not just a sub-field. Wired by
+   * `main()` ONLY when `--out` is set — a dry run must still write nothing.
+   * A checkpoint failure must never abort the sweep.
+   */
+  checkpoint?: (summary: VerifyFieldsSummary) => void;
 }
 
 interface FacilityVerifyResult {
@@ -745,6 +759,10 @@ export async function runVerify(
         break;
       }
     }
+
+    // Checkpoint once per facility processed — see
+    // `VerifyFieldsDeps.checkpoint`'s doc-comment.
+    deps.checkpoint?.(summary);
   }
 
   if (abortReason !== null) {
@@ -986,10 +1004,29 @@ async function main(): Promise<void> {
   const baseUrl = process.env.API_BASE_URL ?? "http://localhost:3000";
   const facilities = await loadFacilities(baseUrl);
 
+  const deps = buildRealDeps();
+  if (args.outPath) {
+    const outPath = args.outPath;
+    mkdirSync(path.dirname(path.resolve(outPath)), { recursive: true });
+    // Checkpoint once per facility processed so a crash mid-sweep (OOM, the
+    // machine sleeping, Ollama dying, ^C) loses at most one facility's worth
+    // of work instead of the entire ~17h run — see `VerifyFieldsDeps.checkpoint`.
+    // Wired ONLY when --out is set: a dry run must still write nothing.
+    deps.checkpoint = (partial) => {
+      try {
+        atomicWriteJson(outPath, partial);
+      } catch (err) {
+        // Losing a checkpoint is survivable; killing a 17-hour sweep over a
+        // transient write failure is not.
+        console.error(`checkpoint write failed (continuing sweep): ${err instanceof Error ? err.message : String(err)}`);
+      }
+    };
+  }
+
   const summary = await runVerify(
     facilities,
     { fields: args.fields, limit: args.limit, facilityId: args.facilityId, runId: args.runId },
-    buildRealDeps()
+    deps
   );
 
   printHumanSummary(summary);

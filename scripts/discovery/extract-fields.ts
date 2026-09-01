@@ -92,7 +92,7 @@
  * Uses relative imports throughout — tsx does not resolve the `@/*` path
  * alias, matching the rest of scripts/discovery/.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import type { Facility, Source } from "../../lib/schema";
@@ -1018,9 +1018,36 @@ export interface SourceFetchDeps {
   fetchPdfTextImpl: (url: string) => Promise<FetchPdfTextResult>;
 }
 
+/**
+ * Atomically writes `data` as JSON to `filePath`: writes to `<filePath>.tmp`
+ * then `renameSync`s over the destination. `rename` is atomic on the same
+ * filesystem, so a crash mid-write can never leave a truncated/invalid JSON
+ * file where a valid one previously existed — the property `checkpoint`
+ * (see `RunExtractDeps`) depends on. Callers are responsible for `mkdirSync`
+ * -ing the destination directory first; this function does not create
+ * directories.
+ */
+export function atomicWriteJson(filePath: string, data: unknown): void {
+  const tmpPath = `${filePath}.tmp`;
+  writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+  renameSync(tmpPath, filePath);
+}
+
 export interface RunExtractDeps extends SourceFetchDeps {
   callOllamaImpl: (opts: Omit<CallOllamaOptions, "fetchImpl">) => Promise<CallOllamaResult<ModelExtraction>>;
   now: () => Date;
+  /**
+   * Optional crash-durability hook. When present, called once per facility
+   * processed (never per gap — write volume must stay sane over a ~17h
+   * sweep) with the summary accumulated so far, so a hard crash (OOM, the
+   * machine sleeping, Ollama dying, ^C) loses at most one facility's worth of
+   * work instead of the entire run. Wired by `main()` ONLY when `--out` is
+   * set — a dry run must still write nothing. Distinct from the final write
+   * in `main()`, which remains the authoritative last word regardless of
+   * this hook's presence. A checkpoint failure must never abort the sweep —
+   * callers should catch and log, not throw.
+   */
+  checkpoint?: (summary: RunExtractSummary) => void;
 }
 
 export interface RunExtractOptions {
@@ -1648,159 +1675,174 @@ export async function runExtract(
   const fetchState: FetchState = { pdfExtractorUnavailableWarned: false };
 
   for (const { facility, fields } of byFacility.values()) {
-    const result = await processFacilitySources(facility, fields, deps, fetchState);
-    summary.sourcesRead += result.sourcesRead;
+    try {
+      const result = await processFacilitySources(facility, fields, deps, fetchState);
+      summary.sourcesRead += result.sourcesRead;
 
-    if (!result.sawAnyReadable) {
-      // `unreadable`/`fetchFailures` must reconcile against `gapsConsidered`
-      // (a PER-FIELD count) the same way every other outcome does — classify
-      // every requested field on this facility (i.e. every gap that could
-      // not even be attempted), not just the facility as a whole.
-      const outcome: GapOutcome = result.sawAnyUnreadable ? "unreadable" : "fetchFailures";
-      if (result.sawAnyUnreadable) {
-        console.log(
-          `skip: ${facility.id} — every cited source fetched but yielded < ${MIN_READABLE_CHARS} chars of text (likely a JS-rendered or empty page) — this is NOT the same as "field not mentioned" (${fields.length} field(s) affected)`
-        );
-        consecutiveTotalFetchFailures = 0;
-      } else {
-        console.log(
-          `skip: ${facility.id} — no cited source could be fetched as readable HTML/plain-text (${fields.length} field(s) affected)`
-        );
-        consecutiveTotalFetchFailures++;
-      }
-      // This facility's own gaps are real `fetchFailures`/`unreadable`
-      // outcomes — classify them BEFORE the threshold check below, so the
-      // triggering facility itself is counted correctly and only facilities
-      // never reached at all end up in `abortedUnprocessed`.
-      for (const field of fields) {
-        outcomes.set(gapKey(facility.id, field), outcome);
-      }
-      if (!result.sawAnyUnreadable && consecutiveTotalFetchFailures >= CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD) {
-        abortReason =
-          `ABORTING: ${consecutiveTotalFetchFailures} consecutive facilities produced ZERO readable sources ` +
-          `(most recent: ${facility.id}). This pattern is symptomatic of a SYSTEMIC fetch failure (e.g. a ` +
-          `leaked/exhausted connection pool or a broken network path), not scattered link rot — a run that ` +
-          `cannot fetch has not measured anything about the dataset and must not report success. Check the ` +
-          `network_error errorCode/errorMessage fields fetchPageText now surfaces (scripts/discovery/fetch-page-text.ts) ` +
-          `to diagnose the underlying cause before re-running. Do not raise this threshold to make the symptom go away.`;
-        console.error(abortReason);
-        break;
-      }
-      continue;
-    }
-
-    consecutiveTotalFetchFailures = 0;
-
-    // Guard 2 (siblingCollision): a facility whose capacityMw.operational AND
-    // capacityMw.planned were BOTH gaps this run, and BOTH resolved to the
-    // SAME value, cannot both be independent facts — see
-    // `detectSiblingValueCollision`'s doc-comment. Runs BEFORE candidate
-    // construction so a colliding pair never reaches `toEnrichmentIntents` in
-    // the first place — never `capacityMw: { planned: X, operational: X }`
-    // built from a single ambiguous quote.
-    const collision = detectSiblingValueCollision(result.accepted);
-    if (collision.collidedFields.length > 0) {
-      // A dropped fact is only RECOVERABLE if the value, quote, and source
-      // that produced it survive in the log — printing only the field name
-      // (as an earlier version of this line did) forces a human to re-run
-      // the extraction just to learn what was thrown away, at which point a
-      // genuinely correct value (e.g. a real `planned: 75` backed by its own
-      // quote) is gone for good. Bring this up to the same evidentiary
-      // standard as `isOperationalStatusContradiction`'s log line: id, field,
-      // value, and source, PLUS the verbatim quote (truncated defensively —
-      // nothing bounds a model quote's length) since the quote is what makes
-      // a rejection line checkable in seconds instead of requiring a re-run.
-      // Looked up from the PRE-filter `result.accepted` (not
-      // `collision.accepted`, which has already had them removed) — each
-      // field gets ITS OWN source/quote, never assumed shared, since the
-      // two can legitimately come from DIFFERENT cited pages (defect 4).
-      const truncateQuote = (quote: string, max = 200) => (quote.length > max ? `${quote.slice(0, max)}…` : quote);
-      const op = result.accepted.find((item) => item.field === "capacityMw.operational");
-      const pl = result.accepted.find((item) => item.field === "capacityMw.planned");
-      console.log(
-        `skip: ${facility.id} capacityMw.operational/capacityMw.planned — sibling collision: both resolved to the ` +
-          `same value, no recorded sibling to compare against (see detectSiblingValueCollision). ` +
-          `operational: value=${JSON.stringify(op?.value)} quote="${op ? truncateQuote(op.verbatimQuote) : "?"}" source=${op?.source.url ?? "?"}; ` +
-          `planned: value=${JSON.stringify(pl?.value)} quote="${pl ? truncateQuote(pl.verbatimQuote) : "?"}" source=${pl?.source.url ?? "?"}`
-      );
-    }
-    result.accepted = collision.accepted;
-    const collidedFields = new Set(collision.collidedFields);
-
-    // Build + self-validate the candidate BEFORE the per-field tally below —
-    // never emit a candidate submit-candidates.ts would itself reject.
-    // targetFacilityId lives outside enrichmentUpdateIntentSchema (stripped
-    // by submit-candidates.ts before parsing) — strip it here too so this
-    // check exercises the exact same schema the downstream consumer applies.
-    // Doing this FIRST (not after crediting `extracted`) is what makes
-    // `schemaRejected` a real per-field final outcome instead of an
-    // after-the-fact facility-level flag layered on top of fields already
-    // counted as extracted: `enrichmentUpdateIntentSchema` validates
-    // `capacityMw`/`energy` as whole sub-objects, so ONE invalid field (e.g.
-    // a model-extracted `0`, which clears the quote gate but fails the
-    // schema's `.positive()`) fails the WHOLE candidate — every field that
-    // contributed to it must be reclassified `schemaRejected`, not left
-    // double-counted under `extracted`.
-    let candidate: Track5Candidate | null = null;
-    let candidateFailedSchema = false;
-    if (result.accepted.length > 0) {
-      candidate = toEnrichmentIntents(facility, result.accepted, {
-        runId: opts.runId,
-        discoveredAt: isoNow,
-        date: dateOnly,
-      });
-      if (candidate) {
-        const intentBody = Object.fromEntries(
-          Object.entries(candidate.enrichmentUpdate).filter(([key]) => key !== "targetFacilityId")
-        );
-        const validation = enrichmentUpdateIntentSchema.safeParse(intentBody);
-        if (!validation.success) {
+      if (!result.sawAnyReadable) {
+        // `unreadable`/`fetchFailures` must reconcile against `gapsConsidered`
+        // (a PER-FIELD count) the same way every other outcome does — classify
+        // every requested field on this facility (i.e. every gap that could
+        // not even be attempted), not just the facility as a whole.
+        const outcome: GapOutcome = result.sawAnyUnreadable ? "unreadable" : "fetchFailures";
+        if (result.sawAnyUnreadable) {
           console.log(
-            `skip: ${facility.id} — built candidate failed enrichmentUpdateIntentSchema validation: ${validation.error.issues[0]?.message ?? "unknown validation error"} (${result.accepted.length} field(s) affected)`
+            `skip: ${facility.id} — every cited source fetched but yielded < ${MIN_READABLE_CHARS} chars of text (likely a JS-rendered or empty page) — this is NOT the same as "field not mentioned" (${fields.length} field(s) affected)`
           );
-          candidateFailedSchema = true;
-          candidate = null;
+          consecutiveTotalFetchFailures = 0;
+        } else {
+          console.log(
+            `skip: ${facility.id} — no cited source could be fetched as readable HTML/plain-text (${fields.length} field(s) affected)`
+          );
+          consecutiveTotalFetchFailures++;
+        }
+        // This facility's own gaps are real `fetchFailures`/`unreadable`
+        // outcomes — classify them BEFORE the threshold check below, so the
+        // triggering facility itself is counted correctly and only facilities
+        // never reached at all end up in `abortedUnprocessed`.
+        for (const field of fields) {
+          outcomes.set(gapKey(facility.id, field), outcome);
+        }
+        if (!result.sawAnyUnreadable && consecutiveTotalFetchFailures >= CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD) {
+          abortReason =
+            `ABORTING: ${consecutiveTotalFetchFailures} consecutive facilities produced ZERO readable sources ` +
+            `(most recent: ${facility.id}). This pattern is symptomatic of a SYSTEMIC fetch failure (e.g. a ` +
+            `leaked/exhausted connection pool or a broken network path), not scattered link rot — a run that ` +
+            `cannot fetch has not measured anything about the dataset and must not report success. Check the ` +
+            `network_error errorCode/errorMessage fields fetchPageText now surfaces (scripts/discovery/fetch-page-text.ts) ` +
+            `to diagnose the underlying cause before re-running. Do not raise this threshold to make the symptom go away.`;
+          console.error(abortReason);
+          break;
+        }
+        continue;
+      }
+
+      consecutiveTotalFetchFailures = 0;
+
+      // Guard 2 (siblingCollision): a facility whose capacityMw.operational AND
+      // capacityMw.planned were BOTH gaps this run, and BOTH resolved to the
+      // SAME value, cannot both be independent facts — see
+      // `detectSiblingValueCollision`'s doc-comment. Runs BEFORE candidate
+      // construction so a colliding pair never reaches `toEnrichmentIntents` in
+      // the first place — never `capacityMw: { planned: X, operational: X }`
+      // built from a single ambiguous quote.
+      const collision = detectSiblingValueCollision(result.accepted);
+      if (collision.collidedFields.length > 0) {
+        // A dropped fact is only RECOVERABLE if the value, quote, and source
+        // that produced it survive in the log — printing only the field name
+        // (as an earlier version of this line did) forces a human to re-run
+        // the extraction just to learn what was thrown away, at which point a
+        // genuinely correct value (e.g. a real `planned: 75` backed by its own
+        // quote) is gone for good. Bring this up to the same evidentiary
+        // standard as `isOperationalStatusContradiction`'s log line: id, field,
+        // value, and source, PLUS the verbatim quote (truncated defensively —
+        // nothing bounds a model quote's length) since the quote is what makes
+        // a rejection line checkable in seconds instead of requiring a re-run.
+        // Looked up from the PRE-filter `result.accepted` (not
+        // `collision.accepted`, which has already had them removed) — each
+        // field gets ITS OWN source/quote, never assumed shared, since the
+        // two can legitimately come from DIFFERENT cited pages (defect 4).
+        const truncateQuote = (quote: string, max = 200) => (quote.length > max ? `${quote.slice(0, max)}…` : quote);
+        const op = result.accepted.find((item) => item.field === "capacityMw.operational");
+        const pl = result.accepted.find((item) => item.field === "capacityMw.planned");
+        console.log(
+          `skip: ${facility.id} capacityMw.operational/capacityMw.planned — sibling collision: both resolved to the ` +
+            `same value, no recorded sibling to compare against (see detectSiblingValueCollision). ` +
+            `operational: value=${JSON.stringify(op?.value)} quote="${op ? truncateQuote(op.verbatimQuote) : "?"}" source=${op?.source.url ?? "?"}; ` +
+            `planned: value=${JSON.stringify(pl?.value)} quote="${pl ? truncateQuote(pl.verbatimQuote) : "?"}" source=${pl?.source.url ?? "?"}`
+        );
+      }
+      result.accepted = collision.accepted;
+      const collidedFields = new Set(collision.collidedFields);
+
+      // Build + self-validate the candidate BEFORE the per-field tally below —
+      // never emit a candidate submit-candidates.ts would itself reject.
+      // targetFacilityId lives outside enrichmentUpdateIntentSchema (stripped
+      // by submit-candidates.ts before parsing) — strip it here too so this
+      // check exercises the exact same schema the downstream consumer applies.
+      // Doing this FIRST (not after crediting `extracted`) is what makes
+      // `schemaRejected` a real per-field final outcome instead of an
+      // after-the-fact facility-level flag layered on top of fields already
+      // counted as extracted: `enrichmentUpdateIntentSchema` validates
+      // `capacityMw`/`energy` as whole sub-objects, so ONE invalid field (e.g.
+      // a model-extracted `0`, which clears the quote gate but fails the
+      // schema's `.positive()`) fails the WHOLE candidate — every field that
+      // contributed to it must be reclassified `schemaRejected`, not left
+      // double-counted under `extracted`.
+      let candidate: Track5Candidate | null = null;
+      let candidateFailedSchema = false;
+      if (result.accepted.length > 0) {
+        candidate = toEnrichmentIntents(facility, result.accepted, {
+          runId: opts.runId,
+          discoveredAt: isoNow,
+          date: dateOnly,
+        });
+        if (candidate) {
+          const intentBody = Object.fromEntries(
+            Object.entries(candidate.enrichmentUpdate).filter(([key]) => key !== "targetFacilityId")
+          );
+          const validation = enrichmentUpdateIntentSchema.safeParse(intentBody);
+          if (!validation.success) {
+            console.log(
+              `skip: ${facility.id} — built candidate failed enrichmentUpdateIntentSchema validation: ${validation.error.issues[0]?.message ?? "unknown validation error"} (${result.accepted.length} field(s) affected)`
+            );
+            candidateFailedSchema = true;
+            candidate = null;
+          }
         }
       }
+
+      // Classify the FINAL per-field outcome now — a field prefiltered on
+      // source 1 but extracted from source 2 lands in `extracted`, never
+      // `prefiltered`; a field whose candidate failed schema validation lands
+      // in `schemaRejected`, never `extracted`. Every branch below WRITES the
+      // gap's outcome into the map — none increments `summary` directly.
+      const extractedFields = new Set(candidateFailedSchema ? [] : result.accepted.map((item) => item.field));
+      const schemaRejectedFields = new Set(candidateFailedSchema ? result.accepted.map((item) => item.field) : []);
+      for (const field of fields) {
+        const key = gapKey(facility.id, field);
+        if (extractedFields.has(field)) {
+          outcomes.set(key, "extracted");
+          continue;
+        }
+        if (schemaRejectedFields.has(field)) {
+          outcomes.set(key, "schemaRejected");
+          continue;
+        }
+        if (collidedFields.has(field)) {
+          outcomes.set(key, "siblingCollision");
+          continue;
+        }
+        const reason = result.fieldFailureReason.get(field);
+        if (reason === undefined) {
+          // Leaves this gap as "unclassified" rather than silently skipping it
+          // — the whole point of the structural rewrite is that this case is
+          // now visible in `summary.unclassified` and this log line, instead
+          // of vanishing from every counter the way defects 5/6/7 each did.
+          console.error(`UNCLASSIFIED GAP: ${key} — no recorded outcome despite a readable source; this is a bug`);
+          continue;
+        }
+        outcomes.set(key, reason);
+      }
+
+      if (!candidate) continue;
+
+      if (candidate.provenance.note.startsWith("REVIEW:")) summary.reviewFlagged++;
+      summary.candidates.push(candidate);
+    } finally {
+      // Checkpoint exactly once per facility, regardless of which path this
+      // iteration took (unreadable/fetchFailures, the systemic-abort `break`,
+      // readable-but-no-candidate, schemaRejected, or a real candidate) — a
+      // single call site in `finally` can never be silently bypassed by a
+      // future `continue`/`break` added inside this loop body the way three
+      // separate call sites could. `summary.candidates` is the only field
+      // this checkpoint needs to be accurate (extract-fields.ts's other
+      // counters are only tallied once, after this whole loop, from
+      // `outcomes`), and the array is already correct here since the push
+      // above runs inside `try` and completes before `finally` does. See
+      // `RunExtractDeps.checkpoint`'s doc-comment.
+      deps.checkpoint?.(summary);
     }
-
-    // Classify the FINAL per-field outcome now — a field prefiltered on
-    // source 1 but extracted from source 2 lands in `extracted`, never
-    // `prefiltered`; a field whose candidate failed schema validation lands
-    // in `schemaRejected`, never `extracted`. Every branch below WRITES the
-    // gap's outcome into the map — none increments `summary` directly.
-    const extractedFields = new Set(candidateFailedSchema ? [] : result.accepted.map((item) => item.field));
-    const schemaRejectedFields = new Set(candidateFailedSchema ? result.accepted.map((item) => item.field) : []);
-    for (const field of fields) {
-      const key = gapKey(facility.id, field);
-      if (extractedFields.has(field)) {
-        outcomes.set(key, "extracted");
-        continue;
-      }
-      if (schemaRejectedFields.has(field)) {
-        outcomes.set(key, "schemaRejected");
-        continue;
-      }
-      if (collidedFields.has(field)) {
-        outcomes.set(key, "siblingCollision");
-        continue;
-      }
-      const reason = result.fieldFailureReason.get(field);
-      if (reason === undefined) {
-        // Leaves this gap as "unclassified" rather than silently skipping it
-        // — the whole point of the structural rewrite is that this case is
-        // now visible in `summary.unclassified` and this log line, instead
-        // of vanishing from every counter the way defects 5/6/7 each did.
-        console.error(`UNCLASSIFIED GAP: ${key} — no recorded outcome despite a readable source; this is a bug`);
-        continue;
-      }
-      outcomes.set(key, reason);
-    }
-
-    if (!candidate) continue;
-
-    if (candidate.provenance.note.startsWith("REVIEW:")) summary.reviewFlagged++;
-    summary.candidates.push(candidate);
   }
 
   if (abortReason !== null) {
@@ -1998,10 +2040,29 @@ async function main(): Promise<void> {
   const baseUrl = process.env.API_BASE_URL ?? "http://localhost:3000";
   const facilities = await loadFacilities(baseUrl);
 
+  const deps = buildRealDeps();
+  if (args.outPath) {
+    const outPath = args.outPath;
+    mkdirSync(path.dirname(path.resolve(outPath)), { recursive: true });
+    // Checkpoint once per facility processed so a crash mid-sweep (OOM, the
+    // machine sleeping, Ollama dying, ^C) loses at most one facility's worth
+    // of work instead of the entire ~17h run — see `RunExtractDeps.checkpoint`.
+    // Wired ONLY when --out is set: a dry run must still write nothing.
+    deps.checkpoint = (partial) => {
+      try {
+        atomicWriteJson(outPath, partial.candidates);
+      } catch (err) {
+        // Losing a checkpoint is survivable; killing a 17-hour sweep over a
+        // transient write failure is not.
+        console.error(`checkpoint write failed (continuing sweep): ${err instanceof Error ? err.message : String(err)}`);
+      }
+    };
+  }
+
   const summary = await runExtract(
     facilities,
     { fields: args.fields, limit: args.limit, facilityId: args.facilityId, runId: args.runId },
-    buildRealDeps()
+    deps
   );
 
   // Write (or report dry-run) UNCONDITIONALLY, whether or not the run
