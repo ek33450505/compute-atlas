@@ -37,6 +37,21 @@ function fixedNow(): Date {
   return new Date("2026-08-16T00:00:00.000Z");
 }
 
+/** Default `fetchPdfTextImpl` for tests that never expect it to be called
+ * (i.e. every source in the test is non-PDF). Throwing on any call makes an
+ * accidental PDF fetch fail loudly instead of silently returning a
+ * plausible-looking result that would mask a routing bug. */
+async function unexpectedPdfFetch(url: string): Promise<never> {
+  throw new Error(`fetchPdfTextImpl unexpectedly called for ${url}`);
+}
+
+/** Symmetric counterpart for tests whose only source is a `.pdf` URL — those
+ * are routed straight to `fetchPdfTextImpl` by `fetchSourceText` and must
+ * never reach `fetchPageTextImpl` at all. */
+async function unexpectedPageFetch(url: string): Promise<never> {
+  throw new Error(`fetchPageTextImpl unexpectedly called for ${url}`);
+}
+
 // ============================================================================
 // selectValuesToVerify — the mirror image of extract-fields.ts's selectGaps
 // ============================================================================
@@ -112,6 +127,7 @@ describe("runVerify — confirmed", () => {
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: 102, verbatimQuote: "operational capacity of 102 MW", reasonIfNull: null },
@@ -139,6 +155,7 @@ describe("runVerify — disagreement (THE PAYLOAD)", () => {
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: 250, verbatimQuote: "operational capacity of 250 MW", reasonIfNull: null },
@@ -172,6 +189,7 @@ describe("runVerify — unconfirmed (model null) is NEVER counted as a disagreem
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: null, verbatimQuote: null, reasonIfNull: "page describes a different facility" },
@@ -200,6 +218,7 @@ describe("runVerify — noMention", () => {
     let modelCalls = 0;
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => {
         modelCalls++;
         return { ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } };
@@ -225,6 +244,7 @@ describe("runVerify — unreachable", () => {
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async () => ({ ok: false, reason: "http_error", httpStatus: 404 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } }),
       now: fixedNow,
     };
@@ -249,6 +269,7 @@ describe("runVerify — quote gate applies to the MODEL's own answer", () => {
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({
         ok: true,
         data: {
@@ -295,6 +316,7 @@ describe("runVerify — reads ALL cited sources, never stops at the first confir
         const text = url.endsWith("source-2") ? contradictingPage : confirmingPage;
         return { ok: true, text, finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async (opts) => {
         // Both mock pages state a plain 100/300 MW figure; branch on which
         // page text was embedded in the prompt so each source resolves to
@@ -338,6 +360,7 @@ describe("runVerify — reads ALL cited sources, never stops at the first confir
         const text = url.endsWith("source-2") ? page2 : page1;
         return { ok: true, text, finalUrl: url, httpStatus: 200 };
       },
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async (opts) => {
         if (opts.userPrompt.includes("60 MW")) {
           return { ok: true, data: { value: 60, verbatimQuote: "operational capacity of 60 MW", reasonIfNull: null } };
@@ -387,6 +410,7 @@ describe("runVerify — reconciliation identity", () => {
           httpStatus: 200,
         };
       },
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async (opts) => {
         const match = opts.userPrompt.match(/operational capacity of (\d+) MW/);
         const value = match ? Number(match[1]) : null;
@@ -421,6 +445,7 @@ describe("runVerify — abort guard on a consecutive total-fetch-failure streak"
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async () => ({ ok: false, reason: "network_error" }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } }),
       now: fixedNow,
     };
@@ -458,6 +483,7 @@ describe("runVerify — abort guard on a consecutive total-fetch-failure streak"
         }
         return { ok: false, reason: "network_error" };
       },
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: 250, verbatimQuote: "operational capacity of 250 MW", reasonIfNull: null },
@@ -483,6 +509,7 @@ describe("runVerify — abort guard on a consecutive total-fetch-failure streak"
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async () => ({ ok: false, reason: "network_error" }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } }),
       now: fixedNow,
     };
@@ -516,6 +543,7 @@ describe("runVerify — --limit caps VALUES checked, not source-checks", () => {
         finalUrl: url,
         httpStatus: 200,
       }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null },
@@ -538,38 +566,79 @@ describe("runVerify — --limit caps VALUES checked, not source-checks", () => {
 // ============================================================================
 
 describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole)", () => {
-  it("a facility whose only source is a PDF lands its value in uncheckedValues with reason allSourcesPdf, contributes zero triples", async () => {
+  // F1: prior to this change, a PDF-only facility was NEVER fetched at all
+  // — its value landed in `uncheckedValues` with reason `allSourcesPdf` and
+  // contributed zero triples (`fetchPageTextImpl`/`fetchPdfTextImpl` calls
+  // == 0). That exemption is removed: PDFs are now routed through the same
+  // `fetchSourceText` router `extract-fields.ts` uses, so a PDF-only
+  // facility IS fetched and contributes real triples like any other source.
+  it("a PDF-only facility with a readable PDF is fetched via fetchPdfTextImpl and yields real triples (F1)", async () => {
     const facility = makeFacility({
       id: "pdf-only-facility",
       capacityMw: { operational: 100 },
       sources: [{ url: "https://example.com/report.pdf", label: "PDF report", retrievedAt: "2026-01-01", kind: "filing" }],
     });
+    const pdfText = `The facility has an operational capacity of 100 MW. ${"Filler sentence about the site. ".repeat(20)}`;
 
-    let fetchCalls = 0;
+    let pdfFetchCalls = 0;
     const deps: VerifyFieldsDeps = {
-      fetchPageTextImpl: async (url) => {
-        fetchCalls++;
-        return { ok: true, text: "should never be reached", finalUrl: url, httpStatus: 200 };
+      fetchPageTextImpl: unexpectedPageFetch,
+      fetchPdfTextImpl: async (url) => {
+        pdfFetchCalls++;
+        return { ok: true, text: pdfText, finalUrl: url, httpStatus: 200, contentType: "application/pdf" };
       },
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null },
+      }),
+      now: fixedNow,
+    };
+
+    const summary = await runVerify([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    // MUTATION-PROVEN (F1 unit 3): re-adding the old `isLikelyPdf` skip in
+    // `verifyFacility` makes `pdfFetchCalls` stay 0 and this whole block
+    // fail — confirmed by temporarily restoring the skip, see dispatch
+    // report.
+    expect(pdfFetchCalls).toBe(1);
+    expect(summary.sourceChecksAttempted).toBe(1);
+    expect(summary.valuesChecked).toBe(1);
+    expect(summary.valuesUnchecked).toBe(0);
+    expect(summary.confirmed).toBe(1);
+    expect(summary.results[0]?.outcome).toBe("confirmed");
+  });
+
+  it("a PDF that fails to fetch/extract yields an unreachable triple — never silence, and never treated as the source not stating the field (F1)", async () => {
+    const facility = makeFacility({
+      id: "pdf-extract-failed-facility",
+      capacityMw: { operational: 100 },
+      sources: [{ url: "https://example.com/report.pdf", label: "PDF report", retrievedAt: "2026-01-01", kind: "filing" }],
+    });
+
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: unexpectedPageFetch,
+      fetchPdfTextImpl: async () => ({
+        ok: false,
+        reason: "pdf_extract_failed",
+        errorMessage: "pdftotext produced no extractable text",
+      }),
       callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } }),
       now: fixedNow,
     };
 
     const summary = await runVerify([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
 
-    expect(fetchCalls).toBe(0); // the PDF is never even fetched
-    expect(summary.sourceChecksAttempted).toBe(0);
-    expect(summary.valuesChecked).toBe(0);
-    expect(summary.valuesUnchecked).toBe(1);
-    expect(summary.uncheckedValues).toEqual([
-      {
-        facilityId: "pdf-only-facility",
-        facilityName: "Test Facility",
-        field: "capacityMw.operational",
-        recordedValue: 100,
-        reason: "allSourcesPdf",
-      },
-    ]);
+    // MUTATION-PROVEN (F1 unit 3): swapping this test's expected outcome to
+    // "noMention" and re-running confirms it fails — a failed PDF read must
+    // never be indistinguishable from "the source doesn't state this" (the
+    // file header's CENTRAL DESIGN CONSTRAINT).
+    expect(summary.sourceChecksAttempted).toBe(1);
+    expect(summary.unreachable).toBe(1);
+    expect(summary.results[0]?.outcome).toBe("unreachable");
+    expect(summary.noMention).toBe(0);
+    expect(summary.confirmed).toBe(0);
+    expect(summary.disagreements).toBe(0);
+    expect(summary.valuesUnchecked).toBe(0);
   });
 
   it("a facility with no sources at all lands its value in uncheckedValues with reason noSources", async () => {
@@ -577,6 +646,7 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async (url) => ({ ok: true, text: "unreachable in this test", finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } }),
       now: fixedNow,
     };
@@ -587,11 +657,18 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
     expect(summary.uncheckedValues[0]?.reason).toBe("noSources");
   });
 
-  it("does not perturb the consecutive-fetch-failure abort streak — an all-PDF facility is a data characteristic, not evidence of network collapse", async () => {
-    // THRESHOLD - 1 genuine fetch failures interleaved with an all-PDF
-    // facility must NOT trip the abort — if the all-PDF facility were
-    // (wrongly) counted as a fetch failure, this would reach the threshold
-    // and abort.
+  // F1 DELIBERATELY REMOVES the old exemption: before this change, an
+  // all-PDF facility was never fetched at all and was excluded from the
+  // consecutive-fetch-failure streak entirely (neither incrementing nor
+  // resetting it), because "every cited source is a PDF" was a data
+  // characteristic, not evidence of network health. Since PDFs are now
+  // actually fetched, a genuine PDF fetch failure IS an ordinary fetch
+  // failure and MUST be able to trip this guard — if every PDF in a run is
+  // failing (e.g. poppler/pdftotext missing), that is exactly the systemic
+  // signal this guard exists to catch, and silently exempting it would
+  // reopen the "silence read as success" failure class the guard exists to
+  // prevent.
+  it("a failed PDF fetch now counts toward the consecutive-fetch-failure abort streak (F1 — the old all-PDF exemption is intentionally removed)", async () => {
     const genuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
       makeFacility({
         id: `bad-facility-${i}`,
@@ -599,28 +676,33 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
         sources: [{ url: `https://example.com/bad-${i}`, label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
       })
     );
-    const pdfOnlyFacility = makeFacility({
-      id: "pdf-only-interspersed",
+    const pdfFailureFacility = makeFacility({
+      id: "pdf-failure-interspersed",
       capacityMw: { operational: 100 },
       sources: [{ url: "https://example.com/report.pdf", label: "PDF report", retrievedAt: "2026-01-01", kind: "filing" }],
     });
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async () => ({ ok: false, reason: "network_error" }),
+      fetchPdfTextImpl: async () => ({ ok: false, reason: "pdf_extract_failed", errorMessage: "pdftotext produced no extractable text" }),
       callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } }),
       now: fixedNow,
     };
 
     const summary = await runVerify(
-      [...genuineFailures, pdfOnlyFacility],
+      [...genuineFailures, pdfFailureFacility],
       { fields: ["capacityMw.operational"], runId: "test-run" },
       deps
     );
 
-    expect(summary.aborted).toBe(false);
-    expect(summary.unreachable).toBe(CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1);
-    expect(summary.valuesUnchecked).toBe(1);
-    expect(summary.uncheckedValues[0]?.reason).toBe("allSourcesPdf");
+    // MUTATION-PROVEN (F1 unit 3): under the OLD semantics this exact shape
+    // (THRESHOLD - 1 genuine failures + 1 all-PDF facility) did NOT abort —
+    // re-adding the old exemption (excluding an all-PDF facility's failed
+    // fetch from the streak) makes `aborted` false again and this assertion
+    // fail.
+    expect(summary.aborted).toBe(true);
+    expect(summary.unreachable).toBe(CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD);
+    expect(summary.valuesUnchecked).toBe(0);
   });
 
   it("a facility never reached because of an abort lands its value in uncheckedValues with reason abortedBeforeReached", async () => {
@@ -639,6 +721,7 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
 
     const deps: VerifyFieldsDeps = {
       fetchPageTextImpl: async () => ({ ok: false, reason: "network_error" }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } }),
       now: fixedNow,
     };
@@ -660,10 +743,14 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
       capacityMw: { operational: 100 },
       sources: [{ url: "https://example.com/confirmed-in-mix", label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
     });
-    const pdfOnlyFacility = makeFacility({
+    // Since F1, a PDF-only facility no longer contributes zero triples (its
+    // PDF is actually fetched — see the "readable PDF yields real triples"
+    // coverage above), so it can no longer stand in for the unchecked case
+    // here. A facility with NO sources at all still can — see `noSources`.
+    const noSourcesFacility = makeFacility({
       id: "unchecked-in-mix",
       capacityMw: { operational: 200 },
-      sources: [{ url: "https://example.com/report.pdf", label: "PDF report", retrievedAt: "2026-01-01", kind: "filing" }],
+      sources: [],
     });
 
     const deps: VerifyFieldsDeps = {
@@ -673,6 +760,7 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
         finalUrl: url,
         httpStatus: 200,
       }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
       callOllamaImpl: async () => ({
         ok: true,
         data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null },
@@ -681,7 +769,7 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
     };
 
     const summary = await runVerify(
-      [confirmedFacility, pdfOnlyFacility],
+      [confirmedFacility, noSourcesFacility],
       { fields: ["capacityMw.operational"], runId: "test-run" },
       deps
     );
@@ -695,5 +783,6 @@ describe("runVerify — per-value accounting: valuesUnchecked (the coverage hole
     expect(summary.valuesChecked + summary.valuesUnchecked).toBe(summary.valuesConsidered);
     expect(summary.confirmed).toBe(1);
     expect(summary.uncheckedValues[0]?.facilityId).toBe("unchecked-in-mix");
+    expect(summary.uncheckedValues[0]?.reason).toBe("noSources");
   });
 });

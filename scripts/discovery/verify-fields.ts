@@ -38,8 +38,9 @@
  * because filling one gap from one good source is the whole job. Here,
  * stopping at the first confirming source would build in confirmation bias:
  * if source 1 confirms and source 3 contradicts, an early exit systematically
- * hides exactly the contradictions this tool exists to find. Every cited,
- * non-PDF source is read for every field under check, every time. If two
+ * hides exactly the contradictions this tool exists to find. Every cited
+ * source — PDF or HTML alike, since F1 — is read for every field under
+ * check, every time. If two
  * sources state different numbers, BOTH are reported — inconsistent sourcing
  * is itself a correctness finding. Do not "optimize" this into an early
  * exit; see the test file's mutation-test note before touching this rule.
@@ -74,12 +75,16 @@
  * ABORT_THRESHOLD`, and `parseFieldsArg` from `extract-fields.ts` — the
  * model-calling, quote-gating, and windowing machinery is IDENTICAL between
  * the fill tool and this check tool, only what happens after a value comes
- * back differs. A few small helpers `extract-fields.ts` does not export are
- * mirrored locally with an explicit coupling comment at each definition
- * (`isNumericField`/`NUMERIC_FIELDS`, `RECONCILE_TOLERANCE`,
- * `MIN_READABLE_CHARS`, `isLikelyPdf`) — keep each in sync with its
- * unexported counterpart in `extract-fields.ts` if that file's constants
- * ever change.
+ * back differs. F1 also shares that file's PDF-vs-HTML source router:
+ * `fetchSourceText`/`FetchState`/`createFetchState`/`SourceFetchDeps` are
+ * imported directly rather than mirrored, so this tool's PDF handling can
+ * never drift from `extract-fields.ts`'s — see `fetchSourceText`'s
+ * doc-comment there for the routing rule itself. A few small helpers
+ * `extract-fields.ts` does not export are still mirrored locally with an
+ * explicit coupling comment at each definition (`isNumericField`/
+ * `NUMERIC_FIELDS`, `RECONCILE_TOLERANCE`, `MIN_READABLE_CHARS`) — keep each
+ * in sync with its unexported counterpart in `extract-fields.ts` if that
+ * file's constants ever change.
  *
  * === ACCOUNTING ===
  * Every (facility, field, source) triple this tool actually attempts is
@@ -100,9 +105,12 @@
  * an invariant to be separately verified.
  *
  * THIS TRIPLE-LEVEL ACCOUNTING HAS A BLIND SPOT: a value whose facility cites
- * only PDFs, cites no sources at all, or was never reached because of an
- * abort contributes ZERO triples — not even an `unreachable` one, since there
- * was nothing to even attempt fetching. Such a value is invisible to the five
+ * no sources at all, or was never reached because of an abort, contributes
+ * ZERO triples — not even an `unreachable` one, since there was nothing to
+ * even attempt fetching. (Since F1, a PDF-only facility no longer falls into
+ * this blind spot — every cited source, PDF or HTML, is now actually fetched,
+ * so it contributes at least one real triple, `unreachable` if the fetch or
+ * extraction fails.) Such a value is invisible to the five
  * outcome counters and, without a second layer, indistinguishable in the
  * output from a value that was fully checked. That is the exact shape of the
  * incident that motivated the abort guard below: a balanced-looking report
@@ -128,9 +136,11 @@
  * reads as "no problems found" rather than "nothing was checked." The streak
  * counter mirrors `extract-fields.ts`'s own distinction between a genuine
  * fetch failure (increments the streak) and a merely-thin/JS-rendered page
- * that DID fetch (resets it, since the network path is proven alive) — see
- * `runVerify`'s doc-comment for the one place this tool's streak semantics
- * deliberately diverge from `extract-fields.ts`'s (an all-PDF facility).
+ * that DID fetch (resets it, since the network path is proven alive). Since
+ * F1, a failed PDF fetch is an ordinary fetch failure like any other and DOES
+ * count toward the streak — the old exemption for all-PDF facilities (they
+ * were never fetched at all, so could not indicate network health either
+ * way) no longer applies now that PDFs are actually fetched.
  *
  * All side-effecting dependencies (fetch, the Ollama call, the clock) are
  * injected via `VerifyFieldsDeps` — `main()` builds the real implementations
@@ -161,7 +171,9 @@ import type { Facility } from "../../lib/schema";
 import {
   CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD,
   EXTRACTABLE_FIELDS,
+  createFetchState,
   extractField,
+  fetchSourceText,
   parseFieldsArg,
   prefilter,
   quoteSupportsValue,
@@ -169,10 +181,13 @@ import {
   windowText,
   type ExtractFieldModelDeps,
   type ExtractableField,
+  type FetchState,
   type ModelExtraction,
+  type SourceFetchDeps,
 } from "./extract-fields";
 import { callOllama } from "./ollama-client";
-import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
+import { fetchPageText } from "./fetch-page-text";
+import { fetchPdfText } from "./fetch-pdf-text";
 
 // Note on reuse: `buildUserPrompt` and `fieldJsonSchema` (also exported by
 // extract-fields.ts) are NOT imported here directly — this tool never calls
@@ -206,13 +221,6 @@ const RECONCILE_TOLERANCE = 0.05;
 // JS-rendered page) is not usable evidence either way; see that constant's
 // doc-comment in extract-fields.ts for the full rationale.
 const MIN_READABLE_CHARS = 400;
-
-// COUPLING: mirrors extract-fields.ts's unexported `isLikelyPdf` — this
-// script never regexes a PDF's raw bytes (measured elsewhere in this
-// project to produce phantom figures).
-function isLikelyPdf(url: string): boolean {
-  return /\.pdf(\?|#|$)/i.test(url);
-}
 
 // ============================================================================
 // Stage 1 — selectValuesToVerify: which (facility, field) pairs currently
@@ -390,21 +398,23 @@ async function classifyReadableSource(
 }
 
 // ============================================================================
-// Per-facility driver: reads EVERY cited non-PDF source, for EVERY field
-// under check — no early exit. See file header's "READ ALL SOURCES" section.
+// Per-facility driver: reads EVERY cited source — PDF or HTML — for EVERY
+// field under check — no early exit. See file header's "READ ALL SOURCES"
+// section. PDF routing is shared with extract-fields.ts's `fetchSourceText`
+// (see the file header's REUSE note) so this tool's PDF handling can never
+// drift from that one's.
 // ============================================================================
 
-export interface VerifyFieldsDeps extends ExtractFieldModelDeps {
-  fetchPageTextImpl: (url: string) => Promise<FetchPageTextResult>;
+export interface VerifyFieldsDeps extends ExtractFieldModelDeps, SourceFetchDeps {
   now: () => Date;
 }
 
 interface FacilityVerifyResult {
   results: SourceVerification[];
-  /** At least one non-PDF source fetched successfully AND cleared
+  /** At least one source fetched successfully AND cleared
    * MIN_READABLE_CHARS. Used only by the systemic-collapse abort guard. */
   sawAnyReadable: boolean;
-  /** At least one non-PDF source fetched successfully but was too thin to
+  /** At least one source fetched successfully but was too thin to
    * read. Kept distinct from `sawAnyReadable` for the same reason
    * extract-fields.ts keeps its own `sawAnyUnreadable` distinct: a thin page
    * still proves the network path works, so it must reset the
@@ -416,16 +426,15 @@ interface FacilityVerifyResult {
 async function verifyFacility(
   facility: Facility,
   fields: Array<{ field: ExtractableField; recordedValue: number | string }>,
-  deps: VerifyFieldsDeps
+  deps: VerifyFieldsDeps,
+  fetchState: FetchState
 ): Promise<FacilityVerifyResult> {
   const results: SourceVerification[] = [];
   let sawAnyReadable = false;
   let sawAnyThin = false;
 
   for (const source of facility.sources) {
-    if (isLikelyPdf(source.url)) continue; // never regex a PDF's bytes — see file header
-
-    const fetchResult = await deps.fetchPageTextImpl(source.url);
+    const fetchResult = await fetchSourceText(source.url, deps, fetchState);
 
     if (!fetchResult.ok) {
       console.log(`unreachable: ${facility.id} — ${source.url} — fetch failed (${fetchResult.reason})`);
@@ -496,15 +505,22 @@ export interface RunVerifyOptions {
 /**
  * Why a value contributed ZERO attempted (facility, field, source) triples —
  * see `VerifyFieldsSummary.uncheckedValues`'s doc-comment for why this is a
- * first-class finding, not an absence. `allSourcesPdf` and `noSources` are
- * deliberately distinct: "every cited source is a PDF" is a very different
- * follow-up (re-cite with a readable source) from "no sources are cited at
- * all" (a data-completeness gap upstream of this tool). `abortedBeforeReached`
- * is distinct from both — it says nothing about the facility's own sources,
- * only that the run stopped before reaching it (see `runVerify`'s abort
- * design); re-running covers it, no data fix is implied.
+ * first-class finding, not an absence. `noSources` (a data-completeness gap
+ * upstream of this tool: nothing was ever cited) and `abortedBeforeReached`
+ * (says nothing about the facility's own sources — only that the run stopped
+ * before reaching it, see `runVerify`'s abort design; re-running covers it,
+ * no data fix implied) are the only two REACHABLE reasons, since F1: every
+ * cited source — PDF or HTML — is now actually fetched, so a reached facility
+ * with at least one source always contributes at least one triple (a failed
+ * fetch or a too-thin read still yields an `unreachable` triple). `unclassified`
+ * is kept ONLY as a structural safety net, mirroring extract-fields.ts's own
+ * `unclassified` counter (see that field's doc-comment there): if this reason
+ * is ever produced, that is a genuine accounting bug in this file, not a data
+ * characteristic — a reached facility with sources somehow contributed zero
+ * triples despite the invariant above. It should never appear in a correct
+ * run.
  */
-export type UncheckedReason = "allSourcesPdf" | "noSources" | "abortedBeforeReached";
+export type UncheckedReason = "noSources" | "abortedBeforeReached" | "unclassified";
 
 export interface UncheckedValue {
   facilityId: string;
@@ -532,8 +548,9 @@ export interface VerifyFieldsSummary {
    * `UncheckedValue`'s doc-comment. THIS IS THE COVERAGE HOLE THE TRIPLE-
    * LEVEL ACCOUNTING CANNOT SEE: a value with zero triples produces no
    * `unreachable` result either (there was nothing to even fail to fetch —
-   * e.g. every cited source is a PDF, or there are no sources at all), so it
-   * is invisible to the five-outcome tally and indistinguishable from "fully
+   * there are no sources cited at all, or the run never reached the facility
+   * because of an abort), so it is invisible to the five-outcome tally and
+   * indistinguishable from "fully
    * covered" in `sourceChecksAttempted`/`results` alone. For a tool whose
    * entire purpose is correctness assurance, "this value could not be
    * checked" must be a first-class, separately-counted finding — never
@@ -546,8 +563,9 @@ export interface VerifyFieldsSummary {
    * disagreements, in `printHumanSummary` — a reader skimming the headline
    * must not be able to mistake partial coverage for full coverage. */
   uncheckedValues: UncheckedValue[];
-  /** Total (facility, field, source) triples actually attempted — PDFs are
-   * never attempted at all and are excluded here. Always equals
+  /** Total (facility, field, source) triples actually attempted — since F1
+   * this includes PDF sources, which are fetched and read like any other
+   * source. Always equals
    * `results.length` and always equals the sum of the five outcome counters
    * below, by construction (see file header's "ACCOUNTING" section). This is
    * the TRIPLE-level identity; `valuesConsidered = valuesChecked +
@@ -598,19 +616,24 @@ const OUTCOME_TO_SUMMARY_KEY: Record<VerifyOutcome, SummaryNumericKey> = {
 /**
  * Runs the full verify-fields pipeline over `facilities`. Groups the
  * selected (facility, field) values by facility, then `verifyFacility` reads
- * through EVERY cited non-PDF source for that facility — never just the
- * first, and never stopping at the first confirmation (see file header) —
- * before every attempted (facility, field, source) triple is pushed into
- * `summary.results` and tallied via `OUTCOME_TO_SUMMARY_KEY`. After the
- * facility loop, a SEPARATE per-value reconciliation pass (see the comment
- * above it) classifies every originally-selected value as `valuesChecked`
- * (>=1 triple attempted) or `valuesUnchecked` (zero triples — a facility
- * whose sources are all PDFs, has none at all, or was never reached because
- * of an abort) — the coverage hole the triple-level tally alone cannot see,
- * since a value with zero triples produces no `unreachable` result either.
- * Ollama itself is strictly serial, so this processes one facility (and
- * within it, one source, and within that, one field) at a time; never fans
- * out with Promise.all.
+ * through EVERY cited source (PDF or HTML, since F1) for that facility —
+ * never just the first, and never stopping at the first confirmation (see
+ * file header) — before every attempted (facility, field, source) triple is
+ * pushed into `summary.results` and tallied via `OUTCOME_TO_SUMMARY_KEY`.
+ * After the facility loop, a SEPARATE per-value reconciliation pass (see the
+ * comment above it) classifies every originally-selected value as
+ * `valuesChecked` (>=1 triple attempted) or `valuesUnchecked` (zero triples —
+ * a facility with no sources at all, or one never reached because of an
+ * abort) — the coverage hole the triple-level tally alone cannot see, since a
+ * value with zero triples produces no `unreachable` result either. Ollama
+ * itself is strictly serial, so this processes one facility (and within it,
+ * one source, and within that, one field) at a time; never fans out with
+ * Promise.all.
+ *
+ * A single `FetchState` (see extract-fields.ts) is created ONCE per
+ * `runVerify` call — never module-scoped — and threaded through every
+ * `verifyFacility`/`fetchSourceText` call in this run, so the shared
+ * `pdf_extractor_unavailable` warning fires at most once per run here too.
  *
  * ABORT design: reuses `CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD` from
  * extract-fields.ts. A streak of CONSECUTIVE facilities that produced zero
@@ -619,13 +642,13 @@ const OUTCOME_TO_SUMMARY_KEY: Record<VerifyOutcome, SummaryNumericKey> = {
  * network path works; mirrors extract-fields.ts's own `sawAnyReadable`/
  * `sawAnyUnreadable` distinction) trips the guard: the facility loop
  * `break`s, `aborted`/`abortReason` are set, and every result found before
- * the abort is kept — never discarded. One deliberate divergence from
- * extract-fields.ts: a facility whose sources are ALL PDFs contributes zero
- * attempted triples (`results.length` stays 0 for it) and is excluded from
- * the streak entirely, neither incrementing nor resetting it — an all-PDF
- * citation list is a data characteristic of that facility, not evidence
- * about network health, so it must not perturb a guard whose only job is
- * detecting a systemic FETCH collapse.
+ * the abort is kept — never discarded. Since F1, a facility whose sources are
+ * ALL PDFs is treated exactly like any other facility for this streak: its
+ * PDFs are actually fetched, so a genuine PDF fetch failure increments the
+ * streak the same as an HTML fetch failure would (removing the old exemption
+ * — see the file header's ACCOUNTING section) — a run where every PDF fails
+ * (e.g. `pdftotext`/poppler missing) SHOULD trip this guard, since that is
+ * exactly the systemic-collapse signal it exists to catch.
  */
 export async function runVerify(
   facilities: Facility[],
@@ -688,9 +711,14 @@ export async function runVerify(
   // non-aborted run.
   const reachedFacilityIds = new Set<string>();
 
+  // One instance per `runVerify` call — see `FetchState`'s doc-comment in
+  // extract-fields.ts — so the pdf_extractor_unavailable warning's "once per
+  // run" guarantee can never leak across independent runs or tests.
+  const fetchState: FetchState = createFetchState();
+
   for (const { facility, fields } of byFacility.values()) {
     reachedFacilityIds.add(facility.id);
-    const result = await verifyFacility(facility, fields, deps);
+    const result = await verifyFacility(facility, fields, deps, fetchState);
     for (const item of result.results) {
       summary.results.push(item);
       summary.sourceChecksAttempted++;
@@ -701,8 +729,9 @@ export async function runVerify(
       consecutiveTotalFetchFailures = 0;
     } else if (result.results.length > 0) {
       // Every attempted source for this facility was a genuine connection
-      // failure (never merely thin, and not an all-PDF facility — see this
-      // function's doc-comment for why all-PDF is excluded entirely).
+      // failure (never merely thin — since F1 this includes PDF sources too,
+      // see this function's doc-comment for why the old all-PDF exemption
+      // was removed).
       consecutiveTotalFetchFailures++;
       if (consecutiveTotalFetchFailures >= CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD) {
         abortReason =
@@ -745,11 +774,26 @@ export async function runVerify(
       summary.valuesChecked++;
       continue;
     }
-    const reason: UncheckedReason = !reachedFacilityIds.has(check.facility.id)
-      ? "abortedBeforeReached"
-      : check.facility.sources.length === 0
-        ? "noSources"
-        : "allSourcesPdf"; // the only remaining way a REACHED facility contributes zero triples
+    let reason: UncheckedReason;
+    if (!reachedFacilityIds.has(check.facility.id)) {
+      reason = "abortedBeforeReached";
+    } else if (check.facility.sources.length === 0) {
+      reason = "noSources";
+    } else {
+      // Structurally unreachable since F1: a REACHED facility with at least
+      // one cited source always contributes at least one triple now that
+      // every source — PDF or HTML — is actually fetched (a failed fetch or
+      // too-thin read still yields an `unreachable` triple). Reaching this
+      // branch means that invariant broke — a genuine accounting bug in this
+      // file, not a data characteristic (mirrors extract-fields.ts's own
+      // `unclassified` sentinel) — so it is logged loudly rather than
+      // silently swallowed.
+      reason = "unclassified";
+      console.error(
+        `unclassified: ${check.facility.id} ${check.field} — reached facility with sources but zero attempted ` +
+          `triples; this should be impossible since F1 and indicates an accounting bug in verify-fields.ts`
+      );
+    }
     summary.uncheckedValues.push({
       facilityId: check.facility.id,
       facilityName: check.facility.name,
@@ -886,6 +930,7 @@ function printHumanSummary(summary: VerifyFieldsSummary): void {
 function buildRealDeps(): VerifyFieldsDeps {
   return {
     fetchPageTextImpl: (url) => fetchPageText(url, { fetchImpl: fetch }),
+    fetchPdfTextImpl: (url) => fetchPdfText(url, { fetchImpl: fetch }),
     callOllamaImpl: (opts) => callOllama<ModelExtraction>({ ...opts, fetchImpl: fetch }),
     now: () => new Date(),
   };
