@@ -980,14 +980,23 @@ EOF
 	[ "$status" -eq 0 ]
 
 	# THIS IS THE MOST IMPORTANT TEST IN THIS FILE. --fields is a safety
-	# guard: parseFieldsArg() defaults to ALL FIVE extractable fields when
+	# guard: parseFieldsArg() defaults to ALL SIX extractable fields when
 	# --fields is omitted, and two of those (capacityMw.planned at 75%
 	# precision, energy.onSiteGenerationMw at 50%) failed the accuracy bench
 	# and are not safe to stage unattended every night. Do not "simplify"
 	# this flag away — that silently re-enables both benched-unsafe fields.
 	extract_line="$(grep "extract-fields.ts" "$NPX_CALL_LOG" | head -1)"
 	[ -n "$extract_line" ]
-	[[ "$extract_line" == *"--fields=capacityMw.operational,energy.source,energy.utility"* ]]
+	[[ "$extract_line" == *"--fields=capacityMw.operational,energy.source,energy.utility,water.coolingType"* ]]
+
+	# The positive assertion above is a SUBSTRING match, so it cannot catch an
+	# APPENDED field — `...,water.coolingType,capacityMw.planned` still matches it.
+	# These two negative assertions are what actually enforce the safety property
+	# the comment above claims: the two fields the bench REJECTED must never
+	# appear in the pinned list. Verified 2026-09-01: without these, a list with
+	# capacityMw.planned appended passes.
+	[[ "$extract_line" != *"capacityMw.planned"* ]]
+	[[ "$extract_line" != *"energy.onSiteGenerationMw"* ]]
 }
 
 @test "verify-fields.ts is invoked with the same explicit --fields allowlist" {
@@ -998,12 +1007,22 @@ EOF
 
 	# NOT the same rationale as extract-fields.ts above: verify-fields is
 	# read-only and stages nothing, so the ship-safety caveat cannot apply to
-	# it. This pins a SCOPE bound — the nightly check stays on the same three
+	# it. This pins a SCOPE bound — the nightly check stays on the same four
 	# fields the fill lane populates, and the run stays inside its time
 	# budget. Widening it is a cost decision, not a safety regression.
 	verify_line="$(grep "verify-fields.ts" "$NPX_CALL_LOG" | head -1)"
 	[ -n "$verify_line" ]
-	[[ "$verify_line" == *"--fields=capacityMw.operational,energy.source,energy.utility"* ]]
+	[[ "$verify_line" == *"--fields=capacityMw.operational,energy.source,energy.utility,water.coolingType"* ]]
+
+	# The positive assertion above is a SUBSTRING match, so it cannot catch an
+	# APPENDED field — `...,water.coolingType,capacityMw.planned` still matches it.
+	# These two negative assertions keep the SCOPE bound honest: verify-fields
+	# stages nothing, so this is not a ship-safety guard (see above) — it is what
+	# stops the nightly check drifting onto fields the fill lane does not populate
+	# and silently spending time budget. Verified 2026-09-01: without these, a
+	# list with capacityMw.planned appended passes.
+	[[ "$verify_line" != *"capacityMw.planned"* ]]
+	[[ "$verify_line" != *"energy.onSiteGenerationMw"* ]]
 }
 
 @test "dry-run skips the field-extraction/verification lane entirely" {
@@ -1061,9 +1080,11 @@ EOF
 	# through to --limit=<garbage>. extract-fields.ts/verify-fields.ts parse an
 	# unparseable limit as `undefined`, and an undefined limit SKIPS the
 	# bounding slice entirely — turning a ~60-value bounded lane into an
-	# unattended ~12h sweep of ~2,525 gap values. Do not simplify this
-	# validation away; it is the only thing standing between an operator typo
-	# and an all-night crawl once this lane is scheduled unattended.
+	# unattended ~17h sweep of ~3,629 gap values (3,629 gaps across the four
+	# pinned fields as of 2026-09-01; the ~17h is a proportional rescale of the
+	# measured 12h/2,525-gap figure, not a fresh timing run). Do not simplify
+	# this validation away; it is the only thing standing between an operator
+	# typo and an all-night crawl once this lane is scheduled unattended.
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=false
 	export ENRICHMENT_LIMIT=abc

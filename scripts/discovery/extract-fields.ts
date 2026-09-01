@@ -15,9 +15,9 @@
  * Fields covered (one field per model call, deliberately never batched — see
  * `extractField`'s doc-comment for the measured reason): `capacityMw.planned`,
  * `capacityMw.operational`, `energy.onSiteGenerationMw`, `energy.source`,
- * `energy.utility`. `energy.notes` is intentionally NOT covered — generating
- * prose from a small local model is a fabrication surface this script does
- * not open.
+ * `energy.utility`, `water.coolingType`. `energy.notes` is intentionally NOT
+ * covered — generating prose from a small local model is a fabrication
+ * surface this script does not open.
  *
  * Pipeline (each stage below is a pure, independently-testable function):
  *   1. selectGaps      — which (facility, field) pairs are currently missing.
@@ -111,6 +111,7 @@ export const EXTRACTABLE_FIELDS = [
   "energy.onSiteGenerationMw",
   "energy.source",
   "energy.utility",
+  "water.coolingType",
 ] as const;
 
 export type ExtractableField = (typeof EXTRACTABLE_FIELDS)[number];
@@ -140,6 +141,14 @@ const ENERGY_SOURCE_VALUES = [
 ] as const;
 type EnergySourceValue = (typeof ENERGY_SOURCE_VALUES)[number];
 
+// Mirrors lib/schema.ts's waterSchema.coolingType enum exactly — kept as a
+// local literal (rather than unwrapped from the zod schema) for a plain
+// JSON-schema `enum` array, same rationale as ENERGY_SOURCE_VALUES above. If
+// lib/schema.ts's enum ever changes, update this too. Order matters — it is
+// the benched order (see FIELD_DESCRIPTIONS["water.coolingType"] below).
+const COOLING_TYPE_VALUES = ["evaporative", "air", "closed_loop", "hybrid", "unknown"] as const;
+type CoolingTypeValue = (typeof COOLING_TYPE_VALUES)[number];
+
 // ============================================================================
 // Stage 1 — selectGaps: which (facility, field) pairs are currently missing
 // ============================================================================
@@ -161,6 +170,8 @@ function fieldIsMissing(facility: Facility, field: ExtractableField): boolean {
       return facility.energy?.source === undefined;
     case "energy.utility":
       return facility.energy?.utility === undefined;
+    case "water.coolingType":
+      return facility.water?.coolingType === undefined;
   }
 }
 
@@ -230,6 +241,8 @@ const ENERGY_SOURCE_HINT_RE =
   /\b(grid power|on-?site gas|natural gas|nuclear|solar|wind|hydro(?:electric)?|renewable|behind-the-meter|fuel cell|diesel generator|power source|energy source|electricity (?:comes|is drawn) from)\b/i;
 const ENERGY_UTILITY_HINT_RE =
   /\b(utility|utilities|electric (?:co(?:mpany|operative)?|cooperative)|power company|served by|serves the|energy provider|transmission (?:provider|operator)|distribution utility)\b/i;
+const COOLING_TYPE_HINT_RE =
+  /\b(cool(?:ing|ed)?|chiller|cooling tower|evaporative|adiabatic|closed[- ]loop|direct-to-chip|liquid cooling|dry cooler|air-cooled|water-cooled|waterless|zero water|water usage effectiveness|\bWUE\b)\b/i;
 
 /**
  * True if `text` could plausibly contain an answer for `field` — a cheap
@@ -241,6 +254,7 @@ const ENERGY_UTILITY_HINT_RE =
 export function prefilter(text: string, field: ExtractableField): boolean {
   if (isNumericField(field)) return POWER_UNIT_RE.test(text);
   if (field === "energy.source") return ENERGY_SOURCE_HINT_RE.test(text);
+  if (field === "water.coolingType") return COOLING_TYPE_HINT_RE.test(text);
   return ENERGY_UTILITY_HINT_RE.test(text); // energy.utility
 }
 
@@ -375,7 +389,15 @@ export function windowText(text: string, name: string, city?: string): WindowRes
 const SYSTEM_PROMPT =
   "You extract ONE field about ONE named facility from a web page. Return the value ONLY if the page explicitly states it FOR THAT SPECIFIC FACILITY. If the page does not state it, or states it for a different site/company-wide total, return null. Never estimate, never infer, never use outside knowledge. UNITS: capacity fields are in MEGAWATTS (MW). If the page states capacity in gigawatts (GW), convert it and return megawatts: 1 GW = 1000 MW (e.g. '1GW' -> 1000, '2.5 GW' -> 2500). Kilowatts: 1000 kW = 1 MW. Converting a stated unit is not inference; report the converted number. verbatimQuote must be text copied exactly from the page (quote the ORIGINAL units as written); null if value is null. If you return null, set reasonIfNull to a one-sentence explanation.";
 
-const FIELD_DESCRIPTIONS: Record<ExtractableField, string> = {
+// water.coolingType's description below is NOT decoration — it is the
+// measured artifact itself. Benched 2026-09-01 over 69 hand-labelled pages,
+// TWICE, same model: a bare vocabulary list (no decision rule) scored
+// P=53% / R=42% (only 4/12 closed_loop pages right); with the TIE-BREAKER
+// rule below in the prompt, P=95% / R=95% (12/12). See
+// docs/methodology.md#cooling-type and scripts/discovery/bench/run.mjs:60-73,
+// which this string is transcribed from verbatim. Do not paraphrase, trim, or
+// "clean up" this text — doing so silently reverts to the 53% version.
+export const FIELD_DESCRIPTIONS: Record<ExtractableField, string> = {
   "capacityMw.planned":
     "the facility's PLANNED total capacity, in megawatts (MW) — the capacity once fully built out, whether or not it is online yet.",
   "capacityMw.operational":
@@ -384,6 +406,20 @@ const FIELD_DESCRIPTIONS: Record<ExtractableField, string> = {
     "the facility's on-site power generation capacity, in megawatts (MW) — power the facility itself generates on-site, not grid power it draws.",
   "energy.source": `the facility's primary energy source. Classify it as EXACTLY ONE of: ${ENERGY_SOURCE_VALUES.join(", ")}. Return this classification string, or null if the page does not state it.`,
   "energy.utility": "the name of the utility company that serves (provides grid power to) the facility.",
+  "water.coolingType":
+    "the DATA CENTER FACILITY's cooling system for its IT/electrical load (NOT a crypto-mining rig's " +
+    "cooling method -- ignore any 'immersion' or rig-level cooling description). " +
+    "Classify BY WATER CONSUMPTION: " +
+    "'evaporative' = heat rejected by evaporating water (cooling towers, adiabatic/evaporative assist); " +
+    "'hybrid' = the design SWITCHES between evaporative and dry modes (e.g. wet in summer, dry in winter) -- " +
+    "it does NOT mean a mix of air and liquid cooling; " +
+    "'closed_loop' = a recirculating water/coolant circuit that is not evaporated (chilled-water loop, " +
+    "direct-to-chip liquid loop, air-cooled chillers over a closed circuit); " +
+    "'air' = NO cooling water circuit at all (dry/direct air cooling, 'waterless', 'zero water for cooling'). " +
+    "TIE-BREAKER: if a recirculating water or coolant circuit is present, answer 'closed_loop' EVEN IF the page " +
+    "calls the design 'air-cooled' -- operators market closed-loop designs that way, so the phrase does not decide it; " +
+    "'air' requires the absence of a cooling water circuit. " +
+    `Answer with EXACTLY ONE of these values: ${COOLING_TYPE_VALUES.join(", ")} -- or null if not stated for this facility.`,
 };
 
 /**
@@ -413,6 +449,9 @@ function fieldValueSchema(field: ExtractableField): object {
   }
   if (field === "energy.utility") {
     return { type: ["string", "null"] };
+  }
+  if (field === "water.coolingType") {
+    return { type: ["string", "null"], enum: [...COOLING_TYPE_VALUES, null] };
   }
   return { type: ["number", "null"] }; // capacityMw.planned | capacityMw.operational | energy.onSiteGenerationMw
 }
@@ -454,13 +493,26 @@ function isModelExtraction(data: unknown): data is ModelExtraction {
  * sent to the model constrains it via grammar-decoding, but that is an
  * assumption, not a guarantee (see ollama-client.ts's `:cloud`-model trap and
  * verify-source.ts's `isModelVerdict` for the same class of defense). */
-function isValidValueForField(field: ExtractableField, value: number | string | null): boolean {
+export function isValidValueForField(field: ExtractableField, value: number | string | null): boolean {
   if (value === null) return true;
   if (field === "energy.source") {
     return typeof value === "string" && (ENERGY_SOURCE_VALUES as readonly string[]).includes(value);
   }
   if (field === "energy.utility") {
     return typeof value === "string";
+  }
+  if (field === "water.coolingType") {
+    // `hybrid` is in the prompt vocabulary (dropping it would change the
+    // benched prompt and invalidate the 95%/95% measurement) but is REFUSED
+    // here: the 69-page corpus contains zero positive `hybrid` labels, so the
+    // value is unmeasured. Measured 2026-09-01: with the rule in the prompt the
+    // model emitted `hybrid` 0 times; all 5 emissions came from the rule-free
+    // run and every one was wrong (3x true `closed_loop`, 1x ambiguous, 1x
+    // true null). Refusing it here costs nothing today and fails closed if that
+    // ever regresses. Remove this only when `hybrid` has bench labels.
+    return typeof value === "string"
+      && (COOLING_TYPE_VALUES as readonly string[]).includes(value)
+      && value !== "hybrid";
   }
   return typeof value === "number" && Number.isFinite(value);
 }
@@ -825,6 +877,7 @@ export interface AcceptedExtraction {
 interface Track5EnrichmentFields {
   capacityMw?: { planned?: number; operational?: number };
   energy?: { source?: EnergySourceValue; utility?: string; onSiteGenerationMw?: number };
+  water?: { coolingType?: CoolingTypeValue };
 }
 
 export interface Track5Candidate {
@@ -867,6 +920,9 @@ function assignField(fields: Track5EnrichmentFields, item: AcceptedExtraction): 
       break;
     case "energy.utility":
       fields.energy = { ...fields.energy, utility: item.value as string };
+      break;
+    case "water.coolingType":
+      fields.water = { ...fields.water, coolingType: item.value as CoolingTypeValue };
       break;
   }
 }

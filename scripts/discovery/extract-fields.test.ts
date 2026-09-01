@@ -15,6 +15,9 @@ import {
   isOperationalStatusContradiction,
   detectSiblingValueCollision,
   sortSourcesPrimaryFirst,
+  isValidValueForField,
+  fieldJsonSchema,
+  FIELD_DESCRIPTIONS,
   EXTRACTABLE_FIELDS,
   CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD,
   type AcceptedExtraction,
@@ -34,6 +37,7 @@ function makeFacility(overrides: {
   id?: string;
   capacityMw?: Facility["capacityMw"];
   energy?: Facility["energy"];
+  water?: Facility["water"];
   status?: Facility["status"];
 } = {}): Facility {
   return {
@@ -49,6 +53,7 @@ function makeFacility(overrides: {
     lastUpdated: "2026-01-01",
     capacityMw: overrides.capacityMw,
     energy: overrides.energy,
+    water: overrides.water,
   };
 }
 
@@ -69,6 +74,82 @@ describe("selectGaps", () => {
   it("returns no gaps when every requested field is already set", () => {
     const complete = makeFacility({ capacityMw: { operational: 50 }, energy: { source: "grid" } });
     expect(selectGaps([complete], ["capacityMw.operational", "energy.source"])).toEqual([]);
+  });
+
+  it("picks up water.coolingType when undefined, and skips it once set", () => {
+    const withoutCoolingType = makeFacility({ id: "without-cooling-type" });
+    const withCoolingType = makeFacility({ id: "with-cooling-type", water: { coolingType: "closed_loop" } });
+
+    expect(selectGaps([withoutCoolingType, withCoolingType], ["water.coolingType"])).toEqual([
+      { facility: withoutCoolingType, field: "water.coolingType" },
+    ]);
+  });
+});
+
+// water.coolingType (F3.2) — the description in FIELD_DESCRIPTIONS was benched
+// as a THREE-WAY correctness dependency: bare vocabulary scored P=53%/R=42%
+// over 69 pages, the same prompt WITH the TIE-BREAKER rule scored P=95%/R=95%.
+// These tests guard the two places that measurement can silently regress:
+// the prompt text itself (drift guard below) and the runtime refusal of the
+// unmeasured `hybrid` value (isValidValueForField below).
+describe("water.coolingType", () => {
+  it("fieldJsonSchema returns the 5-value enum plus null", () => {
+    expect(fieldJsonSchema("water.coolingType")).toMatchObject({
+      properties: {
+        value: { type: ["string", "null"], enum: ["evaporative", "air", "closed_loop", "hybrid", "unknown", null] },
+      },
+    });
+  });
+
+  it("isValidValueForField accepts every non-hybrid vocabulary value, and null", () => {
+    for (const value of ["evaporative", "air", "closed_loop", "unknown"]) {
+      expect(isValidValueForField("water.coolingType", value)).toBe(true);
+    }
+    expect(isValidValueForField("water.coolingType", null)).toBe(true);
+  });
+
+  // Load-bearing: `hybrid` is IN the prompt vocabulary (removing it there would
+  // change the benched prompt) but has zero positive labels in the 69-page
+  // corpus, so it must be refused at the validation boundary. See the
+  // isValidValueForField comment in extract-fields.ts for the full rationale.
+  it("isValidValueForField REJECTS 'hybrid' even though it is a vocabulary member", () => {
+    expect(isValidValueForField("water.coolingType", "hybrid")).toBe(false);
+  });
+
+  it("isValidValueForField rejects an off-vocabulary string and a number", () => {
+    // "immersion" is a real vocabulary value for the SEPARATE mining.coolingType
+    // field, not this one — must not leak across.
+    expect(isValidValueForField("water.coolingType", "immersion")).toBe(false);
+    expect(isValidValueForField("water.coolingType", 42)).toBe(false);
+  });
+
+  it("assignField / toEnrichmentIntents places the value at fields.water.coolingType", () => {
+    const facility = makeFacility({ id: "cooling-type-facility" });
+    const source = facility.sources[0];
+    const accepted: AcceptedExtraction[] = [
+      { field: "water.coolingType", value: "closed_loop", verbatimQuote: "a closed-loop chilled water system", source },
+    ];
+    const candidate = toEnrichmentIntents(facility, accepted, {
+      runId: "test-run",
+      discoveredAt: "2026-09-01T00:00:00.000Z",
+      date: "2026-09-01",
+    });
+    expect(candidate?.enrichmentUpdate.fields.water).toEqual({ coolingType: "closed_loop" });
+  });
+
+  it("parseFieldsArg round-trips water.coolingType, and still rejects an unknown field", () => {
+    expect(parseFieldsArg("water.coolingType")).toEqual(["water.coolingType"]);
+    expect(() => parseFieldsArg("water.coolingtype")).toThrow(/water\.coolingtype/);
+  });
+
+  // Drift guard, not a style check — the TIE-BREAKER sentence is the entire
+  // difference between the 53% and 95% measurements (see file header comment
+  // on FIELD_DESCRIPTIONS in extract-fields.ts). Mutation-tested: deleting the
+  // TIE-BREAKER sentence from the shipped description must fail this test.
+  it("shipped description retains the TIE-BREAKER rule verbatim", () => {
+    const description = FIELD_DESCRIPTIONS["water.coolingType"];
+    expect(description).toContain("TIE-BREAKER:");
+    expect(description).toContain("EVEN IF");
   });
 });
 

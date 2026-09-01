@@ -101,6 +101,71 @@ export const waterSchema = z.object({
   notes: z.string().optional(),
 });
 
+// Values are recorded in the permit's own units, exactly as printed —
+// never convert, never annualize a short-term limit, and never derive a
+// tonnage from capacity (MW). See the field-level notes below for the
+// pollutants where the pilot found real permits diverge from what a
+// naive facility-wide annual reading would assume.
+export const permittedTpySchema = z.object({
+  nox: z.number().nonnegative().optional(),
+  co: z.number().nonnegative().optional(),
+  // Total particulate matter — distinct from the PM10/PM2.5
+  // size-fraction limits below; permits commonly state all three.
+  pm: z.number().nonnegative().optional(),
+  pm25: z.number().nonnegative().optional(),
+  pm10: z.number().nonnegative().optional(),
+  // Permits print this cap under either "SO2" or "SOx" — record the
+  // value here regardless of the permit's own label, and note that
+  // label in `notes` when it isn't "SO2". Never invent a second key
+  // for SOx.
+  so2: z.number().nonnegative().optional(),
+  voc: z.number().nonnegative().optional(),
+  // A missing `co2e` does NOT mean "no GHG limit." Some permits (e.g.
+  // xAI/MZX) cap GHG only as an efficiency RATE (lb/MMBtu), with no
+  // annual tonnage cap at all. Leave `co2e` undefined and explain the
+  // rate-only limit in `notes` — never derive a tonnage from a rate.
+  co2e: z.number().nonnegative().optional(),
+  // Sulfuric acid mist.
+  h2so4: z.number().nonnegative().optional(),
+  // Ammonia — seen as a voluntary limit tied to SCR/urea NOx controls.
+  nh3: z.number().nonnegative().optional(),
+  formaldehyde: z.number().nonnegative().optional(),
+  // Combined hazardous-air-pollutants cap. Individual HAPs other than
+  // formaldehyde go in `notes` — they are open-ended and cannot be
+  // enumerated as dedicated fields.
+  hapsTotal: z.number().nonnegative().optional(),
+});
+
+// A single equipment group's limits, for permits that cap pollutants PER
+// GROUP with DIFFERENT limits per group rather than one facility-wide
+// number. Two real permits forced this: Crusoe Abilene's TCEQ Standard
+// Permit 177263 covers 10 units that are TWO turbine models with different
+// per-unit NOx limits (Solar Titan 350: 14.98 tpy vs GE LM2500: 13.44 tpy) —
+// a single top-level `permittedTpy.nox` cannot represent both without
+// silently asserting one model's limit for the other's units. xAI/MZX MS
+// caps every pollutant PER TURBINE across THREE equipment groups, with no
+// facility-wide tonnage for most pollutants at all. Deriving one blended
+// facility-wide figure from per-group limits is FORBIDDEN — see the
+// no-derived-numbers rule on `permittedTpy` above; it applies here with the
+// same force.
+export const emissionsUnitGroupSchema = z.object({
+  // The permit's own name for this equipment group, verbatim (e.g. "Solar
+  // Titan 350 turbines (EPN 1-6)") — record the permit's wording, never a
+  // paraphrase or a summary of it.
+  label: z.string().min(1),
+  // How many units of this group the permit covers, when it states one.
+  unitCount: z.number().int().positive().optional(),
+  // What this group's `permittedTpy` applies to. Required (unlike the
+  // top-level `basis`) because a group entry exists only to carry limits, so
+  // it must always say what they apply to. "group_wide" is a NEW value that
+  // applies only within a group and does not exist on the top-level `basis`.
+  basis: z.enum(["per_unit", "group_wide"]),
+  permittedTpy: permittedTpySchema,
+  // Omitting this means the group inherits the top-level `averagingPeriod`.
+  averagingPeriod: z.enum(["calendar_year", "rolling_12_month", "other"]).optional(),
+  notes: z.string().optional(),
+});
+
 // Permitted annual emissions limits from an air permit (PSD / Title V / state
 // construction permit) — a regulatory CEILING, not measured or actual
 // emissions. Never present one as the other, in copy or UI.
@@ -121,42 +186,7 @@ export const waterSchema = z.object({
 // non-calendar-year number is never mistaken for a facility-wide annual one.
 export const emissionsSchema = z
   .object({
-    // Values are recorded in the permit's own units, exactly as printed —
-    // never convert, never annualize a short-term limit, and never derive a
-    // tonnage from capacity (MW). See the field-level notes below for the
-    // pollutants where the pilot found real permits diverge from what a
-    // naive facility-wide annual reading would assume.
-    permittedTpy: z
-      .object({
-        nox: z.number().nonnegative().optional(),
-        co: z.number().nonnegative().optional(),
-        // Total particulate matter — distinct from the PM10/PM2.5
-        // size-fraction limits below; permits commonly state all three.
-        pm: z.number().nonnegative().optional(),
-        pm25: z.number().nonnegative().optional(),
-        pm10: z.number().nonnegative().optional(),
-        // Permits print this cap under either "SO2" or "SOx" — record the
-        // value here regardless of the permit's own label, and note that
-        // label in `notes` when it isn't "SO2". Never invent a second key
-        // for SOx.
-        so2: z.number().nonnegative().optional(),
-        voc: z.number().nonnegative().optional(),
-        // A missing `co2e` does NOT mean "no GHG limit." Some permits (e.g.
-        // xAI/MZX) cap GHG only as an efficiency RATE (lb/MMBtu), with no
-        // annual tonnage cap at all. Leave `co2e` undefined and explain the
-        // rate-only limit in `notes` — never derive a tonnage from a rate.
-        co2e: z.number().nonnegative().optional(),
-        // Sulfuric acid mist.
-        h2so4: z.number().nonnegative().optional(),
-        // Ammonia — seen as a voluntary limit tied to SCR/urea NOx controls.
-        nh3: z.number().nonnegative().optional(),
-        formaldehyde: z.number().nonnegative().optional(),
-        // Combined hazardous-air-pollutants cap. Individual HAPs other than
-        // formaldehyde go in `notes` — they are open-ended and cannot be
-        // enumerated as dedicated fields.
-        hapsTotal: z.number().nonnegative().optional(),
-      })
-      .optional(),
+    permittedTpy: permittedTpySchema.optional(),
     // What the tonnages in `permittedTpy` apply to. Required whenever
     // `permittedTpy` carries at least one defined value (enforced by the
     // superRefine below) — a tonnage with no `basis` is ambiguous between a
@@ -181,6 +211,12 @@ export const emissionsSchema = z
     issuedDate: z.string().optional(),
     notes: z.string().optional(),
     sourceIndex: z.number().int().nonnegative().optional(),
+    // Per-equipment-group limits, for permits that cap pollutants per group
+    // with different limits per group (Crusoe Abilene, xAI/MZX MS — see
+    // `emissionsUnitGroupSchema` above). Coexists with the top-level
+    // `permittedTpy` fields, which the superRefine below restricts to
+    // `facility_wide` only once groups are present.
+    unitGroups: z.array(emissionsUnitGroupSchema).min(1).optional(),
   })
   .superRefine((data, ctx) => {
     const hasDefinedPollutant =
@@ -191,6 +227,46 @@ export const emissionsSchema = z
         code: "custom",
         message:
           "a permitted tonnage is meaningless without knowing whether it applies facility-wide or per-unit — set basis",
+        path: ["basis"],
+      });
+    }
+
+    data.unitGroups?.forEach((group, index) => {
+      const groupHasDefinedPollutant = Object.values(group.permittedTpy).some(
+        (value) => value !== undefined,
+      );
+      if (!groupHasDefinedPollutant) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "an equipment group with no defined pollutant values asserts nothing — record at least one limit or remove the group",
+          path: ["unitGroups", index, "permittedTpy"],
+        });
+      }
+    });
+
+    if (data.unitGroups !== undefined) {
+      const seenLabels = new Map<string, number>();
+      data.unitGroups.forEach((group, index) => {
+        const normalizedLabel = group.label.trim().toLowerCase();
+        if (seenLabels.has(normalizedLabel)) {
+          ctx.addIssue({
+            code: "custom",
+            message:
+              "duplicate equipment group label — labels that differ only by case or whitespace make the group's limits unattributable",
+            path: ["unitGroups", index, "label"],
+          });
+        } else {
+          seenLabels.set(normalizedLabel, index);
+        }
+      });
+    }
+
+    if (data.unitGroups !== undefined && data.basis === "per_unit") {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "a top-level per-unit tonnage alongside per-group tonnages is ambiguous — it cannot say which group it belongs to; when unitGroups is present, top-level basis must be facility_wide (or omitted)",
         path: ["basis"],
       });
     }

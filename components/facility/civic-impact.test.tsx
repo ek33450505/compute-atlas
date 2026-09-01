@@ -357,6 +357,143 @@ describe("CivicImpactSection — Air permit (emissions)", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Air permit — per-equipment-group limits (emissions.unitGroups)
+// ---------------------------------------------------------------------------
+describe("CivicImpactSection — Air permit unit groups", () => {
+  // Item-1 trap: a record with ONLY unitGroups (no top-level permittedTpy,
+  // no basis, no permit metadata) must still render the panel. Before the
+  // `unitGroups.length > 0` disjunct was added to `hasContent`, this shape
+  // computed `hasContent === false` and the whole panel silently rendered
+  // nothing — this is the xAI/MZX MS shape from the pilot.
+  it("renders the panel and both groups' values for a groups-only record (no top-level permittedTpy)", () => {
+    const facility = makeFacility({
+      emissions: {
+        unitGroups: [
+          {
+            label: "Solar Titan 350 turbines",
+            unitCount: 6,
+            basis: "per_unit",
+            permittedTpy: { nox: 14.98 },
+          },
+          {
+            label: "GE LM2500 turbines",
+            unitCount: 4,
+            basis: "per_unit",
+            permittedTpy: { nox: 13.44 },
+          },
+        ],
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("Air permit")).toBeInTheDocument();
+    expect(
+      screen.getByText(/regulatory ceiling, not measured emissions/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText("Solar Titan 350 turbines")).toBeInTheDocument();
+    expect(screen.getByText("14.98 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("GE LM2500 turbines")).toBeInTheDocument();
+    expect(screen.getByText("13.44 tons/yr")).toBeInTheDocument();
+  });
+
+  it("renders unitCount when present and omits the Units row when absent", () => {
+    const facility = makeFacility({
+      emissions: {
+        unitGroups: [
+          {
+            label: "Turbines with a stated count",
+            unitCount: 6,
+            basis: "group_wide",
+            permittedTpy: { nox: 90 },
+          },
+          {
+            label: "Turbines without a stated count",
+            basis: "group_wide",
+            permittedTpy: { co: 30 },
+          },
+        ],
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("6 units")).toBeInTheDocument();
+    // Only one group states a unitCount, so exactly one "Units" row exists.
+    expect(screen.getAllByText("Units")).toHaveLength(1);
+  });
+
+  // A 0 tpy value in a group is a real regulatory fact (a pollutant a unit
+  // is prohibited from emitting) and must render, never be hidden by a
+  // truthy check — same rule as the facility-wide pollutant table above.
+  it("renders a 0 tpy value in a group rather than hiding it", () => {
+    const facility = makeFacility({
+      emissions: {
+        unitGroups: [
+          {
+            label: "Zero-NOx group",
+            basis: "group_wide",
+            permittedTpy: { nox: 0, co: 5 },
+          },
+        ],
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("NOx")).toBeInTheDocument();
+    expect(screen.getByText("0 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("CO")).toBeInTheDocument();
+    expect(screen.getByText("5 tons/yr")).toBeInTheDocument();
+  });
+
+  it("labels a per_unit group 'Per unit' and a group_wide group 'Group total'", () => {
+    const facility = makeFacility({
+      emissions: {
+        unitGroups: [
+          {
+            label: "Per-unit group",
+            basis: "per_unit",
+            permittedTpy: { nox: 1 },
+          },
+          {
+            label: "Group-wide group",
+            basis: "group_wide",
+            permittedTpy: { co: 2 },
+          },
+        ],
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("Per unit")).toBeInTheDocument();
+    expect(screen.getByText("Group total")).toBeInTheDocument();
+  });
+
+  // Regression: the pre-existing Homer City shape (facility_wide basis +
+  // top-level permittedTpy, no unitGroups) must render exactly as before,
+  // with no group markup (no <h4> sub-headings, no "Units" rows).
+  it("renders the pre-existing facility_wide shape unchanged when unitGroups is absent", () => {
+    const facility = makeFacility({
+      emissions: {
+        permittedTpy: { nox: 245.5, co2e: 250_000 },
+        basis: "facility_wide",
+        permitNumber: "PA-0012345",
+        permitType: "title_v",
+      },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("NOx")).toBeInTheDocument();
+    expect(screen.getByText("245.5 tons/yr")).toBeInTheDocument();
+    expect(screen.getByText("Facility-wide")).toBeInTheDocument();
+    expect(screen.getByText("PA-0012345")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { level: 4 })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Units")).not.toBeInTheDocument();
+    expect(screen.queryByText("Group total")).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Public subsidies sub-group
 // ---------------------------------------------------------------------------
 describe("CivicImpactSection — Public subsidies", () => {

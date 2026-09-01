@@ -8,4 +8,6 @@ This directory contains guides for understanding and contributing to Compute Atl
 
 - **[discovery-runbook.md](discovery-runbook.md)** — Day-to-day operations: running the pipeline manually, installing/managing the launchd job, reviewing submissions, and using the field extraction and leads lane tools.
 
+- **[maintainers.md](maintainers.md)** — Maintainer-only operations: the data-wave workflow (`db:sync` → `db:export` → `build:mapdata`), database scripts, environment variables, releases, the build gate, and the caching model. Requires `DATABASE_URL`.
+
 For the project architecture, tech stack, and data model, see the main [README.md](../README.md).

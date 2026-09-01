@@ -178,6 +178,7 @@ Fills these structured fields:
 - `energy.onSiteGenerationMw`
 - `energy.source`
 - `energy.utility`
+- `water.coolingType`
 
 One field per model call (deliberately not batched). It reads the facility's existing source URLs in order, stopping early the instant all requested fields are filled. Different fields can be sourced from different pages. Dry run (no `--out`) is the DEFAULT: it prints a summary and writes nothing.
 
@@ -219,18 +220,26 @@ quote gate; a PDF's raw bytes are never regexed.
 ### Usage
 
 > ⛔ **Always pass `--fields` explicitly.** Omitting it does NOT mean "the safe
-> default" — it means all five fields, including the two the bench measured as NOT
+> default" — it means all six fields, including the two the bench measured as NOT
 > safe to ship (`capacityMw.planned` P=75%, `energy.onSiteGenerationMw` P=50%; see
 > the per-field table below). The pinned list is `capacityMw.operational`,
-> `energy.source`, `energy.utility` — but only the FIRST of those three is
-> actually bench-measured (P=100%/R=100%). The other two are **unmeasured, not
-> validated**: the bench could only score numeric fields until 2026-09-01, and
-> neither string field has ever carried a label in `truth.json` or appeared in a
-> result file (the per-field table below states this correctly with `—`). They
-> are pinned because they are the fields we chose to run, not because they
-> cleared a bar. The `npm run`
-> wrapper below bakes that list in so it cannot be forgotten; treat a bare
-> `extract-fields.ts` invocation as an operator error. The nightly `run.sh` lane is
+> `energy.source`, `energy.utility`, `water.coolingType` — and only TWO of those
+> four are actually bench-measured: `capacityMw.operational` (P=100%/R=100%) and
+> `water.coolingType` (P=95%/R=95%). `energy.source` and `energy.utility` remain
+> **unmeasured, not validated**: the bench could only score numeric fields until
+> 2026-09-01, and neither string field has ever carried a label in `truth.json` or
+> appeared in a result file (the per-field table below states this correctly with
+> `—`). They are pinned because they are the fields we chose to run, not because
+> they cleared a bar. The `npm run` wrapper below bakes that list in so it cannot
+> be forgotten; treat a bare `extract-fields.ts` invocation as an operator error.
+>
+> ⚠️ `water.coolingType`'s 95% belongs to the PROMPT, not to the field. The same
+> model on the same 69 pages scored P=53%/R=42% with a bare vocabulary list and no
+> decision rule. `FIELD_DESCRIPTIONS["water.coolingType"]` carries
+> `docs/methodology.md#cooling-type`'s definitions and tie-breaker verbatim, and a
+> drift test fails if that rule is ever removed. `hybrid` is in the prompt
+> vocabulary (removing it would change the benched prompt) but is REFUSED at
+> validation, because it has zero positive labels in the corpus. The nightly `run.sh` lane is
 > scheduled, but never bare — it pins the field list explicitly, and a BATS test
 > fails if that flag is ever removed.
 
@@ -242,7 +251,7 @@ npm run extract-fields                              # all gaps, safe fields only
 npm run extract-fields -- --facility=<facility-id>  # one facility
 ```
 
-The `extract-fields` script entry carries `--fields=capacityMw.operational,energy.source,energy.utility`;
+The `extract-fields` script entry carries `--fields=capacityMw.operational,energy.source,energy.utility,water.coolingType`;
 `npm run verify-fields` deliberately does NOT bake in a field list, because it only
 re-checks values already recorded and writes nothing — the ship-safety caveat above
 is about staging new values, so it does not apply there.
@@ -300,7 +309,7 @@ fields (re-run scoring with `node scripts/discovery/bench/rescore.mjs`):
 | `energy.onSiteGenerationMw` | 50% | 100% | Weak precision; review each |
 | `energy.source` | — | — | Enum (`grid`/`on_site_gas`/`nuclear`/…); not bench-scored |
 | `energy.utility` | — | — | Free-text string; not bench-scored |
-| `water.coolingType` | 95% | 95% | **Not an extractable field yet** — measured 2026-09-01 over all 69 pages (18 correct, 45 correct abstentions, 1 wrong, 0 hallucinations). ⚠️ The score is 53%/42% if the prompt omits the decision rule, so it holds ONLY for a prompt that carries `docs/methodology.md#cooling-type` verbatim. `hybrid` is unmeasured (zero positive labels). |
+| `water.coolingType` | 95% | 95% | **Shipped and pinned** (the 6th extractable field) — measured 2026-09-01 over all 69 pages (18 correct, 45 correct abstentions, 1 wrong, 0 hallucinations). ⚠️ The score is 53%/42% if the prompt omits the decision rule, so it holds ONLY for a prompt that carries `docs/methodology.md#cooling-type` verbatim. `hybrid` is unmeasured (zero positive labels). |
 
 The bench deliberately duplicates the shipped quote-gate logic (see
 `scripts/discovery/bench/quote.mjs` vs. the gate in `extract-fields.ts`), and

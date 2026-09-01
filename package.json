@@ -29,7 +29,7 @@
     "census-triage": "tsx --env-file=.env.local scripts/discovery/census-triage.ts",
     "existing-facilities": "tsx --env-file=.env.local scripts/discovery/existing-facilities.ts",
     "leads-lane": "tsx --env-file=.env.local scripts/discovery/leads-lane.ts",
-    "extract-fields": "tsx --env-file=.env.local scripts/discovery/extract-fields.ts --fields=capacityMw.operational,energy.source,energy.utility",
+    "extract-fields": "tsx --env-file=.env.local scripts/discovery/extract-fields.ts --fields=capacityMw.operational,energy.source,energy.utility,water.coolingType",
     "verify-fields": "tsx --env-file=.env.local scripts/discovery/verify-fields.ts"
   },
   "dependencies": {

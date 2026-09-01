@@ -11290,13 +11290,29 @@
         "publisher": "Iron County, Utah",
         "retrievedAt": "2026-08-25",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.stgeorgeutah.com/news/ai-campus-proposed-in-iron-county-could-bring-500-jobs-on-site-power-generation-public/article_bcfedf59-aa3f-4ff8-92c0-438f38266f72.html",
+        "label": "AI campus proposed in Iron County could bring 500 jobs, on-site power generation",
+        "publisher": "St. George News",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-09-01",
     "notes": "Approximately 8 miles north of Newcastle, roughly 20 miles from Cedar City; application on hold pending the county's data-center moratorium.",
     "energy": {
       "source": "mixed",
       "notes": "Planned hybrid power: 300MW solar, 1,200MWh battery storage, and 1.5GW natural gas generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "\"expected to rely primarily on air-cooled and closed-loop cooling systems designed to reduce water consumption.\" Recorded as closed_loop per the methodology tie-breaker: air-cooled chillers over a recirculating circuit are closed_loop; `air` is reserved for designs with no cooling water circuit at all."
+    },
+    "landAcres": 2600,
+    "jobs": {
+      "permanent": 500,
+      "sourceIndex": 2
     },
     "facilityType": "data_center"
   },
@@ -18933,7 +18949,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-09-01",
     "notes": "Claims to be world's largest planned AI data center campus at 20M sq ft. 1,143 acres owned; 13,000-acre SITLA lease for solar (largest solar lease in Utah history — record previously stated 30,000 acres, corrected to 13,000 acres per March 2026 BusinessWire announcement and multiple independent sources). Initial customer BluSky AI allocated up to 50MW. Adjacent to Intermountain Power Project. 10GW is full-buildout target; first 300MW gas delivery H1 2027. Coordinates at Delta city centroid; site is southeast of Delta.",
     "energy": {
       "source": "mixed",
@@ -18955,6 +18971,10 @@
     ],
     "investmentUsd": 17000000000,
     "landAcres": 1143,
+    "jobs": {
+      "permanent": 106,
+      "sourceIndex": 1
+    },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -38763,14 +38783,45 @@
         "publisher": "Axios",
         "retrievedAt": "2026-07-05",
         "kind": "press"
+      },
+      {
+        "url": "https://files.dep.state.pa.us/RegionalResources/NWRO/NWROPortalFiles/Homer-City/Air/Final-AQ-Plan-Approval/FINAL%20PLAN%20APPROVAL%2032-00457A.pdf",
+        "label": "PA DEP Air Quality Plan Approval 32-00457A — Homer City Generation LP",
+        "publisher": "Pennsylvania Department of Environmental Protection",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-04",
+    "lastUpdated": "2026-09-01",
     "notes": "Dedicated on-site power generation for the co-located Homer City Energy Campus data centers (tracked separately as homer-city-energy-campus-pa). Redevelopment of Pennsylvania's largest former coal plant into up to 4.5 GW of natural-gas generation via seven GE Vernova turbines; PA DEP air-quality plan approval issued 2025-11-20, first power targeted 2027. Same-site companion to the data-center record.",
     "energy": {
       "source": "on_site_gas",
       "utility": "PJM (interconnects with FirstEnergy Pennsylvania Electric); site also touches NYISO",
       "notes": "Behind-the-meter baseload for the on-site data-center campus, with surplus delivered to the local grid. Fueled by Marcellus natural gas (EQT supply) via the nearby Texas Eastern pipeline."
+    },
+    "emissions": {
+      "permittedTpy": {
+        "nox": 1142.8,
+        "co": 1104.8,
+        "pm": 843.19,
+        "pm25": 840.02,
+        "pm10": 842.23,
+        "so2": 211.76,
+        "voc": 332.16,
+        "co2e": 17551454,
+        "h2so4": 165.73,
+        "formaldehyde": 32.2,
+        "hapsTotal": 57.1
+      },
+      "basis": "facility_wide",
+      "averagingPeriod": "rolling_12_month",
+      "unitsCovered": "seven (7) combined-cycle combustion turbines (CCs) and up to ten (10) simple cycle aeroderivative gas turbines (ADGTs)",
+      "permitNumber": "32-00457A",
+      "permitType": "state_construction",
+      "issuingAgency": "Pennsylvania Department of Environmental Protection",
+      "issuedDate": "2025-11-18",
+      "notes": "Permitted CEILINGS from the plan approval, not measured emissions. Stated at site level under \"SECTION C. Site Level Plan Approval Requirements\", each \"Based on a 12-month rolling total\". The permit prints the sulfur cap as \"Sulfur Oxides (SOx)\" - recorded here under so2 with no conversion. Individual HAPs beyond formaldehyde, also tpy: acetaldehyde 2.94, ethylbenzene 2.35, propylene oxide 2.13, toluene 9.58, xylene 4.72. Permit issued 2025-11-18, expires 2027-05-31; it is a Pennsylvania plan approval (a pre-construction authorisation), NOT a Title V operating permit and not styled a PSD permit - the string \"PSD\" does not appear in it. SCOPE CAVEAT: the permit authorises up to 17 combustion turbines (7 CC + up to 10 ADGT), while this record’s generation.unitCount of 7 describes only the seven GE Vernova 7HA.02 combined-cycle machines - the two counts measure different things and must not be reconciled by editing either. The permittee is \"HOMER CITY GENERATION LP\"; this record’s operator is the developer, Homer City Redevelopment. Twelve emergency generators carry no tpy limit at all (Tier 4 plus a 500 hr/yr cap). Two other figure sets exist in the project record and are NOT these caps and must never be merged with them: the PSD net emissions increase, and emission reduction credits from the retired coal units.",
+      "sourceIndex": 4
     },
     "facilityType": "power_generation",
     "generation": {
@@ -39873,11 +39924,22 @@
         "publisher": "Mitsubishi Power Americas",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://daqpermitting.utah.gov/DocViewer?IntDocID=158288&contentType=application/pdf",
+        "label": "Utah DAQ Approval Order DAQE-AN103270031-25 — Intermountain Power Agency",
+        "publisher": "Utah Division of Air Quality",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-09-01",
     "energy": {
       "notes": "IPA's own page states the replacement units deliver '840 megawatts net generation output' and began commercial operation in July 2025, running '30 percent hydrogen fuel at start-up, transitioning to 100 percent hydrogen fuel by 2045.' Mitsubishi Power describes the plant as an '840 MW class GTCC' built on two M501JAC gas turbines plus two steam turbines and two generators, replacing a coal facility of 'about 1.8 GW'. Hydrogen is to be stored in solution-mined geologic salt caverns at the adjacent Advanced Clean Energy Storage project, which Mitsubishi describes as a '220 MW water electrolysis unit' producing 'up to 100 tons of green hydrogen per day'. LADWP is the largest purchaser and acts as Operating Agent and Project Manager; other participants are municipal utilities and rural cooperatives across six states."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Utah DAQ Approval Order DAQE-AN103270031-25 lists under \"II.A.6 Cooling Towers\": \"Two six-cell linear mechanical draft cooling towers (LMDCTs)\" at \"88,341 gpm of cooling water per tower\", directly beneath the two 487 MW combined-cycle turbines. Mechanical-draft cooling towers reject heat by evaporation, which is the methodology’s canonical `evaporative` case. The permit contains no closed-loop, dry-cooler or air-cooled-condenser language anywhere (verified: zero occurrences). This describes the POWER PLANT’s own cooling, not a data centre load."
     },
     "landAcres": 4614,
     "facilityType": "power_generation"
@@ -52059,8 +52121,8 @@
   },
   {
     "id": "new-day-ports-technology-campus-piketon-oh",
-    "name": "PORTS Technology Campus",
-    "operator": "New Day Data Centers LLC (w/ DOE, SoftBank/SB Energy)",
+    "name": "PORTS-Pike Technology Campus",
+    "operator": "SB Energy",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -52079,7 +52141,7 @@
       {
         "status": "under_construction",
         "date": "2026-03-20",
-        "note": "10GW campus on 3,700-acre former Portsmouth Gaseous Diffusion Plant site; 9.2GW on-site natural gas; groundbreaking March 20, 2026.",
+        "note": "Groundbreaking 2026-03-20 on the former Portsmouth Gaseous Diffusion Plant site; 10 GW gross power load, 9.2 GW of new natural gas generation.",
         "sourceIndex": 0
       }
     ],
@@ -52097,16 +52159,98 @@
         "publisher": "Scioto Valley Guardian",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0002133037/000162828026059639/sbenergy-sx1.htm",
+        "label": "SB Energy, Inc. Form S-1 registration statement (PORTS-Pike Technology Campus)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-09-01",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.energy.gov/nepa/articles/cx-270875-4511a-086-lease-real-property-batch-1-property-portsmouth-gaseous-diffusion",
+        "label": "CX-270875: Lease of Real Property (Batch 1 Property) at Portsmouth Gaseous Diffusion Plant",
+        "publisher": "U.S. Department of Energy (NEPA)",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.energy.gov/nepa/articles/cx-270956-environmental-site-assessment-esa-batch-1-leased-property-portsmouth",
+        "label": "CX-270956: Environmental Site Assessment of Batch 1 Leased Property at Portsmouth Gaseous Diffusion Plant",
+        "publisher": "U.S. Department of Energy (NEPA)",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.energy.gov/articles/fact-sheet-department-energy-ensuring-affordable-energy-access-ohio-while-powering-future",
+        "label": "FACT SHEET: DOE is Ensuring Affordable Energy Access in Ohio While Powering the Future of AI",
+        "publisher": "U.S. Department of Energy",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.energy.gov/em/articles/partnership-ensures-affordable-energy-powers-ai-future-portsmouth-site",
+        "label": "Partnership Ensures Affordable Energy, Powers AI Future at Portsmouth Site",
+        "publisher": "U.S. DOE Office of Environmental Management",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.permitting.gov/newsroom/press-releases/ports-technology-campus-latest-gain-fast-41-coverage",
+        "label": "PORTS Technology Campus is Latest to Gain FAST-41 Coverage",
+        "publisher": "Federal Permitting Improvement Steering Council",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://nvidianews.nvidia.com/news/nvidia-guarantees-sb-energy-s-ports-pike-technology-campus-in-ohio-to-exclusively-host-nvidia-ai-compute",
+        "label": "NVIDIA Guarantees SB Energy's PORTS-Pike Technology Campus in Ohio to Exclusively Host NVIDIA AI Compute",
+        "publisher": "NVIDIA",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://portscampus.com/resources/",
+        "label": "PORTS-Pike Technology Campus — project resources",
+        "publisher": "PORTS-Pike Technology Campus (project site)",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.statenews.org/government-politics/2026-03-20/feds-announce-huge-natural-gas-plant-data-center-project-in-southern-ohio",
+        "label": "Feds announce huge natural gas plant, data center project in southern Ohio",
+        "publisher": "Statehouse News Bureau",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://woub.org/2025/12/02/data-center-proposed-site-former-uranium-enrichment-plant-near-piketon/",
+        "label": "A data center proposed at site of former uranium enrichment plant near Piketon",
+        "publisher": "WOUB Public Media",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
-    "notes": "10GW campus on 3,700-acre former Portsmouth Gaseous Diffusion Plant site; 9.2GW on-site natural gas. $10B confirmed initial phase (broader totals softer — Bloomberg puts the data-center portion at $30-40B; a $67.2B FAST-41 total is cited). Groundbreaking March 2026. Distinct from the tracked Oklo Aurora-Piketon reactor project on the same broader site.",
-    "energy": {},
+    "lastUpdated": "2026-09-01",
+    "notes": "Officially \"PORTS-Pike Technology Campus\"; formerly tracked under the pre-announcement Ohio entity New Day Data Centers LLC, a name that appears nowhere in the SEC S-1 or SB Energy’s own announcements. Developer/operator is SB Energy (SoftBank-controlled); the DOE lease was signed 2026-02-26 by its subsidiary Pike County Portsmouth DC LLC. CAPACITY - three distinct figures that must not be conflated: 8.0 GW-IT of contracted compute (8,024 MW-IT; NVIDIA guarantees the initial 4.25 GW-IT with an option on the remaining 3.78 GW-IT), 10 GW of gross power load (the capacityMw.planned value here), and 9.2 GW of new gas generation. OFFTAKE: on 2026-08-17 SB Energy subsidiaries signed 17 twenty-year triple-net leases with OpenAI, with rent commencement conditioned on interconnection and generation being available; NVIDIA provided a residual-value guaranty capped at $105B and separately bought $1.5B of non-voting stock. LAND: landAcres is intentionally omitted - the DOE lease covers 189 acres (Batch 1) on which \"one data center building is expected to be constructed\", while the S-1 places the buildings \"across several thousand acres of private property\"; the widely-cited 3,700/3,777 acres is the whole federal reservation, which also hosts the separately tracked Oklo Aurora project, Centrus and the DUF6 plant. INVESTMENT: investmentUsd intentionally omitted - $10B (DOE, March) and $30-40B (project site) describe the same ~800 MW first phase and cannot both be right, the $67.2B total appears only as one trade outlet’s unattributed rollup, and the S-1 states no total capex. SUBSIDIES: none awarded - the Ohio Tax Credit Authority minutes record no award, no JobsOhio award was found, and Ohio paused new data-centre tax exemptions in May 2026; a county PILOT is under negotiation because the leased federal land yields no property tax. STATUS: early civil works began after the 2026-03-20 groundbreaking, though the S-1 lists construction as not started, with first capacity in 2028 and full buildout 2032. Distinct from oklo-aurora-pike-county-oh on the same broader site - do not merge or double-count.",
+    "energy": {
+      "source": "mixed",
+      "utility": "AEP Ohio",
+      "onSiteGenerationMw": 9200,
+      "notes": "S-1: the campus is \"designed to include 8.0 GW-IT of data center capacity, representing 10 GW of gross power load expected to be supported by the PJM transmission system and new neighbouring gas-fired generation facilities\" - hence \"mixed\". The 9.2 GW of gas is new build, not a reused plant; the site is the former Portsmouth uranium-enrichment complex, whose historic power came over OVEC coal-fired transmission (X-533 switchyard, de-energised 2008, decommissioned 2011). Recorded under onSiteGenerationMw as dedicated captive generation, but note the S-1 calls the plants \"neighbouring\": they sit ~5 miles south of Piketon adjacent to the DOE site, are developed by \"an affiliate of SoftBank that is not our subsidiary\", and SB Energy \"do[es] not expect to own or operate\" them. Ohio Power Siting Board case 26-0746-EL-BGN (applicant Portsmouth Gas DevCo, LLC) covers only a first tranche of \"up to 2 gigawatts\"; AEP Ohio transmission (new 765 kV Baku-Gavin line and four substations) is a separate docket. AEP grid capex is stated as $4.2B by DOE and ~$5.1B in the S-1, unreconciled. CAUTION: the project site states the gas generation \"will be owned by the U.S. Government\", but the S-1 says \"no binding agreement has been executed between us or any of our affiliates and any governmental entity with respect to the funding, construction, ownership or operation of the generation facilities\" - do not assert federal ownership. Only ~0.8 GW of gross load has contracted utility service so far."
+    },
     "water": {},
     "subsidies": [],
-    "landAcres": 3700,
-    "jobs": {},
-    "community": {},
+    "jobs": {
+      "construction": 10000,
+      "permanent": 2000,
+      "sourceIndex": 5
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Documented local support alongside contamination-legacy distrust. Support: State Sen. Shane Wilkin - \"It’s just going to be a generational change for this area\"; SODI executive director Steve Shepherd called it \"a model for the country\"; the Scioto Valley-Piketon Area Council of Governments chair framed it as moving contaminated residential land to industrial use. Concern: a neighbouring farmer with contaminated property (\"This is the most contaminated place around here\"), and Conserve Ohio on water, transmission and the precedent of siting hyperscale projects on legacy DOE land. No litigation, moratorium or public-hearing defeat found as of 2026-09-01; a statewide watchdog notes this project lacks the named opposition groups seen elsewhere in Ohio. Community money (not a public subsidy to the operator): a $40M Community Benefits Agreement from SB Energy plus an incremental $40M from OpenAI.",
+      "sourceIndex": 10
+    },
     "facilityType": "data_center",
     "environmental": {
       "waterStress": "unknown"
@@ -53094,9 +53238,10 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-09-01",
     "energy": {
-      "notes": "Utah DAQ Approval Order DAQE-AN160660003-24 (issued December 19, 2024, to Novva SLC Common, LLC - West Jordan Data Center) permits seventy-two (72) natural gas-fired Jenbacher JGS 620 J715 engines rated 3271.8 kW (4,601 hp) each, controlled with Selective Catalytic Reduction and an oxidation catalyst. The permit's project description states the engines 'will power generators providing primary power for the site's two (2) new data center buildings' — this is dedicated on-site generation, not a merchant plant. 72 x 3271.8 kW is about 235.6 MW of gross engine nameplate; Grist reports the plant as 200 MW, which is the figure recorded here. The order also reclassifies the source as a major CO and HAP source subject to Title V and requires 47 tpy of NOx emission reduction credits to satisfy R307-421 offsets. Permitted potential emissions total 997,261 TPY CO2-equivalent, 51.28 TPY NOx, and 202.72 TPY CO. Grist reports Novva turned to self-generation because Rocky Mountain Power could not supply the campus until 2031, and that Novva sought a two-year Clean Air Act exemption in March to run diesel generators while the gas plant is built."
+      "source": "on_site_gas",
+      "notes": "Utah DAQ Approval Order DAQE-AN160660003-24 (issued December 19, 2024, to Novva SLC Common, LLC - West Jordan Data Center) permits seventy-two (72) natural gas-fired Jenbacher JGS 620 J715 engines rated 3271.8 kW (4,601 hp) each, controlled with Selective Catalytic Reduction and an oxidation catalyst. The permit's project description states the engines 'will power generators providing primary power for the site's two (2) new data center buildings' — this is dedicated on-site generation, not a merchant plant. 72 x 3271.8 kW is about 235.6 MW of gross engine nameplate; Grist reports the plant as 200 MW, which is the figure recorded here. The order also reclassifies the source as a major CO and HAP source subject to Title V and requires 47 tpy of NOx emission reduction credits to satisfy R307-421 offsets. Permitted potential emissions total 997,261 TPY CO2-equivalent, 51.28 TPY NOx, and 202.72 TPY CO. Grist reports Novva turned to self-generation because Rocky Mountain Power could not supply the campus until 2031, and that Novva sought a two-year Clean Air Act exemption in March to run diesel generators while the gas plant is built. Utah DAQ Approval Order authorises \"Seventy-two (72) Jenbacher Model: JGS 620 J715\" gas-fired reciprocating engines at the site."
     },
     "facilityType": "power_generation"
   },
@@ -58683,13 +58828,24 @@
         "publisher": "Iron County, Utah",
         "retrievedAt": "2026-08-25",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.ksl.com/article/51463149/planning-commission-considers-ai-data-center-near-cedar-city",
+        "label": "Planning commission considers AI data center near Cedar City",
+        "publisher": "KSL.com",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-09-01",
     "notes": "West of Cedar City along Antelope Springs Road; permit deemed vested ahead of the county's 180-day data center moratorium; development planned in phases over 8-10 years; up to 6.75M sq ft at full buildout.",
     "energy": {
       "source": "on_site_gas",
       "notes": "On-site natural gas-fired power plant planned to serve the campus."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "\"data center would use what is called a closed-loop cooling system, which is designed to circulate and reuse water.\""
     },
     "landAcres": 640,
     "facilityType": "data_center"
@@ -76280,10 +76436,23 @@
         "publisher": "Basin Now",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://duchesne.utah.gov/wp-content/uploads/2026/03/Wells-Draw-Energy-LLC-Natural-Gas-Power-Plant-Findings-Report-040226.pdf",
+        "label": "Duchesne County Planning Commission Findings Report — Wells Draw Energy LLC natural gas power plant",
+        "publisher": "Duchesne County, Utah",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-25",
-    "notes": "400MW natural gas plant sited to power the adjacent Nine Mile Data Center; not previously tracked as a distinct facility.",
+    "lastUpdated": "2026-09-01",
+    "notes": "400MW natural gas plant sited to power the adjacent Nine Mile Data Center; not previously tracked as a distinct facility. Findings Report states the site is \"200 acres within a larger 609-acre area along Wells Draw Road\" — landAcres records the 200-acre project footprint, not the larger area.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Moon Lake Electric Association",
+      "notes": "Duchesne County Planning Commission Findings Report names \"Moon Lake Electric Association as a retail electric provider\"; the on-site plant is the primary supply, with the co-op as the interconnect."
+    },
+    "landAcres": 200,
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
