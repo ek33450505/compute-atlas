@@ -145,11 +145,16 @@ fetched and mechanically verified before staging, using a **local Ollama** model
 (`scripts/discovery/verify-source.ts`); the gate is on by default and, if Ollama is
 unreachable or `OLLAMA_VERIFY_MODEL` is not pulled, the run **aborts loudly** rather
 than staging unverified candidates (`VERIFY_SOURCES_ENABLED=false` is the only
-opt-out). A separate, **unscheduled** field-extraction lane (`extract-fields.ts` /
-`verify-fields.ts`, run by hand) fills missing structured fields on existing facilities; it reads
+opt-out). A field-extraction lane (`extract-fields.ts` / `verify-fields.ts`) fills missing
+structured fields on existing facilities. It runs **nightly as part of `run.sh`** (after the
+discovery and source-liveness lanes) and can also be run by hand; everything it produces still
+stages as `pending`. It reads
 PDF sources via `pdftotext -layout` and so **requires poppler** — without it every PDF source goes
 unread, loudly warned but not fatal. ⛔ Always invoke it with an explicit `--fields` list: the bare
-default is all five fields, two of which the bench measured as not safe to ship.
+default is all five fields, two of which the bench measured as not safe to ship. The scheduled
+invocation bakes that list in, and bounds each tool with `ENRICHMENT_LIMIT` (60) / `VERIFY_LIMIT`
+(40) — a full sweep is ~12 hours, and an unparseable limit would otherwise disable the bound
+entirely, so `run.sh` validates both before use.
 Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics
 (launchd, `ollama pull`, running it by hand): `docs/discovery-runbook.md`. It uses the Claude Code subscription (not the metered
 API) and runs via `launchd` on the maintainer's machine — treat it as an operator

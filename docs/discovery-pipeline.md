@@ -317,10 +317,25 @@ what the BATS suite pins so cursor tests survive the next rebalance.
 using a local Ollama model. This is an enrichment tool, not a discovery tool —
 it never proposes new facilities and it never overwrites a curated value.
 
-⚠️ **This lane is NOT scheduled.** The architecture diagram above is the whole of
-what `run.sh` invokes; `extract-fields.ts` and `verify-fields.ts` are run by hand.
-Anything scheduling them later must pass `--fields` explicitly (the bare default is
-the unsafe five-field set) and must not weaken the `pending` staging gate.
+**This lane runs nightly.** `run.sh` invokes `extract-fields.ts` (then
+`submit-candidates.ts` on its output) and `verify-fields.ts` once per batch, after
+the per-state discovery loop and the source-liveness check. It can still be run by
+hand the same way. Two conditions the scheduled invocation has to keep meeting:
+
+- **`--fields` is passed explicitly** — the bare default is the unsafe five-field
+  set, two of which the bench measured as not safe to ship. `run.sh` pins the three
+  benched-safe fields, and `tests/discovery/run.bats` asserts the flag is present
+  for both tools (mutation-tested: deleting it fails the suite).
+- **The `pending` staging gate is untouched.** Everything the lane produces goes
+  through `submit-candidates.ts` and needs a human `approve`, exactly as before.
+
+Both tools are bounded by `ENRICHMENT_LIMIT` (default 60) and `VERIFY_LIMIT`
+(default 40), because an unbounded sweep over the current gap set is roughly 12
+hours. Note these are validated in `run.sh` rather than trusted: an unparseable
+`--limit` parses to `undefined` in both scripts, and an undefined limit **skips the
+bounding slice entirely** — so a malformed value would silently unbound the run
+instead of failing. That mattered little when a human ran it and watched; it
+matters now that launchd does.
 
 ### Provenance and review workflow
 

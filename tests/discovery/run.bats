@@ -966,3 +966,113 @@ EOF
 	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
 	[ "$outfile_count" = "1" ]
 }
+
+# --- field-extraction/verification lane (2026-09-01, F0) --------------------
+# extract-fields.ts / verify-fields.ts are shimmed by the catch-all `*) exit 0`
+# case in setup()'s fake npx — neither creates its --out file, so the
+# enrichment submit is skipped with the "nothing to stage" WARN. These tests
+# assert run.sh's own invocation of the lane, not the helpers' behavior.
+
+@test "extract-fields.ts is invoked with an explicit --fields allowlist" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# THIS IS THE MOST IMPORTANT TEST IN THIS FILE. --fields is a safety
+	# guard: parseFieldsArg() defaults to ALL FIVE extractable fields when
+	# --fields is omitted, and two of those (capacityMw.planned at 75%
+	# precision, energy.onSiteGenerationMw at 50%) failed the accuracy bench
+	# and are not safe to stage unattended every night. Do not "simplify"
+	# this flag away — that silently re-enables both benched-unsafe fields.
+	extract_line="$(grep "extract-fields.ts" "$NPX_CALL_LOG" | head -1)"
+	[ -n "$extract_line" ]
+	[[ "$extract_line" == *"--fields=capacityMw.operational,energy.source,energy.utility"* ]]
+}
+
+@test "verify-fields.ts is invoked with the same explicit --fields allowlist" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# NOT the same rationale as extract-fields.ts above: verify-fields is
+	# read-only and stages nothing, so the ship-safety caveat cannot apply to
+	# it. This pins a SCOPE bound — the nightly check stays on the same three
+	# fields the fill lane populates, and the run stays inside its time
+	# budget. Widening it is a cost decision, not a safety regression.
+	verify_line="$(grep "verify-fields.ts" "$NPX_CALL_LOG" | head -1)"
+	[ -n "$verify_line" ]
+	[[ "$verify_line" == *"--fields=capacityMw.operational,energy.source,energy.utility"* ]]
+}
+
+@test "dry-run skips the field-extraction/verification lane entirely" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# Anchor: prove the run actually reached the point where the lane would
+	# fire. check-sources.ts runs unconditionally, including on dry runs (see
+	# its comment in run.sh) — without this, "extract-fields is absent" is
+	# vacuous, since it would also pass against a missing/empty call log or a
+	# run.sh that died before getting anywhere near the lane.
+	[ -s "$NPX_CALL_LOG" ]
+	grep -q "check-sources.ts" "$NPX_CALL_LOG"
+
+	# Positive assertion: neither lane command appears. `grep -c` with no
+	# matches prints "0" but exits 1 (and exits 2 against a missing file), so
+	# a bare `grep -c ... ; [ "$status" -ne 0 ]` passes vacuously on both a
+	# skipped lane AND a run.sh that never got this far. `! grep -q` after the
+	# anchor above has already proven the log file exists and is populated.
+	! grep -q "extract-fields.ts\|verify-fields.ts" "$NPX_CALL_LOG"
+}
+
+@test "extract-fields.ts is invoked after check-sources.ts" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	extract_line="$(grep -n "extract-fields.ts" "$NPX_CALL_LOG" | head -1 | cut -d: -f1)"
+	check_line="$(grep -n "check-sources.ts" "$NPX_CALL_LOG" | head -1 | cut -d: -f1)"
+	[ -n "$extract_line" ]
+	[ -n "$check_line" ]
+	[ "$extract_line" -gt "$check_line" ]
+}
+
+@test "ENRICHMENT_LIMIT and VERIFY_LIMIT env overrides reach their respective commands" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export ENRICHMENT_LIMIT=7
+	export VERIFY_LIMIT=9
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	extract_line="$(grep "extract-fields.ts" "$NPX_CALL_LOG" | head -1)"
+	verify_line="$(grep "verify-fields.ts" "$NPX_CALL_LOG" | head -1)"
+	[[ "$extract_line" == *"--limit=7"* ]]
+	[[ "$verify_line" == *"--limit=9"* ]]
+}
+
+@test "malformed ENRICHMENT_LIMIT/VERIFY_LIMIT fall back to the safe defaults" {
+	# Fail-open hazard: ${VAR:-default} only substitutes when VAR is UNSET or
+	# EMPTY, so a non-empty malformed value (a typo'd env var) passes straight
+	# through to --limit=<garbage>. extract-fields.ts/verify-fields.ts parse an
+	# unparseable limit as `undefined`, and an undefined limit SKIPS the
+	# bounding slice entirely — turning a ~60-value bounded lane into an
+	# unattended ~12h sweep of ~2,525 gap values. Do not simplify this
+	# validation away; it is the only thing standing between an operator typo
+	# and an all-night crawl once this lane is scheduled unattended.
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export ENRICHMENT_LIMIT=abc
+	export VERIFY_LIMIT=-5
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	extract_line="$(grep "extract-fields.ts" "$NPX_CALL_LOG" | head -1)"
+	verify_line="$(grep "verify-fields.ts" "$NPX_CALL_LOG" | head -1)"
+	[[ "$extract_line" == *"--limit=60"* ]]
+	[[ "$verify_line" == *"--limit=40"* ]]
+}
