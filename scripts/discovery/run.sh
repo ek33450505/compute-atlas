@@ -531,6 +531,14 @@ else
   # one, which is why this lane was never wired in before F0 step 3. Do not
   # remove --fields from the extract-fields call to "simplify" it.
   #
+  # ⚠️ But do NOT read this list as "three fields that passed the bench". Only
+  # capacityMw.operational is bench-measured (P=100%/R=100%). Until 2026-09-01
+  # the bench could score only NUMERIC fields, so energy.source (enum) and
+  # energy.utility (free text) have never been scored at all — no label in
+  # truth.json, no row in any result file. Pinning this list EXCLUDES the two
+  # fields the bench rejected; it does not certify the two it never measured.
+  # See docs/discovery-runbook.md's per-field table, which records this with "—".
+  #
   # verify-fields takes the SAME list for a DIFFERENT reason — it is read-only
   # and stages nothing, so the ship-safety caveat above does not apply to it
   # (docs/discovery-runbook.md says so explicitly, which is why the `npm run

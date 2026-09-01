@@ -221,8 +221,14 @@ quote gate; a PDF's raw bytes are never regexed.
 > ⛔ **Always pass `--fields` explicitly.** Omitting it does NOT mean "the safe
 > default" — it means all five fields, including the two the bench measured as NOT
 > safe to ship (`capacityMw.planned` P=75%, `energy.onSiteGenerationMw` P=50%; see
-> the per-field table below). The three benched-safe fields are
-> `capacityMw.operational`, `energy.source`, `energy.utility`. The `npm run`
+> the per-field table below). The pinned list is `capacityMw.operational`,
+> `energy.source`, `energy.utility` — but only the FIRST of those three is
+> actually bench-measured (P=100%/R=100%). The other two are **unmeasured, not
+> validated**: the bench could only score numeric fields until 2026-09-01, and
+> neither string field has ever carried a label in `truth.json` or appeared in a
+> result file (the per-field table below states this correctly with `—`). They
+> are pinned because they are the fields we chose to run, not because they
+> cleared a bar. The `npm run`
 > wrapper below bakes that list in so it cannot be forgotten; treat a bare
 > `extract-fields.ts` invocation as an operator error. The nightly `run.sh` lane is
 > scheduled, but never bare — it pins the field list explicitly, and a BATS test
