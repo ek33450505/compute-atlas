@@ -66,6 +66,29 @@ const valuesEqual = (kind, got, exp) => {
   return numericClose(got, exp);
 };
 
+// UNLABELED-FACILITY GUARD (do not remove — see the block below for why).
+//
+// truth.json's per-facility lookup is `TRUTH[facility] ?? {}` followed by
+// `tt[field] ?? null`. A facility with NO entry at all in truth.json therefore
+// collapses to exp === null for every field — which is *indistinguishable* from
+// a genuine "the page states nothing, correctly expect null" abstention label.
+// Downstream, exp === null + a model value is scored HALLUCINATION. So running
+// this bench over a page that has not been labeled yet reports every one of the
+// model's correct extractions as a hallucination: silence reads as data, and the
+// resulting precision number means nothing. The corpus is being extended from 31
+// labeled pages to ~69, and the ~38 new pages have no truth.json entries yet
+// (labels are hand-assigned later) — so this is no longer a hypothetical.
+//
+// truth.json also carries documentation-only top-level keys (e.g. "_README",
+// an array of strings) that are NOT facility labels. Only a key whose value is
+// a non-null, non-array OBJECT counts as a real label entry.
+const LABELED_FACILITIES = new Set(
+  Object.keys(TRUTH).filter((k) => {
+    const v = TRUTH[k];
+    return v !== null && typeof v === "object" && !Array.isArray(v);
+  }),
+);
+
 const files = readdirSync(D).filter((x) => x.startsWith("result-") && x.endsWith(".json")).sort();
 if (!files.length) { console.log("no result-*.json — run: node run.mjs <model-tag>"); process.exit(0); }
 
@@ -76,10 +99,20 @@ for (const f of files) {
   let qChecked = 0, qGrounded = 0, qUngroundedWithValue = 0;
   const perField = {};
   const detail = [];
+  const unlabeledFacilities = new Set();
+  let unlabeledCells = 0;
 
   for (const r of rows) {
     ms += r.ms || 0;
     if (r.error) { errs++; continue; }
+    // Facility has no real truth.json entry — exclude entirely rather than let
+    // it silently fall through as expect-null (see guard comment above the
+    // files loop). Never counted as tn/hallucination/miss/anything.
+    if (!LABELED_FACILITIES.has(r.facility)) {
+      unlabeledFacilities.add(r.facility);
+      unlabeledCells++;
+      continue;
+    }
     r.grounded = quoteGrounded(r.quote, PAGETEXT[r.facility] ?? "");
     // Re-derive the label from truth.json — NEVER trust r.expected, which was frozen
     // into the result file at run time. Reading the stored copy silently ignored every
@@ -131,6 +164,12 @@ for (const f of files) {
 
   console.log(`\n${"=".repeat(94)}`);
   console.log(`${R.model}   ${scored} scored cells (${ambig} AMBIG excluded, ${errs} errors)  avg ${Math.round(ms / (rows.length || 1))}ms`);
+  // Loud and separate from the scoring section below — these facilities were NOT
+  // measured (no truth.json label to measure against), not measured-and-fine.
+  // Worded so a reader skimming for a pass/fail can't mistake this for either.
+  console.log(`  UNLABELED (not scored, NOT measured — no truth.json entry): ` +
+    `${unlabeledFacilities.size} facilities / ${unlabeledCells} cells excluded` +
+    (unlabeledFacilities.size ? `\n    ids: ${[...unlabeledFacilities].sort().join(", ")}` : ""));
   console.log(`  PRECISION ${pct(precision)}   RECALL ${pct(recall)}   ABSTENTION-ACC ${pct(abstAcc)}   score ${score}`);
   console.log(`  correct=${tp}  correctAbstain=${tn}  miss=${miss}  WRONG=${wrong}  HALLUC=${hall}`);
   console.log(`  quote-grounded ${qGrounded}/${qChecked}` +
