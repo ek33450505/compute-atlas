@@ -297,6 +297,33 @@ Like `stakeholders`, this field is excluded from the automated discovery pipelin
 and from public corrections. It is added through maintainer research against the
 permit document itself.
 
+## Cooling type
+
+An optional `water.coolingType` field classifies a data center's heat-rejection
+method by water consumption — the axis rendered on the `/power` page as
+"Evaporative (high water)," "Hybrid," "Closed-loop (low water)," and
+"Air-cooled (minimal)." This rule was not written down before now; the four
+values existed but curators had no documented standard to apply them against.
+
+- **`evaporative`** — heat is rejected by evaporating water, as in a cooling
+  tower or adiabatic/evaporative assist. Water is consumed continuously.
+- **`hybrid`** — the design switches between evaporative and dry modes, for
+  example wet cooling in summer and dry cooling in winter. Water is consumed
+  seasonally.
+- **`closed_loop`** — a recirculating water or coolant circuit that is not
+  evaporated. Water is consumed only as occasional makeup.
+- **`air`** — no cooling water circuit at all: dry or direct air cooling,
+  described by the operator as "waterless" or "zero water for cooling." Water
+  use is limited to ordinary plumbing.
+- **`unknown`** — a source addresses cooling but does not identify the method.
+
+**The tie-breaker:** a facility with a water circuit that recirculates is
+recorded as `closed_loop`, even when heat is ultimately rejected to air via
+air-cooled chillers or dry coolers. `air` is reserved for designs with no
+cooling water circuit at all. Operators frequently market a closed-loop design
+as "air-cooled," so the marketing phrase alone does not decide the value — the
+presence of a recirculating water circuit does.
+
 ## See also
 
 - [`README.md`](../README.md) — what the dataset is and the public API.
