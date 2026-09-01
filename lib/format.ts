@@ -193,3 +193,21 @@ export function formatMgd(mgd: number): string {
 export function formatTonsPerYear(tpy: number): string {
   return `${tpy.toLocaleString()} tons/yr`;
 }
+
+/**
+ * Formats a dataset edition's `asOf` ISO timestamp (see
+ * `getDatasetEdition` in lib/dataset-edition.ts) as a long-form date, e.g.
+ * "September 1, 2026" — used by the /api citation block and the /stats
+ * masthead so both read the same edition date the same way. Falls back to
+ * "date unavailable" for the "unknown" sentinel or any unparseable input,
+ * rather than rendering "Invalid Date".
+ */
+export function formatEditionDate(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "date unavailable";
+  // Pinned to UTC: `asOf` is a UTC export timestamp, and a citation must read
+  // the same regardless of the reader's or the server's local timezone — a
+  // near-midnight UTC timestamp would otherwise format as the day before in
+  // negative-offset zones (verified in tests).
+  return new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "UTC" }).format(date);
+}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { siteConfig } from "@/lib/site";
+import { getDatasetEdition } from "@/lib/dataset-edition";
+import { formatEditionDate } from "@/lib/format";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
@@ -16,6 +18,17 @@ const CODE = "rounded-sm bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-for
 
 /** Shared style for method+path table cells. */
 const METHOD_PATH = "font-mono text-sm text-foreground";
+
+/**
+ * Base for raw.githubusercontent.com file URLs, derived from siteConfig's
+ * canonical repo URL rather than hardcoded a second time — the "Bulk access"
+ * and "How to cite" sections both build URLs from this so the owner/repo
+ * segment can't drift between them.
+ */
+const RAW_BASE = siteConfig.repoUrl.replace(
+  "https://github.com/",
+  "https://raw.githubusercontent.com/"
+);
 
 interface Endpoint {
   method: string;
@@ -125,6 +138,25 @@ function EndpointTable({ endpoints }: { endpoints: Endpoint[] }) {
 }
 
 export default function ApiPage() {
+  const edition = getDatasetEdition();
+  const editionDate = formatEditionDate(edition.asOf);
+  const editionYear = editionDate === "date unavailable" ? "n.d." : new Date(edition.asOf).getFullYear();
+  const mainBulkUrl = `${RAW_BASE}/main/data/facilities.json`;
+  const pinnedBulkUrl = `${RAW_BASE}/v${edition.version}/data/facilities.json`;
+
+  // Two citation shapes for two different things — see the "How to cite"
+  // section below. The live resource changes continuously, so APA 7 calls
+  // for a "Retrieved <date>" the reader supplies. The tagged snapshot is
+  // immutable — that immutability is the whole point of the paragraph above
+  // it — so it takes NO retrieval date; carrying one on both citations would
+  // blur the exact distinction this section exists to teach. Version goes in
+  // parens before the bracketed description ("(Version 1.30.0) [Data set]"),
+  // not inside the brackets. Built as plain strings (not interpolated into
+  // JSX text nodes) so they render verbatim inside a <pre><code> block and
+  // stay copy-pasteable as one line.
+  const snapshotCitation = `Kubiak, E. (${editionYear}). Compute Atlas (Version ${edition.version}) [Data set]. ${pinnedBulkUrl}`;
+  const liveCitation = `Kubiak, E. (n.d.). Compute Atlas. Retrieved [access date], from ${siteConfig.url}`;
+
   return (
     <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
       <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "API" }]} />
@@ -133,7 +165,7 @@ export default function ApiPage() {
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            API reference · Edition 2026
+            {`API reference · Edition v${edition.version}`}
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             The atlas, as JSON.
@@ -228,7 +260,7 @@ export default function ApiPage() {
               If you want the whole dataset rather than a query, take the
               export instead of paging this API:{" "}
               <a
-                href="https://raw.githubusercontent.com/ek33450505/compute-atlas/main/data/facilities.json"
+                href={mainBulkUrl}
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="Full facilities dataset as JSON on GitHub (opens in new tab)"
@@ -240,7 +272,18 @@ export default function ApiPage() {
               terms, regenerated from the database on each publish and served
               by GitHub&rsquo;s CDN. For a full-list consumer it is fresher
               per request than a cached API response, and it costs this
-              project nothing to serve.
+              project nothing to serve. That URL tracks the{" "}
+              <code className={CODE}>main</code> branch, so it is the
+              current latest — it is not stable to cite, since its content
+              changes under the same URL. To cite a reproducible snapshot,
+              use the version-pinned URL in{" "}
+              <a
+                href="#citation-heading"
+                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              >
+                How to cite
+              </a>{" "}
+              below instead.
             </dd>
           </div>
           <div>
@@ -292,6 +335,80 @@ export default function ApiPage() {
             <dd className="text-muted-foreground">
               The <code className={CODE}>q</code> search parameter is capped
               at 200 characters.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      {/* ---- How to cite ---- */}
+      <section aria-labelledby="citation-heading" className="space-y-6 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § How to cite
+        </p>
+        <h2 id="citation-heading" className="font-display text-2xl text-foreground">
+          Citing this dataset
+        </h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          There are two different things to cite here, and they take
+          different citation shapes. The{" "}
+          <strong className="font-medium text-foreground">live site and API</strong>{" "}
+          change continuously as records are added, corrected, and reviewed
+          — cite it with the date you accessed it. A{" "}
+          <strong className="font-medium text-foreground">
+            tagged release snapshot
+          </strong>{" "}
+          is immutable — cite it with its version number, and the
+          version-pinned URL below, so the exact data behind a finding stays
+          retrievable years later.
+        </p>
+
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-foreground">
+            Citing a reproducible snapshot
+          </p>
+          <div className="overflow-x-auto rounded-md border border-border bg-muted/50">
+            <pre className="whitespace-pre-wrap break-words p-4 font-mono text-xs leading-relaxed text-foreground">
+              <code>{snapshotCitation}</code>
+            </pre>
+          </div>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {`Version ${edition.version} was cut on ${editionDate}. Because the tag is`}{" "}
+            immutable, this citation carries no retrieval date — the version
+            number and URL together already pin an exact, unchanging state
+            of the dataset.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-foreground">
+            Citing the live site or API
+          </p>
+          <div className="overflow-x-auto rounded-md border border-border bg-muted/50">
+            <pre className="whitespace-pre-wrap break-words p-4 font-mono text-xs leading-relaxed text-foreground">
+              <code>{liveCitation}</code>
+            </pre>
+          </div>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Replace <code className={CODE}>[access date]</code> with the date
+            you retrieved the data — the site and API have no fixed
+            publication date to cite instead.
+          </p>
+        </div>
+
+        <dl className="space-y-3 text-sm">
+          <div>
+            <dt className="font-medium text-foreground">Attribution</dt>
+            <dd className="text-muted-foreground">
+              Either citation above satisfies CC-BY-4.0&rsquo;s attribution
+              requirement when used as written — it names both Compute Atlas
+              and the maintainer as the source.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-medium text-foreground">Persistent identifier</dt>
+            <dd className="text-muted-foreground">
+              No DOI is assigned to this dataset yet. If an archival release
+              (e.g. via Zenodo) becomes available, it will be listed here.
             </dd>
           </div>
         </dl>
