@@ -436,12 +436,36 @@ async function nhdPoliteDelay() {
   lastNHDRequestAt = Date.now();
 }
 
+/**
+ * EDITORIAL overrides for upstream USGS NHD water-body names — NOT a data fix.
+ *
+ * Every so often the federal GNIS dataset renames a waterbody, and the project
+ * deliberately does not adopt the rename. Keyed on the LOWERCASED, TRIMMED
+ * upstream `GNIS_NAME` string (so upstream casing drift can't slip past it);
+ * the value is the name we publish, in its correct casing.
+ *
+ * - "lake america" -> "Lake Ontario": USGS NHD now returns GNIS_NAME =
+ *   "Lake America" for the waterbody off Barker, Niagara County NY (verified
+ *   2026-09-01 via a direct query against
+ *   hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/10). The site
+ *   nearest that waterbody (terawulf-lake-mariner-ny) is on Lake Ontario, and
+ *   the project publishes "Lake Ontario".
+ *
+ * MECHANICAL NOTE: this map is the ONLY thing standing between the upstream
+ * name and published data. Removing an entry silently reintroduces the
+ * upstream name on the next `build:mapdata` run, with no error.
+ */
+const GNIS_NAME_OVERRIDES = new Map([
+  ['lake america', 'Lake Ontario'],
+]);
+
 /** Case-insensitive property lookup (NHD layers use inconsistent casing across layers). */
-function propGNISName(props) {
+export function propGNISName(props) {
   const raw = props?.GNIS_NAME ?? props?.gnis_name ?? props?.GnisName ?? null;
   if (typeof raw !== 'string') return null;
   const trimmed = raw.trim();
-  return trimmed === '' ? null : trimmed;
+  if (trimmed === '') return null;
+  return GNIS_NAME_OVERRIDES.get(trimmed.toLowerCase()) ?? trimmed;
 }
 
 /** Ray-casting point-in-polygon (even-odd rule, holes supported). No new turf dep needed. */
