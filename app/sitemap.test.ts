@@ -28,6 +28,7 @@ describe("sitemap", () => {
     expect(urls).toContain(`${siteConfig.url}/opposition`);
     expect(urls).toContain(`${siteConfig.url}/stats`);
     expect(urls).toContain(`${siteConfig.url}/about`);
+    expect(urls).toContain(`${siteConfig.url}/methodology`);
     expect(urls).toContain(`${siteConfig.url}/explore`);
     expect(urls).toContain(`${siteConfig.url}/activity`);
     expect(urls).toContain(`${siteConfig.url}/contribute`);

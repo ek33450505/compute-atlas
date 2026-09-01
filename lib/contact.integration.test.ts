@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, afterAll, describe, it, expect, vi } from "vitest";
+import { eq } from "drizzle-orm";
 
 vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
@@ -13,7 +14,7 @@ import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 import { contactMessagesTable } from "@/lib/db/schema";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
-import { createContactMessage, setContactEmailSent } from "@/lib/contact";
+import { createContactMessage, listContactMessagesForAdmin, setContactEmailSent } from "@/lib/contact";
 
 let tdb: TestDbHandle;
 
@@ -127,5 +128,41 @@ describe("setContactEmailSent", () => {
 
     const rows = await tdb.db.select().from(contactMessagesTable);
     expect(rows[0].emailSent).toBe(true);
+  });
+});
+
+describe("listContactMessagesForAdmin", () => {
+  it("returns messages newest first", async () => {
+    const first = await createContactMessage(VALID, "hash-1");
+    const second = await createContactMessage({ ...VALID, name: "Alex Chen" }, "hash-2");
+    if (!first.ok || !second.ok) throw new Error("setup failed");
+
+    // Both rows insert within the same millisecond under PGlite, so
+    // defaultNow() alone can't guarantee distinct createdAt values — stamp
+    // them explicitly to make the "newest first" ordering deterministic.
+    await tdb.db
+      .update(contactMessagesTable)
+      .set({ createdAt: new Date("2026-08-30T00:00:00Z") })
+      .where(eq(contactMessagesTable.id, first.id));
+    await tdb.db
+      .update(contactMessagesTable)
+      .set({ createdAt: new Date("2026-08-31T00:00:00Z") })
+      .where(eq(contactMessagesTable.id, second.id));
+
+    const rows = await listContactMessagesForAdmin();
+    expect(rows.map((r) => r.id)).toEqual([second.id, first.id]);
+  });
+
+  it("excludes submitterIpHash from the returned rows", async () => {
+    const created = await createContactMessage(VALID, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const rows = await listContactMessagesForAdmin();
+    expect(rows[0]).not.toHaveProperty("submitterIpHash");
+  });
+
+  it("returns an empty array when there are no messages", async () => {
+    const rows = await listContactMessagesForAdmin();
+    expect(rows).toEqual([]);
   });
 });

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { GET } from "./route";
 import { __resetApiRateLimit, API_RATE_LIMIT_MAX } from "@/lib/api-rate-limit";
 import facilitiesRaw from "@/data/facilities.json";
+import meta from "@/data/facilities.meta.json";
 
 function req(): Request {
   return new Request("http://localhost/api/stats");
@@ -24,6 +25,25 @@ describe("GET /api/stats", () => {
       underConstructionMw: expect.any(Number),
     });
     expect(body.count).toBe(facilitiesRaw.length);
+  });
+
+  it("includes the dataset edition, matching facilities.meta.json", async () => {
+    const res = await GET(req());
+    const body = await res.json();
+    expect(body.edition).toEqual({
+      version: meta.sourceRelease,
+      asOf: meta.asOf,
+      recordCount: meta.recordCount,
+      schemaVersion: meta.schemaVersion,
+    });
+  });
+
+  it("rounds summed capacity fields to 1 decimal place", async () => {
+    const res = await GET(req());
+    const body = await res.json();
+    for (const value of [body.operationalMw, body.plannedMw, body.underConstructionMw]) {
+      expect(Math.round(value * 10) / 10).toBe(value);
+    }
   });
 
   it("carries the shared CORS header", async () => {

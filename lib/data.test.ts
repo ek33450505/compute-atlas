@@ -306,20 +306,27 @@ describe("getStats", () => {
     expect(states).toBe(expectedStates);
   });
 
-  it("operationalMw excludes cancelled facilities", async () => {
+  it("operationalMw excludes cancelled facilities and is rounded to 1 decimal", async () => {
     const { operationalMw } = await getStats();
     const manual = (await getAllFacilities())
       .filter((f) => f.status !== "cancelled")
       .reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0);
-    expect(operationalMw).toBe(manual);
+    expect(operationalMw).toBe(Math.round(manual * 10) / 10);
   });
 
-  it("plannedMw excludes cancelled facilities", async () => {
+  it("plannedMw excludes cancelled facilities and is rounded to 1 decimal", async () => {
     const { plannedMw } = await getStats();
     const manual = (await getAllFacilities())
       .filter((f) => f.status !== "cancelled")
       .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
-    expect(plannedMw).toBe(manual);
+    expect(plannedMw).toBe(Math.round(manual * 10) / 10);
+  });
+
+  it("operationalMw, plannedMw, and underConstructionMw carry at most 1 decimal place", async () => {
+    const { operationalMw, plannedMw, underConstructionMw } = await getStats();
+    for (const value of [operationalMw, plannedMw, underConstructionMw]) {
+      expect(Math.round(value * 10) / 10).toBe(value);
+    }
   });
 
   it("operationalMw is non-negative", async () => {
@@ -344,12 +351,12 @@ describe("getStats", () => {
     expect(underConstructionMw).toBeGreaterThanOrEqual(0);
   });
 
-  it("underConstructionMw equals manual recomputation", async () => {
+  it("underConstructionMw equals manual recomputation, rounded to 1 decimal", async () => {
     const { underConstructionMw } = await getStats();
     const expected = (await getAllFacilities())
       .filter((f) => f.status === "under_construction")
       .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
-    expect(underConstructionMw).toBe(expected);
+    expect(underConstructionMw).toBe(Math.round(expected * 10) / 10);
   });
 });
 

@@ -25,7 +25,8 @@ import { aiClassificationEnum } from "@/lib/schema";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { SurveyStatRow } from "@/components/survey-stat-row";
-import { AI_CLASSIFICATION_CONFIDENCE_LABELS, getFacilityMaxMw } from "@/lib/format";
+import { AI_CLASSIFICATION_CONFIDENCE_LABELS, getFacilityMaxMw, formatEditionDate } from "@/lib/format";
+import { getDatasetEdition } from "@/lib/dataset-edition";
 
 export const revalidate = 3600;
 
@@ -93,6 +94,9 @@ export default async function StatsPage() {
     getAllFacilities(),
   ]);
 
+  const edition = getDatasetEdition();
+  const editionDate = formatEditionDate(edition.asOf);
+
   const total = stats.count;
   const communityReporting = COMMUNITY_SIGNAL_ORDER.reduce(
     (sum, key) => sum + communityCounts[key],
@@ -129,7 +133,7 @@ export default async function StatsPage() {
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            Coverage &amp; completeness · Edition 2026
+            Coverage &amp; completeness · Edition v{edition.version}
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             The atlas in numbers.
@@ -140,6 +144,24 @@ export default async function StatsPage() {
             coverage — not average completeness — because a
             source-cited record that says &ldquo;unknown&rdquo; is more
             honest than a record that guesses.
+          </p>
+          <p className="font-mono text-xs text-muted-foreground">
+            {/*
+              Built as one precomputed string (not interspersed JSX text)
+              deliberately: a text chunk that follows a `{...}` interpolation
+              and contains an HTML entity (&middot;, &rsquo; etc.) can have
+              its leading space silently dropped by the JSX transform — see
+              CLAUDE.md's JSX-entity-space gotcha. A literal "·" character
+              inside one JS string sidesteps that class of bug entirely.
+            */}
+            {`Edition v${edition.version} · snapshot as of ${editionDate} · ${edition.recordCount.toLocaleString("en-US")} records at export`}{" "}
+            ·{" "}
+            <a
+              href="/api#citation-heading"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              how to cite
+            </a>
           </p>
         </div>
         <div className="border-t border-border" />

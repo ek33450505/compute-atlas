@@ -8,6 +8,7 @@ import {
   formatPower,
   formatMgd,
   formatTonsPerYear,
+  formatEditionDate,
   stripLegalSuffix,
   isOperatorRedundant,
   nameConveysType,
@@ -216,6 +217,26 @@ describe("formatTonsPerYear", () => {
   // string would misreport a real regulatory fact.
   it("formats 0 as '0 tons/yr', never an em dash or empty string", () => {
     expect(formatTonsPerYear(0)).toBe("0 tons/yr");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatEditionDate
+// ---------------------------------------------------------------------------
+describe("formatEditionDate", () => {
+  it("formats an ISO timestamp as a long-form date", () => {
+    expect(formatEditionDate("2026-09-01T16:58:23.496Z")).toBe("September 1, 2026");
+  });
+
+  // Regression: getDatasetEdition's FALLBACK_EDITION returns the literal
+  // string "unknown" for asOf when facilities.meta.json is missing or
+  // malformed — this must degrade to a readable label, never "Invalid Date".
+  it('falls back to "date unavailable" for the "unknown" sentinel', () => {
+    expect(formatEditionDate("unknown")).toBe("date unavailable");
+  });
+
+  it("falls back to \"date unavailable\" for any other unparseable input", () => {
+    expect(formatEditionDate("not-a-date")).toBe("date unavailable");
   });
 });
 

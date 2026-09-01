@@ -181,6 +181,18 @@ tool, not part of the deployed app.
 
 - **`.env.local` quoting:** `vercel env add` keeps surrounding quotes; a quoted
   `DATABASE_URL` is invalid and fails *silently* (no fallback). Strip quotes.
+  Two sibling traps in the same family, both silent:
+  - **A new Vercel env var is invisible to already-built deployments.** Vercel
+    injects env at deploy time, so `vercel env add` after the deploy leaves the
+    running function reading `undefined` until you
+    `npx vercel redeploy --target production <url>`. Cost the contact endpoint its
+    first real message (2026-09-01): the row stored with `email_sent = false` and
+    the send was skipped — correct fail-safe behavior, indistinguishable from a
+    code bug until you compare the deployment's age against the variable's.
+  - **Appending to `.env.local` needs a trailing-newline check first.** The file
+    does not reliably end in one, so a bare `>>` concatenates the new key onto the
+    previous value (`EMAIL_FROM=…<addr>CONTACT_TO_EMAIL=…`), corrupting both. Check
+    with `tail -c1`, or append a leading `\n`.
 - **Builds are gated, production included.** `vercel.json` runs
   `scripts/vercel-ignore-build.sh` as Vercel's Ignored Build Step: **any**
   deployment whose diff touches only `data/`, `docs/`, `.github/`, `*.md` is

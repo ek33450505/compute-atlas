@@ -40,6 +40,19 @@ const RETIRED_FACILITY_REDIRECTS = [
 ];
 
 const nextConfig: NextConfig = {
+  /**
+   * `/methodology` (app/methodology/page.tsx, via lib/methodology.ts) reads
+   * `docs/methodology.md` off disk at module-evaluation time. The page has
+   * no `revalidate`/dynamic data so Next prerenders it fully at `next build`
+   * (where the repo is always fully checked out) — this entry is a
+   * belt-and-suspenders guard so the file is still traced into the
+   * serverless bundle if that page ever becomes dynamic, rather than relying
+   * solely on `@vercel/nft`'s heuristic static analysis of the `fs` call.
+   */
+  outputFileTracingIncludes: {
+    "/methodology": ["./docs/methodology.md"],
+  },
+
   async redirects() {
     return RETIRED_FACILITY_REDIRECTS;
   },

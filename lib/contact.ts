@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { contactMessagesTable, type ContactMessageRow } from "@/lib/db/schema";
@@ -50,6 +50,44 @@ export async function createContactMessage(input: unknown, ipHash: string): Prom
     .returning({ id: contactMessagesTable.id });
 
   return { ok: true, id: row.id, name, email, topic, message };
+}
+
+/**
+ * The columns the admin contact-messages screen renders. Deliberately
+ * excludes `submitterIpHash` (a hashed submitter IP — pseudonymous personal
+ * data about an anonymous member of the public): every field on a row
+ * passed from a server component into a client component crosses into the
+ * browser in the RSC payload whether or not it's rendered in JSX, so an
+ * unprojected `ContactMessageRow[]` would ship the hash to the admin's
+ * browser unused. Selecting an explicit column list (rather than stripping
+ * fields after the fact) means a future column added to
+ * `contactMessagesTable` can't silently start leaking here too.
+ * `submitterIpHash` stays readable server-side via the full
+ * `ContactMessageRow` for rate limiting. Mirrors `ADMIN_LEAD_COLUMNS` in
+ * lib/leads.ts.
+ */
+const ADMIN_CONTACT_COLUMNS = {
+  id: contactMessagesTable.id,
+  createdAt: contactMessagesTable.createdAt,
+  name: contactMessagesTable.name,
+  email: contactMessagesTable.email,
+  topic: contactMessagesTable.topic,
+  message: contactMessagesTable.message,
+  emailSent: contactMessagesTable.emailSent,
+} as const;
+
+export type AdminContactRow = Pick<
+  ContactMessageRow,
+  "id" | "createdAt" | "name" | "email" | "topic" | "message" | "emailSent"
+>;
+
+/** Lists contact messages for the admin screen, newest first. */
+export async function listContactMessagesForAdmin(): Promise<AdminContactRow[]> {
+  const db = getDb();
+  return db
+    .select(ADMIN_CONTACT_COLUMNS)
+    .from(contactMessagesTable)
+    .orderBy(desc(contactMessagesTable.createdAt));
 }
 
 /**

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
+import { getDatasetEdition } from "@/lib/dataset-edition";
 import { Wordmark } from "@/components/wordmark";
 
 const EXPLORE_LINKS = [
@@ -18,6 +19,8 @@ const EXTERNAL_NAV_LINK_CLASS =
   "inline-flex min-h-11 items-center gap-1 rounded-sm underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 export function SiteFooter() {
+  const edition = getDatasetEdition();
+
   return (
     <footer className="print:hidden relative border-t border-border">
       {/* Faint graticule wash — atlas margin texture */}
@@ -149,7 +152,7 @@ export function SiteFooter() {
         {/* Edition margin line */}
         <div className="mt-8 flex flex-col gap-2 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            {siteConfig.name} · Edition 2026
+            {`${siteConfig.name} · v${edition.version}`}
           </p>
           <p
             aria-label="Coordinates: 39.5 degrees north, 98.5 degrees west"

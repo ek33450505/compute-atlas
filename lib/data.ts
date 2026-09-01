@@ -447,6 +447,18 @@ export async function getFacilitiesByStatus(status: Status): Promise<Facility[]>
 }
 
 /**
+ * Rounds a summed capacity figure to 1 decimal place. These are megawatts
+ * aggregated across hundreds of facilities via floating-point addition, so
+ * the raw sum carries accumulation artifacts (e.g. `27350.639999999996`)
+ * well past any precision the underlying per-facility disclosures actually
+ * support — sub-0.1 MW resolution is noise, not signal, and is exactly what
+ * an academic citation would otherwise quote verbatim.
+ */
+function roundMw(sum: number): number {
+  return Math.round(sum * 10) / 10;
+}
+
+/**
  * Returns aggregate stats for the whole dataset.
  *
  * `operationalMw` — sum of `capacityMw.operational` across non-cancelled facilities.
@@ -454,6 +466,8 @@ export async function getFacilitiesByStatus(status: Status): Promise<Facility[]>
  * Both lenses exclude cancelled projects so the displayed figures are not
  * inflated by withdrawn announcements. They are intentionally independent
  * (running vs announced) rather than a combined max/total.
+ *
+ * All three summed fields are rounded to 1 decimal place — see `roundMw`.
  */
 export async function getStats(): Promise<{
   count: number;
@@ -466,17 +480,17 @@ export async function getStats(): Promise<{
   const count = facilities.length;
   const states = new Set(facilities.map((f) => f.location.state)).size;
   const active = facilities.filter((f) => f.status !== "cancelled");
-  const operationalMw = active.reduce(
-    (sum, f) => sum + (f.capacityMw?.operational ?? 0),
-    0
+  const operationalMw = roundMw(
+    active.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0)
   );
-  const plannedMw = active.reduce(
-    (sum, f) => sum + (f.capacityMw?.planned ?? 0),
-    0
+  const plannedMw = roundMw(
+    active.reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
   );
-  const underConstructionMw = facilities
-    .filter((f) => f.status === "under_construction")
-    .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+  const underConstructionMw = roundMw(
+    facilities
+      .filter((f) => f.status === "under_construction")
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
+  );
   return { count, states, operationalMw, plannedMw, underConstructionMw };
 }
 

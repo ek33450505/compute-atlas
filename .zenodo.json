@@ -1,0 +1,20 @@
+{
+  "title": "Compute Atlas: a source-cited dataset of U.S. data centers, crypto-mining sites, and dedicated power generation",
+  "description": "Compute Atlas is a curated, human-moderated dataset tracking AI and traditional data centers, crypto-mining operations, and dedicated power-generation facilities built to supply them, across the United States. Every record traces to a real, citable public source — press coverage, filings, permits, or government data — and spans the full project lifecycle from proposed through operational.",
+  "upload_type": "dataset",
+  "access_right": "open",
+  "license": "cc-by-4.0",
+  "creators": [
+    {
+      "name": "Kubiak, Edward"
+    }
+  ],
+  "keywords": [
+    "data centers",
+    "AI infrastructure",
+    "energy",
+    "water use",
+    "crypto mining",
+    "power generation"
+  ]
+}

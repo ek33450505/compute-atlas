@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
 import { getStats } from "@/lib/data";
+import { getDatasetEdition } from "@/lib/dataset-edition";
 import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
@@ -27,6 +28,7 @@ export const revalidate = 3600;
 
 export default async function AboutPage() {
   const stats = await getStats();
+  const edition = getDatasetEdition();
 
   return (
     <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
@@ -36,7 +38,7 @@ export default async function AboutPage() {
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            About &amp; method · Edition 2026
+            {`About & method · Edition v${edition.version}`}
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             Public, but scattered.
@@ -373,6 +375,15 @@ export default async function AboutPage() {
           facilities across {stats.states} states, compiled from publicly
           available sources. Every record links to the specific sources used to
           create or update it. Source types include:
+        </p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          For the full sourcing standard &mdash; how facilities are found,
+          verified, and deduplicated, and how to read the citations behind a
+          record &mdash; see the{" "}
+          <Link href="/methodology" className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
+            methodology
+          </Link>
+          .
         </p>
         <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
           <li>Company announcements and press releases</li>
