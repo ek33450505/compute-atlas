@@ -1,6 +1,11 @@
 import { listContactMessagesForAdmin } from "@/lib/contact";
 import { ContactMessageList } from "@/app/admin/contact/contact-message-list";
 
+// Cookie-gated (proxy.ts matches /admin/:path*) and DB-backed — prerendering
+// this at build time runs listContactMessagesForAdmin() with no DATABASE_URL
+// available, which aborts the build. Render on demand instead.
+export const dynamic = "force-dynamic";
+
 export default async function AdminContactPage() {
   const messages = await listContactMessagesForAdmin();
 
