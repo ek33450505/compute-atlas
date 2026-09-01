@@ -59,6 +59,53 @@ describe("ContributeFacilityForm — structure", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Select labels — Base UI's <SelectValue /> resolves its displayed text from
+// the Select root's `items` prop, not from the rendered <SelectItem>
+// children; without `items` it falls back to the raw enum value
+// (resolveValueLabel.js's `stringifyAsLabel`). Regression coverage for that:
+// select an option and assert the trigger shows the human label, not the
+// stored value.
+// ---------------------------------------------------------------------------
+
+describe("ContributeFacilityForm — select labels", () => {
+  it("shows the human label on the Type trigger after selecting an option", async () => {
+    const user = userEvent.setup();
+    render(<ContributeFacilityForm />);
+
+    await user.click(screen.getByRole("combobox", { name: /^type$/i }));
+    await user.click(await screen.findByRole("option", { name: "Crypto mining" }));
+
+    const trigger = screen.getByRole("combobox", { name: /^type$/i });
+    expect(trigger).toHaveTextContent("Crypto mining");
+    expect(trigger).not.toHaveTextContent("crypto_mining");
+  });
+
+  it("shows the human label on the Status trigger after selecting an option", async () => {
+    const user = userEvent.setup();
+    render(<ContributeFacilityForm />);
+
+    await user.click(screen.getByRole("combobox", { name: /^status$/i }));
+    await user.click(await screen.findByRole("option", { name: "Under construction" }));
+
+    const trigger = screen.getByRole("combobox", { name: /^status$/i });
+    expect(trigger).toHaveTextContent("Under construction");
+    expect(trigger).not.toHaveTextContent("under_construction");
+  });
+
+  it("shows the full state name on the State trigger after selecting an option", async () => {
+    const user = userEvent.setup();
+    render(<ContributeFacilityForm />);
+
+    await user.click(screen.getByRole("combobox", { name: /^state$/i }));
+    await user.click(await screen.findByRole("option", { name: "California" }));
+
+    const trigger = screen.getByRole("combobox", { name: /^state$/i });
+    expect(trigger).toHaveTextContent("California");
+    expect(trigger).not.toHaveTextContent("CA");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Submit outcomes (mocked fetch)
 // ---------------------------------------------------------------------------
 

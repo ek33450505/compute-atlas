@@ -64,6 +64,20 @@ const STATE_OPTIONS = Object.entries(US_STATE_NAMES)
   .map(([code, name]) => ({ code, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
 
+// `items` for each <Select> — Base UI resolves the trigger's displayed label
+// from this, not from the rendered <SelectItem> children, so each one is
+// derived from the same source the <SelectItem>s below map over (never a
+// hand-written second list that can drift from it).
+const FACILITY_TYPE_ITEMS = FACILITY_TYPE_ORDER.map((t) => ({
+  value: t,
+  label: FACILITY_TYPE_META[t].label,
+}));
+const STATUS_ITEMS = STATUS_ORDER.map((s) => ({
+  value: s,
+  label: STATUS_META[s].label,
+}));
+const STATE_ITEMS = STATE_OPTIONS.map((s) => ({ value: s.code, label: s.name }));
+
 // ---------------------------------------------------------------------------
 // Payload building — numeric parsing delegated to lib/form-payload.ts
 // (shared with the admin form); optional text empties are omitted rather
@@ -237,6 +251,7 @@ function FacilitySection({
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="facilityType">Type</Label>
             <Select
+              items={FACILITY_TYPE_ITEMS}
               value={state.facilityType}
               onValueChange={(v) => {
                 if (v === null) return;
@@ -258,6 +273,7 @@ function FacilitySection({
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="status">Status</Label>
             <Select
+              items={STATUS_ITEMS}
               value={state.status}
               onValueChange={(v) => {
                 if (v === null) return;
@@ -308,6 +324,7 @@ function LocationSection({
               <span aria-hidden="true" className="text-destructive"> *</span>
             </Label>
             <Select
+              items={STATE_ITEMS}
               value={state.state}
               onValueChange={(v) => {
                 if (v === null) return;
