@@ -9,6 +9,7 @@ import {
   quoteSupportsValue,
   toEnrichmentIntents,
   parseFieldsArg,
+  parseArgs,
   runExtract,
   isDuplicateOfRecordedSibling,
   isOperationalStatusContradiction,
@@ -1804,5 +1805,77 @@ describe("runExtract — PDF source routing (F1)", () => {
     expect(summary.extracted).toBe(1);
     expect(summary.candidates).toHaveLength(1);
     expect(summary.candidates[0]?.enrichmentUpdate.fields.capacityMw?.planned).toBe(120);
+  });
+});
+
+describe("parseArgs — --limit fail-open regression guard", () => {
+  it("falls back to 500 (not undefined) for a non-numeric --limit=value", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const args = parseArgs(["--limit=abc"]);
+      expect(args.limit).toBe(500);
+      expect(args.limit).not.toBeUndefined();
+      expect(warnSpy).toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("falls back to 500 for --limit=0 and --limit=-5", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      expect(parseArgs(["--limit=0"]).limit).toBe(500);
+      expect(parseArgs(["--limit=-5"]).limit).toBe(500);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("leaves limit undefined (unbounded) when --limit is omitted entirely", () => {
+    const args = parseArgs(["--fields=capacityMw.operational"]);
+    expect(args.limit).toBeUndefined();
+  });
+
+  it("accepts a valid --limit=25 unchanged", () => {
+    const args = parseArgs(["--limit=25"]);
+    expect(args.limit).toBe(25);
+  });
+
+  it("applies the same fallback to the space-separated form (--limit abc)", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const args = parseArgs(["--limit", "abc"]);
+      expect(args.limit).toBe(500);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("falls back to 500 (not undefined) for a bare trailing --limit with no value at all", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const args = parseArgs(["--limit"]);
+      expect(args.limit).toBe(500);
+      expect(args.limit).not.toBeUndefined();
+      expect(warnSpy).toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("falls back to 500 for --limit immediately followed by another flag, and does not swallow that flag", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const args = parseArgs(["--limit", "--fields=energy.source"]);
+      expect(args.limit).toBe(500);
+      expect(args.fields).toEqual(["energy.source"]);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("still leaves limit undefined (unbounded) when --limit is omitted entirely — the over-correction guard", () => {
+    const args = parseArgs([]);
+    expect(args.limit).toBeUndefined();
   });
 });
