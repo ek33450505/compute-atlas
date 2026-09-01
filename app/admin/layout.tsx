@@ -41,6 +41,12 @@ export default function AdminLayout({
             >
               Facilities
             </Link>
+            <Link
+              href="/admin/contact"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Contact
+            </Link>
           </nav>
         </div>
         <form action={logout}>
