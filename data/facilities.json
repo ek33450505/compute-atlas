@@ -52059,8 +52059,8 @@
   },
   {
     "id": "new-day-ports-technology-campus-piketon-oh",
-    "name": "PORTS Technology Campus",
-    "operator": "New Day Data Centers LLC (w/ DOE, SoftBank/SB Energy)",
+    "name": "PORTS-Pike Technology Campus",
+    "operator": "SB Energy",
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
@@ -52079,7 +52079,7 @@
       {
         "status": "under_construction",
         "date": "2026-03-20",
-        "note": "10GW campus on 3,700-acre former Portsmouth Gaseous Diffusion Plant site; 9.2GW on-site natural gas; groundbreaking March 20, 2026.",
+        "note": "Groundbreaking 2026-03-20 on the former Portsmouth Gaseous Diffusion Plant site; 10 GW gross power load, 9.2 GW of new natural gas generation.",
         "sourceIndex": 0
       }
     ],
@@ -52097,16 +52097,98 @@
         "publisher": "Scioto Valley Guardian",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0002133037/000162828026059639/sbenergy-sx1.htm",
+        "label": "SB Energy, Inc. Form S-1 registration statement (PORTS-Pike Technology Campus)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-09-01",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.energy.gov/nepa/articles/cx-270875-4511a-086-lease-real-property-batch-1-property-portsmouth-gaseous-diffusion",
+        "label": "CX-270875: Lease of Real Property (Batch 1 Property) at Portsmouth Gaseous Diffusion Plant",
+        "publisher": "U.S. Department of Energy (NEPA)",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.energy.gov/nepa/articles/cx-270956-environmental-site-assessment-esa-batch-1-leased-property-portsmouth",
+        "label": "CX-270956: Environmental Site Assessment of Batch 1 Leased Property at Portsmouth Gaseous Diffusion Plant",
+        "publisher": "U.S. Department of Energy (NEPA)",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.energy.gov/articles/fact-sheet-department-energy-ensuring-affordable-energy-access-ohio-while-powering-future",
+        "label": "FACT SHEET: DOE is Ensuring Affordable Energy Access in Ohio While Powering the Future of AI",
+        "publisher": "U.S. Department of Energy",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.energy.gov/em/articles/partnership-ensures-affordable-energy-powers-ai-future-portsmouth-site",
+        "label": "Partnership Ensures Affordable Energy, Powers AI Future at Portsmouth Site",
+        "publisher": "U.S. DOE Office of Environmental Management",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.permitting.gov/newsroom/press-releases/ports-technology-campus-latest-gain-fast-41-coverage",
+        "label": "PORTS Technology Campus is Latest to Gain FAST-41 Coverage",
+        "publisher": "Federal Permitting Improvement Steering Council",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://nvidianews.nvidia.com/news/nvidia-guarantees-sb-energy-s-ports-pike-technology-campus-in-ohio-to-exclusively-host-nvidia-ai-compute",
+        "label": "NVIDIA Guarantees SB Energy's PORTS-Pike Technology Campus in Ohio to Exclusively Host NVIDIA AI Compute",
+        "publisher": "NVIDIA",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://portscampus.com/resources/",
+        "label": "PORTS-Pike Technology Campus — project resources",
+        "publisher": "PORTS-Pike Technology Campus (project site)",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.statenews.org/government-politics/2026-03-20/feds-announce-huge-natural-gas-plant-data-center-project-in-southern-ohio",
+        "label": "Feds announce huge natural gas plant, data center project in southern Ohio",
+        "publisher": "Statehouse News Bureau",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://woub.org/2025/12/02/data-center-proposed-site-former-uranium-enrichment-plant-near-piketon/",
+        "label": "A data center proposed at site of former uranium enrichment plant near Piketon",
+        "publisher": "WOUB Public Media",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
-    "notes": "10GW campus on 3,700-acre former Portsmouth Gaseous Diffusion Plant site; 9.2GW on-site natural gas. $10B confirmed initial phase (broader totals softer — Bloomberg puts the data-center portion at $30-40B; a $67.2B FAST-41 total is cited). Groundbreaking March 2026. Distinct from the tracked Oklo Aurora-Piketon reactor project on the same broader site.",
-    "energy": {},
+    "lastUpdated": "2026-09-01",
+    "notes": "Officially \"PORTS-Pike Technology Campus\"; formerly tracked under the pre-announcement Ohio entity New Day Data Centers LLC, a name that appears nowhere in the SEC S-1 or SB Energy’s own announcements. Developer/operator is SB Energy (SoftBank-controlled); the DOE lease was signed 2026-02-26 by its subsidiary Pike County Portsmouth DC LLC. CAPACITY - three distinct figures that must not be conflated: 8.0 GW-IT of contracted compute (8,024 MW-IT; NVIDIA guarantees the initial 4.25 GW-IT with an option on the remaining 3.78 GW-IT), 10 GW of gross power load (the capacityMw.planned value here), and 9.2 GW of new gas generation. OFFTAKE: on 2026-08-17 SB Energy subsidiaries signed 17 twenty-year triple-net leases with OpenAI, with rent commencement conditioned on interconnection and generation being available; NVIDIA provided a residual-value guaranty capped at $105B and separately bought $1.5B of non-voting stock. LAND: landAcres is intentionally omitted - the DOE lease covers 189 acres (Batch 1) on which \"one data center building is expected to be constructed\", while the S-1 places the buildings \"across several thousand acres of private property\"; the widely-cited 3,700/3,777 acres is the whole federal reservation, which also hosts the separately tracked Oklo Aurora project, Centrus and the DUF6 plant. INVESTMENT: investmentUsd intentionally omitted - $10B (DOE, March) and $30-40B (project site) describe the same ~800 MW first phase and cannot both be right, the $67.2B total appears only as one trade outlet’s unattributed rollup, and the S-1 states no total capex. SUBSIDIES: none awarded - the Ohio Tax Credit Authority minutes record no award, no JobsOhio award was found, and Ohio paused new data-centre tax exemptions in May 2026; a county PILOT is under negotiation because the leased federal land yields no property tax. STATUS: early civil works began after the 2026-03-20 groundbreaking, though the S-1 lists construction as not started, with first capacity in 2028 and full buildout 2032. Distinct from oklo-aurora-pike-county-oh on the same broader site - do not merge or double-count.",
+    "energy": {
+      "source": "mixed",
+      "utility": "AEP Ohio",
+      "onSiteGenerationMw": 9200,
+      "notes": "S-1: the campus is \"designed to include 8.0 GW-IT of data center capacity, representing 10 GW of gross power load expected to be supported by the PJM transmission system and new neighbouring gas-fired generation facilities\" - hence \"mixed\". The 9.2 GW of gas is new build, not a reused plant; the site is the former Portsmouth uranium-enrichment complex, whose historic power came over OVEC coal-fired transmission (X-533 switchyard, de-energised 2008, decommissioned 2011). Recorded under onSiteGenerationMw as dedicated captive generation, but note the S-1 calls the plants \"neighbouring\": they sit ~5 miles south of Piketon adjacent to the DOE site, are developed by \"an affiliate of SoftBank that is not our subsidiary\", and SB Energy \"do[es] not expect to own or operate\" them. Ohio Power Siting Board case 26-0746-EL-BGN (applicant Portsmouth Gas DevCo, LLC) covers only a first tranche of \"up to 2 gigawatts\"; AEP Ohio transmission (new 765 kV Baku-Gavin line and four substations) is a separate docket. AEP grid capex is stated as $4.2B by DOE and ~$5.1B in the S-1, unreconciled. CAUTION: the project site states the gas generation \"will be owned by the U.S. Government\", but the S-1 says \"no binding agreement has been executed between us or any of our affiliates and any governmental entity with respect to the funding, construction, ownership or operation of the generation facilities\" - do not assert federal ownership. Only ~0.8 GW of gross load has contracted utility service so far."
+    },
     "water": {},
     "subsidies": [],
-    "landAcres": 3700,
-    "jobs": {},
-    "community": {},
+    "jobs": {
+      "construction": 10000,
+      "permanent": 2000,
+      "sourceIndex": 5
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Documented local support alongside contamination-legacy distrust. Support: State Sen. Shane Wilkin - \"It’s just going to be a generational change for this area\"; SODI executive director Steve Shepherd called it \"a model for the country\"; the Scioto Valley-Piketon Area Council of Governments chair framed it as moving contaminated residential land to industrial use. Concern: a neighbouring farmer with contaminated property (\"This is the most contaminated place around here\"), and Conserve Ohio on water, transmission and the precedent of siting hyperscale projects on legacy DOE land. No litigation, moratorium or public-hearing defeat found as of 2026-09-01; a statewide watchdog notes this project lacks the named opposition groups seen elsewhere in Ohio. Community money (not a public subsidy to the operator): a $40M Community Benefits Agreement from SB Energy plus an incremental $40M from OpenAI.",
+      "sourceIndex": 10
+    },
     "facilityType": "data_center",
     "environmental": {
       "waterStress": "unknown"
