@@ -2173,6 +2173,58 @@
     "facilityType": "data_center"
   },
   {
+    "id": "aliquippa-data-center-beaver-county-pa",
+    "name": "Aliquippa Data Center (former J&L Steel site)",
+    "operator": "Five 9s Digital",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 40.6023,
+      "lon": -80.2456,
+      "city": "Aliquippa",
+      "county": "Beaver",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 496
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-27",
+        "note": "Project listed as announced; no public land-use records linked to it at that date.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://poweredbywho.com/projects/aliquippa-5f9f2231",
+        "label": "Aliquippa Data Center, Pennsylvania — project record",
+        "publisher": "PoweredByWho",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/pennsylvania",
+        "label": "Data Centers in Pennsylvania — Project List & Locations (Five 9s Digital Aliquippa, 496 MW)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/energy-power-supply/pennsylvania-s-70-billion-race-for-america-s-data-centers",
+        "label": "Pennsylvania's $70 Billion Race for America's Data Centers",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Operator attribution is unsettled and deliberately conservative: Five 9s Digital advertises the site, CB Tech Partners LLC is described as the purported purchaser with ties to Fezzik Energy, and Data Center Knowledge separately describes a Blackstone-backed redevelopment of an abandoned Aliquippa steel mill. Confidence is 'rumored' for that reason. No investment figure is recorded — the reported $25 billion is an entity/regional figure that has not been tied to this site by any source read here. Parcel is not geocoded in the records consulted; coordinates are city-level.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "allegheny-dc-springdale-cheswick-pa",
     "name": "Springdale Data Center (former Cheswick Generating Station)",
     "operator": "Allegheny DC Property Co., LLC",
@@ -3457,16 +3509,47 @@
         "label": "Apple is building a solar-powered data 'command center' in Arizona (Quartz)",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/full_text/text/2014/01/23/2014-01296.txt",
+        "label": "Federal Register, FTZ Board docket S-5-2014 — 'The proposed subzone (83.17 acres) is located at 3740 S. Signal Butte Rd, Mesa, Arizona.'",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.cultofmac.com/news/apple-data-center-mesa-arizona-details",
+        "label": "Cult of Mac — 'Approximately 150 people work at the Mesa facility.'",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/full_text/text/2014/03/27/2014-06841.txt",
+        "label": "Federal Register — approval of FTZ Subzone 221A for the Mesa site",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-08-31",
     "notes": "Apple's Global Data and Command Center at 3740 S Signal Butte Rd, Mesa, Maricopa County — a converted former GT Advanced sapphire plant (~1.3M sq ft), operational in the ~2016-2018 window, a $2B investment (Mesa Now / Data Center Knowledge), solar-powered. Functions as Apple's worldwide data-center monitoring/command hub. Apple's Feb 2025 newsroom names Arizona among states for continued data-center capacity expansion. No site-specific IT-load MW is disclosed; acreage not disclosed in fetched sources. Coordinates are an approximate geocode of the Signal Butte Rd address; a county-parcel pass could upgrade precision to exact.",
     "energy": {
       "source": "solar",
       "utility": "Salt River Project (SRP)",
       "notes": "Apple partnered with SRP in 2014 to site the 282-acre, 50MW Bonnybrooke solar farm in Florence, AZ, operational December 2016."
     },
+    "subsidies": [
+      {
+        "program": "Foreign-Trade Zone Subzone 221A — confers an Arizona property-tax reclassification; no dollar value is published for this site",
+        "jurisdiction": "U.S. Foreign-Trade Zones Board / City of Mesa (FTZ 221 grantee)",
+        "year": "2014",
+        "sourceIndex": 6
+      }
+    ],
     "investmentUsd": 2000000000,
+    "landAcres": 83.17,
+    "jobs": {
+      "permanent": 150,
+      "sourceIndex": 5
+    },
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -4843,6 +4926,49 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "armstrong-power-south-bend-township-armstrong-county-pa",
+    "name": "Armstrong Power Natural Gas Plant",
+    "operator": "Armstrong Power, LLC (NRG Energy)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.667,
+      "lon": -79.417,
+      "city": "South Bend Township",
+      "county": "Armstrong",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 688
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-04-04",
+        "note": "Existing 688 MW plant; Title V modification filed to convert to combined cycle to serve AI data centers.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://paenvironmentdaily.blogspot.com/2026/04/dep-invites-comments-on-title-v-air.html",
+        "label": "DEP Invites Comments On Title V Air Quality Permit Modifications For Armstrong Natural Gas Power Plant In Armstrong County To Feed A.I. Data Centers",
+        "publisher": "PA Environment Digest",
+        "retrievedAt": "2026-08-31",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "No named compute offtaker is identified in the permit notice, so `generation.offtaker` is left unset. Coordinates are township-level.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 3,
+      "notes": "Three existing simple-cycle turbines. A Title V air-quality permit modification, published for comment in the April 4, 2026 PA Bulletin (p. 1870, DEP Northwest Regional Office), would convert them into three combined-cycle gas turbines; the notice does not state the resulting capacity. DEP's notice records that NRG Energy bought the 688 MW plant in May 2025 with the announced intent of providing power to A.I. data centers."
+    }
   },
   {
     "id": "artemis-technologies-cave-city-ar",
@@ -8976,19 +9102,35 @@
         "publisher": "KJZZ Fronteras Desk",
         "retrievedAt": "2026-08-28",
         "kind": "press"
+      },
+      {
+        "url": "https://content.civicplus.com/api/assets/2192e865-fe7e-48f4-8a0c-7c1c8b5cd32c",
+        "label": "Pima County Administrator memo to the Board of Supervisors, 'Update on Project Blue' (17 Sept 2025), with the Beale Infrastructure letter attached — 'we have selected an air cooling technology that uses a closed-loop system... Beale's air cooled design will consume no water, potable or otherwise, for industrial cooling.'",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.pima.gov/3552/Project-Blue-FAQ",
+        "label": "Pima County official Project Blue FAQ, Economic Impact Study section — \"180 new full-time, permanent jobs created by the third year of operations in 2029.\"",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-28",
-    "notes": "Unincorporated Pima County, west of Houghton Rd, near Tucson. 500-700MW planned across 13M sq ft (a range, so omitted from capacityMw). AWS confirmed as end-customer via an NDA obtained by AZ Luminaria. Distinct site from Beale Infrastructure's Fremont Peak Properties/Luckett Road project in the Town of Marana (also AZ, also tracked this session) - same developer family, different parcel. Coordinates are approximate.",
+    "lastUpdated": "2026-08-31",
+    "notes": "Unincorporated Pima County, west of Houghton Rd, near Tucson. 500-700MW planned across 13M sq ft (a range, so omitted from capacityMw). AWS confirmed as end-customer via an NDA obtained by AZ Luminaria. Distinct site from Beale Infrastructure's Fremont Peak Properties/Luckett Road project in the Town of Marana (also AZ, also tracked this session) - same developer family, different parcel. Coordinates are approximate. The 180 permanent jobs figure is a projection for the third year of operations in 2029, published by Pima County and by the developer. Beale's own letter of 2025-09-17 adds a qualifier the county FAQ omits: the figure \"include[s] full-time contractors and support personnel\", and at least 75 of the roles will be directly employed by the end user. Beale has also stated it \"is not asking for property tax incentives, often a necessary component of a data center project's cost competitiveness\", and the utility agreement with Tucson Electric Power carries no financial incentives or discounts — unusual for a project of this size, and the reason subsidies are recorded as absent rather than merely unsearched.",
     "energy": {
       "source": "grid",
       "utility": "Tucson Electric Power (TEP)"
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Beale told Pima County it selected an air-cooling technology using a closed-loop system that continuously recirculates small amounts of water and consumes none for industrial cooling; the County Administrator restated this in the same memo, and it became a binding commitment on 2025-12-16. Water volume remains publicly contested — Beale has cited roughly 40 acre-feet/year while the ADWR permit ceiling is 96.5 acre-feet/year. The dispute concerns volume, construction conduct and process, not the cooling technology."
     },
     "investmentUsd": 3600000000,
     "landAcres": 290,
     "jobs": {
       "permanent": 180,
-      "sourceIndex": 2
+      "sourceIndex": 5
     },
     "community": {
       "status": "opposed",
@@ -11057,6 +11199,59 @@
     "facilityType": "data_center"
   },
   {
+    "id": "breaker-street-data-center-jessup-lackawanna-pa",
+    "name": "Breaker Street Data Center Campus",
+    "operator": "Breaker Street Associates LLC (Catalyst Commercial Development)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.4712,
+      "lon": -75.5588,
+      "city": "Jessup",
+      "county": "Lackawanna",
+      "street": "Breaker Street",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-02",
+        "note": "Zoning appeal denied in a written decision; the switchyard/substation fell in residentially zoned land north of Breaker Street and did not qualify as a public utility facility or accessory use. Developer may appeal to county court.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/articles/jessup-denies-breaker-street-data-010400301.html",
+        "label": "Jessup denies Breaker Street data centers",
+        "publisher": "The Times-Tribune (via Yahoo News)",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/pennsylvania",
+        "label": "Data Centers in Pennsylvania — Project List & Locations (Breaker Street, 600 MW)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Six structures totalling nearly 1.1 million sq ft, each up to 130 feet tall, on 131 acres on the south side of Breaker Street between Hill Street and the Casey Highway. The developer, a West Conshohocken firm, has separately proposed a 487,000 sq ft data center near Sunnyside Road and Alberigi Drive in Jessup — a different parcel, not recorded here. Distinct from the tracked Triboro Industrial Park record (different developer and parcel in the same borough).",
+    "landAcres": 131,
+    "community": {
+      "status": "contested",
+      "notes": "Jessup's zoning hearing board unanimously rejected the developer's appeal; the borough has since adopted an ordinance restricting data centers.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "brightnight-red-butte-newcastle-ut",
     "name": "Red Butte Energy and Data Center Campus",
     "operator": "BrightNight",
@@ -12082,6 +12277,114 @@
     ],
     "lastUpdated": "2026-08-02",
     "notes": "Officially named 'LAX5' on Centersquare's own current site; 'LAX2' is a deprecated Evoque-era code for this same building that persists on some aggregator pages. Capacity corrected to 17.3MW (Centersquare's current disclosed figure) from a stale/legacy 15MW aggregator figure. Centersquare = Brookfield's April 2024 combination of Evoque Data Center Solutions + acquired Cyxtera Technologies assets. No AI/HPC-specific marketing found for this building specifically (only portfolio-wide language). Distinct building from Centersquare's other Irvine facility, LAX3 (17836 Gillette Avenue), approximately 0.7 miles away - same operator, not the same campus. First Orange County, CA facility tracked in this dataset.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "centersquare-ord2-elk-grove-village-il",
+    "name": "Centersquare ORD2 (Elk Grove Village)",
+    "operator": "Centersquare (Csquare)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.9923175,
+      "lon": -87.9582323,
+      "city": "Elk Grove Village",
+      "street": "2425 Busse Road",
+      "postalCode": "60007",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 25.9
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Listed as a live Chicago-market facility on the operator's own locations page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/data-centers/chicago",
+        "label": "Csquare (Centersquare) Chicago data centers — ORD1, ORD2, ORD4",
+        "publisher": "Csquare / Centersquare",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (2425 Busse Road LLC (CenterSquare ORD2), Elk Grove Village, 2025 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Operator lists ORD2 at 111,906 sq ft of raised floor and 25.9MW. The operating entity has changed hands and names repeatedly (Cyxtera/Evoque → Centersquare → Csquare); the DCEO MOU is held by 2425 Busse Road LLC and was amended in 2025 to add Centersquare MSA Holdings LLC. County omitted: the geocoder returns DuPage for this address while Elk Grove Village spans two counties. Coordinates geocoded from the published street address.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 17134551,
+        "jurisdiction": "Illinois",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "centersquare-ord4-lisle-il",
+    "name": "Centersquare ORD4 (Lisle)",
+    "operator": "Centersquare (Csquare)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.8023406,
+      "lon": -88.0948856,
+      "city": "Lisle",
+      "county": "DuPage",
+      "street": "4513 Western Avenue",
+      "postalCode": "60532",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Listed as a live Chicago-market facility on the operator's own locations page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/data-centers/chicago",
+        "label": "Csquare (Centersquare) Chicago data centers — ORD1, ORD2, ORD4",
+        "publisher": "Csquare / Centersquare",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (4513 Western Avenue LLC (CenterSquare ORD4), Lisle, 2025 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Operator lists ORD4 at 66,875 sq ft of raised floor. No capacityMw recorded: the operator's page gives 88.9MW against ORD4 while other trade listings give figures an order of magnitude lower for the same building, so the number is not asserted here. Coordinates geocoded from the published street address.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 16148419,
+        "jurisdiction": "Illinois",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -17280,6 +17583,90 @@
     "aiClassification": "likely"
   },
   {
+    "id": "coresite-ch1-chicago-il",
+    "name": "CoreSite CH1",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.8763329,
+      "lon": -87.6314808,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "427 S. LaSalle St.",
+      "postalCode": "60605",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Listed as an active colocation facility on CoreSite's own site page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/ch1-chicago-il",
+        "label": "CoreSite CH1 — Chicago, IL data center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (Coresite, L.P., Chicago, 2020 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Downtown Chicago colocation facility adjacent to the Board of Trade; CoreSite's page states \"180,000+\" sq ft. Coordinates geocoded from the published street address. CoreSite, L.P. holds a 2020 Illinois Data Center Investment Program MOU for a Chicago site, but the state report does not say which of CoreSite's two Chicago facilities it covers, so no subsidy figure is attributed to this record.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-ch2-chicago-il",
+    "name": "CoreSite CH2",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.8628,
+      "lon": -87.6413029,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "1432 S. Clinton St.",
+      "postalCode": "60607",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 18
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Listed as an active colocation facility on CoreSite's own site page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/ch2-chicago-il",
+        "label": "CoreSite CH2 — Chicago, IL data center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "CoreSite's page states \"168,000+\" sq ft and \"18 MW\". Coordinates geocoded from the published street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "coresite-dc1-washington-d-c-dc",
     "name": "CoreSite DC1 - Washington, D.C.",
     "operator": "CoreSite",
@@ -19553,6 +19940,61 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cyrusone-chi6-wood-dale-il",
+    "name": "CyrusOne Wood Dale Campus",
+    "operator": "CyrusOne",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.9790594,
+      "lon": -87.964189,
+      "city": "Wood Dale",
+      "county": "DuPage",
+      "street": "Bryn Mawr Avenue",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 18
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-05-13",
+        "note": "Topping-out ceremony marking completion of the structural framework; facility still under construction.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/resources/press-releases/cyrusone-celebrates-wood-dale-topping-out-ceremony",
+        "label": "CyrusOne Celebrates Wood Dale Topping Out Ceremony",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (C1 Chicago 1 LLC - C1 Chicago 2 LLC, Wood Dale, 2024 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Operator states \"the campus will include two buildings totaling more than 500,000 square feet, delivering an initial IT capacity of 18 megawatts with scalable capacity\" — the 18MW is the initial IT capacity, not a full-build figure. Street-level coordinate is approximate: the press release names only Wood Dale, and the Bryn Mawr Avenue location comes from secondary reporting. Distinct from the tracked CyrusOne Aurora (CHI1–CHI3) and CyrusOne Sangamon County records.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 15625000,
+        "jurisdiction": "Illinois",
+        "year": "2024",
+        "sourceIndex": 1
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "cyrusone-cin2-cincinnati-oh",
     "name": "CyrusOne CIN2 (Cincinnati)",
     "operator": "CyrusOne",
@@ -21086,6 +21528,86 @@
       }
     ],
     "lastUpdated": "2026-08-15",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-ord3-mount-prospect-il",
+    "name": "DataBank ORD3 (Mount Prospect)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.0771274,
+      "lon": -87.9238121,
+      "city": "Mount Prospect",
+      "county": "Cook",
+      "street": "800 E. Business Center Drive",
+      "postalCode": "60056",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2.7
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Listed with live IT square footage and critical load on DataBank's Chicago market page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/chicago/",
+        "label": "DataBank Chicago data centers (ORD1–ORD4)",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "DataBank's market page lists ORD3 at 28,950 IT sq ft and 2.7MW. Distinct from CloudHQ's Mount Prospect campus already tracked (different operator, different site — this is an existing suburban colocation building on Business Center Drive). Coordinates geocoded from the published street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-ord4-oak-brook-il",
+    "name": "DataBank ORD4 (Chicago Tri-State)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.85392,
+      "lon": -87.9221234,
+      "city": "Oak Brook",
+      "county": "DuPage",
+      "street": "1808 Swift Drive",
+      "postalCode": "60523",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 8.75
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Listed with live IT square footage and critical load on DataBank's Chicago market page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/chicago/",
+        "label": "DataBank Chicago data centers (ORD1–ORD4)",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "DataBank's market page lists ORD4 at 77,510 IT sq ft and 8.75MW — its largest Illinois site. Coordinates geocoded from the published street address.",
     "facilityType": "data_center"
   },
   {
@@ -23629,6 +24151,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "digital-realty-ord12-franklin-park-il",
+    "name": "Digital Realty ORD12",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.9283705,
+      "lon": -87.8592552,
+      "city": "Franklin Park",
+      "county": "Cook",
+      "street": "9333 Grand Avenue",
+      "postalCode": "60131",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Marketed as an active facility on Digital Realty's own site page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/chicago/ord12",
+        "label": "Digital Realty ORD12 — 9333 Grand Avenue, Franklin Park",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "110,000 sq ft single-storey building on Digital Realty's 40-acre master-planned Franklin Park campus. Distinct from the four tracked Digital Realty IL records, which are in Elk Grove Village (CH1, CH2) and Chicago (ORD10 at 350 E Cermak, ORD11 at 600 S Federal) — none in Franklin Park. Coordinates geocoded from the published street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "digital-realty-pdx11-or",
     "name": "Digital Realty PDX11",
     "operator": "Digital Realty",
@@ -25390,6 +25949,64 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "ecp-york-2-energy-center-data-center-peach-bottom-york-pa",
+    "name": "York 2 Energy Center Data Center",
+    "operator": "Energy Capital Partners",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.75,
+      "lon": -76.35,
+      "city": "Peach Bottom Township",
+      "county": "York",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-07-21",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07-21",
+        "note": "Announced by Energy Capital Partners at the Pennsylvania Energy and Innovation Summit; no formal land development plan filed with the township as of the August 2026 county survey.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cpbj.com/5b-data-center-coming-to-york-county-energy-site/",
+        "label": "$5B data center coming to York County energy site",
+        "publisher": "Central Penn Business Journal",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/heres-where-data-centers-proposed-120559817.html",
+        "label": "Here's where data centers have been proposed or discussed in York County — and their status",
+        "publisher": "York Daily Record (via Yahoo News)",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "The 828 MW figure is the existing Calpine generating station's capacity, not the data center's IT load — no compute capacity has been published. The $5 billion is the announced site investment; the separately reported $90 billion figure is a statewide multi-company pledge and is not attributed here.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "To be developed on the site of Calpine's York 2 Energy Center, an 828 MW dual-fuelled combined-cycle gas turbine station, giving direct access to on-site power. Calpine is an Energy Capital Partners subsidiary."
+    },
+    "investmentUsd": 5000000000,
+    "jobs": {
+      "construction": 2500,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Township officials advanced a data center ordinance while saying no formal plan had been submitted; residents packed a township workshop objecting that they had heard about the project only through rumours and public statements made outside the community.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "edgeconnex-ashville-oh",
@@ -28290,6 +28907,63 @@
     "facilityType": "data_center"
   },
   {
+    "id": "essential-energy-archbald-lackawanna-county-pa",
+    "name": "Essential Energy Archbald Power Plant",
+    "operator": "Essential Energy, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.4959,
+      "lon": -75.5391,
+      "city": "Archbald",
+      "county": "Lackawanna",
+      "street": "1000 Main Street",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-27",
+        "note": "Conditional-use application heard by Archbald Borough Council; still under review.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://fox56.com/news/local/proposed-archbald-power-plant-could-reshape-borough-and-add-power-to-grid",
+        "label": "Proposed Archbald power plant could reshape borough and add power to grid",
+        "publisher": "Fox56 WOLF",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://paenvironmentdaily.blogspot.com/2026/08/governors-office-expected-to-announce.html?m=1",
+        "label": "Governor's Office Expected To Announce Further Steps To Regulate A.I. Data Centers (notes the fifth Archbald hearing resumed Aug. 18)",
+        "publisher": "PA Environment Digest",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Distinct from the tracked Archbald data center records (Project Gravity, Wildcat Ridge) — this is the generation application at 1000 Main Street. No `offtaker` is recorded because the applicant states merchant PJM sales, not a named compute buyer.",
+    "landAcres": 17,
+    "community": {
+      "status": "contested",
+      "notes": "About 200 residents attended the April 27, 2026 conditional-use hearing at Valley View High School; officials and residents raised the absence of evidence on noise, odor, dust, light, glare and vibration impacts. Hearings continued into August 2026.",
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 4,
+      "notes": "Four turbine pads of roughly 66,000 sq ft each on a 17-acre former auto salvage yard, totalling nearly 500,000 sq ft. The developer says output would be sold on the open market into the PJM grid; residents at the conditional-use hearings contend it is intended to serve the data centers proposed in and around the borough. Site chosen for access to existing transmission and natural gas infrastructure."
+    }
+  },
+  {
     "id": "evolution-technology-bourbon-county-ks",
     "name": "Evolution Technology Bitcoin Mine (Bourbon County)",
     "operator": "Evolution Technology",
@@ -29103,6 +29777,43 @@
     ],
     "lastUpdated": "2026-07-23",
     "notes": "Confirmed at 359 Corporate Drive, Portsmouth, NH, on FirstLight's own domain (firstlight.net/resources/data-center-portsmouth-nh-specifications/), corroborated by Baxtel (https://baxtel.com/data-center/firstlight-portsmouth). Carrier-neutral operational colocation facility.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "five-up-realty-eynon-jermyn-road-archbald-pa",
+    "name": "Eynon Jermyn Road Data Center Campus (former auto salvage yard)",
+    "operator": "Five Up Realty LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.509,
+      "lon": -75.535,
+      "city": "Archbald",
+      "county": "Lackawanna",
+      "street": "Eynon Jermyn Road",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-04-10",
+        "note": "Zoning application filed to convert an operating auto salvage yard to a data center campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/developer-seeks-convert-archbald-junkyard-000700860.html",
+        "label": "Developer seeks to convert Archbald junkyard to data centers",
+        "publisher": "The Times-Tribune (via Yahoo News)",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Three two-story buildings of roughly 150,000 sq ft footprint each, under 70 feet tall, plus a 20,000 sq ft office building, equipment yards and a 211,000 sq ft electrical substation yard on 86.1 acres. The site sits in a C-2 general commercial district where data centers were principally permitted; the borough has been moving to make them conditional uses. Principal named in the filing: James Marzolino. No capacity figure has been published.",
+    "landAcres": 86.1,
     "facilityType": "data_center"
   },
   {
@@ -35493,9 +36204,33 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://mesa.legistar.com/View.ashx?M=F&ID=7431552&GUID=F48E7DF7-C483-4237-8F54-83D08F5E1935",
+        "label": "City of Mesa resolution authorising a development agreement and lease with Stone Applications, LLC for ~187 acres at S Sossaman Rd and E Elliot Rd (approved 1 July 2019)",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://mesa.legistar.com/View.ashx?M=F&ID=7431554&GUID=560CC2A3-8A23-4144-8CCB-CB9D273698B2",
+        "label": "City of Mesa Office of Economic Development study-session presentation, 27 June 2019 — GPLET term: ~$32,967,000 excise payable over 25 years vs ~$48,916,134 ad valorem otherwise",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://legistar1.granicus.com/Mesa/attachments/eb9e229a-330d-417b-bf35-95ed173402fc.doc",
+        "label": "Executed GPLET Lease between the City of Mesa and Stone Applications, LLC (City of Mesa matter 19-0809) — states no abatement amount; net annual rent of $10,000 and an express disclaimer that GPLET benefits are not guaranteed during the term",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
+      },
+      {
+        "url": "https://legistar1.granicus.com/Mesa/attachments/e2e1b966-a066-4ba7-b9a6-ec11167a332d.pdf",
+        "label": "Executed Development Agreement with exhibits, City of Mesa and Stone Applications, LLC (matter 19-0809)",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-08-31",
     "notes": "Three-phase campus through 2030; originally filed anonymously as Project Red Hawk via LLC Stone Applications. Phase 1 operational July 2025. Phase 2 under construction. Coordinates at Elliot and Sossaman roads, SE Mesa. 2019 development agreement requires >=$600M capex by 2025, >=$1B by 2029, 750,000 sq ft built by 2030, and a >=$65,000 average full-time data-center salary; construction workforce has been cited around 1,200 (an estimate, not a permanent-jobs count). Status reflects Phase 1 (Redhawk 1), operational since July 2025; Phases 2 and 3 remain under construction, which is why Google's own US locations index still lists Mesa under sites in development.",
     "energy": {
       "source": "solar",
@@ -35508,10 +36243,10 @@
     },
     "subsidies": [
       {
-        "program": "Government Property Lease Excise Tax (GPLET) — approx. $16M property-tax reduction over 25 years",
-        "jurisdiction": "City of Mesa, AZ",
+        "program": "Government Property Lease Excise Tax (GPLET), 25-year lease. The executed lease states no abatement amount; the City of Mesa economic-development office projected a ~$16M 25-year value (~$48.9M ad valorem avoided against ~$33.0M excise payable). Projected differential, not a stated or disbursed sum.",
+        "jurisdiction": "City of Mesa, Arizona",
         "year": "2019",
-        "sourceIndex": 2
+        "sourceIndex": 5
       }
     ],
     "investmentUsd": 1000000000,
@@ -37922,6 +38657,53 @@
     "facilityType": "power_generation"
   },
   {
+    "id": "holtwood-hydroelectric-lancaster-county-pa",
+    "name": "Holtwood Hydroelectric Station",
+    "operator": "Brookfield Renewable",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.8331,
+      "lon": -76.3339,
+      "city": "Holtwood",
+      "county": "Lancaster",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-07-15",
+        "note": "Existing Susquehanna River hydro station brought under Google's hydro framework agreement with Brookfield.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.witf.org/2025/07/16/google-to-buy-3b-worth-of-electricity-for-data-centers-from-holtwood-safe-harbor-hydroelectric-plants/",
+        "label": "Google to buy $3B worth of electricity for data centers from Holtwood, Safe Harbor hydroelectric plants",
+        "publisher": "WITF",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/energy-power-supply/pennsylvania-s-70-billion-race-for-america-s-data-centers",
+        "label": "Pennsylvania's $70 Billion Race for America's Data Centers",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "No per-plant capacity recorded — all located figures are two-plant combined totals. County recorded as Lancaster since the powerhouse sits on the Lancaster side; the impoundment spans into York County.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "hydro",
+      "offtaker": "Google",
+      "notes": "Covered by the same 20-year, more-than-$3-billion Google/Brookfield hydro framework agreement announced July 15, 2025; 670 MW is contracted across Holtwood and Safe Harbor combined. The dam spans the Susquehanna River between Martic Township (Lancaster County) and Chanceford Township (York County). Plants are to be relicensed, upgraded or overhauled."
+    }
+  },
+  {
     "id": "homer-city-energy-campus-generation-pa",
     "name": "Homer City Energy Campus — natural gas generation",
     "operator": "Homer City Redevelopment",
@@ -38756,6 +39538,68 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "hydravault-chicago-il",
+    "name": "HydraVault Chicago",
+    "operator": "HydraVault",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.846546,
+      "lon": -87.6254598,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "2538 South Wabash Avenue",
+      "postalCode": "60616",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "announcedDate": "2025-10-28",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-10-28",
+        "note": "Construction permit secured; Power Construction Company commenced work immediately. Early user access targeted for December 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/hydravault-secures-construction-permit-for-downtown-chicagos-first-purpose-built-ai-facility-power-construction-to-commence-work-immediately-302596035.html",
+        "label": "HydraVault Secures Construction Permit for Downtown Chicago's First Purpose-Built AI Facility",
+        "publisher": "HydraVault via PR Newswire",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (HydraVault LLC, Chicago, 2025 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Purpose-built for AI training/inference and low-latency trading, at densities up to 200kW per rack. Subsidy value is the state's estimated tax benefit on a $270,000,000 investment commitment. Coordinates geocoded from the published street address.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator describes a closed-loop waterless cooling design with hybrid air and liquid (direct-to-chip / rear-door heat exchanger) cooling; stated annualised PUE of 1.19."
+    },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 16875000,
+        "jurisdiction": "Illinois",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "hyperblock-bonner-mt",
     "name": "Bonner Mill Bitcoin Mine (Project Spokane / HyperBlock)",
     "operator": "HyperBlock Inc.",
@@ -38858,6 +39702,59 @@
       "notes": "Nearby residents have raised noise and environmental concerns ('nothing but a noise trap'); Cass County adopted a transparency resolution in response."
     },
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "iep-hummingbird-power-plant-greene-county-pa",
+    "name": "Project Hummingbird Power Plant",
+    "operator": "International Electric Power",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.79,
+      "lon": -79.92,
+      "city": "Greensboro",
+      "county": "Greene",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 944
+    },
+    "announcedDate": "2025-08-26",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-26",
+        "note": "Announced as the dedicated generation for the co-located Hummingbird data center campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.utilitydive.com/news/iep-plans-944-mw-behind-the-meter-gas-plant-in-pennsylvania-to-power-data-c/758830/",
+        "label": "IEP plans 944-MW behind-the-meter gas plant in Pennsylvania to power data center",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://iepwr.com/227-2/",
+        "label": "Hummingbird — International Electric Power project page",
+        "publisher": "International Electric Power",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Tracked separately from the co-located compute campus (same pattern as the Homer City campus/generation split). The 944 MW is generation capacity, not the data center's IT load — do not sum the two records.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "poweredFacilityIds": [
+        "iep-project-hummingbird-greene-county-pa"
+      ],
+      "notes": "Behind-the-meter combined-cycle gas turbines with battery storage and backup from an existing grid interconnection. Manufacturing slots secured with turbine delivery expected in 2028; expected operational Q1 2029. IEP's own page describes the plant as approximately 910 MW."
+    }
   },
   {
     "id": "immersionbtc-walnut-ridge-ar",
@@ -39078,6 +39975,45 @@
       "status": "opposed"
     },
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "invitium-energy-carroll-township-perry-county-pa",
+    "name": "Invitium Energy Natural Gas Power Plant (Shermans Dale)",
+    "operator": "Invitium Energy LLC (PPL / Blackstone joint venture)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.32,
+      "lon": -77.17,
+      "city": "Shermans Dale",
+      "county": "Perry",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-12",
+        "note": "Listed among active Pennsylvania data-center-related energy projects with DEP interaction.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://paenvironmentdaily.blogspot.com/2026/08/governors-office-expected-to-announce.html?m=1",
+        "label": "Governor's Office Expected To Announce Further Steps To Regulate A.I. Data Centers; 100 Data Center Proposals Being Discussed in PA, 55 Have Some Interaction With DEP",
+        "publisher": "PA Environment Digest",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Early-stage. Recorded because it is a dedicated generation project explicitly tied to data center load; capacity, site acreage and offtaker are all unpublished.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Proposed to feed data centers. DEP invited comment on the project's proposed use of emission reduction credits. No capacity figure has been published in a source fetched this session, so none is recorded."
+    }
   },
   {
     "id": "iren-horizon-childress-tx",
@@ -39522,6 +40458,63 @@
     "facilityType": "data_center"
   },
   {
+    "id": "iron-mountain-chi1-des-plaines-il",
+    "name": "Iron Mountain CHI-1",
+    "operator": "Iron Mountain Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.0116575,
+      "lon": -87.8811913,
+      "city": "Des Plaines",
+      "county": "Cook",
+      "street": "1680 Touhy Ave",
+      "postalCode": "60018",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 36
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Operator states the facility is accepting customers with 12MW available for immediate deployment.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ironmountain.com/data-centers/locations/chicago-data-center",
+        "label": "Iron Mountain Chicago data center (CHI-1), Des Plaines",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (Iron Mountain Data Centers, LLC, Des Plaines, 2024 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "13-acre campus, 315,000 sq ft with four planned 28,000 sq ft data halls; operator states a \"36MW IT load design\" being built out in phases. Subsidy value is the state's estimated tax benefit on a $320,000,000 investment commitment. Coordinates geocoded from the published street address.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 20000000,
+        "jurisdiction": "Illinois",
+        "year": "2024",
+        "sourceIndex": 1
+      }
+    ],
+    "landAcres": 13,
+    "facilityType": "data_center"
+  },
+  {
     "id": "iron-mountain-den1-denver-co",
     "name": "Iron Mountain DEN-1 Denver Data Center",
     "operator": "Iron Mountain Data Centers",
@@ -39896,6 +40889,48 @@
     "landAcres": 66,
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "iron-mountain-wpa-1-boyers-butler-county-pa",
+    "name": "Iron Mountain WPA-1 (Boyers underground data center)",
+    "operator": "Iron Mountain",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.0956,
+      "lon": -79.9128,
+      "city": "Boyers",
+      "county": "Butler",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 40
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenter.ironmountain.com/western-pennsylvania-data-center",
+        "label": "Iron Mountain — Western Pennsylvania Data Center (WPA-1)",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/pennsylvania",
+        "label": "Data Centers in Pennsylvania — Project List & Locations (Iron Mountain WPA-1, Butler County)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "333,000 sq ft of data center space 220 feet underground in a former limestone mine on a 200-acre campus, about an hour north of Pittsburgh. Operator states 40 MW of total potential capacity; the currently energised load is not published, so the figure is recorded as planned rather than operational. Long-standing colocation/records site rather than an AI buildout — no aiClassification asserted.",
+    "water": {
+      "notes": "Cooled using a 35-acre underground lake / geothermal cooling system in the former limestone mine; Iron Mountain cites this as the basis of the site's efficiency. No withdrawal or consumption figure is published."
+    },
+    "landAcres": 200,
+    "facilityType": "data_center"
   },
   {
     "id": "isocentric-networks-tulsa-ok",
@@ -45542,14 +46577,23 @@
         "label": "SRP - Meta Teams Up with SRP and Ørsted to Support Data Center with Clean Energy",
         "retrievedAt": "2026-08-16",
         "kind": "press"
+      },
+      {
+        "url": "https://legistar1.granicus.com/Mesa/attachments/7e390610-b558-426d-aa10-c7aa2825530d.doc",
+        "label": "City of Mesa Council Report, file 21-0552 (17 May 2021) — Development Agreement and Sustainable Water Service Agreement with Redale LLC for ~396 acres; Water Allowance rising to 1,400 acre-feet/year at Phase 3",
+        "retrievedAt": "2026-08-31",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-08-31",
     "notes": "Meta data center at 3841 S Ellsworth Rd in the Elliot Road Technology Corridor, Mesa, Maricopa County — land acquired 2021 (shell entity 'Redale LLC'), came online in 2025, and was redesigned for AI workloads during construction (baxtel). Meta states 'more than $1 billion' invested in Arizona. No site-specific IT-load MW is disclosed. Coordinates are an approximate geocode of the disclosed Ellsworth Rd address; a county-parcel pass could upgrade precision to exact.",
     "energy": {
       "source": "solar",
       "utility": "Salt River Project (SRP)",
       "notes": "Meta partnered with SRP and Ørsted for a portfolio of solar-plus-battery projects to reach 100% renewable for the Mesa data center: majority offtake of the 300 MW Eleven Mile Solar Center (Pinal County), a 50 MW allocation from the 100 MW West Line Solar Facility (Eloy)."
+    },
+    "water": {
+      "notes": "Meta has not named the cooling technology for Mesa. Its community development manager for the campus said that 'for more than half the year we can take air from outside to help cool our servers in lieu of continual water use', and that water is recycled several times before discharge to the municipality. The City of Mesa Sustainable Water Service Agreement provides a Water Allowance rising from 550 acre-feet/year at Phase 1 to 1,400 acre-feet/year at Phase 3. Meta's fleet-wide description of newer direct-to-chip closed-loop designs does not apply to this site, which broke ground in 2021."
     },
     "investmentUsd": 1000000000,
     "landAcres": 396,
@@ -46302,6 +47346,71 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "metro-edge-imd1-chicago-il",
+    "name": "Metro Edge IMD1",
+    "operator": "Metro Edge Development Partners",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.8639696,
+      "lon": -87.6749686,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "1951 W Hastings St",
+      "postalCode": "60608",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 53
+    },
+    "announcedDate": "2022-09-22",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-08-31",
+        "note": "75-year ground lease executed on the Illinois Medical District parcel and planning/permitting begun; a 2023 state Data Center Investment Program MOU is on record.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://medp.io/news/metro-edge-development-partners-secures-land-in-chicago-for-21mw-data-center",
+        "label": "Metro Edge Development Partners Secures Land in Chicago for 21MW Data Center",
+        "publisher": "Metro Edge Development Partners",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://medp.io/projects/",
+        "label": "Metro Edge projects — IMD1 data center",
+        "publisher": "Metro Edge Development Partners",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (MEDP Mission Critical Facility, LLC dba Metro Edge, Chicago, 2023 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Operator's current project page states \"4 story, 174,900 SF\" and \"53 MW in total power from ComEd, 28 MW initial phase\"; the 2022 announcement described a 21MW five-storey building, so the design grew. Status is the weakest link here — neither operator page states a live date, and confidence is set to reported accordingly. Coordinates geocoded from the published street address.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 16070247,
+        "jurisdiction": "Illinois",
+        "year": "2023",
+        "sourceIndex": 2
+      }
+    ],
+    "landAcres": 1.97,
+    "facilityType": "data_center"
   },
   {
     "id": "metrobloks-liberty-mo",
@@ -51848,9 +52957,21 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://legistar1.granicus.com/Mesa/attachments/d6c1b1ca-28ad-400c-8d28-a59aca19080e.pdf",
+        "label": "City of Mesa case ZON24-00291 ('Project Borealis') Project Narrative — 'Each of the data hall buildings will utilize a closed-loop water cooling system... Crucially, no evaporative methods are used for reducing air temperature'",
+        "retrievedAt": "2026-08-31",
+        "kind": "permit"
+      },
+      {
+        "url": "https://legistar1.granicus.com/Mesa/attachments/a49b6d5a-09db-4b36-845e-756af027c367.doc",
+        "label": "City of Mesa Planning Division staff report, ZON24-00291 — 'Site Size: 159± acres', parcel 304-31-141",
+        "retrievedAt": "2026-08-31",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-08-31",
     "notes": "Located near Ellsworth and Warner roads, southeast Mesa. Five data halls, 1.3M sq ft data hall space, 200,000 sq ft office, two-phase buildout over ~10 years. Sixth Novva campus nationally, first in Arizona. Architectural design honors Hohokam heritage. Coordinates approximate.",
     "energy": {
       "source": "solar",
@@ -51858,8 +52979,8 @@
       "notes": "100% renewable energy goal; backup generators designed for second-generation biofuel and HVO"
     },
     "water": {
-      "coolingType": "air",
-      "notes": "Proprietary water-free air-cooling system projected to conserve up to 650 million gallons of culinary water annually versus comparable evaporative-cooled facility"
+      "coolingType": "closed_loop",
+      "notes": "The applicant's filed project narrative describes a closed-loop water cooling system (60% water / 40% glycol), filled once at roughly 200,000 gallons per building, with no evaporative or condensing loss and free cooling below 72°F ambient. Novva's press materials describe the same system as 'water-free air-cooling'; the filed engineering description is the more precise source."
     },
     "investmentUsd": 3000000000,
     "landAcres": 160,
@@ -53821,7 +54942,7 @@
     "id": "panther-creek-hpc-ai-campus-nesquehoning-pa",
     "name": "Panther Creek HPC/AI Data Center Campus",
     "operator": "Bitfarms Ltd.",
-    "status": "proposed",
+    "status": "under_construction",
     "confidence": "confirmed",
     "location": {
       "lat": 40.8564,
@@ -53838,6 +54959,12 @@
         "date": "2025-08-05",
         "note": "Bitfarms announced a partnership with T5 Data Centers for pre-construction design planning and development approvals for an HPC/AI data center at the Panther Creek campus.",
         "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-08-31",
+        "note": "Bitfarms converted its Macquarie facility into $300M of project financing on October 10, 2025 and drew an additional $50M specifically to fund civil works and substation construction at Panther Creek, with groundbreaking and commencement of civil works in Q4 2025 and Phase 1 energization expected by year-end 2026. The Nesquehoning Planning Commission granted a special exception permit on February 24, 2026 for Phase 1 — four buildings totalling 315,000 sq ft on 90 acres.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -53854,9 +54981,23 @@
         "publisher": "PA Environment Digest",
         "retrievedAt": "2026-08-17",
         "kind": "press"
+      },
+      {
+        "url": "https://investor.bitfarms.com/news-releases/news-release-details/bitfarms-converts-macquarie-debt-facility-300m-project-financing",
+        "label": "Bitfarms Converts Macquarie Debt Facility to $300M Project Financing and Draws Additional $50M to Accelerate HPC/AI Development at Panther Creek Campus",
+        "publisher": "Bitfarms Ltd.",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
+      },
+      {
+        "url": "https://finance.yahoo.com/news/local-officials-greenlight-bitfarms-panther-142555915.html",
+        "label": "Local officials greenlight Bitfarms Panther Creek AI data center",
+        "publisher": "Times News Online (via Yahoo Finance)",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-08-31",
     "notes": "An HPC/AI data center campus in pre-construction design at the Panther Creek waste-coal power plant site in Nesquehoning, Carbon County, with T5 Data Centers providing pre-construction design, development-approval and construction guidance. This is a separate data_center record from the already-tracked Panther Creek plant / crypto-mining operation at the same site, following the same convention as the split Homer City generation and campus records. Trade reports of a 350 MW firm power contract by 2028 (scalable toward 500 MW+) and of a special exception permit from the Nesquehoning Planning Commission were not confirmed in the sources cited here, so capacityMw and a 'permitted' status are omitted.",
     "facilityType": "data_center",
     "aiClassification": "confirmed"
@@ -55733,10 +56874,24 @@
         "publisher": "Prime Data Centers",
         "retrievedAt": "2026-07-17",
         "kind": "other"
+      },
+      {
+        "url": "https://primedatacenters.com/wp-content/uploads/2025/10/PDC_Phoenix_TechSheet_PHX01_04.pdf",
+        "label": "Prime Data Centers PHX01 tech sheet — spec table: 'UTILITY PROVIDER SRP', 'ACRES 66.5', 'CRITICAL IT LOAD 240MW'; 'a closed-loop cooling system engineered for zero process water use during operations'",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-31",
     "notes": "5-building, 66.5-acre campus; groundbreaking on first 3 buildings May 2026.",
+    "energy": {
+      "source": "grid",
+      "utility": "Salt River Project (SRP)"
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator specifies a closed-loop cooling system with zero process water use during operations. The City of Avondale restricts water-cooled data centers, considering only closed-loop, air-cooled facilities."
+    },
     "investmentUsd": 3000000000,
     "landAcres": 66.5,
     "facilityType": "data_center"
@@ -55870,6 +57025,55 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "prime-ord-elk-grove-village-il",
+    "name": "Prime ORD Chicago Campus",
+    "operator": "Prime Data Centers",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.0224688,
+      "lon": -87.9621839,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "street": "1600 East Higgins Road",
+      "postalCode": "60007",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 175
+    },
+    "announcedDate": "2022-11-15",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2022-11-15",
+        "note": "Official groundbreaking ceremony for ORD-01, the first of three planned campus buildings.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/prime-data-centers-breaks-ground-on-1b-chicago-data-center-campus-in-elk-grove-village-301681170.html",
+        "label": "Prime Data Centers Breaks Ground on $1B Chicago Data Center Campus in Elk Grove Village",
+        "publisher": "Prime Data Centers via PR Newswire",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://primedatacenters.com/news/chicago-data-center-campus/",
+        "label": "Prime Data Centers — Chicago data center campus",
+        "publisher": "Prime Data Centers",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Site-level figures, not entity-wide: the $1B and 175MW are stated for this Elk Grove Village campus at full build-out across three buildings; first building ORD-01 is 384,000 sq ft and up to 72MW. Status reflects the most recent sourced stage (2022 groundbreaking) — no fetched source confirms a live date, so this may lag reality. Distinct from the tracked TA Realty Elk Grove Village site (different operator, different parcel/acreage). Coordinates geocoded from the published street address.",
+    "investmentUsd": 1000000000,
+    "facilityType": "data_center"
   },
   {
     "id": "prime-santa-clara-silicon-valley-campus-ca",
@@ -57967,6 +59171,59 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "qts-chicago-1-il",
+    "name": "QTS Chicago 1",
+    "operator": "QTS Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.8422152,
+      "lon": -87.6689701,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "2800 S Ashland Ave",
+      "postalCode": "60608",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "QTS markets the first building as live and is pre-leasing a second building on the same campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://q.com/data-centers/chicago/",
+        "label": "QTS Chicago data center campus",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (Quality Technology Service (QTS), Chicago, 2021 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "30-acre campus; QTS describes a \"Two building facility at full build-out\" with \"Pre-leasing is now available for our second building\". The state report's estimated tax-benefit value is calculated at 6.25% of the $250,000,000 investment commitment, not money already received. Coordinates geocoded from the published street address.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 15625000,
+        "jurisdiction": "Illinois",
+        "year": "2021",
+        "sourceIndex": 1
+      }
+    ],
+    "facilityType": "data_center"
   },
   {
     "id": "qts-clinton-clinton-county-ia",
@@ -62046,6 +63303,53 @@
     "aiClassification": "likely"
   },
   {
+    "id": "safe-harbor-hydroelectric-lancaster-county-pa",
+    "name": "Safe Harbor Hydroelectric Station",
+    "operator": "Brookfield Renewable",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.9331,
+      "lon": -76.3856,
+      "city": "Conestoga Township",
+      "county": "Lancaster",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-07-15",
+        "note": "Existing Susquehanna River hydro station brought under Google's hydro framework agreement with Brookfield.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.witf.org/2025/07/16/google-to-buy-3b-worth-of-electricity-for-data-centers-from-holtwood-safe-harbor-hydroelectric-plants/",
+        "label": "Google to buy $3B worth of electricity for data centers from Holtwood, Safe Harbor hydroelectric plants",
+        "publisher": "WITF",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/energy-power-supply/pennsylvania-s-70-billion-race-for-america-s-data-centers",
+        "label": "Pennsylvania's $70 Billion Race for America's Data Centers",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "No per-plant capacity is recorded: every figure located this session (670 MW contracted, 296 MW average combined output) is a two-plant combined number, and splitting it would be a fabricated attribution. Dam coordinates are approximate.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "hydro",
+      "offtaker": "Google",
+      "notes": "Covered by a 20-year, more-than-$3-billion hydro framework agreement with Google announced July 15, 2025, under which Google contracts 670 MW across Safe Harbor and Holtwood combined. WITF reports the two plants' combined current output averages about 296 MW annually, of which Google's share averages about 33.5 MW. The plants are to be relicensed, upgraded or overhauled to meet the new demand. Brookfield retains existing commitments from Safe Harbor, including to Amtrak."
+    }
+  },
+  {
     "id": "salcido-cashmere-cashmere-wa",
     "name": "Salcido Cashmere Data Center",
     "operator": "Salcido Enterprises, LLC",
@@ -63229,6 +64533,62 @@
     "facilityType": "data_center"
   },
   {
+    "id": "serverfarm-ch1-chicago-il",
+    "name": "Serverfarm CH1",
+    "operator": "Serverfarm",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.8717114,
+      "lon": -87.6392312,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "840 South Canal Street",
+      "postalCode": "60607",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 21.5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Marketed as a fully modernised, live colocation environment on Serverfarm's own site page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.serverfarmllc.com/chicago-data-center/",
+        "label": "Serverfarm CH1 Chicago data center",
+        "publisher": "Serverfarm",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (Serverfarm LLC dba SF CH1, LLC, Chicago, 2023 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "443,000 sq ft eight-storey building with 130,000 sq ft of data halls; 32MW utility power and 21.5MW IT power per the operator. Subsidy value is the state's estimated tax benefit (6.25% of a $285,000,000 investment commitment), not cash received. Coordinates geocoded from the published street address.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 17812500,
+        "jurisdiction": "Illinois",
+        "year": "2023",
+        "sourceIndex": 1
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "serverfarm-covington-hazelbrand-ga",
     "name": "Serverfarm Covington Data Center (Hazelbrand Road)",
     "operator": "Serverfarm",
@@ -63817,6 +65177,46 @@
     "landAcres": 20,
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "slate-belt-holdings-upper-mount-bethel-northampton-pa",
+    "name": "Slate Belt Holdings Data Center Campus (Upper Mount Bethel)",
+    "operator": "Slate Belt Holdings LLC (Talen Energy / River Pointe Logistics joint venture)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.9,
+      "lon": -75.13,
+      "city": "Upper Mount Bethel Township",
+      "county": "Northampton",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-10",
+        "note": "Township documents describe up to 23 buildings of roughly 201,500 sq ft each across 754 acres.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.bicmagazine.com/departments/AI-Infrastructure/talen-looks-to-develop-23-building-data-center-campus-in-pennsylvania/",
+        "label": "Talen looks to develop 23-building data center campus in Pennsylvania",
+        "publisher": "BIC Magazine",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Site is roughly 30 miles northeast of Allentown, near Bangor. Land was acquired from River Pointe Logistics in 2026. The developers are challenging Upper Mount Bethel Township's zoning ordinance restrictions on data center use. Coordinates are township-level, not parcel-confirmed.",
+    "energy": {
+      "notes": "Plans include a 480 MW on-site substation; reporting ties the site to the nearby 607 MW Lower Mount Bethel natural gas plant. No confirmed offtake arrangement has been published."
+    },
+    "landAcres": 754,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "socrates-north-new-albany-oh",
@@ -67033,14 +68433,24 @@
         "label": "DataCenterDynamics — \"Stream Data Centers opens Phoenix I facility in Goodyear, Arizona\"",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.streamdatacenters.com/wp-content/uploads/2026/01/SDC-Goodyear-CaseStudy-251218.pdf",
+        "label": "Stream Data Centers Goodyear campus case study — 'Evaporative cooling is not sustainable in Metro Phoenix, so our design uses air-cooled chillers with a closed-loop water system.'",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-08-31",
     "notes": "Operator's own Phoenix page names this campus 'PHXA (Phoenix I-VII)' at 2950 S. Litchfield Road, Goodyear, AZ 85338, Maricopa County. 157-acre, 7-building planned campus; 2 of 7 buildings currently operational, remaining 5 under development, so campus-level status is mixed-build but the entity is live/operational overall. Site markets '100% AI-ready infrastructure' but no confirmed GPU/HPC tenant or workload was found, so aiClassification is left empty rather than 'likely' -- marketing language alone is not workload evidence. Note officialName differs from OSM tag 'PHX-1'; corrected to operator's own 'PHXA'. AI/HPC (likely): Stream's own Phoenix/Goodyear campus page carries a facility-specific '100% AI-Ready' key-stat badge alongside its 280 MW critical capacity.",
     "energy": {
       "source": "grid",
       "utility": "APS (Arizona Public Service)",
       "notes": "Stream's own announcement of the Goodyear campus commissioning states the site is served by an on-site APS substation Stream invested in (up to 350 MW, expandable toward 480 MW per secondary listings)."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Site-specific case study states air-cooled chillers with a closed-loop water system, filled once and requiring no additional water; the operator explicitly rejected evaporative cooling as unsuitable for Metro Phoenix."
     },
     "landAcres": 157,
     "facilityType": "data_center",
@@ -68541,6 +69951,62 @@
     "facilityType": "data_center"
   },
   {
+    "id": "t5-chicago-iii-northlake-il",
+    "name": "T5 @ Chicago III (Northlake)",
+    "operator": "T5 Data Centers",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.9310571,
+      "lon": -87.9145933,
+      "city": "Northlake",
+      "county": "Cook",
+      "street": "11650 W Grand Ave",
+      "postalCode": "60164",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 36
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-08-31",
+        "note": "Listed as under construction at 11650 W Grand Ave with 36 MW in the Illinois Coalition for Responsible Data Centers project table.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.illinoiscrdc.com/illinoisdatacenters",
+        "label": "Illinois data center project table (T5 Chicago III, Northlake — 36 MW, under construction)",
+        "publisher": "Coalition for Responsible Data Centers",
+        "retrievedAt": "2026-08-31",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report (T5@Chicago III, LP, Northlake, 2024 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-08-31",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Third T5 site in the Chicago market, distinct from the tracked T5 Chicago II (Elk Grove Village) and T5 Chicago IV (Grayslake). Subsidy value is the state's estimated tax benefit on a $252,000,000 investment commitment. Coordinates geocoded from the published street address.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales/use tax exemption MOU)",
+        "amountUsd": 15750000,
+        "jurisdiction": "Illinois",
+        "year": "2024",
+        "sourceIndex": 1
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "t5-chicago-iv-grayslake-il",
     "name": "T5 Chicago IV (CHI IV)",
     "operator": "T5 Data Centers",
@@ -68846,8 +70312,8 @@
     "status": "permitted",
     "confidence": "confirmed",
     "location": {
-      "lat": 33.68,
-      "lon": -112.42,
+      "lat": 33.5685,
+      "lon": -112.3703,
       "county": "Maricopa",
       "state": "AZ",
       "precision": "exact"
@@ -68869,7 +70335,7 @@
         "label": "Project Baccara - official project site",
         "publisher": "Takanock, LLC",
         "retrievedAt": "2026-07-09",
-        "kind": "other"
+        "kind": "permit"
       },
       {
         "url": "https://www.azcc.gov/news/home/2026/02/06/february-4--2026-open-meeting-highlights",
@@ -68891,24 +70357,132 @@
         "publisher": "AZBEX",
         "retrievedAt": "2026-08-28",
         "kind": "press"
+      },
+      {
+        "url": "https://www.projectbaccara.com/_files/ugd/cbe98b_459cc246ea694c9f99e6fc4e9b79b975.pdf",
+        "label": "Certificate of Environmental Compatibility application, Baccara Power LLC (ACC docket L-21369A-25-0222-00253) — APS-owned substation interconnecting at 230 kV; 'closed loop chiller system which, once filled, will reuse water without the need for refilling'; '~100 permanent well-paying jobs'",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.projectbaccara.com/_files/ugd/cbe98b_7cd257dc576944ffb5f945e9ade851bb.pdf",
+        "label": "Maricopa County Air Quality Department, Notice of Public Hearing and Public Comment, Proposed Permit No. P0013417, Takanock Baccara LLC — facility address \"NW Corner W Olive Ave & N 143rd Ave, Waddell, AZ 85355\"",
+        "retrievedAt": "2026-08-31",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-28",
-    "notes": "Unincorporated Maricopa County near Surprise, AZ, north of Luke AFB. Construction targeted Q3 2026, first building online 2028. Coordinates are approximate.",
+    "lastUpdated": "2026-08-31",
+    "notes": "Unincorporated Maricopa County near Surprise, AZ, north of Luke AFB. Construction targeted Q3 2026, first building online 2028. Coordinates are approximate. Coordinates corrected 2026-08-31 to the filed parcel (501-43-016A) in the southwest quarter of Section 28, Township 3 North, Range 1 West. The previously stored point fell roughly 8.2 miles NNW, in a different township. The 160-acre parcel holds the turbine yard, the data center buildings and the APS substation together, so a single approximate point represents the whole campus.",
     "energy": {
       "source": "on_site_gas",
+      "utility": "Arizona Public Service (APS)",
       "onSiteGenerationMw": 700,
       "notes": "~700MW on-site natural gas generation. Still needs EPA air-quality sign-off."
     },
     "water": {
-      "notes": "Commission materials describe water conservation measures using cooled chillers and reclaimed wastewater. No cooling type is stated definitively and no withdrawal volume has been published."
+      "coolingType": "closed_loop",
+      "notes": "The CEC application states the data halls use a closed-loop chiller system that, once filled, reuses water without refilling. Note this is distinct from the plant's turbine INLET cooling, which is evaporative — the two systems must not be conflated. Permitted project; figures are as-filed, not operational."
     },
     "investmentUsd": 36000000000,
     "landAcres": 160,
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 5
+    },
     "community": {
       "status": "contested",
       "notes": "Board of Supervisors approved 4-1 (May 2026).",
       "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "talen-montour-ct-expansion-derry-township-montour-pa",
+    "name": "Montour CT Project (Montour plant gas turbine expansion)",
+    "operator": "Talen Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.0333,
+      "lon": -76.6667,
+      "city": "Washingtonville",
+      "county": "Montour",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1310
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-22",
+        "note": "Air Quality Plan Approval application published for comment in the August 22, 2026 PA Bulletin (p. 5593); DEP Northcentral Regional Office; comments due September 21, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://paenvironmentdaily.blogspot.com/2026/08/dep-invites-comments-on-air-permit-for.html",
+        "label": "DEP Invites Comments On Air Permit For Montour CT Natural Gas Power Plant Expansion In Montour County To Feed Data Centers",
+        "publisher": "PA Environment Digest",
+        "retrievedAt": "2026-08-31",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Permit application only — a pending plan approval is not an award and not a built unit. The 1,310 MW is the proposed addition, not the existing plant's capacity.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2,
+      "notes": "Two 655 MW turbine generation units proposed as an addition to the existing Talen Montour natural gas plant. DEP's notice states the units are 'to feed A.I. data centers'."
+    }
+  },
+  {
+    "id": "talen-montour-data-center-campus-montour-county-pa",
+    "name": "Talen Energy Montour Data Center Campus",
+    "operator": "Talen Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.05,
+      "lon": -76.67,
+      "city": "Washingtonville",
+      "county": "Montour",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-22",
+        "note": "Rezoning of roughly 1,000 acres in northern Montour County sought from agricultural to industrial; about a dozen data center buildings anticipated.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.northcentralpa.com/business/talen-energy-officials-address-community-concerns-about-rezoning/article_18cf27f5-6015-4978-a910-593e02b43c79.html",
+        "label": "Talen Energy officials address community concerns about rezoning",
+        "publisher": "NorthcentralPA.com",
+        "retrievedAt": "2026-08-31",
+        "kind": "press"
+      },
+      {
+        "url": "http://paenvironmentdaily.blogspot.com/2026/08/dep-invites-comments-on-air-permit-for.html",
+        "label": "DEP Invites Comments On Air Permit For Montour CT Natural Gas Power Plant Expansion In Montour County To Feed Data Centers",
+        "publisher": "PA Environment Digest",
+        "retrievedAt": "2026-08-31",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-08-31",
+    "notes": "Talen is seeking to rezone approximately 1,000 acres in northern Montour County from agricultural to industrial; the company anticipates about a dozen buildings, each on two to three acres. Acreage figure is the rezoning request area, not a confirmed campus footprint, so no landAcres value is recorded. The request has drawn substantial local opposition over land use, pollution, water and noise. No tenant has been named.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Sited beside Talen's Montour plant. DEP published notice in the August 22, 2026 PA Bulletin of an air-quality plan approval application to add two 655 MW turbine generation units at Montour 'to feed A.I. data centers'; comments were due September 21, 2026."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -71873,10 +73447,22 @@
         "publisher": "Tract",
         "retrievedAt": "2026-08-16",
         "kind": "press"
+      },
+      {
+        "url": "https://d3n9y02raazwpg.cloudfront.net/buckeyeaz/0eb9a025-6f87-11ee-b4aa-0050569183fa-8fca9741-32ef-4a0f-b8ad-ee8a00454790-1722900291.pdf",
+        "label": "City of Buckeye Regular Council Meeting agenda packet, 6 August 2024 — Ordinance No. 08-24 and the executed Development Agreement with AZLCO Buckeye, LLC (§12 Regional Infrastructure Components and reimbursement terms)",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
+      },
+      {
+        "url": "https://buckeyeaz.granicus.com/services/minutes/reports/23859ad0-eafd-4e39-b582-796e20fdc9cb/attachment",
+        "label": "City of Buckeye council minutes, 6 August 2024 — adoption of Ordinance No. 08-24 approving the development agreement with AZLCO Buckeye, LLC (motion passed unanimously)",
+        "retrievedAt": "2026-08-31",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-16",
-    "notes": "Master-planned data center park on a ~2,069-acre former residential (Cipriani) parcel Tract acquired for ~$136M, south of I-10 in Buckeye; planned for up to ~20M sq ft across as many as 40 data centers at full build-out over ~15 years (~$20B). Coordinates are an approximate town-level geocode (Buckeye, south of I-10), not a parcel-confirmed point.",
+    "lastUpdated": "2026-08-31",
+    "notes": "Master-planned data center park on a ~2,069-acre former residential (Cipriani) parcel Tract acquired for ~$136M, south of I-10 in Buckeye; planned for up to ~20M sq ft across as many as 40 data centers at full build-out over ~15 years (~$20B). Coordinates are an approximate town-level geocode (Buckeye, south of I-10), not a parcel-confirmed point. The City of Buckeye executed a development agreement with AZLCO Buckeye, LLC (Ordinance No. 08-24, adopted unanimously 2024-08-06). It reimburses the developer for six enumerated regional infrastructure components it builds and dedicates to the city — two public-safety sites, temporary and permanent public-safety facilities, $15M toward the Johnson Road interchange, and oversized regional water infrastructure — funded by 20% of the tax revenue the project itself generates, beginning only after the city has received $60M cumulatively and terminating 20 years from the effective date. It is capped at \"the lesser of\" the developer's verified costs or $50,000,000, so it cannot exceed what the developer actually spent; it is cost recovery for public infrastructure rather than an incentive, abatement or credit, and is therefore not recorded as a subsidy. Nothing has been paid to date. Buckeye's economic-development director has projected \"more than 360 jobs at full build out\" — an end-state across as many as 40 separate future data centers, none yet leased, permitted or built, and so not recorded as a permanent-jobs figure for this site. A search of 226 Buckeye Council and P&Z agendas (Feb 2024 – Aug 2026) found no GPLET and no Foreign Trade Zone instrument.",
     "energy": {
       "source": "grid",
       "utility": "Arizona Public Service (APS)",
@@ -73412,8 +74998,17 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-08-31",
     "notes": "45 S Bullard Ave, Goodyear AZ 85338; campus of buildings AZ11-AZ14, 176MW planned, per datacentermap/datacenters.com cross-check.",
+    "energy": {
+      "source": "grid",
+      "utility": "Arizona Public Service (APS)"
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator states a closed-loop chilled water system fed by air-cooled chillers, with planned WUE 'near zero (liters/kW/hr)'. No operational water-use figure has been published."
+    },
+    "landAcres": 50,
     "facilityType": "data_center"
   },
   {
