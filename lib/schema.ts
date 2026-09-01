@@ -61,6 +61,37 @@ export const energySchema = z.object({
   notes: z.string().optional(),
 });
 
+// `coolingType` classifies a data center's heat-rejection method BY WATER
+// CONSUMPTION — that is the axis `lib/energy.ts`'s `COOLING_TYPE_ENTRIES`
+// already publishes on /power ("Evaporative (high water)" ... "Air-cooled
+// (minimal)"); the two must never drift, so read this comment alongside that
+// file rather than re-deriving the ordering independently.
+//
+//   - "evaporative" — heat is rejected by evaporating water (cooling towers,
+//     adiabatic/evaporative assist). Water is consumed continuously.
+//   - "hybrid" — the design switches between evaporative and dry modes (e.g.
+//     wet cooling in summer, dry in winter). Water is consumed seasonally.
+//   - "closed_loop" — a recirculating water/coolant circuit that is not
+//     evaporated; water is consumed only as occasional makeup.
+//   - "air" — NO cooling water circuit at all: dry/direct air cooling,
+//     "waterless", "zero water for cooling". Water use is limited to
+//     ordinary plumbing.
+//   - "unknown" — a source addresses cooling but does not identify the
+//     method.
+//
+// TIE-BREAKER (the rule that resolves the common real-world case): if the
+// facility has a water circuit that recirculates, the value is
+// "closed_loop" — even when heat is ultimately rejected to air via
+// air-cooled chillers or dry coolers. "air" is reserved for designs with NO
+// cooling water circuit. Operators very often market a closed-loop design as
+// "air-cooled" — the marketing phrase alone must not decide the value; the
+// presence of a recirculating water circuit does.
+//
+// This is `water.coolingType`, NOT `mining.coolingType` below — a separate
+// enum (`immersion`/`air`/`hydro`/`hybrid`/`unknown`) for crypto-mining rigs.
+// The two share the literal values "air" and "hybrid", so a mining value can
+// be assigned here and still pass validation; the definitions above are the
+// ones that apply to this field.
 export const waterSchema = z.object({
   coolingType: z.enum(["evaporative", "air", "closed_loop", "hybrid", "unknown"]).optional(),
   reportedMgd: z.number().nonnegative().optional(),

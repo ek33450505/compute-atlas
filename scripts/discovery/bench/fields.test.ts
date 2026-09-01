@@ -5,7 +5,6 @@ import { describe, it, expect } from "vitest";
 
 import {
   KIND,
-  FIELD_KINDS,
   FIELD_ENUM_VALUES,
   fieldKind,
   isInVocabulary,
