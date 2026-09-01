@@ -1,5 +1,17 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+
+// vi.mock calls are hoisted above imports by Vitest. Route the shared mock
+// through vi.hoisted() so its initialization is hoisted alongside the
+// vi.mock call itself, rather than relying on a plain top-level const (same
+// pattern as app/api/page.test.tsx / app/stats/page.test.tsx).
+const { mockGetDatasetEdition } = vi.hoisted(() => ({
+  mockGetDatasetEdition: vi.fn(),
+}));
+
+vi.mock("@/lib/dataset-edition", () => ({
+  getDatasetEdition: mockGetDatasetEdition,
+}));
 
 import { SiteFooter } from "./site-footer";
 
@@ -24,6 +36,15 @@ vi.mock("next/link", () => ({
 }));
 
 describe("SiteFooter", () => {
+  beforeEach(() => {
+    mockGetDatasetEdition.mockReturnValue({
+      version: "1.30.0",
+      asOf: "2026-09-01T16:58:23.496Z",
+      recordCount: 1309,
+      schemaVersion: 1,
+    });
+  });
+
   it("renders the wordmark/home link with the correct aria-label", () => {
     render(<SiteFooter />);
     expect(
@@ -128,9 +149,9 @@ describe("SiteFooter", () => {
     ).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
   });
 
-  it("renders the edition margin line", () => {
+  it("renders the edition margin line with the real dataset version", () => {
     render(<SiteFooter />);
-    expect(screen.getByText("Compute Atlas · Edition 2026")).toBeInTheDocument();
+    expect(screen.getByText("Compute Atlas · v1.30.0")).toBeInTheDocument();
     expect(
       screen.getByLabelText("Coordinates: 39.5 degrees north, 98.5 degrees west")
     ).toBeInTheDocument();

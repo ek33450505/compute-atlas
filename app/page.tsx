@@ -4,6 +4,7 @@ import { ArrowRight, Globe } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
 import { datasetJsonLdString } from "@/lib/seo";
+import { getDatasetEdition } from "@/lib/dataset-edition";
 import {
   getStats,
   getNotableFacilities,
@@ -37,6 +38,7 @@ export const metadata: Metadata = {
  * Server component: no client state needed.
  */
 export default async function HomePage() {
+  const edition = getDatasetEdition();
   const { count, states, operationalMw, plannedMw, underConstructionMw } =
     await getStats();
   const notable = await getNotableFacilities(6);
@@ -146,7 +148,7 @@ export default async function HomePage() {
         <div className="relative z-10 space-y-4 pt-8 pb-10">
           {/* Overline */}
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            United States · Edition 2026 · 39.5°N 98.5°W
+            {`United States · Edition v${edition.version} · 39.5°N 98.5°W`}
           </p>
 
           {/* Headline */}
