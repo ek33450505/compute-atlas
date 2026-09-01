@@ -761,3 +761,133 @@ describe("facilitySchema — emissions", () => {
     expect(badAveragingPeriod.success).toBe(false);
   });
 });
+
+// unitGroups: real permits cap pollutants PER EQUIPMENT GROUP with DIFFERENT
+// limits per group — Crusoe Abilene's TCEQ Standard Permit 177263 covers two
+// turbine models (Solar Titan 350 vs GE LM2500) with different per-unit NOx
+// limits, and a single top-level `permittedTpy.nox` cannot represent both.
+describe("emissionsSchema — unitGroups", () => {
+  const crusoeGroups = [
+    {
+      label: "Solar Titan 350 turbines (EPN 1-6)",
+      unitCount: 6,
+      basis: "per_unit" as const,
+      permittedTpy: { nox: 14.98 },
+    },
+    {
+      label: "GE LM2500 turbines (EPN 7-10)",
+      unitCount: 4,
+      basis: "per_unit" as const,
+      permittedTpy: { nox: 13.44 },
+    },
+  ];
+
+  it("parses a valid two-group emissions object modeled on Crusoe Abilene", () => {
+    const result = emissionsSchema.safeParse({
+      permitNumber: "177263",
+      permitType: "state_construction",
+      basis: "facility_wide",
+      unitGroups: crusoeGroups,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.unitGroups).toEqual(crusoeGroups);
+    }
+  });
+
+  it("rejects a group missing label", () => {
+    const result = emissionsSchema.safeParse({
+      unitGroups: [{ basis: "per_unit", permittedTpy: { nox: 10 } }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a group missing basis", () => {
+    const result = emissionsSchema.safeParse({
+      unitGroups: [{ label: "Turbines", permittedTpy: { nox: 10 } }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a group missing permittedTpy", () => {
+    const result = emissionsSchema.safeParse({
+      unitGroups: [{ label: "Turbines", basis: "per_unit" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a group whose permittedTpy has every key undefined, with issue path ["unitGroups", 0, "permittedTpy"]', () => {
+    const result = emissionsSchema.safeParse({
+      unitGroups: [{ label: "Turbines", basis: "per_unit", permittedTpy: {} }],
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["unitGroups", 0, "permittedTpy"] })
+      );
+    }
+  });
+
+  it('rejects two groups whose labels differ only by case/whitespace, with issue path ["unitGroups", 1, "label"]', () => {
+    const result = emissionsSchema.safeParse({
+      unitGroups: [
+        { label: "Solar Titan 350 turbines", basis: "per_unit", permittedTpy: { nox: 14.98 } },
+        { label: "  solar titan 350 turbines  ", basis: "per_unit", permittedTpy: { nox: 13.44 } },
+      ],
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["unitGroups", 1, "label"] })
+      );
+    }
+  });
+
+  it('rejects unitGroups present with top-level basis "per_unit", with issue path ["basis"]', () => {
+    const result = emissionsSchema.safeParse({
+      basis: "per_unit",
+      unitGroups: crusoeGroups,
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["basis"] })
+      );
+    }
+  });
+
+  it("accepts unitGroups present with top-level basis facility_wide and a facility-wide permittedTpy", () => {
+    const result = emissionsSchema.safeParse({
+      basis: "facility_wide",
+      permittedTpy: { co2e: 125000 },
+      unitGroups: crusoeGroups,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an empty unitGroups array", () => {
+    const result = emissionsSchema.safeParse({ unitGroups: [] });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts a 0 value for a pollutant inside a group, and counts it as defined (not a truthiness bug)", () => {
+    const result = emissionsSchema.safeParse({
+      unitGroups: [{ label: "Turbines", basis: "per_unit", permittedTpy: { so2: 0 } }],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("REGRESSION: an emissions object with no unitGroups (Homer City shape) still parses exactly as before", () => {
+    const result = emissionsSchema.safeParse({
+      permittedTpy: { nox: 45.2, co2e: 125000 },
+      basis: "facility_wide",
+      averagingPeriod: "rolling_12_month",
+      permitNumber: "P0123456",
+      permitType: "psd",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.unitGroups).toBeUndefined();
+    }
+  });
+});
