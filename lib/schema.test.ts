@@ -766,17 +766,23 @@ describe("facilitySchema — emissions", () => {
 // limits per group — Crusoe Abilene's TCEQ Standard Permit 177263 covers two
 // turbine models (Solar Titan 350 vs GE LM2500) with different per-unit NOx
 // limits, and a single top-level `permittedTpy.nox` cannot represent both.
+// The original Aug-2024 registration was 6 Titan 350 + 6 LM2500; TCEQ's
+// January 2025 modification reduced both counts to 5 + 5 (10 turbines
+// total), per the Technical Review for Registration No. 177263. Table 1(a)
+// of the application labels the units TURBINE-1 through TURBINE-5 (Titan
+// 350) and TURBINE-6 through TURBINE-10 (GE LM2500) — don't "correct" this
+// fixture back to 6/4 from a stale (pre-modification) source.
 describe("emissionsSchema — unitGroups", () => {
   const crusoeGroups = [
     {
-      label: "Solar Titan 350 turbines (EPN 1-6)",
-      unitCount: 6,
+      label: "Solar Titan 350 turbines (TURBINE-1 through TURBINE-5)",
+      unitCount: 5,
       basis: "per_unit" as const,
       permittedTpy: { nox: 14.98 },
     },
     {
-      label: "GE LM2500 turbines (EPN 7-10)",
-      unitCount: 4,
+      label: "GE LM2500 turbines (TURBINE-6 through TURBINE-10)",
+      unitCount: 5,
       basis: "per_unit" as const,
       permittedTpy: { nox: 13.44 },
     },
