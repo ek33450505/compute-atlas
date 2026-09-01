@@ -323,9 +323,14 @@ the per-state discovery loop and the source-liveness check. It can still be run 
 hand the same way. Two conditions the scheduled invocation has to keep meeting:
 
 - **`--fields` is passed explicitly** — the bare default is the unsafe five-field
-  set, two of which the bench measured as not safe to ship. `run.sh` pins the three
-  benched-safe fields, and `tests/discovery/run.bats` asserts the flag is present
-  for both tools (mutation-tested: deleting it fails the suite).
+  set, two of which the bench measured as not safe to ship. `run.sh` pins three
+  fields, and `tests/discovery/run.bats` asserts the flag is present for both
+  tools (mutation-tested: deleting it fails the suite).
+  ⚠️ Of those three, only `capacityMw.operational` is bench-measured
+  (P=100%/R=100%). `energy.source` and `energy.utility` are **unmeasured** — the
+  bench could not score non-numeric fields until 2026-09-01, so neither has ever
+  carried a label or appeared in a result file. Pinning them excludes the two
+  fields the bench REJECTED; it does not certify the two it never scored.
 - **The `pending` staging gate is untouched.** Everything the lane produces goes
   through `submit-candidates.ts` and needs a human `approve`, exactly as before.
 
