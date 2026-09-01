@@ -92,12 +92,22 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.coresite.com/data-center/ny1-new-york-ny",
+        "label": "CoreSite NY1 — New York",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-09-01",
     "notes": "Former AT&T Long Distance Building, built 1932, converted to a carrier hotel by Rudin Management after their 1999 acquisition. Represented as ONE consolidated facility record rather than one per tenant. Digital Realty (branded \"JFK13\") occupies 132,500 sq ft per Digital Realty's own facility page — no power (MW) figure is disclosed by Digital Realty itself for this site; a widely-repeated 9.0 MW figure traces only to third-party aggregator listings, not a Digital Realty or building-primary source, and is not repeated here as fact. CoreSite (branded \"NY1\") occupies 48,000+ sq ft per CoreSite's own facility page, also with no MW figure disclosed. No whole-building data-center square footage or power total is disclosed anywhere; capacityMw is deliberately left unset rather than synthesized by summing incomplete tenant figures. Coordinates are a building-centroid geocode (Wikidata, sourced from building records) — plausible but not independently cross-checked against a primary GIS source.",
     "energy": {
       "utility": "Con Edison"
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "community": {
       "status": "unknown"
@@ -1073,14 +1083,24 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-08-16",
         "kind": "other"
+      },
+      {
+        "url": "https://aligneddc.com/dallas-data-centers/",
+        "label": "Aligned facility directory",
+        "publisher": "Aligned",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-09-01",
     "notes": "Confirmed operational on Aligned's Dallas directory page; address 2800 Summit Ave, Plano, TX 75074. AI/HPC (likely): Dallas DFW-01: Aligned DeltaFlow/Delta3 high-density AI/HPC platform.",
     "energy": {
       "source": "grid",
       "utility": "Oncor Electric Delivery",
       "notes": "Aligned's DFW-01/DFW-02 campus in Plano (28000 Summit Avenue, 46 MW at full build) sits within Oncor's T&D service territory covering central/eastern/southern Plano. No facility-specific statement names Oncor directly, and no dedicated on-site generation or renewable PPA was found. The utility is inferred from service-territory geography — it is not a sourced claim about this facility."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -1120,14 +1140,24 @@
         "label": "Aligned — DFW-03 Mansfield press release",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://aligneddc.com/dallas-data-centers/",
+        "label": "Aligned facility directory",
+        "publisher": "Aligned",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-13",
+    "lastUpdated": "2026-09-01",
     "notes": "Confirmed operational; 3801 Britton Rd, Mansfield, TX; 27-acre campus. AI/HPC (likely): Mansfield DFW-03 on Aligned adaptive high-density AI/HPC platform.",
     "energy": {
       "source": "grid",
       "utility": "Oncor Electric Delivery",
       "notes": "Aligned's DFW-03 campus in Mansfield (Tarrant County), TX, sits within Oncor's transmission and distribution service territory — Oncor is the dominant T&D utility across the DFW metro. No press coverage or filing explicitly names Oncor as DFW-03's interconnecting utility, and no dedicated on-site generation or renewable PPA was found. The utility is inferred from service-territory geography — it is not a sourced claim about this facility."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "landAcres": 27,
     "facilityType": "data_center",
@@ -1179,14 +1209,24 @@
         "label": "datacenters.com — Aligned Energy IAD01 Ashburn",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://aligneddc.com/northern-virginia-data-centers/",
+        "label": "Aligned facility directory",
+        "publisher": "Aligned",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-09-01",
     "notes": "Ashburn campus confirmed operational (IAD-01, 370,000 sq ft, 60MW) via Aligned press/case study pages; generic candidate name mapped to the first/flagship building. AI/HPC (likely): Ashburn IAD-01 supports AI/HPC/GPU via adaptive high-density design.",
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy Virginia",
       "notes": "Aligned's IAD-01 facility in Ashburn (370,000 sqft, 60 MW power capacity) connects to the Dominion Energy Virginia grid. No site-specific renewable PPA or dedicated on-site generation found — standard grid power from the regional utility."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -1241,14 +1281,24 @@
         "label": "datacenters.com — Aligned Energy IAD01/IAD02 Ashburn",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://aligneddc.com/northern-virginia-data-centers/",
+        "label": "Aligned AI/HPC — Sterling IAD-03 supports high/variable-density AI/HPC",
+        "publisher": "aligneddc.com",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-09-01",
     "notes": "IAD-03 confirmed via Aligned's own location page; 430,000 sq ft, 72MW, phase one delivered Fall 2023. AI/HPC (likely): Sterling IAD-03 supports high/variable-density AI/HPC.",
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy Virginia",
       "notes": "Aligned's Ashburn campus connects to the Dominion Energy Virginia grid; Dominion offers green-energy program options but no site-specific dedicated generation or PPA was found for IAD-03 specifically."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -10864,6 +10914,62 @@
     "facilityType": "data_center"
   },
   {
+    "id": "blue-ladder-wolcott-white-county-in",
+    "name": "Wolcott Data Center",
+    "operator": "Blue Ladder Development",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.7581,
+      "lon": -87.0281,
+      "city": "Wolcott",
+      "county": "White",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-06-26",
+        "note": "Rezoning approved; developer held a community open house on 2026-06-29 as the project moved forward in Mid-America Commerce Park.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wolcottdatacenter.com/",
+        "label": "Wolcott Data Center — project site",
+        "publisher": "Blue Ladder Development",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.aol.com/articles/white-county-data-center-plans-183828000.html",
+        "label": "White County data center plans move forward with community open house",
+        "publisher": "InkFreeNews via AOL",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Campus south of U.S. Highway 24 next to N 1100 W in Mid-America Commerce Park: four data center buildings of 327,612 sq ft each, plus a 50,000 sq ft office, a 100,000 sq ft warehouse and two substations. The developer states it seeks no incentives, abatements or subsidies and pays for its own electric infrastructure; full build-out is projected for 2029.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer describes a closed-loop, dry-cooled design with no water used for cooling and no wells on the property; water use is limited to employee needs."
+    },
+    "landAcres": 322,
+    "jobs": {
+      "construction": 1000,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "Wolcott residents Bart and Amy Snyder sued the commissioners, the White County Redevelopment Commission and the property owners in August 2025 seeking to overturn the rezoning of just over 184 acres near U.S. 24 and County Road 1100 West, alleging a missing notarized authorization letter and site plan; a summary judgment hearing was set for July 27.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "bluebird-quad-cities-bettendorf-ia",
     "name": "Bluebird Quad Cities Data Center",
     "operator": "Bluebird Network",
@@ -15128,6 +15234,46 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cloverleaf-carlton-kewaunee-county-wi",
+    "name": "Cloverleaf Carlton Data Center Site (Kewaunee County)",
+    "operator": "Cloverleaf Infrastructure",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.35,
+      "lon": -87.58,
+      "city": "Carlton",
+      "county": "Kewaunee County",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025-12",
+        "note": "Cloverleaf stopped pursuing farmland in the town of Carlton in late 2025 after town leadership and residents opposed it.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wisconsinwatch.org/2026/01/wisconsin-data-center-kewaunee-county-town-carlton-cloverleaf-nuclear-power/",
+        "label": "Kewaunee County town staves off interest from data center developers",
+        "publisher": "Wisconsin Watch",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Cloverleaf sought to assemble farmland near the retired Kewaunee Power Station. Acreage and megawatt capacity were never disclosed. Coordinates are a town-level locator, not a parcel. Distinct from the separate EnergySolutions/WEC new-nuclear proposal at the Kewaunee Power Station site itself.",
+    "community": {
+      "status": "opposed",
+      "notes": "Town chairman David Hardtke: 'People in the town of Carlton do not want the AI (data) center.' Opposition centered on farmland preservation; some residents favored the economic development.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cloverleaf-cherry-blossom-frenchtown-mi",
     "name": "Project Cherry Blossom",
     "operator": "Cloverleaf Infrastructure",
@@ -15277,6 +15423,54 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "cloverleaf-wrightstown-village-wi",
+    "name": "Cloverleaf Wrightstown Data Center Inquiry (Village of Wrightstown)",
+    "operator": "Cloverleaf Infrastructure",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.3269,
+      "lon": -88.1631,
+      "city": "Wrightstown",
+      "county": "Brown County",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "Cloverleaf Infrastructure inquired about village land for a data center; village held a public information meeting May 31, 2026 and placed a non-binding referendum on the August 2026 ballot.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://spectrumnews1.com/wi/milwaukee/news/2026/06/01/data-center-wrightstown-meeting",
+        "label": "Wrightstown hosts public meeting as data centers target village land",
+        "publisher": "Spectrum News 1 Wisconsin",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://wisconsinwatch.org/2026/08/wisconsin-ai-data-center-land-big-tech-wrightstown-voters-opposition-opinion/",
+        "label": "Wisconsin voters push back on AI data center development",
+        "publisher": "Wisconsin Watch",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "No formal application has been filed and no acreage or megawatt figure has been published for this jurisdiction; the record captures a live, sourced siting inquiry that the village itself acted on. Village officials denied at spring 2026 meetings that they had seen a proposal; emails later showed communication with Cloverleaf since January 2026. Related to but distinct from the Village of Greenleaf / Town of Wrightstown site Cloverleaf abandoned in January 2026 — a human reviewer should confirm they are separate parcels before publishing both. Coordinates are a municipality-level locator.",
+    "community": {
+      "status": "opposed",
+      "notes": "In the Aug. 11, 2026 non-binding referendum nearly 9 in 10 Wrightstown voters opposed data center development. The village board approved a pause in June 2026 and unanimously extended the moratorium to a year in July 2026.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "cnx-zediker-station-south-strabane-washington-county-pa",
@@ -19194,13 +19388,29 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-08-04",
         "kind": "press"
+      },
+      {
+        "url": "https://records.tceq.texas.gov/cs/idcplg?IdcService=TCEQ_EXTERNAL_SEARCH_GET_FILE&Rendition=Web&dID=8600639",
+        "label": "Standard Permit Modification Application, Registration No. 177263 (Abilene DC 1, LLC dba Crusoe Energy Systems)",
+        "publisher": "Texas Commission on Environmental Quality",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-04",
+    "lastUpdated": "2026-09-01",
     "notes": "On-site behind-the-meter natural-gas generation for the co-located Crusoe / Lancium Clean Campus ('Stargate Site 1', tracked separately as lancium-crusoe-abilene-tx). 10 turbines totaling 360.5 MW are permit-confirmed (TCEQ Reg. 177263) and reported operational as of mid-2026, with a large expansion proposed. Same-site companion to the data-center record; supersedes the older 'on-site gas not confirmed' note on that record.",
     "energy": {
       "source": "on_site_gas",
       "notes": "Behind-the-meter, primary-plus-backup on-site generation dedicated to the campus; explicitly not exporting to ERCOT."
+    },
+    "emissions": {
+      "unitsCovered": "ten (10) natural gas-fired simple cycle combustion turbines: five Solar Titan 350 (TURBINE-1 through TURBINE-5) and five GE LM2500 (TURBINE-6 through TURBINE-10)",
+      "permitNumber": "177263",
+      "permitType": "state_construction",
+      "issuingAgency": "Texas Commission on Environmental Quality",
+      "issuedDate": "2025-01-22",
+      "notes": "NO per-pollutant annual tonnage is recorded here, deliberately. This is a TCEQ Electric Generating Unit Standard Permit registration — a rule-based authorisation that does not state per-pollutant tons-per-year ceilings the way a PSD or plan-approval permit does. The only annual tonnages in the file are the applicant's own calculated potential-to-emit (Table 1(a) of the modification application, built from manufacturer rates and AP-42 emission factors), and potential-to-emit is not a permitted ceiling; this project does not publish one as the other. The enforceable limit the standard permit does impose is a RATE: 0.14 lb NOx/MWh for units operating more than 300 hours per year, against which the application estimates a controlled rate of 0.09 lb/MWh. Registration history: originally registered 2024-08-30 for six Titan 350 plus six GE LM2500; the modification approved 2025-01-22 reduced each model from six to five, giving the ten turbines above (Titan 350 site-rated 38 MW each, GE LM2500 34.1 MW each). Registered as Abilene DC 1, LLC dba Crusoe Energy Systems (Regulated Entity RN112029079, Customer CN606295137). A separate major TCEQ permit application filed July 2026 seeking roughly 41 additional turbines is NOT covered by this registration and none of its figures are recorded here.",
+      "sourceIndex": 0
     },
     "facilityType": "power_generation",
     "generation": {
@@ -27620,6 +27830,47 @@
     "facilityType": "data_center"
   },
   {
+    "id": "energysolutions-kewaunee-new-nuclear-wi",
+    "name": "Kewaunee Power Station New Nuclear Project",
+    "operator": "EnergySolutions (with WEC Energy Group)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.3419,
+      "lon": -87.5369,
+      "city": "Carlton",
+      "county": "Kewaunee County",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "EnergySolutions filed a notice of intent with the U.S. Nuclear Regulatory Commission and submitted related permit filings, its first major commitment to the project.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/news/plans-move-forward-new-nuclear-energy-plant-kewaunee-county-wisconsin",
+        "label": "Plans move forward to bring new nuclear energy to Kewaunee County",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Capacity and reactor technology are not published; no MW figure is recorded. Timelines cited range from a decade to 10-15 years, and one critic argues the plant could not meet near-term data center demand at all. Coordinates are the Kewaunee Power Station site. A notice of intent to the NRC is a filing, not an approval or an award — treat as an early-stage lead. Distinct from the separate Cloverleaf data center site inquiry in the same town of Carlton.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "Not contracted; developers cite rising Wisconsin demand driven largely by data centers",
+      "notes": "New advanced nuclear generation at the retired Kewaunee Power Station site rather than a restart of the 1974-2013 reactor. EnergySolutions is acquiring surrounding land and running site-suitability studies."
+    }
+  },
+  {
     "id": "entergy-bogalusa-west-solar-washington-parish-la",
     "name": "Bogalusa West Solar Station",
     "operator": "Entergy Louisiana",
@@ -28044,6 +28295,50 @@
       "technology": "natural_gas",
       "notes": "Entergy Louisiana filed for approval to construct the Westlake Power Station together with the Waterford 6 Power Station in February 2026 (LPSC Docket No. U-37853); the testimony states the two 'when completed, will add approximately 1,500 MW of additional capacity to ELL's base supply plan'. No per-station MW split is given in the fetched filing, so capacityMw is omitted rather than guessed."
     }
+  },
+  {
+    "id": "epic-hosting-verona-wi",
+    "name": "Epic Hosting Verona Data Center",
+    "operator": "Epic Hosting, LLC (Epic Systems)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.98,
+      "lon": -89.562,
+      "city": "Verona",
+      "county": "Dane County",
+      "street": "Milky Way",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-09-24",
+        "note": "Certified by the Wisconsin Department of Revenue as a qualified data center at Milky Way, Verona.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.revenue.wi.gov/Pages/FAQS/ExemptionforQualifiedDataCenter.aspx",
+        "label": "Wisconsin DOR — Exemption for Qualified Data Center (list of certified data centers)",
+        "publisher": "Wisconsin Department of Revenue",
+        "retrievedAt": "2026-09-01",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "One of only four data centers certified for Wisconsin's qualified-data-center sales and use tax exemption (alongside Microsoft/Mount Pleasant, Degas LLC/Beaver Dam and Oracle America Cloud Services/Port Washington). Certification in a county over 100,000 population requires a plan to invest at least $150 million over five years; that threshold is NOT recorded as an investment figure because the certified plan amount is not published. Status is recorded as 'permitted' because state certification is the only sourced fact — I found no source establishing that the facility is built or operating, and a human reviewer should resolve the true build status before publication. No subsidy dollar amount is published. Coordinates are a campus-level locator for Epic's Milky Way address in Verona.",
+    "subsidies": [
+      {
+        "program": "Wisconsin Qualified Data Center sales and use tax exemption",
+        "jurisdiction": "State of Wisconsin",
+        "year": "2024",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
   },
   {
     "id": "equinix-ashburn-va",
@@ -34791,7 +35086,7 @@
     "id": "google-michigan-city-in",
     "name": "Google Michigan City Data Center",
     "operator": "Google",
-    "status": "proposed",
+    "status": "under_construction",
     "confidence": "confirmed",
     "location": {
       "lat": 41.7075394,
@@ -34801,7 +35096,14 @@
       "state": "IN",
       "precision": "approximate"
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-01",
+        "note": "Google confirmed acquisition of the Project Maize site and construction is underway: work began in fall 2025 with completion expected at the beginning of 2027, and multiple unions are working on site. The tracked record still shows 'proposed'.",
+        "sourceIndex": 4
+      }
+    ],
     "sources": [
       {
         "url": "https://datacenters.google/locations/",
@@ -34816,10 +35118,49 @@
         "publisher": "Google",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://nwindianabusiness.com/industries/professional-services/information-technology/michigan-city-welcomes-google-as-data-center-owner/77568/",
+        "label": "Michigan City welcomes Google as data center owner",
+        "publisher": "Northwest Indiana Business Magazine",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://wsbt.com/news/local/breaking-google-confirms-data-center-in-michigan-city-project-oyal-road-project-maize-underway-challenges-site-statement-michigan-city-laporte-county-indiana",
+        "label": "Google data center construction underway in Michigan City",
+        "publisher": "WSBT",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://wsbt.com/news/local/breaking-google-confirms-data-center-in-michigan-city-project-oyal-road-project-maize-underway-challenges-site-statement-michigan-city-laporte-county-indiana",
+        "label": "Google data center construction underway in Michigan City",
+        "publisher": "WSBT",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://nwindianabusiness.com/industries/professional-services/information-technology/michigan-city-welcomes-google-as-data-center-owner/77568/",
+        "label": "Michigan City welcomes Google as data center owner",
+        "publisher": "Northwest Indiana Business Magazine",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-01",
     "notes": "Announced by Google in 2026 as a planned Indiana data center, distinct from Google's operational Fort Wayne site and its Morgan County (Monrovia) development. No capacity or investment figure published. Coordinates are the Michigan City centroid (approximate).",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Google states the facility uses a closed-loop water system. City officials say existing water supply is adequate with no additional taxpayer cost."
+    },
+    "investmentUsd": 832000000,
+    "landAcres": 70,
+    "jobs": {
+      "construction": 500,
+      "permanent": 30,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -38301,6 +38642,101 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "heartland-industrial-park-sullivan-county-in",
+    "name": "Heartland Industrial Park (Fluidstack Sullivan County Campus)",
+    "operator": "Fluidstack",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.0694,
+      "lon": -87.5108,
+      "city": "Merom",
+      "county": "Sullivan",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2100
+    },
+    "announcedDate": "2026-04-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-08",
+        "note": "Potentia Inc. publicly unveiled the Sullivan County campus at Heartland Industrial Park.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-04-23",
+        "note": "Potentia began construction on major site infrastructure; Fluidstack held a community open house on the campus on 2026-08-06.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wbiw.com/2026/04/08/potentia-inc-unveils-historic-65-billion-data-center-project-in-sullivan-county/",
+        "label": "Potentia Inc. unveils historic $65 Billion data center project in Sullivan County",
+        "publisher": "WBIW",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://sullivanenergydata.com/data-centers/heartland-industrial-park/",
+        "label": "Heartland Industrial Park — Sullivan County Indiana Energy & Data Centers",
+        "publisher": "Sullivan County Energy & Data Center Projects",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.wthitv.com/2026/08/06/fluidstack-hosts-open-house-sullivan-county-data-center-campus/",
+        "label": "FluidStack hosts open house for Sullivan County data center campus",
+        "publisher": "WTHI-TV",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sullivanfluidstack.io/",
+        "label": "Sullivan County Data Center — Fluidstack project site",
+        "publisher": "Fluidstack",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://inforcapital.com/news/fluidstack-shares-details-of-planned-data-center-in-sullivan-county-indiana/",
+        "label": "Fluidstack's 2.1GW Indiana AI Data Center Campus",
+        "publisher": "Infor Capital",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "One site under two names: Potentia Inc. is the site developer of the 1,000-acre Heartland Industrial Park on US 41 near the Merom Generating Station, and Fluidstack is the anchor tenant/operator building the campus (both sources describe the same 15-acre fire-station donation and the same $50M community payment). The 2.1 GW figure is the full-park planned capacity; a separately financed first phase is reported at roughly 430 MW of critical IT load. The $65 billion figure is the announced site investment, driven by tenant and partner spending rather than Potentia alone.",
+    "energy": {
+      "source": "grid",
+      "utility": "WIN Energy REMC",
+      "notes": "WIN Energy REMC serves the campus; Fluidstack and WIN Energy state they carry all energy costs so existing member-consumers' rates are not affected."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.06,
+      "notes": "Closed-loop recirculating system; the tanks are filled once and the water recirculates. Potentia states roughly 60,000 gallons per day of freshwater makeup at full build-out."
+    },
+    "investmentUsd": 65000000000,
+    "landAcres": 1000,
+    "jobs": {
+      "construction": 2750,
+      "permanent": 500,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Sullivan County residents have voiced concerns at public meetings; the developer has committed $50 million in community enhancement payments, $4.5 million in charitable contributions and 15 acres for a new county fire station, and local unions report roughly $600 million in labor contracts on the project.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "helion-orion-malaga-wa",
     "name": "Helion Orion fusion power plant",
     "operator": "Helion Energy",
@@ -41517,6 +41953,59 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "jumping-bison-greensburg-decatur-county-in",
+    "name": "Jumping Bison Greensburg Data Center",
+    "operator": "Jumping Bison LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.3372,
+      "lon": -85.4836,
+      "city": "Greensburg",
+      "county": "Decatur",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-12-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-12-10",
+        "note": "Greensburg City Council unanimously approved establishing a 550-acre Economic Revitalization Area and a real property tax abatement for the project.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wrbiradio.com/greensburg-council-approves-era-establishment-data-center-abatement/",
+        "label": "Greensburg Council Approves ERA Establishment, Data Center Abatement",
+        "publisher": "WRBI Radio",
+        "retrievedAt": "2026-09-01",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.yahoo.com/news/development-coming-greensburg-011600861.html",
+        "label": "New development coming to Greensburg",
+        "publisher": "Greensburg Daily News via Yahoo",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Two-phase project of roughly 340 acres north of Greensburg inside a newly established 550-acre Economic Revitalization Area at the Business Enterprise Park along I-74, opposite Honda's Indiana Auto Plant, at $400 million per phase. Staff are to be paid 125% of the average Decatur County wage. Local opponents have organized a petition against the campus.",
+    "subsidies": [
+      {
+        "program": "Economic Revitalization Area real property tax abatement (10 years, 60%)",
+        "jurisdiction": "City of Greensburg, IN",
+        "year": "2024",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 800000000,
+    "landAcres": 340,
+    "facilityType": "data_center"
+  },
+  {
     "id": "kairos-hermes-2-oak-ridge-tn",
     "name": "Kairos Power Hermes 2",
     "operator": "Kairos Power",
@@ -41636,6 +42125,43 @@
       "offtaker": "Google",
       "notes": "First deployment under the October 2024 Kairos Power-Google Master Plant Development Agreement (Google fleet-wide target of up to 500 MW across multiple Kairos plants by 2035). Power is delivered via a Tennessee Valley Authority PPA (announced 2025-08-18) -- the first US utility PPA for an advanced Gen IV reactor -- intended to serve Google data centers in Montgomery County, TN and Jackson County, AL (grid-region delivery, no single named campus). Shares the Heritage Center/ETTP campus with the earlier, smaller non-power-producing Hermes 1 demonstration reactor but sits on a distinct K-33 parcel. Target operation by 2030."
     }
+  },
+  {
+    "id": "karis-critical-deep-river-merrillville-in",
+    "name": "Karis Critical Deep River Campus",
+    "operator": "Karis Critical",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.47,
+      "lon": -87.27,
+      "city": "Merrillville",
+      "county": "Lake",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-11",
+        "note": "Reported as one of three early-stage Merrillville data center proposals.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.govtech.com/artificial-intelligence/2b-in-data-center-projects-planned-for-merrillville-ind",
+        "label": "$2B+ in Data Center Projects Planned for Merrillville, Ind.",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Proposed campus on 180 acres on 101st Avenue east of Deep River County Park, at up to $900 million and reported to bring hundreds of jobs. Described as early-stage.",
+    "investmentUsd": 900000000,
+    "landAcres": 180,
+    "facilityType": "data_center"
   },
   {
     "id": "lambda-aligned-plano-tx",
@@ -42598,6 +43124,53 @@
       "status": "contested",
       "notes": "Organized resident opposition on environmental, health, and energy-cost concerns documented since at least fall 2025; the project's power-delivery shortfall (240 MW requested vs. 45 MW/24-month deliverable) triggered the Jan 2026 pause. Butler County's June 2026 moratorium legally covers only unincorporated townships, not the City of Hamilton, but reflects regional opposition context.",
       "sourceIndex": 3
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "logix-reality-frankfort-clinton-county-in",
+    "name": "Logix Reality Frankfort Data Center",
+    "operator": "Logix Reality LLC",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.2792,
+      "lon": -86.5108,
+      "city": "Frankfort",
+      "county": "Clinton",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-06",
+        "note": "Clinton County Area Plan Commission issued a favorable recommendation on the rezoning of 714.55 acres from A1 Agricultural to I1 Light Industrial.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-01-20",
+        "note": "Clinton County Commissioners unanimously denied the rezoning, citing impact on adjacent property owners and the developer's failure to negotiate the 14 proposed commitments. The denial bars the petitioner from returning for 12 months.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.clintoncountytoday.com/commissioners-say-no-to-the-rezoning-of-land-for-data-center/",
+        "label": "Commissioners Say 'No' to the Rezoning of Land for Data Center",
+        "publisher": "Clinton County Today",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Site sits east of Frankfort near Conagra, spanning unincorporated county land and a portion inside Frankfort city limits. No capacity or investment figure was disclosed.",
+    "landAcres": 714.55,
+    "community": {
+      "status": "opposed",
+      "notes": "Commissioners cited negative impact on area property owners. A separate variance for the portion inside Frankfort city limits was granted by the city Board of Zoning Appeals on 2025-04-23, but no development has been announced there.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -52120,6 +52693,78 @@
     "facilityType": "data_center"
   },
   {
+    "id": "netsonic-green-bay-wi",
+    "name": "Netsonic Green Bay Data Center",
+    "operator": "Netsonic (Dynamic Ventures LLC)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.5155,
+      "lon": -87.995,
+      "city": "Green Bay",
+      "county": "Brown County",
+      "street": "1263 Main St., Suite 223",
+      "postalCode": "54302",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.netsonic.net/datacenter.php",
+        "label": "Green Bay, WI Datacenter — Colocation, Backup and Disaster Recovery",
+        "publisher": "Netsonic",
+        "retrievedAt": "2026-09-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Carrier-neutral colocation facility operating in Green Bay since 1996, veteran-owned. The operator advertises nearly 4 MW of available power capacity on 1200-amp 480-volt service, 60 tons of redundant Liebert cooling, N+1 power, an on-site generator with roughly 96 hours of runtime, and a 9,000+ sq ft expansion. Services span standard colocation, AI/GPU high-density colocation and ASIC miner hosting at $0.075/kWh. Figures are operator-published and not independently verified, so no capacityMw value is recorded. Coordinates are a best-effort geocode of the street address.",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
+    "id": "new-carlisle-chicago-trail-data-center-st-joseph-county-in",
+    "name": "New Carlisle Chicago Trail Data Center (rezoning denied)",
+    "operator": "Undisclosed",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.7003,
+      "lon": -86.5089,
+      "city": "New Carlisle",
+      "county": "St. Joseph",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025-12-10",
+        "note": "St. Joseph County Council voted 7-2 to deny the rezoning after a hearing that ran until roughly 4 a.m.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wvpe.org/wvpe-news/2025-12-10/council-denies-rezoning-for-data-center-near-new-carlisle",
+        "label": "Council denies rezoning for data center near New Carlisle",
+        "publisher": "WVPE",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "A New York-based developer sought to rezone about 1,000 acres of farmland along the Chicago Trail near New Carlisle for 14 buildings, adjacent to the Amazon campus. The rezoning was denied; the developer may refile after six months. The petitioner was not publicly named.",
+    "landAcres": 1000,
+    "community": {
+      "status": "opposed",
+      "notes": "Council member Amy Drake said she was voting with the people of New Carlisle against the data center after overwhelming public testimony in opposition.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "new-day-ports-technology-campus-piketon-oh",
     "name": "PORTS-Pike Technology Campus",
     "operator": "SB Energy",
@@ -52784,6 +53429,73 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "nipsco-genco-schahfer-wheatfield-in",
+    "name": "NIPSCO GenCo Schahfer Natural Gas Plants",
+    "operator": "NIPSCO Generation LLC (GenCo)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1911,
+      "lon": -87.0592,
+      "city": "Wheatfield",
+      "county": "Jasper",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2600
+    },
+    "announcedDate": "2025-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09-25",
+        "note": "NIPSCO disclosed plans to build gas generation for data centers through a new unregulated subsidiary, NIPSCO Generation LLC.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-06",
+        "note": "IURC approved the generators to supply electricity exclusively for a new $7B Amazon data center at Wheatfield.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wfyi.org/news/articles/nipsco-plans-large-natural-gas-plant-to-serve-data-centers-through-new-subsidiary",
+        "label": "NIPSCO plans large natural gas plant to serve data centers through new subsidiary",
+        "publisher": "WFYI",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.circleofblue.org/2026/water-energy/inside-americas-first-data-center-only-utility/",
+        "label": "Inside America's First Data Center-Only Utility",
+        "publisher": "Circle of Blue",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.canarymedia.com/articles/data-centers/indiana-nipsco-genco-build-power-criticism",
+        "label": "Critics decry company created to rush power to Indiana data centers",
+        "publisher": "Canary Media",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Built beside the retired R.M. Schahfer coal plant in Jasper County and structured under an unregulated NIPSCO subsidiary so existing ratepayers do not carry the cost. Capacity figures differ across reporting: WFYI's September 2025 account of the filing describes 2,300 MW, while 2026 reporting describes two 1.3 GW units (2,600 MW total) — the later figure is recorded here. WFYI reports the proposed air permit would allow the equivalent of roughly 7 million tons of CO2 a year; that is a reporter's characterization of a proposed permit, not a recorded permitted-emissions limit.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Amazon Web Services",
+      "poweredFacilityIds": [
+        "aws-wheatfield-in"
+      ],
+      "unitCount": 2
+    }
   },
   {
     "id": "northern-data-pryor-ok",
@@ -54764,6 +55476,43 @@
       "notes": "City council unanimously rejected the project 2026-03-26, following the planning commission's denial recommendation, citing conflicts with the city's Comprehensive Plan and inability to fund required water-treatment expansion.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "oppidan-beaver-dam-edge-wi",
+    "name": "Oppidan Beaver Dam Edge Data Center",
+    "operator": "Oppidan Investment Company",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.4578,
+      "lon": -88.8373,
+      "city": "Beaver Dam",
+      "county": "Dodge County",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-04-07",
+        "note": "Beaver Dam Common Council voted 11-3 to authorize a development agreement and the sale of slightly more than 14 acres of city land near Highway 151 and Hemlock Road for $407,340; construction set to begin summer 2026 with the facility online in 2028.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dailydodge.com/beaver-dam-common-council-approves-second-data-center/",
+        "label": "Beaver Dam Common Council Approves Second Data Center",
+        "publisher": "Daily Dodge",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "A 90,000-square-foot single-story regional edge data center — a separate, much smaller project from Meta's ~700,000-square-foot Beaver Dam campus already tracked. Council deliberations raised water use, utility rates and tax-fairness concerns. Coordinates are a municipality-level locator; the site is at Highway 151 and Hemlock Road.",
+    "landAcres": 14,
     "facilityType": "data_center"
   },
   {
@@ -58340,6 +59089,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "prologis-shelbyville-in",
+    "name": "Prologis Shelbyville Data Center Campus",
+    "operator": "Prologis",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5214,
+      "lon": -85.7769,
+      "city": "Shelbyville",
+      "county": "Shelby",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-04-06",
+        "note": "Shelbyville Common Council approved voluntary annexation and rezoning (amended Ordinance 26-3052), a fiscal plan and an economic development agreement, each 4-2-1.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.shelbyville.in.gov/m/newsflash/Home/Detail/364",
+        "label": "Shelbyville City Council Approves Annexation and Rezoning Request",
+        "publisher": "City of Shelbyville, Indiana",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Roughly 429 acres near State Road 44 annexed into Shelbyville for a multi-phase development of up to eleven data center buildings, at an estimated $2 billion investment. No tenant has been identified.",
+    "investmentUsd": 2000000000,
+    "landAcres": 429,
+    "facilityType": "data_center"
+  },
+  {
     "id": "prologis-silver-creek-valley-san-jose-ca",
     "name": "Prologis Silver Creek Valley Road Data Center",
     "operator": "Prologis",
@@ -58851,6 +59637,102 @@
     "facilityType": "data_center"
   },
   {
+    "id": "province-group-bristol-innovation-park-elkhart-county-in",
+    "name": "Bristol Innovation Park",
+    "operator": "The Province Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.7203,
+      "lon": -85.8175,
+      "city": "Bristol",
+      "county": "Elkhart",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-09",
+        "note": "Elkhart County Advisory Plan Commission voted 7-2 to forward the rezoning with an unfavorable recommendation after a five-hour hearing attended by more than 500 opponents.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wvpe.org/wvpe-news/2024-09-10/undisclosed-tech-firm-plans-1-billion-data-center-for-bristol",
+        "label": "Undisclosed tech firm plans $1 billion data center for Bristol",
+        "publisher": "WVPE",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wvpe.org/wvpe-news/2026-07-21/rezoning-for-possible-bristol-data-center-suffers-another-setback",
+        "label": "Rezoning for possible Bristol data center suffers another setback",
+        "publisher": "WVPE",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wvpe.org/wvpe-news/2026-06-10/elkhart-county-planners-to-consider-proposed-bristol-data-center-project-july-9",
+        "label": "Elkhart County planners to consider proposed Bristol data center project July 9",
+        "publisher": "WVPE",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Campus on 247 acres of farmland at county roads 14 and 23 north of Bristol, with roughly a million square feet of single-story buildings over a five-to-seven year build. The Province Group is acting for an undisclosed tech company; the rezoning requires both county council and Bristol Town Council action.",
+    "investmentUsd": 1000000000,
+    "landAcres": 247,
+    "jobs": {
+      "permanent": 150,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "More than 500 opponents attended the July 2026 hearing, which was relocated to a church gym to fit the crowd; the plan commission recommended denial 7-2. Bristol Town Council President Jeff Beachy initially wrote in support, then publicly reversed to opposition on 2026-07-21 after accusations and threats.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "province-group-merrillville-technology-park-in",
+    "name": "Merrillville Technology Park",
+    "operator": "The Province Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.46,
+      "lon": -87.29,
+      "city": "Merrillville",
+      "county": "Lake",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-11",
+        "note": "Reported as one of three early-stage Merrillville data center proposals.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.govtech.com/artificial-intelligence/2b-in-data-center-projects-planned-for-merrillville-ind",
+        "label": "$2B+ in Data Center Projects Planned for Merrillville, Ind.",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "A 1 million sq ft campus near Colorado Street and Harms Road, close to the Hobart border, developed by Newport Beach, California-based Province Group at up to $500 million, with reported salaries up to $175,000. Distinct from the same developer's Bristol Innovation Park proposal in Elkhart County.",
+    "investmentUsd": 500000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "prsm-group-cumberland-county-nc",
     "name": "PRSM Group Cumberland County AI Data Center (undisclosed industrial park)",
     "operator": "PRSM Group",
@@ -58947,6 +59829,60 @@
     "community": {
       "status": "opposed",
       "notes": "The Preble County Planning Commission rejected the rezoning 11-0 and the Rural Zoning Commission 5-0; residents raised electricity-cost and water-supply concerns.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "qlevr-charlestown-clark-county-in",
+    "name": "QLEVR Charlestown Data Center",
+    "operator": "QLEVR LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.4517,
+      "lon": -85.67,
+      "city": "Charlestown",
+      "county": "Clark",
+      "street": "1600 Cristiani Parkway",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 3
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06",
+        "note": "Proposal filed for Shadow Lake Industrial Park; public hearing set for June 9 with Advisory Plan Commission review pending.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newsandtribune.com/news/data-center-proposed-for-charlestowns-shadow-lake-park/article_b0967582-6664-4499-a2b4-44dfcfa4702a.html",
+        "label": "Data center proposed for Charlestown's Shadow Lake Park",
+        "publisher": "News and Tribune",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "A 55,000 sq ft, 3 MW facility on 12 acres in Shadow Lake Industrial Park, with a stated 14-16 month construction period. The developer did not request tax abatements and says it will pay for any required utility upgrades.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling with water recycling; an initial fill of 50,000-60,000 gallons and roughly 33 gallons per day of ongoing demand."
+    },
+    "investmentUsd": 105000000,
+    "landAcres": 12,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The site is directly across from the Woodford Drive residential area; residents raised environmental concerns and Mayor Treva Hodges said she wanted higher expectations for developers and suggested delaying approval.",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -65944,6 +66880,50 @@
     "lastUpdated": "2026-07-17",
     "notes": "25 MW grid-hydro Bitcoin hosting, operating since 2021. Explicit entry in Soluna's 10-Q site table. Distinct from Soluna Project Kati (Willacy County, TX).",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "sos-limited-park-falls-wi",
+    "name": "SOS Limited Park Falls Crypto Mine (Former Flambeau River Paper Mill)",
+    "operator": "SOS Limited",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.9305,
+      "lon": -90.438,
+      "city": "Park Falls",
+      "county": "Price County",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2022-01",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-06",
+        "note": "SOS Limited installed racks of mining computers in the century-old brick office building of the former Park Falls mill; a June 2022 company video showed the operation running.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wisconsinwatch.org/2023/01/crypto-mine-in-park-falls-wisconsin-creates-controversy-at-former-paper-mill/",
+        "label": "In rural Wisconsin, former employees lift curtain on troubled crypto mine",
+        "publisher": "Wisconsin Watch",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "NYSE-listed SOS Limited mines Bitcoin and Ethereum inside part of the former Flambeau River Paper / Park Falls Pulp and Paper mill, with equipment supplied by Shenzhen Beibeizhu Technology and the site held through Park Falls Industrial Management. Only a handful of employees are based in Park Falls. The most recent reporting I could source is January 2023, when the operation ran at limited capacity indoors with the outdoor expansion halted; current operating status is unverified and should be re-checked before publication. Capacity, hash rate and power arrangement were never disclosed. Coordinates are a best-effort locator for the mill site.",
+    "community": {
+      "status": "contested",
+      "notes": "An August 2022 expansion permit was voted down over noise. City officials said 'the city does not believe this use is the best use of the property in terms of jobs for our area,' but industrial zoning prevented stopping it and they preferred it to a vacant, deteriorating mill.",
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "mixed"
+    }
   },
   {
     "id": "sovereign-gazelle-somerville-al",
@@ -75165,6 +76145,58 @@
     "facilityType": "data_center"
   },
   {
+    "id": "vantage-pittsboro-in",
+    "name": "Vantage Pittsboro Campus",
+    "operator": "Vantage Data Centers",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.8656,
+      "lon": -86.4675,
+      "city": "Pittsboro",
+      "county": "Hendricks",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-02",
+        "note": "Rezoning request filed for a 618-acre site; Advisory Plan Commission voted 4-1 in favor.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2025-03-18",
+        "note": "Pittsboro Town Council unanimously approved rezoning of the 626-acre site.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.insideindianabusiness.com/articles/data-center-developer-eyeing-618-acre-site-in-hendricks-county",
+        "label": "Data center developer eyeing 618-acre site in Hendricks County",
+        "publisher": "Inside INdiana Business",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.insideindianabusiness.com/articles/pittsboro-officials-ok-rezoning-of-626-acre-site-for-proposed-data-center-campus",
+        "label": "Pittsboro officials OK rezoning of 626 acre-site for proposed data center campus",
+        "publisher": "Inside INdiana Business",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Colocation campus in the northeast corner of Pittsboro, north of I-74 and west of County Road 500 East, on land annexed into the town in late 2024. Roughly 285 of the 626 rezoned acres are planned for development, in three buildings reported at 256 MW, 96 MW and 48 MW. Third-party project trackers list the campus as later withdrawn; no press confirmation of a withdrawal was located as of 2026-09-01, so the last sourced status (rezoning approved) is recorded here.",
+    "landAcres": 626,
+    "facilityType": "data_center"
+  },
+  {
     "id": "vantage-quincy-wa11-wa",
     "name": "Vantage Quincy WA11",
     "operator": "Vantage Data Centers",
@@ -76398,6 +77430,123 @@
     "facilityType": "data_center"
   },
   {
+    "id": "we-energies-oak-creek-natural-gas-wi",
+    "name": "We Energies Oak Creek Natural Gas Generating Units",
+    "operator": "We Energies (WEC Energy Group)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.8858,
+      "lon": -87.8347,
+      "city": "Oak Creek",
+      "county": "Milwaukee County",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1100
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-05-22",
+        "note": "Wisconsin Public Service Commission approved We Energies' plan to build gas generation at Oak Creek and Paris, part of a package of more than $1.5 billion.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Construction beginning 2025, with completion expected in late 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/news/public-service-commission-approves-we-energies-plan-wisconsin-natural-gas-plants",
+        "label": "Public Service Commission approves We Energies' plan to build new Wisconsin natural gas plants",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.canarymedia.com/articles/utilities/wepco-gas-data-centers",
+        "label": "Wisconsin utility's data center-driven gas expansion meets skepticism",
+        "publisher": "Canary Media",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "Built explicitly against data center demand: PSC Commissioner Kristy Nieto noted We Energies faces 'significant data center development' expected to require about 1,800 MW of capacity, of which the utility seeks to meet roughly 1,228 MW; the PSC later ruled data centers must pay 100% of the cost of the two new gas plants rather than 75%. investmentUsd records the stated 'more than $1.2 billion' figure as a floor; one source puts it nearer $1.3 billion. Coordinates are the existing Oak Creek power plant site. Verify current construction progress before publication — sources differ on whether the units are still 'proposed' or building.",
+    "investmentUsd": 1200000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Data center load in We Energies' southeastern Wisconsin territory (Microsoft, Vantage/OpenAI/Oracle)",
+      "notes": "Replaces aging coal units at the South Oak Creek plant (two units offline in 2024, two retired in 2025). Expected to emit more than 1.3 million tons of greenhouse gas annually, roughly 3.6 million tons less than continuing coal operations. Associated proposed components include an LNG storage terminal at Oak Creek (~$520 million) and the 33-mile Rochester Lateral pipeline (~$210 million)."
+    }
+  },
+  {
+    "id": "we-energies-paris-rice-wi",
+    "name": "We Energies Paris Generating Station RICE Units",
+    "operator": "We Energies (WEC Energy Group)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.6489,
+      "lon": -88.0087,
+      "city": "Paris",
+      "county": "Kenosha County",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 128
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-05-22",
+        "note": "Approved by the Wisconsin Public Service Commission alongside the Oak Creek gas project.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2025",
+        "note": "Construction beginning 2025, with completion expected in late 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/news/public-service-commission-approves-we-energies-plan-wisconsin-natural-gas-plants",
+        "label": "Public Service Commission approves We Energies' plan to build new Wisconsin natural gas plants",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.canarymedia.com/articles/utilities/wepco-gas-data-centers",
+        "label": "Wisconsin utility's data center-driven gas expansion meets skepticism",
+        "publisher": "Canary Media",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "The smaller of the two We Energies gas projects the PSC approved on May 22, 2025 to serve southeastern Wisconsin data center load. investmentUsd records the stated 'more than $270 million' figure as a floor; one source puts it nearer $300 million. Coordinates are a town-level locator near the existing Paris peaker site.",
+    "investmentUsd": 270000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Data center load in We Energies' southeastern Wisconsin territory (Microsoft, Vantage/OpenAI/Oracle)",
+      "unitCount": 7,
+      "notes": "Seven reciprocating internal combustion engines complementing the existing Paris peaker plant; expected to emit up to about 590,000 tons of greenhouse gas annually."
+    }
+  },
+  {
     "id": "wells-draw-energy-duchesne-county-ut",
     "name": "Wells Draw Energy Natural Gas Power Plant",
     "operator": "Wells Draw Energy, LLC",
@@ -77162,6 +78311,46 @@
     "aiClassification": "likely"
   },
   {
+    "id": "wylie-capital-broadway-merrillville-in",
+    "name": "Wylie Capital Broadway Data Center",
+    "operator": "Wylie Capital",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.4828,
+      "lon": -87.3328,
+      "city": "Merrillville",
+      "county": "Lake",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-11",
+        "note": "Reported as one of three early-stage Merrillville data center proposals.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.govtech.com/artificial-intelligence/2b-in-data-center-projects-planned-for-merrillville-ind",
+        "label": "$2B+ in Data Center Projects Planned for Merrillville, Ind.",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-09-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-01",
+    "notes": "A 1.2 million sq ft data center at Broadway, 93rd Avenue and Georgia Street in Merrillville, described as an early-stage proposal. Merrillville adopted a data center moratorium running 2026-06-01 through 2027-05-31.",
+    "investmentUsd": 600000000,
+    "jobs": {
+      "permanent": 200,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "xai-colossus-2-power-station-southaven-ms",
     "name": "Colossus 2 power station",
     "operator": "xAI",
@@ -77207,10 +78396,78 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-07-17",
         "kind": "other"
+      },
+      {
+        "url": "https://opcgis.deq.state.ms.us/ensearchonline/get_doc.aspx?dt=finalp&id=1834338",
+        "label": "PSD Air Construction Permit No. 0680-00119, MZX Tech LLC (AI 12592)",
+        "publisher": "Mississippi Department of Environmental Quality",
+        "retrievedAt": "2026-09-01",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-07-18",
+    "lastUpdated": "2026-09-01",
     "notes": "Former Duke Energy site on Stanton Rd, Southaven. ~46 turbines operational by May 2026; permitting contested — 41 permitted Mar 2026, additional turbines unpermitted; NAACP/Earthjustice/SELC litigation. Distinct facility from the separately tracked xAI Southaven data center (Colossus).",
+    "emissions": {
+      "permittedTpy": {
+        "hapsTotal": 24
+      },
+      "basis": "facility_wide",
+      "averagingPeriod": "rolling_12_month",
+      "unitsCovered": "forty-one (41) natural gas-fired simple cycle combustion turbines: seventeen Solar Titan Model PGM-130 (TUR-1 through TUR-17), sixteen Solar Titan Model 350 (TUR-18 through TUR-33), and eight ProEnergy Model 6000PE (TUR-34 through TUR-41)",
+      "permitNumber": "0680-00119",
+      "permitType": "psd",
+      "issuingAgency": "Mississippi Department of Environmental Quality",
+      "issuedDate": "2026-03-11",
+      "notes": "Permitted CEILINGS from MDEQ PSD Air Construction Permit 0680-00119 (permittee MZX Tech LLC, an xAI affiliate; AI 12592), not measured emissions. Every per-group tonnage is PER TURBINE on a 12-month rolling total basis — they are limits on each individual machine and must never be summed or multiplied by the unit count to state a facility total; the permit itself states no facility-wide tonnage for NOx, CO, VOC, SO2, PM10, PM2.5, NH3 or formaldehyde. SCOPE CAVEAT: this permit authorises 41 turbines, while this record's generation.unitCount of 59 describes the larger on-site fleet, which includes turbines operating without this permit and is the subject of NAACP/SELC/Earthjustice litigation filed 2026-04-14. The two counts measure different things and must not be reconciled by editing either. GHG: the permit sets CO2 as a rate only — BACT of 120 lb/MMBtu, short-term and long-term — with NO annual tonnage cap, so co2e is deliberately left undefined; a missing co2e here does not mean the facility has no GHG limit. HAPs: the only facility-wide caps in the permit are 24.0 tpy total combined HAPs and 9.50 tpy for any individual HAP (Condition 3.3, \"For the entire facility\"); the schema records the combined figure, and the per-individual cap has no field. The permit prints formaldehyde as \"CH2O\"; PM10 and PM2.5 are stated as filterable + condensable.",
+      "sourceIndex": 3,
+      "unitGroups": [
+        {
+          "label": "AA-000 — seventeen Solar Titan Model PGM-130 turbines (TUR-1 through TUR-17)",
+          "unitCount": 17,
+          "basis": "per_unit",
+          "permittedTpy": {
+            "nox": 5.6,
+            "co": 3.41,
+            "pm25": 0.27,
+            "pm10": 0.27,
+            "so2": 2.2,
+            "voc": 5.37,
+            "nh3": 5.18,
+            "formaldehyde": 0.12
+          }
+        },
+        {
+          "label": "AB-000 — sixteen Solar Titan Model 350 turbines (TUR-18 through TUR-33)",
+          "unitCount": 16,
+          "basis": "per_unit",
+          "permittedTpy": {
+            "nox": 11.38,
+            "co": 6.93,
+            "pm25": 0.55,
+            "pm10": 0.55,
+            "so2": 4.61,
+            "voc": 10.91,
+            "nh3": 10.53,
+            "formaldehyde": 0.24
+          }
+        },
+        {
+          "label": "AC-000 — eight ProEnergy Model 6000PE turbines (TUR-34 through TUR-41)",
+          "unitCount": 8,
+          "basis": "per_unit",
+          "permittedTpy": {
+            "nox": 15.47,
+            "co": 18.83,
+            "pm25": 0.75,
+            "pm10": 0.75,
+            "so2": 5.64,
+            "voc": 18.53,
+            "nh3": 28.62,
+            "formaldehyde": 0.46
+          }
+        }
+      ]
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
