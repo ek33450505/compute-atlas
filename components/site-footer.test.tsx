@@ -36,9 +36,15 @@ describe("SiteFooter", () => {
     expect(
       screen.getByText(/An open, source-cited survey of the U\.S\. compute buildout/i)
     ).toBeInTheDocument();
-    expect(
-      screen.getByText("An independent project by Edward Kubiak")
-    ).toBeInTheDocument();
+    expect(screen.getByText(/An independent project by/i)).toBeInTheDocument();
+  });
+
+  it("links the maintainer's name to their personal site, opened in a new tab", () => {
+    render(<SiteFooter />);
+    const maintainerLink = screen.getByRole("link", { name: "Edward Kubiak" });
+    expect(maintainerLink).toHaveAttribute("href", "https://edwardkubiak.com");
+    expect(maintainerLink).toHaveAttribute("target", "_blank");
+    expect(maintainerLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("renders the Explore and Data & project column labels", () => {
@@ -82,6 +88,10 @@ describe("SiteFooter", () => {
     expect(screen.getByRole("link", { name: "API" })).toHaveAttribute(
       "href",
       "/api"
+    );
+    expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute(
+      "href",
+      "/contact"
     );
     expect(
       screen.getByRole("link", { name: /Contribute a facility/i })

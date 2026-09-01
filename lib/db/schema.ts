@@ -1,4 +1,5 @@
 import {
+  boolean,
   customType,
   index,
   jsonb,
@@ -198,3 +199,37 @@ export const leadsTable = pgTable(
 );
 
 export type LeadRow = typeof leadsTable.$inferSelect;
+
+/**
+ * The public contact channel (`POST /api/contact`) — press/research/
+ * partnership/correction/other inquiries addressed to the maintainer. This is
+ * NOT a data intake: nothing here ever becomes a facility, a submission, or a
+ * lead, and no code path reads this table to influence live data. Facility
+ * tips stay on `/contribute` and `/api/leads`.
+ *
+ * Rows are stored (not just emailed) for two reasons: (1) durable per-IP rate
+ * limiting — an in-memory limiter is per-lambda on serverless and therefore
+ * near-useless across invocations, so `submitterIpHash` needs a real table to
+ * count against, same as `leadsTable`; (2) so a Resend failure never loses
+ * correspondence — `emailSent` records whether the notification actually went
+ * out, independent of whether the message itself was durably captured.
+ */
+export const contactMessagesTable = pgTable(
+  "contact_messages",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    topic: text("topic").notNull(), // press | research | partnership | correction | other
+    message: text("message").notNull(),
+    submitterIpHash: text("submitter_ip_hash"), // for rate limiting
+    emailSent: boolean("email_sent").notNull().default(false),
+  },
+  (table) => [
+    index("contact_messages_created_at_idx").on(table.createdAt.desc()),
+    index("contact_messages_submitter_ip_hash_idx").on(table.submitterIpHash),
+  ]
+);
+
+export type ContactMessageRow = typeof contactMessagesTable.$inferSelect;

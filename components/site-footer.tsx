@@ -44,7 +44,15 @@ export function SiteFooter() {
               corporation or government agency.
             </p>
             <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-              An independent project by Edward Kubiak
+              An independent project by{" "}
+              <a
+                href="https://edwardkubiak.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              >
+                Edward Kubiak
+              </a>
             </p>
           </div>
 
@@ -83,6 +91,11 @@ export function SiteFooter() {
               <li>
                 <Link href="/api" className={NAV_LINK_CLASS}>
                   API
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className={NAV_LINK_CLASS}>
+                  Contact
                 </Link>
               </li>
               <li>
