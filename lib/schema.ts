@@ -150,8 +150,8 @@ export const permittedTpySchema = z.object({
 // same force.
 export const emissionsUnitGroupSchema = z.object({
   // The permit's own name for this equipment group, verbatim (e.g. "Solar
-  // Titan 350 turbines (EPN 1-6)") — record the permit's wording, never a
-  // paraphrase or a summary of it.
+  // Titan 350 turbines (TURBINE-1 through TURBINE-5)") — record the permit's
+  // wording, never a paraphrase or a summary of it.
   label: z.string().min(1),
   // How many units of this group the permit covers, when it states one.
   unitCount: z.number().int().positive().optional(),

@@ -3334,6 +3334,21 @@
       "rock": "Sandstone"
     }
   },
+  "blue-ladder-wolcott-white-county-in": {
+    "nearestWater": {
+      "name": "Hoagland Ditch",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "bluebird-quad-cities-bettendorf-ia": {
     "nearestWater": {
       "name": "Mississippi River",
@@ -4884,6 +4899,29 @@
       "rock": "Carbonate-rock"
     }
   },
+  "cloverleaf-carlton-kewaunee-county-wi": {
+    "nearestWater": {
+      "name": "East Twin River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "cloverleaf-cherry-blossom-frenchtown-mi": {
     "nearestWater": {
       "name": "Shurtzer Drain",
@@ -4931,6 +4969,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "cloverleaf-wrightstown-village-wi": {
+    "nearestWater": {
+      "name": "Fox River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "cnx-zediker-station-south-strabane-washington-county-pa": {
@@ -9258,6 +9315,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "energysolutions-kewaunee-new-nuclear-wi": {
+    "nearestWater": {
+      "name": "Lake Michigan",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    }
+  },
   "entergy-bogalusa-west-solar-washington-parish-la": {
     "nearestWater": {
       "name": "Coburn Creek",
@@ -9417,6 +9493,25 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "epic-hosting-verona-wi": {
+    "nearestWater": {
+      "name": "Sugar River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "equinix-ashburn-va": {
@@ -12770,6 +12865,21 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "heartland-industrial-park-sullivan-county-in": {
+    "nearestWater": {
+      "name": "Turtle Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "helion-orion-malaga-wa": {
     "nearestWater": {
       "name": "Columbia River",
@@ -13813,6 +13923,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "jumping-bison-greensburg-decatur-county-in": {
+    "nearestWater": {
+      "name": "Sand Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "kairos-hermes-2-oak-ridge-tn": {
     "nearestWater": {
       "name": "Poplar Creek",
@@ -13830,6 +13959,21 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "karis-critical-deep-river-merrillville-in": {
+    "nearestWater": {
+      "name": "Deer Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "lambda-aligned-plano-tx": {
@@ -14145,6 +14289,21 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "logix-reality-frankfort-clinton-county-in": {
+    "nearestWater": {
+      "name": "Prairie Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "long-ferry-road-rowan-county-nc": {
@@ -16886,6 +17045,44 @@
       "rock": "Carbonate-rock"
     }
   },
+  "netsonic-green-bay-wi": {
+    "nearestWater": {
+      "name": "East River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "new-carlisle-chicago-trail-data-center-st-joseph-county-in": {
+    "nearestWater": {
+      "name": "Kankakee River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "new-day-ports-technology-campus-piketon-oh": {
     "nearestWater": {
       "name": "Big Beaver Creek",
@@ -17062,6 +17259,21 @@
     "aquifer": {
       "name": "Colorado Plateaus Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "nipsco-genco-schahfer-wheatfield-in": {
+    "nearestWater": {
+      "name": "Kankakee River",
+      "kind": "river",
+      "distanceMi": 4.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.6
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "northern-data-pryor-ok": {
@@ -17755,6 +17967,25 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "oppidan-beaver-dam-edge-wi": {
+    "nearestWater": {
+      "name": "Beaver Dam Lake",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     },
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
@@ -18832,6 +19063,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "prologis-shelbyville-in": {
+    "nearestWater": {
+      "name": "Big Blue River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "prologis-silver-creek-valley-san-jose-ca": {
     "nearestWater": {
       "name": "Coyote Creek",
@@ -18988,6 +19238,36 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "province-group-bristol-innovation-park-elkhart-county-in": {
+    "nearestWater": {
+      "name": "Saint Joseph River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "province-group-merrillville-technology-park-in": {
+    "nearestWater": {
+      "name": "Deer Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "prsm-group-cumberland-county-nc": {
     "nearestWater": {
       "name": "Cape Fear River",
@@ -19024,6 +19304,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "qlevr-charlestown-clark-county-in": {
+    "nearestWater": {
+      "name": "Pleasant Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     },
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
@@ -21332,6 +21631,21 @@
     "aquifer": {
       "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "sos-limited-park-falls-wi": {
+    "nearestWater": {
+      "name": "Flambeau River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 44.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "sovereign-gazelle-somerville-al": {
@@ -24222,6 +24536,21 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "vantage-pittsboro-in": {
+    "nearestWater": {
+      "name": "West Fork White Lick Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "vantage-quincy-wa11-wa": {
     "nearestWater": {
       "name": "Babcock Ridge Lake",
@@ -24667,6 +24996,48 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "we-energies-oak-creek-natural-gas-wi": {
+    "nearestWater": {
+      "name": "Lake Michigan",
+      "kind": "lake",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    }
+  },
+  "we-energies-paris-rice-wi": {
+    "nearestWater": {
+      "name": "Root River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "wells-draw-energy-duchesne-county-ut": {
     "nearestWater": {
       "name": "Duchesne River",
@@ -24912,6 +25283,21 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "wylie-capital-broadway-merrillville-in": {
+    "nearestWater": {
+      "name": "Sprout Ditch",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "xai-colossus-2-power-station-southaven-ms": {
