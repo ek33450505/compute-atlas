@@ -1,4 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
+import { describe, it, expect, vi, afterEach } from "vitest";
 
 import {
   selectGaps,
@@ -20,6 +24,7 @@ import {
   FIELD_DESCRIPTIONS,
   EXTRACTABLE_FIELDS,
   CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD,
+  atomicWriteJson,
   type AcceptedExtraction,
   type RunExtractDeps,
 } from "./extract-fields";
@@ -1958,5 +1963,187 @@ describe("parseArgs — --limit fail-open regression guard", () => {
   it("still leaves limit undefined (unbounded) when --limit is omitted entirely — the over-correction guard", () => {
     const args = parseArgs([]);
     expect(args.limit).toBeUndefined();
+  });
+});
+
+// Crash durability: a full sweep is ~17h, and both the sweep tools used to
+// write `--out` only once, at the very end — a hard crash (OOM, the machine
+// sleeping, Ollama dying, ^C) lost 100% of the work. `RunExtractDeps.checkpoint`
+// is the fix: an optional hook `runExtract` calls once per facility processed
+// so at most one facility's worth of work is ever lost. `atomicWriteJson`
+// (write-to-`.tmp`-then-rename) is what makes each checkpoint crash-safe in
+// isolation, independent of the per-facility cadence above.
+describe("runExtract — checkpoint (crash durability)", () => {
+  let dir: string;
+
+  afterEach(() => {
+    if (dir) {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  function makeCheckpointFacility(id: string, url: string): Facility {
+    return {
+      id,
+      name: `Facility ${id}`,
+      operator: "Test Operator",
+      status: "operational",
+      facilityType: "data_center",
+      confidence: "confirmed",
+      location: { lat: 30, lon: -90, city: "Testville", state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [{ url, label: "Press release", retrievedAt: "2026-01-01", kind: "press" }],
+      lastUpdated: "2026-01-01",
+    };
+  }
+
+  it("invokes checkpoint exactly once per facility processed over a multi-facility sweep, regardless of which per-facility outcome it takes", async () => {
+    // `runExtract` calls `deps.checkpoint?.()` from a SINGLE consolidated
+    // site — a `finally` block wrapping each facility's processing in the
+    // loop body — so it fires once per facility regardless of which path
+    // (unreadable/fetchFailures, `!candidate`, or a pushed candidate) that
+    // facility took. Asserting `toHaveBeenCalledTimes(3)` over three
+    // facilities that ALL took the same (candidate-produced) path would pass
+    // even if the `finally` were removed and replaced by a single call after
+    // the loop; routing one facility through each path is what makes this
+    // assertion able to catch a checkpoint silently reduced to firing only
+    // once per run, or skipped on some paths.
+    const facilities = ["a", "b", "c"].map((id) => makeCheckpointFacility(id, `https://example.com/${id}`));
+    const checkpoint = vi.fn();
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url === "https://example.com/c") {
+          // < MIN_READABLE_CHARS (400) — "unreadable" outcome, taking the
+          // `!result.sawAnyReadable` branch (still checkpointed via `finally`).
+          return { ok: true, text: "Too short to read.", finalUrl: url, httpStatus: 200 };
+        }
+        return {
+          ok: true,
+          text: `The facility has a planned capacity of 10 MW. ${"filler ".repeat(100)}`,
+          finalUrl: url,
+          httpStatus: 200,
+        };
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async (opts) => {
+        if (opts.userPrompt.includes("Facility b")) {
+          // Readable source, but the model finds nothing — `result.accepted`
+          // stays empty, so `candidate` stays null: takes the `if (!candidate)`
+          // branch (still checkpointed via `finally`).
+          return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "not mentioned" } };
+        }
+        return {
+          ok: true,
+          data: { value: 10, verbatimQuote: "planned capacity of 10 MW", reasonIfNull: null },
+        };
+      },
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+      checkpoint,
+    };
+
+    const summary = await runExtract(facilities, { fields: ["capacityMw.planned"], runId: "checkpoint-test" }, deps);
+
+    // Only facility "a" produced a candidate; "b" and "c" were processed
+    // (and each still checkpointed) without one.
+    expect(summary.candidates).toHaveLength(1);
+    expect(summary.candidates[0]?.enrichmentUpdate.targetFacilityId).toBe("a");
+    expect(checkpoint).toHaveBeenCalledTimes(3);
+  });
+
+  it("does not write anything when deps.checkpoint is omitted — mirrors main()'s dry-run wiring (no --out)", async () => {
+    dir = mkdtempSync(path.join(tmpdir(), "extract-fields-checkpoint-test-"));
+    const facility = makeCheckpointFacility("dry-run-facility", "https://example.com/dry-run-facility");
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => ({
+        ok: true,
+        text: `The facility has a planned capacity of 10 MW. ${"filler ".repeat(100)}`,
+        finalUrl: url,
+        httpStatus: 200,
+      }),
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 10, verbatimQuote: "planned capacity of 10 MW", reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+      // No `checkpoint` — exactly what main() leaves in place for a dry run
+      // (no --out). Nothing in `runExtract` should ever touch the filesystem
+      // on its own.
+    };
+
+    await runExtract([facility], { fields: ["capacityMw.planned"], runId: "dry-run-test" }, deps);
+
+    expect(readdirSync(dir)).toEqual([]);
+  });
+
+  it("preserves candidates found before an aborted sweep in the checkpointed file — a crash must never lose already-found work", async () => {
+    dir = mkdtempSync(path.join(tmpdir(), "extract-fields-checkpoint-test-"));
+    const outPath = path.join(dir, "candidates.json");
+
+    const goodFacilities = [
+      makeCheckpointFacility("good-a", "https://example.com/good-a"),
+      makeCheckpointFacility("good-b", "https://example.com/good-b"),
+    ];
+    const badFacilities = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD }, (_, i) =>
+      makeCheckpointFacility(`unfetchable-${i}`, `https://example.com/unfetchable-${i}`)
+    );
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url === "https://example.com/good-a") {
+          return {
+            ok: true,
+            text: `The facility has a planned capacity of 100 MW. ${"filler ".repeat(100)}`,
+            finalUrl: url,
+            httpStatus: 200,
+          };
+        }
+        if (url === "https://example.com/good-b") {
+          return {
+            ok: true,
+            text: `The facility has a planned capacity of 200 MW. ${"filler ".repeat(100)}`,
+            finalUrl: url,
+            httpStatus: 200,
+          };
+        }
+        return { ok: false, reason: "network_error", errorCode: "ECONNRESET" };
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async (opts) => {
+        if (opts.userPrompt.includes("Facility good-a")) {
+          return { ok: true, data: { value: 100, verbatimQuote: "planned capacity of 100 MW", reasonIfNull: null } };
+        }
+        if (opts.userPrompt.includes("Facility good-b")) {
+          return { ok: true, data: { value: 200, verbatimQuote: "planned capacity of 200 MW", reasonIfNull: null } };
+        }
+        return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "unused" } };
+      },
+      now: () => new Date("2026-08-16T00:00:00.000Z"),
+      checkpoint: (summary) => atomicWriteJson(outPath, summary.candidates),
+    };
+
+    const summary = await runExtract(
+      [...goodFacilities, ...badFacilities],
+      { fields: ["capacityMw.planned"], runId: "checkpoint-abort-test" },
+      deps
+    );
+
+    expect(summary.aborted).toBe(true);
+    expect(summary.candidates).toHaveLength(2);
+
+    const onDisk = JSON.parse(readFileSync(outPath, "utf-8")) as typeof summary.candidates;
+    expect(onDisk).toEqual(summary.candidates);
+    expect(onDisk.map((c) => c.enrichmentUpdate.targetFacilityId).sort()).toEqual(["good-a", "good-b"]);
+  });
+
+  it("atomicWriteJson writes valid JSON matching the input, and leaves no .tmp file behind", () => {
+    dir = mkdtempSync(path.join(tmpdir(), "extract-fields-checkpoint-test-"));
+    const outPath = path.join(dir, "out.json");
+    const payload = [{ a: 1 }, { b: 2 }];
+
+    atomicWriteJson(outPath, payload);
+
+    expect(JSON.parse(readFileSync(outPath, "utf-8"))).toEqual(payload);
+    expect(readdirSync(dir)).toEqual(["out.json"]);
   });
 });

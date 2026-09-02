@@ -18,6 +18,7 @@
 // NOT unit-anchored: anchoring on "MW" would hand the model pre-filtered evidence
 // and inflate recall. The real pipeline needs this same windowing for the same reason.
 import { readFileSync, writeFileSync } from "node:fs";
+import { htmlToText } from "./html.mjs";
 
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
 const HEAD_LIMIT = 20000;   // short docs pass through untouched
@@ -98,13 +99,17 @@ async function fetchOne(t) {
       if (!r.ok) { console.log(`  ${String(r.status).padStart(3)} skip  ${t.id}`); continue; }
       if (/pdf/i.test(r.headers.get("content-type") || "")) { console.log(`  pdf skip ${t.id}`); continue; }
       const html = await r.text();
-      // `<\/script\b[^>]*>` not `<\/script>`: HTML parsers tolerate whitespace AND
-      // stray junk inside an end tag (`</script >`, `</script\t\n bar>`). Without it, script contents survive the
-      // strip and land in the cached page text as if they were prose (CodeQL
-      // js/bad-tag-filter, flagged on PR #158). Mirrors SCRIPT_OR_STYLE_RE in
-      // scripts/discovery/fetch-page-text.ts — keep the two in step.
-      const full = html.replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, " ").replace(/<style\b[^>]*>[\s\S]*?<\/style\b[^>]*>/gi, " ")
-        .replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+      // htmlToText is a hand-ported copy of fetch-page-text.ts's `htmlToText`
+      // (scripts/discovery/bench/html.mjs) — script/style stripped WITH
+      // contents, remaining tags stripped, then entities decoded (named +
+      // decimal numeric), then whitespace collapsed. html-parity.test.ts
+      // keeps the two implementations in step. The tag-stripping regex was
+      // also harmonised to the shipped extractor's `/<[^>]+>/g` (one-or-more),
+      // replacing this file's old inline `/<[^>]*>/g` (zero-or-more) — the two
+      // disagree only on the literal input `<>`, which the old regex stripped
+      // and the shipped one leaves as text. Deliberate: the point is matching
+      // fetch-page-text.ts exactly, not preserving the old bench behavior.
+      const full = htmlToText(html);
       if (full.length < 400) { console.log(`  thin skip ${t.id} (${full.length}ch)`); continue; }
       const w = windowText(full, t.name, t.city);
       // Fail loudly: an empty/near-empty extract must never reach the cache and

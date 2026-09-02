@@ -1,4 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
+import { describe, it, expect, vi, afterEach } from "vitest";
 
 import {
   selectValuesToVerify,
@@ -7,7 +11,7 @@ import {
   parseArgs,
   type VerifyFieldsDeps,
 } from "./verify-fields";
-import { CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD } from "./extract-fields";
+import { CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD, atomicWriteJson } from "./extract-fields";
 import type { Facility } from "../../lib/schema";
 
 function makeFacility(overrides: {
@@ -857,5 +861,139 @@ describe("parseArgs — --limit fail-open regression guard", () => {
   it("still leaves limit undefined (unbounded) when --limit is omitted entirely — the over-correction guard", () => {
     const args = parseArgs([]);
     expect(args.limit).toBeUndefined();
+  });
+});
+
+// Crash durability — mirrors extract-fields.test.ts's own checkpoint suite.
+// `VerifyFieldsDeps.checkpoint` is called once per facility processed so a
+// hard crash mid-sweep loses at most one facility's worth of work instead of
+// the whole ~17h run. Unlike extract-fields.ts, `VerifyFieldsSummary`'s
+// per-outcome counts are tallied INCREMENTALLY inside the facility loop, so
+// checkpointing the whole summary object (not just a sub-field) is safe and
+// matches the final `--out` write's shape exactly.
+describe("runVerify — checkpoint (crash durability)", () => {
+  let dir: string;
+
+  afterEach(() => {
+    if (dir) {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("invokes checkpoint exactly once per facility processed over a multi-facility sweep", async () => {
+    const facilities = ["a", "b", "c"].map((id) =>
+      makeFacility({
+        id,
+        capacityMw: { operational: 100 },
+        sources: [{ url: `https://example.com/${id}`, label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
+      })
+    );
+    const pageText = `The facility has an operational capacity of 100 MW. ${"Filler sentence about the site. ".repeat(20)}`;
+    const checkpoint = vi.fn();
+
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null },
+      }),
+      now: fixedNow,
+      checkpoint,
+    };
+
+    const summary = await runVerify(facilities, { fields: ["capacityMw.operational"], runId: "checkpoint-test" }, deps);
+
+    expect(summary.confirmed).toBe(3);
+    expect(checkpoint).toHaveBeenCalledTimes(3);
+  });
+
+  it("does not write anything when deps.checkpoint is omitted — mirrors main()'s dry-run wiring (no --out)", async () => {
+    dir = mkdtempSync(path.join(tmpdir(), "verify-fields-checkpoint-test-"));
+    const facility = makeFacility({ id: "dry-run-facility", capacityMw: { operational: 100 } });
+    const pageText = `The facility has an operational capacity of 100 MW. ${"Filler sentence about the site. ".repeat(20)}`;
+
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: async (url) => ({ ok: true, text: pageText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: unexpectedPdfFetch,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null },
+      }),
+      now: fixedNow,
+      // No `checkpoint` — exactly what main() leaves in place for a dry run
+      // (no --out). Nothing in `runVerify` should ever touch the filesystem
+      // on its own.
+    };
+
+    await runVerify([facility], { fields: ["capacityMw.operational"], runId: "dry-run-test" }, deps);
+
+    expect(readdirSync(dir)).toEqual([]);
+  });
+
+  it("preserves results found before an aborted sweep in the checkpointed file — a crash must never lose already-found work", async () => {
+    dir = mkdtempSync(path.join(tmpdir(), "verify-fields-checkpoint-test-"));
+    const outPath = path.join(dir, "summary.json");
+
+    const goodFacility = makeFacility({
+      id: "good-facility",
+      capacityMw: { operational: 100 },
+      sources: [{ url: "https://example.com/good", label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
+    });
+    const badFacilities = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD }, (_, i) =>
+      makeFacility({
+        id: `bad-facility-${i}`,
+        capacityMw: { operational: 100 },
+        sources: [{ url: `https://example.com/bad-${i}`, label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
+      })
+    );
+
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url.includes("good")) {
+          return {
+            ok: true,
+            text: `The facility has an operational capacity of 250 MW. ${"Filler sentence about the site. ".repeat(20)}`,
+            finalUrl: url,
+            httpStatus: 200,
+          };
+        }
+        return { ok: false, reason: "network_error" };
+      },
+      fetchPdfTextImpl: unexpectedPdfFetch,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 250, verbatimQuote: "operational capacity of 250 MW", reasonIfNull: null },
+      }),
+      now: fixedNow,
+      checkpoint: (summary) => atomicWriteJson(outPath, summary),
+    };
+
+    const summary = await runVerify(
+      [goodFacility, ...badFacilities],
+      { fields: ["capacityMw.operational"], runId: "checkpoint-abort-test" },
+      deps
+    );
+
+    expect(summary.aborted).toBe(true);
+    expect(summary.disagreements).toBe(1);
+
+    const onDisk = JSON.parse(readFileSync(outPath, "utf-8")) as typeof summary;
+    // Same shape as the final --out write (the whole summary object) — a
+    // consumer must not be able to tell a checkpoint file from a final one.
+    expect(onDisk.runId).toBe(summary.runId);
+    expect(onDisk.disagreements).toBe(1);
+    expect(onDisk.results.some((r) => r.facilityId === "good-facility" && r.outcome === "disagreement")).toBe(true);
+  });
+
+  it("atomicWriteJson writes valid JSON matching the input, and leaves no .tmp file behind", () => {
+    dir = mkdtempSync(path.join(tmpdir(), "verify-fields-checkpoint-test-"));
+    const outPath = path.join(dir, "out.json");
+    const payload = { runId: "x", results: [] };
+
+    atomicWriteJson(outPath, payload);
+
+    expect(JSON.parse(readFileSync(outPath, "utf-8"))).toEqual(payload);
+    expect(readdirSync(dir)).toEqual(["out.json"]);
   });
 });

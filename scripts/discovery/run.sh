@@ -20,9 +20,10 @@ log() {
 # extract-fields.ts and verify-fields.ts both parse an unparseable --limit as
 # `undefined`, and an undefined limit means the bounding gaps.slice(0, limit)
 # is SKIPPED ENTIRELY — turning a ~60-value bounded lane into an unattended
-# sweep of ~3,629 gap values, roughly 17 hours of third-party-source
-# crawling (proportional rescale of the previously measured 12h/2,525-gap
-# figure to the current 4-field gap count — not a fresh measurement).
+# sweep of ~2,190 gap values (measured 2026-09-01 via selectGaps()), roughly
+# 10 hours of third-party-source crawling (proportional rescale of the
+# previously measured 12h/2,525-gap figure to the current 2-field gap
+# count — not a fresh measurement).
 # This matters specifically because this lane now runs unattended
 # via launchd, not by hand: a hand-run operator would see the runtime blow
 # up and kill it; a scheduled job will not. submit-candidates.ts already
@@ -517,20 +518,25 @@ fi
 if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
   log "DISCOVERY_DRY_RUN=true — skipping field-extraction/verification lane"
 else
-  # Bounded, not swept-to-completion: the four fields below total 3,629 gap
-  # values (measured 2026-09-01: capacityMw.operational 1,052 + energy.source
-  # 753 + energy.utility 718 + water.coolingType 1,106, over 1,309 records),
-  # and each takes ~6-7s per source check with ~3 checks per value — an
-  # unbounded run is roughly 17 hours (proportional rescale of the
-  # previously measured 12h/2,525-gap figure to the current 3,629-gap
-  # total, not a fresh measurement). Env-overridable so an operator can
-  # widen the sweep by hand without editing this script.
+  # Bounded, not swept-to-completion: the two fields below total 2,190 gap
+  # values (measured 2026-09-01 evening via selectGaps() against
+  # data/facilities.json: capacityMw.operational 1,074 + water.coolingType
+  # 1,116), and each takes ~6-7s per source check with ~3 checks per value —
+  # an unbounded run is roughly 10 hours (proportional rescale of the
+  # previously measured 12h/2,525-gap figure to the current 2,190-gap total;
+  # the gap COUNT above is freshly measured, the 10h DURATION is still a
+  # rescale, not a fresh timing measurement). Env-overridable so an operator
+  # can widen the sweep by hand without editing this script.
   #
-  # ⚠️ Adding a 4th field does NOT lengthen the run. selectGaps() iterates
-  # facilities outer × fields inner, and ENRICHMENT_LIMIT bounds the TOTAL
-  # number of gaps filled per run, not a per-field count — so a 4th field
-  # shifts the mix within the same fixed budget: fewer facilities get covered
-  # per night, but wall-clock time is unchanged.
+  # ⚠️ Dropping energy.source/energy.utility (F7, 2026-09-01 — see below) does
+  # NOT shorten a nightly run. selectGaps() iterates facilities outer ×
+  # fields inner, and ENRICHMENT_LIMIT bounds the TOTAL number of gaps filled
+  # per run, not a per-field count — so removing a field just shifts the mix
+  # within the same fixed budget: more facilities get covered per night for
+  # the two remaining fields, but wall-clock time per run is unchanged. What
+  # DOES shrink is the full-sweep horizon above (17h → 10h), since there are
+  # fewer total gaps to clear. The same logic runs in reverse for adding a
+  # field back: it would not lengthen a single run, only re-widen the horizon.
   ENRICHMENT_LIMIT="$(validate_positive_int_env ENRICHMENT_LIMIT 60)"
   VERIFY_LIMIT="$(validate_positive_int_env VERIFY_LIMIT 40)"
   ENRICHMENT_RUN_ID="$(date '+%Y%m%dT%H%M%S')-enrichment"
@@ -543,14 +549,16 @@ else
   # one, which is why this lane was never wired in before F0 step 3. Do not
   # remove --fields from the extract-fields call to "simplify" it.
   #
-  # ⚠️ But do NOT read this list as "four fields that passed the bench". Of
-  # the four fields pinned here, only TWO are bench-measured:
-  # capacityMw.operational (P=100%/R=100%) and water.coolingType (P=95%/R=95%,
-  # measured 2026-09-01 over 69 pages). energy.source (enum) and
-  # energy.utility (free text) remain unmeasured — no label in truth.json, no
-  # row in any result file. Pinning this list EXCLUDES the fields the bench
-  # rejected; it does not certify the ones it never measured. See
-  # docs/discovery-runbook.md's per-field table, which records this with "—".
+  # ⚠️ Every field pinned here IS bench-measured: capacityMw.operational
+  # (P=100%/R=100%) and water.coolingType (P=95%/R=95%, measured 2026-09-01
+  # over 69 pages). That was not true until 2026-09-01: energy.source (enum)
+  # and energy.utility (free text) were pinned here too, unmeasured, for
+  # months — no label in truth.json, no row in any result file — and were
+  # dropped from this nightly list for exactly that reason (F7: "either bench
+  # them or stop shipping them", resolved as "stop shipping"). They remain in
+  # EXTRACTABLE_FIELDS for deliberate manual invocation; do not re-add them
+  # here without bench numbers to back it. See docs/discovery-runbook.md's
+  # per-field table.
   #
   # ⚠️ water.coolingType's 95% belongs to the PROMPT, not the field. With a
   # bare vocabulary list and no decision rule, the same model on the same 69
@@ -565,10 +573,10 @@ else
   # and stages nothing, so the ship-safety caveat above does not apply to it
   # (docs/discovery-runbook.md says so explicitly, which is why the `npm run
   # verify-fields` wrapper deliberately bakes in no field list). Here the list
-  # is a SCOPE bound: it keeps the nightly check on the same four fields the
+  # is a SCOPE bound: it keeps the nightly check on the same two fields the
   # fill lane populates, and keeps the run inside its time budget. Widening it
   # for verify-fields is a cost question, not a safety one.
-  ENRICHMENT_FIELDS="capacityMw.operational,energy.source,energy.utility,water.coolingType"
+  ENRICHMENT_FIELDS="capacityMw.operational,water.coolingType"
 
   if ! command -v pdftotext >/dev/null 2>&1; then
     log "WARN: pdftotext not on PATH (poppler not installed) — every PDF source in this lane will go unread; continuing degraded"
@@ -601,10 +609,10 @@ else
     log "WARN: no enrichment candidates written for $ENRICHMENT_RUN_ID — skipping submit (nothing to stage)"
   fi
 
-  # verify-fields is read-only (never writes dataset data) and writes its
-  # --out file only at the very end of the run, so its stdout is redirected
-  # to a log file here — a crash without this would lose the whole run's
-  # findings instead of just the tail.
+  # verify-fields is read-only (never writes dataset data). Crash durability
+  # for its --out file is handled by its own per-facility checkpoint, not by
+  # this redirect; stdout is still sent to a log file here so a long run's
+  # progress output doesn't scroll off the terminal/launchd log buffer.
   VERIFY_OUTFILE="$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.json"
   log "verifying fields (limit=${VERIFY_LIMIT} fields=${ENRICHMENT_FIELDS})"
   if ! npx tsx --env-file=.env.local scripts/discovery/verify-fields.ts \

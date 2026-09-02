@@ -677,6 +677,109 @@ const WHY_COMMUNITIES_OPPOSE_EXPLAINER: GlossaryExplainer = {
   ],
 };
 
+/**
+ * Cited explainer for "why-connect-to-the-grid". Every claim traces to a
+ * source in `sources` below; quoted figures come from the source document,
+ * not from the tracked dataset. Do not reword, add figures, or otherwise
+ * "improve" this prose — each sentence is scoped to exactly what its cited
+ * source supports.
+ */
+const WHY_CONNECT_TO_THE_GRID_EXPLAINER: GlossaryExplainer = {
+  lede:
+    "A site that builds its own power plant and a site that connects to the grid are usually described as if they were alternatives. In the record, they are not — most large on-site generation arrangements do both, and the two decisions interact: what a site builds affects how fast it can connect, and how it connects decides who pays for the wires. What follows is what the cited sources establish about that arrangement, and where the record runs out.",
+  sections: [
+    {
+      heading: "A worked example: Project Evest in Louisiana",
+      evidence: "substantiated",
+      sourceIds: ["lpsc-evest"],
+      exemplarIds: ["entergy-pointe-coupee-cccts-la"],
+      body: [
+        "The clearest documented case of a large AI customer arranging for new dedicated-looking generation is Entergy Louisiana's Project Evest filing, submitted to the Louisiana Public Service Commission in March 2026. Entergy proposed seven new combustion turbine generators plus battery storage tied to a new large customer — but the filing does not describe that generation as dedicated to the customer. Asked directly whether the new plants' output would be devoted to the customer, Entergy testified: \"Each of the seven new CCCTs is expected to have a nameplate capacity of 754 MW. As to whether the output from the new CCCTs will be devoted to the Customer, the new CCCTs are being built to serve ELL's total system load in the future, which will include the load of this new customer. These new CCCTs will be a part of ELL's overall generation-resource portfolio, and ELL is seeking approval of the CCCTs as system resources.\" Entergy made the same claim for the co-located battery storage.",
+        "Entergy also testified that it needs the added capacity independent of this one customer, citing its own separate dockets for other generation: \"projected load (plus a planning reserve margin) exceeds the capacity of ELL's existing and LPSC-approved resources, which indicates a need for additional long-term capacity, and this need exists independent of the anticipated load associated with Project Evest.\" In this filing, building new generation and staying connected to the grid are not two competing options — the new plants join the utility's dispatchable fleet, and the grid connection is how their output (and everyone else's) actually gets delivered.",
+      ],
+    },
+    {
+      heading: "Owning generation can mean a shorter path onto the grid",
+      evidence: "substantiated",
+      sourceIds: ["orrick", "lpsc-evest"],
+      body: [
+        "One reason developers pursue on-site generation at all is speed. A law firm's guide to data-center power describes the trade-off developers weigh: \"Connecting hyperscale data center load to the interstate transmission grid is an increasingly complex, costly, and time-consuming process. Developers must carefully weigh the trade-offs between direct interconnection as a 'network load' and pairing with behind-the-meter generation.\" The same guide states that \"co-located generation provides enhanced reliability and may accelerate energization by enabling the data center to interconnect using the generator's existing or pending interconnection agreement.\"",
+        "One specific mechanism it describes is reusing an existing generator's interconnection rights rather than applying for new ones: \"where an aging coal plant operates at only 20% capacity, a developer may co-locate a new solar plant to supply the remaining interconnection capacity. By attaching to an existing interconnection agreement, the solar plant skips the interconnection queue.\" That queue is the generator interconnection queue — the process a power plant goes through to connect its own output to the grid — not a separate queue for data centers; the data center benefits indirectly, by co-locating with a generator that already holds a place in line.",
+        "Louisiana's Project Evest filing documents a related shortcut for genuinely new generation: some of Entergy's proposed plants were routed through an expedited study track rather than the standard queue. Entergy testified that \"all four of those CCCT generators were submitted to MISO pursuant to its Expedited Resource Addition Study ('ERAS') process, which is a temporary process used by MISO for expediting the study and approval of interconnection projects needed for resource adequacy and/or reliability needs.\" This, too, is a faster route through a generator queue, not a bypass of the grid connection itself.",
+      ],
+    },
+    {
+      heading: "Why connect to the grid at all, if you already have your own power",
+      evidence: "substantiated",
+      sourceIds: ["unison", "utility-dive"],
+      body: [
+        "Building on-site generation is not the same as leaving the grid. A microgrid vendor's account of how these arrangements work in practice states plainly that on-site generation and a utility connection are usually meant to run together, not as alternatives: \"data center developers could use microgrids concurrently with utility power as mechanical power load, back-up power supply during outages, and excess power exports.\" On that account, a site with its own plant still connects to the grid to draw supplemental power alongside its own generation, to fall back on during an outage, and in some cases to sell surplus power back.",
+        "Federal regulators have described wanting similar flexibility built into how the grid itself is planned. Utility Dive, reporting on FERC's approach to data-center interconnection, quoted Commissioner Judy Chang describing plans that \"contemplate running the system 'tighter' than we have done in the past, potentially with more loads on the system served by co-located or behind-the-meter generation, and potentially more use of batteries, load control systems, and backup resources to manage demand during system peaks or other stressed conditions.\" That description comes from Utility Dive's reporting of the Commissioner's remarks, not from the text of a FERC order.",
+      ],
+    },
+    {
+      heading: "Who pays for the wires depends on how a site connects",
+      evidence: "substantiated",
+      sourceIds: ["ferc-pjm-order", "lpsc-evest"],
+      body: [
+        "How a large load connects to the grid also decides who is on the hook for new transmission investment, and federal regulators have started to write that decision down explicitly — for one region. In December 2025, FERC ordered PJM, the grid operator for the mid-Atlantic and part of the Midwest, to require that a co-located load's customer of record take one of three defined services: \"we direct PJM to modify its Tariff to require that the Eligible Customer taking transmission service on behalf of the Co-Located Load takes one of three transmission services: (1) Network Integration Transmission Service (NITS), (2) a new Firm Contract Demand transmission service, or (3) a new Non-Firm Contract Demand transmission service.\" The order adds that \"we establish a paper hearing to determine the just and reasonable rates, terms, and conditions for these new transmission services\" — the specific rates were still an open question when the order issued, not a settled figure.",
+        "The Commission's stated reason was cost allocation. It found that PJM's existing behind-the-meter generation rules \"are no longer just and reasonable because loads with BTMG are not fully accounted for in resource adequacy planning and shift costs onto other transmission customers contrary to the Commission's cost causation principles\" — the principle that, as the order states, rates must \"reflect to some degree the costs actually caused by the customer who must pay for them.\" FERC has ordered PJM specifically to fix this. The order does not extend to other grid operators, and Project Evest's utility sits in a different one: Entergy Louisiana is in MISO, not PJM.",
+        "Louisiana applies its own version of the same cost-causation principle at the state level, separately from PJM's order. Entergy's Project Evest filing states that guidelines there \"require that ELL identify all required transmission upgrades that need to be constructed or have their planned construction accelerated due to the new load,\" and that ELL must demonstrate \"(1) network and interconnection costs caused by the load are fully assigned to the load, (2) no material transmission costs are shifted to existing customers that they otherwise might not bear or for which they do not receive commensurate benefits, and (3) upgrade timelines are consistent with the load ramp.\" It is the same underlying question FERC's order addresses for PJM — who pays for the wires — answered by a separate state rule, not by FERC's PJM order applied elsewhere.",
+      ],
+    },
+    {
+      heading: "What this page does not show",
+      evidence: "raised",
+      sourceIds: [],
+      body: [
+        "The FERC order above governs PJM only, and as of the order's issue date the specific rates for the three new transmission services were set for a future hearing, not yet decided. Nothing here establishes what those rates turned out to be, or whether another grid operator has adopted a comparable rule.",
+        "Project Evest is one utility's filing in one state. It documents how Entergy Louisiana chose to build and justify new generation for one customer; it is not evidence of how other utilities structure comparable arrangements elsewhere. A national figure for how much time an existing interconnection right typically saves, or how many projects use one, was not available from any source consulted for this page.",
+      ],
+    },
+  ],
+  sources: [
+    {
+      id: "lpsc-evest",
+      label: "Direct Testimony of Laura K. Beauchamp, Application for Certification of Generation and Transmission Resources (Project Evest), Public Redacted Version",
+      publisher: "Entergy Louisiana, LLC, filed with the Louisiana Public Service Commission — March 2026",
+      url: "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
+      verifiedAt: "2026-09-01",
+    },
+    {
+      id: "orrick",
+      label: "Powering Data Centers | Megawatts to Megabytes: Orrick's Guide to Developing, Financing & Powering Data Centers",
+      publisher: "Orrick, Herrington & Sutcliffe LLP — November 2025",
+      url: "https://www.orrick.com/en/Insights/2025/11/Powering-Data-Centers",
+      verifiedAt: "2026-09-01",
+      note: "A law firm's client-development content — informed, but marketing-adjacent.",
+    },
+    {
+      id: "unison",
+      label: "How Data Centers Use Microgrids After Utility Interconnection",
+      publisher: "Unison Energy",
+      url: "https://unisonenergy.com/resources/blog/onsite-generation-part-of-the-power-stack/",
+      verifiedAt: "2026-09-01",
+      note: "A microgrid vendor's blog — a commercial interest in the arrangement it describes.",
+    },
+    {
+      id: "utility-dive",
+      label: "6 takeaways from FERC's data center interconnection decision",
+      publisher: "Utility Dive",
+      url: "https://www.utilitydive.com/news/ferc-doe-data-center-interconnection/823360/",
+      verifiedAt: "2026-09-01",
+      note: "The Commissioner Chang quote is this article's reporting; it was not located verbatim in a primary FERC order document.",
+    },
+    {
+      id: "ferc-pjm-order",
+      label: "PJM Interconnection, L.L.C., 193 FERC ¶ 61,217, Docket No. EL25-49-000 (Co-Location Order), Dec. 18, 2025",
+      publisher: "Federal Energy Regulatory Commission",
+      url: "https://www.gravel2gavel.com/files/2025/12/E-1-EL25-49-000.pdf",
+      verifiedAt: "2026-09-01",
+      note: "The copy cited is a third-party law-firm mirror; ferc.gov and elibrary.ferc.gov both returned errors when fetched directly.",
+    },
+  ],
+};
+
 export const GLOSSARY_TOPICS: GlossaryTopic[] = [
   {
     slug: "data-center-water-use",
@@ -707,6 +810,12 @@ export const GLOSSARY_TOPICS: GlossaryTopic[] = [
     title: "Why do communities oppose data centers?",
     dek: "Noise, water use, land, and grid strain — the recurring reasons local communities push back on proposed data center projects.",
     explainer: WHY_COMMUNITIES_OPPOSE_EXPLAINER,
+  },
+  {
+    slug: "why-connect-to-the-grid",
+    title: "If a data center builds its own power plant, why does it still connect to the grid?",
+    dek: "On-site generation and a grid connection are usually not alternatives — the record shows both together, and how a site connects decides who pays for the wires.",
+    explainer: WHY_CONNECT_TO_THE_GRID_EXPLAINER,
   },
 ];
 
