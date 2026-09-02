@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { GLOSSARY_TOPICS, getGlossaryTopicBySlug } from "@/lib/glossary";
 
 describe("GLOSSARY_TOPICS", () => {
-  it("has exactly 5 curated topics", () => {
-    expect(GLOSSARY_TOPICS).toHaveLength(5);
+  it("has exactly 6 curated topics", () => {
+    expect(GLOSSARY_TOPICS).toHaveLength(6);
   });
 
   it("has unique slugs", () => {
@@ -11,7 +11,7 @@ describe("GLOSSARY_TOPICS", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
-  it("includes exactly the 5 expected slugs", () => {
+  it("includes exactly the 6 expected slugs", () => {
     const slugs = GLOSSARY_TOPICS.map((t) => t.slug).sort();
     expect(slugs).toEqual(
       [
@@ -19,6 +19,7 @@ describe("GLOSSARY_TOPICS", () => {
         "data-center-power-draw",
         "data-center-water-use",
         "what-is-an-ai-data-center",
+        "why-connect-to-the-grid",
         "why-do-communities-oppose-data-centers",
       ].sort()
     );
@@ -119,6 +120,7 @@ describe("GlossaryExplainer content", () => {
       "what-is-an-ai-data-center": { sections: 4, sources: 6 },
       "behind-the-meter-power": { sections: 6, sources: 2 },
       "why-do-communities-oppose-data-centers": { sections: 8, sources: 6 },
+      "why-connect-to-the-grid": { sections: 5, sources: 5 },
     };
 
     // Every topic must appear in the table, so a newly added topic cannot slip

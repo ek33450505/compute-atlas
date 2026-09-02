@@ -164,6 +164,21 @@ async function getTopicContent(slug: string): Promise<TopicContent | undefined> 
         crossLink: { href: "/opposition", label: "the opposition tracker" },
       };
     }
+    case "why-connect-to-the-grid": {
+      const genStats = await getGenerationStats();
+      return {
+        explainer:
+          genStats.count > 0
+            ? `Compute Atlas tracks ${genStats.count} dedicated power-generation project${genStats.count === 1 ? "" : "s"} built to power a data center on-site, with ${formatPower(genStats.operationalMw)} operational and ${formatPower(genStats.plannedMw)} planned. This page explains how such projects relate to the grid connection that usually accompanies them, and who pays for the transmission it uses.`
+            : "No dedicated power-generation projects are tracked yet.",
+        stats: [
+          { value: String(genStats.count), label: "Projects" },
+          { value: formatPower(genStats.operationalMw), label: "Operational" },
+          { value: formatPower(genStats.plannedMw), label: "Planned" },
+        ],
+        crossLink: { href: "/power", label: "the power generation hub" },
+      };
+    }
     default:
       return undefined;
   }

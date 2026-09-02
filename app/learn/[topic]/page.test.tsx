@@ -213,6 +213,57 @@ describe("LearnTopicPage", () => {
     );
   });
 
+  it("renders dataset-derived stat values from getGenerationStats on why-connect-to-the-grid, not a fabricated figure", async () => {
+    mockGetGenerationStats.mockResolvedValue({
+      count: 4,
+      operationalMw: 500,
+      plannedMw: 1000,
+      offtakerCount: 2,
+    });
+
+    const page = await LearnTopicPage({
+      params: Promise.resolve({ topic: "why-connect-to-the-grid" }),
+    });
+    render(page);
+
+    expect(screen.getByText("4")).toBeInTheDocument();
+    expect(screen.getByText("Projects")).toBeInTheDocument();
+    expect(screen.getByText("500 MW")).toBeInTheDocument();
+    expect(screen.getByText("Operational")).toBeInTheDocument();
+    expect(screen.getByText("1.0 GW")).toBeInTheDocument();
+    expect(screen.getByText("Planned")).toBeInTheDocument();
+  });
+
+  it("falls back to a zero-count explainer sentence on why-connect-to-the-grid when no generation projects are tracked", async () => {
+    const page = await LearnTopicPage({
+      params: Promise.resolve({ topic: "why-connect-to-the-grid" }),
+    });
+    render(page);
+
+    expect(
+      screen.getByText("No dedicated power-generation projects are tracked yet.")
+    ).toBeInTheDocument();
+  });
+
+  it("cross-links to the power generation hub on the why-connect-to-the-grid topic", async () => {
+    mockGetGenerationStats.mockResolvedValue({
+      count: 4,
+      operationalMw: 500,
+      plannedMw: 1000,
+      offtakerCount: 2,
+    });
+
+    const page = await LearnTopicPage({
+      params: Promise.resolve({ topic: "why-connect-to-the-grid" }),
+    });
+    render(page);
+
+    expect(screen.getByRole("link", { name: /power generation hub/ })).toHaveAttribute(
+      "href",
+      "/power"
+    );
+  });
+
   it("calls notFound (throws) for a slug that isn't in the glossary registry", async () => {
     await expect(
       LearnTopicPage({ params: Promise.resolve({ topic: "not-a-real-topic" }) })
