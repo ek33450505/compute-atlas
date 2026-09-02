@@ -223,15 +223,13 @@ quote gate; a PDF's raw bytes are never regexed.
 > default" — it means all six fields, including the two the bench measured as NOT
 > safe to ship (`capacityMw.planned` P=75%, `energy.onSiteGenerationMw` P=50%; see
 > the per-field table below). The pinned list is `capacityMw.operational`,
-> `energy.source`, `energy.utility`, `water.coolingType` — and only TWO of those
-> four are actually bench-measured: `capacityMw.operational` (P=100%/R=100%) and
-> `water.coolingType` (P=95%/R=95%). `energy.source` and `energy.utility` remain
-> **unmeasured, not validated**: the bench could only score numeric fields until
-> 2026-09-01, and neither string field has ever carried a label in `truth.json` or
-> appeared in a result file (the per-field table below states this correctly with
-> `—`). They are pinned because they are the fields we chose to run, not because
-> they cleared a bar. The `npm run` wrapper below bakes that list in so it cannot
-> be forgotten; treat a bare `extract-fields.ts` invocation as an operator error.
+> `water.coolingType` — both bench-measured: `capacityMw.operational` (P=100%/R=100%)
+> and `water.coolingType` (P=95%/R=95%). `energy.source` and `energy.utility` remain
+> **extractable but not pinned**: they were unmeasured (the bench could only score
+> numeric fields until 2026-09-01, and neither string field carried a label in
+> `truth.json`), so they do not run nightly; re-add them only after clearing the
+> bench. The `npm run` wrapper below bakes the pinned list in so it cannot be
+> forgotten; treat a bare `extract-fields.ts` invocation as an operator error.
 >
 > ⚠️ `water.coolingType`'s 95% belongs to the PROMPT, not to the field. The same
 > model on the same 69 pages scored P=53%/R=42% with a bare vocabulary list and no
@@ -251,7 +249,7 @@ npm run extract-fields                              # all gaps, safe fields only
 npm run extract-fields -- --facility=<facility-id>  # one facility
 ```
 
-The `extract-fields` script entry carries `--fields=capacityMw.operational,energy.source,energy.utility,water.coolingType`;
+The `extract-fields` script entry carries `--fields=capacityMw.operational,water.coolingType`;
 `npm run verify-fields` deliberately does NOT bake in a field list, because it only
 re-checks values already recorded and writes nothing — the ship-safety caveat above
 is about staging new values, so it does not apply there.
@@ -260,14 +258,14 @@ Equivalent long form, if you need a field list the wrapper doesn't cover:
 
 ```bash
 npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
-  --fields capacityMw.operational,energy.source
+  --fields capacityMw.operational,water.coolingType
 ```
 
 Real run (stages candidates for review):
 
 ```bash
 npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
-  --out /tmp/candidates.json --fields capacityMw.operational,energy.source
+  --out /tmp/candidates.json --fields capacityMw.operational,water.coolingType
 npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts /tmp/candidates.json
 npm run submissions -- list pending
 npm run submissions -- approve <id> "reviewed and verified"
@@ -275,7 +273,7 @@ npm run submissions -- approve <id> "reviewed and verified"
 
 **Flags:**
 - `--out <path>` — write candidates to a file (omit for dry run)
-- `--fields <list>` — comma-separated field names. **Defaults to all five fields, which is the unsafe set** — see the warning above; always pass it explicitly. An unknown name exits 1 rather than silently falling back to all five.
+- `--fields <list>` — comma-separated field names. **Defaults to all six fields, which is the unsafe set** — see the warning above; always pass it explicitly. An unknown name exits 1 rather than silently falling back to all six.
 - `--limit N` — cap the run at N *gaps*, not N facilities. A gap is one missing field on one facility, so `--limit 100` with two fields requested covers roughly 50–67 facilities. Size runs accordingly.
 - `--facility <id>` — restrict the run to one facility. Composes with `--limit` rather than overriding it: facilities are filtered first, then the gap cap still applies to what remains.
 - `--run-id=<id>` — custom run ID (defaults to `track5-${timestamp}`)
@@ -307,8 +305,8 @@ fields (re-run scoring with `node scripts/discovery/bench/rescore.mjs`):
 | `capacityMw.operational` | 100% | 100% | Strongest; safe to ship |
 | `capacityMw.planned` | 75% | 67% | Weaker; review each |
 | `energy.onSiteGenerationMw` | 50% | 100% | Weak precision; review each |
-| `energy.source` | — | — | Enum (`grid`/`on_site_gas`/`nuclear`/…); not bench-scored |
-| `energy.utility` | — | — | Free-text string; not bench-scored |
+| `energy.source` | — | — | Enum (`grid`/`on_site_gas`/`nuclear`/…); extractable but not pinned (unmeasured) |
+| `energy.utility` | — | — | Free-text string; extractable but not pinned (unmeasured) |
 | `water.coolingType` | 95% | 95% | **Shipped and pinned** (the 6th extractable field) — measured 2026-09-01 over all 69 pages (18 correct, 45 correct abstentions, 1 wrong, 0 hallucinations). ⚠️ The score is 53%/42% if the prompt omits the decision rule, so it holds ONLY for a prompt that carries `docs/methodology.md#cooling-type` verbatim. `hybrid` is unmeasured (zero positive labels). |
 
 The bench deliberately duplicates the shipped quote-gate logic (see

@@ -323,21 +323,21 @@ the per-state discovery loop and the source-liveness check. It can still be run 
 hand the same way. Two conditions the scheduled invocation has to keep meeting:
 
 - **`--fields` is passed explicitly** — the bare default is the unsafe six-field
-  set, two of which the bench measured as not safe to ship. `run.sh` pins four
+  set, two of which the bench measured as not safe to ship. `run.sh` pins two
   fields, and `tests/discovery/run.bats` asserts the flag is present for both
   tools (mutation-tested: deleting it fails the suite).
-  ⚠️ Of those four, TWO are bench-measured: `capacityMw.operational`
+  Both pinned fields are bench-measured: `capacityMw.operational`
   (P=100%/R=100%) and `water.coolingType` (P=95%/R=95%, measured 2026-09-01).
-  `energy.source` and `energy.utility` are **unmeasured** — the bench could not
-  score non-numeric fields until 2026-09-01, so neither has ever carried a label
-  or appeared in a result file. Pinning them excludes the two fields the bench
-  REJECTED; it does not certify the two it never scored.
+  `energy.source` and `energy.utility` remain extractable but are not pinned —
+  they were unmeasured (the bench could not score non-numeric fields until 2026-09-01,
+  and neither ever carried a label or appeared in a result file), so they do not
+  run nightly. Re-add either only after measuring.
 - **The `pending` staging gate is untouched.** Everything the lane produces goes
   through `submit-candidates.ts` and needs a human `approve`, exactly as before.
 
 Both tools are bounded by `ENRICHMENT_LIMIT` (default 60) and `VERIFY_LIMIT`
-(default 40), because an unbounded sweep over the current gap set is roughly 17
-hours (3,629 gaps across the four pinned fields as of 2026-09-01; a proportional
+(default 40), because an unbounded sweep over the current gap set is roughly 10
+hours (2,190 gaps across the two pinned fields, measured 2026-09-01; a proportional
 rescale of the previously measured 12h/2,525-gap figure, not a fresh timing run). Note these are validated in `run.sh` rather than trusted: an unparseable
 `--limit` parses to `undefined` in both scripts, and an undefined limit **skips the
 bounding slice entirely** — so a malformed value would silently unbound the run
@@ -373,10 +373,12 @@ caught in seconds only because the quote travelled with the value.
   were silently skipped, and a separate fetch failure caused a full sweep to
   report 1455 of 1545 gaps as unfetchable. Do not cite the older "5,650 field-gaps"
   headline — it is retracted. Re-run a sweep before drawing yield conclusions.
-- **Unmeasured fields** (`energy.source`, `energy.utility`): still unscored. The
-  bench covered only numeric fields until 2026-09-01, when `water.coolingType`
-  became the first non-numeric field measured (P=95%/R=95%) — but that machinery
-  has not been pointed at these two, so they remain alpha.
+- **Unmeasured fields** (`energy.source`, `energy.utility`): remain extractable
+  but are not pinned nightly because they have never been measured. The bench
+  covered only numeric fields until 2026-09-01, when `water.coolingType` became
+  the first non-numeric field measured (P=95%/R=95%) — but that machinery has
+  not been pointed at these two. Re-add either to the pinned list only after
+  measuring and confirming safety.
 - **PDF sources were unreadable until PR #199**, and the yield figure above was
   measured while they were. Every `.pdf` source was skipped outright — 96 of them
   across the dataset, disproportionately the permits and filings most likely to
