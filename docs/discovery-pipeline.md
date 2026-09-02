@@ -203,7 +203,7 @@ name `5C Data Center` but *rejects* `5C Group / Vultr Data Center (Prime Ohio)`,
 which is that facility's `name` in the dataset. A source that refers to a site by
 a different name — subsidiary, tenant, project codename, operator rather than
 site — can be rejected even though the citation is genuine. 241 of 937 records
-(26%) carry composite names of that shape. Read gate output with that in mind: a
+(26%) **as measured 2026-08-14** carry composite names of that shape. Read gate output with that in mind: a
 rejection is not proof that a citation is bad.
 
 ## Safety properties
@@ -361,8 +361,8 @@ caught in seconds only because the quote travelled with the value.
 ### Screening rules
 
 - **`>= 500 MW` on a `data_center`** is flagged for human review (flag in
-  `provenance.note` as `REVIEW: ...`), not an alarm. Of 854 live data centers,
-  108 already exceed 500 MW, so this is a routine queue item, not a red flag.
+  `provenance.note` as `REVIEW: ...`), not an alarm. Of 1,091 data_center records (as of 2026-09-01),
+  151 already have capacityMw.operational or capacityMw.planned >= 500 MW, so this is a routine queue item, not a red flag.
 
 ### Known limits and caveats
 

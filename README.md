@@ -77,8 +77,8 @@ these sites.
 
 ```console
 $ curl -s 'https://www.compute-atlas.com/api/stats'   # real response, 2026-09-01
-{"count":1309,"states":50,"operationalMw":27350.639999999996,
- "plannedMw":331916.5,"underConstructionMw":108001.2}
+{"count":1331,"states":50,"operationalMw":27350.639999999996,
+ "plannedMw":338247.5,"underConstructionMw":111329.2}
 ```
 
 The figures above are a point-in-time snapshot; the live endpoint is the authority.

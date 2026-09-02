@@ -241,15 +241,21 @@ quote gate; a PDF's raw bytes are never regexed.
 > scheduled, but never bare — it pins the field list explicitly, and a BATS test
 > fails if that flag is ever removed.
 
-Dry run (prints a summary, writes nothing) — the packaged form, with the safe
+Dry run (prints a summary, writes nothing) — the packaged form, with a curated
 field list already applied:
 
 ```bash
-npm run extract-fields                              # all gaps, safe fields only
+npm run extract-fields                              # four fields: see note below
 npm run extract-fields -- --facility=<facility-id>  # one facility
 ```
 
-The `extract-fields` script entry carries `--fields=capacityMw.operational,water.coolingType`;
+The `extract-fields` **npm wrapper** carries `--fields=capacityMw.operational,energy.source,energy.utility,water.coolingType`
+(four fields, not two). The **nightly unattended lane** (`scripts/discovery/run.sh:579`) is correctly pinned to only
+`capacityMw.operational,water.coolingType` — the two fields cleared by bench measurement.
+The wrapper's four-field list includes `energy.source` and `energy.utility`, which are NOT flagged unsafe but
+remain unmeasured (zero bench labels); a maintainer using the wrapper can capture them, but they route through
+the staging gate like any unvetted field.
+
 `npm run verify-fields` deliberately does NOT bake in a field list, because it only
 re-checks values already recorded and writes nothing — the ship-safety caveat above
 is about staging new values, so it does not apply there.
