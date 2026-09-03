@@ -5,6 +5,18 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.31.0](https://github.com/ek33450505/compute-atlas/compare/v1.30.0...v1.31.0) (2026-09-03)
+
+
+### Features
+
+* **discovery:** schedule the field-extraction lane in the nightly run ([#201](https://github.com/ek33450505/compute-atlas/issues/201)) ([c5443c2](https://github.com/ek33450505/compute-atlas/commit/c5443c2622cdbefa4c0b6d0921e5ec9484668b44))
+
+
+### Performance Improvements
+
+* **db:** cut Neon egress from preview branches and SELECT * ([#196](https://github.com/ek33450505/compute-atlas/issues/196)) ([8d89ac3](https://github.com/ek33450505/compute-atlas/commit/8d89ac374fadcff89e01cdb0d8e736c1e186560f))
+
 ## [1.30.0](https://github.com/ek33450505/compute-atlas/compare/v1.29.0...v1.30.0) (2026-08-31)
 
 
