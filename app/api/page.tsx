@@ -257,8 +257,12 @@ export default function ApiPage() {
           <div>
             <dt className="font-medium text-foreground">Bulk access</dt>
             <dd className="text-muted-foreground">
-              If you want the whole dataset rather than a query, take the
-              export instead of paging this API:{" "}
+              For the whole dataset with no query params, call{" "}
+              <code className={CODE}>GET /api/facilities</code> directly — it
+              reads the live database and is CDN-cached for up to an hour, so
+              it is the freshest bulk option this API offers.
+              If you would rather not page an API at all, take the export:
+              {" "}
               <a
                 href={mainBulkUrl}
                 target="_blank"
@@ -269,10 +273,10 @@ export default function ApiPage() {
                 data/facilities.json
               </a>
               . It is every record in one file, under the same CC-BY-4.0
-              terms, regenerated from the database on each publish and served
-              by GitHub&rsquo;s CDN. For a full-list consumer it is fresher
-              per request than a cached API response, and it costs this
-              project nothing to serve. That URL tracks the{" "}
+              terms, and it costs this project nothing to serve — but it is a
+              periodic snapshot regenerated from the database on a daily
+              schedule, not a live read, so treat it as good-enough-fresh
+              rather than current-to-the-minute. That URL tracks the{" "}
               <code className={CODE}>main</code> branch, so it is the
               current latest — it is not stable to cite, since its content
               changes under the same URL. To cite a reproducible snapshot,
