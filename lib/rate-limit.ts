@@ -2,7 +2,13 @@ import { createHash } from "node:crypto";
 import { and, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
-import { submissionsTable, subscriptionsTable, leadsTable, contactMessagesTable } from "@/lib/db/schema";
+import {
+  submissionsTable,
+  subscriptionsTable,
+  leadsTable,
+  contactMessagesTable,
+  apiAccessGrantsTable,
+} from "@/lib/db/schema";
 
 export const RATE_LIMIT_MAX = 5;
 export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -148,5 +154,41 @@ export async function checkEmailSendCap(email: string): Promise<{ ok: boolean }>
     .select({ c: sql<number>`count(*)::int` })
     .from(subscriptionsTable)
     .where(and(gt(subscriptionsTable.createdAt, windowStart), eq(subscriptionsTable.email, email)));
+  return { ok: Number(rows[0]?.c ?? 0) < EMAIL_SEND_CAP_MAX };
+}
+
+/**
+ * Per-IP rate limit for the bulk-API-access request endpoint
+ * (`POST /api/access/request`), counting `apiAccessGrantsTable` rows via its
+ * own `submitterIpHash` column — its own counter (own table, same
+ * MAX/WINDOW), same reasoning as `checkLeadRateLimit`/`checkContactRateLimit`.
+ * This guards the request-a-token endpoint from abuse; it is NOT the daily
+ * API-volume gate on the facilities-family routes (a separate mechanism,
+ * out of scope here).
+ */
+export async function checkAccessGrantRateLimit(ipHash: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(apiAccessGrantsTable)
+    .where(
+      and(gt(apiAccessGrantsTable.createdAt, windowStart), eq(apiAccessGrantsTable.submitterIpHash, ipHash))
+    );
+  return rateLimitDecision(Number(rows[0]?.c ?? 0));
+}
+
+/**
+ * Per-recipient cap on bulk-access-request magic-link emails, independent of
+ * the per-IP rate limit above — mirrors `checkEmailSendCap`'s reasoning
+ * (s65 security review, Fix 2): the IP limit alone doesn't stop a
+ * distributed attacker from email-bombing one victim across IPs. `email` is
+ * expected pre-normalized (lowercased/trimmed) by the caller.
+ */
+export async function checkAccessGrantEmailSendCap(email: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(apiAccessGrantsTable)
+    .where(and(gt(apiAccessGrantsTable.createdAt, windowStart), eq(apiAccessGrantsTable.email, email)));
   return { ok: Number(rows[0]?.c ?? 0) < EMAIL_SEND_CAP_MAX };
 }

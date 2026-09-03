@@ -50,6 +50,13 @@
       "when": 1788290430025,
       "tag": "0006_lovely_johnny_blaze",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788463956336,
+      "tag": "0007_tense_electro",
+      "breakpoints": true
     }
   ]
 }

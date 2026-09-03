@@ -72,6 +72,41 @@ export async function sendConfirmEmail(input: {
   }
 }
 
+export async function sendBulkAccessEmail(input: {
+  email: string;
+  confirmToken: string;
+}): Promise<{ sent: boolean }> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn("RESEND_API_KEY not set — skipping bulk access email send");
+    return { sent: false };
+  }
+
+  const confirmUrl = `${linkBase()}/api/access/confirm?token=${encodeURIComponent(input.confirmToken)}`;
+  const subject = "Your Compute Atlas bulk API access link";
+  const why =
+    "This exists to stop automated scraping and hammering of the API, not to gatekeep the data. " +
+    "The full dataset is still available with zero login at /data for anyone who just wants it once. " +
+    "This flow is only for people building a recurring or automated integration who want a higher, non-anonymous request ceiling.";
+  const text = `Confirm your Compute Atlas bulk API access: ${confirmUrl}\n\n${why}\n\nIf this wasn't you, ignore this email — nothing is granted unless you confirm.`;
+  const html = `<p><a href="${escapeHtml(confirmUrl)}">Confirm your Compute Atlas bulk API access</a></p><p>${escapeHtml(why)}</p><p>If this wasn't you, ignore this email — nothing is granted unless you confirm.</p>`;
+
+  try {
+    const result = await resend.emails.send({ from: fromAddress(), to: input.email, subject, text, html });
+    if (result.error) {
+      // Log only the error type, not the raw Resend error object — it can
+      // echo the recipient address back on a validation failure (s65
+      // security review, Fix 3).
+      console.error("sendBulkAccessEmail failed:", result.error?.name ?? "unknown");
+      return { sent: false };
+    }
+    return { sent: true };
+  } catch (error) {
+    console.error("sendBulkAccessEmail failed:", error instanceof Error ? error.name : "unknown");
+    return { sent: false };
+  }
+}
+
 export async function sendContactEmail(input: {
   name: string;
   email: string;

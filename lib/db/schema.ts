@@ -2,6 +2,7 @@ import {
   boolean,
   customType,
   index,
+  integer,
   jsonb,
   pgTable,
   text,
@@ -233,3 +234,39 @@ export const contactMessagesTable = pgTable(
 );
 
 export type ContactMessageRow = typeof contactMessagesTable.$inferSelect;
+
+/**
+ * Email-verified, revocable grant of a higher API request ceiling — NOT a
+ * user account. Same raw-single-use-token conventions as `subscriptionsTable`
+ * above (no hashing/signing — see that table's comment for the rationale):
+ * `confirmToken` is the one-time magic-link token, `accessToken` is the
+ * long-lived bearer credential minted only once, on confirm. This table is
+ * self-contained (schema + email + request/confirm routes) — nothing outside
+ * this file's Unit reads `accessToken` yet; wiring it into the actual
+ * `/api/facilities`-family rate gate is a separate unit, out of scope here.
+ */
+export const apiAccessGrantsTable = pgTable(
+  "api_access_grants",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    email: text("email").notNull(), // stored lowercased + trimmed
+    status: text("status").notNull().default("pending"), // pending | active | revoked
+    confirmToken: text("confirm_token").notNull(), // raw 256-bit base64url, single-use magic link
+    accessToken: text("access_token"), // raw 256-bit base64url, set on confirm; null until active
+    submitterIpHash: text("submitter_ip_hash"),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }), // confirmedAt + 90 days
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    requestCount: integer("request_count").notNull().default(0), // usage counter, visibility only for now
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("api_access_grants_status_idx").on(table.status),
+    uniqueIndex("api_access_grants_confirm_token_idx").on(table.confirmToken),
+    uniqueIndex("api_access_grants_access_token_idx").on(table.accessToken),
+    index("api_access_grants_ip_idx").on(table.submitterIpHash),
+  ]
+);
+
+export type ApiAccessGrantRow = typeof apiAccessGrantsTable.$inferSelect;
