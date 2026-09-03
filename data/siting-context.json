@@ -957,6 +957,21 @@
       "rock": "Carbonate-rock"
     }
   },
+  "american-tower-edc-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "Spring Creek",
+      "kind": "river",
+      "distanceMi": 2.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "american-tower-reedy-creek-charlotte-nc": {
     "nearestWater": {
       "name": "Back Creek",
@@ -5051,6 +5066,44 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "cogent-cheyenne-114-w-10th-wy": {
+    "nearestWater": {
+      "name": "Clear Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cogent-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "North Canadian River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "coinmint-massena-ny": {
     "nearestWater": {
       "name": "Raquette River",
@@ -6259,6 +6312,29 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "crypto-knight-hosting-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Lake Minnehaha",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "csquare-sfo1-ca": {
@@ -9248,6 +9324,29 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "enbridge-cowboy-solar-bess-laramie-county-wy": {
+    "nearestWater": {
+      "name": "Lake Minnehaha",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "enerfore-pleasant-valley-tioga-nd": {
@@ -13070,6 +13169,21 @@
       "rock": "Sandstone"
     }
   },
+  "host-digital-northeast-oklahoma-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "hostdime-eatonville-fl": {
     "nearestWater": {
       "name": "Lake Bell",
@@ -13091,6 +13205,21 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "hp-cherokee-data-center-tulsa-ok": {
+    "nearestWater": {
+      "name": "Coal Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "hunters-ridge-south-data-center-campus-spotsylvania-va": {
@@ -13803,6 +13932,21 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "jackson-technical-enguard-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "jailhouse-studios-chattanooga-tn": {
@@ -16562,6 +16706,21 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "midcon-recovery-solutions-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "milligan-1-wind-saline-ne": {
     "nearestWater": {
       "name": "South Fork Turkey Creek",
@@ -16906,6 +17065,29 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "ncar-wyoming-supercomputing-center-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Diamond Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "ne-edge-millstone-ct": {
@@ -17859,6 +18041,36 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "ocosa-321-south-boston-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "oklahoma-ai-ventures-black-bear-noble-county-ok": {
+    "nearestWater": {
+      "name": "Cow Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "oklo-aurora-pike-county-oh": {
     "nearestWater": {
       "name": "Atomic Energy Commission Pond",
@@ -18314,6 +18526,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "philcade-data-center-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "plan-c-crypto-fayetteville-cumberland-county-nc": {
     "nearestWater": {
       "name": "Beaver Creek",
@@ -18434,6 +18661,21 @@
     "aquifer": {
       "name": "Edwards-trinity Aquifer System",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "potentia-oklahoma-campus-02-inola-ok": {
+    "nearestWater": {
+      "name": "Pea Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "powerconnex-i-new-albany-oh": {
@@ -24278,6 +24520,74 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "truss-energy-carpenter-wy": {
+    "nearestWater": {
+      "name": "Porter Creek",
+      "kind": "river",
+      "distanceMi": 5.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "tulsa-technology-exchange-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "tulsaconnect-dc1-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "tulsaconnect-dc2-tulsa-ok": {
+    "nearestWater": {
+      "name": "Arkansas River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "tulsaconnect-downtown-dc5-tulsa-ok": {
     "nearestWater": {
       "name": "Arkansas River",
@@ -24386,6 +24696,21 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "valorc3-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "North Canadian River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "valorc3-st-george-ut": {
@@ -25226,6 +25551,21 @@
     "aquifer": {
       "name": "Valley And Ridge Carbonate-rock Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "windstream-wholesale-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "North Canadian River",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 11.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "wintersburg-313-tonopah-az": {
