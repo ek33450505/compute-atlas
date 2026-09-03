@@ -3,6 +3,7 @@ import { getDatasetEdition } from "@/lib/dataset-edition";
 import { cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
 import { extractClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
+import { checkDailyApiGate } from "@/lib/api-daily-limit";
 
 /**
  * Public aggregate dataset stats. Additive `edition` key carries the
@@ -12,6 +13,10 @@ import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 export async function GET(request: Request): Promise<Response> {
   const gate = checkApiRateLimit(extractClientIp(request));
   if (!gate.ok) return tooManyRequests(gate.retryAfter);
+
+  const dailyGate = await checkDailyApiGate(request);
+  if (!dailyGate.ok) return tooManyRequests(dailyGate.retryAfter ?? 60);
+
   const stats = await getStats();
   return cacheableJson(
     { ...stats, edition: getDatasetEdition() },

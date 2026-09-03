@@ -2,6 +2,7 @@ import {
   boolean,
   customType,
   index,
+  integer,
   jsonb,
   pgTable,
   text,
@@ -233,3 +234,66 @@ export const contactMessagesTable = pgTable(
 );
 
 export type ContactMessageRow = typeof contactMessagesTable.$inferSelect;
+
+/**
+ * Email-verified, revocable grant of a higher API request ceiling — NOT a
+ * user account. Same raw-single-use-token conventions as `subscriptionsTable`
+ * above (no hashing/signing — see that table's comment for the rationale):
+ * `confirmToken` is the one-time magic-link token, `accessToken` is the
+ * long-lived bearer credential minted only once, on confirm. This table is
+ * self-contained (schema + email + request/confirm routes) — nothing outside
+ * this file's Unit reads `accessToken` yet; wiring it into the actual
+ * `/api/facilities`-family rate gate is a separate unit, done below in
+ * `apiDailyUsageTable`.
+ */
+export const apiAccessGrantsTable = pgTable(
+  "api_access_grants",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    email: text("email").notNull(), // stored lowercased + trimmed
+    status: text("status").notNull().default("pending"), // pending | active | revoked
+    confirmToken: text("confirm_token").notNull(), // raw 256-bit base64url, single-use magic link
+    accessToken: text("access_token"), // raw 256-bit base64url, set on confirm; null until active
+    submitterIpHash: text("submitter_ip_hash"),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }), // confirmedAt + 90 days
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    requestCount: integer("request_count").notNull().default(0), // usage counter, visibility only for now
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("api_access_grants_status_idx").on(table.status),
+    uniqueIndex("api_access_grants_confirm_token_idx").on(table.confirmToken),
+    uniqueIndex("api_access_grants_access_token_idx").on(table.accessToken),
+    index("api_access_grants_ip_idx").on(table.submitterIpHash),
+  ]
+);
+
+export type ApiAccessGrantRow = typeof apiAccessGrantsTable.$inferSelect;
+
+/**
+ * Durable per-IP daily request counter for the public facilities-family read
+ * API (`GET /api/facilities`, `/api/search`, `/api/stats`, `/api/schema`,
+ * `/api/facilities/[id]`) — Track B2's anonymous ceiling. One row per
+ * (ipHash, UTC calendar day), incremented atomically via upsert. This is
+ * deliberately separate from `lib/api-rate-limit.ts`'s in-memory burst
+ * limiter (60/min): that one resets on cold start and can't hold a day-long
+ * sum. `day` is a plain "YYYY-MM-DD" string, matching this file's existing
+ * convention of storing simple date-only values as text rather than a
+ * Postgres date/timestamp type (see `facilitiesTable.lastUpdated`).
+ */
+export const apiDailyUsageTable = pgTable(
+  "api_daily_usage",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    ipHash: text("ip_hash").notNull(),
+    day: text("day").notNull(),
+    count: integer("count").notNull().default(0),
+  },
+  (table) => [
+    uniqueIndex("api_daily_usage_ip_hash_day_idx").on(table.ipHash, table.day),
+  ]
+);
+
+export type ApiDailyUsageRow = typeof apiDailyUsageTable.$inferSelect;

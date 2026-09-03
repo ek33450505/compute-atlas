@@ -100,3 +100,49 @@ describe("sendContactEmail", () => {
     expect(result.sent).toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// sendBulkAccessEmail
+// ---------------------------------------------------------------------------
+describe("sendBulkAccessEmail", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    resendSendMock.mockReset();
+  });
+
+  it("returns sent:false and does not call Resend when RESEND_API_KEY is unset", async () => {
+    const { sendBulkAccessEmail } = await import("./email");
+    const result = await sendBulkAccessEmail({ email: "reader@example.com", confirmToken: "tok123" });
+    expect(result.sent).toBe(false);
+    expect(resendSendMock).not.toHaveBeenCalled();
+  });
+
+  it("sends to the requester with a confirm link built from the token, and explains why the flow exists", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    resendSendMock.mockResolvedValue({ data: { id: "email-1" }, error: null });
+
+    const { sendBulkAccessEmail } = await import("./email");
+    const result = await sendBulkAccessEmail({ email: "reader@example.com", confirmToken: "tok123" });
+
+    expect(result.sent).toBe(true);
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    const args = resendSendMock.mock.calls[0][0];
+    expect(args.to).toBe("reader@example.com");
+    expect(args.subject).toContain("bulk API access");
+    expect(args.text).toContain("/api/access/confirm?token=tok123");
+    expect(args.html).toContain("/api/access/confirm?token=tok123");
+    // Ed's explicit requirement (2026-09-03): body must say plainly why this
+    // exists — not to gatekeep the data, and /data remains a zero-login path.
+    expect(args.text).toContain("not to gatekeep the data");
+    expect(args.text).toContain("/data");
+  });
+
+  it("returns sent:false when the Resend call throws", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    resendSendMock.mockRejectedValue(new Error("network failure"));
+
+    const { sendBulkAccessEmail } = await import("./email");
+    const result = await sendBulkAccessEmail({ email: "reader@example.com", confirmToken: "tok123" });
+    expect(result.sent).toBe(false);
+  });
+});
