@@ -1,0 +1,80 @@
+# Fails loudly if JSON<->Neon drift is STILL present late in the day — the
+# signal that the daily sync chain (neon-sync.yml) did not converge today.
+#
+# WHY A SEPARATE WORKFLOW, NOT A BLOCKING STEP ON EVERY PR:
+# Drift is normal and expected for hours after every prod approval — Neon
+# updates the instant a maintainer approves a submission or runs db:sync
+# --apply, and the committed JSON only catches up on the next sync cycle.
+# Making check:drift blocking on every PR would turn every unrelated PR red
+# for up to ~45h after a routine, correct prod approval (measured 2026-09-03:
+# neon-sync's cron itself runs 0.3-11.9h after its nominal 08:00 UTC trigger,
+# then whatever the merge lag adds on top). That punishes unrelated work for
+# a lag that has nothing to do with it — see ci.yml's existing
+# `check:drift (informational)` job for the same reasoning applied per-PR.
+#
+# So this runs on its OWN schedule, well after neon-sync's worst observed
+# start time (08:00 UTC + up to 11.9h ~= 19:54 UTC) plus room for that run's
+# own ~20min build:mapdata pass and PR merge to land. If drift STILL exists
+# by then, the automation chain itself broke — that is what deserves a red X
+# and GitHub's default failure notification, not the mere existence of drift.
+#
+# check-neon-drift.ts is deliberately non-blocking (always exits 0, see its
+# own header) so other callers of `npm run check:drift` keep that contract.
+# This workflow does NOT change that script; it greps its output instead, so
+# the shared drift detector stays exactly as advisory as it already was.
+#
+# The grep below intentionally omits the leading "✓ " — grep -q performs an
+# unanchored substring search, so it matches the full line regardless; kept
+# without the glyph so the pattern stays plain ASCII in this file.
+name: Neon Drift Alert
+
+on:
+  schedule:
+    - cron: "0 22 * * *"  # 22:00 UTC — past neon-sync's worst observed convergence time
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  drift-check:
+    name: Verify today's sync converged
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - name: Check JSON <-> Neon drift
+        if: env.DATABASE_URL != ''
+        id: drift
+        run: |
+          OUTPUT="$(npm run check:drift 2>&1)"
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "No drift detected between JSON and Neon"; then
+            echo "converged=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "converged=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report a stuck sync PR, if one exists
+        if: env.DATABASE_URL != '' && steps.drift.outputs.converged == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr list --head automated/neon-sync --state open \
+            --json number,createdAt,url \
+            --jq '.[] | "::error::Open unmerged sync PR #\(.number), opened \(.createdAt): \(.url)"' \
+            || true
+
+      - name: Fail if not converged
+        if: env.DATABASE_URL != '' && steps.drift.outputs.converged == 'false'
+        run: |
+          echo "::error::JSON<->Neon drift is still present past the daily sync's expected convergence window. See the drift output above and docs/architecture (or npm run check:drift locally) to diagnose."
+          exit 1

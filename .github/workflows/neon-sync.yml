@@ -41,11 +41,18 @@
 # Requires: DATABASE_URL as a repo secret (Settings → Secrets and variables → Actions).
 # If not configured, the workflow skips gracefully.
 #
-# CAVEAT: the auto-PR is opened with the default GITHUB_TOKEN, so it will NOT
-# trigger the CI / drift-check workflows on itself (GitHub loop-prevention). The
-# exported data is schema-valid by construction (scripts/export.ts validates the
-# full array against facilitiesSchema before writing), and a human reviews the PR
-# before merge. If CI on the auto-PR is ever wanted, swap GITHUB_TOKEN for a PAT.
+# NEON_SYNC_PAT (optional, added 2026-09-03): a fine-grained PAT scoped to this
+# repo only (Contents + Pull requests, read/write), owned by the maintainer. If
+# set, it is used as the PR-creation token instead of the default GITHUB_TOKEN,
+# which changes real behavior: GitHub does not trigger `pull_request`-scoped
+# workflows (ci.yml) off a GITHUB_TOKEN-authored PR (loop-prevention), but WILL
+# trigger them off a PAT-authored one. With the PAT, this PR gets a real CI run
+# for the first time, and `gh pr merge --auto` waits for those checks to pass
+# before merging — it does not bypass branch protection, it satisfies it
+# normally. Without the PAT, behavior is UNCHANGED from before: the PR opens,
+# no CI runs on it, and a maintainer merges by hand (as has always happened —
+# every historical sync PR was merged manually by an admin, since required
+# checks can never pass without one). Investigated and confirmed 2026-09-03.
 
 name: Neon→JSON Sync
 
@@ -71,6 +78,7 @@ jobs:
     # conditions — the `secrets` context is NOT available in `if:` expressions.
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -146,7 +154,11 @@ jobs:
       - name: Create PR if drift detected
         if: steps.check-drift.outputs.drift == 'true'
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        id: create-pr
         with:
+          # Falls back to the default token when the PAT isn't configured —
+          # same graceful-degradation shape as the DATABASE_URL check above.
+          token: ${{ env.NEON_SYNC_PAT || github.token }}
           branch: automated/neon-sync
           base: main
           title: "chore(data): sync facilities.json with Neon"
@@ -177,3 +189,16 @@ jobs:
             public/data/aquifers.geojson
             public/data/map-layers.json
             public/data/hero-points.json
+
+      # Native GitHub auto-merge: merges once the PR's required checks report
+      # success. Does NOT bypass branch protection — if the PAT isn't set (so
+      # no CI ever runs on this PR) or a check genuinely fails, this call
+      # schedules a merge that will simply never become eligible, and the PR
+      # sits for manual attention exactly as it always has. Skipped entirely
+      # when the PAT isn't configured, since there would be nothing for it to
+      # wait on.
+      - name: Enable auto-merge
+        if: steps.check-drift.outputs.drift == 'true' && env.NEON_SYNC_PAT != ''
+        env:
+          GH_TOKEN: ${{ env.NEON_SYNC_PAT }}
+        run: gh pr merge "${{ steps.create-pr.outputs.pull-request-number }}" --squash --auto
