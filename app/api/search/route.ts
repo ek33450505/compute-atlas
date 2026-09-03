@@ -2,6 +2,7 @@ import { searchFacilitiesDb, MAX_SEARCH_QUERY_LEN } from "@/lib/search-db";
 import { cacheableJson, corsPreflight, jsonResponse, READ_CACHE } from "@/lib/api-response";
 import { extractClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
+import { checkDailyApiGate } from "@/lib/api-daily-limit";
 
 /**
  * Public full-text facility search over the DB `search_vector` (name +
@@ -25,6 +26,9 @@ import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 export async function GET(request: Request): Promise<Response> {
   const gate = checkApiRateLimit(extractClientIp(request));
   if (!gate.ok) return tooManyRequests(gate.retryAfter);
+
+  const dailyGate = await checkDailyApiGate(request);
+  if (!dailyGate.ok) return tooManyRequests(dailyGate.retryAfter ?? 60);
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q") ?? "";

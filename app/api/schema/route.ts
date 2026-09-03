@@ -3,11 +3,15 @@ import { facilitySchema } from "@/lib/schema";
 import { jsonResponse, cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
 import { extractClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
+import { checkDailyApiGate } from "@/lib/api-daily-limit";
 
 /** Public JSON Schema export of the facility shape, for API consumers. */
 export async function GET(request: Request): Promise<Response> {
   const gate = checkApiRateLimit(extractClientIp(request));
   if (!gate.ok) return tooManyRequests(gate.retryAfter);
+
+  const dailyGate = await checkDailyApiGate(request);
+  if (!dailyGate.ok) return tooManyRequests(dailyGate.retryAfter ?? 60);
 
   try {
     return cacheableJson(z.toJSONSchema(facilitySchema), READ_CACHE.schema);

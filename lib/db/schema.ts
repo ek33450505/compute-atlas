@@ -243,7 +243,8 @@ export type ContactMessageRow = typeof contactMessagesTable.$inferSelect;
  * long-lived bearer credential minted only once, on confirm. This table is
  * self-contained (schema + email + request/confirm routes) — nothing outside
  * this file's Unit reads `accessToken` yet; wiring it into the actual
- * `/api/facilities`-family rate gate is a separate unit, out of scope here.
+ * `/api/facilities`-family rate gate is a separate unit, done below in
+ * `apiDailyUsageTable`.
  */
 export const apiAccessGrantsTable = pgTable(
   "api_access_grants",
@@ -270,3 +271,29 @@ export const apiAccessGrantsTable = pgTable(
 );
 
 export type ApiAccessGrantRow = typeof apiAccessGrantsTable.$inferSelect;
+
+/**
+ * Durable per-IP daily request counter for the public facilities-family read
+ * API (`GET /api/facilities`, `/api/search`, `/api/stats`, `/api/schema`,
+ * `/api/facilities/[id]`) — Track B2's anonymous ceiling. One row per
+ * (ipHash, UTC calendar day), incremented atomically via upsert. This is
+ * deliberately separate from `lib/api-rate-limit.ts`'s in-memory burst
+ * limiter (60/min): that one resets on cold start and can't hold a day-long
+ * sum. `day` is a plain "YYYY-MM-DD" string, matching this file's existing
+ * convention of storing simple date-only values as text rather than a
+ * Postgres date/timestamp type (see `facilitiesTable.lastUpdated`).
+ */
+export const apiDailyUsageTable = pgTable(
+  "api_daily_usage",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    ipHash: text("ip_hash").notNull(),
+    day: text("day").notNull(),
+    count: integer("count").notNull().default(0),
+  },
+  (table) => [
+    uniqueIndex("api_daily_usage_ip_hash_day_idx").on(table.ipHash, table.day),
+  ]
+);
+
+export type ApiDailyUsageRow = typeof apiDailyUsageTable.$inferSelect;

@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/api-auth";
 import { updateFacility, deleteFacility } from "@/lib/facility-write";
 import { extractClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
+import { checkDailyApiGate } from "@/lib/api-daily-limit";
 
 /** Public single-facility lookup by id. */
 export async function GET(
@@ -12,6 +13,9 @@ export async function GET(
 ): Promise<Response> {
   const gate = checkApiRateLimit(extractClientIp(request));
   if (!gate.ok) return tooManyRequests(gate.retryAfter);
+
+  const dailyGate = await checkDailyApiGate(request);
+  if (!dailyGate.ok) return tooManyRequests(dailyGate.retryAfter ?? 60);
 
   const { id } = await params;
   const facility = await getFacilityById(id);
