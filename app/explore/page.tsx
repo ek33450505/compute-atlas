@@ -82,6 +82,12 @@ const LENSES = [
       "Plain-language explainers behind the dataset — data center water and power use, what counts as an AI facility, and why communities push back.",
   },
   {
+    label: "Download",
+    href: "/data",
+    description:
+      "The full dataset as CSV or JSON — no login, no query parameters, no explanation required.",
+  },
+  {
     label: "API",
     href: "/api",
     description:
@@ -126,7 +132,7 @@ export default async function ExplorePage() {
             lenses on the same source-cited dataset — by
             geography, lifecycle stage, power and facility type, community
             reception, and who&rsquo;s building it, plus rankings, the glossary,
-            and the API directly.
+            the dataset download, and the API directly.
           </p>
         </div>
         <div className="border-t border-border" />
