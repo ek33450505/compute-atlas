@@ -13,6 +13,7 @@ const ROUTES = [
   "/contact",
   "/methodology",
   "/api",
+  "/data",
 ] as const;
 
 // Tags covering WCAG 2.x AA + 2.2 AA

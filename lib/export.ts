@@ -32,6 +32,8 @@ export const CSV_COLUMNS: CsvColumn[] = [
   { header: "announced_date", value: (f) => f.announcedDate },
   { header: "last_updated", value: (f) => f.lastUpdated },
   { header: "detail_url", value: (f) => `${siteConfig.url}/facilities/${f.id}` },
+  { header: "source_count", value: (f) => f.sources.length },
+  { header: "primary_source_url", value: (f) => f.sources[0]?.url },
 ];
 
 // Wrap in quotes + double internal quotes only when the field contains , " CR or LF.

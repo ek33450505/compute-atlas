@@ -52,9 +52,13 @@ export function OpenRecord({
     },
     {
       label: "Access",
-      value: "API + RSS",
+      value: "Download + API",
       sub: (
         <>
+          <Link href="/data" className={TRAILING_LINK_CLASS}>
+            Download
+          </Link>{" "}
+          ·{" "}
           <Link href="/api" className={TRAILING_LINK_CLASS}>
             JSON API
           </Link>{" "}

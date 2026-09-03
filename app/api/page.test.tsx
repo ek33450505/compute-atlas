@@ -152,4 +152,33 @@ describe("ApiPage — How to cite", () => {
 
     expect(screen.getByText("API reference · Edition v1.30.0")).toBeInTheDocument();
   });
+
+  it("shows the Zenodo concept DOI instead of the old no-DOI placeholder", () => {
+    mockGetDatasetEdition.mockReturnValue({
+      version: "1.30.0",
+      asOf: "2026-09-01T16:58:23.496Z",
+      recordCount: 1309,
+      schemaVersion: 1,
+    });
+
+    render(<ApiPage />);
+
+    const doiLink = screen.getByRole("link", {
+      name: /compute atlas concept doi on zenodo/i,
+    });
+    expect(doiLink).toHaveAttribute(
+      "href",
+      "https://doi.org/10.5281/zenodo.22284476"
+    );
+
+    const persistentIdHeading = screen.getByText("Persistent identifier");
+    const persistentIdBlock = persistentIdHeading.nextElementSibling;
+    expect(persistentIdBlock).not.toBeNull();
+    const persistentIdText = persistentIdBlock!.textContent ?? "";
+
+    expect(persistentIdText).toContain(
+      "https://doi.org/10.5281/zenodo.22284476"
+    );
+    expect(persistentIdText).not.toContain("No DOI is assigned");
+  });
 });
