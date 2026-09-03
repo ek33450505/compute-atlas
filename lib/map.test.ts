@@ -30,7 +30,7 @@ const facilityFull: Facility = {
     {
       url: "https://example.com/source",
       label: "Example Article",
-      retrievedAt: "2024-01",
+      retrievedAt: "2024-01-01",
       kind: "press",
     },
   ],
@@ -56,7 +56,7 @@ const facilityNoCapacity: Facility = {
     {
       url: "https://example.com/source2",
       label: "Filing",
-      retrievedAt: "2024-01",
+      retrievedAt: "2024-01-01",
       kind: "permit",
     },
   ],

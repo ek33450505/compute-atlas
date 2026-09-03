@@ -32,7 +32,14 @@ export const sourceSchema = z.object({
     ),
   label: z.string().min(1),
   publisher: z.string().optional(),
-  retrievedAt: z.string().min(4),
+  // Strict YYYY-MM-DD. A looser rule (min-length) silently accepted month-precision
+  // and bare-year values from hand-curated research waves, and — because nothing
+  // rejected them — publication dates entered in place of retrieval dates. Every
+  // programmatic producer already emits a full date, so this only constrains
+  // curation. See docs/methodology.md#scope-and-known-limitations.
+  retrievedAt: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "retrievedAt must be an ISO date (YYYY-MM-DD)"),
   kind: sourceKindEnum.default("other"),
 });
 

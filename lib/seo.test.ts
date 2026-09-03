@@ -35,7 +35,7 @@ const baseFacility: Facility = {
     {
       url: "https://example.com/source",
       label: "Example source",
-      retrievedAt: "2025-01",
+      retrievedAt: "2025-01-01",
       kind: "press",
     },
   ],

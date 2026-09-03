@@ -41,7 +41,7 @@ function makeFacility(overrides: Partial<Facility> = {}): Facility {
     capacityMw: { operational: 150 },
     statusHistory: [],
     sources: [
-      { url: "https://example.com", label: "Example source", retrievedAt: "2025-01", kind: "press" },
+      { url: "https://example.com", label: "Example source", retrievedAt: "2025-01-01", kind: "press" },
     ],
     lastUpdated: "2026-01-01",
     ...overrides,

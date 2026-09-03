@@ -326,6 +326,66 @@ cooling water circuit at all. Operators frequently market a closed-loop design
 as "air-cooled," so the marketing phrase alone does not decide the value — the
 presence of a recirculating water circuit does.
 
+## Scope and known limitations
+
+Compute Atlas is a curated dataset, not a census. What follows is the honest
+shape of its coverage — the things worth knowing before using it for analysis.
+The figures are measured against the published export and carry an as-of date;
+recompute them from the export rather than quoting them indefinitely.
+
+**Collection began on 2026-07-05.** There is no cutoff date and nothing is
+excluded for being old: the earliest dated event in the set is 1999. But the
+dataset is assembled from the public record that the current buildout
+generates — county planning portals, utility interconnection queues, securities
+filings, local reporting. That record is far thicker for sites being proposed
+and built now than for sites that opened a decade ago, so coverage skews recent.
+
+**It is not exhaustive.** The set is well short of the total US data center
+population, and no claim of completeness is made for any state, operator, or
+status. A facility's absence is not evidence it does not exist.
+
+**Coverage is uneven by status, and most so for operational sites.** Measured
+2026-09-03 across 1,351 records, the share of records carrying a dated
+`statusHistory` entry:
+
+| Status | Records | With a dated history |
+| --- | --- | --- |
+| `operational` | 616 | 189 (31%) |
+| `under_construction` | 238 | 195 (82%) |
+| `permitted` | 103 | 87 (84%) |
+| `proposed` | 336 | 254 (76%) |
+| `cancelled` | 58 | 41 (71%) |
+
+The operational cohort is the outlier. An announcement, a permit or a
+groundbreaking produces a dated public record; a site that has simply been
+running for years often produces none, so its commissioning date is frequently
+unrecoverable from citable sources. Of the operational records that *are* dated,
+62% fall in 2024 or later.
+
+⚠️ **This matters for any analysis comparing proposed against built.** The built
+side of that comparison is both less completely covered and less completely
+dated than the proposed side. A difference between the two cohorts may reflect
+that asymmetry in the sourcing rather than anything about the facilities. Treat
+the proposed/under-construction cohorts as the better-evidenced half.
+
+**Other things to know:**
+
+- **Absent is not zero.** Optional fields — capacity, water, jobs, subsidies,
+  emissions — are omitted when no citable source published a figure. An empty
+  field means "not established," never "none."
+- **19.4% of records cite at least one primary document** (a `permit`, `filing`,
+  `iso_queue`, or `subsidy` source). The rest rest on reporting. Read the `kind`
+  mix alongside `confidence` (542 `confirmed`, 800 `reported`, 9 `rumored`).
+- **Coordinates vary in precision.** 586 records are `exact` footprints; 763 are
+  `approximate` geocodes of a town or parcel centroid. Check
+  `location.precision` before doing distance or spatial work.
+- **Some records are deliberately aggregates.** A multi-building campus or a
+  carrier hotel with many tenants may be one record rather than many, because
+  the site is the meaningful unit. Where this applies, `notes` says so.
+- **`retrievedAt` is the date a source was fetched**, not its publication date.
+  26 entries that conflated the two were corrected on 2026-09-03, and the schema
+  now requires a full `YYYY-MM-DD` date so the two cannot be confused again.
+
 ## See also
 
 - [`README.md`](../README.md) — what the dataset is and the public API.

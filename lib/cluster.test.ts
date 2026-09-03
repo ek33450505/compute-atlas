@@ -18,7 +18,7 @@ import type { Facility } from "@/lib/schema";
 const SOURCE = {
   url: "https://example.com",
   label: "Example",
-  retrievedAt: "2024-01",
+  retrievedAt: "2024-01-01",
   kind: "press" as const,
 };
 

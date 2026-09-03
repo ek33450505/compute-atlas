@@ -897,3 +897,20 @@ describe("emissionsSchema — unitGroups", () => {
     }
   });
 });
+
+describe("sourceSchema — retrievedAt format", () => {
+  it("accepts a full ISO date", () => {
+    expect(sourceSchema.safeParse({ ...baseSource, retrievedAt: "2026-07-06" }).success).toBe(true);
+  });
+
+  // Regression: the rule was `z.string().min(4)`, which accepted every value below.
+  // Month-precision and bare-year values reached the published dataset, and because
+  // nothing rejected them, article PUBLICATION dates were entered in this field too —
+  // 26 such entries were corrected on 2026-09-03. Loosening this rule reopens that.
+  it.each(["2026-07", "2026", "26-07-06", "2026-7-6", "not-a-date", ""])(
+    "rejects %j",
+    (retrievedAt) => {
+      expect(sourceSchema.safeParse({ ...baseSource, retrievedAt }).success).toBe(false);
+    },
+  );
+});

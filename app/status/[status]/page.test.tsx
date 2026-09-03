@@ -30,7 +30,7 @@ function makeFacility(overrides: Partial<Facility> = {}): Facility {
     location: { lat: 40, lon: -90, city: "Springfield", state: "IL", precision: "exact" },
     statusHistory: [],
     sources: [
-      { url: "https://example.com", label: "Example source", retrievedAt: "2025-01", kind: "press" },
+      { url: "https://example.com", label: "Example source", retrievedAt: "2025-01-01", kind: "press" },
     ],
     lastUpdated: "2026-01-01",
     ...overrides,
