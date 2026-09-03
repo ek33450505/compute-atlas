@@ -13,6 +13,7 @@
   <a href="https://www.compute-atlas.com/api/stats"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwww.compute-atlas.com%2Fapi%2Fstats&query=%24.states&label=states&color=3F5B43&style=flat" alt="States covered"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-informational?style=flat" alt="Code: MIT"></a>
   <a href="LICENSE-DATA"><img src="https://img.shields.io/badge/data-CC%20BY%204.0-informational?style=flat" alt="Data: CC BY 4.0"></a>
+  <a href="https://doi.org/10.5281/zenodo.22284476"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.22284476.svg" alt="DOI: 10.5281/zenodo.22284476"></a>
 </p>
 
 <p align="center">
