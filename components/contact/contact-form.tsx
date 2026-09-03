@@ -356,6 +356,16 @@ export function ContactForm() {
             This is one person, so replies aren&rsquo;t instant, but every
             message is read.
           </p>
+          <p className="text-sm text-muted-foreground">
+            Looking for the raw data instead of getting in touch?{" "}
+            <Link
+              href="/data"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              Get the data
+            </Link>
+            .
+          </p>
           <Button type="button" variant="outline" onClick={handleReset}>
             Send another
           </Button>

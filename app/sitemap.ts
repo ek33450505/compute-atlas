@@ -141,6 +141,12 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
+      url: `${siteConfig.url}/data`,
+      lastModified: datasetLastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
       url: `${siteConfig.url}/activity`,
       lastModified: datasetLastModified,
       changeFrequency: "daily",
