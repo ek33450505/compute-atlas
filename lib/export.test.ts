@@ -15,6 +15,15 @@ function makeSource() {
   };
 }
 
+function makeSecondSource() {
+  return {
+    url: "https://second-example.com",
+    label: "Second Example Source",
+    retrievedAt: "2024-02-01",
+    kind: "press" as const,
+  };
+}
+
 const dataCenterFacility: Facility = {
   id: "alpha-facility",
   name: "Alpha Center",
@@ -59,6 +68,22 @@ const specialCharFacility: Facility = {
   lastUpdated: "2024-03-10",
 };
 
+// Multiple sources, to exercise source_count and primary_source_url.
+const multiSourceFacility: Facility = {
+  id: "epsilon-facility",
+  name: "Epsilon Center",
+  operator: "EpsilonCorp",
+  status: "operational",
+  facilityType: "data_center",
+  aiClassification: "confirmed",
+  confidence: "confirmed",
+  location: { lat: 33.0, lon: -84.0, city: "Atlanta", state: "GA", precision: "exact" },
+  capacityMw: { operational: 75 },
+  statusHistory: [],
+  sources: [makeSource(), makeSecondSource()],
+  lastUpdated: "2024-06-01",
+};
+
 // ---------------------------------------------------------------------------
 // facilitiesToCsv
 // ---------------------------------------------------------------------------
@@ -99,6 +124,31 @@ describe("facilitiesToCsv", () => {
     const cells = row.split(",");
     const offtakerIdx = header.indexOf("offtaker");
     expect(cells[offtakerIdx]).toBe("");
+  });
+
+  it("header row ends with source_count then primary_source_url, after detail_url", () => {
+    const header = CSV_COLUMNS.map((c) => c.header);
+    expect(header.slice(-3)).toEqual(["detail_url", "source_count", "primary_source_url"]);
+  });
+
+  it("populates source_count and primary_source_url for a facility with multiple sources", () => {
+    const csv = facilitiesToCsv([multiSourceFacility]);
+    const header = CSV_COLUMNS.map((c) => c.header);
+    const [, row] = csv.split("\r\n");
+    const cells = row.split(",");
+    const sourceCountIdx = header.indexOf("source_count");
+    const primarySourceUrlIdx = header.indexOf("primary_source_url");
+    expect(cells[sourceCountIdx]).toBe(String(multiSourceFacility.sources.length));
+    expect(cells[primarySourceUrlIdx]).toBe(multiSourceFacility.sources[0].url);
+  });
+
+  it("populates source_count as 1 for a facility with a single source", () => {
+    const csv = facilitiesToCsv([dataCenterFacility]);
+    const header = CSV_COLUMNS.map((c) => c.header);
+    const [, row] = csv.split("\r\n");
+    const cells = row.split(",");
+    const sourceCountIdx = header.indexOf("source_count");
+    expect(cells[sourceCountIdx]).toBe("1");
   });
 });
 
