@@ -464,14 +464,24 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://rejournals.com/aboutbit-to-turn-portion-of-indiana-power-station-into-cryptocurrency-mining-facility/",
+        "label": "AboutBit to turn portion of Indiana power station into cryptocurrency mining facility",
+        "publisher": "REJournals",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-02",
     "notes": "Proposed 115 MW crypto mine adjacent to the coal-fired Merom Generating Station in Sullivan County. Announced May 2022 ($50M, up to 15 jobs, liquid cooling, 115 MW from WIN Energy). Powering-up was reported in 2023, but in December 2023 AboutBit's CEO walked back the 2022 timeline and denied a link to the plant's continued operation; current operational status is unconfirmed. Staged as proposed pending a fresh primary source. Coordinates approximate. SOURCE CONFLICT RESOLVED 2026-08-08: two claims contradicted this record — Earthjustice (Oct 2023) described the site as operating since 2022, and a Baxtel listing tagged it \"withdrawn before construction\". Neither is supported. Global Energy Monitor's Cryptomining Tracker entry, the most rigorous of the three, still read \"is a proposed 115 MW cryptocurrency mine\" in its 2025-01-22 snapshot (gem.wiki serves 403 to fetchers, so the archived copy is cited). The status stays \"proposed\" and no evidence was found that the mine was ever energized. Location upgraded from a Merom town-level guess to GEM's plotted address.",
     "energy": {
       "source": "grid",
       "utility": "WIN Energy",
       "notes": "Five-year agreement to purchase 115 MW; sited adjacent to the coal-fired Merom Generating Station."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "investmentUsd": 50000000,
     "facilityType": "crypto_mining",
@@ -1409,14 +1419,24 @@
         "label": "datacentermap.com — Aligned NEO-01 Cleveland/Sandusky",
         "retrievedAt": "2026-07-24",
         "kind": "other"
+      },
+      {
+        "url": "https://aligneddc.com/northeast-ohio-data-centers/",
+        "label": "Aligned facility directory",
+        "publisher": "Aligned",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-09-02",
     "notes": "Confirmed via Aligned's Northeast Ohio page and DatacenterDynamics/JobsOhio press coverage; 2509 Hayes Ave, Sandusky, OH; 96MW/200,000 sq ft, under construction, official name NEO-01. AI/HPC (likely): Sandusky NEO-01 on Aligned DeltaFlow/Delta3 AI/HPC design.",
     "energy": {
       "source": "grid",
       "utility": "Ohio Edison (FirstEnergy)",
       "notes": "NEO-01 in Sandusky (Perkins Township) connects to the FirstEnergy grid with Ohio Edison as the local distribution utility, delivering power feeds up to 80 MW (expandable beyond 200 MW at full build). No dedicated on-site generation or renewable PPA specific to this site was found."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -1434,6 +1454,9 @@
       "county": "Cook",
       "state": "IL",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 48
     },
     "poweredBy": "Grid — ComEd",
     "statusHistory": [],
@@ -1484,9 +1507,16 @@
         "publisher": "Datacenters.com",
         "retrievedAt": "2026-08-03",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/energy-power-supply/aligned-launches-one-chicago-data-center-and-breaks-ground-on-another",
+        "label": "Aligned Launches One Chicago Data Center and Breaks Ground on Another",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-03",
+    "lastUpdated": "2026-09-02",
     "notes": "Confirmed via Aligned Chicago page and DatacenterDynamics ('Aligned completes first Chicago data center'); 505 Northwest Ave, Northlake, IL; 48MW, operational. AI/HPC (likely): Northlake ORD-01 hyperscale, adaptive AI/HPC cooling platform.",
     "energy": {
       "source": "grid",
@@ -1637,10 +1667,20 @@
         "publisher": "The Reporting Project (Denison University)",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://www.aol.com/articles/pataskala-allow-data-center-industrial-180844000.html",
+        "label": "AOL/Newark Advocate: 89 acres, 200 MW, 3 buildings (down from 4), Broad St & Mink St; P&Z voted 5-2 to recommend rejection (staff recommended approval); Council hearing 2026-08-25",
+        "publisher": "AOL / Newark Advocate",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-02",
     "notes": "Blocked 200 MW campus (89 acres, 3 planned buildings, down from 4) at Broad St & Mink St in the Pataskala industrial park, which would have run on on-site Bloom Energy natural-gas fuel cells. The Planning & Zoning Commission voted 5–2 on 2026-06-03 to recommend rejection (staff had recommended approval), and City Council rejected the site plan 7-0 on 2026-08-25. Recorded as cancelled because the city denied the application; note that Aligned itself has not abandoned the project — its general counsel said the company would “reflect and regroup.” A citizen charter amendment banning data centers over 25 MW goes to Pataskala and Granville voters on Nov. 3, 2026. Coordinates approximate (Pataskala city-center).",
+    "water": {
+      "coolingType": "closed_loop"
+    },
     "community": {
       "status": "contested",
       "notes": "Sustained resident opposition: rallies at City Hall and a citizen petition drive. P&Z recommended rejection 5–2 on 2026-06-03; City Council then rejected the site plan 7-0 on 2026-08-25. A citizen-driven charter amendment banning data centers over 25 MW is on the Nov. 3, 2026 ballot in Pataskala and Granville.",
@@ -1698,14 +1738,24 @@
         "label": "DCD — Aligned tops out PDX-1 data center in Hillsboro, Oregon",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://aligneddc.com/hillsboro-data-centers/",
+        "label": "Aligned facility directory",
+        "publisher": "Aligned",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-02",
     "notes": "Confirmed operational, 27-acre campus at NE 30th Ave & NE Evergreen Rd, Hillsboro, OR. AI/HPC (likely): Hillsboro PDX-01 engineered on high-density AI/HPC cooling design.",
     "energy": {
       "source": "grid",
       "utility": "Portland General Electric (PGE)",
       "notes": "PDX-01 draws grid power from Portland General Electric."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "landAcres": 27,
     "facilityType": "data_center",
@@ -1753,15 +1803,25 @@
         "label": "Aligned — Power Reliability is a Big Driver for Aligned Data Centers in Phoenix",
         "retrievedAt": "2026-07-24",
         "kind": "press"
+      },
+      {
+        "url": "https://aligneddc.com/phoenix/",
+        "label": "Aligned facility directory",
+        "publisher": "Aligned",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-02",
     "notes": "Confirmed operational via Aligned's Phoenix directory page; 55-acre Union Hills campus, PHX-01/02/03/05 buildings. AI/HPC (likely): Phoenix hosts Aligned Advanced Cooling Lab; DeltaFlow supports highest-density GPUs.",
     "energy": {
       "source": "on_site_gas",
       "utility": "Arizona Public Service (APS)",
       "onSiteGenerationMw": 63,
       "notes": "Aligned's Phoenix campus (2500 W Union Hills — matches PHX-01/02/03) is powered by APS via a custom 69kV enhanced-capability substation, PLUS a genuine 63 MW on-site microgrid generation project built jointly with APS — allowing the campus to island itself from the grid during congestion."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "landAcres": 55,
     "facilityType": "data_center",
@@ -2179,11 +2239,21 @@
         "publisher": "Data Center Frontier",
         "retrievedAt": "2026-08-16",
         "kind": "press"
+      },
+      {
+        "url": "https://aligneddc.com/salt-lake-city-data-centers/",
+        "label": "Aligned Data Centers — Salt Lake City data centers",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-09-02",
     "energy": {
       "notes": "Data Center Frontier reports SLC-02 as 'The 240,000 square foot facility offers 48 megawatts of capacity, and can be expanded to 60 MW' and describes regional power available at 5.8 cents per kilowatt hour with free-air cooling viable 75-80 percent of the year. No campus-wide MW total was found on a source that was actually read, so capacityMw is omitted rather than assembled from third-party aggregator figures."
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "landAcres": 55,
     "facilityType": "data_center"
@@ -2217,9 +2287,19 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://aligneddc.com/salt-lake-city-data-centers/",
+        "label": "Aligned Data Centers — Salt Lake City data centers (SLC-04, 6368 W Beagley Rd)",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-09-02",
+    "water": {
+      "coolingType": "closed_loop"
+    },
     "facilityType": "data_center"
   },
   {
@@ -3164,6 +3244,53 @@
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
+  },
+  {
+    "id": "american-tower-edc-oklahoma-city-ok",
+    "name": "American Tower EDC Oklahoma (Oklahoma City)",
+    "operator": "American Tower",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.5896,
+      "lon": -97.4934,
+      "city": "Oklahoma City",
+      "county": "Oklahoma County",
+      "street": "1309 NE 122nd St",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 4
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08",
+        "note": "Construction-ready edge data center; delivery stated as 18 months from anchor lease signing.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9 (KWTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/states/oklahoma/",
+        "label": "Oklahoma Data Center Map — American Tower EDC Oklahoma",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Edge data center on an 83.5-acre site at 1309 NE 122nd Street, Oklahoma City. Coordinates are an approximate geocode of the street address.",
+    "landAcres": 83.5,
+    "facilityType": "data_center"
   },
   {
     "id": "american-tower-reedy-creek-charlotte-nc",
@@ -15673,6 +15800,98 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cogent-cheyenne-114-w-10th-wy",
+    "name": "Cogent Cheyenne Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.1278101,
+      "lon": -104.8110116,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "street": "114 W 10th Street",
+      "postalCode": "82007",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2.5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025",
+        "note": "Cogent's wholesale colocation datasheet describes the facility as an operating carrier-neutral data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/files/docs/wholesale_colocation/Cheyenne_Wholesale_2025.pdf",
+        "label": "Cogent Wholesale Colocation - 114 W 10th, Cheyenne, WY (operator datasheet)",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Carrier-neutral colocation facility near downtown Cheyenne: 32,860 total square feet, 16,200 square feet available for wholesale, 2.50 MW of power with an additional 2.5 MW available on request and 2.08 MW of protected power. Sits on 1.6 acres zoned for City use. Available carriers include Cogent, Zayo, EchoStar, Charter and CenturyLink/Lumen. Coordinates are an address-level geocode. Figures come from Cogent's own datasheet, which states the information is for informational purposes and may change.",
+    "energy": {
+      "source": "grid",
+      "utility": "Black Hills Energy",
+      "notes": "One 480V three-phase utility feed at 3,000 amps; two 1,500 kW diesel standby generators with 2,000 amp automatic transfer switches."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Cooling is entirely direct-expansion: two 200-ton DX air handling units with condensing units, eight 30-ton DX computer room units plus one more, and small DX and rooftop air handlers. No cooling towers or chilled-water circuit are listed."
+    },
+    "landAcres": 1.6,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cogent-oklahoma-city-ok",
+    "name": "Cogent Oklahoma City Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.4676,
+      "lon": -97.5164,
+      "city": "Oklahoma City",
+      "county": "Oklahoma County",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational carrier-hotel colocation site of roughly 5,294 sq ft.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma? — Cogent Data Center",
+        "publisher": "News 9 (KWTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/states/oklahoma/",
+        "label": "Oklahoma Data Center Map — Cogent Data Center, Oklahoma City",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Small carrier-hotel colocation footprint (~5,294 sq ft) in Oklahoma City. Street address not confirmed on a page retrieved this session; coordinates approximate to Oklahoma City.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "coinmint-massena-ny",
     "name": "Coinmint (Massena East / former Alcoa Smelter)",
     "operator": "Coinmint",
@@ -19739,6 +19958,57 @@
     "facilityType": "crypto_mining",
     "mining": {
       "powerArrangement": "stranded_gas"
+    }
+  },
+  {
+    "id": "crypto-knight-hosting-cheyenne-wy",
+    "name": "Crypto Knight Hosting Cheyenne Bitcoin Mining Facility",
+    "operator": "Crypto Knight Hosting",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.14,
+      "lon": -104.82,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-05-21",
+        "note": "Company announced the opening of its first Bitcoin mining facility in Cheyenne on 2022-05-21.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cryptoknighthosting.com/post/crypto-knight-hosting-opens-first-bitcoin-mining-facility-cheyenne-wyoming",
+        "label": "Crypto Knight Hosting Opens Its First Bitcoin Mining Facility in Cheyenne, Wyoming",
+        "publisher": "Crypto Knight Hosting",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://cowboystatedaily.com/2025/04/02/wyoming-crypto-miner-says-tariff-threats-spiking-prices-for-equipment/",
+        "label": "Wyoming Crypto Miner Says Tariff Threats Spiking Prices For Equipment",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Wyoming family-run hosting company providing infrastructure for local bitcoin miners and data centers. The first Cheyenne facility opened 2022-05-21 with 786 miners in a single container and at least 3,000 across the site. Cowboy State Daily reports the company runs more than 60 MW of total energy in Laramie County across its operations; that is an entity-wide figure spanning multiple sites and is deliberately NOT recorded as this site's capacity. No street address is published in either source, so coordinates are an approximate point for Cheyenne. A further build-out in the Happy Jack area was reported ongoing in April 2025.",
+    "energy": {
+      "source": "grid",
+      "utility": "Black Hills Energy",
+      "notes": "Power is taken under a curtailable load agreement with Black Hills Energy. Each of the company's transformers runs nearly 3 MW."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "grid"
     }
   },
   {
@@ -27667,6 +27937,73 @@
       "notes": "Chesapeake City Council denied the rezoning; project did not proceed."
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "enbridge-cowboy-solar-bess-laramie-county-wy",
+    "name": "Cowboy Solar and BESS Project (Phase 1)",
+    "operator": "Enbridge Inc.",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.14,
+      "lon": -104.82,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 365
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-05",
+        "note": "Enbridge's public-awareness project page lists Cowboy Solar and BESS as under construction; the company states it has completed public consultation and is obtaining remaining approvals.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.enbridge.com/stories/2026/may/enbridge-meta-expand-partnership-cowboy-project-solar-plus-battery-storage",
+        "label": "Enbridge and Meta expand partnership with Cowboy Project",
+        "publisher": "Enbridge Inc.",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.enbridge.com/projects-and-infrastructure/public-awareness/cowboy-solar-and-bess-project",
+        "label": "Cowboy Solar I & II and BESS Project",
+        "publisher": "Enbridge Inc.",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/enbridge-meta-build-365-mw200-mw-solarstorage-project/820905/",
+        "label": "Enbridge, Meta to build 365-MW solar/200-MW storage project",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Located in Laramie County near Cheyenne; Enbridge publishes the county but not a parcel or address, so coordinates are an approximate point for Cheyenne. Expected in service by the end of 2027. Enbridge's project page labels the project under construction while also saying it is still obtaining necessary approvals; the status here follows the operator's own label and should be re-checked.",
+    "energy": {
+      "source": "solar",
+      "utility": "Cheyenne Light, Fuel and Power",
+      "notes": "Paired with a 200 MW / 1,600 MWh battery energy storage system supplied and serviced by Tesla, under a battery tolling agreement. Power is delivered to the offtaker by Cheyenne Light, Fuel and Power, a Black Hills Corp. subsidiary, under Wyoming's Large Power Contract Service tariff."
+    },
+    "investmentUsd": 1200000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "poweredFacilityIds": [
+        "meta-cheyenne-wy"
+      ],
+      "notes": "First phase of the Enbridge-Meta Cowboy Project. Meta has contracted 100% of the facility's output under a long-term power purchase agreement. Enbridge's own project page describes the wider Cowboy Solar development in two phases (400 MW solar with 200 MW/1,600 MWh storage, and 365 MW solar with 133 MW storage); the 365 MW recorded here is the Meta-contracted phase as stated in the May 2026 announcement."
+    }
   },
   {
     "id": "enerfore-pleasant-valley-tioga-nd",
@@ -38567,10 +38904,24 @@
         "publisher": "Wyoming Business Council / Wyoming Legislature",
         "retrievedAt": "2026-08-19",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/02-2026062202-02_WBCMaterials.pdf",
+        "label": "Wyoming Business Council Programs & Services (Data Center Sales Tax Exemption Eligibility Certification recipient list)",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-09-02",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-09-02",
     "notes": "Named in June 2026 Wyoming Business Council materials as a Newcastle Bitcoin mining operation that reaches the threshold to qualify for the state's Data Center Sales Tax Exemption because it employs people in Wyoming and spends CAPEX at a rate similar to a traditional data center. No subsidy record is entered: the source states the operation qualifies, which is eligibility, not a certified award. Capacity, power arrangement and address are not stated in the source and are omitted rather than estimated. A Wyoming DEQ air-quality public notice for H6 Coin, LLC (permit F032396/A0019068, dated 2026-05-07) was indexed but the notice page returned HTTP 403 and could not be read this session, so it is not cited and its permit details are not recorded. Coordinates approximate the town of Newcastle.",
+    "subsidies": [
+      {
+        "program": "Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "sourceIndex": 1
+      }
+    ],
     "facilityType": "crypto_mining"
   },
   {
@@ -39406,6 +39757,52 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "host-digital-northeast-oklahoma-ok",
+    "name": "Host Digital Northeast Oklahoma Data Center",
+    "operator": "Host Digital Infrastructure LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.154,
+      "lon": -95.9928,
+      "city": "Tulsa",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 43
+    },
+    "announcedDate": "2026-08-31",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "Described by the company as an existing, currently energized facility; 43 MW of critical IT load leased under a 15-year take-or-pay agreement, tenant delivery expected in H1 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/08/31/3353118/0/en/hcwc-announces-host-digital-secures-1-25-billion-15-year-ai-data-center-lease.html",
+        "label": "HCWC Announces Host Digital Secures $1.25 Billion, 15-Year AI Data Center Lease",
+        "publisher": "GlobeNewswire / Healthy Choice Wellness Corp.",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://usdatacenterprojects.com/oklahoma/host-digital-locks-usd-1-25-billion-15-year-ai-data-center-lease-in-northeast-oklahoma",
+        "label": "Host Digital Locks In 15-Year AI Data Center Lease",
+        "publisher": "US Data Center Projects",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "⚠️ LOCATION NEEDS CONFIRMATION BEFORE PUBLICATION: both cited sources place the facility only in 'northeast Oklahoma' and do not name a city; the coordinates recorded here are a provisional approximation for the Tulsa metro and are not parcel- or address-confirmed. Lease terms: ~$1.25bn over a 15-year base take-or-pay term, ~$3.2bn if all renewals are exercised, tenant backstopped by a US investment-grade technology company.",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "hostdime-eatonville-fl",
     "name": "HostDime Orlando Tier IV Data Center",
     "operator": "HostDime",
@@ -39473,6 +39870,48 @@
       "notes": "Eatonville Town Council members have pushed for transparency and raised water/power/noise/appearance concerns; the town has assessed missed-deadline fines. No lawsuit or formal permit denial identified as of Aug 2026.",
       "sourceIndex": 3
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "hp-cherokee-data-center-tulsa-ok",
+    "name": "Cherokee Data Center (Tulsa)",
+    "operator": "Hewlett-Packard",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.2085,
+      "lon": -95.9137,
+      "city": "Tulsa",
+      "county": "Tulsa County",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational ~430,000 sq ft facility in the Cherokee Industrial Park.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? — Cherokee Data Center, Tulsa",
+        "publisher": "News On 6 (KOTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/tulsa",
+        "label": "Tulsa Data Centers & Colocation — HP Cherokee Data Center (Tulsa)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "~430,000 sq ft facility in the Cherokee Industrial Park, north Tulsa. Operator is recorded as the cited sources state it; current ownership was not independently verified this session, so confidence is 'reported'. Distinct from Project Clydesdale, a separate 506-acre greenfield campus near the same industrial park in unincorporated Tulsa County. Coordinates approximate to the Cherokee Industrial Park area.",
     "facilityType": "data_center"
   },
   {
@@ -41543,6 +41982,52 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "jackson-technical-enguard-tulsa-ok",
+    "name": "ENGUARD Data Center (Jackson Technical)",
+    "operator": "Jackson Technical",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1509,
+      "lon": -95.9856,
+      "city": "Tulsa",
+      "county": "Tulsa County",
+      "street": "611 S Elgin Ave",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.4
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational Tulsa colocation facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? — Jackson Technical, 611 S Elgin Ave",
+        "publisher": "News On 6 (KOTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/states/oklahoma/",
+        "label": "Oklahoma Data Center Map — ENGUARD Data Center, Jackson Technical, Tulsa",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Small operational colocation facility at 611 South Elgin Avenue, Tulsa. Coordinates are an approximate geocode of the street address.",
+    "facilityType": "data_center"
   },
   {
     "id": "jailhouse-studios-chattanooga-tn",
@@ -44248,14 +44733,28 @@
         "publisher": "Wyoming Business Council / Wyoming Legislature",
         "retrievedAt": "2026-08-19",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/02-2026062202-02_WBCMaterials.pdf",
+        "label": "Wyoming Business Council Programs & Services (Data Center Sales Tax Exemption Eligibility Certification recipient list)",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-09-02",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-09-02",
     "notes": "Colocation facility at 340 Progress Circle, Cheyenne. 5 MW available with stated ability to expand to 8 MW; critical IT load 4 MW; average PUE 1.17, low 1.05. Formerly Green House Data. Ownership caveat: Fifteenfortyseven Critical Systems Realty markets a Cheyenne facility (CHWY1) with a matching 42,000 sq ft building and ~5 MW on-site, so the same building may be owned by 1547 and operated/marketed by Lunavi; only one record is held here to avoid a duplicate, with Lunavi named as operator on the strength of its own current first-party listing. No subsidy is recorded: the Wyoming Business Council materials describe Lunavi as a driver of the exemption's co-location amendments, not as a certified recipient. Coordinates approximate the street address.",
     "water": {
       "coolingType": "evaporative",
       "notes": "Custom indirect evaporative cooling units using filtered outside air rather than traditional air conditioning; N+2 cooling at 1.2 MW."
     },
+    "subsidies": [
+      {
+        "program": "Data Center Sales Tax Exemption",
+        "jurisdiction": "Wyoming",
+        "sourceIndex": 3
+      }
+    ],
     "facilityType": "data_center",
     "environmental": {
       "pue": 1.17,
@@ -51225,6 +51724,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "midcon-recovery-solutions-oklahoma-city-ok",
+    "name": "MIDCON Recovery Solutions Data Center",
+    "operator": "MIDCON Recovery Solutions",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.618,
+      "lon": -97.567,
+      "city": "Oklahoma City",
+      "county": "Oklahoma County",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational Tier IV data center of roughly 60,000 sq ft in the Quail Springs Business Park, northwest Oklahoma City.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma? — MIDCON Recovery Solutions",
+        "publisher": "News 9 (KWTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? — MIDCON, Quail Springs",
+        "publisher": "News On 6 (KOTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "~60,000 sq ft Tier IV colocation/disaster-recovery facility in the Quail Springs Business Park. Coordinates are approximate to the Quail Springs area of northwest Oklahoma City; no street address is given in the cited sources.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "milligan-1-wind-saline-ne",
     "name": "Milligan I Wind Project",
     "operator": "EDF Renewables",
@@ -52206,6 +52747,60 @@
     "lastUpdated": "2026-07-22",
     "notes": "Phase 1, 50MW, operational since April 2023. Bitcoin mining facility co-located at Susquehanna nuclear plant, powered behind-the-meter. Originally a TeraWulf/Talen joint venture; Talen acquired full ownership Oct 2024. Two buildings (1 and 2) confirmed independently by baxtel.com and cleanview.co as distinct operating structures on the same campus, matching the two nearby-but-distinct OSM coordinates in this batch.",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "ncar-wyoming-supercomputing-center-cheyenne-wy",
+    "name": "NCAR-Wyoming Supercomputing Center",
+    "operator": "University Corporation for Atmospheric Research (UCAR)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.1289,
+      "lon": -104.8974,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "street": "Veta Drive",
+      "postalCode": "82009",
+      "state": "WY",
+      "precision": "exact"
+    },
+    "announcedDate": "2012",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2012-10",
+        "note": "Computing operations began in October 2012.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cisl.ucar.edu/ncar-wyoming-supercomputing-center",
+        "label": "NCAR-Wyoming Supercomputing Center - Computational and Information Systems Lab",
+        "publisher": "NCAR/UCAR",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/NCAR-Wyoming_Supercomputing_Center",
+        "label": "NCAR-Wyoming Supercomputing Center",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "High-performance computing and data-archival facility in the North Range Business Park, Cheyenne, operated by NCAR for UCAR under a partnership with the State of Wyoming and the University of Wyoming. 153,000 total square feet with 24,000 square feet of raised-floor modules. Coordinates and street are corroborated by the OpenStreetMap building tagged telecom=data_center with operator 'University Corporation for Atmospheric Research'. No megawatt figure is published in the sources read, so no capacity is recorded.",
+    "energy": {
+      "source": "grid",
+      "utility": "Cheyenne Light, Fuel and Power (Black Hills Corporation)",
+      "notes": "Wind supplies at least 10% of the center's power; the primary grid source is coal."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "The facility uses ambient outside air for cooling roughly 96% of the year and specialized cooling-tower equipment otherwise, a seasonal switch between dry and evaporative modes. Water consumption is reported as about 40% lower than a traditional design."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "ne-edge-millstone-ct",
@@ -55032,6 +55627,104 @@
     "facilityType": "data_center"
   },
   {
+    "id": "ocosa-321-south-boston-tulsa-ok",
+    "name": "OCOSA Communications Tulsa Data Center (321 S Boston)",
+    "operator": "OCOSA Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1535,
+      "lon": -95.9905,
+      "city": "Tulsa",
+      "county": "Tulsa County",
+      "street": "321 S Boston Ave",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational Tulsa colocation facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/tulsa",
+        "label": "Tulsa Data Centers & Colocation — OCOSA 321 S Boston",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? — OCOSA Data Center, Tulsa",
+        "publisher": "News On 6 (KOTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "OCOSA Communications colocation space in the 321 South Boston Avenue carrier hotel — the same building as TulsaConnect DC-1, but a separate operator and facility. Coordinates are an approximate geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "oklahoma-ai-ventures-black-bear-noble-county-ok",
+    "name": "Black Bear AI Data Center Campus",
+    "operator": "Oklahoma AI Ventures LLC (Jericho Energy Ventures / Comstock Holding Companies JV)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.2892,
+      "lon": -97.2836,
+      "city": "Perry",
+      "county": "Noble County",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-10",
+        "note": "Oklahoma AI Ventures LLC joint venture formed; land assemblage under way in Pawnee and Noble counties.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.jerichoenergyventures.com/aidatacenter",
+        "label": "AI Data Centers — Black Bear campus",
+        "publisher": "Jericho Energy Ventures",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001299969/000162828026042075/jerichojvpr-finalfor8xk.htm",
+        "label": "Comstock Holding Companies Form 8-K exhibit — Oklahoma AI Ventures JV with Jericho",
+        "publisher": "U.S. Securities and Exchange Commission",
+        "retrievedAt": "2026-09-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://dcmap.us/states/oklahoma/",
+        "label": "Oklahoma Data Center Map — Black Bear AI Data Center Campus, Perry",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Flagship campus of the Jericho Energy Ventures / Comstock 50-50 joint venture (Oklahoma AI Ventures LLC), sited on Jericho's ~18,000-acre subsurface portfolio with roughly 60 miles of gas, power and water infrastructure between Oklahoma City and Tulsa. The 8-K names Pawnee and Noble counties and states upwards of 4,000 acres secured for development options; no capacity figure is given by the developer, so none is recorded here. Coordinates are approximate to Perry, the Noble County seat.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Developer describes behind-the-meter natural gas generation from its own producing acreage with grid power as a supplement; a newly built 345 kV line crossing the site is stated to deliver 20 MW of available capacity from January 2026."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "oklo-aurora-pike-county-oh",
     "name": "Oklo Aurora Powerhouse",
     "operator": "Oklo",
@@ -56509,6 +57202,42 @@
     "facilityType": "data_center"
   },
   {
+    "id": "philcade-data-center-tulsa-ok",
+    "name": "Philcade Data Center",
+    "operator": "Kanbar Properties",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1516,
+      "lon": -95.9903,
+      "city": "Tulsa",
+      "county": "Tulsa County",
+      "street": "501 S Boston Ave",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational downtown Tulsa data center in the Philcade Building.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? — Philcade Data Center, 501 S Boston Ave",
+        "publisher": "News On 6 (KOTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Downtown Tulsa data center in the Philcade Building at 501 South Boston Avenue, operated by the building owner. Single-sourced. Coordinates are an approximate geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "plan-c-crypto-fayetteville-cumberland-county-nc",
     "name": "Plan C Crypto Fayetteville (Dedication Drive)",
     "operator": "Plan C Crypto",
@@ -56925,6 +57654,61 @@
     "landAcres": 568,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "potentia-oklahoma-campus-02-inola-ok",
+    "name": "Potentia Oklahoma Campus 02 (Inola)",
+    "operator": "Potentia, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1487,
+      "lon": -95.5097,
+      "city": "Inola",
+      "county": "Rogers County",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2000
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "Land assembled via 'Tulsa Farms' entities; Tulsa Port Authority–Rogers County board agenda lists a purchase-agreement amendment with Potentia Tulsa 1 LLC.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.joecrivelli.com/p/the-data-center-coming-to-inola-oklahoma",
+        "label": "The Data Center Coming to Inola, Oklahoma: What We Know",
+        "publisher": "Joe Crivelli",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-centers/potentia-inc",
+        "label": "Potentia Inc. Data Centers and Colocation — Campus 02 (Oklahoma)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://servercountry.org/data/states/oklahoma/",
+        "label": "Oklahoma Data Center Projects tracker — Potentia Oklahoma Campus 02, Inola",
+        "publisher": "Server Country",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Roughly 1,850 acres in Rogers County bounded by 4190 Road and 4200 Road, adjacent to the Port of Inola and existing high-voltage transmission serving the Sofidel plant. Reporting describes recorded deeds, site clearing and HV substation work, and a Building 1 target of Q2 2027; the 2.0 GW figure comes from a third-party tracker, not the developer. Coordinates are approximate to the town of Inola, not a parcel-confirmed point.",
+    "landAcres": 1850,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "powerconnex-i-new-albany-oh",
@@ -62789,9 +63573,16 @@
         "publisher": "Wyoming Business Council / Wyoming Legislature",
         "retrievedAt": "2026-08-19",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://wyoleg.gov/InterimCommittee/2026/02-2026062202-02_WBCMaterials.pdf",
+        "label": "Wyoming Business Council Programs & Services (Data Center Sales Tax Exemption Eligibility Certification recipient list)",
+        "publisher": "Wyoming Business Council / Wyoming Legislature",
+        "retrievedAt": "2026-09-02",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-09-02",
     "notes": "115-acre campus in the Cheyenne Business Parkway; up to 302 MW of critical IT capacity across the full campus. CoreWeave is the anchor tenant under a long-term lease for 88 MW of critical IT capacity — the 88 MW is the leased slice, not the campus total. Phase I projected to generate over $250 million in tax revenue to Wyoming and Cheyenne in its first 15 years. Coordinates approximate the Cheyenne Business Parkway, not a parcel-confirmed point.",
     "energy": {
       "source": "grid",
@@ -65274,10 +66065,21 @@
         "publisher": "Cowboy State Daily",
         "retrievedAt": "2026-08-19",
         "kind": "press"
+      },
+      {
+        "url": "https://www.powercompanyofwyoming.com/gas-generation/index.shtml",
+        "label": "About the Miller Generating Station",
+        "publisher": "Power Company of Wyoming LLC",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-09-02",
     "notes": "Located on the Anschutz-owned Overland Trail Ranch in Carbon County, south of Rawlins and Sinclair. Development began in 2017 and was shelved until market conditions improved. Wyoming reporting separately describes Anschutz Corporation subsidiaries planning roughly 3,200 MW of gas and 1,000 MW of solar in southern Wyoming partly to serve data-center load, but the cited source names no offtaker for this station, so none is recorded. Coordinates are an approximate placement on the ranch from the described location.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Approximately 2,000 MW of natural gas-fired generation using turbines the developer describes as designed for fuel efficiency, operational flexibility and reduced emissions. The plant is stated to be hydrogen-capable and carbon-capture-ready, with on-site carbon capture and storage under exploration. The developer now presents the project as the Miller Generating Station, developed by SPC LLC, a Power Company of Wyoming affiliate, on private land south of Sinclair, co-located with existing and under-construction power infrastructure, Interstate 80 and the Union Pacific main line."
+    },
     "water": {
       "coolingType": "air",
       "notes": "Dry cooling using air rather than water, described as reducing water consumption by up to 95%; about 320 acre-feet per year, sourced from the Platte River."
@@ -71826,16 +72628,36 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-08-07",
         "kind": "other"
+      },
+      {
+        "url": "https://www.power-eng.com/gas/turbines/wyoming-data-center-power-projects-highlight-new-entrants-partnerships-in-power-generation-market/",
+        "label": "Wyoming data center power projects highlight new entrants, partnerships in power generation market",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://wyofile.com/laramie-county-approves-construction-of-what-could-become-the-largest-data-center-in-us/",
+        "label": "Laramie County approves construction of what could become the largest data center in US",
+        "publisher": "WyoFile",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-07",
+    "lastUpdated": "2026-09-02",
     "notes": "Dedicated natural-gas power hub built by Tallgrass to supply the Crusoe/Google 'Project Tembo' campus (tracked separately as tallgrass-project-jade-cheyenne-wy). Laramie County approved the Switchgrass Industrial Park site plan in January 2026; over $7 billion in planned investment.",
     "energy": {
       "source": "on_site_gas",
+      "onSiteGenerationMw": 1150,
       "notes": "Natural gas-fired generation to serve the adjacent data center campus: a fuel cell yard, two combined-cycle natural gas turbines, and both temporary and permanent aeroderivative/light-duty simple-cycle turbines."
     },
     "investmentUsd": 7000000000,
     "landAcres": 659,
+    "community": {
+      "status": "contested",
+      "notes": "The Hyndman Homesites Homeowners Association raised concerns about deep wells drilled into the aquifer, increased traffic and noise, light pollution, gas turbine emissions and noxious odors.",
+      "sourceIndex": 6
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -71914,15 +72736,46 @@
         "publisher": "POWER Magazine",
         "retrievedAt": "2026-08-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/gas/turbines/wyoming-data-center-power-projects-highlight-new-entrants-partnerships-in-power-generation-market/",
+        "label": "Wyoming data center power projects highlight new entrants, partnerships in power generation market",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://wyofile.com/laramie-county-approves-construction-of-what-could-become-the-largest-data-center-in-us/",
+        "label": "Laramie County approves construction of what could become the largest data center in US",
+        "publisher": "WyoFile",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://cowboystatedaily.com/2026/07/08/google-revealed-as-owner-of-wyomings-largest-data-center-now-project-tembo/",
+        "label": "Say Hello To Google, The Mystery Owner Behind Wyoming's Largest Data Center, Now Project Tembo",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-07",
+    "lastUpdated": "2026-09-02",
     "notes": "Switchgrass Industrial Park, Hwy 85 south of Cheyenne, Laramie County - geographically distinct from Meta (Project Cosmo) and Microsoft's Cheyenne campuses. 716-acre campus. Originally announced at 1.8GW as 'Project Jade' with an undisclosed hyperscale client (Crusoe Energy as builder); Crusoe exited June 2026. On 2026-07-08, Google was publicly revealed as owner/operator via subsidiary Jupiter Star Holdings, and the project was renamed 'Project Tembo'; capacity confirmed at 2.7GW with an ultimate ceiling of up to 10GW. The Cheyenne Power Hub on-site natural-gas plant supplies power (Tallgrass Energy; Black Hills Energy co-invested). ~$50B total project figure remains a projection. Completion targeted 2031.",
     "energy": {
       "source": "on_site_gas",
+      "utility": "Black Hills Energy",
       "notes": "Cheyenne Power Hub natural-gas plant (Tallgrass), scalable toward multi-GW; Black Hills Energy co-invested."
     },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling systems recirculating treated water; plans include deep wells beneath the Lance Formation to reach industrial water below the Ogallala Aquifer. Wastewater treatment is to occur on site with evaporative lagoon storage, which is disposal rather than the heat-rejection method."
+    },
     "landAcres": 716,
+    "jobs": {
+      "construction": 5000,
+      "permanent": 400,
+      "sourceIndex": 6
+    },
     "community": {
       "status": "mixed"
     },
@@ -75429,6 +76282,167 @@
     "aiClassification": "likely"
   },
   {
+    "id": "truss-energy-carpenter-wy",
+    "name": "Truss Energy Carpenter Data Center",
+    "operator": "Truss Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.0461861,
+      "lon": -104.3627365,
+      "city": "Carpenter",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-18",
+        "note": "Laramie County planning staff confirmed a 540-acre data center concept about one mile west of Carpenter; the company was doing due diligence and no application had been submitted.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cowboystatedaily.com/2026/05/18/two-more-data-centers-possible-as-laramie-county-planners-ok-massive-man-camp/",
+        "label": "Two More Data Centers Possible As Laramie County Planners OK Massive Man Camp",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Very early stage: as of 2026-05-18 no application had been submitted to Laramie County and Truss Energy did not respond to press inquiries. About one mile west of Carpenter, an unincorporated community roughly 35 miles east of Cheyenne; coordinates are an approximate geocode of Carpenter. No megawatt, investment or job figures have been published. Single-source, and it may not proceed.",
+    "landAcres": 540,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tulsa-technology-exchange-tulsa-ok",
+    "name": "Tulsa Technology Exchange",
+    "operator": "Facility Gateway Corporation",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1512,
+      "lon": -95.9903,
+      "city": "Tulsa",
+      "county": "Tulsa County",
+      "street": "509 S Boston Ave",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational downtown Tulsa data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? — Tulsa Technology Exchange, 509 S Boston Ave",
+        "publisher": "News On 6 (KOTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Downtown Tulsa carrier/colocation exchange at 509 South Boston Avenue. Single-sourced. Coordinates are an approximate geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tulsaconnect-dc1-tulsa-ok",
+    "name": "TulsaConnect Tulsa Data Center (DC-1)",
+    "operator": "TulsaConnect",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1535,
+      "lon": -95.9905,
+      "city": "Tulsa",
+      "county": "Tulsa County",
+      "street": "321 S Boston Ave",
+      "postalCode": "74103",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational TulsaConnect colocation facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/state/oklahoma/",
+        "label": "Oklahoma Data Center Location Map — TulsaConnect Tulsa Data Center (DC1), 321 S. Boston Ave.",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/tulsa",
+        "label": "Tulsa Data Centers & Colocation — TulsaConnect DC1",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "TulsaConnect's DC-1 facility at 321 South Boston Avenue. Distinct from the already-tracked DC-3 (4500 S 129th E Ave) and DC-5 (downtown) records. Coordinates are an approximate geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tulsaconnect-dc2-tulsa-ok",
+    "name": "TulsaConnect Tulsa Data Center (DC-2)",
+    "operator": "TulsaConnect",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1523,
+      "lon": -95.9932,
+      "city": "Tulsa",
+      "county": "Tulsa County",
+      "street": "110 W 7th St",
+      "postalCode": "74119",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational TulsaConnect colocation facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/state/oklahoma/",
+        "label": "Oklahoma Data Center Location Map — TulsaConnect Tulsa Data Center (DC2), 110 W. 7th St.",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/tulsa",
+        "label": "Tulsa Data Centers & Colocation — TulsaConnect DC2",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "TulsaConnect's DC-2 facility at 110 West 7th Street. Distinct from the tracked DC-3 and DC-5 records. Coordinates are an approximate geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "tulsaconnect-downtown-dc5-tulsa-ok",
     "name": "TulsaConnect Downtown (DC-5)",
     "operator": "TulsaConnect",
@@ -75687,6 +76701,51 @@
       "utility": "Pacific Gas & Electric (PG&E)"
     },
     "landAcres": 12.5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "valorc3-oklahoma-city-ok",
+    "name": "ValorC3 Oklahoma City Data Center",
+    "operator": "ValorC3 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.4676,
+      "lon": -97.5164,
+      "city": "Oklahoma City",
+      "county": "Oklahoma County",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1.25
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational Tier III+ colocation facility of roughly 65,000 sq ft, built for severe-weather resistance.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma? — ValorC3 Oklahoma City",
+        "publisher": "News 9 (KWTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/states/oklahoma/",
+        "label": "Oklahoma Data Center Map — ValorC3 Oklahoma City Data Center",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Operational multi-tenant colocation facility, ~65,000 sq ft. Street address was not confirmed on a page retrieved this session, so it is omitted; coordinates are approximate to Oklahoma City.",
     "facilityType": "data_center"
   },
   {
@@ -78114,6 +79173,49 @@
     ],
     "lastUpdated": "2026-08-26",
     "landAcres": 72,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "windstream-wholesale-oklahoma-city-ok",
+    "name": "Windstream Wholesale Oklahoma City Data Center",
+    "operator": "Windstream",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.4791,
+      "lon": -97.5142,
+      "city": "Oklahoma City",
+      "county": "Oklahoma County",
+      "street": "825 N Broadway Ave",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an operational downtown Oklahoma City carrier facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? — Windstream Wholesale, 825 N Broadway",
+        "publisher": "News On 6 (KOTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma? — Windstream Wholesale",
+        "publisher": "News 9 (KWTV)",
+        "retrievedAt": "2026-09-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-02",
+    "notes": "Downtown Oklahoma City carrier/wholesale facility at 825 North Broadway Avenue. Coordinates are an approximate geocode of the street address.",
     "facilityType": "data_center"
   },
   {
