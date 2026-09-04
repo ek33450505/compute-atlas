@@ -6,62 +6,12 @@ import { redirect } from "next/navigation";
 
 import { SESSION_COOKIE_NAME, createSessionValue } from "@/lib/admin-session";
 import { extractTrustedClientIp, hashIp } from "@/lib/rate-limit";
+import { isLoginRateLimited, recordFailedLogin, safeLoginRedirect } from "./login-guards";
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
-const LOGIN_ATTEMPT_MAX = 5;
-const LOGIN_ATTEMPT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-
-/**
- * Hard ceiling on distinct concurrent IP-hash buckets tracked below, mirroring
- * `lib/api-rate-limit.ts`'s FIFO-eviction guard against unbounded Map growth
- * from an attacker varying `X-Forwarded-For` across requests.
- */
-const MAX_LOGIN_ATTEMPT_BUCKETS = 10_000;
-
-interface AttemptBucket {
-  count: number;
-  windowStart: number;
-}
-
-/**
- * Fixed-window in-memory cap on failed login attempts per IP hash. This is a
- * per-instance, best-effort brute-force backstop (state resets on cold
- * start, isn't shared across serverless instances) — the same caveat as
- * `lib/api-rate-limit.ts`'s read-API buckets, which this mirrors. There is
- * no admin-login-attempts table to persist this in, and adding one is out of
- * scope for this fix; the in-memory bucket is deliberately not a new
- * durable store, just this file's local instance of the existing bucket
- * idiom used elsewhere in the codebase for the same concern.
- */
-const loginAttempts = new Map<string, AttemptBucket>();
-
 export interface LoginState {
   error?: string;
-}
-
-/** True if `ipHash` is currently at or over the failed-attempt cap for the active window. */
-function isLoginRateLimited(ipHash: string): boolean {
-  const existing = loginAttempts.get(ipHash);
-  if (!existing || Date.now() - existing.windowStart >= LOGIN_ATTEMPT_WINDOW_MS) {
-    return false;
-  }
-  return existing.count >= LOGIN_ATTEMPT_MAX;
-}
-
-/** Records one failed attempt for `ipHash`, starting a new window if the prior one expired. */
-function recordFailedLogin(ipHash: string): void {
-  const now = Date.now();
-  const existing = loginAttempts.get(ipHash);
-  if (!existing || now - existing.windowStart >= LOGIN_ATTEMPT_WINDOW_MS) {
-    if (!existing && loginAttempts.size >= MAX_LOGIN_ATTEMPT_BUCKETS) {
-      const oldest = loginAttempts.keys().next().value;
-      if (oldest !== undefined) loginAttempts.delete(oldest);
-    }
-    loginAttempts.set(ipHash, { count: 1, windowStart: now });
-    return;
-  }
-  existing.count++;
 }
 
 /**
@@ -134,11 +84,7 @@ export async function login(
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
 
-  const destination =
-    redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
-      ? redirectTo
-      : "/admin/submissions";
-  redirect(destination);
+  redirect(safeLoginRedirect(redirectTo));
 }
 
 /**

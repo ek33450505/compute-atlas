@@ -83,6 +83,21 @@ describe("POST /api/contribute (public, unauthenticated happy path)", () => {
     expect(rows).toHaveLength(0);
   });
 
+  it("honeypot pre-parse: a schema-invalid payload with a filled honeypot still returns 201 and writes nothing", async () => {
+    // Missing required create fields (name, operator, state, lat, lon) and an
+    // invalid sourceUrl — this must never reach Zod validation, because the
+    // honeypot check now runs on the raw body before submitContribution's
+    // schema parse. Pre-fix, this payload would 400 (schema-invalid) instead
+    // of silently 201-ing like a real bot response.
+    const res = await POST(req({ kind: "create", website: "spam", sourceUrl: "not-a-valid-url" }));
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body.ok).toBe(true);
+
+    const rows = await tdb.db.select().from(submissionsTable);
+    expect(rows).toHaveLength(0);
+  });
+
   it("rate-limits a 6th submission from the same ip within the window", async () => {
     const ip = "203.0.113.7";
     const ipHash = hashIp(ip);

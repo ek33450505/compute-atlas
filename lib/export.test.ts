@@ -84,6 +84,23 @@ const multiSourceFacility: Facility = {
   lastUpdated: "2024-06-01",
 };
 
+// Name/operator that look like spreadsheet formulas, plus a legitimately
+// negative lon, to exercise the CSV formula-injection guard.
+const formulaInjectionFacility: Facility = {
+  id: "zeta-facility",
+  name: "=1+1",
+  operator: "@SUM(A1:A9)",
+  status: "operational",
+  facilityType: "data_center",
+  aiClassification: "confirmed",
+  confidence: "confirmed",
+  location: { lat: 29.9511, lon: -90.0148, city: "New Orleans", state: "LA", precision: "exact" },
+  capacityMw: { operational: 100 },
+  statusHistory: [],
+  sources: [makeSource()],
+  lastUpdated: "2024-07-01",
+};
+
 // ---------------------------------------------------------------------------
 // facilitiesToCsv
 // ---------------------------------------------------------------------------
@@ -149,6 +166,39 @@ describe("facilitiesToCsv", () => {
     const cells = row.split(",");
     const sourceCountIdx = header.indexOf("source_count");
     expect(cells[sourceCountIdx]).toBe("1");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CSV formula-injection guard (OWASP CSV injection)
+// ---------------------------------------------------------------------------
+
+describe("escapeCsvField formula-injection guard", () => {
+  it("prefixes a formula-leading name with a single quote", () => {
+    const csv = facilitiesToCsv([formulaInjectionFacility]);
+    const header = CSV_COLUMNS.map((c) => c.header);
+    const [, row] = csv.split("\r\n");
+    const cells = row.split(",");
+    const nameIdx = header.indexOf("name");
+    expect(cells[nameIdx]).toBe("'=1+1");
+  });
+
+  it("prefixes an @-leading operator with a single quote", () => {
+    const csv = facilitiesToCsv([formulaInjectionFacility]);
+    const header = CSV_COLUMNS.map((c) => c.header);
+    const [, row] = csv.split("\r\n");
+    const cells = row.split(",");
+    const operatorIdx = header.indexOf("operator");
+    expect(cells[operatorIdx]).toBe("'@SUM(A1:A9)");
+  });
+
+  it("leaves a legitimately negative numeric field (lon) unchanged", () => {
+    const csv = facilitiesToCsv([formulaInjectionFacility]);
+    const header = CSV_COLUMNS.map((c) => c.header);
+    const [, row] = csv.split("\r\n");
+    const cells = row.split(",");
+    const lonIdx = header.indexOf("lon");
+    expect(cells[lonIdx]).toBe("-90.0148");
   });
 });
 

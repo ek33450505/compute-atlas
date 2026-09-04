@@ -130,10 +130,23 @@ export async function confirmAccessGrant(token: string): Promise<ConfirmAccessGr
   const now = new Date();
   const expiresAt = new Date(now.getTime() + GRANT_EXPIRY_MS);
 
-  await db
+  // Re-check status=pending in the UPDATE's own WHERE, not just the read
+  // above: two concurrent confirms of the same token can both pass the
+  // read-then-check race, but only the first UPDATE can still match a
+  // pending row — the loser's zero-row result falls through to `invalid`
+  // below instead of silently minting (and immediately orphaning) a second
+  // accessToken.
+  const updated = await db
     .update(apiAccessGrantsTable)
     .set({ status: "active", accessToken, confirmedAt: now, expiresAt })
-    .where(eq(apiAccessGrantsTable.confirmToken, token));
+    .where(
+      and(eq(apiAccessGrantsTable.confirmToken, token), eq(apiAccessGrantsTable.status, "pending"))
+    )
+    .returning({ id: apiAccessGrantsTable.id });
+
+  if (updated.length === 0) {
+    return { status: "invalid" };
+  }
 
   return { status: "active", accessToken };
 }

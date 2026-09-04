@@ -222,4 +222,9 @@ jobs:
           && steps.mapdata.outcome != 'failure'
         env:
           GH_TOKEN: ${{ env.NEON_SYNC_PAT }}
-        run: gh pr merge "${{ steps.create-pr.outputs.pull-request-number }}" --squash --auto
+          # Env-var indirection rather than direct ${{ }} interpolation into the
+          # shell line — the value is a trusted integer from create-pull-request,
+          # but the pattern matches MAPDATA_OUTCOME above and GitHub's hardening
+          # guidance, so no run: block interpolates an expression directly.
+          SYNC_PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
+        run: gh pr merge "$SYNC_PR_NUMBER" --squash --auto
