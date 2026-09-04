@@ -197,8 +197,29 @@ jobs:
       # sits for manual attention exactly as it always has. Skipped entirely
       # when the PAT isn't configured, since there would be nothing for it to
       # wait on.
+      #
+      # ⛔ ALSO skipped when build:mapdata FAILED, and that clause is
+      # load-bearing. On a mapdata failure the artifacts are discarded above and
+      # the PR opens carrying facility data only, with a ⚠️ in its body saying
+      # siting-context will be STALE for any new facility. That warning only
+      # works if a human reads it — and auto-merge is precisely the thing that
+      # removes the reader. Worse, it does not self-heal: the merge resolves the
+      # `data/facilities.json` drift, so the next run's drift check finds
+      # nothing, skips, and `data/siting-context.json` stays stale indefinitely
+      # until someone runs `npm run build:mapdata` by hand. That is the
+      # mechanism that left 65 of 934 records without a Siting context panel
+      # (2026-08-08). Holding the PR open on failure restores the human read on
+      # exactly the runs that need one, and costs nothing on a clean run.
+      #
+      # Use `outcome`, NOT `conclusion`: `continue-on-error: true` rewrites
+      # `conclusion` to 'success' even when the step failed, so a `conclusion`
+      # check here would silently never fire. Matches the two existing
+      # `steps.mapdata.outcome` uses above.
       - name: Enable auto-merge
-        if: steps.check-drift.outputs.drift == 'true' && env.NEON_SYNC_PAT != ''
+        if: >-
+          steps.check-drift.outputs.drift == 'true'
+          && env.NEON_SYNC_PAT != ''
+          && steps.mapdata.outcome != 'failure'
         env:
           GH_TOKEN: ${{ env.NEON_SYNC_PAT }}
         run: gh pr merge "${{ steps.create-pr.outputs.pull-request-number }}" --squash --auto
