@@ -38,6 +38,7 @@ import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
 import { verifySource, type VerifyClaim, type VerificationResult } from "./verify-source";
 import { fetchPageText } from "./fetch-page-text";
 import { callOllama } from "./ollama-client";
+import { loadFacilities } from "./load-facilities";
 
 // --- types -----------------------------------------------------------------
 
@@ -713,23 +714,6 @@ function parseArgs(argv: string[]): CliArgs {
   return { inputPath, runId, max, dryRun, baseUrl, state };
 }
 
-/** Fetches the live facility set for dedup — read API first, JSON file fallback. */
-async function loadExistingFacilities(baseUrl: string): Promise<Facility[]> {
-  try {
-    const res = await fetch(`${baseUrl}/api/facilities`);
-    if (res.ok) {
-      const body = (await res.json()) as { facilities: Facility[] };
-      return body.facilities;
-    }
-  } catch {
-    // fall through to file fallback
-  }
-
-  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
-  const raw = readFileSync(jsonPath, "utf-8");
-  return JSON.parse(raw) as Facility[];
-}
-
 function writeLog(summary: RunSubmitSummary): void {
   const dir = process.env.DISCOVERY_LOG_DIR ?? path.join(process.cwd(), "discovery-logs");
   mkdirSync(dir, { recursive: true });
@@ -782,7 +766,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const existingFacilities = await loadExistingFacilities(args.baseUrl);
+  const existingFacilities = await loadFacilities(args.baseUrl);
 
   // Default-ON: the real gate always runs unless explicitly disabled. This
   // makes Ollama an operational dependency of a real (non-dry-run) discovery

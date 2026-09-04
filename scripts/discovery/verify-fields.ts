@@ -216,7 +216,7 @@
  * Uses relative imports throughout — tsx does not resolve the `@/*` path
  * alias, matching the rest of scripts/discovery/.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import type { Facility } from "../../lib/schema";
@@ -228,6 +228,7 @@ import {
   extractField,
   fetchSourceText,
   parseFieldsArg,
+  parseLimitArg,
   prefilter,
   quoteSupportsValue,
   quoteVerbatim,
@@ -242,6 +243,7 @@ import { callOllama } from "./ollama-client";
 import { fetchPageText } from "./fetch-page-text";
 import { fetchPdfText } from "./fetch-pdf-text";
 import { findWaybackSnapshotUrl } from "./wayback";
+import { loadFacilities } from "./load-facilities";
 
 // Note on reuse: `buildUserPrompt` and `fieldJsonSchema` (also exported by
 // extract-fields.ts) are NOT imported here directly — this tool never calls
@@ -1042,39 +1044,6 @@ interface CliArgs {
   runId: string;
 }
 
-/**
- * Fallback used when `--limit` is PRESENT on the command line but not
- * parseable as a positive integer (`--limit=abc`, `--limit=0`,
- * `--limit=-5`, an empty value). Kept as a named constant, not a bare
- * literal, so the "why 500" reasoning stays attached to the value.
- */
-const INVALID_LIMIT_FALLBACK = 500;
-
-/**
- * Parses a `--limit` value that was actually supplied. `limit === undefined`
- * means "no bound" downstream — see `if (opts.limit !== undefined) { checks
- * = checks.slice(0, opts.limit); }` — and that is the correct, deliberate
- * meaning of OMITTING `--limit` entirely (an operator asking for a full
- * sweep). `raw === undefined` here reflects exactly that omission, so it is
- * the only input allowed to return `undefined`.
- *
- * A PRESENT-but-invalid value must never collapse to that same `undefined`:
- * doing so is the bug this function exists to close — `--limit=abc` used to
- * silently produce an unbounded, ~12-hour sweep over the full check set.
- * Clamp it to `INVALID_LIMIT_FALLBACK` instead, and say so loudly on stderr.
- */
-function parseLimitArg(raw: string | undefined): number | undefined {
-  if (raw === undefined) return undefined;
-  const parsed = Number(raw);
-  if (Number.isFinite(parsed) && parsed > 0) {
-    return Math.floor(parsed);
-  }
-  console.warn(
-    `--limit: invalid value ${JSON.stringify(raw)} (expected a positive integer) — falling back to ${INVALID_LIMIT_FALLBACK}.`
-  );
-  return INVALID_LIMIT_FALLBACK;
-}
-
 export function parseArgs(argv: string[]): CliArgs {
   let outPath: string | undefined;
   let limit: number | undefined;
@@ -1120,25 +1089,6 @@ export function parseArgs(argv: string[]): CliArgs {
   }
 
   return { outPath, limit, fields, facilityId, runId };
-}
-
-/** Loads the live facility set — read API first, JSON file fallback. Same
- * pattern as extract-fields.ts's own (unexported) loader — duplicated rather
- * than imported since extract-fields.ts does not export it. */
-async function loadFacilities(baseUrl: string): Promise<Facility[]> {
-  try {
-    const res = await fetch(`${baseUrl}/api/facilities`);
-    if (res.ok) {
-      const body = (await res.json()) as { facilities: Facility[] };
-      return body.facilities;
-    }
-  } catch {
-    // fall through to file fallback
-  }
-
-  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
-  const raw = readFileSync(jsonPath, "utf-8");
-  return JSON.parse(raw) as Facility[];
 }
 
 /**
