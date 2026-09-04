@@ -49,8 +49,10 @@ export default function AccessPage() {
 
       <p className="max-w-2xl text-sm text-muted-foreground">
         Enter your email and we&rsquo;ll send a confirmation link. Confirming mints a token
-        shown to you exactly once &mdash; there is no login, no password, and nothing else is
-        stored about you beyond the email address itself.
+        shown to you exactly once &mdash; there is no login and no password. What&rsquo;s
+        stored is the email address and a salted, non-reversible hash of the IP address, used
+        for rate limiting; the grant expires after 90 days, and revoked or expired records are
+        deleted 90 days later.
       </p>
 
       <AccessRequestForm />
