@@ -5153,10 +5153,37 @@
         "publisher": "PA Environment Digest",
         "retrievedAt": "2026-08-31",
         "kind": "permit"
+      },
+      {
+        "url": "https://files.dep.state.pa.us/air/AirQuality/AQPortalFiles/Permits/PermitDocuments/1534781%5B03-00975%5D_Issued_v1.pdf",
+        "label": "PA DEP Title V/State Operating Permit 03-00975 — Armstrong Power, LLC",
+        "publisher": "Pennsylvania Department of Environmental Protection",
+        "retrievedAt": "2026-09-04",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-04",
     "notes": "No named compute offtaker is identified in the permit notice, so `generation.offtaker` is left unset. Coordinates are township-level.",
+    "emissions": {
+      "permittedTpy": {
+        "nox": 312.7,
+        "co": 168.6,
+        "pm": 90.9,
+        "pm25": 70.7,
+        "pm10": 90.9,
+        "so2": 38.5,
+        "voc": 19.7
+      },
+      "basis": "facility_wide",
+      "averagingPeriod": "rolling_12_month",
+      "unitsCovered": "all turbines in Source Group G01 (Units 1-4), each rated 1,926.000 MMBtu/hr",
+      "permitNumber": "03-00975",
+      "permitType": "title_v",
+      "issuingAgency": "Pennsylvania Department of Environmental Protection, Northwest Regional Office",
+      "issuedDate": "2020-11-02",
+      "notes": "Permitted CEILINGS from the Title V operating permit, not measured emissions. Section E, Group G01 (Turbines), Condition #001: \"Emissions from the gas turbine generating station, including during times of startup, shutdown, and malfunction, shall not exceed the following on a consecutive 12-month rolling total basis\", stated \"From all Turbines\" and authorised through Plan Approval PA-03-00975D. The permit prints the sulfur cap as \"SOx (SULFUR OXIDES)\" - recorded here under so2 with no conversion. SCOPE CAVEAT: the permit's Source Group G01 lists FOUR turbines (Units 1-4, sources 201-204), while this record's generation.unitCount of 3 follows the April 4, 2026 PA Bulletin modification notice describing \"three existing simple-cycle turbines\". The two counts measure different things and must not be reconciled by editing either. The facility's three emergency generators (sources 301-303, 28.600 MMBtu/hr each) are NOT covered by these tonnage limits. No CO2e tonnage cap appears in this condition; a missing co2e does not mean no GHG limit exists. DATE CAVEAT: the permit prints Issue Date November 2, 2020, Revision and Effective Date September 11, 2025, and Expiration Date October 31, 2025 - a date now past. A renewal/modification was in DEP public comment per the April 4, 2026 PA Bulletin notice cited on this record. The document itself states only the renewal-timeliness rule and does not assert whether the permit continues in force past expiry, so no such claim is made here.",
+      "sourceIndex": 1
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
