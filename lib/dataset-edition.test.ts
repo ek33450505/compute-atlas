@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import meta from "@/data/facilities.meta.json";
-import { getDatasetEdition } from "@/lib/dataset-edition";
+import { getDatasetEdition, getLiveDatasetEdition } from "@/lib/dataset-edition";
 
 describe("getDatasetEdition", () => {
   it("returns the four contract fields sourced from facilities.meta.json", () => {
@@ -40,5 +40,27 @@ describe("getDatasetEdition", () => {
     });
     vi.doUnmock("@/data/facilities.meta.json");
     vi.resetModules();
+  });
+});
+
+describe("getLiveDatasetEdition", () => {
+  it("returns version/asOf/schemaVersion but omits recordCount", () => {
+    const live = getLiveDatasetEdition();
+    expect(live).toEqual({
+      version: meta.sourceRelease,
+      asOf: meta.asOf,
+      schemaVersion: meta.schemaVersion,
+    });
+    expect(live).not.toHaveProperty("recordCount");
+  });
+
+  it("agrees with getDatasetEdition on every field it keeps", () => {
+    const full = getDatasetEdition();
+    const live = getLiveDatasetEdition();
+    expect(live).toEqual({
+      version: full.version,
+      asOf: full.asOf,
+      schemaVersion: full.schemaVersion,
+    });
   });
 });
