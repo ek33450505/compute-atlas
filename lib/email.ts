@@ -40,48 +40,61 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
+/**
+ * Shared send path for every outbound email below: resolves the Resend
+ * client (skipping with `skipLogMessage` if `RESEND_API_KEY` is unset), sends
+ * `payload`, and logs any failure under `logLabel`. Each public sender still
+ * composes its own subject/text/html (and any sender-specific guard, e.g.
+ * sendContactEmail's CONTACT_TO_EMAIL check) before calling this.
+ */
+async function sendViaResend(
+  logLabel: string,
+  skipLogMessage: string,
+  payload: Parameters<Resend["emails"]["send"]>[0],
+): Promise<{ sent: boolean }> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn(skipLogMessage);
+    return { sent: false };
+  }
+
+  try {
+    const result = await resend.emails.send(payload);
+    if (result.error) {
+      // Log only the error type, not the raw Resend error object — it can
+      // echo the recipient address back on a validation failure (s65
+      // security review, Fix 3).
+      console.error(`${logLabel} failed:`, result.error?.name ?? "unknown");
+      return { sent: false };
+    }
+    return { sent: true };
+  } catch (error) {
+    console.error(`${logLabel} failed:`, error instanceof Error ? error.name : "unknown");
+    return { sent: false };
+  }
+}
+
 export async function sendConfirmEmail(input: {
   email: string;
   targetLabel: string;
   confirmToken: string;
 }): Promise<{ sent: boolean }> {
-  const resend = getResend();
-  if (!resend) {
-    console.warn("RESEND_API_KEY not set — skipping confirm email send");
-    return { sent: false };
-  }
-
   const confirmUrl = `${linkBase()}/api/subscribe/confirm?token=${encodeURIComponent(input.confirmToken)}`;
   const subject = "Confirm your Compute Atlas alerts";
   const text = `You asked to be notified when ${input.targetLabel} changes on Compute Atlas. Confirm to start receiving updates: ${confirmUrl}. If this wasn't you, ignore this email — nothing is sent unless you confirm.`;
   const html = `<p>You asked to be notified when <strong>${escapeHtml(input.targetLabel)}</strong> changes on Compute Atlas.</p><p><a href="${escapeHtml(confirmUrl)}">Confirm to start receiving updates</a></p><p>If this wasn't you, ignore this email — nothing is sent unless you confirm.</p>`;
 
-  try {
-    const result = await resend.emails.send({ from: fromAddress(), to: input.email, subject, text, html });
-    if (result.error) {
-      // Log only the error type, not the raw Resend error object — it can
-      // echo the recipient address back on a validation failure (s65
-      // security review, Fix 3).
-      console.error("sendConfirmEmail failed:", result.error?.name ?? "unknown");
-      return { sent: false };
-    }
-    return { sent: true };
-  } catch (error) {
-    console.error("sendConfirmEmail failed:", error instanceof Error ? error.name : "unknown");
-    return { sent: false };
-  }
+  return sendViaResend(
+    "sendConfirmEmail",
+    "RESEND_API_KEY not set — skipping confirm email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
 }
 
 export async function sendBulkAccessEmail(input: {
   email: string;
   confirmToken: string;
 }): Promise<{ sent: boolean }> {
-  const resend = getResend();
-  if (!resend) {
-    console.warn("RESEND_API_KEY not set — skipping bulk access email send");
-    return { sent: false };
-  }
-
   const confirmUrl = `${linkBase()}/api/access/confirm?token=${encodeURIComponent(input.confirmToken)}`;
   const subject = "Your Compute Atlas bulk API access link";
   const why =
@@ -91,20 +104,11 @@ export async function sendBulkAccessEmail(input: {
   const text = `Confirm your Compute Atlas bulk API access: ${confirmUrl}\n\n${why}\n\nIf this wasn't you, ignore this email — nothing is granted unless you confirm.`;
   const html = `<p><a href="${escapeHtml(confirmUrl)}">Confirm your Compute Atlas bulk API access</a></p><p>${escapeHtml(why)}</p><p>If this wasn't you, ignore this email — nothing is granted unless you confirm.</p>`;
 
-  try {
-    const result = await resend.emails.send({ from: fromAddress(), to: input.email, subject, text, html });
-    if (result.error) {
-      // Log only the error type, not the raw Resend error object — it can
-      // echo the recipient address back on a validation failure (s65
-      // security review, Fix 3).
-      console.error("sendBulkAccessEmail failed:", result.error?.name ?? "unknown");
-      return { sent: false };
-    }
-    return { sent: true };
-  } catch (error) {
-    console.error("sendBulkAccessEmail failed:", error instanceof Error ? error.name : "unknown");
-    return { sent: false };
-  }
+  return sendViaResend(
+    "sendBulkAccessEmail",
+    "RESEND_API_KEY not set — skipping bulk access email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
 }
 
 export async function sendContactEmail(input: {
@@ -113,12 +117,6 @@ export async function sendContactEmail(input: {
   topic: string;
   message: string;
 }): Promise<{ sent: boolean }> {
-  const resend = getResend();
-  if (!resend) {
-    console.warn("RESEND_API_KEY not set — skipping contact email send");
-    return { sent: false };
-  }
-
   const to = process.env.CONTACT_TO_EMAIL;
   if (!to) {
     // The message is already durably stored (the route inserts the row
@@ -132,27 +130,11 @@ export async function sendContactEmail(input: {
   const text = `New contact form submission.\n\nName: ${input.name}\nEmail: ${input.email}\nTopic: ${input.topic}\n\n${input.message}`;
   const html = `<p><strong>New contact form submission</strong></p><p>Name: ${escapeHtml(input.name)}<br>Email: ${escapeHtml(input.email)}<br>Topic: ${escapeHtml(input.topic)}</p><p>${escapeHtml(input.message).replace(/\n/g, "<br>")}</p>`;
 
-  try {
-    const result = await resend.emails.send({
-      from: fromAddress(),
-      to,
-      replyTo: input.email,
-      subject,
-      text,
-      html,
-    });
-    if (result.error) {
-      // Log only the error type, not the raw Resend error object — it can
-      // echo the recipient address back on a validation failure (s65
-      // security review, Fix 3).
-      console.error("sendContactEmail failed:", result.error?.name ?? "unknown");
-      return { sent: false };
-    }
-    return { sent: true };
-  } catch (error) {
-    console.error("sendContactEmail failed:", error instanceof Error ? error.name : "unknown");
-    return { sent: false };
-  }
+  return sendViaResend(
+    "sendContactEmail",
+    "RESEND_API_KEY not set — skipping contact email send",
+    { from: fromAddress(), to, replyTo: input.email, subject, text, html },
+  );
 }
 
 export async function sendChangeNotification(input: {
@@ -163,20 +145,16 @@ export async function sendChangeNotification(input: {
   status: string;
   unsubscribeToken: string;
 }): Promise<{ sent: boolean }> {
-  const resend = getResend();
-  if (!resend) {
-    console.warn("RESEND_API_KEY not set — skipping change notification send");
-    return { sent: false };
-  }
-
   const facilityUrl = `${linkBase()}/facilities/${input.facilitySlug}`;
   const unsubUrl = `${linkBase()}/api/subscribe/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
   const subject = `${input.facilityName} — record updated on Compute Atlas`;
   const text = `The record you're watching changed: ${input.facilityName} — ${input.changeLabel} (now ${input.status}). View it: ${facilityUrl}.\n\nYou're receiving this because you asked to be notified when this record changes on Compute Atlas. Unsubscribe: ${unsubUrl}`;
   const html = `<p>The record you're watching changed: <strong>${escapeHtml(input.facilityName)}</strong> — ${escapeHtml(input.changeLabel)} (now ${escapeHtml(input.status)}).</p><p><a href="${escapeHtml(facilityUrl)}">View it</a></p><p style="color:#666;font-size:0.85em;">You're receiving this because you asked to be notified when this record changes on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe</a></p>`;
 
-  try {
-    const result = await resend.emails.send({
+  return sendViaResend(
+    "sendChangeNotification",
+    "RESEND_API_KEY not set — skipping change notification send",
+    {
       from: fromAddress(),
       to: input.email,
       subject,
@@ -186,17 +164,6 @@ export async function sendChangeNotification(input: {
         "List-Unsubscribe": `<${unsubUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
-    });
-    if (result.error) {
-      // Log only the error type, not the raw Resend error object — it can
-      // echo the recipient address back on a validation failure (s65
-      // security review, Fix 3).
-      console.error("sendChangeNotification failed:", result.error?.name ?? "unknown");
-      return { sent: false };
-    }
-    return { sent: true };
-  } catch (error) {
-    console.error("sendChangeNotification failed:", error instanceof Error ? error.name : "unknown");
-    return { sent: false };
-  }
+    },
+  );
 }

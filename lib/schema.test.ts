@@ -534,6 +534,14 @@ describe("sourceSchema — url protocol restriction", () => {
     expect(sourceSchema.safeParse({ ...valid, url: "data:text/html,<script>alert(1)</script>" }).success).toBe(false);
   });
 
+  it("rejects an ftp: uri", () => {
+    expect(sourceSchema.safeParse({ ...valid, url: "ftp://example.com/doc.pdf" }).success).toBe(false);
+  });
+
+  it("rejects a file: uri", () => {
+    expect(sourceSchema.safeParse({ ...valid, url: "file:///etc/passwd" }).success).toBe(false);
+  });
+
   it("rejects a javascript: uri at the facility level (sources[0].url)", () => {
     // reuse the existing baseFacility fixture defined above in this file
     const result = facilitySchema.safeParse({

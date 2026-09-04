@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { STATUS_ORDER } from "@/lib/status";
+import { httpUrlSchema } from "@/lib/intake-fields";
 
 export const statusEnum = z.enum(STATUS_ORDER);
 export const aiClassificationEnum = z.enum(["confirmed", "likely", "mixed_use"]);
@@ -16,20 +17,7 @@ export const sourceKindEnum = z.enum([
 ]);
 
 export const sourceSchema = z.object({
-  url: z
-    .string()
-    .url()
-    .refine(
-      (value) => {
-        try {
-          const { protocol } = new URL(value);
-          return protocol === "http:" || protocol === "https:";
-        } catch {
-          return false;
-        }
-      },
-      { message: "url must use the http or https protocol" },
-    ),
+  url: httpUrlSchema,
   label: z.string().min(1),
   publisher: z.string().optional(),
   // Strict YYYY-MM-DD. A looser rule (min-length) silently accepted month-precision

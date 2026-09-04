@@ -4,11 +4,12 @@
 // lib/leads.ts and lib/lead-fields.ts for the failure mode this avoids).
 import { z } from "zod";
 
-// Mirrors lib/schema.ts sourceSchema's http/https refine — rejects
+// The single source of truth for the http/https URL refine — rejects
 // javascript:/data: URLs at submit time, not just at facility-write time.
-// The single source of truth for both public-intake surfaces: lib/contribute.ts
-// (create/correction submissions) and lib/leads.ts (bare-URL tips) both import
-// this exact refine instead of maintaining their own copy.
+// lib/schema.ts's sourceSchema imports this directly (rather than keeping its
+// own copy) for facility sources; the public-intake surfaces lib/contribute.ts
+// (create/correction submissions) and lib/leads.ts (bare-URL tips) import this
+// exact refine too, so no caller maintains its own copy.
 export const httpUrlSchema = z.string().max(2000).url().refine(
   (value) => {
     try {
