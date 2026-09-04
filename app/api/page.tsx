@@ -5,6 +5,7 @@ import { getDatasetEdition } from "@/lib/dataset-edition";
 import { formatEditionDate } from "@/lib/format";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
+import { DATASET_DOI_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "API",
@@ -15,14 +16,6 @@ export const metadata: Metadata = {
 
 /** Shared style for inline `<code>` tokens (endpoints, headers, param names). */
 const CODE = "rounded-sm bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground";
-
-/**
- * Compute Atlas's Zenodo concept DOI — always resolves to the latest
- * archived release. Same value as app/data/page.tsx's DOI_URL; kept as a
- * separate local const rather than a shared import since neither page
- * exports the other's constants today.
- */
-const DOI_URL = "https://doi.org/10.5281/zenodo.22284476";
 
 /** Shared style for method+path table cells. */
 const METHOD_PATH = "font-mono text-sm text-foreground";
@@ -164,7 +157,7 @@ export default function ApiPage() {
   // stay copy-pasteable as one line.
   const snapshotCitation = `Kubiak, E. (${editionYear}). Compute Atlas (Version ${edition.version}) [Data set]. ${pinnedBulkUrl}`;
   const liveCitation = `Kubiak, E. (n.d.). Compute Atlas. Retrieved [access date], from ${siteConfig.url}`;
-  const doiCitation = `Kubiak, E. (n.d.). Compute Atlas [Data set]. ${DOI_URL}`;
+  const doiCitation = `Kubiak, E. (n.d.). Compute Atlas [Data set]. ${DATASET_DOI_URL}`;
 
   return (
     <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
@@ -423,7 +416,7 @@ export default function ApiPage() {
               <p>
                 Compute Atlas is archived on{" "}
                 <a
-                  href={DOI_URL}
+                  href={DATASET_DOI_URL}
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label="Compute Atlas concept DOI on Zenodo (opens in new tab)"

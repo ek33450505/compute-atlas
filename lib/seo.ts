@@ -1,6 +1,16 @@
 import type { Facility } from "@/lib/schema";
 import { siteConfig } from "@/lib/site";
 
+/**
+ * Compute Atlas's Zenodo concept DOI, resolvable and always pointing at the
+ * latest archived release. This is the single source for the DOI: the
+ * `Dataset` JSON-LD `identifier` below and the visible citation text on
+ * `app/api/page.tsx` and `app/data/page.tsx` all read it from here, so a
+ * future Zenodo release (which mints a NEW DOI) is a one-line change and
+ * cannot leave the structured data disagreeing with the rendered page.
+ */
+export const DATASET_DOI_URL = "https://doi.org/10.5281/zenodo.22284476";
+
 export interface FacilityJsonLd {
   "@context": "https://schema.org";
   "@type": "Place";
@@ -71,6 +81,7 @@ export interface DatasetJsonLd {
   name: string;
   description: string;
   url: string;
+  identifier: string;
   sameAs: string;
   keywords: string[];
   license: string;
@@ -102,6 +113,14 @@ export interface DatasetJsonLd {
 /**
  * Builds a schema.org Dataset JSON-LD object describing the whole facility
  * dataset (not a single facility) — enables Google Dataset Search eligibility.
+ * `identifier` carries the resolvable Zenodo concept DOI, the field Google
+ * Dataset Search and citation tooling key on.
+ *
+ * Deliberately omits `temporalCoverage`: it would need an honest start date
+ * for the period the data covers, and nothing available to this builder
+ * supplies one — `getDatasetEdition()` (`lib/dataset-edition.ts`) exposes
+ * only `asOf`, a single point-in-time export timestamp, not a range. Add it
+ * only when a real start date becomes available; don't invent one.
  * Pure function — unit-testable without any DOM or Next.js dependencies.
  */
 export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): DatasetJsonLd {
@@ -111,6 +130,7 @@ export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): Datase
     name: "Compute Atlas — U.S. Data Center & Compute Infrastructure Dataset",
     description: siteConfig.description,
     url: siteConfig.url,
+    identifier: DATASET_DOI_URL,
     sameAs: siteConfig.repoUrl,
     keywords: [
       "data centers",
@@ -279,6 +299,7 @@ export function siteJsonLdString(): string {
 export interface ItemListJsonLd {
   "@context": "https://schema.org";
   "@type": "ItemList";
+  numberOfItems: number;
   itemListElement: {
     "@type": "ListItem";
     position: number;
@@ -289,9 +310,13 @@ export interface ItemListJsonLd {
 
 /**
  * Builds a schema.org ItemList JSON-LD object for a directory/hub page
- * (e.g. /states, /operators). `position` is 1-based (`i + 1`). Contract:
- * callers pass already-absolute `url`s (typically `${siteConfig.url}/...`);
- * this builder only assigns positions, it does not resolve relative paths.
+ * (e.g. /states, /operators). `position` is 1-based (`i + 1`).
+ * `numberOfItems` is derived from `items.length` — the same array
+ * `itemListElement` is built from — so it can never drift from the actual
+ * element count; there is no separate caller-supplied count to fall out of
+ * sync. Contract: callers pass already-absolute `url`s (typically
+ * `${siteConfig.url}/...`); this builder only assigns positions, it does not
+ * resolve relative paths.
  * Pure function — unit-testable without any DOM or Next.js dependencies.
  */
 export function buildItemListJsonLd(
@@ -300,6 +325,7 @@ export function buildItemListJsonLd(
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
+    numberOfItems: items.length,
     itemListElement: items.map((item, i) => ({
       "@type": "ListItem",
       position: i + 1,

@@ -12,6 +12,8 @@ import {
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatCapacity, formatLocation, formatPower } from "@/lib/format";
+import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
@@ -93,12 +95,38 @@ export default async function OperatorPage({
       ? `The largest tracked site${topFacilityNames.length === 1 ? "" : "s"}, by capacity, ${topFacilityNames.length === 1 ? "is" : "are"} ${new Intl.ListFormat("en-US", { style: "long", type: "conjunction" }).format(topFacilityNames)}.`
       : null;
 
+  const crumbs = [
+    { label: "Explore", href: "/explore" },
+    { label: "Operators", href: "/operators" },
+    { label: operatorName },
+  ];
+
   return (
     <div
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
-      <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Operators", href: "/operators" }, { label: operatorName }]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: breadcrumbJsonLdString(
+            crumbs.map((c) => ({ name: c.label, url: c.href }))
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: itemListJsonLdString(
+            facilities.map((f) => ({
+              name: f.name,
+              url: `${siteConfig.url}/facilities/${f.id}`,
+            }))
+          ),
+        }}
+      />
+
+      <Breadcrumb items={crumbs} />
 
       {/* ------------------------------------------------------------------ */}
       {/* Masthead                                                            */}

@@ -11,6 +11,7 @@ import {
   siteJsonLdString,
   buildItemListJsonLd,
   itemListJsonLdString,
+  DATASET_DOI_URL,
 } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
@@ -157,6 +158,12 @@ describe("buildDatasetJsonLd", () => {
   it("sets license to the CC-BY-4.0 URL", () => {
     const ld = buildDatasetJsonLd();
     expect(ld.license).toBe("https://creativecommons.org/licenses/by/4.0/");
+  });
+
+  it("sets identifier to the resolvable Zenodo DOI", () => {
+    const ld = buildDatasetJsonLd();
+    expect(ld.identifier).toBe(DATASET_DOI_URL);
+    expect(ld.identifier).toBe("https://doi.org/10.5281/zenodo.22284476");
   });
 
   it("includes dateModified when provided", () => {
@@ -347,6 +354,22 @@ describe("buildItemListJsonLd", () => {
     const ld = buildItemListJsonLd([]);
     expect(ld.itemListElement).toEqual([]);
   });
+
+  it("sets numberOfItems to the element count for a multi-item list", () => {
+    const ld = buildItemListJsonLd(ITEMS);
+    expect(ld.numberOfItems).toBe(2);
+    expect(ld.numberOfItems).toBe(ld.itemListElement.length);
+  });
+
+  it("sets numberOfItems to 0 for an empty list", () => {
+    const ld = buildItemListJsonLd([]);
+    expect(ld.numberOfItems).toBe(0);
+  });
+
+  it("sets numberOfItems to the element count for a single-item list", () => {
+    const ld = buildItemListJsonLd([ITEMS[0]]);
+    expect(ld.numberOfItems).toBe(1);
+  });
 });
 
 describe("itemListJsonLdString", () => {
@@ -372,11 +395,13 @@ describe("itemListJsonLdString", () => {
     const parsed = JSON.parse(str);
     expect(parsed["@type"]).toBe("ItemList");
     expect(parsed.itemListElement[0].position).toBe(1);
+    expect(parsed.numberOfItems).toBe(1);
   });
 
   it("produces valid JSON for an empty array", () => {
     const str = itemListJsonLdString([]);
     const parsed = JSON.parse(str);
     expect(parsed.itemListElement).toEqual([]);
+    expect(parsed.numberOfItems).toBe(0);
   });
 });
