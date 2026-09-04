@@ -12,8 +12,7 @@ vi.mock("@/lib/db/client");
 // real Next.js request lifecycle, which this suite (calling POST directly)
 // never sets up. Mocked to run the task immediately and capture its promise
 // in `pendingAfter` so tests can deterministically await the email-send
-// phase. Mirrors app/api/subscribe/route's and app/api/contact/route's
-// identical mock.
+// phase. Mirrors app/api/access/request/route's identical mock.
 let pendingAfter: Promise<unknown> | undefined;
 vi.mock("next/server", async (importOriginal) => {
   const actual = await importOriginal<typeof import("next/server")>();
@@ -33,15 +32,19 @@ vi.mock("resend", () => ({
 }));
 
 import * as dbClient from "@/lib/db/client";
-import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
-import { apiAccessGrantsTable } from "@/lib/db/schema";
+import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
+import { subscriptionsTable } from "@/lib/db/schema";
 import { hashIp } from "@/lib/rate-limit";
+import facilitiesRaw from "@/data/facilities.json";
+import type { Facility } from "@/lib/schema";
 
 // Imported after the mocks above so the mocked modules are in effect.
 import { POST } from "./route";
 
+const seedDoc = facilitiesRaw[0] as unknown as Facility; // xai-colossus-memphis-tn
+
 function req(body: unknown, headers?: HeadersInit): Request {
-  return new Request("http://localhost/api/access/request", {
+  return new Request("http://localhost/api/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json", ...headers },
     body: JSON.stringify(body),
@@ -58,6 +61,10 @@ beforeAll(async () => {
   tdb = await makeTestDb();
   vi.mocked(dbClient.getDb).mockReturnValue(tdb.db as never);
   vi.mocked(dbClient.hasDatabaseUrl).mockReturnValue(true);
+  // subscribeToTarget resolves the target facility via getFacilityById ->
+  // loadFacilities, which gates on readsUseDatabase() (see lib/db/client.ts)
+  // rather than hasDatabaseUrl() directly.
+  vi.mocked(dbClient.readsUseDatabase).mockReturnValue(true);
 });
 
 beforeEach(async () => {
@@ -75,24 +82,27 @@ afterAll(async () => {
   await tdb.client.close();
 });
 
-describe("POST /api/access/request", () => {
-  it("stages a pending grant with 201, and sends nothing when RESEND_API_KEY is unset", async () => {
-    const res = await POST(req({ email: "reader@example.com" }));
+describe("POST /api/subscribe", () => {
+  it("stages a pending subscription with 201, and sends nothing when RESEND_API_KEY is unset", async () => {
+    await seedFacility(tdb.db, seedDoc);
+
+    const res = await POST(req({ email: "reader@example.com", targetType: "facility", targetId: seedDoc.id }));
     expect(res.status).toBe(201);
     const body = await res.json();
     expect(body.ok).toBe(true);
     await flushAfter();
 
-    const rows = await tdb.db.select().from(apiAccessGrantsTable);
+    const rows = await tdb.db.select().from(subscriptionsTable);
     expect(rows).toHaveLength(1);
     expect(rows[0].status).toBe("pending");
     expect(resendSendMock).not.toHaveBeenCalled();
   });
 
-  it("sends the magic-link email once RESEND_API_KEY is set", async () => {
+  it("sends the confirm email once RESEND_API_KEY is set", async () => {
+    await seedFacility(tdb.db, seedDoc);
     vi.stubEnv("RESEND_API_KEY", "test-key");
 
-    const res = await POST(req({ email: "reader@example.com" }));
+    const res = await POST(req({ email: "reader@example.com", targetType: "facility", targetId: seedDoc.id }));
     expect(res.status).toBe(201);
     await flushAfter();
 
@@ -102,7 +112,7 @@ describe("POST /api/access/request", () => {
   });
 
   it("rejects a malformed JSON body with 400", async () => {
-    const badReq = new Request("http://localhost/api/access/request", {
+    const badReq = new Request("http://localhost/api/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: "{not valid json",
@@ -112,46 +122,59 @@ describe("POST /api/access/request", () => {
   });
 
   it("rejects an invalid email with 400 and writes nothing", async () => {
-    const res = await POST(req({ email: "not-an-email" }));
+    const res = await POST(req({ email: "not-an-email", targetType: "facility", targetId: seedDoc.id }));
     expect(res.status).toBe(400);
-    expect(await tdb.db.select().from(apiAccessGrantsTable)).toHaveLength(0);
+    expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(0);
   });
 
   it("honeypot: returns 201 ok but inserts zero rows and never sends", async () => {
+    await seedFacility(tdb.db, seedDoc);
     vi.stubEnv("RESEND_API_KEY", "test-key");
-    const res = await POST(req({ email: "spammer@example.com", website: "spam" }));
+    const res = await POST(
+      req({ email: "spammer@example.com", targetType: "facility", targetId: seedDoc.id, website: "spam" })
+    );
     expect(res.status).toBe(201);
-    expect(await tdb.db.select().from(apiAccessGrantsTable)).toHaveLength(0);
+    expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(0);
     expect(resendSendMock).not.toHaveBeenCalled();
   });
 
   it("rate-limits a 6th request from the same ip within the window", async () => {
-    const ip = "203.0.113.10";
+    await seedFacility(tdb.db, seedDoc);
+    const ip = "203.0.113.14";
     const ipHash = hashIp(ip);
     for (let i = 0; i < 5; i++) {
-      await tdb.db.insert(apiAccessGrantsTable).values({
+      await tdb.db.insert(subscriptionsTable).values({
         email: `user${i}@example.com`,
+        targetType: "facility",
+        targetId: seedDoc.id,
         status: "pending",
         confirmToken: `tok-${i}`,
+        unsubscribeToken: `unsub-${i}`,
         submitterIpHash: ipHash,
       });
     }
 
-    const res = await POST(req({ email: "reader@example.com" }, { "x-forwarded-for": ip }));
+    const res = await POST(
+      req({ email: "reader@example.com", targetType: "facility", targetId: seedDoc.id }, { "x-forwarded-for": ip })
+    );
     expect(res.status).toBe(429);
 
-    const rows = await tdb.db.select().from(apiAccessGrantsTable);
+    const rows = await tdb.db.select().from(subscriptionsTable);
     expect(rows).toHaveLength(5); // the 6th attempt must not have landed
   });
 
   it("buckets by cf-connecting-ip, not a spoofed leftmost x-forwarded-for", async () => {
-    const trustedIp = "203.0.113.12";
+    await seedFacility(tdb.db, seedDoc);
+    const trustedIp = "203.0.113.15";
     const ipHash = hashIp(trustedIp);
     for (let i = 0; i < 5; i++) {
-      await tdb.db.insert(apiAccessGrantsTable).values({
+      await tdb.db.insert(subscriptionsTable).values({
         email: `spoof-user${i}@example.com`,
+        targetType: "facility",
+        targetId: seedDoc.id,
         status: "pending",
         confirmToken: `spoof-tok-${i}`,
+        unsubscribeToken: `spoof-unsub-${i}`,
         submitterIpHash: ipHash,
       });
     }
@@ -161,13 +184,13 @@ describe("POST /api/access/request", () => {
     // extractTrustedClientIp doc comment); cf-connecting-ip must still win.
     const res = await POST(
       req(
-        { email: "reader@example.com" },
-        { "x-forwarded-for": "198.51.100.8", "cf-connecting-ip": trustedIp }
+        { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
+        { "x-forwarded-for": "198.51.100.10", "cf-connecting-ip": trustedIp }
       )
     );
     expect(res.status).toBe(429);
 
-    const rows = await tdb.db.select().from(apiAccessGrantsTable);
+    const rows = await tdb.db.select().from(subscriptionsTable);
     expect(rows).toHaveLength(5); // the spoofed-XFF attempt must not have landed
   });
 });

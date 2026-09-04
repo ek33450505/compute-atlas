@@ -40,7 +40,7 @@ vi.mock("resend", () => ({
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 import { contactMessagesTable } from "@/lib/db/schema";
-import { hashIp } from "@/lib/rate-limit";
+import { hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
 
 // Imported after the mocks above so the mocked modules are in effect.
 import { POST } from "./route";
@@ -235,5 +235,31 @@ describe("POST /api/contact", () => {
 
     const rows = await tdb.db.select().from(contactMessagesTable);
     expect(rows).toHaveLength(5); // the 6th attempt must not have landed
+  });
+
+  it("buckets two different IPv6 addresses in the same /64 together (RFC 4941 rotation)", async () => {
+    // Same /64 prefix (first four groups), different interface identifiers —
+    // exactly what a residential IPv6 client rotates through automatically
+    // via privacy extensions, no attacker required. Without
+    // normaliseIpForBucketing these hash to different buckets and the limit
+    // never fires.
+    const firstAddressInBlock = "2001:db8:1:2:3:4:5:6";
+    const secondAddressInBlock = "2001:db8:1:2:ffff:ffff:ffff:ffff";
+    const ipHash = hashIp(normaliseIpForBucketing(firstAddressInBlock));
+    for (let i = 0; i < 5; i++) {
+      await tdb.db.insert(contactMessagesTable).values({
+        name: VALID.name,
+        email: VALID.email,
+        topic: VALID.topic,
+        message: `${VALID.message} ${i}`,
+        submitterIpHash: ipHash,
+      });
+    }
+
+    const res = await POST(req(VALID, { "cf-connecting-ip": secondAddressInBlock }));
+    expect(res.status).toBe(429);
+
+    const rows = await tdb.db.select().from(contactMessagesTable);
+    expect(rows).toHaveLength(5); // the 6th attempt, from a rotated address in the same /64, must not have landed
   });
 });

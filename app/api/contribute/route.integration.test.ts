@@ -101,6 +101,29 @@ describe("POST /api/contribute (public, unauthenticated happy path)", () => {
     expect(rows).toHaveLength(5); // the 6th attempt must not have landed
   });
 
+  it("buckets by cf-connecting-ip, not a spoofed leftmost x-forwarded-for", async () => {
+    const trustedIp = "203.0.113.13";
+    const ipHash = hashIp(trustedIp);
+    for (let i = 0; i < 5; i++) {
+      await tdb.db.insert(submissionsTable).values({
+        kind: "create",
+        payload: seedDoc,
+        provenance: { sources: ["https://example.com/x"], discoveredBy: "test", submitterIpHash: ipHash },
+      });
+    }
+
+    // A different leftmost x-forwarded-for entry on every request is exactly
+    // what defeated extractClientIp in production (see lib/rate-limit.ts's
+    // extractTrustedClientIp doc comment); cf-connecting-ip must still win.
+    const res = await POST(
+      req(validCreateBody, { "x-forwarded-for": "198.51.100.9", "cf-connecting-ip": trustedIp })
+    );
+    expect(res.status).toBe(429);
+
+    const rows = await tdb.db.select().from(submissionsTable);
+    expect(rows).toHaveLength(5); // the spoofed-XFF attempt must not have landed
+  });
+
   it("correction: stages a pending update submission targeting an existing facility", async () => {
     await seedFacility(tdb.db, seedDoc);
 

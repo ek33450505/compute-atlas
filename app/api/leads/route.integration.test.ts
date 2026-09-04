@@ -185,6 +185,28 @@ describe("POST /api/leads", () => {
     expect(rows).toHaveLength(5); // the 6th attempt must not have landed
   });
 
+  it("buckets by cf-connecting-ip, not a spoofed leftmost x-forwarded-for", async () => {
+    const trustedIp = "203.0.113.11";
+    const ipHash = hashIp(trustedIp);
+    for (let i = 0; i < 5; i++) {
+      await tdb.db.insert(leadsTable).values({ url: `https://example.com/spoof-${i}`, submitterIpHash: ipHash });
+    }
+
+    // A different leftmost x-forwarded-for entry on every request is exactly
+    // what defeated extractClientIp in production (see lib/rate-limit.ts's
+    // extractTrustedClientIp doc comment); cf-connecting-ip must still win.
+    const res = await POST(
+      req(
+        { url: "https://example.com/spoofed-sixth" },
+        { "x-forwarded-for": "198.51.100.7", "cf-connecting-ip": trustedIp }
+      )
+    );
+    expect(res.status).toBe(429);
+
+    const rows = await tdb.db.select().from(leadsTable);
+    expect(rows).toHaveLength(5); // the spoofed-XFF attempt must not have landed
+  });
+
   it("a triage fetch failure still yields 201 with the lead row present (triage=null-ish)", async () => {
     vi.stubGlobal(
       "fetch",

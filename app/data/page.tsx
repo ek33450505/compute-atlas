@@ -6,7 +6,7 @@ import { getDatasetEdition } from "@/lib/dataset-edition";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { ExportButtons } from "@/components/explorer/export-buttons";
-import { breadcrumbJsonLdString } from "@/lib/seo";
+import { breadcrumbJsonLdString, DATASET_DOI_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Get the data",
@@ -17,8 +17,6 @@ export const metadata: Metadata = {
 
 const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
-
-const DOI_URL = "https://doi.org/10.5281/zenodo.22284476";
 
 /**
  * Formats `DatasetEdition.asOf` for display. `asOf` can be the literal
@@ -60,7 +58,10 @@ export default async function DataPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: breadcrumbJsonLdString([{ name: "Get the data", url: "/data" }]),
+          __html: breadcrumbJsonLdString([
+            { name: "Home", url: "/" },
+            { name: "Get the data", url: "/data" },
+          ]),
         }}
       />
 
@@ -138,8 +139,8 @@ export default async function DataPage() {
         </p>
         <blockquote className="max-w-2xl border-l-2 border-border pl-4 font-mono text-sm text-muted-foreground">
           Kubiak, E. (n.d.). Compute Atlas [Data set].{" "}
-          <a href={DOI_URL} className={LINK_CLASS}>
-            {DOI_URL}
+          <a href={DATASET_DOI_URL} className={LINK_CLASS}>
+            {DATASET_DOI_URL}
           </a>
         </blockquote>
       </section>

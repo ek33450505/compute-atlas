@@ -129,6 +129,33 @@ describe("DataPage", () => {
     expect(metadata.alternates).toEqual({ canonical: "/data" });
   });
 
+  it("emits a BreadcrumbList JSON-LD with a valid trail of at least two items", async () => {
+    const page = await DataPage();
+    const { container } = render(page);
+
+    const scripts = container.querySelectorAll('script[type="application/ld+json"]');
+    expect(scripts).toHaveLength(1);
+
+    const breadcrumb = JSON.parse(scripts[0]!.textContent!);
+    expect(breadcrumb["@type"]).toBe("BreadcrumbList");
+    expect(breadcrumb.itemListElement.length).toBeGreaterThanOrEqual(2);
+    expect(breadcrumb.itemListElement.map((i: { position: number }) => i.position)).toEqual([
+      1, 2,
+    ]);
+    expect(breadcrumb.itemListElement[0]).toEqual({
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: "https://www.compute-atlas.com/",
+    });
+    expect(breadcrumb.itemListElement[1]).toEqual({
+      "@type": "ListItem",
+      position: 2,
+      name: "Get the data",
+      item: "https://www.compute-atlas.com/data",
+    });
+  });
+
   it("keeps raw HTML entities out of metadata string props, which JSX does not decode", () => {
     const strings = [metadata.title, metadata.description].filter(
       (v): v is string => typeof v === "string"

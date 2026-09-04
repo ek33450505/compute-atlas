@@ -1,7 +1,12 @@
 import { after } from "next/server";
 
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
-import { checkLeadRateLimit, extractClientIp, hashIp } from "@/lib/rate-limit";
+import {
+  checkLeadRateLimit,
+  extractTrustedClientIp,
+  hashIp,
+  normaliseIpForBucketing,
+} from "@/lib/rate-limit";
 import { isHoneypotTripped } from "@/lib/contribute";
 import { createLead, setLeadTriage } from "@/lib/leads";
 import { triageUrl } from "@/lib/url-triage";
@@ -15,7 +20,7 @@ export async function POST(request: Request) {
     return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const ipHash = hashIp(extractClientIp(request));
+  const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
 
   const gate = await checkLeadRateLimit(ipHash);
   if (!gate.ok) {

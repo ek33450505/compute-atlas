@@ -2,7 +2,12 @@ import { after } from "next/server";
 
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
 import { sendBulkAccessEmail } from "@/lib/email";
-import { checkAccessGrantRateLimit, extractClientIp, hashIp } from "@/lib/rate-limit";
+import {
+  checkAccessGrantRateLimit,
+  extractTrustedClientIp,
+  hashIp,
+  normaliseIpForBucketing,
+} from "@/lib/rate-limit";
 import { requestAccessGrant } from "@/lib/access-grants";
 
 export async function POST(request: Request) {
@@ -13,7 +18,7 @@ export async function POST(request: Request) {
     return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const ipHash = hashIp(extractClientIp(request));
+  const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
 
   const gate = await checkAccessGrantRateLimit(ipHash);
   if (!gate.ok) {

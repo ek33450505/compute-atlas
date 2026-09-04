@@ -30,21 +30,48 @@ export function extractClientIp(request: Request): string {
  * (Vercel appends the real client IP rather than replacing one the client
  * already sent), so an attacker can rotate XFF per request to get a fresh
  * `ipHash` bucket every request and bypass any limiter keyed on
- * `extractClientIp`'s result entirely. This prefers `x-real-ip` instead —
- * assumed to be set by Vercel's edge to the true client-connection IP,
- * single-valued and not attacker-controllable — falling back to the
- * RIGHTMOST `x-forwarded-for` entry (the one appended by the trusted proxy,
- * on the same assumption) if `x-real-ip` is absent, then to a fixed
- * sentinel.
+ * `extractClientIp`'s result entirely.
  *
- * Prefer this over `extractClientIp` for security-sensitive paths where a
- * spoofed bucket has a real cost if bypassed — auth lockout, and anything
- * that sends email or costs money on every accepted request (e.g. the
- * contact endpoint). `extractClientIp` remains the default for the read-API
- * and other limiters that don't need this stronger guarantee; do not switch
- * them over without a reason, since it's marginally stricter (a genuine
- * multi-hop proxy chain with no `x-real-ip` set will resolve to a different
- * entry than before).
+ * Precedence, most to least trusted:
+ *  1. `cf-connecting-ip` — on the production path (Cloudflare in front of
+ *     Vercel), Cloudflare always overwrites this header with the real
+ *     connecting client's IP rather than passing through a client-supplied
+ *     value, so it's trustworthy there. It is NOT unspoofable in general: a
+ *     request that reaches the Vercel origin directly, bypassing Cloudflare,
+ *     can set this header itself like any other. That's not an incremental
+ *     weakness versus the alternatives below, though — the same direct-to-
+ *     origin caller could already forge `x-real-ip` (precedence #2) too, and
+ *     the burst limiter (`lib/api-rate-limit.ts`) plus the DB-backed daily
+ *     volume gate remain as further defense regardless of which header wins.
+ *     Confirmed live 2026-09-03: production's `x-forwarded-for` leftmost
+ *     entry was rotating per request (21 requests from one stable IPv4
+ *     egress produced 20 distinct buckets), which is exactly the spoofing
+ *     this precedence exists to close.
+ *  2. `x-real-ip` — assumed set by Vercel's edge to the true
+ *     client-connection IP, single-valued and not attacker-controllable; the
+ *     fallback for non-Cloudflare paths (local dev, direct Vercel access).
+ *  3. The RIGHTMOST `x-forwarded-for` entry (the one appended by the trusted
+ *     proxy, on the same assumption), if neither of the above is present.
+ *  4. A fixed sentinel ("unknown").
+ *
+ * Prefer this over `extractClientIp` for any path where a spoofed bucket
+ * defeats the limiter's purpose — auth lockout, anything that sends email or
+ * costs money on every accepted request (e.g. the contact endpoint), durable
+ * per-IP volume caps (e.g. the daily API-read gate), and the in-memory burst
+ * limiter (`lib/api-rate-limit.ts`) guarding the read API's
+ * `checkApiRateLimit` buckets. The burst limiter was switched over
+ * deliberately, at all five read-API routes (`facilities`,
+ * `facilities/[id]`, `search`, `stats`, `schema`): the production incident
+ * this precedence exists to close (above) hits an in-memory
+ * per-request-count bucket exactly the same way it hits a DB-backed one — a
+ * rotating leftmost XFF entry defeats either kind of counter regardless of
+ * where the count is stored.
+ *
+ * The `cf-connecting-ip` precedence is a strict improvement for every
+ * existing caller (`app/api/contact/route.ts`, `app/admin/login/actions.ts`)
+ * too — it only takes effect on requests that are actually behind
+ * Cloudflare, and when present it is strictly more trustworthy than
+ * `x-real-ip`/XFF, so no caller becomes less safe.
  *
  * Takes `Headers` directly (not a `Request`) so both a route handler
  * (`request.headers`) and a Server Action (`await headers()` from
@@ -52,6 +79,11 @@ export function extractClientIp(request: Request): string {
  * `Headers`) can call this without wrapping or casting.
  */
 export function extractTrustedClientIp(headers: Headers): string {
+  const cfConnectingIp = headers.get("cf-connecting-ip");
+  if (cfConnectingIp) {
+    const trimmed = cfConnectingIp.trim();
+    if (trimmed) return trimmed;
+  }
   const realIp = headers.get("x-real-ip");
   if (realIp) {
     const trimmed = realIp.trim();
@@ -66,6 +98,54 @@ export function extractTrustedClientIp(headers: Headers): string {
     if (parts.length > 0) return parts[parts.length - 1];
   }
   return "unknown";
+}
+
+const IPV4_MAPPED_IPV6 = /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/i;
+
+/**
+ * Collapses an IPv6 address to its /64 network prefix for use as a rate-limit
+ * bucket key; IPv4 addresses (and the "unknown" sentinel) pass through
+ * unchanged. A residential IPv6 client is routinely delegated a whole /64 and
+ * rotates its source address within it automatically (privacy extensions,
+ * RFC 4941), so hashing the full address would hand any such client
+ * effectively unlimited buckets against a per-IP cap — standard practice is
+ * to rate-limit IPv6 at the /64 boundary instead. `::ffff:1.2.3.4`
+ * (IPv4-mapped IPv6) is treated as plain IPv4.
+ *
+ * Handles `::` zero-compression by expanding it properly: the compressed run
+ * can sit anywhere in the address (start, middle, or end), and the groups
+ * that carry the /64 prefix can live on either side of it — e.g.
+ * `::2001:db8:1:2:3:4:5` expands to `0:2001:db8:1:2:3:4:5`, so its /64 is
+ * `0:2001:db8:1`, not `0:0:0:0` (naively taking only the pre-"::" head gets
+ * this wrong whenever the compressed run sits early and the tail carries the
+ * prefix groups). We split on `::` into head and tail group lists, insert
+ * `8 - head.length - tail.length` zero groups between them to get the full
+ * 8-group address, then take the first four groups as the /64 prefix (e.g.
+ * `2001:db8::1` -> head `["2001","db8"]`, tail `["1"]` -> prefix
+ * `2001:db8:0:0`).
+ */
+export function normaliseIpForBucketing(ip: string): string {
+  if (!ip.includes(":")) return ip; // IPv4, or the "unknown" sentinel
+
+  const mapped = ip.match(IPV4_MAPPED_IPV6);
+  if (mapped) return mapped[1];
+
+  const withoutZone = ip.split("%")[0]; // strip zone id (e.g. "%eth0")
+
+  let groups: string[];
+  if (withoutZone.includes("::")) {
+    const [headPart, tailPart] = withoutZone.split("::");
+    const head = headPart ? headPart.split(":").filter((p) => p.length > 0) : [];
+    const tail = tailPart ? tailPart.split(":").filter((p) => p.length > 0) : [];
+    const missing = Math.max(0, 8 - head.length - tail.length);
+    groups = [...head, ...Array(missing).fill("0"), ...tail];
+  } else {
+    groups = withoutZone.split(":").filter((p) => p.length > 0);
+  }
+
+  const prefix =
+    groups.length >= 4 ? groups.slice(0, 4) : [...groups, ...Array(4 - groups.length).fill("0")];
+  return prefix.join(":");
 }
 
 export function hashIp(ip: string): string {

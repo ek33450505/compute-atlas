@@ -1,7 +1,12 @@
 import { after } from "next/server";
 
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
-import { checkContactRateLimit, extractTrustedClientIp, hashIp } from "@/lib/rate-limit";
+import {
+  checkContactRateLimit,
+  extractTrustedClientIp,
+  hashIp,
+  normaliseIpForBucketing,
+} from "@/lib/rate-limit";
 import { isHoneypotTripped } from "@/lib/contribute";
 import { createContactMessage, setContactEmailSent } from "@/lib/contact";
 import { sendContactEmail } from "@/lib/email";
@@ -14,7 +19,7 @@ export async function POST(request: Request) {
     return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const ipHash = hashIp(extractTrustedClientIp(request.headers));
+  const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
 
   const gate = await checkContactRateLimit(ipHash);
   if (!gate.ok) {

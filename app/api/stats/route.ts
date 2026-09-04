@@ -1,7 +1,7 @@
 import { getStats } from "@/lib/data";
 import { getDatasetEdition } from "@/lib/dataset-edition";
 import { cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
-import { extractClientIp } from "@/lib/rate-limit";
+import { extractTrustedClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 import { checkDailyApiGate } from "@/lib/api-daily-limit";
 
@@ -11,7 +11,7 @@ import { checkDailyApiGate } from "@/lib/api-daily-limit";
  * see `lib/dataset-edition.ts`. Existing fields and caching are unchanged.
  */
 export async function GET(request: Request): Promise<Response> {
-  const gate = checkApiRateLimit(extractClientIp(request));
+  const gate = checkApiRateLimit(extractTrustedClientIp(request.headers));
   if (!gate.ok) return tooManyRequests(gate.retryAfter);
 
   const dailyGate = await checkDailyApiGate(request);
