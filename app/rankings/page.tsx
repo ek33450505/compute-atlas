@@ -10,15 +10,14 @@ import {
   type OperatorCapacityRanking,
   type StateCapacityRanking,
 } from "@/lib/data";
-import { formatCapacity, formatLocation, formatPower } from "@/lib/format";
+import { formatLocation, formatPower } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
-import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
+import { FacilityListRow } from "@/components/facility-list-row";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { SectionHeading } from "@/components/section-heading";
-import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -67,25 +66,7 @@ export default async function RankingsPage() {
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: breadcrumbJsonLdString(
-            CRUMBS.map((c) => ({ name: c.label, url: c.href }))
-          ),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: itemListJsonLdString(
-            topProjects.map((f) => ({
-              name: f.name,
-              url: `${siteConfig.url}/facilities/${f.id}`,
-            }))
-          ),
-        }}
-      />
+      <CollectionJsonLd crumbs={CRUMBS} facilities={topProjects} />
 
       <Breadcrumb items={CRUMBS} />
 
@@ -160,25 +141,10 @@ export default async function RankingsPage() {
               <ol className="divide-y divide-border">
                 {topProjects.map((f) => (
                   <li key={f.id}>
-                    <Link
-                      href={`/facilities/${f.id}`}
-                      className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-                    >
-                      <span className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-sm text-foreground truncate">
-                          {f.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground truncate">
-                          {f.operator} &middot; {formatLocation(f)}
-                        </span>
-                      </span>
-                      <span className="flex shrink-0 items-center gap-3">
-                        <StatusBadge status={f.status} />
-                        <span className="font-mono tabular-nums text-xs text-muted-foreground">
-                          {formatCapacity(f)}
-                        </span>
-                      </span>
-                    </Link>
+                    <FacilityListRow
+                      facility={f}
+                      secondary={<>{f.operator} &middot; {formatLocation(f)}</>}
+                    />
                   </li>
                 ))}
               </ol>

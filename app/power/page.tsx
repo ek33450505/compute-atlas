@@ -10,10 +10,10 @@ import {
   getFacilitiesByWaterUsage,
   getCoolingTypeCounts,
 } from "@/lib/data";
-import { formatCapacity, formatLocation, formatMgd, formatPower, getFacilityMaxMw } from "@/lib/format";
+import { formatLocation, formatMgd, formatPower, sortByMaxMwDesc, countDisclosedCapacity } from "@/lib/format";
 import { ENERGY_SOURCE_ENTRIES, COOLING_TYPE_ENTRIES } from "@/lib/energy";
-import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { FacilityListRow } from "@/components/facility-list-row";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
@@ -66,21 +66,8 @@ export default async function PowerPage() {
     getFacilitiesByWaterUsage(),
     getCoolingTypeCounts(),
   ]);
-  const allProjects = [...projects].sort(
-    (a, b) =>
-      (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
-      a.name.localeCompare(b.name)
-  );
-
-  // stats.operationalMw/plannedMw (getGenerationStats) sum only non-cancelled
-  // projects, while stats.count is unfiltered — so this denominator must
-  // apply the same non-cancelled guard, not just "has a capacity figure at
-  // all", or the "N of M" line could silently drift from the population the
-  // sums above it actually cover. Same predicate as app/stats/page.tsx and
-  // app/crypto/page.tsx: getFacilityMaxMw is the canonical disclosure check.
-  const capacityDisclosedCount = allProjects.filter(
-    (f) => f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined
-  ).length;
+  const allProjects = [...projects].sort(sortByMaxMwDesc);
+  const capacityDisclosedCount = countDisclosedCapacity(allProjects);
 
   const technologyCounts = new Map<GenerationTechnology, number>();
   for (const f of allProjects) {
@@ -291,25 +278,10 @@ export default async function PowerPage() {
               <ul className="divide-y divide-border">
                 {group.facilities.map((f) => (
                   <li key={f.id}>
-                    <Link
-                      href={`/facilities/${f.id}`}
-                      className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-                    >
-                      <span className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-sm text-foreground truncate">
-                          {f.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground truncate">
-                          {technologyLabel(f)} &middot; {formatLocation(f)}
-                        </span>
-                      </span>
-                      <span className="flex shrink-0 items-center gap-3">
-                        <StatusBadge status={f.status} />
-                        <span className="font-mono tabular-nums text-xs text-muted-foreground">
-                          {formatCapacity(f)}
-                        </span>
-                      </span>
-                    </Link>
+                    <FacilityListRow
+                      facility={f}
+                      secondary={<>{technologyLabel(f)} &middot; {formatLocation(f)}</>}
+                    />
                   </li>
                 ))}
               </ul>
@@ -495,25 +467,10 @@ export default async function PowerPage() {
         <ul className="divide-y divide-border">
           {allProjects.map((f) => (
             <li key={f.id}>
-              <Link
-                href={`/facilities/${f.id}`}
-                className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-              >
-                <span className="flex flex-col gap-0.5 min-w-0">
-                  <span className="text-sm text-foreground truncate">
-                    {f.name}
-                  </span>
-                  <span className="text-xs text-muted-foreground truncate">
-                    {technologyLabel(f)} &middot; {formatLocation(f)}
-                  </span>
-                </span>
-                <span className="flex shrink-0 items-center gap-3">
-                  <StatusBadge status={f.status} />
-                  <span className="font-mono tabular-nums text-xs text-muted-foreground">
-                    {formatCapacity(f)}
-                  </span>
-                </span>
-              </Link>
+              <FacilityListRow
+                facility={f}
+                secondary={<>{technologyLabel(f)} &middot; {formatLocation(f)}</>}
+              />
             </li>
           ))}
         </ul>

@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   getFacilityMaxMw,
+  countDisclosedCapacity,
+  sortByMaxMwDesc,
   formatCapacity,
   formatLocation,
   formatStatusLabel,
@@ -329,5 +331,58 @@ describe("nameConveysType", () => {
     expect(nameConveysType("Sunrise Wind Farm", "power_generation")).toBe(true);
     expect(nameConveysType("Ark Data Centers Marion", "data_center")).toBe(true);
     expect(nameConveysType("Compass Datacenters Lauderdale", "data_center")).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// countDisclosedCapacity
+// ---------------------------------------------------------------------------
+describe("countDisclosedCapacity", () => {
+  it("counts facilities that disclose operational or planned capacity", () => {
+    const facilities = [
+      makeFacility({ id: "a", capacityMw: { operational: 150 } }),
+      makeFacility({ id: "b", capacityMw: { planned: 400 } }),
+      makeFacility({ id: "c", capacityMw: undefined }),
+    ];
+    expect(countDisclosedCapacity(facilities)).toBe(2);
+  });
+
+  it("excludes cancelled facilities even when they disclose a capacity figure", () => {
+    const facilities = [
+      makeFacility({ id: "a", status: "cancelled", capacityMw: { planned: 800 } }),
+      makeFacility({ id: "b", status: "operational", capacityMw: { operational: 150 } }),
+    ];
+    expect(countDisclosedCapacity(facilities)).toBe(1);
+  });
+
+  it("returns 0 for an empty list", () => {
+    expect(countDisclosedCapacity([])).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// sortByMaxMwDesc
+// ---------------------------------------------------------------------------
+describe("sortByMaxMwDesc", () => {
+  it("orders facilities by disclosed capacity descending", () => {
+    const small = makeFacility({ id: "small", name: "Small", capacityMw: { operational: 50 } });
+    const large = makeFacility({ id: "large", name: "Large", capacityMw: { operational: 500 } });
+    const mid = makeFacility({ id: "mid", name: "Mid", capacityMw: { planned: 200 } });
+
+    expect([small, large, mid].sort(sortByMaxMwDesc)).toEqual([large, mid, small]);
+  });
+
+  it("sorts undisclosed capacity last", () => {
+    const disclosed = makeFacility({ id: "disclosed", name: "Disclosed", capacityMw: { operational: 10 } });
+    const undisclosed = makeFacility({ id: "undisclosed", name: "Undisclosed", capacityMw: undefined });
+
+    expect([undisclosed, disclosed].sort(sortByMaxMwDesc)).toEqual([disclosed, undisclosed]);
+  });
+
+  it("breaks ties alphabetically by name", () => {
+    const zebra = makeFacility({ id: "z", name: "Zebra Site", capacityMw: { operational: 100 } });
+    const alpha = makeFacility({ id: "a", name: "Alpha Site", capacityMw: { operational: 100 } });
+
+    expect([zebra, alpha].sort(sortByMaxMwDesc)).toEqual([alpha, zebra]);
   });
 });
