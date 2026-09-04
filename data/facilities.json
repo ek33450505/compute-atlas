@@ -11309,9 +11309,17 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.nephi.utah.gov/690/CRA-Fund",
+        "label": "Nephi City — Community Reinvestment Agency fund",
+        "publisher": "Nephi City",
+        "retrievedAt": "2026-09-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-09-04",
+    "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy found. Nephi City's Community Reinvestment Agency fund is tied to a hotel project area rather than this site, and no CRA participation agreement naming this project was located. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. Recorded as no-evidence-found rather than a fully closed absence: the Nephi project-area budget PDF did not return readable text on retrieval.",
     "energy": {
       "notes": "4 MW at full activation. The company release notes Nephi 'recently completed a project to increase the town's energy capacity from 29 megawatts to 85 megawatts', which is the municipal utility's headroom, NOT this facility's capacity. Modular deployment using the company's SkyMod data center modules on a pad of approximately 100 x 150 feet."
     },
@@ -40963,9 +40971,17 @@
         "publisher": "Utah Division of Air Quality",
         "retrievedAt": "2026-09-01",
         "kind": "permit"
+      },
+      {
+        "url": "https://ipprenewed.com/about/",
+        "label": "IPP Renewed — project overview (states the rebuild proceeds with no government subsidies)",
+        "publisher": "Intermountain Power Agency",
+        "retrievedAt": "2026-09-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-09-04",
+    "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy. IPA's own IPP Renewed project page states the natural-gas and hydrogen rebuild proceeds \"with no government subsidies\". The existing plant's property-tax treatment is a statutory fee-in-lieu-of-tax applying to a Utah interlocal political subdivision — standard tax treatment for a government-owned entity, not a negotiated site-level incentive.",
     "energy": {
       "notes": "IPA's own page states the replacement units deliver '840 megawatts net generation output' and began commercial operation in July 2025, running '30 percent hydrogen fuel at start-up, transitioning to 100 percent hydrogen fuel by 2045.' Mitsubishi Power describes the plant as an '840 MW class GTCC' built on two M501JAC gas turbines plus two steam turbines and two generators, replacing a coal facility of 'about 1.8 GW'. Hydrogen is to be stored in solution-mined geologic salt caverns at the adjacent Advanced Clean Energy Storage project, which Mitsubishi describes as a '220 MW water electrolysis unit' producing 'up to 100 tons of green hydrogen per day'. LADWP is the largest purchaser and acts as Operating Agent and Project Manager; other participants are municipal utilities and rural cooperatives across six states."
     },
@@ -42571,10 +42587,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.utahbusiness.com/industry/2025/11/05/data-center-creekstone-energy-joule-capital-partners-millard-county-fillmore/",
+        "label": "Utah Business — Millard County commissioners on data-center incentives",
+        "publisher": "Utah Business",
+        "retrievedAt": "2026-09-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-07-23",
-    "notes": "Founders Mark McDougal and David Gray converting family 4,000-acre alfalfa farm near Holden. Described by founders as largest private project in Utah history. Partnership with Caterpillar for generator sets; MOU with EnergySolutions for nuclear feasibility study. Part of Governor Cox's Operation Gigawatt initiative. Site at 4,800+ ft elevation for cooling efficiency. Coordinates approximate for Holden, Millard County.",
+    "lastUpdated": "2026-09-04",
+    "notes": "Founders Mark McDougal and David Gray converting family 4,000-acre alfalfa farm near Holden. Described by founders as largest private project in Utah history. Partnership with Caterpillar for generator sets; MOU with EnergySolutions for nuclear feasibility study. Part of Governor Cox's Operation Gigawatt initiative. Site at 4,800+ ft elevation for cooling efficiency. Coordinates approximate for Holden, Millard County. Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy. Millard County commissioners are quoted on the record stating the county \"did not give either development any special treatment or incentives\", and no Millard County CRA/RDA public body is registered on the Utah Public Notice Website. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 sales-tax exemption is self-executing, so no site-level award document exists to find.",
     "energy": {
       "source": "on_site_gas",
       "utility": "PacifiCorp",
@@ -54226,10 +54249,17 @@
         "publisher": "Basin Now",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://duchesne.utah.gov/wp-content/uploads/2026/03/Findings-Report-Nine-Mile-Data-LLC-040226.pdf",
+        "label": "Duchesne County findings report — Nine Mile Data, LLC conditional use permit",
+        "publisher": "Duchesne County",
+        "retrievedAt": "2026-09-04",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-25",
-    "notes": "Approximately 6 miles southwest of Myton near Wells Draw and South Myton Bench; ~475 acres for data-center use within a ~879-acre leased area; targeting operational by 2029.",
+    "lastUpdated": "2026-09-04",
+    "notes": "Approximately 6 miles southwest of Myton near Wells Draw and South Myton Bench; ~475 acres for data-center use within a ~879-acre leased area; targeting operational by 2029. Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy. The county's conditional-use findings report carries no tax-abatement, CRA/RDA or payment-in-lieu-of-taxes term, and no Duchesne County or Myton CRA project area was found to exist at all. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "source": "mixed",
       "notes": "On-site power via Wells Draw Energy's 400MW natural gas plant plus a 333MW solar photovoltaic plant and 800-1,600MWh of battery storage."
@@ -54761,9 +54791,17 @@
         "publisher": "Grist",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.westjordan.utah.gov/economic-development/redevelopment/",
+        "label": "West Jordan Redevelopment Agency — active project areas and boundaries",
+        "publisher": "City of West Jordan",
+        "retrievedAt": "2026-09-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-09-04",
+    "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy. This is the co-located generation build-out for the same Wells Park Road campus as novva-west-jordan-ut, not a separately sited facility, and it falls outside every West Jordan CRA/RDA project area for the same structural reason — under Title 17C no participation agreement is available at this location. Neither the campus nor its generation arm was found to hold an agreement, which answers in the negative whether the two share one.",
     "energy": {
       "source": "on_site_gas",
       "notes": "Utah DAQ Approval Order DAQE-AN160660003-24 (issued December 19, 2024, to Novva SLC Common, LLC - West Jordan Data Center) permits seventy-two (72) natural gas-fired Jenbacher JGS 620 J715 engines rated 3271.8 kW (4,601 hp) each, controlled with Selective Catalytic Reduction and an oxidation catalyst. The permit's project description states the engines 'will power generators providing primary power for the site's two (2) new data center buildings' — this is dedicated on-site generation, not a merchant plant. 72 x 3271.8 kW is about 235.6 MW of gross engine nameplate; Grist reports the plant as 200 MW, which is the figure recorded here. The order also reclassifies the source as a major CO and HAP source subject to Title V and requires 47 tpy of NOx emission reduction credits to satisfy R307-421 offsets. Permitted potential emissions total 997,261 TPY CO2-equivalent, 51.28 TPY NOx, and 202.72 TPY CO. Grist reports Novva turned to self-generation because Rocky Mountain Power could not supply the campus until 2031, and that Novva sought a two-year Clean Air Act exemption in March to run diesel generators while the gas plant is built. Utah DAQ Approval Order authorises \"Seventy-two (72) Jenbacher Model: JGS 620 J715\" gas-fired reciprocating engines at the site."
@@ -54817,9 +54855,17 @@
         "publisher": "Novva Data Centers",
         "retrievedAt": "2026-08-16",
         "kind": "other"
+      },
+      {
+        "url": "https://www.westjordan.utah.gov/economic-development/redevelopment/",
+        "label": "West Jordan Redevelopment Agency — active project areas and boundaries",
+        "publisher": "City of West Jordan",
+        "retrievedAt": "2026-09-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-09-04",
+    "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy, for a structural reason rather than a search miss. West Jordan's Redevelopment Agency lists six active project areas, all bounded well east of this campus; under Title 17C an agency may only act within a designated project area, so no participation agreement is available at this location under the current project-area map. The city's own 2025 post on the expansion discusses tax value in generic terms and names no incentive or agreement.",
     "energy": {
       "notes": "Novva's own facility page describes a centralized 200MW on-campus substation with N+1 redundancy serving the four-phase campus, plus a planned 15MW-30MW of on-site solar. The 175MW figure is the campus's stated total data center capacity at four-phase completion; the 200MW is substation capacity, not IT load."
     },
@@ -60666,10 +60712,17 @@
         "publisher": "KSL.com",
         "retrievedAt": "2026-09-01",
         "kind": "press"
+      },
+      {
+        "url": "https://secure.utah.gov/pmn-admin/files/1431597.pdf",
+        "label": "Iron County Planning Commission minutes, 4 June 2026 — Antelope data campus conditional use permit",
+        "publisher": "Iron County",
+        "retrievedAt": "2026-09-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-01",
-    "notes": "West of Cedar City along Antelope Springs Road; permit deemed vested ahead of the county's 180-day data center moratorium; development planned in phases over 8-10 years; up to 6.75M sq ft at full buildout.",
+    "lastUpdated": "2026-09-04",
+    "notes": "West of Cedar City along Antelope Springs Road; permit deemed vested ahead of the county's 180-day data center moratorium; development planned in phases over 8-10 years; up to 6.75M sq ft at full buildout. Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy. Iron County Planning Commission minutes for the 4 June 2026 conditional-use approval record no tax-incentive term, and Iron County's CRA has no project area covering this site, which lies in unincorporated Iron County outside Cedar City's municipal limits.",
     "energy": {
       "source": "on_site_gas",
       "notes": "On-site natural gas-fired power plant planned to serve the campus."
@@ -78919,10 +78972,17 @@
         "publisher": "Duchesne County, Utah",
         "retrievedAt": "2026-09-01",
         "kind": "permit"
+      },
+      {
+        "url": "https://duchesne.utah.gov/wp-content/uploads/2026/03/Wells-Draw-Energy-LLC-Solar-Power-Plant-Findings-Report-040226.pdf",
+        "label": "Duchesne County findings report — Wells Draw Energy, LLC solar power plant",
+        "publisher": "Duchesne County",
+        "retrievedAt": "2026-09-04",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-01",
-    "notes": "400MW natural gas plant sited to power the adjacent Nine Mile Data Center; not previously tracked as a distinct facility. Findings Report states the site is \"200 acres within a larger 609-acre area along Wells Draw Road\" — landAcres records the 200-acre project footprint, not the larger area.",
+    "lastUpdated": "2026-09-04",
+    "notes": "400MW natural gas plant sited to power the adjacent Nine Mile Data Center; not previously tracked as a distinct facility. Findings Report states the site is \"200 acres within a larger 609-acre area along Wells Draw Road\" — landAcres records the 200-acre project footprint, not the larger area. Subsidies checked at the municipal tier (2026-09-04): no executed site-level subsidy. The solar findings report carries the county's standard ordinance clause that a development agreement or payment-in-lieu-of-taxes arrangement \"may be necessary\" before construction begins, but that language is boilerplate applied to all large-scale solar permits rather than a term negotiated for this project, and no executed agreement was located. Eligibility under an ordinance clause is not an award.",
     "energy": {
       "source": "on_site_gas",
       "utility": "Moon Lake Electric Association",
