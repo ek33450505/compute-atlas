@@ -148,9 +148,26 @@ export function normaliseIpForBucketing(ip: string): string {
   return prefix.join(":");
 }
 
+const FALLBACK_CONTRIBUTE_IP_SALT = "compute-atlas-contribute-v1";
+
+/**
+ * `CONTRIBUTE_IP_SALT` is optional locally but REQUIRED in production. The
+ * fallback salt above is public (this repo is open source), so hashes made
+ * with it are brute-forceable over the full IPv4 address space — production
+ * must fail loudly rather than silently pseudonymize submitter IPs with a
+ * known salt. Preview deployments do not inherit Production-scoped env vars,
+ * so previews (like local dev and tests) intentionally keep the fallback.
+ */
 export function hashIp(ip: string): string {
-  const salt = process.env.CONTRIBUTE_IP_SALT ?? "compute-atlas-contribute-v1";
-  return createHash("sha256").update(ip + salt).digest("hex");
+  const salt = process.env.CONTRIBUTE_IP_SALT;
+  if (!salt && process.env.VERCEL_ENV === "production") {
+    throw new Error(
+      "CONTRIBUTE_IP_SALT must be set in production — refusing to hash IPs with the repo-public default salt."
+    );
+  }
+  return createHash("sha256")
+    .update(ip + (salt ?? FALLBACK_CONTRIBUTE_IP_SALT))
+    .digest("hex");
 }
 
 export function rateLimitDecision(count: number): { ok: boolean } {

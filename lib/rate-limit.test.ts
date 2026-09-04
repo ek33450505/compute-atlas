@@ -1,10 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import {
   rateLimitDecision,
   RATE_LIMIT_MAX,
   extractTrustedClientIp,
   normaliseIpForBucketing,
+  hashIp,
 } from "@/lib/rate-limit";
 
 describe("rateLimitDecision", () => {
@@ -165,5 +166,48 @@ describe("normaliseIpForBucketing", () => {
     // "::1" expands to 7 zero groups + "1"; its /64 prefix is still
     // "0:0:0:0" as before the fix — this must not regress.
     expect(normaliseIpForBucketing("::1")).toBe("0:0:0:0");
+  });
+});
+
+describe("hashIp", () => {
+  const ORIGINAL_SALT = process.env.CONTRIBUTE_IP_SALT;
+  const ORIGINAL_VERCEL_ENV = process.env.VERCEL_ENV;
+
+  beforeEach(() => {
+    delete process.env.CONTRIBUTE_IP_SALT;
+    delete process.env.VERCEL_ENV;
+  });
+
+  afterEach(() => {
+    if (ORIGINAL_SALT === undefined) {
+      delete process.env.CONTRIBUTE_IP_SALT;
+    } else {
+      process.env.CONTRIBUTE_IP_SALT = ORIGINAL_SALT;
+    }
+    if (ORIGINAL_VERCEL_ENV === undefined) {
+      delete process.env.VERCEL_ENV;
+    } else {
+      process.env.VERCEL_ENV = ORIGINAL_VERCEL_ENV;
+    }
+  });
+
+  it("throws in production when CONTRIBUTE_IP_SALT is unset", () => {
+    process.env.VERCEL_ENV = "production";
+    expect(() => hashIp("203.0.113.9")).toThrow(
+      /CONTRIBUTE_IP_SALT must be set in production/
+    );
+  });
+
+  it("falls back to the built-in salt and returns a sha256 hex digest when unset outside production", () => {
+    const hash = hashIp("203.0.113.9");
+    expect(hash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it("produces a different digest than the fallback once a real salt is set", () => {
+    const fallbackHash = hashIp("203.0.113.9");
+    process.env.CONTRIBUTE_IP_SALT = "a-real-random-salt";
+    const saltedHash = hashIp("203.0.113.9");
+    expect(saltedHash).not.toBe(fallbackHash);
+    expect(saltedHash).toMatch(/^[0-9a-f]{64}$/);
   });
 });
