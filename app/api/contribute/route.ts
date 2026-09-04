@@ -1,5 +1,5 @@
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
-import { checkRateLimit, extractClientIp, hashIp } from "@/lib/rate-limit";
+import { checkRateLimit, extractTrustedClientIp, hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
 import { submitContribution } from "@/lib/contribute";
 
 export async function POST(request: Request) {
@@ -10,8 +10,7 @@ export async function POST(request: Request) {
     return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const ip = extractClientIp(request);
-  const ipHash = hashIp(ip);
+  const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
 
   const gate = await checkRateLimit(ipHash);
   if (!gate.ok) {

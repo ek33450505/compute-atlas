@@ -2,7 +2,12 @@ import { after } from "next/server";
 
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
 import { sendConfirmEmail } from "@/lib/email";
-import { checkSubscribeRateLimit, extractClientIp, hashIp } from "@/lib/rate-limit";
+import {
+  checkSubscribeRateLimit,
+  extractTrustedClientIp,
+  hashIp,
+  normaliseIpForBucketing,
+} from "@/lib/rate-limit";
 import { subscribeToTarget } from "@/lib/subscribe";
 
 export async function POST(request: Request) {
@@ -13,7 +18,7 @@ export async function POST(request: Request) {
     return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const ipHash = hashIp(extractClientIp(request));
+  const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
 
   const gate = await checkSubscribeRateLimit(ipHash);
   if (!gate.ok) {
