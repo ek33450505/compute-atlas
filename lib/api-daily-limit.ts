@@ -2,7 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
 import { apiAccessGrantsTable, apiDailyUsageTable } from "@/lib/db/schema";
-import { extractClientIp, hashIp } from "@/lib/rate-limit";
+import { extractTrustedClientIp, hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
 
 export const API_DAILY_LIMIT_MAX = 1000;
 
@@ -73,7 +73,7 @@ export async function checkDailyApiGate(
       }
     }
 
-    const ipHash = hashIp(extractClientIp(request));
+    const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
     const day = utcDateString();
     const rows = await db
       .insert(apiDailyUsageTable)

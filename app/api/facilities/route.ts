@@ -5,7 +5,7 @@ import { facilityTypeEnum, type Facility } from "@/lib/schema";
 import { jsonResponse, cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
 import { requireAdmin } from "@/lib/api-auth";
 import { createFacility } from "@/lib/facility-write";
-import { extractClientIp } from "@/lib/rate-limit";
+import { extractTrustedClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 import { checkDailyApiGate } from "@/lib/api-daily-limit";
 import { MAX_SEARCH_QUERY_LEN } from "@/lib/search-db";
@@ -39,7 +39,7 @@ function collectParam(searchParams: URLSearchParams, key: string): string[] {
  * malformed client input degrades to "no constraint" instead of an error.
  */
 export async function GET(request: Request): Promise<Response> {
-  const gate = checkApiRateLimit(extractClientIp(request));
+  const gate = checkApiRateLimit(extractTrustedClientIp(request.headers));
   if (!gate.ok) return tooManyRequests(gate.retryAfter);
 
   const dailyGate = await checkDailyApiGate(request);
