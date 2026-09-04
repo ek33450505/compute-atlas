@@ -19,6 +19,7 @@
     "build:heropoints": "node scripts/build-hero-points.mjs",
     "db:generate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs generate",
     "check:drift": "tsx --env-file=.env.local scripts/check-neon-drift.ts",
+    "check:schema": "tsx --env-file=.env.local scripts/check-schema-drift.ts",
     "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
     "db:sync": "tsx --env-file=.env.local scripts/sync-to-neon.ts",
