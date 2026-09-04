@@ -51,6 +51,16 @@ jobs:
           cache: npm
       - run: npm ci
 
+      # Runs BEFORE the JSON drift check, and with continue-on-error, so both
+      # kinds of drift are reported in one run rather than the first failure
+      # hiding the second. Schema drift is the more urgent of the two: a
+      # missing table means shipped code is silently inert.
+      - name: Check deployed schema matches code
+        if: env.DATABASE_URL != ''
+        id: schema
+        continue-on-error: true
+        run: npm run check:schema
+
       - name: Check JSON <-> Neon drift
         if: env.DATABASE_URL != ''
         id: drift
@@ -77,4 +87,15 @@ jobs:
         if: env.DATABASE_URL != '' && steps.drift.outputs.converged == 'false'
         run: |
           echo "::error::JSON<->Neon drift is still present past the daily sync's expected convergence window. See the drift output above and docs/architecture (or npm run check:drift locally) to diagnose."
+          exit 1
+
+      # `always()` is load-bearing, not decoration: the step above exits 1
+      # without continue-on-error, which would otherwise skip every later step
+      # — so a JSON drift failure would silently mask a schema drift failure,
+      # the exact masking this ordering exists to prevent.
+      - name: Fail if the deployed schema drifted from the code
+        if: always() && env.DATABASE_URL != '' && steps.schema.outcome == 'failure'
+        run: |
+          echo "::error::A table declared in lib/db/schema.ts is missing from the live database: a migration reached main but was never applied. Fix with 'npm run db:migrate' against production, then re-run this workflow."
+          echo "::error::This is the failure mode that silently disabled the daily API cap on 2026-09-03. Nothing caught it: CI was green, the deploy succeeded, and every public API route kept returning 200 while the gate failed open on every request."
           exit 1
