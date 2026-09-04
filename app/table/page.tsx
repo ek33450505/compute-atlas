@@ -9,7 +9,7 @@ import { GraticuleSurvey } from "@/components/home/graticule-survey";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Data table",
+  title: "Searchable table of every tracked facility",
   description:
     "Filterable, sortable table of every facility tracked by Compute Atlas — data centers, crypto-mining operations, and dedicated power generation. Shares filter state with the map.",
   alternates: { canonical: "/table" },
