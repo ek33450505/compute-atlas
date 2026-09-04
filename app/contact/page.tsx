@@ -56,6 +56,11 @@ export default function ContactPage() {
         the source before anything is published.
       </p>
 
+      <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        Messages are stored with your name, email, and a salted hash of your IP address (used
+        for rate limiting), are read by one person, and are deleted after 180 days.
+      </p>
+
       <ContactForm />
     </div>
   );
