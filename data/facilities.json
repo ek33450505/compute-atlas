@@ -2681,12 +2681,22 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.pecva.org/wp-content/uploads/warrenton-amazon-data-center-town-hall-faq-handout-10-26-22.pdf",
+        "label": "Amazon Blackwell Frequently Asked Questions (Town of Warrenton / PEC town hall handout)",
+        "publisher": "Piedmont Environmental Council / Town of Warrenton",
+        "retrievedAt": "2026-09-03",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-03",
     "notes": "Town of Warrenton SUP-22-3; 220,000 sq ft on 42 acres; site plan approved with 27 conditions (Apr 2024).",
     "energy": {
       "utility": "Dominion Energy Virginia"
+    },
+    "water": {
+      "coolingType": "closed_loop"
     },
     "landAcres": 42,
     "community": {
@@ -4030,9 +4040,16 @@
         "publisher": "The Hayride",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/central-louisiana-secures-3-6-billion-applied-digital-ai-factory-campus",
+        "label": "Central Louisiana Secures $3.6 Billion Applied Digital AI Factory Campus",
+        "publisher": "Louisiana Economic Development",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-09-03",
     "notes": "Anchor tenant is an undisclosed investment-grade U.S. hyperscaler under a $7.5B, 15-year lease. Two initial facilities totaling 300 MW across 300 acres (of 672-acre secured site). Initial operations targeted mid-2027. Applied Digital HQ in Dallas, TX.",
     "energy": {
       "source": "grid",
@@ -5760,10 +5777,22 @@
         "publisher": "KOB 4",
         "retrievedAt": "2026-08-20",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kob.com/news/top-news/raton-residents-push-back-on-proposed-data-center-plans/",
+        "label": "Raton residents push back on proposed data center plans",
+        "publisher": "KOB 4",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-20",
+    "lastUpdated": "2026-09-03",
     "notes": "Three-phase proposal: Phase 1 would convert a former Kmart on the south side of Raton into a data center drawing up to 5 MW, with later phases at a nearby power station and the city airport over roughly five years, totalling up to 50 MW. Nothing is approved — the feasibility study period ran to early August 2026 and the City Commission must still authorize any development. Atterix was incorporated in Colorado in December 2025.",
+    "jobs": {
+      "construction": 0,
+      "permanent": 0,
+      "sourceIndex": 4
+    },
     "community": {
       "status": "opposed",
       "notes": "More than 100 residents organized as 'Protect Our Resources' to press city leaders to stop or slow the project, citing noise and light pollution and water and electricity use in a town of about 6,000; the City Commission has been weighing a temporary data center moratorium.",
@@ -12389,6 +12418,39 @@
     "aiClassification": "likely"
   },
   {
+    "id": "centersquare-abq1-albuquerque-nm",
+    "name": "Centersquare ABQ1",
+    "operator": "Centersquare (formerly Cyxtera Technologies / Evoque Data Center Solutions)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.0844,
+      "lon": -106.6504,
+      "city": "Albuquerque",
+      "county": "Bernalillo",
+      "street": "400 Tijeras Ave NW",
+      "postalCode": "87102",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/centersquare-albuquerque-abq1",
+        "label": "Centersquare: Albuquerque ABQ1 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-03",
+    "notes": "Multi-tenant colocation facility originally built as CenturyLink/Cyxtera's AB3 site (Cyxtera acquired via Brookfield's ~$2.8B 57-site transaction, May 2017); rebranded Centersquare in late 2025. Capacity MW figures conflicted across sources (1.35-6 MW) and were omitted rather than guessed.",
+    "energy": {
+      "utility": "Public Service Company of New Mexico (PNM)"
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "centersquare-gallatin-tn",
     "name": "Centersquare Gallatin (NAS) Campus",
     "operator": "Centersquare",
@@ -14927,9 +14989,16 @@
         "publisher": "The Hayride",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "http://thehayride.com/2026/07/cleco-plans-756-mw-gas-plant-alongside-rapides-data-center/",
+        "label": "Cleco plans 756-MW gas plant alongside Rapides data center",
+        "publisher": "The Hayride",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-09-03",
     "notes": "Location is approximate (Rapides Parish, near Boyce) — no exact site/parcel name was disclosed in available sources; coverage describes the turbine as being sited on Cleco's existing Rapides Parish generation campus.",
     "energy": {
       "source": "on_site_gas",
@@ -33097,6 +33166,41 @@
     }
   },
   {
+    "id": "four-mile-mesa-solar-battery-san-juan-county-nm",
+    "name": "Four Mile Mesa Solar + Battery Storage Project",
+    "operator": "Tierra Adentro Growth Capital (TAG Capital) / DESRI",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.7975,
+      "lon": -108.3236,
+      "county": "San Juan",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.abqjournal.com/business/solar-projects-break-ground-in-nw-new-mexico-near-shuttered-coal-plant/3050484",
+        "label": "Solar projects break ground in NW New Mexico near shuttered coal plant",
+        "publisher": "Albuquerque Journal",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-03",
+    "notes": "New Mexico State Investment Council committed $100M to TAG Capital (Sept 2024) across the developer's broader portfolio, not specific to this single site — that entity-level figure is not recorded as this facility's investmentUsd.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta Platforms (via PNM power purchase agreement)",
+      "notes": "100 MW solar plus 100 MW battery storage (LG Energy Solution cells); EPC by SOLV Energy; sited on Ute Mountain Ute tribal land near the demolished San Juan Generating Station, connecting to PNM's grid near the decommissioned coal plant. Expected completion summer 2027. Sibling project on the same land parcel, Foxtail Flats (170 MW solar / 80 MW battery), serves a separate PPA with Los Alamos County (LANL/Sandia/Kirtland) and is not tracked here as it is not a data-center offtake."
+    }
+  },
+  {
     "id": "freestone-energy-center-fairfield-tx",
     "name": "Freestone Energy Center",
     "operator": "Constellation Energy",
@@ -38091,13 +38195,24 @@
         "publisher": "Albuquerque Journal",
         "retrievedAt": "2026-08-20",
         "kind": "press"
+      },
+      {
+        "url": "https://www.abqjournal.com/news/spaceport-america-data-center-proposal-sparks-curiosity/3084192",
+        "label": "Spaceport America in talks with Green Data for data center project in Sierra County",
+        "publisher": "Albuquerque Journal",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-20",
+    "lastUpdated": "2026-09-03",
     "notes": "Sited on state trust land inside Spaceport America's 18,000-acre lease outside Truth or Consequences. Current plan would occupy 21 acres within the horizontal launch area, possibly plus 30 additional acres. Spaceport America says discussions with Green Data have been ongoing since 2021 and that the project 'is not a relocation of the Socorro proposal'; only 'limited planning agreements' are in effect. Capacity has not been disclosed.",
     "energy": {
       "source": "mixed",
       "notes": "Proposal pairs on-site solar generation and battery storage covering 'a substantial portion' of demand with a utility connection; the developer's stated objective is to offset annual grid purchases with on-site renewable generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Proposed closed-loop system: ~30,300 gallon initial fill, ~15,300 gallons/year (~42 gal/day) makeup water. No water source had been identified or validated as of Aug 2026."
     },
     "landAcres": 21,
     "community": {
@@ -38624,6 +38739,7 @@
       "city": "Albuquerque",
       "county": "Bernalillo",
       "street": "505 Marquette Avenue NW",
+      "postalCode": "87102",
       "state": "NM",
       "precision": "approximate"
     },
@@ -38635,9 +38751,23 @@
         "publisher": "H5 Data Centers",
         "retrievedAt": "2026-08-20",
         "kind": "other"
+      },
+      {
+        "url": "https://h5datacenters.com/h5-Albuquerque.html",
+        "label": "H5 Data Centers Announces Expansion to Albuquerque Edge Data Center",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-09-03",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/5092",
+        "label": "H5 Data Centers Albuquerque facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-03",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-20",
+    "lastUpdated": "2026-09-03",
     "notes": "225,000 SF Tier III carrier-neutral colocation campus across two buildings at 505 Marquette Ave NW in downtown Albuquerque; H5's first New Mexico facility, positioned as the state's primary interconnection point.",
     "facilityType": "data_center"
   },
@@ -47137,9 +47267,16 @@
         "publisher": "Louisiana Public Service Commission",
         "retrievedAt": "2026-08-26",
         "kind": "filing"
+      },
+      {
+        "url": "https://about.fb.com/news/2026/07/teachers-local-businesses-win-as-meta-expands-louisiana-data-center/",
+        "label": "Teachers and Local Businesses Win as Meta Expands Louisiana Data Center",
+        "publisher": "Meta",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-09-03",
     "energy": {
       "source": "mixed",
       "utility": "Entergy Louisiana",
@@ -52351,6 +52488,53 @@
     }
   },
   {
+    "id": "mowata-solar-acadia-parish-la",
+    "name": "Mowata Solar",
+    "operator": "Lightsource bp",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.3918,
+      "lon": -92.4044,
+      "county": "Acadia",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "announcedDate": "2026-07-23",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://lightsourcebp.com/us/news/lightsource-bp-and-meta-expand-partnership-with-new-power-purchase-agreement-for-mowata-solar-in-louisiana/",
+        "label": "Lightsource bp and Meta expand partnership with new power purchase agreement for Mowata Solar in Louisiana",
+        "publisher": "Lightsource bp",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Mowata_Solar",
+        "label": "Mowata Solar",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-03",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-03",
+    "notes": "$400,000 community benefit contribution made to the Acadia Parish Industrial Development Board in 2025; project includes a Land Management and Biodiversity Plan for coastal habitat restoration.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 237000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "notes": "172 MWdc / 150 MWac photovoltaic project; Meta signed a long-term power purchase agreement for the output. Construction was stated as planned to begin 'later this year' as of the July 2026 announcement; not confirmed started as of this session."
+    }
+  },
+  {
     "id": "ms-solar-grid-data-new-orleans-east-la",
     "name": "MS Solar Grid Data (New Orleans East)",
     "operator": "MS Solar Grid Data",
@@ -53542,9 +53726,16 @@
         "publisher": "POWER Magazine",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/new-era-energy-new-mexico",
+        "label": "New Era Energy & Digital - Lea County, New Mexico Project",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-03",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-03",
     "notes": "Land-option signed for approximately 3,500 acres near Lovington. Gas (>2GW) plus nuclear (5GW+) powered. First power targeted 2028; still pre-construction.",
     "energy": {
       "source": "mixed",
@@ -55848,6 +56039,49 @@
         "meta-prometheus-new-albany-oh"
       ],
       "notes": "Oklo owns/operates; Meta prepays for power + funds development (not equity). Powers Meta's New Albany 'Prometheus' supercluster (meta-prometheus-new-albany-oh). Site is the former Portsmouth Gaseous Diffusion Plant, 206 acres bought from DOE for ~$5.15M in Dec 2025."
+    }
+  },
+  {
+    "id": "one-nuclear-project-cayman-ascension-parish-la",
+    "name": "Project Cayman (ONE Nuclear gas-fired plant & battery storage)",
+    "operator": "ONE Nuclear Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.1,
+      "lon": -90.9942,
+      "city": "Donaldsonville",
+      "county": "Ascension",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2880
+    },
+    "announcedDate": "2026-09-02",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://americanpress.com/2026/09/02/one-nuclear-plans-gas-fired-data-center-near-musks-starbase-louisiana/",
+        "label": "One Nuclear plans gas-fired data center near Musk's Starbase Louisiana",
+        "publisher": "American Press",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.powermag.com/one-nuclear-signs-deal-for-2-88-gw-gas-fired-plant-large-bess-for-louisiana-data-center-campus/",
+        "label": "One Nuclear Signs Deal for 2.88-GW Gas-Fired Plant, Large BESS for Louisiana Data Center Campus",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-03",
+    "notes": "A binding letter of intent for site control was signed with a Louisiana landowner group near RiverPlex MegaPark (17,000-acre megasite on the Mississippi's west bank between Donaldsonville and White Castle); no permits filed yet. Public information meetings planned September-December 2026. Location coordinates are an approximate point for Donaldsonville (nearest named town), not a parcel-confirmed site.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Paired with a 700 MW / 2.88 GWh battery energy storage system (BESS). ONE Nuclear states an initial natural-gas (Rolls-Royce turbine) deployment with a planned future transition to small modular reactor (SMR) technology once commercially available. Stated purpose is to serve data center load near the RiverPlex MegaPark megasite; no data center offtaker has been named."
     }
   },
   {
@@ -69568,9 +69802,16 @@
         "publisher": "Source New Mexico",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.santafenewmexican.com/news/local_news/project-jupiter-developers-overhaul-data-centers-power-plan/article_d7bb0388-8382-4993-b1db-073d148379ac.html",
+        "label": "Project Jupiter developers overhaul data center's power plan",
+        "publisher": "Santa Fe New Mexican",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-03",
     "energy": {
       "source": "on_site_gas",
       "utility": "El Paso Electric",
@@ -79949,9 +80190,23 @@
         "publisher": "DatacenterDynamics",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.energy-storage.news/pacifico-zenith-volts-and-fermi-america-propose-gigawatt-scale-energy-solutions-with-bess-to-feed-us-data-centres/",
+        "label": "Pacifico, Zenith Volts and Fermi America propose gigawatt-scale energy solutions with BESS to feed US data centres",
+        "publisher": "Energy-Storage.news",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/zenith-volts-corp-secures-county-approval-for-scalable-data-center-20-miles-south-of-roswell-nm-targeting-operation-by-november-2027-302537746.html",
+        "label": "Zenith Volts Corp. Secures County Approval for Scalable Data Center 20 Miles South of Roswell, NM, Targeting Operation by November 2027",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-09-03",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-03",
     "notes": "Approximately 20 miles south of Roswell. Chaves County Commission approved; 300-acre initial footprint within an 8,500-acre approved site. On-site solar, gas, geothermal, and battery storage. Targets November 2027 operational; approximately 140 FTE jobs.",
     "energy": {
       "source": "mixed",
@@ -79961,6 +80216,10 @@
       "notes": "Plan calls for geothermal cooling; no water-withdrawal figure has been disclosed."
     },
     "landAcres": 300,
+    "jobs": {
+      "permanent": 140,
+      "sourceIndex": 5
+    },
     "community": {
       "status": "supported",
       "notes": "Chaves County Commission approved the special-use permit for the project on August 22, 2025; no organized opposition or dissent is reported across multiple independent news accounts of the approval.",
