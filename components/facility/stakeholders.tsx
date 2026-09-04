@@ -1,6 +1,7 @@
 import type { Facility } from "@/lib/schema";
+import { Separator } from "@/components/ui/separator";
 
-import { FactRow, SourceLink } from "./fact-row";
+import { FactGroup, FactRow, SourceLink } from "./fact-row";
 
 type Stakeholder = NonNullable<Facility["stakeholders"]>[number];
 
@@ -73,17 +74,15 @@ export function StakeholdersSection({ facility }: { facility: Facility }) {
   const officials = stakeholders.filter((s) => s.role === "public_official");
 
   return (
-    <section aria-labelledby={headingId} className="space-y-6">
-      <h2 id={headingId} className="text-base font-semibold mb-4">
-        Notable stakeholders
-      </h2>
+    <>
+      <Separator />
+      <section aria-labelledby={headingId} className="space-y-6">
+        <h2 id={headingId} className="text-base font-semibold mb-4">
+          Notable stakeholders
+        </h2>
 
-      {financial.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold mb-3">
-            Ownership and financial interest
-          </h3>
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+        {financial.length > 0 && (
+          <FactGroup title="Ownership and financial interest">
             {financial.map((stakeholder, i) => (
               <StakeholderRow
                 key={`${stakeholder.name}-${i}`}
@@ -91,18 +90,19 @@ export function StakeholdersSection({ facility }: { facility: Facility }) {
                 stakeholder={stakeholder}
               />
             ))}
-          </dl>
-        </div>
-      )}
+          </FactGroup>
+        )}
 
-      {officials.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold mb-3">Public officials</h3>
-          <p className="mb-3 text-sm text-muted-foreground">
-            Officials with a documented role in this site&rsquo;s approval or
-            funding. Listing here does not imply a financial interest.
-          </p>
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+        {officials.length > 0 && (
+          <FactGroup
+            title="Public officials"
+            intro={
+              <p className="mb-3 text-sm text-muted-foreground">
+                Officials with a documented role in this site&rsquo;s approval
+                or funding. Listing here does not imply a financial interest.
+              </p>
+            }
+          >
             {officials.map((stakeholder, i) => (
               <StakeholderRow
                 key={`${stakeholder.name}-${i}`}
@@ -110,9 +110,9 @@ export function StakeholdersSection({ facility }: { facility: Facility }) {
                 stakeholder={stakeholder}
               />
             ))}
-          </dl>
-        </div>
-      )}
-    </section>
+          </FactGroup>
+        )}
+      </section>
+    </>
   );
 }

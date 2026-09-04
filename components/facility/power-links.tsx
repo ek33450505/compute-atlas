@@ -7,6 +7,8 @@ import { getGenerationTechnologyLabel } from "@/lib/generation";
 import { getStatusMeta } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatCapacity, formatLocation } from "@/lib/format";
+import { Separator } from "@/components/ui/separator";
+import { MetaLine } from "./fact-row";
 
 const LINK_CLASSNAME =
   "text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
@@ -45,11 +47,7 @@ async function PowersGroup({ facility }: { facility: Facility & { facilityType: 
                 <Link href={`/facilities/${c.id}`} className={LINK_CLASSNAME}>
                   {c.name}
                 </Link>
-                {metaParts.length > 0 && (
-                  <div className="text-muted-foreground text-xs mt-0.5">
-                    {metaParts.join(" · ")}
-                  </div>
-                )}
+                <MetaLine parts={metaParts} />
               </li>
             );
           })}
@@ -90,11 +88,7 @@ async function PoweredByGroup({ facility }: { facility: Facility }) {
             <Link href={`/facilities/${g.id}`} className={LINK_CLASSNAME}>
               {g.name}
             </Link>
-            {metaParts.length > 0 && (
-              <div className="text-muted-foreground text-xs mt-0.5">
-                {metaParts.join(" · ")}
-              </div>
-            )}
+            <MetaLine parts={metaParts} />
           </li>
         );
       })}
@@ -121,19 +115,22 @@ export async function PowerLinksSection({ facility }: { facility: Facility }) {
     : await PoweredByGroup({ facility });
 
   return (
-    <section aria-labelledby={headingId} className="space-y-4">
-      <h2
-        id={headingId}
-        className="font-display text-xl text-foreground mb-4 flex items-center gap-2"
-      >
-        {isGenerator ? (
-          <Zap className="size-5 text-primary" aria-hidden="true" />
-        ) : (
-          <Plug className="size-5 text-primary" aria-hidden="true" />
-        )}
-        {isGenerator ? "Powers" : "Power supply"}
-      </h2>
-      {group}
-    </section>
+    <>
+      <Separator />
+      <section aria-labelledby={headingId} className="space-y-4">
+        <h2
+          id={headingId}
+          className="font-display text-xl text-foreground mb-4 flex items-center gap-2"
+        >
+          {isGenerator ? (
+            <Zap className="size-5 text-primary" aria-hidden="true" />
+          ) : (
+            <Plug className="size-5 text-primary" aria-hidden="true" />
+          )}
+          {isGenerator ? "Powers" : "Power supply"}
+        </h2>
+        {group}
+      </section>
+    </>
   );
 }
