@@ -3821,6 +3821,25 @@
       "label": "Low (<10%)"
     }
   },
+  "centersquare-abq1-albuquerque-nm": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "centersquare-gallatin-tn": {
     "nearestWater": {
       "name": "Town Creek",
@@ -11346,6 +11365,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "four-mile-mesa-solar-battery-san-juan-county-nm": {
+    "nearestWater": {
+      "name": "Stevens Arroyo",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "freestone-energy-center-fairfield-tx": {
     "nearestWater": {
       "name": "Walnut Creek",
@@ -16926,6 +16964,29 @@
       "rock": "Carbonate-rock"
     }
   },
+  "mowata-solar-acadia-parish-la": {
+    "nearestWater": {
+      "name": "Long Point Gully",
+      "kind": "river",
+      "distanceMi": 2.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "ms-solar-grid-data-new-orleans-east-la": {
     "nearestWater": {
       "name": "Lake Ponchartrain",
@@ -18088,6 +18149,29 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "one-nuclear-project-cayman-ascension-parish-la": {
+    "nearestWater": {
+      "name": "McCall Bayou",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "openai-project-camellia-effingham-ga": {
