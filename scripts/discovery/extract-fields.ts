@@ -72,6 +72,35 @@
  * number written into both capacity sub-fields) — they do not close the
  * general gap.
  *
+ * === WAYBACK FALLBACK — RECOVERING A BOT-WALLED OR DEAD DIRECT FETCH ===
+ * Mirrors verify-fields.ts's own fallback (see that file's header for the
+ * measured 27.2%-unreachable finding that motivated it — issue #228). When
+ * (and ONLY when) a source's DIRECT fetch fails with `http_error` or
+ * `network_error`, `processFacilitySources` retries via
+ * `findWaybackSnapshotUrl` (wayback.ts, shared with verify-fields.ts and
+ * verify-source.ts) and re-fetches the snapshot through the same
+ * `fetchSourceText` router as any other URL — a `.pdf` snapshot URL therefore
+ * still routes correctly with no extra work. Deliberately NEVER attempted for
+ * `bad_content_type`/`too_large`/`pdf_extract_failed`/etc. (separate,
+ * out-of-scope findings) or for a merely-thin direct fetch. THE TRAP (same as
+ * verify-fields.ts): Wayback sometimes archives nothing but its own
+ * navigation chrome, so the SAME `MIN_READABLE_CHARS` floor applied to a
+ * direct fetch is applied to the archived text too, BEFORE it is ever handed
+ * to the model — a chrome-only snapshot is treated exactly like the ordinary
+ * thin-page branch (`unreadable`), never as "the field is unstated." An
+ * accepted extraction sourced from an archived snapshot is tagged
+ * `AcceptedExtraction.viaArchive`/`archiveUrl` — `source`/`sources[]` always
+ * keep the ORIGINAL cited URL, never rewritten to the snapshot, and
+ * `toEnrichmentIntents`'s reviewer note spells out which page was actually
+ * read, since a human approving the candidate cannot re-check a citation that
+ * itself 403s. A successful archived fetch counts as `sawAnyReadable` — the
+ * systemic-collapse abort guard must not fire just because the LIVE URLs
+ * happened to be bot-walled while the network itself is fine. Pacing/sleep
+ * and the raw `fetchImpl` used for the Wayback availability lookup are
+ * injectable on `RunExtractDeps` (`sleep`/`fetchImpl`), mirroring
+ * `VerifyFieldsDeps` exactly, so no test ever actually waits or opens a
+ * socket; `buildRealDeps()` wires the real implementations.
+ *
  * All side-effecting dependencies (fetch, the Ollama call, the clock) are
  * injected — see `RunExtractDeps` — following the `RunSubmitDeps` pattern in
  * submit-candidates.ts, so the whole pipeline is testable with no network and
@@ -100,6 +129,7 @@ import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
+import { findWaybackSnapshotUrl } from "./wayback";
 
 // ============================================================================
 // Fields covered
@@ -870,8 +900,17 @@ export interface AcceptedExtraction {
    * fields on the same facility can legitimately come from different
    * sources (see Stage 6b) — this is what lets `toEnrichmentIntents` say
    * WHICH url supported WHICH value, not just "one of the facility's
-   * sources, somewhere." */
+   * sources, somewhere." Always the ORIGINAL cited source — see
+   * `viaArchive`/`archiveUrl` below, never rewritten to a Wayback URL. */
   source: Source;
+  /** True when this value was read from a Wayback snapshot because the cited
+   *  URL was unreachable — weaker evidence than a live read, and the human
+   *  reviewer cannot re-check the citation directly. See the file header's
+   *  WAYBACK FALLBACK section. */
+  viaArchive?: boolean;
+  /** The snapshot actually read, set only alongside `viaArchive`. `source`
+   *  above always remains the ORIGINAL cited URL. */
+  archiveUrl?: string;
 }
 
 interface Track5EnrichmentFields {
@@ -979,8 +1018,17 @@ export function toEnrichmentIntents(
   }
   const sources = [...sourcesByUrl.values()];
 
+  // A value read via an archived Wayback snapshot says so explicitly — a
+  // human reviewer clicking `source.url` on an archive-recovered item would
+  // otherwise hit the same 403/bot-wall the direct fetch did and be unable to
+  // verify the value they're approving. Non-archived items are formatted
+  // exactly as before this field existed (see the file header's WAYBACK
+  // FALLBACK section).
   const noteBody = accepted
-    .map((item) => `${item.field}=${item.value} (quote: "${item.verbatimQuote}", source: ${item.source.url})`)
+    .map((item) => {
+      const base = `${item.field}=${item.value} (quote: "${item.verbatimQuote}", source: ${item.source.url}`;
+      return item.viaArchive ? `${base}, read via archive: ${item.archiveUrl})` : `${base})`;
+    })
     .join("; ");
   const note = `${reviewFlagged ? `REVIEW: >=${REVIEW_THRESHOLD_MW}MW data_center — ` : ""}${noteBody}`;
 
@@ -1048,6 +1096,24 @@ export interface RunExtractDeps extends SourceFetchDeps {
    * callers should catch and log, not throw.
    */
   checkpoint?: (summary: RunExtractSummary) => void;
+  /**
+   * Paces Wayback availability lookups (see `WAYBACK_LOOKUP_PACING_MS`) so a
+   * full sweep doesn't hammer archive.org. Injectable so no test ever
+   * actually waits — falls back to a real `setTimeout`-backed sleep
+   * (`realSleep`) when omitted; `buildRealDeps()` wires it explicitly anyway.
+   * Mirrors `VerifyFieldsDeps.sleep` exactly.
+   */
+  sleep?: (ms: number) => Promise<void>;
+  /**
+   * Raw fetch, used ONLY to query the Wayback Machine's `/wayback/available`
+   * endpoint (via `findWaybackSnapshotUrl`, wayback.ts) — mirrors
+   * `VerifyFieldsDeps.fetchImpl` for the same reason: `fetchPageTextImpl`/
+   * `fetchPdfTextImpl` enforce guards this trusted, fixed host doesn't need,
+   * and a content-type allowlist that would reject its JSON response
+   * outright. Defaults to the global `fetch` in production; tests should
+   * always inject their own mock.
+   */
+  fetchImpl?: typeof fetch;
 }
 
 export interface RunExtractOptions {
@@ -1322,6 +1388,148 @@ export async function fetchSourceText(
 }
 
 /**
+ * Real-world default for `RunExtractDeps.sleep` — a plain `setTimeout`
+ * wrapped as a Promise. `buildRealDeps()` wires this explicitly, but
+ * `attemptArchiveRecovery` also falls back to it directly (mirrors the
+ * `deps.fetchImpl ?? fetch` pattern below) so any future caller that forgets
+ * to wire `sleep` degrades to a real sleep rather than a crash. Mirrors
+ * verify-fields.ts's own `realSleep`.
+ */
+async function realSleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Paces Wayback availability lookups against archive.org — mirrors
+ * verify-fields.ts's own `WAYBACK_LOOKUP_PACING_MS` (same value, same
+ * rationale: a full sweep can generate on the order of hundreds of lookups
+ * against a third-party host this project does not control). Applied BEFORE
+ * each lookup in `attemptArchiveRecovery`, and ONLY when a lookup is
+ * actually about to happen — a run with zero recoverable failures pays
+ * nothing.
+ */
+const WAYBACK_LOOKUP_PACING_MS = 1_200;
+
+/**
+ * Attempts to recover a source whose DIRECT fetch failed with a genuine
+ * transport failure (`http_error`/`network_error` — the caller,
+ * `processFacilitySources`, checks this BEFORE ever calling in here; every
+ * other failure reason is deliberately never routed to this function, see
+ * the file header's WAYBACK FALLBACK section) by looking up and re-fetching
+ * an archived Wayback snapshot of the same URL. Re-fetches through the SAME
+ * `fetchSourceText` router as any other URL, so a `.pdf` snapshot URL routes
+ * correctly with no extra work, and the shared `pdf_extractor_unavailable`
+ * warning still fires at most once per run via the threaded `fetchState`.
+ * Mirrors verify-fields.ts's own `attemptArchiveRecovery` exactly — kept as a
+ * separate (not shared/imported) copy because it's typed against
+ * `RunExtractDeps`, not `VerifyFieldsDeps`.
+ *
+ * Returns `null` when no snapshot exists at all. Otherwise returns the
+ * snapshot URL found AND the result of fetching it — which may itself be
+ * `{ ok: false }`; a snapshot existing does not guarantee it's fetchable.
+ * The caller decides what each shape means for `viaArchive`/`archiveUrl` —
+ * both `null` here and an `{ ok: false }` fetchResult mean "never actually
+ * read a snapshot," so neither ever sets those fields.
+ */
+async function attemptArchiveRecovery(
+  url: string,
+  deps: RunExtractDeps,
+  fetchState: FetchState
+): Promise<{ archiveUrl: string; fetchResult: Awaited<ReturnType<typeof fetchSourceText>> } | null> {
+  const sleep = deps.sleep ?? realSleep;
+  await sleep(WAYBACK_LOOKUP_PACING_MS);
+
+  const archiveUrl = await findWaybackSnapshotUrl(url, deps.fetchImpl ?? fetch);
+  if (!archiveUrl) return null;
+
+  const fetchResult = await fetchSourceText(archiveUrl, deps, fetchState);
+  return { archiveUrl, fetchResult };
+}
+
+/**
+ * Attempts every still-`unfilled` field against `windowedText` already
+ * fetched from `source.url` — directly, or (when `archive` is set) via an
+ * archived Wayback snapshot. Shared verbatim by both the direct-fetch and
+ * archived-fetch success paths in `processFacilitySources` below, so an
+ * accepted field's provenance tagging (`viaArchive`/`archiveUrl`) can never
+ * drift between the two — mutates `unfilled`/`accepted`/`fieldFailureReason`
+ * in place, mirroring the loop this replaced.
+ */
+async function extractFieldsFromReadableText(
+  facility: Facility,
+  source: Source,
+  windowedText: string,
+  unfilled: Set<ExtractableField>,
+  accepted: AcceptedExtraction[],
+  fieldFailureReason: Map<ExtractableField, FieldFailureReason>,
+  deps: RunExtractDeps,
+  archive?: { archiveUrl: string }
+): Promise<void> {
+  const archiveSuffix = archive ? `, via archive ${archive.archiveUrl}` : "";
+  for (const field of [...unfilled]) {
+    if (!prefilter(windowedText, field)) {
+      console.log(`skip: ${facility.id} ${field} — prefilter found no plausible mention on ${source.url}${archiveSuffix}`);
+      fieldFailureReason.set(field, "prefiltered");
+      continue;
+    }
+
+    const outcome = await extractField(field, facility, windowedText, deps);
+    if (!outcome.ok) {
+      console.log(`skip: ${facility.id} ${field} — model call unavailable on ${source.url}${archiveSuffix} (${outcome.modelFailureReason})`);
+      fieldFailureReason.set(field, "modelUnavailable");
+      continue;
+    }
+    if (outcome.value === null) {
+      console.log(
+        `skip: ${facility.id} ${field} — model returned null on ${source.url}${archiveSuffix} (${outcome.reasonIfNull ?? "no reason given"})`
+      );
+      fieldFailureReason.set(field, "modelNulls");
+      continue;
+    }
+
+    if (!quoteVerbatim(outcome.verbatimQuote, windowedText)) {
+      console.log(`skip: ${facility.id} ${field} — quote is not a verbatim span of ${source.url}${archiveSuffix}`);
+      fieldFailureReason.set(field, "quoteRejected");
+      continue;
+    }
+    // outcome.verbatimQuote is narrowed to `string` by the guard above.
+    // The `as number` cast below is guaranteed by isNumericField(field)
+    // exactly matching isValidValueForField's own numeric branch in
+    // extractField — TS cannot see that runtime pairing across functions.
+    if (isNumericField(field) && !quoteSupportsValue(outcome.verbatimQuote, outcome.value as number, windowedText)) {
+      console.log(`skip: ${facility.id} ${field} — quote does not reconcile with the extracted value on ${source.url}${archiveSuffix}`);
+      fieldFailureReason.set(field, "quoteRejected");
+      continue;
+    }
+    if (isOperationalStatusContradiction(facility, field)) {
+      console.log(
+        `skip: ${facility.id} ${field} = ${JSON.stringify(outcome.value)} on ${source.url}${archiveSuffix} — facility status is "${facility.status}", not "operational"; an operational-capacity figure contradicts the record`
+      );
+      fieldFailureReason.set(field, "statusContradiction");
+      continue;
+    }
+    if (isDuplicateOfRecordedSibling(facility, field, outcome.value)) {
+      console.log(
+        `skip: ${facility.id} ${field} = ${JSON.stringify(outcome.value)} on ${source.url}${archiveSuffix} — duplicates the recorded sibling capacityMw value (existing capacityMw on record: ${JSON.stringify(facility.capacityMw)}); same fact re-read, not a new one`
+      );
+      fieldFailureReason.set(field, "duplicateOfSibling");
+      continue;
+    }
+
+    console.log(`ok: ${facility.id} ${field} = ${JSON.stringify(outcome.value)} (source: ${source.url}${archiveSuffix})`);
+    accepted.push({
+      field,
+      value: outcome.value,
+      verbatimQuote: outcome.verbatimQuote,
+      source,
+      ...(archive ? { viaArchive: true, archiveUrl: archive.archiveUrl } : {}),
+    });
+    fieldFailureReason.delete(field); // filled — clear any earlier source's failure reason for it
+    unfilled.delete(field); // never re-attempt this field against a later source
+  }
+}
+
+/**
  * Defect 4's fix: iterates a facility's cited sources IN ORDER (F2: primary
  * documents first, see `sortSourcesPrimaryFirst`), reading as many as it
  * takes to fill every field in `fields` — not just the first readable one. A
@@ -1386,6 +1594,52 @@ async function processFacilitySources(
         fetchResult.reason === "network_error"
           ? `network_error${fetchResult.errorCode ? `:${fetchResult.errorCode}` : ""}${fetchResult.errorMessage ? ` (${fetchResult.errorMessage})` : ""}`
           : `${fetchResult.reason}${fetchResult.httpStatus ? ` (status ${fetchResult.httpStatus})` : ""}`;
+
+      if (fetchResult.reason === "http_error" || fetchResult.reason === "network_error") {
+        const archived = await attemptArchiveRecovery(source.url, deps, fetchState);
+
+        if (archived && archived.fetchResult.ok) {
+          const archiveUrl = archived.archiveUrl;
+
+          if (archived.fetchResult.text.length < MIN_READABLE_CHARS) {
+            // Same MIN_READABLE_CHARS floor as an ordinary thin direct fetch
+            // — a chrome-only Wayback snapshot must never be misread as "this
+            // field is unstated." See the file header's WAYBACK FALLBACK
+            // section; NEVER reaches extractField.
+            sawAnyUnreadable = true;
+            console.log(
+              `thin: ${source.url} — direct fetch failed (${detail}); Wayback snapshot ${archiveUrl} fetched but only ${archived.fetchResult.text.length} chars (below MIN_READABLE_CHARS=${MIN_READABLE_CHARS}) — likely navigation chrome only; trying next source`
+            );
+            continue;
+          }
+
+          sawAnyReadable = true;
+          sourcesRead++;
+          const windowed = windowText(archived.fetchResult.text, facility.name, facility.location.city);
+          console.log(
+            `recovered-via-archive: ${facility.id} — ${source.url} — direct fetch failed (${detail}); reading Wayback snapshot ${archiveUrl} instead (${windowed.mode}, ${windowed.text.length} chars)`
+          );
+          await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps, {
+            archiveUrl,
+          });
+          continue;
+        }
+
+        // No snapshot existed at all, or one was found but its own fetch
+        // also failed — either way no archived text was ever actually read
+        // (see `attemptArchiveRecovery`'s doc-comment), so this source stays
+        // an ordinary fetch failure.
+        const archiveDetail = archived
+          ? `Wayback snapshot ${archived.archiveUrl} found but its own fetch also failed (${archived.fetchResult.ok ? "unknown" : archived.fetchResult.reason})`
+          : "no Wayback snapshot available";
+        console.log(`fetch-failed: ${facility.id} — ${source.url} — ${detail} — ${Date.now() - fetchAttemptStart}ms — ${archiveDetail}`);
+        continue;
+      }
+
+      // Every other failure reason (bad_content_type / too_large /
+      // pdf_extract_failed / pdf_extractor_unavailable / blocked /
+      // redirect_limit) is deliberately NEVER routed to a Wayback recovery
+      // attempt — see the file header's WAYBACK FALLBACK section.
       console.log(`fetch-failed: ${facility.id} — ${source.url} — ${detail} — ${Date.now() - fetchAttemptStart}ms`);
       continue;
     }
@@ -1404,61 +1658,7 @@ async function processFacilitySources(
 
     // Only the fields still unfilled are tried against this source — a field
     // already filled from an earlier source is never re-attempted.
-    for (const field of [...unfilled]) {
-      if (!prefilter(windowed.text, field)) {
-        console.log(`skip: ${facility.id} ${field} — prefilter found no plausible mention on ${source.url}`);
-        fieldFailureReason.set(field, "prefiltered");
-        continue;
-      }
-
-      const outcome = await extractField(field, facility, windowed.text, deps);
-      if (!outcome.ok) {
-        console.log(`skip: ${facility.id} ${field} — model call unavailable on ${source.url} (${outcome.modelFailureReason})`);
-        fieldFailureReason.set(field, "modelUnavailable");
-        continue;
-      }
-      if (outcome.value === null) {
-        console.log(
-          `skip: ${facility.id} ${field} — model returned null on ${source.url} (${outcome.reasonIfNull ?? "no reason given"})`
-        );
-        fieldFailureReason.set(field, "modelNulls");
-        continue;
-      }
-
-      if (!quoteVerbatim(outcome.verbatimQuote, windowed.text)) {
-        console.log(`skip: ${facility.id} ${field} — quote is not a verbatim span of ${source.url}`);
-        fieldFailureReason.set(field, "quoteRejected");
-        continue;
-      }
-      // outcome.verbatimQuote is narrowed to `string` by the guard above.
-      // The `as number` cast below is guaranteed by isNumericField(field)
-      // exactly matching isValidValueForField's own numeric branch in
-      // extractField — TS cannot see that runtime pairing across functions.
-      if (isNumericField(field) && !quoteSupportsValue(outcome.verbatimQuote, outcome.value as number, windowed.text)) {
-        console.log(`skip: ${facility.id} ${field} — quote does not reconcile with the extracted value on ${source.url}`);
-        fieldFailureReason.set(field, "quoteRejected");
-        continue;
-      }
-      if (isOperationalStatusContradiction(facility, field)) {
-        console.log(
-          `skip: ${facility.id} ${field} = ${JSON.stringify(outcome.value)} on ${source.url} — facility status is "${facility.status}", not "operational"; an operational-capacity figure contradicts the record`
-        );
-        fieldFailureReason.set(field, "statusContradiction");
-        continue;
-      }
-      if (isDuplicateOfRecordedSibling(facility, field, outcome.value)) {
-        console.log(
-          `skip: ${facility.id} ${field} = ${JSON.stringify(outcome.value)} on ${source.url} — duplicates the recorded sibling capacityMw value (existing capacityMw on record: ${JSON.stringify(facility.capacityMw)}); same fact re-read, not a new one`
-        );
-        fieldFailureReason.set(field, "duplicateOfSibling");
-        continue;
-      }
-
-      console.log(`ok: ${facility.id} ${field} = ${JSON.stringify(outcome.value)} (source: ${source.url})`);
-      accepted.push({ field, value: outcome.value, verbatimQuote: outcome.verbatimQuote, source });
-      fieldFailureReason.delete(field); // filled — clear any earlier source's failure reason for it
-      unfilled.delete(field); // never re-attempt this field against a later source
-    }
+    await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps);
   }
 
   return { accepted, fieldFailureReason, sourcesRead, sawAnyReadable, sawAnyUnreadable };
@@ -2032,6 +2232,8 @@ function buildRealDeps(): RunExtractDeps {
     fetchPdfTextImpl: (url) => fetchPdfText(url, { fetchImpl: fetch }),
     callOllamaImpl: (opts) => callOllama<ModelExtraction>({ ...opts, fetchImpl: fetch }),
     now: () => new Date(),
+    sleep: realSleep,
+    fetchImpl: fetch,
   };
 }
 

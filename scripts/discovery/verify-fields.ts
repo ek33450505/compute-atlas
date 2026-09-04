@@ -86,6 +86,58 @@
  * in sync with its unexported counterpart in `extract-fields.ts` if that
  * file's constants ever change.
  *
+ * === WAYBACK FALLBACK — RECOVERING A BOT-WALLED OR DEAD DIRECT FETCH ===
+ * Measured on a full-dataset sweep (issue #228): 736 of 2,706 (facility,
+ * field, source) triples (27.2%) came back `unreachable`, and 534 of those
+ * were `http_error`/`network_error` bot-walls across 447 distinct URLs —
+ * end-to-end recovery was measured on 6/6 sampled URLs, each yielding real
+ * article text (2,659–13,604 chars) via its Wayback snapshot. When (and ONLY
+ * when) the DIRECT fetch fails with `http_error` or `network_error`,
+ * `verifyFacility` retries via `findWaybackSnapshotUrl` (wayback.ts, shared
+ * with verify-source.ts's own fallback) and re-fetches the snapshot through
+ * the same `fetchSourceText` router as any other URL — a `.pdf` snapshot URL
+ * therefore still routes correctly with no extra work, and the shared
+ * `pdf_extractor_unavailable` warning still fires at most once per run via
+ * the threaded `fetchState`. Deliberately NEVER attempted for
+ * `bad_content_type`/`too_large`/`pdf_extract_failed`/etc. (separate
+ * findings, out of scope here) or for a merely-thin direct fetch (checked:
+ * 131 of 134 thin triples are one JS-rendered ArcGIS map viewer — a
+ * data-quality problem, not a fetch one).
+ *
+ * THE TRAP: Wayback sometimes archives nothing but its own navigation chrome
+ * (this project has been bitten by exactly this before — a 9.7 KB
+ * toolbar-only page). Classifying that normally would return `noMention` — a
+ * FALSE ABSENT that reads as "the source does not state this value," the
+ * single most expensive failure class here (see the CENTRAL DESIGN
+ * CONSTRAINT above). So the SAME `MIN_READABLE_CHARS` floor applied to a
+ * direct fetch is applied to the archived text too, BEFORE it is ever handed
+ * to the model: a chrome-only snapshot always yields `unreachable`, never
+ * `noMention`.
+ *
+ * PROVENANCE stays explicit, never blurred: `sourceUrl` on every result is
+ * ALWAYS the original cited URL, never silently rewritten to the snapshot —
+ * a value confirmed against a possibly-years-old archived snapshot is weaker
+ * evidence than one confirmed against the live page, so
+ * `SourceVerification.viaArchive`/`archiveUrl` record which path produced a
+ * given triple, set ONLY when archived text was actually fetched and read
+ * (thin or full) — never when a snapshot was merely found but its own fetch
+ * also failed, and never when no snapshot existed at all (mirrors
+ * verify-source.ts's own `viaWayback`, which draws the same line). A
+ * successful archived fetch proves the network path is alive, so it resets
+ * `sawAnyReadable`/`sawAnyThin` exactly like a direct fetch would — the
+ * systemic-collapse abort guard must not fire just because the LIVE URLs
+ * happened to be bot-walled while the network itself is fine.
+ * `VerifyFieldsSummary.recoveredViaArchive` is a CROSS-TAB over `results`
+ * (how many triples carry `viaArchive: true`), never folded into
+ * `OUTCOME_TO_SUMMARY_KEY` — see that field's own doc-comment.
+ *
+ * PACING: a full sweep can generate on the order of hundreds of Wayback
+ * availability lookups, so `WAYBACK_LOOKUP_PACING_MS` (see
+ * `attemptArchiveRecovery`) sleeps before each one — a run with zero
+ * recoverable failures pays nothing. `VerifyFieldsDeps.sleep`/`fetchImpl` are
+ * both injectable so no test ever actually waits or opens a socket;
+ * `buildRealDeps()` wires the real implementations.
+ *
  * === ACCOUNTING ===
  * Every (facility, field, source) triple this tool actually attempts is
  * pushed exactly once into `VerifyFieldsSummary.results`, tagged with one of
@@ -189,6 +241,7 @@ import {
 import { callOllama } from "./ollama-client";
 import { fetchPageText } from "./fetch-page-text";
 import { fetchPdfText } from "./fetch-pdf-text";
+import { findWaybackSnapshotUrl } from "./wayback";
 
 // Note on reuse: `buildUserPrompt` and `fieldJsonSchema` (also exported by
 // extract-fields.ts) are NOT imported here directly — this tool never calls
@@ -324,6 +377,17 @@ export interface SourceVerification {
    * and never set for confirmed/disagreement (the recorded vs. source-stated
    * values already say everything needed there). */
   detail?: string;
+  /** True when this triple was classified (or determined too-thin-to-classify)
+   * from a Wayback snapshot because the live URL was unreachable — weaker
+   * evidence than a live-page check. Set ONLY when archived text was
+   * actually fetched and read (thin or full) — never when a snapshot was
+   * merely found but its own fetch also failed, and never when no snapshot
+   * existed at all. See the file header's WAYBACK FALLBACK section. */
+  viaArchive?: boolean;
+  /** The snapshot actually read — set only alongside `viaArchive`.
+   * `sourceUrl` above always remains the ORIGINAL cited URL; this is the
+   * only field that ever carries a Wayback URL. */
+  archiveUrl?: string;
 }
 
 /**
@@ -421,6 +485,23 @@ export interface VerifyFieldsDeps extends ExtractFieldModelDeps, SourceFetchDeps
    * A checkpoint failure must never abort the sweep.
    */
   checkpoint?: (summary: VerifyFieldsSummary) => void;
+  /**
+   * Paces Wayback availability lookups (see `WAYBACK_LOOKUP_PACING_MS`) so a
+   * full sweep doesn't hammer archive.org. Injectable so no test ever
+   * actually waits — falls back to a real `setTimeout`-backed sleep
+   * (`realSleep`) when omitted; `buildRealDeps()` wires it explicitly anyway.
+   */
+  sleep?: (ms: number) => Promise<void>;
+  /**
+   * Raw fetch, used ONLY to query the Wayback Machine's `/wayback/available`
+   * endpoint (via `findWaybackSnapshotUrl`, wayback.ts) — mirrors
+   * verify-source.ts's own `VerifySourceDeps.fetchImpl` for the same reason:
+   * `fetchPageTextImpl`/`fetchPdfTextImpl` enforce guards this trusted,
+   * fixed host doesn't need, and a content-type allowlist that would reject
+   * its JSON response outright. Defaults to the global `fetch` in
+   * production; tests should always inject their own mock.
+   */
+  fetchImpl?: typeof fetch;
 }
 
 interface FacilityVerifyResult {
@@ -437,6 +518,62 @@ interface FacilityVerifyResult {
   sawAnyThin: boolean;
 }
 
+/**
+ * Real-world default for `VerifyFieldsDeps.sleep` — a plain `setTimeout`
+ * wrapped as a Promise. `buildRealDeps()` wires this explicitly, but
+ * `attemptArchiveRecovery` also falls back to it directly (mirrors the
+ * `deps.fetchImpl ?? fetch` pattern below) so any future caller that forgets
+ * to wire `sleep` degrades to a real sleep rather than a crash.
+ */
+async function realSleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Paces Wayback availability lookups against archive.org — a full sweep can
+ * generate on the order of hundreds of them (issue #228 measured 447
+ * distinct bot-walled URLs), and archive.org is a third-party host whose
+ * rate limits this project does not control. Applied BEFORE each lookup in
+ * `attemptArchiveRecovery`, and ONLY when a lookup is actually about to
+ * happen — a run with zero recoverable failures pays nothing. Not a
+ * scientifically-tuned value, just a conservative, documented pace.
+ */
+const WAYBACK_LOOKUP_PACING_MS = 1_200;
+
+/**
+ * Attempts to recover a source whose DIRECT fetch failed with a genuine
+ * transport failure (`http_error`/`network_error` — the caller,
+ * `verifyFacility`, checks this BEFORE ever calling in here; every other
+ * failure reason is deliberately never routed to this function, see the file
+ * header's WAYBACK FALLBACK section) by looking up and re-fetching an
+ * archived Wayback snapshot of the same URL. Re-fetches through the SAME
+ * `fetchSourceText` router as any other URL, so a `.pdf` snapshot URL routes
+ * correctly with no extra work, and the shared `pdf_extractor_unavailable`
+ * warning still fires at most once per run via the threaded `fetchState`.
+ *
+ * Returns `null` when no snapshot exists at all. Otherwise returns the
+ * snapshot URL found AND the result of fetching it — which may itself be
+ * `{ ok: false }`; a snapshot existing does not guarantee it's fetchable.
+ * The caller decides what each shape means for `viaArchive`/`archiveUrl` —
+ * see `SourceVerification.archiveUrl`'s doc-comment: both `null` here and an
+ * `{ ok: false }` fetchResult mean "never actually read a snapshot," so
+ * neither ever sets those fields.
+ */
+async function attemptArchiveRecovery(
+  url: string,
+  deps: VerifyFieldsDeps,
+  fetchState: FetchState
+): Promise<{ archiveUrl: string; fetchResult: Awaited<ReturnType<typeof fetchSourceText>> } | null> {
+  const sleep = deps.sleep ?? realSleep;
+  await sleep(WAYBACK_LOOKUP_PACING_MS);
+
+  const archiveUrl = await findWaybackSnapshotUrl(url, deps.fetchImpl ?? fetch);
+  if (!archiveUrl) return null;
+
+  const fetchResult = await fetchSourceText(archiveUrl, deps, fetchState);
+  return { archiveUrl, fetchResult };
+}
+
 async function verifyFacility(
   facility: Facility,
   fields: Array<{ field: ExtractableField; recordedValue: number | string }>,
@@ -447,22 +584,80 @@ async function verifyFacility(
   let sawAnyReadable = false;
   let sawAnyThin = false;
 
+  /** Pushes one `unreachable` triple per field under check for `sourceUrl`,
+   * optionally tagged with archive provenance — the shared tail of every
+   * "could not read this source" branch below. */
+  const pushUnreachable = (sourceUrl: string, detail: string, archive?: { archiveUrl: string }) => {
+    for (const { field, recordedValue } of fields) {
+      results.push({
+        facilityId: facility.id,
+        facilityName: facility.name,
+        field,
+        recordedValue,
+        sourceUrl,
+        outcome: "unreachable",
+        detail,
+        ...(archive ? { viaArchive: true, archiveUrl: archive.archiveUrl } : {}),
+      });
+    }
+  };
+
   for (const source of facility.sources) {
     const fetchResult = await fetchSourceText(source.url, deps, fetchState);
 
     if (!fetchResult.ok) {
-      console.log(`unreachable: ${facility.id} — ${source.url} — fetch failed (${fetchResult.reason})`);
-      for (const { field, recordedValue } of fields) {
-        results.push({
-          facilityId: facility.id,
-          facilityName: facility.name,
-          field,
-          recordedValue,
-          sourceUrl: source.url,
-          outcome: "unreachable",
-          detail: `fetch failed: ${fetchResult.reason}`,
-        });
+      if (fetchResult.reason === "http_error" || fetchResult.reason === "network_error") {
+        const archived = await attemptArchiveRecovery(source.url, deps, fetchState);
+
+        if (archived && archived.fetchResult.ok) {
+          const archiveUrl = archived.archiveUrl;
+
+          if (archived.fetchResult.text.length < MIN_READABLE_CHARS) {
+            sawAnyThin = true;
+            const archivedLen = archived.fetchResult.text.length;
+            console.log(
+              `unreachable: ${facility.id} — ${source.url} — direct fetch failed (${fetchResult.reason}); Wayback snapshot ${archiveUrl} fetched but only ${archivedLen} chars (below MIN_READABLE_CHARS=${MIN_READABLE_CHARS}) — likely navigation chrome only`
+            );
+            pushUnreachable(
+              source.url,
+              `direct fetch failed (${fetchResult.reason}); Wayback snapshot fetched but below MIN_READABLE_CHARS (${archivedLen} chars) — this is NOT evidence the field is unstated`,
+              { archiveUrl }
+            );
+            continue;
+          }
+
+          sawAnyReadable = true;
+          console.log(
+            `recovered-via-archive: ${facility.id} — ${source.url} — direct fetch failed (${fetchResult.reason}); reading Wayback snapshot ${archiveUrl} instead (${archived.fetchResult.text.length} chars)`
+          );
+          // Windowing/classification mirror the direct-fetch path below —
+          // the only difference is the text came from the archived snapshot.
+          const windowed = windowText(archived.fetchResult.text, facility.name, facility.location.city);
+          for (const { field, recordedValue } of fields) {
+            const classified = await classifyReadableSource(facility, field, recordedValue, source.url, windowed.text, deps);
+            results.push({ ...classified, viaArchive: true, archiveUrl });
+          }
+          continue;
+        }
+
+        // No snapshot existed at all, or one was found but its own fetch
+        // also failed — either way we never actually read archived text (see
+        // `attemptArchiveRecovery`'s doc-comment), so `viaArchive`/
+        // `archiveUrl` stay unset on this triple.
+        const archiveDetail = archived
+          ? `Wayback snapshot ${archived.archiveUrl} found but its own fetch also failed (${archived.fetchResult.ok ? "unknown" : archived.fetchResult.reason})`
+          : "no Wayback snapshot available";
+        console.log(`unreachable: ${facility.id} — ${source.url} — fetch failed (${fetchResult.reason}); ${archiveDetail}`);
+        pushUnreachable(source.url, `fetch failed: ${fetchResult.reason}; ${archiveDetail}`);
+        continue;
       }
+
+      // Every other failure reason (bad_content_type / too_large /
+      // pdf_extract_failed / pdf_extractor_unavailable / blocked /
+      // redirect_limit) is deliberately NEVER routed to a Wayback recovery
+      // attempt — see the file header's WAYBACK FALLBACK section.
+      console.log(`unreachable: ${facility.id} — ${source.url} — fetch failed (${fetchResult.reason})`);
+      pushUnreachable(source.url, `fetch failed: ${fetchResult.reason}`);
       continue;
     }
 
@@ -471,17 +666,10 @@ async function verifyFacility(
       console.log(
         `unreachable: ${facility.id} — ${source.url} — fetched but only ${fetchResult.text.length} chars (below MIN_READABLE_CHARS=${MIN_READABLE_CHARS}) — likely a JS-rendered or empty page`
       );
-      for (const { field, recordedValue } of fields) {
-        results.push({
-          facilityId: facility.id,
-          facilityName: facility.name,
-          field,
-          recordedValue,
-          sourceUrl: source.url,
-          outcome: "unreachable",
-          detail: `fetched but below MIN_READABLE_CHARS (${fetchResult.text.length} chars) — this is NOT evidence the field is unstated`,
-        });
-      }
+      pushUnreachable(
+        source.url,
+        `fetched but below MIN_READABLE_CHARS (${fetchResult.text.length} chars) — this is NOT evidence the field is unstated`
+      );
       continue;
     }
 
@@ -595,6 +783,16 @@ export interface VerifyFieldsSummary {
   unconfirmed: number;
   noMention: number;
   unreachable: number;
+  /** CROSS-TAB, not a sixth outcome: counts triples in `results` with
+   * `viaArchive: true` — i.e. classified (or determined too-thin-to-classify)
+   * from a Wayback-archived snapshot after the live URL failed. Every such
+   * triple ALSO lands in exactly one of the five outcome counters above via
+   * its `outcome` field — this field is deliberately excluded from
+   * `OUTCOME_TO_SUMMARY_KEY` and MUST stay excluded, or the reconciliation
+   * identity `confirmed + disagreements + unconfirmed + noMention +
+   * unreachable === sourceChecksAttempted` would double-count. See the file
+   * header's WAYBACK FALLBACK section. */
+  recoveredViaArchive: number;
   /** True iff CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD tripped and the run
    * stopped before reaching every selected value. Results found before the
    * abort are real and are never discarded. Every value belonging to a
@@ -683,6 +881,7 @@ export async function runVerify(
     unconfirmed: 0,
     noMention: 0,
     unreachable: 0,
+    recoveredViaArchive: 0,
     aborted: false,
     abortReason: null,
     results: [],
@@ -737,6 +936,12 @@ export async function runVerify(
       summary.results.push(item);
       summary.sourceChecksAttempted++;
       summary[OUTCOME_TO_SUMMARY_KEY[item.outcome]]++;
+      // CROSS-TAB, not an outcome — see `recoveredViaArchive`'s doc-comment.
+      // Derived directly from `viaArchive` on the pushed item, never tracked
+      // separately, so it can never drift out of sync with `results`.
+      if (item.viaArchive) {
+        summary.recoveredViaArchive++;
+      }
     }
 
     if (result.sawAnyReadable || result.sawAnyThin) {
@@ -976,6 +1181,13 @@ function printHumanSummary(summary: VerifyFieldsSummary): void {
     console.log(`All ${summary.valuesConsidered} selected values had at least one source attempted.`);
   }
 
+  if (summary.recoveredViaArchive > 0) {
+    console.log(
+      `\n(${summary.recoveredViaArchive} of ${summary.sourceChecksAttempted} triples were classified from a ` +
+        `Wayback-archived snapshot after the live URL failed — see each result's viaArchive/archiveUrl.)`
+    );
+  }
+
   console.log(`\n=== SUMMARY ===`);
   const { results, uncheckedValues, ...rest } = summary;
   console.log(JSON.stringify({ ...rest, resultCount: results.length, uncheckedValueCount: uncheckedValues.length }, null, 2));
@@ -996,6 +1208,8 @@ function buildRealDeps(): VerifyFieldsDeps {
     fetchPdfTextImpl: (url) => fetchPdfText(url, { fetchImpl: fetch }),
     callOllamaImpl: (opts) => callOllama<ModelExtraction>({ ...opts, fetchImpl: fetch }),
     now: () => new Date(),
+    sleep: realSleep,
+    fetchImpl: fetch,
   };
 }
 

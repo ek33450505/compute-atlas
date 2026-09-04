@@ -38,6 +38,57 @@ import type { FetchPdfTextResult } from "./fetch-pdf-text";
 // doc-comment on why the field is required rather than optional).
 const pdfUnavailable = async (): Promise<FetchPdfTextResult> => ({ ok: false, reason: "pdf_extractor_unavailable" });
 
+// ============================================================================
+// Wayback-fallback test doubles — every test whose `fetchPageTextImpl` (or
+// `fetchPdfTextImpl`) returns `http_error`/`network_error` now triggers a
+// recovery attempt (see extract-fields.ts's WAYBACK FALLBACK section), so it
+// MUST inject both `fetchImpl` (never the real global `fetch` — this module
+// must never open a socket) and `sleep` (never a real wait) or the run would
+// silently hit archive.org and take ~1.2s per failed source. Mirrors
+// verify-fields.test.ts's own `waybackJson`/`waybackUnavailable` doubles.
+// ============================================================================
+
+/** Immediate no-op — the real `RunExtractDeps.sleep` paces Wayback
+ * availability lookups in production; tests must never actually wait.
+ * Deliberately takes no `ms` parameter (a function with fewer parameters is
+ * structurally assignable to `(ms: number) => Promise<void>`) so there is no
+ * unused-parameter warning to suppress. */
+async function noopSleep(): Promise<void> {}
+
+/** `findWaybackSnapshotUrl` reads via `readCappedText` (a `Content-Length`
+ * check + `res.text()`), not `res.json()` directly — this mock's shape
+ * matches that: no declared Content-Length (falls through the early bail)
+ * and a `text()` resolving to the JSON string to be parsed. */
+function waybackJson(body: unknown): Response {
+  return {
+    ok: true,
+    status: 200,
+    headers: { get: () => null } as unknown as Headers,
+    text: async () => JSON.stringify(body),
+  } as Response;
+}
+
+/** Default double for tests that don't care about Wayback recovery at all —
+ * reports "no snapshot available" for every URL, so a source that already
+ * failed to fetch directly stays a plain fetch failure exactly as it did
+ * before this fallback existed. */
+function waybackUnavailable() {
+  return vi.fn<typeof fetch>(async () => waybackJson({ archived_snapshots: {} }));
+}
+
+function waybackAvailable(snapshotUrl: string) {
+  return vi.fn<typeof fetch>(async () => waybackJson({ archived_snapshots: { closest: { available: true, url: snapshotUrl } } }));
+}
+
+/** Safety-net double: throws if the Wayback availability endpoint is ever
+ * queried in a test that isn't exercising recovery — proves a non-recoverable
+ * failure reason (e.g. `bad_content_type`) never attempts a lookup at all. */
+function waybackNeverCalled() {
+  return vi.fn<typeof fetch>(async () => {
+    throw new Error("wayback fetchImpl must not be called in this test");
+  });
+}
+
 function makeFacility(overrides: {
   id?: string;
   capacityMw?: Facility["capacityMw"];
@@ -468,6 +519,272 @@ describe("runExtract — near-empty fetch guard", () => {
     expect(summary.prefiltered).toBe(1);
   });
 });
+
+// ============================================================================
+// Wayback fallback — recovering a source whose DIRECT fetch failed with
+// http_error/network_error. See extract-fields.ts's WAYBACK FALLBACK section
+// and verify-fields.ts's own (sibling) fallback for the same design.
+// ============================================================================
+
+describe("runExtract — Wayback fallback (archived-snapshot recovery)", () => {
+  function makeArchiveFacility(id: string, sources: Facility["sources"]): Facility {
+    return {
+      id,
+      name: "Archive Test Facility",
+      operator: "Test Operator",
+      status: "operational",
+      facilityType: "data_center",
+      confidence: "confirmed",
+      location: { lat: 30, lon: -90, city: "Testville", state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources,
+      lastUpdated: "2026-01-01",
+    };
+  }
+
+  it("recovers a source via a Wayback snapshot with rich text: value extracted, viaArchive surfaced via the note, sources[] keeps the ORIGINAL url", async () => {
+    const facility = makeArchiveFacility("archive-recovered-facility", [
+      { url: "https://example.com/botwalled", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+    ]);
+    const snapshotUrl = "https://web.archive.org/web/20250101000000/https://example.com/botwalled";
+    const archivedText = `The facility has an operational capacity of 300 MW. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
+
+    let ollamaCalls = 0;
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url === snapshotUrl) return { ok: true, text: archivedText, finalUrl: url, httpStatus: 200 };
+        return { ok: false, reason: "http_error", httpStatus: 403 };
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => {
+        ollamaCalls++;
+        return { ok: true, data: { value: 300, verbatimQuote: "operational capacity of 300 MW", reasonIfNull: null } };
+      },
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      fetchImpl: waybackAvailable(snapshotUrl),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(ollamaCalls).toBe(1);
+    expect(summary.extracted).toBe(1);
+    expect(summary.candidates).toHaveLength(1);
+    const candidate = summary.candidates[0]!;
+    expect(candidate.enrichmentUpdate.fields.capacityMw?.operational).toBe(300);
+    // The ORIGINAL cited URL must never be silently rewritten to the snapshot.
+    expect(candidate.enrichmentUpdate.sources).toHaveLength(1);
+    expect(candidate.enrichmentUpdate.sources[0]?.url).toBe("https://example.com/botwalled");
+    expect(candidate.provenance.note).toContain(`read via archive: ${snapshotUrl}`);
+  });
+
+  // THE LOAD-BEARING TEST: a chrome-only archived snapshot must never be
+  // misread as an extractable value — that would be a false positive built on
+  // navigation chrome, not on evidence. Mutation-tested: see the comment at
+  // the bottom of this describe block.
+  it("floors a chrome-only Wayback snapshot (under MIN_READABLE_CHARS) to unreadable and NEVER calls the model", async () => {
+    const facility = makeArchiveFacility("archive-chrome-only-facility", [
+      { url: "https://example.com/botwalled", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+    ]);
+    const snapshotUrl = "https://web.archive.org/web/20250101000000/https://example.com/botwalled";
+    // Deliberately under MIN_READABLE_CHARS (400) — mimics Wayback's own
+    // navigation-chrome-only archive of an uncrawled page.
+    const chromeOnlySnapshot = "Wayback Machine. This is an archived version of a page. The archive coverage for this page is incomplete.";
+
+    let ollamaCalls = 0;
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url === snapshotUrl) return { ok: true, text: chromeOnlySnapshot, finalUrl: url, httpStatus: 200 };
+        return { ok: false, reason: "http_error", httpStatus: 403 };
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => {
+        ollamaCalls++;
+        return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "n/a" } };
+      },
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      fetchImpl: waybackAvailable(snapshotUrl),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(ollamaCalls).toBe(0);
+    expect(summary.unreadable).toBe(1);
+    expect(summary.fetchFailures).toBe(0);
+    expect(summary.candidates).toEqual([]);
+  });
+
+  it("leaves a source a plain fetch failure, and never calls the model, when no Wayback snapshot is available at all", async () => {
+    const facility = makeArchiveFacility("archive-no-snapshot-facility", [
+      { url: "https://example.com/dead-link", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+    ]);
+
+    let ollamaCalls = 0;
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async () => ({ ok: false, reason: "http_error", httpStatus: 404 }),
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => {
+        ollamaCalls++;
+        return { ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } };
+      },
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      fetchImpl: waybackUnavailable(),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(ollamaCalls).toBe(0);
+    expect(summary.fetchFailures).toBe(1);
+    expect(summary.candidates).toEqual([]);
+  });
+
+  it("never attempts a Wayback lookup for a non-recoverable failure reason (bad_content_type)", async () => {
+    const facility = makeArchiveFacility("archive-bad-content-type-facility", [
+      { url: "https://example.com/weird-content-type", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+    ]);
+
+    const deps: RunExtractDeps = {
+      // `fetchSourceText` itself retries a `bad_content_type` page result via
+      // `fetchPdfTextImpl` exactly once BEFORE this ever reaches
+      // `processFacilitySources`'s Wayback gate — unrelated to this test's
+      // concern, so the retry is just given a failure to fall through with.
+      fetchPageTextImpl: async () => ({ ok: false, reason: "bad_content_type", httpStatus: 200 }),
+      fetchPdfTextImpl: async () => ({ ok: false, reason: "bad_content_type", httpStatus: 200 }),
+      callOllamaImpl: async () => ({ ok: true, data: { value: 100, verbatimQuote: null, reasonIfNull: null } }),
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      // Throws if ever called — proves the Wayback lookup itself is never attempted.
+      fetchImpl: waybackNeverCalled(),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(summary.fetchFailures).toBe(1);
+    expect(summary.candidates).toEqual([]);
+  });
+
+  it("reviewer note carries the archive URL for an archive-recovered field, and is byte-identical to today's format for a directly-fetched field on the same facility", async () => {
+    const snapshotUrl = "https://web.archive.org/web/20250101000000/https://example.com/botwalled";
+    const archivedText = `The facility has an operational capacity of 300 MW. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
+    // No utility-hint words in the archived text (see ENERGY_UTILITY_HINT_RE)
+    // — energy.utility is correctly prefiltered out on THIS source, forcing
+    // the loop to move on to the second, directly-fetchable source for it.
+    const directText = `The facility is served by Example Utility Co for grid power. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
+
+    const facility = makeArchiveFacility("archive-mixed-note-facility", [
+      { url: "https://example.com/botwalled", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+      { url: "https://example.com/direct-source", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+    ]);
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url === snapshotUrl) return { ok: true, text: archivedText, finalUrl: url, httpStatus: 200 };
+        if (url === "https://example.com/direct-source") return { ok: true, text: directText, finalUrl: url, httpStatus: 200 };
+        return { ok: false, reason: "http_error", httpStatus: 403 };
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async (opts) => {
+        if (opts.userPrompt.includes("CURRENTLY OPERATIONAL")) {
+          return { ok: true, data: { value: 300, verbatimQuote: "operational capacity of 300 MW", reasonIfNull: null } };
+        }
+        return {
+          ok: true,
+          data: { value: "Example Utility Co", verbatimQuote: "served by Example Utility Co for grid power", reasonIfNull: null },
+        };
+      },
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      fetchImpl: waybackAvailable(snapshotUrl),
+    };
+
+    const summary = await runExtract(
+      [facility],
+      { fields: ["capacityMw.operational", "energy.utility"], runId: "test-run" },
+      deps
+    );
+
+    expect(summary.candidates).toHaveLength(1);
+    const note = summary.candidates[0]!.provenance.note;
+    // Archived item: the "today's format" body PLUS the archive suffix.
+    expect(note).toContain(
+      'capacityMw.operational=300 (quote: "operational capacity of 300 MW", source: https://example.com/botwalled, read via archive: ' +
+        snapshotUrl +
+        ")"
+    );
+    // Directly-fetched item: byte-identical to the pre-existing (no-archive) format.
+    expect(note).toContain(
+      'energy.utility=Example Utility Co (quote: "served by Example Utility Co for grid power", source: https://example.com/direct-source)'
+    );
+  });
+
+  it("resets the consecutive-failure streak on a recovered source, so a run mixing recoverable and genuine failures does not abort", async () => {
+    const snapshotUrl = "https://web.archive.org/web/20250101000000/https://example.com/recovered";
+    const archivedText = `The facility has an operational capacity of 100 MW. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
+
+    const genuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
+      makeArchiveFacility(`bad-facility-${i}`, [
+        { url: `https://example.com/bad-${i}`, label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+      ])
+    );
+    const recoveredFacility = makeArchiveFacility("recovered-facility", [
+      { url: "https://example.com/recovered", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+    ]);
+    const moreGenuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
+      makeArchiveFacility(`bad-facility-later-${i}`, [
+        { url: `https://example.com/bad-later-${i}`, label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+      ])
+    );
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url === snapshotUrl) return { ok: true, text: archivedText, finalUrl: url, httpStatus: 200 };
+        return { ok: false, reason: "network_error" };
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      // `findWaybackSnapshotUrl` calls this with the availability endpoint
+      // URL, `...?url=<encodeURIComponent(the-real-url)>` — "recovered"
+      // survives encoding unescaped, so this cheaply routes only the
+      // recovered facility's lookup to a real snapshot.
+      fetchImpl: (async (input: RequestInfo | URL) => {
+        const url = String(input);
+        return url.includes("recovered")
+          ? waybackJson({ archived_snapshots: { closest: { available: true, url: snapshotUrl } } })
+          : waybackJson({ archived_snapshots: {} });
+      }) as typeof fetch,
+    };
+
+    const summary = await runExtract(
+      [...genuineFailures, recoveredFacility, ...moreGenuineFailures],
+      { fields: ["capacityMw.operational"], runId: "test-run" },
+      deps
+    );
+
+    expect(summary.aborted).toBe(false);
+    expect(summary.extracted).toBe(1);
+  });
+});
+// MUTATION-TEST NOTE (test "floors a chrome-only Wayback snapshot..." above):
+// actually verified, not just asserted: disabling the
+// `archived.fetchResult.text.length < MIN_READABLE_CHARS` guard in
+// extract-fields.ts's archive-recovery branch (so a chrome-only snapshot
+// falls straight through to `extractFieldsFromReadableText`) makes this test
+// FAIL — `expect(summary.unreadable).toBe(1)` gets 0 instead. (`ollamaCalls`
+// stays 0 either way here, since the chrome-only text also happens to fail
+// the ordinary prefilter — the mutation's damage shows up as a misclassified
+// outcome, `prefiltered` instead of `unreadable`, not as a spurious model
+// call. A page whose chrome text accidentally LOOKED like it mentioned a
+// field would be the case where the mutation's damage becomes a real
+// fabrication risk, which is exactly why this floor exists.) Restoring the
+// guard makes the test pass again. Both runs performed by hand while
+// authoring this suite.
 
 // Regression: enrichment is fill-missing, so a record with only
 // capacityMw.operational set still queues capacityMw.planned as a gap. When a
@@ -1112,6 +1429,8 @@ describe("runExtract — unreadable/fetchFailures reconcile per field, not per f
       fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "n/a" } }),
       now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      fetchImpl: waybackUnavailable(),
     };
 
     const summary = await runExtract(
@@ -1198,6 +1517,8 @@ describe("runExtract — unreadable/fetchFailures reconcile per field, not per f
         return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "unused in this test" } };
       },
       now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      fetchImpl: waybackUnavailable(),
     };
 
     const summary = await runExtract(
@@ -1294,6 +1615,8 @@ describe("runExtract — aborts loudly on a consecutive total-fetch-failure stre
     fetchPdfTextImpl: pdfUnavailable,
     callOllamaImpl: async () => ({ ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "unused" } }),
     now: () => new Date("2026-08-16T00:00:00.000Z"),
+    sleep: noopSleep,
+    fetchImpl: waybackUnavailable(),
   };
 
   it("returns an ABORTED summary (never throws) once the streak reaches CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD", async () => {
@@ -1340,6 +1663,8 @@ describe("runExtract — aborts loudly on a consecutive total-fetch-failure stre
         return { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "unused" } };
       },
       now: () => new Date("2026-08-16T00:00:00.000Z"),
+      sleep: noopSleep,
+      fetchImpl: waybackUnavailable(),
     };
 
     const summary = await runExtract(
@@ -1428,6 +1753,8 @@ describe("runExtract — aborts loudly on a consecutive total-fetch-failure stre
       fetchPdfTextImpl: pdfUnavailable,
       callOllamaImpl: alwaysFailDeps.callOllamaImpl,
       now: alwaysFailDeps.now,
+      sleep: noopSleep,
+      fetchImpl: waybackUnavailable(),
     };
 
     const summary = await runExtract(
@@ -2120,6 +2447,8 @@ describe("runExtract — checkpoint (crash durability)", () => {
       },
       now: () => new Date("2026-08-16T00:00:00.000Z"),
       checkpoint: (summary) => atomicWriteJson(outPath, summary.candidates),
+      sleep: noopSleep,
+      fetchImpl: waybackUnavailable(),
     };
 
     const summary = await runExtract(
