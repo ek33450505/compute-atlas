@@ -121,7 +121,7 @@
  * Uses relative imports throughout — tsx does not resolve the `@/*` path
  * alias, matching the rest of scripts/discovery/.
  */
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { mkdirSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import type { Facility, Source } from "../../lib/schema";
@@ -130,6 +130,7 @@ import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./oll
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
 import { findWaybackSnapshotUrl } from "./wayback";
+import { loadFacilities } from "./load-facilities";
 
 // ============================================================================
 // Fields covered
@@ -2121,7 +2122,7 @@ export function parseFieldsArg(raw: string | undefined): ExtractableField[] {
  * `--limit=-5`, an empty value). Kept as a named constant, not a bare
  * literal, so the "why 500" reasoning stays attached to the value.
  */
-const INVALID_LIMIT_FALLBACK = 500;
+export const INVALID_LIMIT_FALLBACK = 500;
 
 /**
  * Parses a `--limit` value that was actually supplied. `limit === undefined`
@@ -2136,7 +2137,7 @@ const INVALID_LIMIT_FALLBACK = 500;
  * silently produce an unbounded, ~12-hour sweep over the full gap set. Clamp
  * it to `INVALID_LIMIT_FALLBACK` instead, and say so loudly on stderr.
  */
-function parseLimitArg(raw: string | undefined): number | undefined {
+export function parseLimitArg(raw: string | undefined): number | undefined {
   if (raw === undefined) return undefined;
   const parsed = Number(raw);
   if (Number.isFinite(parsed) && parsed > 0) {
@@ -2193,25 +2194,6 @@ export function parseArgs(argv: string[]): CliArgs {
   }
 
   return { outPath, limit, fields, facilityId, runId };
-}
-
-/** Loads the live facility set — read API first, JSON file fallback. Same
- * pattern as submit-candidates.ts's/existing-facilities.ts's own loader
- * (not shared into a common module — out of scope for this script). */
-async function loadFacilities(baseUrl: string): Promise<Facility[]> {
-  try {
-    const res = await fetch(`${baseUrl}/api/facilities`);
-    if (res.ok) {
-      const body = (await res.json()) as { facilities: Facility[] };
-      return body.facilities;
-    }
-  } catch {
-    // fall through to file fallback
-  }
-
-  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
-  const raw = readFileSync(jsonPath, "utf-8");
-  return JSON.parse(raw) as Facility[];
 }
 
 function printSummary(summary: RunExtractSummary): void {

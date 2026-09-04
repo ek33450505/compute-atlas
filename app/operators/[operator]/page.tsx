@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -11,13 +10,14 @@ import {
 } from "@/lib/data";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
-import { formatCapacity, formatLocation, formatPower } from "@/lib/format";
-import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
-import { StatusBadge } from "@/components/status-badge";
+import { formatLocation, formatPower } from "@/lib/format";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
+import { FacilityListRow } from "@/components/facility-list-row";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { PercentageBar } from "@/components/percentage-bar";
+import { SectionHeading } from "@/components/section-heading";
 
 export const revalidate = 3600;
 
@@ -106,25 +106,7 @@ export default async function OperatorPage({
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: breadcrumbJsonLdString(
-            crumbs.map((c) => ({ name: c.label, url: c.href }))
-          ),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: itemListJsonLdString(
-            facilities.map((f) => ({
-              name: f.name,
-              url: `${siteConfig.url}/facilities/${f.id}`,
-            }))
-          ),
-        }}
-      />
+      <CollectionJsonLd crumbs={crumbs} facilities={facilities} />
 
       <Breadcrumb items={crumbs} />
 
@@ -182,42 +164,23 @@ export default async function OperatorPage({
           aria-labelledby="facility-type-heading"
           className="space-y-6 border-t border-border pt-10"
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § By type
-          </p>
-          <h2
-            id="facility-type-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            Facility type
-          </h2>
+          <SectionHeading kicker="By type" id="facility-type-heading" title="Facility type" />
           <div className="space-y-4">
             {FACILITY_TYPE_ORDER.filter((key) => summary.byType[key] > 0).map(
               (key) => {
                 const count = summary.byType[key];
                 const pct = summary.count > 0 ? (count / summary.count) * 100 : 0;
                 return (
-                  <div key={key} className="space-y-1.5">
-                    <div className="flex items-baseline justify-between gap-2 text-sm">
-                      <span className="text-foreground">
-                        {FACILITY_TYPE_META[key].label}
-                      </span>
-                      <span className="font-mono tabular-nums text-muted-foreground">
+                  <PercentageBar
+                    key={key}
+                    label={FACILITY_TYPE_META[key].label}
+                    valueLabel={
+                      <>
                         {count} &middot; {pct.toFixed(0)}%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        aria-hidden="true"
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${pct.toFixed(2)}%`,
-                          backgroundColor: "var(--primary)",
-                          opacity: 0.7,
-                        }}
-                      />
-                    </div>
-                  </div>
+                      </>
+                    }
+                    pct={pct}
+                  />
                 );
               }
             )}
@@ -232,38 +195,26 @@ export default async function OperatorPage({
         aria-labelledby="status-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § By status
-        </p>
-        <h2 id="status-heading" className="font-display text-2xl text-foreground">
-          Lifecycle status
-        </h2>
+        <SectionHeading kicker="By status" id="status-heading" title="Lifecycle status" />
         <div className="space-y-4">
           {STATUS_ORDER.filter((status) => summary.byStatus[status] > 0).map(
             (status) => {
               const count = summary.byStatus[status];
               const pct = summary.count > 0 ? (count / summary.count) * 100 : 0;
               return (
-                <div key={status} className="space-y-1.5">
-                  <div className="flex items-baseline justify-between gap-2 text-sm">
-                    <span className="text-foreground">
-                      {STATUS_META[status].label}
-                    </span>
-                    <span className="font-mono tabular-nums text-muted-foreground">
+                <PercentageBar
+                  key={status}
+                  label={STATUS_META[status].label}
+                  valueLabel={
+                    <>
                       {count} &middot; {pct.toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                    <div
-                      aria-hidden="true"
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${pct.toFixed(2)}%`,
-                        backgroundColor: getStatusColor(status),
-                      }}
-                    />
-                  </div>
-                </div>
+                    </>
+                  }
+                  pct={pct}
+                  color={getStatusColor(status)}
+                  opacity={1}
+                  transition
+                />
               );
             }
           )}
@@ -277,37 +228,11 @@ export default async function OperatorPage({
         aria-labelledby="facilities-heading"
         className="space-y-4 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Facilities
-        </p>
-        <h2
-          id="facilities-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Facilities operated by {operatorName}
-        </h2>
+        <SectionHeading kicker="Facilities" id="facilities-heading" title={<>Facilities operated by {operatorName}</>} />
         <ul className="divide-y divide-border">
           {facilities.map((f) => (
             <li key={f.id}>
-              <Link
-                href={`/facilities/${f.id}`}
-                className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-              >
-                <span className="flex flex-col gap-0.5 min-w-0">
-                  <span className="text-sm text-foreground truncate">
-                    {f.name}
-                  </span>
-                  <span className="text-xs text-muted-foreground truncate">
-                    {formatLocation(f)}
-                  </span>
-                </span>
-                <span className="flex shrink-0 items-center gap-3">
-                  <StatusBadge status={f.status} />
-                  <span className="font-mono tabular-nums text-xs text-muted-foreground">
-                    {formatCapacity(f)}
-                  </span>
-                </span>
-              </Link>
+              <FacilityListRow facility={f} secondary={formatLocation(f)} />
             </li>
           ))}
         </ul>

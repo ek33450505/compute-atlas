@@ -63,10 +63,11 @@ import path from "node:path";
 import { and, eq, lte } from "drizzle-orm";
 
 import { facilitiesSchema, type Facility } from "../lib/schema";
-import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
+import { facilitiesTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { docToRow } from "../lib/db/serialize";
 import { computeDocDiff, type DiffEntry } from "../lib/doc-diff";
+import { insertFacilityHistoryRow } from "../lib/facility-history";
 import { canonicalize, canonicalStringify, changedTopLevelKeys } from "../lib/canonical-json";
 import { tagsForFacility, isValidCacheTag, MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
 
@@ -338,12 +339,15 @@ export async function applySync(
 }
 
 /**
- * Inserts one audit row. Log-and-continue on failure, mirroring
- * `recordFacilityHistory` in `lib/facility-write.ts` — losing an audit row is
- * recoverable, failing a facility write because the audit table hiccuped is
- * worse. Unlike that helper this reports the failure to the caller, because a
- * silently missing history row is precisely the `db:seed --force` bug this
- * script exists to fix; the run exits non-zero so it can't pass unnoticed.
+ * Thin wrapper over the shared `insertFacilityHistoryRow` leaf
+ * (`../lib/facility-history.ts`) — the same insert `lib/facility-write.ts`'s
+ * `recordFacilityHistory` now delegates to, rather than each keeping its own
+ * copy. What's still genuinely different is caller-side: this CLI collects
+ * every failing id into `result.historyFailures` and exits non-zero, because
+ * a silently missing history row is precisely the `db:seed --force` bug this
+ * script exists to fix, whereas the app's HTTP write path only carries the
+ * same boolean on `WriteResult.historyRecorded` for the response body to
+ * report.
  */
 async function recordHistory(
   facilityId: string,
@@ -351,14 +355,7 @@ async function recordHistory(
   diff: DiffEntry[],
   source: string
 ): Promise<boolean> {
-  try {
-    const db = getDb();
-    await db.insert(facilityHistoryTable).values({ facilityId, changeType, diff, source });
-    return true;
-  } catch (err) {
-    console.error("facility_history insert failed for %s (%s):", facilityId, changeType, err);
-    return false;
-  }
+  return insertFacilityHistoryRow(facilityId, changeType, diff, source);
 }
 
 /**

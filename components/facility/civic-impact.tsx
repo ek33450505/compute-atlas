@@ -1,8 +1,9 @@
 import type { Facility } from "@/lib/schema";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { formatUsdCompact, formatTonsPerYear } from "@/lib/format";
 
-import { FactRow, SourceLink } from "./fact-row";
+import { FactGroup, FactRow, MetaLine, SourceLink } from "./fact-row";
 
 // Shape of `facility.emissions.permittedTpy`, derived (not cast) from the
 // schema so the pollutant table below stays in sync with `lib/schema.ts`.
@@ -201,18 +202,15 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
   })();
 
   return (
-    <div>
-      <h3 className="text-sm font-semibold mb-3">Economics</h3>
-      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-        {investmentUsd !== undefined && (
-          <FactRow label="Investment">{formatUsdCompact(investmentUsd)}</FactRow>
-        )}
-        {landAcres !== undefined && (
-          <FactRow label="Land">{landAcres.toLocaleString()} acres</FactRow>
-        )}
-        {jobsText && <FactRow label="Jobs">{jobsText}</FactRow>}
-      </dl>
-    </div>
+    <FactGroup title="Economics">
+      {investmentUsd !== undefined && (
+        <FactRow label="Investment">{formatUsdCompact(investmentUsd)}</FactRow>
+      )}
+      {landAcres !== undefined && (
+        <FactRow label="Land">{landAcres.toLocaleString()} acres</FactRow>
+      )}
+      {jobsText && <FactRow label="Jobs">{jobsText}</FactRow>}
+    </FactGroup>
   );
 }
 
@@ -231,8 +229,7 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
 
   return (
     <div>
-      <h3 className="text-sm font-semibold mb-3">Energy &amp; water</h3>
-      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+      <FactGroup title="Energy & water">
         {energySourceLabel && <FactRow label="Energy source">{energySourceLabel}</FactRow>}
         {energy?.utility && <FactRow label="Utility">{energy.utility}</FactRow>}
         {energy?.onSiteGenerationMw !== undefined && (
@@ -244,7 +241,7 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
         {water?.reportedMgd !== undefined && (
           <FactRow label="Water use">{water.reportedMgd.toLocaleString()} MGD</FactRow>
         )}
-      </dl>
+      </FactGroup>
       {energy?.notes && (
         <p className="mt-2 text-sm text-muted-foreground">{energy.notes}</p>
       )}
@@ -302,12 +299,15 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
 
   return (
     <div>
-      <h3 className="text-sm font-semibold mb-3">Air permit</h3>
-      <p className="text-sm text-muted-foreground mb-3">
-        Permitted annual limits from this facility&apos;s air permit — a
-        regulatory ceiling, not measured emissions.
-      </p>
-      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+      <FactGroup
+        title="Air permit"
+        intro={
+          <p className="text-sm text-muted-foreground mb-3">
+            Permitted annual limits from this facility&apos;s air permit — a
+            regulatory ceiling, not measured emissions.
+          </p>
+        }
+      >
         {pollutantEntries.map(({ key, value }) => (
           <FactRow key={key} label={pollutantLabels[key]}>
             {formatTonsPerYear(value)}
@@ -328,7 +328,7 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
           <FactRow label="Agency">{emissions.issuingAgency}</FactRow>
         )}
         {emissions.issuedDate && <FactRow label="Issued">{emissions.issuedDate}</FactRow>}
-      </dl>
+      </FactGroup>
       {emissions.notes && (
         <p className="mt-2 text-sm text-muted-foreground">{emissions.notes}</p>
       )}
@@ -428,21 +428,18 @@ function MiningGroup({ facility }: { facility: Facility }) {
   }
 
   return (
-    <div>
-      <h3 className="text-sm font-semibold mb-3">Mining</h3>
-      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-        {mining.hashRateThPerS !== undefined && (
-          <FactRow label="Hash rate">{mining.hashRateThPerS.toLocaleString()} TH/s</FactRow>
-        )}
-        {hardwareLabel && <FactRow label="Hardware">{hardwareLabel}</FactRow>}
-        {coolingLabel && <FactRow label="Cooling">{coolingLabel}</FactRow>}
-        {powerArrangementLabel && (
-          <FactRow label="Power arrangement">
-            <span className="capitalize">{powerArrangementLabel}</span>
-          </FactRow>
-        )}
-      </dl>
-    </div>
+    <FactGroup title="Mining">
+      {mining.hashRateThPerS !== undefined && (
+        <FactRow label="Hash rate">{mining.hashRateThPerS.toLocaleString()} TH/s</FactRow>
+      )}
+      {hardwareLabel && <FactRow label="Hardware">{hardwareLabel}</FactRow>}
+      {coolingLabel && <FactRow label="Cooling">{coolingLabel}</FactRow>}
+      {powerArrangementLabel && (
+        <FactRow label="Power arrangement">
+          <span className="capitalize">{powerArrangementLabel}</span>
+        </FactRow>
+      )}
+    </FactGroup>
   );
 }
 
@@ -464,22 +461,19 @@ function EnvironmentalGroup({ facility }: { facility: Facility }) {
     const waterStressLabel = waterStressLabels[waterStress] ?? waterStress;
 
     return (
-      <div>
-        <h3 className="text-sm font-semibold mb-3">Environmental</h3>
-        <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-          {pueDisplay && <FactRow label="PUE">{pueDisplay}</FactRow>}
-          {wue !== undefined && <FactRow label="WUE">{wue}</FactRow>}
-          {gridCarbonIntensityGCo2PerKwh !== undefined && (
-            <FactRow label="Grid carbon intensity">
-              {gridCarbonIntensityGCo2PerKwh.toLocaleString()} gCO2/kWh
-            </FactRow>
-          )}
-          {renewablePercent !== undefined && (
-            <FactRow label="Renewable">{renewablePercent}%</FactRow>
-          )}
-          <FactRow label="Water stress">{waterStressLabel}</FactRow>
-        </dl>
-      </div>
+      <FactGroup title="Environmental">
+        {pueDisplay && <FactRow label="PUE">{pueDisplay}</FactRow>}
+        {wue !== undefined && <FactRow label="WUE">{wue}</FactRow>}
+        {gridCarbonIntensityGCo2PerKwh !== undefined && (
+          <FactRow label="Grid carbon intensity">
+            {gridCarbonIntensityGCo2PerKwh.toLocaleString()} gCO2/kWh
+          </FactRow>
+        )}
+        {renewablePercent !== undefined && (
+          <FactRow label="Renewable">{renewablePercent}%</FactRow>
+        )}
+        <FactRow label="Water stress">{waterStressLabel}</FactRow>
+      </FactGroup>
     );
   }
 
@@ -492,15 +486,12 @@ function EnvironmentalGroup({ facility }: { facility: Facility }) {
   if (carbonIntensityProxy === undefined && !basisLabel) return null;
 
   return (
-    <div>
-      <h3 className="text-sm font-semibold mb-3">Environmental</h3>
-      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-        {carbonIntensityProxy !== undefined && (
-          <FactRow label="Carbon proxy">{carbonIntensityProxy}</FactRow>
-        )}
-        {basisLabel && <FactRow label="Carbon basis">{basisLabel}</FactRow>}
-      </dl>
-    </div>
+    <FactGroup title="Environmental">
+      {carbonIntensityProxy !== undefined && (
+        <FactRow label="Carbon proxy">{carbonIntensityProxy}</FactRow>
+      )}
+      {basisLabel && <FactRow label="Carbon basis">{basisLabel}</FactRow>}
+    </FactGroup>
   );
 }
 
@@ -530,11 +521,7 @@ function SubsidiesGroup({ facility }: { facility: Facility }) {
                   <span className="ml-2 tabular-nums">{amountDisplay}</span>
                 )}
               </div>
-              {metaParts.length > 0 && (
-                <div className="text-muted-foreground text-xs mt-0.5">
-                  {metaParts.join(" · ")}
-                </div>
-              )}
+              <MetaLine parts={metaParts} />
               {subsidy.sourceIndex !== undefined && (
                 <div className="mt-0.5">
                   <SourceLink sourceIndex={subsidy.sourceIndex} facility={facility} />
@@ -580,17 +567,20 @@ export function CivicImpactSection({ facility }: { facility: Facility }) {
   const headingId = `civic-impact-${facility.id}`;
 
   return (
-    <section aria-labelledby={headingId} className="space-y-6">
-      <h2 id={headingId} className="text-base font-semibold mb-4">
-        Civic impact
-      </h2>
-      <EconomicsGroup facility={facility} />
-      <EnergyWaterGroup facility={facility} />
-      <EmissionsGroup facility={facility} />
-      <MiningGroup facility={facility} />
-      <EnvironmentalGroup facility={facility} />
-      <SubsidiesGroup facility={facility} />
-      <CommunityGroup facility={facility} />
-    </section>
+    <>
+      <Separator />
+      <section aria-labelledby={headingId} className="space-y-6">
+        <h2 id={headingId} className="text-base font-semibold mb-4">
+          Civic impact
+        </h2>
+        <EconomicsGroup facility={facility} />
+        <EnergyWaterGroup facility={facility} />
+        <EmissionsGroup facility={facility} />
+        <MiningGroup facility={facility} />
+        <EnvironmentalGroup facility={facility} />
+        <SubsidiesGroup facility={facility} />
+        <CommunityGroup facility={facility} />
+      </section>
+    </>
   );
 }

@@ -22,13 +22,14 @@ import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MastheadFactGrid, MastheadFactRow } from "@/components/facility/fact-row";
 import { StatusTimeline } from "@/components/facility/status-timeline";
 import { ProvenancePanel } from "@/components/facility/provenance-panel";
 import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-dynamic";
-import { CivicImpactSection, hasCivicImpact } from "@/components/facility/civic-impact";
-import { StakeholdersSection, hasStakeholders } from "@/components/facility/stakeholders";
-import { PowerLinksSection, hasPowerLinks } from "@/components/facility/power-links";
-import { SitingContextSection, hasSitingContext } from "@/components/facility/siting-context";
+import { CivicImpactSection } from "@/components/facility/civic-impact";
+import { StakeholdersSection } from "@/components/facility/stakeholders";
+import { PowerLinksSection } from "@/components/facility/power-links";
+import { SitingContextSection } from "@/components/facility/siting-context";
 import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
@@ -242,88 +243,43 @@ export default async function FacilityPage({
         <h2 id="key-facts-heading" className="font-display text-xl text-foreground mb-4">
           Key facts
         </h2>
-        <dl className="neatline grid grid-cols-1 gap-x-8 gap-y-4 rounded-sm border border-border p-5 sm:grid-cols-2">
-          <div>
-            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              Location
-            </dt>
-            <dd className="mt-1 text-sm">
-              {facility.location.street ? (
-                <span className="block">{facility.location.street}</span>
-              ) : null}
-              {location}
-              {facility.location.postalCode ? ` ${facility.location.postalCode}` : ""}
-              {facility.location.county
-                ? ` · ${formatCountyLabel(facility.location.county, facility.location.state)}`
-                : ""}
-            </dd>
-          </div>
+        <MastheadFactGrid>
+          <MastheadFactRow label="Location">
+            {facility.location.street ? (
+              <span className="block">{facility.location.street}</span>
+            ) : null}
+            {location}
+            {facility.location.postalCode ? ` ${facility.location.postalCode}` : ""}
+            {facility.location.county
+              ? ` · ${formatCountyLabel(facility.location.county, facility.location.state)}`
+              : ""}
+          </MastheadFactRow>
 
-          <div>
-            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              Capacity
-            </dt>
-            <dd className="mt-1 text-sm font-mono tabular-nums">
-              {formatCapacity(facility)}
-            </dd>
-          </div>
+          <MastheadFactRow label="Capacity" valueClassName="mt-1 text-sm font-mono tabular-nums">
+            {formatCapacity(facility)}
+          </MastheadFactRow>
 
-          <div>
-            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              Powered by
-            </dt>
-            <dd className="mt-1 text-sm">
-              {facility.poweredBy ?? "—"}
-            </dd>
-          </div>
+          <MastheadFactRow label="Powered by">
+            {facility.poweredBy ?? "—"}
+          </MastheadFactRow>
 
-          <div>
-            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              Announced
-            </dt>
-            <dd className="mt-1 text-sm font-mono tabular-nums">
-              {facility.announcedDate ?? "—"}
-            </dd>
-          </div>
+          <MastheadFactRow label="Announced" valueClassName="mt-1 text-sm font-mono tabular-nums">
+            {facility.announcedDate ?? "—"}
+          </MastheadFactRow>
 
-          <div>
-            <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              Last updated
-            </dt>
-            <dd className="mt-1 text-sm font-mono tabular-nums">
-              <time dateTime={facility.lastUpdated}>{facility.lastUpdated}</time>
-            </dd>
-          </div>
-        </dl>
+          <MastheadFactRow label="Last updated" valueClassName="mt-1 text-sm font-mono tabular-nums">
+            <time dateTime={facility.lastUpdated}>{facility.lastUpdated}</time>
+          </MastheadFactRow>
+        </MastheadFactGrid>
       </section>
 
-      {hasSitingContext(facility) && (
-        <>
-          <Separator />
-          <SitingContextSection facility={facility} />
-        </>
-      )}
+      <SitingContextSection facility={facility} />
 
-      {(await hasPowerLinks(facility)) && (
-        <>
-          <Separator />
-          <PowerLinksSection facility={facility} />
-        </>
-      )}
+      <PowerLinksSection facility={facility} />
 
-      {hasCivicImpact(facility) && (
-        <>
-          <Separator />
-          <CivicImpactSection facility={facility} />
-        </>
-      )}
+      <CivicImpactSection facility={facility} />
 
-      {hasStakeholders(facility) && (
-        <>
-          <Separator />
-          <StakeholdersSection facility={facility} />
-        </>
-      )}
+      <StakeholdersSection facility={facility} />
 
       <Separator />
 

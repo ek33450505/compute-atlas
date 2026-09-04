@@ -3,10 +3,9 @@ import Link from "next/link";
 
 import type { Facility } from "@/lib/schema";
 import { formatCapacity, formatLocation } from "@/lib/format";
-import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb, type Crumb } from "@/components/breadcrumb";
+import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
 import { ShowMoreList } from "@/components/collection/show-more-list";
 
 export interface CollectionStat {
@@ -71,9 +70,9 @@ function CollectionFacilityCard({ facility }: { facility: Facility }) {
  * this component only renders, so it stays trivially testable without
  * mocking the data layer.
  *
- * Injects two JSON-LD graphs via the shared lib/seo builders: BreadcrumbList
- * (from `crumbs`) and ItemList (from `facilities`) — collection pages don't
- * hand-roll structured data.
+ * Injects the shared BreadcrumbList + ItemList JSON-LD pair via
+ * `CollectionJsonLd` (from `crumbs` and `facilities`) — collection pages
+ * don't hand-roll structured data.
  */
 export function CollectionPage({
   title,
@@ -85,25 +84,7 @@ export function CollectionPage({
 }: CollectionPageProps) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: breadcrumbJsonLdString(
-            crumbs.map((c) => ({ name: c.label, url: c.href }))
-          ),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: itemListJsonLdString(
-            facilities.map((f) => ({
-              name: f.name,
-              url: `${siteConfig.url}/facilities/${f.id}`,
-            }))
-          ),
-        }}
-      />
+      <CollectionJsonLd crumbs={crumbs} facilities={facilities} />
 
       <Breadcrumb items={crumbs} />
 

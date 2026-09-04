@@ -23,13 +23,14 @@ import path from "node:path";
 import { missingEnrichableFamilies } from "../../lib/enrichment-update";
 import type { Facility } from "../../lib/schema";
 import type { SourceCheckResult, SourceHealthReport } from "./check-sources";
+import { loadFacilities } from "./load-facilities";
 
 /**
  * Latest statusHistory date, or lastUpdated if statusHistory is empty/absent.
  * Defensive against raw (non-zod-parsed) JSON where `statusHistory` may be
  * missing entirely — the schema's `.default([])` only applies via `.parse()`,
  * and the CLI's file fallback reads `data/facilities.json` with a bare
- * `JSON.parse`, matching submit-candidates.ts's loadExistingFacilities.
+ * `JSON.parse`, matching the shared loadFacilities in ./load-facilities.ts.
  */
 function latestStatusDate(facility: Facility): string {
   const history = facility.statusHistory ?? [];
@@ -161,28 +162,6 @@ function parseArgs(argv: string[]): { state?: string } {
   return { state };
 }
 
-/**
- * Loads the live facility set — read API first, JSON file fallback.
- * Duplicated from scripts/discovery/submit-candidates.ts's
- * loadExistingFacilities (not refactored into a shared module — out of
- * scope for this feature, see plan Task A2).
- */
-async function loadExistingFacilities(baseUrl: string): Promise<Facility[]> {
-  try {
-    const res = await fetch(`${baseUrl}/api/facilities`);
-    if (res.ok) {
-      const body = (await res.json()) as { facilities: Facility[] };
-      return body.facilities;
-    }
-  } catch {
-    // fall through to file fallback
-  }
-
-  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
-  const raw = readFileSync(jsonPath, "utf-8");
-  return JSON.parse(raw) as Facility[];
-}
-
 async function main(): Promise<void> {
   const { state } = parseArgs(process.argv.slice(2));
   if (!state) {
@@ -191,7 +170,7 @@ async function main(): Promise<void> {
   }
 
   const baseUrl = process.env.API_BASE_URL ?? "http://localhost:3000";
-  const facilities = await loadExistingFacilities(baseUrl);
+  const facilities = await loadFacilities(baseUrl);
   const projection = projectExisting(facilities, state);
 
   const report = loadLatestSourceHealth();

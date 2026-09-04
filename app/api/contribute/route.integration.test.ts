@@ -128,7 +128,8 @@ describe("POST /api/contribute (public, unauthenticated happy path)", () => {
     }
 
     // A different leftmost x-forwarded-for entry on every request is exactly
-    // what defeated extractClientIp in production (see lib/rate-limit.ts's
+    // what defeated the naive leftmost-x-forwarded-for extraction
+    // lib/rate-limit.ts once had, in production (see lib/rate-limit.ts's
     // extractTrustedClientIp doc comment); cf-connecting-ip must still win.
     const res = await POST(
       req(validCreateBody, { "x-forwarded-for": "198.51.100.9", "cf-connecting-ip": trustedIp })

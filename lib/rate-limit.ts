@@ -13,24 +13,13 @@ import {
 export const RATE_LIMIT_MAX = 5;
 export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 
-export function extractClientIp(request: Request): string {
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  if (forwardedFor) {
-    const first = forwardedFor.split(",")[0]?.trim();
-    if (first) return first;
-  }
-  const realIp = request.headers.get("x-real-ip");
-  if (realIp) return realIp.trim();
-  return "unknown";
-}
-
 /**
- * Derives the client IP the way `extractClientIp` above deliberately does
- * NOT: on Vercel the leftmost `x-forwarded-for` entry is client-suppliable
- * (Vercel appends the real client IP rather than replacing one the client
- * already sent), so an attacker can rotate XFF per request to get a fresh
- * `ipHash` bucket every request and bypass any limiter keyed on
- * `extractClientIp`'s result entirely.
+ * Derives the client IP by avoiding the naive leftmost-x-forwarded-for
+ * extraction this module once had: on Vercel the leftmost `x-forwarded-for`
+ * entry is client-suppliable (Vercel appends the real client IP rather than
+ * replacing one the client already sent), so an attacker can rotate XFF per
+ * request to get a fresh `ipHash` bucket every request and bypass any
+ * limiter keyed on that naive extraction's result entirely.
  *
  * Precedence, most to least trusted:
  *  1. `cf-connecting-ip` — on the production path (Cloudflare in front of
@@ -54,8 +43,9 @@ export function extractClientIp(request: Request): string {
  *     proxy, on the same assumption), if neither of the above is present.
  *  4. A fixed sentinel ("unknown").
  *
- * Prefer this over `extractClientIp` for any path where a spoofed bucket
- * defeats the limiter's purpose — auth lockout, anything that sends email or
+ * Prefer this over the naive leftmost-x-forwarded-for extraction this module
+ * once had, for any path where a spoofed bucket defeats the limiter's
+ * purpose — auth lockout, anything that sends email or
  * costs money on every accepted request (e.g. the contact endpoint), durable
  * per-IP volume caps (e.g. the daily API-read gate), and the in-memory burst
  * limiter (`lib/api-rate-limit.ts`) guarding the read API's

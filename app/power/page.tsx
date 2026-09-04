@@ -10,12 +10,14 @@ import {
   getFacilitiesByWaterUsage,
   getCoolingTypeCounts,
 } from "@/lib/data";
-import { formatCapacity, formatLocation, formatMgd, formatPower, getFacilityMaxMw } from "@/lib/format";
+import { formatLocation, formatMgd, formatPower, sortByMaxMwDesc, countDisclosedCapacity } from "@/lib/format";
 import { ENERGY_SOURCE_ENTRIES, COOLING_TYPE_ENTRIES } from "@/lib/energy";
-import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { FacilityListRow } from "@/components/facility-list-row";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { PercentageBar } from "@/components/percentage-bar";
+import { SectionHeading } from "@/components/section-heading";
 import type { PowerGenerationFacility } from "@/lib/schema";
 import {
   GENERATION_TECHNOLOGY_ORDER,
@@ -64,21 +66,8 @@ export default async function PowerPage() {
     getFacilitiesByWaterUsage(),
     getCoolingTypeCounts(),
   ]);
-  const allProjects = [...projects].sort(
-    (a, b) =>
-      (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
-      a.name.localeCompare(b.name)
-  );
-
-  // stats.operationalMw/plannedMw (getGenerationStats) sum only non-cancelled
-  // projects, while stats.count is unfiltered — so this denominator must
-  // apply the same non-cancelled guard, not just "has a capacity figure at
-  // all", or the "N of M" line could silently drift from the population the
-  // sums above it actually cover. Same predicate as app/stats/page.tsx and
-  // app/crypto/page.tsx: getFacilityMaxMw is the canonical disclosure check.
-  const capacityDisclosedCount = allProjects.filter(
-    (f) => f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined
-  ).length;
+  const allProjects = [...projects].sort(sortByMaxMwDesc);
+  const capacityDisclosedCount = countDisclosedCapacity(allProjects);
 
   const technologyCounts = new Map<GenerationTechnology, number>();
   for (const f of allProjects) {
@@ -207,12 +196,7 @@ export default async function PowerPage() {
         className="space-y-6 border-t border-border pt-10"
       >
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § The buildout
-          </p>
-          <h2 id="buildout-heading" className="font-display text-2xl text-foreground">
-            What&apos;s being built
-          </h2>
+          <SectionHeading kicker="The buildout" id="buildout-heading" title="What's being built" />
         </div>
         <SurveyStatRow
           spacing="wide"
@@ -230,44 +214,17 @@ export default async function PowerPage() {
           ]}
         />
         <div className="space-y-4">
-          <div className="space-y-1.5">
-            <div className="flex items-baseline justify-between gap-2 text-sm">
-              <span className="text-foreground">Gas · planned</span>
-              <span className="font-mono tabular-nums text-muted-foreground">
-                {formatPower(buildout.fossilPlannedMw)}
-              </span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                aria-hidden="true"
-                className="h-full rounded-full"
-                style={{
-                  width: "100%",
-                  backgroundColor: "var(--primary)",
-                  opacity: 0.7,
-                }}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <div className="flex items-baseline justify-between gap-2 text-sm">
-              <span className="text-foreground">Non-fossil · planned</span>
-              <span className="font-mono tabular-nums text-muted-foreground">
-                {formatPower(buildout.nonFossilPlannedMw)}
-              </span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                aria-hidden="true"
-                className="h-full rounded-full"
-                style={{
-                  width: `${nonFossilBarPct.toFixed(2)}%`,
-                  backgroundColor: "var(--primary)",
-                  opacity: 0.35,
-                }}
-              />
-            </div>
-          </div>
+          <PercentageBar
+            label="Gas · planned"
+            valueLabel={formatPower(buildout.fossilPlannedMw)}
+            pct={100}
+          />
+          <PercentageBar
+            label="Non-fossil · planned"
+            valueLabel={formatPower(buildout.nonFossilPlannedMw)}
+            pct={nonFossilBarPct}
+            opacity={0.35}
+          />
         </div>
         <div className="max-w-2xl space-y-4">
           <p className="text-base leading-relaxed text-muted-foreground">
@@ -301,12 +258,7 @@ export default async function PowerPage() {
         className="space-y-8 border-t border-border pt-10"
       >
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § By offtaker
-          </p>
-          <h2 id="offtaker-heading" className="font-display text-2xl text-foreground">
-            Who&apos;s buying the power
-          </h2>
+          <SectionHeading kicker="By offtaker" id="offtaker-heading" title="Who's buying the power" />
         </div>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           {offtakerReporting} of the {offtakerTotal} tracked power-generation
@@ -326,25 +278,10 @@ export default async function PowerPage() {
               <ul className="divide-y divide-border">
                 {group.facilities.map((f) => (
                   <li key={f.id}>
-                    <Link
-                      href={`/facilities/${f.id}`}
-                      className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-                    >
-                      <span className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-sm text-foreground truncate">
-                          {f.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground truncate">
-                          {technologyLabel(f)} &middot; {formatLocation(f)}
-                        </span>
-                      </span>
-                      <span className="flex shrink-0 items-center gap-3">
-                        <StatusBadge status={f.status} />
-                        <span className="font-mono tabular-nums text-xs text-muted-foreground">
-                          {formatCapacity(f)}
-                        </span>
-                      </span>
-                    </Link>
+                    <FacilityListRow
+                      facility={f}
+                      secondary={<>{technologyLabel(f)} &middot; {formatLocation(f)}</>}
+                    />
                   </li>
                 ))}
               </ul>
@@ -360,36 +297,22 @@ export default async function PowerPage() {
         aria-labelledby="technology-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § By technology
-        </p>
-        <h2 id="technology-heading" className="font-display text-2xl text-foreground">
-          Technology mix
-        </h2>
+        <SectionHeading kicker="By technology" id="technology-heading" title="Technology mix" />
         <div className="space-y-4">
           {presentTechnologies.map((tech) => {
             const count = technologyCounts.get(tech) ?? 0;
             const pct = allProjects.length > 0 ? (count / allProjects.length) * 100 : 0;
             return (
-              <div key={tech} className="space-y-1.5">
-                <div className="flex items-baseline justify-between gap-2 text-sm">
-                  <span className="text-foreground">{GENERATION_TECHNOLOGY_LABELS[tech]}</span>
-                  <span className="font-mono tabular-nums text-muted-foreground">
+              <PercentageBar
+                key={tech}
+                label={GENERATION_TECHNOLOGY_LABELS[tech]}
+                valueLabel={
+                  <>
                     {count} &middot; {pct.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    aria-hidden="true"
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${pct.toFixed(2)}%`,
-                      backgroundColor: "var(--primary)",
-                      opacity: 0.7,
-                    }}
-                  />
-                </div>
-              </div>
+                  </>
+                }
+                pct={pct}
+              />
             );
           })}
         </div>
@@ -403,15 +326,7 @@ export default async function PowerPage() {
         className="space-y-6 border-t border-border pt-10"
       >
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § Energy source
-          </p>
-          <h2
-            id="energy-source-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            On-site generation vs. the grid
-          </h2>
+          <SectionHeading kicker="Energy source" id="energy-source-heading" title="On-site generation vs. the grid" />
         </div>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           Beyond the dedicated projects above, individual data centers and
@@ -432,25 +347,17 @@ export default async function PowerPage() {
                   ? (count / energySourceReporting) * 100
                   : 0;
               return (
-                <li key={key} className="space-y-1.5">
-                  <div className="flex items-baseline justify-between gap-2 text-sm">
-                    <span className="text-foreground">{label}</span>
-                    <span className="font-mono tabular-nums text-muted-foreground">
+                <PercentageBar
+                  key={key}
+                  as="li"
+                  label={label}
+                  valueLabel={
+                    <>
                       {count} &middot; {pct.toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                    <div
-                      aria-hidden="true"
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${pct.toFixed(2)}%`,
-                        backgroundColor: "var(--primary)",
-                        opacity: 0.7,
-                      }}
-                    />
-                  </div>
-                </li>
+                    </>
+                  }
+                  pct={pct}
+                />
               );
             })}
           </ul>
@@ -469,15 +376,7 @@ export default async function PowerPage() {
         className="space-y-6 border-t border-border pt-10"
       >
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § Water use
-          </p>
-          <h2
-            id="water-use-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            Facility-level water use
-          </h2>
+          <SectionHeading kicker="Water use" id="water-use-heading" title="Facility-level water use" />
         </div>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           Cooling water is one of the least-transparent civic costs of a data
@@ -539,25 +438,17 @@ export default async function PowerPage() {
                     ? (count / coolingTypeReporting) * 100
                     : 0;
                 return (
-                  <li key={key} className="space-y-1.5">
-                    <div className="flex items-baseline justify-between gap-2 text-sm">
-                      <span className="text-foreground">{label}</span>
-                      <span className="font-mono tabular-nums text-muted-foreground">
+                  <PercentageBar
+                    key={key}
+                    as="li"
+                    label={label}
+                    valueLabel={
+                      <>
                         {count} &middot; {pct.toFixed(0)}%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        aria-hidden="true"
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${pct.toFixed(2)}%`,
-                          backgroundColor: "var(--primary)",
-                          opacity: 0.7,
-                        }}
-                      />
-                    </div>
-                  </li>
+                      </>
+                    }
+                    pct={pct}
+                  />
                 );
               })}
             </ul>
@@ -572,34 +463,14 @@ export default async function PowerPage() {
         aria-labelledby="projects-heading"
         className="space-y-4 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Projects
-        </p>
-        <h2 id="projects-heading" className="font-display text-2xl text-foreground">
-          All projects
-        </h2>
+        <SectionHeading kicker="Projects" id="projects-heading" title="All projects" />
         <ul className="divide-y divide-border">
           {allProjects.map((f) => (
             <li key={f.id}>
-              <Link
-                href={`/facilities/${f.id}`}
-                className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-              >
-                <span className="flex flex-col gap-0.5 min-w-0">
-                  <span className="text-sm text-foreground truncate">
-                    {f.name}
-                  </span>
-                  <span className="text-xs text-muted-foreground truncate">
-                    {technologyLabel(f)} &middot; {formatLocation(f)}
-                  </span>
-                </span>
-                <span className="flex shrink-0 items-center gap-3">
-                  <StatusBadge status={f.status} />
-                  <span className="font-mono tabular-nums text-xs text-muted-foreground">
-                    {formatCapacity(f)}
-                  </span>
-                </span>
-              </Link>
+              <FacilityListRow
+                facility={f}
+                secondary={<>{technologyLabel(f)} &middot; {formatLocation(f)}</>}
+              />
             </li>
           ))}
         </ul>

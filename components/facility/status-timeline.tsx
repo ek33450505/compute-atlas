@@ -1,6 +1,5 @@
-import { ExternalLink } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
-import { safeExternalHref } from "@/lib/url";
+import { SourceAnchor } from "@/components/facility/fact-row";
 import type { StatusEvent, Source } from "@/lib/schema";
 
 interface StatusTimelineProps {
@@ -57,18 +56,7 @@ export function StatusTimeline({ history, sources }: StatusTimelineProps) {
                 <p className="text-sm text-muted-foreground">{event.note}</p>
               )}
 
-              {source && (
-                <a
-                  href={safeExternalHref(source.url)}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  aria-label={`${source.label} (opens in new tab)`}
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-                >
-                  <ExternalLink className="size-3" aria-hidden="true" />
-                  {source.label}
-                </a>
-              )}
+              {source && <SourceAnchor source={source} />}
             </div>
           </li>
         );

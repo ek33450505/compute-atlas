@@ -36,10 +36,11 @@ describe("extractTrustedClientIp", () => {
     expect(extractTrustedClientIp(headers)).toBe("203.0.113.9");
   });
 
-  // This is the whole point of `extractTrustedClientIp`: unlike
-  // `extractClientIp`, a spoofed LEFTMOST x-forwarded-for entry (the
-  // attacker-controllable one) must not change the derived IP — only the
-  // rightmost entry, appended by the trusted proxy, is trusted.
+  // This is the whole point of `extractTrustedClientIp`: unlike the naive
+  // leftmost-x-forwarded-for extraction this module once had, a spoofed
+  // LEFTMOST x-forwarded-for entry (the attacker-controllable one) must not
+  // change the derived IP — only the rightmost entry, appended by the
+  // trusted proxy, is trusted.
   it("ignores a spoofed leftmost x-forwarded-for entry", () => {
     const trusted = "203.0.113.9";
     const spoofedOnce = new Headers({

@@ -15,6 +15,35 @@ export function getFacilityMaxMw(f: Facility): number | undefined {
 }
 
 /**
+ * Count of facilities that disclose a capacity figure, restricted to
+ * non-cancelled facilities. Shared "N of M disclose capacity" denominator
+ * used by /power, /crypto, and /stats. The non-cancelled restriction matters
+ * whenever the caller's own operational/planned MW sums (e.g.
+ * getGenerationStats, getCryptoMiningStats) also exclude cancelled
+ * facilities — without it, a cancelled record that happens to disclose a
+ * figure could inflate this count relative to the population those sums
+ * actually cover, making a "disclosed for N of M" sentence false.
+ */
+export function countDisclosedCapacity(facilities: Facility[]): number {
+  return facilities.filter(
+    (f) => f.status !== "cancelled" && getFacilityMaxMw(f) !== undefined
+  ).length;
+}
+
+/**
+ * Comparator for `Array.prototype.sort`: orders facilities by disclosed
+ * capacity (the larger of operational/planned, via `getFacilityMaxMw`)
+ * descending, undisclosed capacity sorting last, ties broken alphabetically
+ * by name. Shared by /power and /crypto's "all projects/facilities" lists.
+ */
+export function sortByMaxMwDesc(a: Facility, b: Facility): number {
+  return (
+    (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+/**
  * Returns a human-readable capacity string:
  * - "150 MW"              when operational capacity is present
  * - "1,200 MW planned"    when only planned capacity is present

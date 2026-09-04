@@ -9,8 +9,9 @@
  * Writes a report to discovery-logs/source-health-<timestamp>.json.
  *
  * Deliberately does NOT import submit-candidates.ts or lib/facility-write.ts.
- * The CLI facility-loading fallback (loadExistingFacilities) is duplicated
- * from submit-candidates.ts rather than shared, per task scope.
+ * The CLI facility-loading fallback comes from the shared leaf
+ * ./load-facilities.ts (see that file's header for why it's a leaf, not an
+ * import of submit-candidates.ts itself).
  *
  * The SSRF guard, retry/backoff constants, and bounded-concurrency runner are
  * shared with the candidate-source verification path and live in
@@ -19,7 +20,7 @@
  * Uses relative imports throughout — tsx does not resolve the `@/*` path
  * alias, matching scripts/seed.ts and scripts/discovery/submit-candidates.ts.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -32,6 +33,7 @@ import {
   parseRetryAfterMs,
   runWithConcurrency,
 } from "./net-guard";
+import { loadFacilities } from "./load-facilities";
 import type { Facility } from "../../lib/schema";
 
 // --- types -----------------------------------------------------------------
@@ -209,25 +211,6 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
 const DEFAULT_CONCURRENCY = 5;
 const DEFAULT_TIMEOUT_MS = 10_000;
 
-/** Fetches the live facility set — read API first, JSON file fallback.
- * Duplicated from submit-candidates.ts:288-302 (loadExistingFacilities) by
- * design — this script must not import submit-candidates.ts. */
-async function loadExistingFacilities(baseUrl: string): Promise<Facility[]> {
-  try {
-    const res = await fetch(`${baseUrl}/api/facilities`);
-    if (res.ok) {
-      const body = (await res.json()) as { facilities: Facility[] };
-      return body.facilities;
-    }
-  } catch {
-    // fall through to file fallback
-  }
-
-  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
-  const raw = readFileSync(jsonPath, "utf-8");
-  return JSON.parse(raw) as Facility[];
-}
-
 /** Machine-consumable source-health report envelope written to disk. */
 export interface SourceHealthReport {
   generatedAt: string;
@@ -281,7 +264,7 @@ async function main(): Promise<void> {
   const concurrency = Number(process.env.CHECK_SOURCES_CONCURRENCY) || DEFAULT_CONCURRENCY;
   const timeoutMs = Number(process.env.CHECK_SOURCES_TIMEOUT_MS) || DEFAULT_TIMEOUT_MS;
 
-  const facilities = await loadExistingFacilities(baseUrl);
+  const facilities = await loadFacilities(baseUrl);
   const results = await checkSources(facilities, { fetchImpl: fetch, concurrency, timeoutMs });
   const logPath = writeReport(results);
   console.log(`${summarize(results)} -> ${logPath}`);
