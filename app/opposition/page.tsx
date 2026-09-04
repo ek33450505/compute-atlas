@@ -15,6 +15,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow, type SurveyStat } from "@/components/survey-stat-row";
+import { PercentageBar } from "@/components/percentage-bar";
 
 export const revalidate = 3600;
 
@@ -266,27 +267,16 @@ export default async function OppositionPage() {
                 const count = counts[status];
                 const pct = total > 0 ? (count / total) * 100 : 0;
                 return (
-                  <div key={status} className="space-y-1.5">
-                    <div className="flex items-baseline justify-between gap-2 text-sm">
-                      <span className="text-foreground">
-                        {COMMUNITY_RECEPTION_META[status].label}
-                      </span>
-                      <span className="font-mono tabular-nums text-muted-foreground">
+                  <PercentageBar
+                    key={status}
+                    label={COMMUNITY_RECEPTION_META[status].label}
+                    valueLabel={
+                      <>
                         {count} &middot; {pct.toFixed(0)}%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        aria-hidden="true"
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${pct.toFixed(2)}%`,
-                          backgroundColor: "var(--primary)",
-                          opacity: 0.7,
-                        }}
-                      />
-                    </div>
-                  </div>
+                      </>
+                    }
+                    pct={pct}
+                  />
                 );
               })}
             </div>

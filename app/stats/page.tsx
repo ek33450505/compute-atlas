@@ -25,6 +25,7 @@ import { aiClassificationEnum } from "@/lib/schema";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { PercentageBar } from "@/components/percentage-bar";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS, getFacilityMaxMw, formatEditionDate } from "@/lib/format";
 import { getDatasetEdition } from "@/lib/dataset-edition";
 
@@ -223,27 +224,16 @@ export default async function StatsPage() {
             const count = facilityTypeCounts[key];
             const pct = total > 0 ? (count / total) * 100 : 0;
             return (
-              <div key={key} className="space-y-1.5">
-                <div className="flex items-baseline justify-between gap-2 text-sm">
-                  <span className="text-foreground">
-                    {FACILITY_TYPE_META[key].label}
-                  </span>
-                  <span className="font-mono tabular-nums text-muted-foreground">
+              <PercentageBar
+                key={key}
+                label={FACILITY_TYPE_META[key].label}
+                valueLabel={
+                  <>
                     {count} &middot; {pct.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    aria-hidden="true"
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${pct.toFixed(2)}%`,
-                      backgroundColor: "var(--primary)",
-                      opacity: 0.7,
-                    }}
-                  />
-                </div>
-              </div>
+                  </>
+                }
+                pct={pct}
+              />
             );
           })}
         </div>
@@ -297,25 +287,16 @@ export default async function StatsPage() {
                       ? (count / energySourceReporting) * 100
                       : 0;
                   return (
-                    <div key={key} className="space-y-1.5">
-                      <div className="flex items-baseline justify-between gap-2 text-sm">
-                        <span className="text-foreground">{label}</span>
-                        <span className="font-mono tabular-nums text-muted-foreground">
+                    <PercentageBar
+                      key={key}
+                      label={label}
+                      valueLabel={
+                        <>
                           {count} &middot; {pct.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                        <div
-                          aria-hidden="true"
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${pct.toFixed(2)}%`,
-                            backgroundColor: "var(--primary)",
-                            opacity: 0.7,
-                          }}
-                        />
-                      </div>
-                    </div>
+                        </>
+                      }
+                      pct={pct}
+                    />
                   );
                 })}
               </div>
@@ -392,25 +373,7 @@ export default async function StatsPage() {
                 const pct =
                   coolingSum > 0 ? (count / coolingSum) * 100 : 0;
                 return (
-                  <div key={key} className="space-y-1.5">
-                    <div className="flex items-baseline justify-between gap-2 text-sm">
-                      <span className="text-foreground">{label}</span>
-                      <span className="font-mono tabular-nums text-muted-foreground">
-                        {count}
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        aria-hidden="true"
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${pct.toFixed(2)}%`,
-                          backgroundColor: "var(--primary)",
-                          opacity: 0.7,
-                        }}
-                      />
-                    </div>
-                  </div>
+                  <PercentageBar key={key} label={label} valueLabel={count} pct={pct} />
                 );
               })}
             </div>
@@ -439,26 +402,19 @@ export default async function StatsPage() {
             const count = statusCounts[status];
             const pct = total > 0 ? (count / total) * 100 : 0;
             return (
-              <div key={status} className="space-y-1.5">
-                <div className="flex items-baseline justify-between gap-2 text-sm">
-                  <span className="text-foreground">
-                    {STATUS_META[status].label}
-                  </span>
-                  <span className="font-mono tabular-nums text-muted-foreground">
+              <PercentageBar
+                key={status}
+                label={STATUS_META[status].label}
+                valueLabel={
+                  <>
                     {count} &middot; {pct.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    aria-hidden="true"
-                    className="h-full rounded-full transition-all"
-                    style={{
-                      width: `${pct.toFixed(2)}%`,
-                      backgroundColor: getStatusColor(status),
-                    }}
-                  />
-                </div>
-              </div>
+                  </>
+                }
+                pct={pct}
+                color={getStatusColor(status)}
+                opacity={1}
+                transition
+              />
             );
           })}
         </div>
@@ -512,27 +468,16 @@ export default async function StatsPage() {
             const count = communityCounts[key];
             const pct = communityReporting > 0 ? (count / communityReporting) * 100 : 0;
             return (
-              <div key={key} className="space-y-1.5">
-                <div className="flex items-baseline justify-between gap-2 text-sm">
-                  <span className="text-foreground">
-                    {COMMUNITY_RECEPTION_META[key].label}
-                  </span>
-                  <span className="font-mono tabular-nums text-muted-foreground">
+              <PercentageBar
+                key={key}
+                label={COMMUNITY_RECEPTION_META[key].label}
+                valueLabel={
+                  <>
                     {count} &middot; {pct.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    aria-hidden="true"
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${pct.toFixed(2)}%`,
-                      backgroundColor: "var(--primary)",
-                      opacity: 0.7,
-                    }}
-                  />
-                </div>
-              </div>
+                  </>
+                }
+                pct={pct}
+              />
             );
           })}
         </div>
@@ -567,25 +512,16 @@ export default async function StatsPage() {
             const count = coverage[key];
             const pct = total > 0 ? (count / total) * 100 : 0;
             return (
-              <div key={key} className="space-y-1.5">
-                <div className="flex items-baseline justify-between gap-2 text-sm">
-                  <span className="text-foreground">{label}</span>
-                  <span className="font-mono tabular-nums text-muted-foreground">
+              <PercentageBar
+                key={key}
+                label={label}
+                valueLabel={
+                  <>
                     {count} / {total} &middot; {pct.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    aria-hidden="true"
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${pct.toFixed(2)}%`,
-                      backgroundColor: "var(--primary)",
-                      opacity: 0.7,
-                    }}
-                  />
-                </div>
-              </div>
+                  </>
+                }
+                pct={pct}
+              />
             );
           })}
         </div>

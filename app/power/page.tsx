@@ -16,6 +16,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { PercentageBar } from "@/components/percentage-bar";
 import type { PowerGenerationFacility } from "@/lib/schema";
 import {
   GENERATION_TECHNOLOGY_ORDER,
@@ -230,44 +231,17 @@ export default async function PowerPage() {
           ]}
         />
         <div className="space-y-4">
-          <div className="space-y-1.5">
-            <div className="flex items-baseline justify-between gap-2 text-sm">
-              <span className="text-foreground">Gas · planned</span>
-              <span className="font-mono tabular-nums text-muted-foreground">
-                {formatPower(buildout.fossilPlannedMw)}
-              </span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                aria-hidden="true"
-                className="h-full rounded-full"
-                style={{
-                  width: "100%",
-                  backgroundColor: "var(--primary)",
-                  opacity: 0.7,
-                }}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <div className="flex items-baseline justify-between gap-2 text-sm">
-              <span className="text-foreground">Non-fossil · planned</span>
-              <span className="font-mono tabular-nums text-muted-foreground">
-                {formatPower(buildout.nonFossilPlannedMw)}
-              </span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                aria-hidden="true"
-                className="h-full rounded-full"
-                style={{
-                  width: `${nonFossilBarPct.toFixed(2)}%`,
-                  backgroundColor: "var(--primary)",
-                  opacity: 0.35,
-                }}
-              />
-            </div>
-          </div>
+          <PercentageBar
+            label="Gas · planned"
+            valueLabel={formatPower(buildout.fossilPlannedMw)}
+            pct={100}
+          />
+          <PercentageBar
+            label="Non-fossil · planned"
+            valueLabel={formatPower(buildout.nonFossilPlannedMw)}
+            pct={nonFossilBarPct}
+            opacity={0.35}
+          />
         </div>
         <div className="max-w-2xl space-y-4">
           <p className="text-base leading-relaxed text-muted-foreground">
@@ -371,25 +345,16 @@ export default async function PowerPage() {
             const count = technologyCounts.get(tech) ?? 0;
             const pct = allProjects.length > 0 ? (count / allProjects.length) * 100 : 0;
             return (
-              <div key={tech} className="space-y-1.5">
-                <div className="flex items-baseline justify-between gap-2 text-sm">
-                  <span className="text-foreground">{GENERATION_TECHNOLOGY_LABELS[tech]}</span>
-                  <span className="font-mono tabular-nums text-muted-foreground">
+              <PercentageBar
+                key={tech}
+                label={GENERATION_TECHNOLOGY_LABELS[tech]}
+                valueLabel={
+                  <>
                     {count} &middot; {pct.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    aria-hidden="true"
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${pct.toFixed(2)}%`,
-                      backgroundColor: "var(--primary)",
-                      opacity: 0.7,
-                    }}
-                  />
-                </div>
-              </div>
+                  </>
+                }
+                pct={pct}
+              />
             );
           })}
         </div>
@@ -432,25 +397,17 @@ export default async function PowerPage() {
                   ? (count / energySourceReporting) * 100
                   : 0;
               return (
-                <li key={key} className="space-y-1.5">
-                  <div className="flex items-baseline justify-between gap-2 text-sm">
-                    <span className="text-foreground">{label}</span>
-                    <span className="font-mono tabular-nums text-muted-foreground">
+                <PercentageBar
+                  key={key}
+                  as="li"
+                  label={label}
+                  valueLabel={
+                    <>
                       {count} &middot; {pct.toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                    <div
-                      aria-hidden="true"
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${pct.toFixed(2)}%`,
-                        backgroundColor: "var(--primary)",
-                        opacity: 0.7,
-                      }}
-                    />
-                  </div>
-                </li>
+                    </>
+                  }
+                  pct={pct}
+                />
               );
             })}
           </ul>
@@ -539,25 +496,17 @@ export default async function PowerPage() {
                     ? (count / coolingTypeReporting) * 100
                     : 0;
                 return (
-                  <li key={key} className="space-y-1.5">
-                    <div className="flex items-baseline justify-between gap-2 text-sm">
-                      <span className="text-foreground">{label}</span>
-                      <span className="font-mono tabular-nums text-muted-foreground">
+                  <PercentageBar
+                    key={key}
+                    as="li"
+                    label={label}
+                    valueLabel={
+                      <>
                         {count} &middot; {pct.toFixed(0)}%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        aria-hidden="true"
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${pct.toFixed(2)}%`,
-                          backgroundColor: "var(--primary)",
-                          opacity: 0.7,
-                        }}
-                      />
-                    </div>
-                  </li>
+                      </>
+                    }
+                    pct={pct}
+                  />
                 );
               })}
             </ul>
