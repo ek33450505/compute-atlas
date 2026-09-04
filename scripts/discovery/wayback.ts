@@ -1,10 +1,10 @@
 /**
  * Wayback Machine availability lookup, shared by BOTH the discovery lane
- * (`verify-source.ts`) and the verification lane (`verify-fields.ts`, wired
- * in a follow-up). This module only answers "is there a snapshot, and where"
- * — the *decision* about whether a snapshot is usable (whether to fall back
- * to it, how to weight its result, what outcome an unreadable snapshot
- * produces) deliberately stays in each caller.
+ * (`verify-source.ts`) and the verification lane (`verify-fields.ts`). This
+ * module only answers "is there a snapshot, and where" — the *decision*
+ * about whether a snapshot is usable (whether to fall back to it, how to
+ * weight its result, what outcome an unreadable snapshot produces)
+ * deliberately stays in each caller.
  */
 
 // --- Wayback fallback ----------------------------------------------------
