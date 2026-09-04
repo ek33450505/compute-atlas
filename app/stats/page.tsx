@@ -31,7 +31,7 @@ import { getDatasetEdition } from "@/lib/dataset-edition";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Statistics",
+  title: "Dataset coverage and completeness",
   description:
     "Coverage and completeness of the Compute Atlas dataset — facilities tracked, lifecycle status, civic-data coverage, and evidence quality across the U.S. grid-scale compute buildout.",
   alternates: { canonical: "/stats" },

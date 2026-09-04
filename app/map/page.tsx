@@ -7,7 +7,7 @@ import { Explorer } from "@/components/explorer/explorer";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Map",
+  title: "Map of data centers, mining and power sites",
   description:
     "Interactive map of the U.S. compute buildout — traditional and AI-specific data centers, crypto-mining operations, and the dedicated power generation built to supply them. Filter by status, state, operator, and capacity.",
   alternates: { canonical: "/map" },
