@@ -626,6 +626,25 @@ else
   fi
 fi
 
+# --- PII retention prune (global, after all discovery/enrichment writes) ---
+# Deletes or redacts rows that have aged out of the documented PII retention
+# windows. scripts/retention-prune.ts is the single source of truth for those
+# windows — do not duplicate the numbers here. The script is back-up-or-abort
+# PER TABLE: every mutation is preceded by a JSON-lines backup written under
+# discovery-logs/retention-backups/, and a table whose backup write fails has
+# its mutation skipped rather than risked. Skipped entirely on a dry run,
+# same rationale as the enrichment lane above — this lane WRITES.
+if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
+  log "DISCOVERY_DRY_RUN=true — skipping retention-prune lane"
+else
+  log "pruning expired PII per retention policy"
+  if ! npx tsx --env-file=.env.local scripts/retention-prune.ts --apply \
+    >"$LOG_DIR/retention-prune-$(date '+%Y%m%dT%H%M%S').log" 2>>"$LOG_DIR/retention-prune.err"; then
+    log "WARN: retention prune failed — continuing (see retention-prune.err)"
+    FAILURES+=("retention: prune failed")
+  fi
+fi
+
 log "discovery batch complete: states=${BATCH_STATES[*]} run_ids=${RUN_IDS[*]}"
 
 # Heartbeat: a visible "last real run" marker so a silent launchd skip/crash is
