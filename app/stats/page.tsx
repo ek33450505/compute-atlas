@@ -26,6 +26,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
+import { SectionHeading } from "@/components/section-heading";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS, getFacilityMaxMw, formatEditionDate } from "@/lib/format";
 import { getDatasetEdition } from "@/lib/dataset-edition";
 
@@ -204,15 +205,7 @@ export default async function StatsPage() {
         aria-labelledby="facility-type-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § By type
-        </p>
-        <h2
-          id="facility-type-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Facility type
-        </h2>
+        <SectionHeading kicker="By type" id="facility-type-heading" title="Facility type" />
         <p className="text-sm leading-relaxed text-muted-foreground">
           Most tracked sites are data centers; a smaller set are large-scale
           crypto mining facilities, which draw on the same grid capacity; and a
@@ -246,15 +239,7 @@ export default async function StatsPage() {
         aria-labelledby="energy-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Energy
-        </p>
-        <h2
-          id="energy-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Power source
-        </h2>
+        <SectionHeading kicker="Energy" id="energy-heading" title="Power source" />
 
         {(() => {
           const energySourceEntries: { key: EnergySource; label: string }[] = [
@@ -312,15 +297,7 @@ export default async function StatsPage() {
         aria-labelledby="water-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Water use
-        </p>
-        <h2
-          id="water-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Water use
-        </h2>
+        <SectionHeading kicker="Water use" id="water-heading" title="Water use" />
 
         {/* Lead figure */}
         <div className="flex flex-col gap-1">
@@ -388,15 +365,7 @@ export default async function StatsPage() {
         aria-labelledby="status-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § By status
-        </p>
-        <h2
-          id="status-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Lifecycle status
-        </h2>
+        <SectionHeading kicker="By status" id="status-heading" title="Lifecycle status" />
         <div className="space-y-4">
           {STATUS_ORDER.map((status) => {
             const count = statusCounts[status];
@@ -427,15 +396,7 @@ export default async function StatsPage() {
         aria-labelledby="community-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Community reception
-        </p>
-        <h2
-          id="community-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Community reception
-        </h2>
+        <SectionHeading kicker="Community reception" id="community-heading" title="Community reception" />
 
         {/* Lead figure */}
         <div className="flex flex-col gap-1">
@@ -490,15 +451,7 @@ export default async function StatsPage() {
         aria-labelledby="coverage-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Data coverage
-        </p>
-        <h2
-          id="coverage-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Civic-data coverage
-        </h2>
+        <SectionHeading kicker="Data coverage" id="coverage-heading" title="Civic-data coverage" />
         <p className="text-sm leading-relaxed text-muted-foreground">
           Each figure counts facilities carrying at least one{" "}
           <strong className="font-medium text-foreground">sourced</strong> value
@@ -534,15 +487,7 @@ export default async function StatsPage() {
         aria-labelledby="evidence-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Evidence quality
-        </p>
-        <h2
-          id="evidence-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Evidence quality
-        </h2>
+        <SectionHeading kicker="Evidence quality" id="evidence-heading" title="Evidence quality" />
         <p className="text-sm leading-relaxed text-muted-foreground">
           The atlas follows the &ldquo;a source for every record&rdquo; standard
           — every field traces back to a public source. AI classification and
@@ -607,15 +552,7 @@ export default async function StatsPage() {
           aria-labelledby="geography-heading"
           className="space-y-4 border-t border-border pt-10"
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § Geography
-          </p>
-          <h2
-            id="geography-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            Top states
-          </h2>
+          <SectionHeading kicker="Geography" id="geography-heading" title="Top states" />
           <p className="text-sm text-muted-foreground">
             {stats.states} state{stats.states !== 1 ? "s" : ""}{" "}
             covered &middot; top 10 by
@@ -643,15 +580,7 @@ export default async function StatsPage() {
           aria-labelledby="operators-heading"
           className="space-y-4 border-t border-border pt-10"
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § Operators
-          </p>
-          <h2
-            id="operators-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            Top operators
-          </h2>
+          <SectionHeading kicker="Operators" id="operators-heading" title="Top operators" />
           <p className="text-sm text-muted-foreground">Top 10 by facility count</p>
           <ul className="space-y-2 text-sm">
             {topOperators.map(({ operator, count }) => (

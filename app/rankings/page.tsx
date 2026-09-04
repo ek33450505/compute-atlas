@@ -16,6 +16,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { SectionHeading } from "@/components/section-heading";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -148,12 +149,7 @@ export default async function RankingsPage() {
             className="space-y-4 border-t border-border pt-10"
           >
             <div className="space-y-2">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                § Biggest projects
-              </p>
-              <h2 id="projects-heading" className="font-display text-2xl text-foreground">
-                Biggest data center projects
-              </h2>
+              <SectionHeading kicker="Biggest projects" id="projects-heading" title="Biggest data center projects" />
             </div>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
               Individual facilities ranked by tracked capacity — planned
@@ -201,12 +197,7 @@ export default async function RankingsPage() {
             className="space-y-4 border-t border-border pt-10"
           >
             <div className="space-y-2">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                § Operators with the most disclosed capacity
-              </p>
-              <h2 id="operators-heading" className="font-display text-2xl text-foreground">
-                Operators with the most disclosed capacity
-              </h2>
+              <SectionHeading kicker="Operators with the most disclosed capacity" id="operators-heading" title="Operators with the most disclosed capacity" />
             </div>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
               Operators ranked by combined capacity — operational plus
@@ -253,12 +244,7 @@ export default async function RankingsPage() {
             className="space-y-4 border-t border-border pt-10"
           >
             <div className="space-y-2">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                § States with the most disclosed capacity
-              </p>
-              <h2 id="states-heading" className="font-display text-2xl text-foreground">
-                States with the most disclosed capacity
-              </h2>
+              <SectionHeading kicker="States with the most disclosed capacity" id="states-heading" title="States with the most disclosed capacity" />
             </div>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
               States ranked by combined capacity — operational plus planned —

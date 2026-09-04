@@ -24,6 +24,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
+import { SectionHeading } from "@/components/section-heading";
 import { aiClassificationEnum } from "@/lib/schema";
 
 export const revalidate = false;
@@ -226,15 +227,7 @@ export default async function StatePage({
           aria-labelledby="facility-type-heading"
           className="space-y-6 border-t border-border pt-10"
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § By type
-          </p>
-          <h2
-            id="facility-type-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            Facility type
-          </h2>
+          <SectionHeading kicker="By type" id="facility-type-heading" title="Facility type" />
           <div className="space-y-4">
             {FACILITY_TYPE_ORDER.filter((key) => summary.byType[key] > 0).map(
               (key) => {
@@ -265,12 +258,7 @@ export default async function StatePage({
         aria-labelledby="status-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § By status
-        </p>
-        <h2 id="status-heading" className="font-display text-2xl text-foreground">
-          Lifecycle status
-        </h2>
+        <SectionHeading kicker="By status" id="status-heading" title="Lifecycle status" />
         <div className="space-y-4">
           {STATUS_ORDER.filter((status) => summary.byStatus[status] > 0).map(
             (status) => {
@@ -303,15 +291,7 @@ export default async function StatePage({
         aria-labelledby="community-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Community reception
-        </p>
-        <h2
-          id="community-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Community reception
-        </h2>
+        <SectionHeading kicker="Community reception" id="community-heading" title="Community reception" />
 
         {summary.communityReporting > 0 ? (
           <>
@@ -373,15 +353,7 @@ export default async function StatePage({
           aria-labelledby="ai-classification-heading"
           className="space-y-6 border-t border-border pt-10"
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § AI classification
-          </p>
-          <h2
-            id="ai-classification-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            AI-classified facilities
-          </h2>
+          <SectionHeading kicker="AI classification" id="ai-classification-heading" title="AI-classified facilities" />
           <div className="flex flex-col gap-1">
             <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
               {totalAiClassified}
@@ -431,15 +403,7 @@ export default async function StatePage({
         aria-labelledby="operators-heading"
         className="space-y-4 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Operators
-        </p>
-        <h2
-          id="operators-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Operators
-        </h2>
+        <SectionHeading kicker="Operators" id="operators-heading" title="Operators" />
         <ul className="space-y-2 text-sm">
           {displayedOperators.map(({ operator, count }) => (
             <li key={operator} className="flex items-baseline justify-between gap-2">
@@ -466,15 +430,7 @@ export default async function StatePage({
         aria-labelledby="facilities-heading"
         className="space-y-4 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Facilities
-        </p>
-        <h2
-          id="facilities-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Facilities in {stateName}
-        </h2>
+        <SectionHeading kicker="Facilities" id="facilities-heading" title={<>Facilities in {stateName}</>} />
         <ul className="divide-y divide-border">
           {facilities.map((f) => (
             <li key={f.id}>

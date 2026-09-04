@@ -16,6 +16,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow, type SurveyStat } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
+import { SectionHeading } from "@/components/section-heading";
 
 export const revalidate = 3600;
 
@@ -141,12 +142,7 @@ export default async function OppositionPage() {
               aria-labelledby="notable-cases-heading"
               className="space-y-6 border-t border-border pt-10"
             >
-              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                § Notable 2026 cases
-              </p>
-              <h2 id="notable-cases-heading" className="font-display text-2xl text-foreground">
-                Notable 2026 cases
-              </h2>
+              <SectionHeading kicker="Notable 2026 cases" id="notable-cases-heading" title="Notable 2026 cases" />
               <p className="max-w-2xl text-base text-muted-foreground">
                 Opposition to data centers has become a national trend in 2026:
                 Good Jobs First counted 833 active community opposition groups
@@ -194,12 +190,7 @@ export default async function OppositionPage() {
               aria-labelledby="defeated-heading"
               className="space-y-6 border-t border-border pt-10"
             >
-              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                § Withdrawn or defeated
-              </p>
-              <h2 id="defeated-heading" className="font-display text-2xl text-foreground">
-                Withdrawn or defeated
-              </h2>
+              <SectionHeading kicker="Withdrawn or defeated" id="defeated-heading" title="Withdrawn or defeated" />
               <p className="max-w-2xl text-base text-muted-foreground">
                 {defeatedProjects.length} cancelled{" "}
                 {defeatedProjects.length === 1 ? "project" : "projects"} in Compute
@@ -256,12 +247,7 @@ export default async function OppositionPage() {
             aria-labelledby="reception-heading"
             className="space-y-6 border-t border-border pt-10"
           >
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              § By reception
-            </p>
-            <h2 id="reception-heading" className="font-display text-2xl text-foreground">
-              By reception
-            </h2>
+            <SectionHeading kicker="By reception" id="reception-heading" title="By reception" />
             <div className="space-y-4">
               {FRICTION_ORDER.map((status) => {
                 const count = counts[status];
@@ -289,12 +275,7 @@ export default async function OppositionPage() {
             aria-labelledby="sites-heading"
             className="space-y-8 border-t border-border pt-10"
           >
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              § The sites
-            </p>
-            <h2 id="sites-heading" className="font-display text-2xl text-foreground">
-              The sites
-            </h2>
+            <SectionHeading kicker="The sites" id="sites-heading" title="The sites" />
             <div className="space-y-8">
               {groups.map((group) => (
                 <div key={group.status} className="space-y-3">

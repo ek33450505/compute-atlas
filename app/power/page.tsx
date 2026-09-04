@@ -17,6 +17,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
+import { SectionHeading } from "@/components/section-heading";
 import type { PowerGenerationFacility } from "@/lib/schema";
 import {
   GENERATION_TECHNOLOGY_ORDER,
@@ -208,12 +209,7 @@ export default async function PowerPage() {
         className="space-y-6 border-t border-border pt-10"
       >
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § The buildout
-          </p>
-          <h2 id="buildout-heading" className="font-display text-2xl text-foreground">
-            What&apos;s being built
-          </h2>
+          <SectionHeading kicker="The buildout" id="buildout-heading" title="What's being built" />
         </div>
         <SurveyStatRow
           spacing="wide"
@@ -275,12 +271,7 @@ export default async function PowerPage() {
         className="space-y-8 border-t border-border pt-10"
       >
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § By offtaker
-          </p>
-          <h2 id="offtaker-heading" className="font-display text-2xl text-foreground">
-            Who&apos;s buying the power
-          </h2>
+          <SectionHeading kicker="By offtaker" id="offtaker-heading" title="Who's buying the power" />
         </div>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           {offtakerReporting} of the {offtakerTotal} tracked power-generation
@@ -334,12 +325,7 @@ export default async function PowerPage() {
         aria-labelledby="technology-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § By technology
-        </p>
-        <h2 id="technology-heading" className="font-display text-2xl text-foreground">
-          Technology mix
-        </h2>
+        <SectionHeading kicker="By technology" id="technology-heading" title="Technology mix" />
         <div className="space-y-4">
           {presentTechnologies.map((tech) => {
             const count = technologyCounts.get(tech) ?? 0;
@@ -368,15 +354,7 @@ export default async function PowerPage() {
         className="space-y-6 border-t border-border pt-10"
       >
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § Energy source
-          </p>
-          <h2
-            id="energy-source-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            On-site generation vs. the grid
-          </h2>
+          <SectionHeading kicker="Energy source" id="energy-source-heading" title="On-site generation vs. the grid" />
         </div>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           Beyond the dedicated projects above, individual data centers and
@@ -426,15 +404,7 @@ export default async function PowerPage() {
         className="space-y-6 border-t border-border pt-10"
       >
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § Water use
-          </p>
-          <h2
-            id="water-use-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            Facility-level water use
-          </h2>
+          <SectionHeading kicker="Water use" id="water-use-heading" title="Facility-level water use" />
         </div>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           Cooling water is one of the least-transparent civic costs of a data
@@ -521,12 +491,7 @@ export default async function PowerPage() {
         aria-labelledby="projects-heading"
         className="space-y-4 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Projects
-        </p>
-        <h2 id="projects-heading" className="font-display text-2xl text-foreground">
-          All projects
-        </h2>
+        <SectionHeading kicker="Projects" id="projects-heading" title="All projects" />
         <ul className="divide-y divide-border">
           {allProjects.map((f) => (
             <li key={f.id}>

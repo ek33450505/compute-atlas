@@ -19,6 +19,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
+import { SectionHeading } from "@/components/section-heading";
 
 export const revalidate = 3600;
 
@@ -183,15 +184,7 @@ export default async function OperatorPage({
           aria-labelledby="facility-type-heading"
           className="space-y-6 border-t border-border pt-10"
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            § By type
-          </p>
-          <h2
-            id="facility-type-heading"
-            className="font-display text-2xl text-foreground"
-          >
-            Facility type
-          </h2>
+          <SectionHeading kicker="By type" id="facility-type-heading" title="Facility type" />
           <div className="space-y-4">
             {FACILITY_TYPE_ORDER.filter((key) => summary.byType[key] > 0).map(
               (key) => {
@@ -222,12 +215,7 @@ export default async function OperatorPage({
         aria-labelledby="status-heading"
         className="space-y-6 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § By status
-        </p>
-        <h2 id="status-heading" className="font-display text-2xl text-foreground">
-          Lifecycle status
-        </h2>
+        <SectionHeading kicker="By status" id="status-heading" title="Lifecycle status" />
         <div className="space-y-4">
           {STATUS_ORDER.filter((status) => summary.byStatus[status] > 0).map(
             (status) => {
@@ -260,15 +248,7 @@ export default async function OperatorPage({
         aria-labelledby="facilities-heading"
         className="space-y-4 border-t border-border pt-10"
       >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Facilities
-        </p>
-        <h2
-          id="facilities-heading"
-          className="font-display text-2xl text-foreground"
-        >
-          Facilities operated by {operatorName}
-        </h2>
+        <SectionHeading kicker="Facilities" id="facilities-heading" title={<>Facilities operated by {operatorName}</>} />
         <ul className="divide-y divide-border">
           {facilities.map((f) => (
             <li key={f.id}>

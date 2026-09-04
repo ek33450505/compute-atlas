@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { SectionHeading } from "@/components/section-heading";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -140,12 +141,7 @@ export default async function CryptoPage() {
             aria-labelledby="facilities-heading"
             className="space-y-4 border-t border-border pt-10"
           >
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              § Facilities
-            </p>
-            <h2 id="facilities-heading" className="font-display text-2xl text-foreground">
-              All crypto-mining facilities
-            </h2>
+            <SectionHeading kicker="Facilities" id="facilities-heading" title="All crypto-mining facilities" />
             <ul className="divide-y divide-border">
               {allFacilities.map((f) => (
                 <li key={f.id}>
