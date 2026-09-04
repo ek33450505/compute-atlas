@@ -49,13 +49,12 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/apple-icon", sizes: "180x180", type: "image/png" }],
   },
-  alternates: {
-    types: {
-      "application/rss+xml": [
-        { url: "/activity/feed.xml", title: `${siteConfig.name} — Recent activity` },
-      ],
-    },
-  },
+  // No `alternates.types` here: Next.js metadata merging REPLACES (not
+  // deep-merges) `alternates` per route segment, and every route in this app
+  // sets its own `alternates.canonical`, so an RSS link declared here would
+  // never survive to any actual page. Declared as a real <link> in <head>
+  // below instead, which renders unconditionally regardless of what any
+  // route does to its `alternates`.
 };
 
 export default function RootLayout({
@@ -69,6 +68,17 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${GeistSans.variable} ${GeistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
+      <head>
+        {/* Rendered directly (not via the metadata API's `alternates.types`)
+            so it survives on every route regardless of that route's own
+            `alternates.canonical` — see the comment on `metadata` above. */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${siteConfig.name} — Recent activity`}
+          href="/activity/feed.xml"
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <script
           type="application/ld+json"
