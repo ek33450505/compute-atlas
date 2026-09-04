@@ -37,9 +37,17 @@ export const CSV_COLUMNS: CsvColumn[] = [
 ];
 
 // Wrap in quotes + double internal quotes only when the field contains , " CR or LF.
+// String fields that start with =, +, -, @, tab, or CR get a leading single-quote
+// prefix first (OWASP CSV-injection guard): spreadsheet apps execute a
+// leading-=/+/-/@ cell as a formula when the file is opened. Numeric fields
+// (e.g. lon) are exempt from the prefix — a typed number can't carry a
+// formula, and a legitimate negative like -90.0148 must serialize unchanged.
 function escapeCsvField(value: string | number | undefined): string {
   if (value === undefined || value === null) return "";
-  const s = String(value);
+  let s = String(value);
+  if (typeof value === "string" && /^[=+\-@\t\r]/.test(s)) {
+    s = `'${s}`;
+  }
   return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
