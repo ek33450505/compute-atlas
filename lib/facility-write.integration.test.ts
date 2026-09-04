@@ -257,6 +257,24 @@ describe("writeEnrichmentUpdate", () => {
   });
 });
 
+describe("updateFacility", () => {
+  it("404s when the facility id does not exist", async () => {
+    const result = await updateFacility("does-not-exist", { name: "New Name" });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(404);
+  });
+});
+
+describe("deleteFacility", () => {
+  it("404s when the facility id does not exist", async () => {
+    const result = await deleteFacility("does-not-exist");
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(404);
+  });
+});
+
 describe("revalidateForFacility (scoped tag invalidation, not the old global nuke)", () => {
   it("createFacility busts facility:<id> and state:<STATE>, never the old global 'facilities' tag", async () => {
     const doc = makeSeedDoc();

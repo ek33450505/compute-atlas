@@ -27,10 +27,11 @@ import path from "node:path";
 
 import { facilitiesSchema } from "../lib/schema";
 import type { Facility } from "../lib/schema";
-import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
+import { facilitiesTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { docToRow } from "../lib/db/serialize";
 import { computeDocDiff } from "../lib/doc-diff";
+import { insertFacilityHistoryRow } from "../lib/facility-history";
 
 export interface SeedResult {
   /** Ids present in the JSON but absent from the DB — always inserted. */
@@ -66,14 +67,15 @@ export async function seedFacilities(
   // a concurrent seed run or a submission approved between the id-fetch
   // above and this insert) without ever touching an existing row's data.
   //
-  // We record `facility_history` directly here (rather than going through
-  // lib/facility-write.ts's recordFacilityHistory) because seed.ts is a
-  // plain tsx CLI: facility-write.ts imports `revalidateTag` from
-  // `next/cache` at module scope, which only resolves inside the Next.js
-  // runtime and throws when imported from a bare Node/tsx process. Only
-  // computeDocDiff (a pure module) is safe to reuse here. .returning() lets
-  // us tell a real insert from a no-op conflict, so history is written only
-  // for facilities that were actually inserted.
+  // Uses the shared `insertFacilityHistoryRow` leaf (`../lib/facility-history.ts`)
+  // rather than going through `lib/facility-write.ts`'s `recordFacilityHistory`:
+  // that file imports `revalidateTag` from `next/cache` at module scope, which
+  // only resolves inside the Next.js runtime and throws when imported from a
+  // bare Node/tsx process like this one. The leaf has no such dependency (only
+  // lib/db/client, lib/db/schema, and doc-diff's DiffEntry type), so all three
+  // callers now share one implementation instead of three copies.
+  // .returning() lets us tell a real insert from a no-op conflict, so history
+  // is written only for facilities that were actually inserted.
   for (const facility of toInsert) {
     const inserted = await db
       .insert(facilitiesTable)
@@ -81,16 +83,11 @@ export async function seedFacilities(
       .onConflictDoNothing()
       .returning({ id: facilitiesTable.id });
     if (inserted.length > 0) {
-      try {
-        await db.insert(facilityHistoryTable).values({
-          facilityId: facility.id,
-          changeType: "create",
-          diff: computeDocDiff(null, facility),
-          source: "db-seed",
-        });
-      } catch (err) {
-        console.error("facility_history insert failed for %s (create):", facility.id, err);
-      }
+      // A false return means the leaf already logged the failure via
+      // console.error — nothing further to do here, matching this script's
+      // existing behavior of never failing a bootstrap seed run over one
+      // missing audit row.
+      await insertFacilityHistoryRow(facility.id, "create", computeDocDiff(null, facility), "db-seed");
     }
   }
 

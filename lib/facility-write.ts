@@ -4,9 +4,10 @@ import { revalidateTag } from "next/cache";
 import { facilitySchema, type Facility } from "@/lib/schema";
 import { tagsForFacility } from "@/lib/cache-tags";
 import { getDb } from "@/lib/db/client";
-import { facilitiesTable, facilityHistoryTable } from "@/lib/db/schema";
+import { facilitiesTable, type FacilityRow } from "@/lib/db/schema";
 import { docToRow } from "@/lib/db/serialize";
 import { computeDocDiff, type DiffEntry } from "@/lib/doc-diff";
+import { insertFacilityHistoryRow } from "@/lib/facility-history";
 import { statusUpdateIntentSchema, applyStatusUpdate } from "@/lib/status-update";
 import { enrichmentUpdateIntentSchema, applyEnrichmentUpdate } from "@/lib/enrichment-update";
 
@@ -33,17 +34,19 @@ function revalidateForFacility(doc: Facility, prevDoc?: Facility): void {
 }
 
 /**
- * Inserts one `facility_history` audit row. Deliberately log-and-continue on
- * failure rather than propagating/rolling back the facility mutation — the
- * facility write is the source of truth Ed cares about most; losing one
- * history row is recoverable, whereas failing a facility save because the
- * audit table hiccuped would be a worse outcome. (Judgment call per Phase 5a
- * of the admin-ui-part2 plan.)
- *
- * Still never throws or rolls back the facility mutation. Instead, returns
- * `true`/`false` so the caller can carry the outcome on `WriteResult.
- * historyRecorded` — a failure is logged here (as before) AND surfaced to
- * whoever triggered the write, instead of only living in the server log.
+ * Thin wrapper over the shared `insertFacilityHistoryRow` leaf
+ * (`lib/facility-history.ts`) so the call sites below keep reading
+ * `recordFacilityHistory`, and so `WriteResult.historyRecorded` plumbing
+ * doesn't change. The insert itself, and the log-and-continue-on-failure
+ * design it implements — losing one audit row is recoverable, whereas
+ * failing a facility save because the audit table hiccuped would be a worse
+ * outcome (judgment call per Phase 5a of the admin-ui-part2 plan) — now live
+ * in the leaf, shared with `scripts/sync-to-neon.ts` and `scripts/seed.ts`
+ * (previously three separate copies of this same body, kept separate only
+ * because this file also imports `next/cache` at module scope, which throws
+ * outside the Next.js runtime — see the leaf's header comment). This wrapper
+ * just forwards the boolean so callers here can carry it on
+ * `WriteResult.historyRecorded`.
  */
 async function recordFacilityHistory(
   facilityId: string,
@@ -51,14 +54,56 @@ async function recordFacilityHistory(
   diff: DiffEntry[],
   source: string
 ): Promise<boolean> {
-  try {
-    const db = getDb();
-    await db.insert(facilityHistoryTable).values({ facilityId, changeType, diff, source });
-    return true;
-  } catch (err) {
-    console.error("facility_history insert failed for %s (%s):", facilityId, changeType, err);
-    return false;
+  return insertFacilityHistoryRow(facilityId, changeType, diff, source);
+}
+
+/**
+ * Shared "fetch by id or 404" for every mutation below except
+ * `createFacility` (which checks for a 409 on a *different* query, not a
+ * 404). `updateFacility`, `writeStatusUpdate`, `writeEnrichmentUpdate`, and
+ * `deleteFacility` all need the existing row in hand before deciding what to
+ * merge/apply/delete, and all 404 identically when it's missing. Returns the
+ * `WriteResult`-shaped miss directly so a call site can `return` it as-is;
+ * narrows to `{ ok: true; row }` otherwise.
+ */
+async function fetchExistingRowOr404(
+  id: string
+): Promise<{ ok: true; row: FacilityRow } | { ok: false; status: number; error: string }> {
+  const db = getDb();
+  const existingRows = await db
+    .select()
+    .from(facilitiesTable)
+    .where(eq(facilitiesTable.id, id));
+  const existingRow = existingRows[0];
+  if (!existingRow) {
+    return { ok: false, status: 404, error: "Facility not found" };
   }
+  return { ok: true, row: existingRow };
+}
+
+/**
+ * Shared "persist the merged doc, record history, revalidate, return ok"
+ * tail for `updateFacility`, `writeStatusUpdate`, and
+ * `writeEnrichmentUpdate` — each arrives at `doc` via a different merge
+ * strategy (shallow patch, `applyStatusUpdate`, `applyEnrichmentUpdate`) but
+ * finishes identically from there. `deleteFacility` is deliberately not a
+ * caller: it deletes rather than updates, and diffs against `null` rather
+ * than a new `doc`.
+ */
+async function persistUpdateAndRecordHistory(
+  id: string,
+  doc: Facility,
+  prevDoc: Facility,
+  source: string
+): Promise<WriteResult> {
+  const db = getDb();
+  await db
+    .update(facilitiesTable)
+    .set({ ...docToRow(doc), updatedAt: new Date() })
+    .where(eq(facilitiesTable.id, id));
+  const historyRecorded = await recordFacilityHistory(id, "update", computeDocDiff(prevDoc, doc), source);
+  revalidateForFacility(doc, prevDoc);
+  return { ok: true, facility: doc, historyRecorded };
 }
 
 /**
@@ -111,15 +156,11 @@ export async function updateFacility(
   patch: unknown,
   source: string = "admin-direct"
 ): Promise<WriteResult> {
-  const db = getDb();
-  const existingRows = await db
-    .select()
-    .from(facilitiesTable)
-    .where(eq(facilitiesTable.id, id));
-  const existingRow = existingRows[0];
-  if (!existingRow) {
-    return { ok: false, status: 404, error: "Facility not found" };
+  const found = await fetchExistingRowOr404(id);
+  if (!found.ok) {
+    return found;
   }
+  const existingRow = found.row;
 
   const merged = { ...existingRow.doc, ...(patch as object), id };
   const parsed = facilitySchema.safeParse(merged);
@@ -128,13 +169,7 @@ export async function updateFacility(
   }
   const doc = parsed.data;
 
-  await db
-    .update(facilitiesTable)
-    .set({ ...docToRow(doc), updatedAt: new Date() })
-    .where(eq(facilitiesTable.id, id));
-  const historyRecorded = await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
-  revalidateForFacility(doc, existingRow.doc);
-  return { ok: true, facility: doc, historyRecorded };
+  return persistUpdateAndRecordHistory(id, doc, existingRow.doc, source);
 }
 
 /**
@@ -156,15 +191,11 @@ export async function writeStatusUpdate(
     return { ok: false, status: 400, error: "Invalid status update", issues: parsedIntent.error.issues };
   }
 
-  const db = getDb();
-  const existingRows = await db
-    .select()
-    .from(facilitiesTable)
-    .where(eq(facilitiesTable.id, id));
-  const existingRow = existingRows[0];
-  if (!existingRow) {
-    return { ok: false, status: 404, error: "Facility not found" };
+  const found = await fetchExistingRowOr404(id);
+  if (!found.ok) {
+    return found;
   }
+  const existingRow = found.row;
 
   const applied = applyStatusUpdate(existingRow.doc, parsedIntent.data);
   const parsed = facilitySchema.safeParse(applied);
@@ -173,13 +204,7 @@ export async function writeStatusUpdate(
   }
   const doc = parsed.data;
 
-  await db
-    .update(facilitiesTable)
-    .set({ ...docToRow(doc), updatedAt: new Date() })
-    .where(eq(facilitiesTable.id, id));
-  const historyRecorded = await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
-  revalidateForFacility(doc, existingRow.doc);
-  return { ok: true, facility: doc, historyRecorded };
+  return persistUpdateAndRecordHistory(id, doc, existingRow.doc, source);
 }
 
 /**
@@ -202,15 +227,11 @@ export async function writeEnrichmentUpdate(
     return { ok: false, status: 400, error: "Invalid enrichment update", issues: parsedIntent.error.issues };
   }
 
-  const db = getDb();
-  const existingRows = await db
-    .select()
-    .from(facilitiesTable)
-    .where(eq(facilitiesTable.id, id));
-  const existingRow = existingRows[0];
-  if (!existingRow) {
-    return { ok: false, status: 404, error: "Facility not found" };
+  const found = await fetchExistingRowOr404(id);
+  if (!found.ok) {
+    return found;
   }
+  const existingRow = found.row;
 
   const applied = applyEnrichmentUpdate(existingRow.doc, parsedIntent.data);
   const parsed = facilitySchema.safeParse(applied);
@@ -219,13 +240,7 @@ export async function writeEnrichmentUpdate(
   }
   const doc = parsed.data;
 
-  await db
-    .update(facilitiesTable)
-    .set({ ...docToRow(doc), updatedAt: new Date() })
-    .where(eq(facilitiesTable.id, id));
-  const historyRecorded = await recordFacilityHistory(id, "update", computeDocDiff(existingRow.doc, doc), source);
-  revalidateForFacility(doc, existingRow.doc);
-  return { ok: true, facility: doc, historyRecorded };
+  return persistUpdateAndRecordHistory(id, doc, existingRow.doc, source);
 }
 
 /**
@@ -237,16 +252,13 @@ export async function deleteFacility(
   id: string,
   source: string = "admin-direct"
 ): Promise<WriteResult> {
-  const db = getDb();
-  const existingRows = await db
-    .select()
-    .from(facilitiesTable)
-    .where(eq(facilitiesTable.id, id));
-  const existingRow = existingRows[0];
-  if (!existingRow) {
-    return { ok: false, status: 404, error: "Facility not found" };
+  const found = await fetchExistingRowOr404(id);
+  if (!found.ok) {
+    return found;
   }
+  const existingRow = found.row;
 
+  const db = getDb();
   await db.delete(facilitiesTable).where(eq(facilitiesTable.id, id));
   const historyRecorded = await recordFacilityHistory(id, "delete", computeDocDiff(existingRow.doc, null), source);
   // Only the deleted doc exists (no prevDoc) — still correctly busts
