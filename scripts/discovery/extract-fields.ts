@@ -130,6 +130,7 @@ import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
 import { findWaybackSnapshotUrl } from "./wayback";
 import { loadFacilities } from "./load-facilities";
+import { isNonDocumentSource } from "./non-document-source";
 
 // ============================================================================
 // Fields covered
@@ -1571,6 +1572,21 @@ async function processFacilitySources(
 
   for (const source of sortSourcesPrimaryFirst(facility.sources)) {
     if (unfilled.size === 0) break; // every requested field is already filled — stop reading further sources
+
+    // Issue #230: an ArcGIS FeatureServer/MapServer endpoint, an Esri item
+    // viewer, or a Nominatim geocoder lookup cannot be read as a document —
+    // fetching one always fails, and that failure was previously
+    // indistinguishable from a genuine bot-wall/dead-link fetch failure (see
+    // `isNonDocumentSource`'s doc-comment for the measured 14.4%/624-of-4,401
+    // figure). Skipped BEFORE `fetchSourceText` is ever called, so it never
+    // counts as a read (`sourcesRead`) or an unreadable-but-fetched page
+    // (`sawAnyUnreadable`) — it was never attempted as a document at all.
+    // This is still a REAL, kept citation; only the fetch-as-document attempt
+    // is skipped, never the source itself.
+    if (isNonDocumentSource(source)) {
+      console.log(`skipped-non-document: ${facility.id} — ${source.url}`);
+      continue;
+    }
 
     if (process.env.TRACK5_DEBUG_MEM) {
       const mem = process.memoryUsage();
