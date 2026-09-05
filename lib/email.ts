@@ -5,9 +5,11 @@ import { siteConfig } from "@/lib/site";
 
 /**
  * 256-bit random token, base64url-encoded (~43 chars, URL-safe, no padding).
- * Used for both the single-use confirm token and the long-lived unsubscribe
- * token on `subscriptions` rows (`lib/db/schema.ts`) — see that file's
- * comment for the raw-storage (no hashing/signing) rationale.
+ * The raw value returned here goes to the recipient once (embedded in a
+ * confirm/access/unsubscribe email) and is never itself the value compared on
+ * lookup — confirm and access tokens are stored as a sha256 hash (see
+ * `lib/token-hash.ts` and the per-column comments in `lib/db/schema.ts`); the
+ * unsubscribe token is the one deliberate exception and stays raw in storage.
  */
 export function generateToken(): string {
   return randomBytes(32).toString("base64url");

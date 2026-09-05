@@ -6,6 +6,7 @@ import { subscriptionsTable } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
 import { getFacilityById } from "@/lib/data";
 import { checkEmailSendCap } from "@/lib/rate-limit";
+import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 export const subscribeInputSchema = z
   .object({
@@ -93,19 +94,17 @@ export async function subscribeToTarget(
   }
 
   const db = getDb();
+  const confirmToken = generateToken();
   try {
-    const [row] = await db
-      .insert(subscriptionsTable)
-      .values({
-        email,
-        targetType: data.targetType,
-        targetId,
-        status: "pending",
-        confirmToken: generateToken(),
-        unsubscribeToken: generateToken(),
-        submitterIpHash: ipHash,
-      })
-      .returning({ confirmToken: subscriptionsTable.confirmToken });
+    await db.insert(subscriptionsTable).values({
+      email,
+      targetType: data.targetType,
+      targetId,
+      status: "pending",
+      confirmToken: hashToken(confirmToken), // raw kept only in the local `confirmToken` var below, for the email
+      unsubscribeToken: generateToken(),
+      submitterIpHash: ipHash,
+    });
 
     // The confirm email is NOT sent here. The route sends it AFTER this
     // function returns (via next/server's `after()`), so that response
@@ -123,7 +122,7 @@ export async function subscribeToTarget(
     // clears. Accepted for MVP (rare + bounded). Future fix: roll back the
     // row on a genuine send error (distinguishing it from the env-gated
     // no-key no-op), or expire stale pending rows + allow resend.
-    return { ok: true, confirm: { email, targetLabel, confirmToken: row.confirmToken } };
+    return { ok: true, confirm: { email, targetLabel, confirmToken } };
   } catch (err) {
     if (!isUniqueViolation(err)) {
       throw err;
@@ -145,10 +144,28 @@ export async function confirmSubscription(
   }
 
   const db = getDb();
-  const rows = await db
+  const hashed = hashToken(token);
+  let rows = await db
     .select()
     .from(subscriptionsTable)
-    .where(eq(subscriptionsTable.confirmToken, token));
+    .where(eq(subscriptionsTable.confirmToken, hashed));
+  let matchedValue: string = hashed;
+  if (!rows[0] && !isHashedToken(token)) {
+    // Legacy fallback: row predates hashing and still stores the raw confirm
+    // token. A hit here is upgraded to its hash as part of the confirming
+    // UPDATE below (see lib/token-hash.ts). Gated on `!isHashedToken(token)`
+    // to close a stolen-stored-hash bypass: without this guard, presenting
+    // the 64-hex hash itself (e.g. from a DB leak) would miss the hash-first
+    // lookup (hash-of-hash) but then match THIS raw-equality fallback
+    // directly against the stored value, authenticating with no raw token
+    // ever having existed. A genuine raw token is always 43-char base64url
+    // and can never be 64 lowercase hex, so no real caller is affected.
+    rows = await db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.confirmToken, token));
+    matchedValue = token;
+  }
   const row = rows[0];
   if (!row) {
     return { status: "invalid" };
@@ -163,8 +180,8 @@ export async function confirmSubscription(
 
   await db
     .update(subscriptionsTable)
-    .set({ status: "confirmed", confirmedAt: new Date() })
-    .where(eq(subscriptionsTable.confirmToken, token));
+    .set({ status: "confirmed", confirmedAt: new Date(), confirmToken: hashed })
+    .where(eq(subscriptionsTable.confirmToken, matchedValue));
 
   return { status: "confirmed" };
 }

@@ -13,6 +13,7 @@ import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
 import { subscriptionsTable } from "@/lib/db/schema";
 import { EMAIL_SEND_CAP_MAX } from "@/lib/rate-limit";
+import { hashToken, isHashedToken } from "@/lib/token-hash";
 import facilitiesRaw from "@/data/facilities.json";
 import type { Facility } from "@/lib/schema";
 
@@ -70,6 +71,12 @@ describe("subscribeToTarget", () => {
     expect(rows[0].targetType).toBe("facility");
     expect(rows[0].targetId).toBe(seedDoc.id);
     expect(rows[0].status).toBe("pending");
+    // Stored confirmToken is the sha256 hash, never the raw value handed back for the email.
+    expect(isHashedToken(rows[0].confirmToken)).toBe(true);
+    if (result.ok && result.confirm) {
+      expect(rows[0].confirmToken).toBe(hashToken(result.confirm.confirmToken));
+      expect(rows[0].confirmToken).not.toBe(result.confirm.confirmToken);
+    }
   });
 
   it("rejects a state target with a 400 (targetType is facility-only now)", async () => {
@@ -205,13 +212,14 @@ describe("subscribeToTarget", () => {
 describe("confirmSubscription", () => {
   it("flips a pending row to confirmed", async () => {
     await seedFacility(tdb.db, seedDoc);
-    await subscribeToTarget(
+    const subscribeResult = await subscribeToTarget(
       { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
       "iphash-9"
     );
+    const rawToken = subscribeResult.ok && subscribeResult.confirm ? subscribeResult.confirm.confirmToken : "";
     const [row] = await tdb.db.select().from(subscriptionsTable);
 
-    const result = await confirmSubscription(row.confirmToken);
+    const result = await confirmSubscription(rawToken);
     expect(result.status).toBe("confirmed");
 
     const [updated] = await tdb.db
@@ -224,20 +232,88 @@ describe("confirmSubscription", () => {
 
   it("returns 'already' on a second confirm of the same token", async () => {
     await seedFacility(tdb.db, seedDoc);
-    await subscribeToTarget(
+    const subscribeResult = await subscribeToTarget(
       { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
       "iphash-10"
     );
-    const [row] = await tdb.db.select().from(subscriptionsTable);
+    const rawToken = subscribeResult.ok && subscribeResult.confirm ? subscribeResult.confirm.confirmToken : "";
 
-    await confirmSubscription(row.confirmToken);
-    const second = await confirmSubscription(row.confirmToken);
+    await confirmSubscription(rawToken);
+    const second = await confirmSubscription(rawToken);
     expect(second.status).toBe("already");
   });
 
   it("returns 'invalid' for an unknown token and for an empty token", async () => {
     expect((await confirmSubscription("bogus-token")).status).toBe("invalid");
     expect((await confirmSubscription("")).status).toBe("invalid");
+  });
+});
+
+describe("confirmSubscription — legacy raw-token dual-read", () => {
+  it("confirms a pre-hashing row stored with a raw confirmToken, and upgrades it to a hash", async () => {
+    await seedFacility(tdb.db, seedDoc);
+    const rawLegacyToken = "legacy-raw-confirm-token-not-hashed";
+    const [inserted] = await tdb.db
+      .insert(subscriptionsTable)
+      .values({
+        email: "legacy@example.com",
+        targetType: "facility",
+        targetId: seedDoc.id,
+        status: "pending",
+        confirmToken: rawLegacyToken,
+        unsubscribeToken: "legacy-unsub-token",
+      })
+      .returning({ id: subscriptionsTable.id });
+
+    const result = await confirmSubscription(rawLegacyToken);
+    expect(result.status).toBe("confirmed");
+
+    const [updated] = await tdb.db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.id, inserted.id));
+    expect(updated.status).toBe("confirmed");
+    expect(isHashedToken(updated.confirmToken)).toBe(true);
+    expect(updated.confirmToken).toBe(hashToken(rawLegacyToken));
+
+    // The same raw link still works post-upgrade — a second confirm now hits
+    // the hash-first path directly and correctly reports 'already'.
+    const second = await confirmSubscription(rawLegacyToken);
+    expect(second.status).toBe("already");
+  });
+});
+
+describe("confirmSubscription — stolen-hash rejection", () => {
+  it("rejects the stored hash itself as a presented token (closes the stolen-hash-as-bearer bypass)", async () => {
+    await seedFacility(tdb.db, seedDoc);
+    const subscribeResult = await subscribeToTarget(
+      { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
+      "iphash-stolen-hash"
+    );
+    const rawToken = subscribeResult.ok && subscribeResult.confirm ? subscribeResult.confirm.confirmToken : "";
+    const [row] = await tdb.db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.email, "reader@example.com"));
+    const stolenHash = row.confirmToken; // exactly what a DB leak would expose
+    expect(isHashedToken(stolenHash)).toBe(true);
+    expect(stolenHash).toBe(hashToken(rawToken));
+
+    // Presenting the STOLEN HASH itself (never the raw token) must not authenticate.
+    const result = await confirmSubscription(stolenHash);
+    expect(result.status).toBe("invalid");
+
+    // Untouched — the stolen hash never confirmed the row.
+    const [unchanged] = await tdb.db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.id, row.id));
+    expect(unchanged.status).toBe("pending");
+    expect(unchanged.confirmedAt).toBeNull();
+
+    // The genuine raw token still works — the guard doesn't break the real path.
+    const genuine = await confirmSubscription(rawToken);
+    expect(genuine.status).toBe("confirmed");
   });
 });
 

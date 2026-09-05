@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db/client";
 import { apiAccessGrantsTable } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
 import { checkAccessGrantEmailSendCap } from "@/lib/rate-limit";
+import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 export const accessGrantInputSchema = z.object({
   email: z.string().email().max(254),
@@ -83,17 +84,15 @@ export async function requestAccessGrant(
     return { ok: true };
   }
 
-  const [row] = await db
-    .insert(apiAccessGrantsTable)
-    .values({
-      email,
-      status: "pending",
-      confirmToken: generateToken(),
-      submitterIpHash: ipHash,
-    })
-    .returning({ confirmToken: apiAccessGrantsTable.confirmToken });
+  const confirmToken = generateToken();
+  await db.insert(apiAccessGrantsTable).values({
+    email,
+    status: "pending",
+    confirmToken: hashToken(confirmToken), // raw kept only in the local `confirmToken` var above, for the email
+    submitterIpHash: ipHash,
+  });
 
-  return { ok: true, confirm: { email, confirmToken: row.confirmToken } };
+  return { ok: true, confirm: { email, confirmToken } };
 }
 
 const GRANT_EXPIRY_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
@@ -117,30 +116,55 @@ export async function confirmAccessGrant(token: string): Promise<ConfirmAccessGr
   }
 
   const db = getDb();
-  const rows = await db
+  const hashedConfirm = hashToken(token);
+  let rows = await db
     .select()
     .from(apiAccessGrantsTable)
-    .where(eq(apiAccessGrantsTable.confirmToken, token));
+    .where(eq(apiAccessGrantsTable.confirmToken, hashedConfirm));
+  let matchedConfirmValue: string = hashedConfirm;
+  if (!rows[0] && !isHashedToken(token)) {
+    // Legacy fallback: row predates hashing and still stores the raw confirm
+    // token. A hit here is upgraded to its hash as part of the confirming
+    // UPDATE below (see lib/token-hash.ts), alongside minting accessToken.
+    // Gated on `!isHashedToken(token)` to close a stolen-stored-hash bypass:
+    // without this guard, presenting the 64-hex hash itself (e.g. from a DB
+    // leak) would miss the hash-first lookup (hash-of-hash) but then match
+    // THIS raw-equality fallback directly against the stored value,
+    // authenticating with no raw token ever having existed. A genuine raw
+    // token is always 43-char base64url and can never be 64 lowercase hex,
+    // so no real caller is affected.
+    rows = await db
+      .select()
+      .from(apiAccessGrantsTable)
+      .where(eq(apiAccessGrantsTable.confirmToken, token));
+    matchedConfirmValue = token;
+  }
   const row = rows[0];
   if (!row || row.status !== "pending") {
     return { status: "invalid" };
   }
 
-  const accessToken = generateToken();
+  const rawAccessToken = generateToken();
   const now = new Date();
   const expiresAt = new Date(now.getTime() + GRANT_EXPIRY_MS);
 
-  // Re-check status=pending in the UPDATE's own WHERE, not just the read
-  // above: two concurrent confirms of the same token can both pass the
-  // read-then-check race, but only the first UPDATE can still match a
-  // pending row — the loser's zero-row result falls through to `invalid`
-  // below instead of silently minting (and immediately orphaning) a second
-  // accessToken.
+  // Re-check status=pending in the UPDATE's own WHERE (against whichever
+  // value — hash or legacy raw — matched above), not just the read: two
+  // concurrent confirms of the same token can both pass the read-then-check
+  // race, but only the first UPDATE can still match a pending row — the
+  // loser's zero-row result falls through to `invalid` below instead of
+  // silently minting (and immediately orphaning) a second accessToken.
   const updated = await db
     .update(apiAccessGrantsTable)
-    .set({ status: "active", accessToken, confirmedAt: now, expiresAt })
+    .set({
+      status: "active",
+      accessToken: hashToken(rawAccessToken),
+      confirmToken: hashedConfirm,
+      confirmedAt: now,
+      expiresAt,
+    })
     .where(
-      and(eq(apiAccessGrantsTable.confirmToken, token), eq(apiAccessGrantsTable.status, "pending"))
+      and(eq(apiAccessGrantsTable.confirmToken, matchedConfirmValue), eq(apiAccessGrantsTable.status, "pending"))
     )
     .returning({ id: apiAccessGrantsTable.id });
 
@@ -148,5 +172,5 @@ export async function confirmAccessGrant(token: string): Promise<ConfirmAccessGr
     return { status: "invalid" };
   }
 
-  return { status: "active", accessToken };
+  return { status: "active", accessToken: rawAccessToken };
 }
