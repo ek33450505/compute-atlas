@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, createHmac } from "node:crypto";
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
@@ -143,6 +143,28 @@ describe("admin-session", () => {
     it("rejects malformed values with the wrong number of parts", () => {
       expect(verifySessionCookie("v2.123.abc")).toBe(false);
       expect(verifySessionCookie("v2.123.abc.def.extra")).toBe(false);
+    });
+
+    it("rejects a well-formed cookie signed with a different token", () => {
+      // Mint a cookie the normal way — real version, real issuedAt, real
+      // random nonce — but with a token that isn't the real
+      // API_ADMIN_TOKEN. Structurally this is indistinguishable from a
+      // genuine cookie; only the signing key is wrong.
+      const attackerCookie = createSessionValue("attacker-token");
+      const [version, issuedAtRaw, nonce] = attackerCookie.split(".");
+
+      // Recompute the HMAC over the identical signed input using the REAL
+      // token, so the only difference between this cookie and the one above
+      // is the signing key — this rules out the rejection above being a
+      // vacuous pass from a format/length mismatch rather than the HMAC
+      // comparison actually doing its job.
+      const realHmac = createHmac("sha256", TOKEN)
+        .update(`${version}.${issuedAtRaw}.${nonce}`)
+        .digest("hex");
+      const realCookie = `${version}.${issuedAtRaw}.${nonce}.${realHmac}`;
+
+      expect(verifySessionCookie(realCookie)).toBe(true);
+      expect(verifySessionCookie(attackerCookie)).toBe(false);
     });
   });
 
