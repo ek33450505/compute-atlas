@@ -44,6 +44,20 @@ export interface NonDocumentSourceCandidate {
 }
 
 /**
+ * True when `host` (already lowercased) IS `domain`, or is a proper
+ * subdomain of it (`<label>.` + `domain`). A plain `host.endsWith(domain)`
+ * has no label boundary and also matches a lookalike host that merely ends
+ * with the same characters — `evilarcgis.com` ends with `arcgis.com` with no
+ * dot in between (CodeQL `js/incomplete-url-substring-sanitization`, flagged
+ * on PR #246). Requiring either exact equality or a `.`-prefixed suffix
+ * closes that: `www.arcgis.com` and `services5.arcgis.com` still match,
+ * `evilarcgis.com` and `notarcgis.com` do not.
+ */
+function hostMatches(host: string, domain: string): boolean {
+  return host === domain || host.endsWith(`.${domain}`);
+}
+
+/**
  * True when `source` is structurally unreadable as a document and should be
  * skipped BEFORE any fetch is attempted. Two independent signals, either one
  * sufficient:
@@ -65,9 +79,13 @@ export interface NonDocumentSourceCandidate {
  *        `/arcgis/rest/services/` path segment on some hosts' shortened
  *        routes.
  *      - `arcgis.com/home/item.html` — Esri's own hosted "item details"
- *        viewer page, an interactive map/gallery entry, not an article.
+ *        viewer page, an interactive map/gallery entry, not an article. Host
+ *        match requires a real label boundary (`hostMatches`): exact
+ *        `arcgis.com` or a `.arcgis.com` subdomain, never a lookalike like
+ *        `evilarcgis.com`.
  *      - `nominatim.openstreetmap.org` as the hostname — the OSM project's
  *        public geocoder; every response is a JSON/XML coordinate lookup.
+ *        Same `hostMatches` label-boundary rule applies.
  *      - a `f=json` query parameter — ArcGIS REST's own "give me JSON, not
  *        the HTML viewer" format switch; present on plenty of ArcGIS URLs
  *        that don't otherwise match the path patterns above (e.g. a
@@ -108,8 +126,8 @@ export function isNonDocumentSource(source: NonDocumentSourceCandidate): boolean
   if (path.includes("/arcgis/rest/services/")) return true;
   if (path.includes("/mapserver/")) return true;
   if (path.includes("/featureserver/")) return true;
-  if (host.endsWith("arcgis.com") && path.includes("/home/item.html")) return true;
-  if (host.endsWith("nominatim.openstreetmap.org")) return true;
+  if (hostMatches(host, "arcgis.com") && path.includes("/home/item.html")) return true;
+  if (hostMatches(host, "nominatim.openstreetmap.org")) return true;
 
   const fParam = parsed.searchParams.get("f");
   if (fParam !== null && fParam.toLowerCase() === "json") return true;

@@ -30,10 +30,41 @@ describe("isNonDocumentSource", () => {
     ).toBe(true);
   });
 
+  it("matches a subdomain host for the arcgis.com item-details viewer, not just www", () => {
+    expect(
+      isNonDocumentSource({ url: "https://services5.arcgis.com/home/item.html?id=abc123def456" })
+    ).toBe(true);
+  });
+
   it("matches the Nominatim geocoder host", () => {
     expect(
       isNonDocumentSource({ url: "https://nominatim.openstreetmap.org/search?q=some+facility&format=json" })
     ).toBe(true);
+  });
+
+  // Regression for CodeQL js/incomplete-url-substring-sanitization (PR #246):
+  // a bare `host.endsWith("arcgis.com")` / `host.endsWith("nominatim.openstreetmap.org")`
+  // has no label boundary, so a lookalike host that merely ends with the same
+  // characters would be misclassified as non-document and never fetched — a
+  // silent skip, not an error. `hostMatches` requires exact-host or a
+  // `.`-prefixed subdomain; these lookalikes must NOT match either check.
+  it("does NOT match lookalike hosts that merely end with 'arcgis.com'", () => {
+    expect(
+      isNonDocumentSource({ url: "https://evilarcgis.com/home/item.html?id=abc123def456" })
+    ).toBe(false);
+    expect(isNonDocumentSource({ url: "https://notarcgis.com/home/item.html" })).toBe(false);
+  });
+
+  it("does NOT match a lookalike host that merely ends with 'nominatim.openstreetmap.org'", () => {
+    expect(
+      isNonDocumentSource({ url: "https://fakenominatim.openstreetmap.org/search" })
+    ).toBe(false);
+  });
+
+  it("does NOT match a host that merely contains the domain mid-string", () => {
+    expect(
+      isNonDocumentSource({ url: "https://arcgis.com.evil-tracker.net/home/item.html" })
+    ).toBe(false);
   });
 
   it("matches any URL carrying ArcGIS REST's f=json format switch, case-insensitively", () => {
