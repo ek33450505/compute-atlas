@@ -1,0 +1,81 @@
+# Fails loudly when the LOCAL discovery pipeline has not run at all.
+#
+# WHY THIS CANNOT LIVE ON THE MAINTAINER'S MACHINE:
+# The discovery pipeline runs on the maintainer's Mac via the launchd agent
+# `com.compute-atlas.discovery` at 13:00 local. run.sh already alerts on its own
+# failures — desktop notification plus a nonzero exit — but it documents its own
+# blind spot at scripts/discovery/run.sh:72-75:
+#
+#     RESIDUAL GAP (deliberate, documented): this only fires when run.sh
+#     actually RUNS. It cannot detect "launchd never fired at all" — that needs
+#     a separate watchdog job.
+#
+# A watchdog on the same machine shares that blind spot exactly, so this runs in
+# GitHub Actions instead. That is also why the heartbeat is published to Neon
+# rather than read from disk: run.sh writes discovery-logs/heartbeat.json, but
+# /discovery-logs/ is gitignored with nothing tracked, so a CI job cannot see it.
+# Neon is the one store both the Mac and this runner can reach.
+#
+# THE FAILURE THIS EXISTS TO CATCH, observed 2026-09-05:
+# The Mac booted at 13:32:43, 32 minutes after the 13:00 schedule. macOS
+# StartCalendarInterval does NOT catch up a run missed while the machine was
+# off — it waits for the next occurrence. `launchctl print` showed `runs = 0`,
+# `last exit code = (never exited)`. Nothing errored, no log line was written,
+# no notification fired: the run simply never happened, and the only way to
+# notice was to go looking. run.sh's own stale-heartbeat check would have
+# reported the gap on the NEXT run that happened — i.e. a day late, and never
+# at all if the machine stayed off.
+#
+# WHAT A PASSING CHECK LOOKS LIKE WHILE THE BUG IS PRESENT: it does not pass.
+# check-heartbeat.ts fails closed on a stale row AND on a missing row — a
+# missing row means either no run has ever published (expected only in the
+# window between merging this and the first run afterwards) or the publisher is
+# broken, and neither is "fine". It also fails on an unset DATABASE_URL rather
+# than skipping, because a watchdog that quietly skips is the exact silent
+# instrument this feature exists to replace.
+#
+# SCOPE: freshness only — "did it run at all". Run QUALITY (a run that happened
+# but failed) is already covered by run.sh's own notify + nonzero exit, so a
+# degraded-but-fresh heartbeat logs a warning here and still passes. Do not
+# widen this to fail on `status != ok` without removing that overlap first.
+#
+# 23:00 UTC lands 5-6h after the 13:00-local run starts (17:00 UTC on EDT,
+# 18:00 UTC on EST) and so clears its ~2h runtime in both DST states; measured
+# worst-case gap between consecutive runs across a DST transition is ~30-35h,
+# still inside the 36h threshold in check-heartbeat.ts (which matches run.sh's
+# DISCOVERY_STALE_HOURS default), so the exact hour is not load-bearing.
+# Deliberately one hour after drift-alert.yml's 22:00 so the two failure emails
+# stay distinguishable.
+#
+# Requires: DATABASE_URL as a repo secret (already configured for neon-sync).
+
+name: Discovery Watchdog
+
+on:
+  schedule:
+    - cron: "0 23 * * *"  # 23:00 UTC — well after the 13:00-local discovery run
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  watchdog:
+    name: Verify discovery actually ran
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      # Invoked as `npx tsx <script>` rather than the `check:heartbeat` npm
+      # script, matching ci.yml:76 and neon-sync.yml:147. The npm script carries
+      # `--env-file=.env.local`, which does not exist on a runner; here
+      # DATABASE_URL arrives from the job env above.
+      - name: Check discovery heartbeat freshness
+        run: npx tsx scripts/discovery/check-heartbeat.ts
