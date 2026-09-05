@@ -139,18 +139,12 @@ export default async function PowerPage() {
     >
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Power" }]} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Dedicated generation"
         title="Behind-the-meter power generation for AI data centers"
         dek="Purpose-built generation — most often natural gas, with a growing nuclear and small-modular-reactor cohort — that hyperscalers are financing or contracting to feed AI and compute demand directly. Tracked here as its own facility layer, distinct from the compute campuses it supplies: a dedicated plant built or contracted for a specific offtaker, rather than a data center drawing solely from the grid."
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         spacing="wide"
         stats={[
@@ -161,9 +155,6 @@ export default async function PowerPage() {
         ]}
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Overview prose                                                      */}
-      {/* ------------------------------------------------------------------ */}
       <div className="max-w-2xl space-y-4">
         <p className="text-base leading-relaxed text-muted-foreground">
           Compute Atlas tracks {stats.count}{" "}
@@ -188,9 +179,6 @@ export default async function PowerPage() {
         </p>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § The buildout                                                      */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="buildout-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -250,9 +238,6 @@ export default async function PowerPage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § By offtaker                                                       */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="offtaker-heading"
         className="space-y-8 border-t border-border pt-10"
@@ -290,9 +275,6 @@ export default async function PowerPage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § By technology                                                     */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="technology-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -318,9 +300,6 @@ export default async function PowerPage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Energy source                                                     */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="energy-source-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -368,9 +347,6 @@ export default async function PowerPage() {
         )}
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Water use                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="water-use-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -456,9 +432,6 @@ export default async function PowerPage() {
         )}
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Projects                                                          */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="projects-heading"
         className="space-y-4 border-t border-border pt-10"

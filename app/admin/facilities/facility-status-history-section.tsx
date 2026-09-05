@@ -22,7 +22,7 @@ import { FacilitySourceIndexPicker } from "@/app/admin/facilities/facility-sourc
 import { useFocusAfterRemove } from "@/lib/use-focus-after-remove";
 
 // ---------------------------------------------------------------------------
-// statusHistory[] array editor (Phase 2b-3).
+// statusHistory[] array editor.
 //
 // `facilitySchema.statusHistory` defaults to `[]` — this array is OPTIONAL
 // in the sense that an empty array is a valid, complete submission (unlike

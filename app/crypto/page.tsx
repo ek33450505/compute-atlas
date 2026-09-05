@@ -46,9 +46,6 @@ export default async function CryptoPage() {
 
       <Breadcrumb items={CRUMBS} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Crypto mining"
         title="Crypto mining facilities in the United States"
@@ -61,9 +58,6 @@ export default async function CryptoPage() {
         </p>
       ) : (
         <>
-          {/* ------------------------------------------------------------------ */}
-          {/* Overview prose                                                      */}
-          {/* ------------------------------------------------------------------ */}
           <div className="max-w-2xl space-y-4">
             <p className="text-base leading-relaxed text-muted-foreground">
               Compute Atlas tracks {stats.count} crypto-mining
@@ -83,9 +77,6 @@ export default async function CryptoPage() {
             </p>
           </div>
 
-          {/* ------------------------------------------------------------------ */}
-          {/* Survey stats row                                                    */}
-          {/* ------------------------------------------------------------------ */}
           <SurveyStatRow
             stats={[
               { value: stats.count, label: "Facilities" },
@@ -103,9 +94,6 @@ export default async function CryptoPage() {
             tracked site.
           </p>
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § Facilities                                                        */}
-          {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="facilities-heading"
             className="space-y-4 border-t border-border pt-10"

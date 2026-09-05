@@ -85,7 +85,7 @@ export default async function StatePage({
   const facilities = await getFacilitiesByStateCached(code);
   const stateName = stateNameFromCode(code)!;
 
-  // Cross-link callout (SEO Task 3.3): only fetched when this state has
+  // Cross-link callout: only fetched when this state has
   // documented friction, since a zero-friction state renders no callout.
   const stateOppositionCase =
     summary.communityFriction > 0
@@ -94,7 +94,7 @@ export default async function StatePage({
         )
       : undefined;
 
-  // Cross-link callout (SEO Task 6.3): per-classification AI counts for this
+  // Cross-link callout: per-classification AI counts for this
   // state; the callout below renders nothing when the total is zero.
   const aiCounts = await getStateAiClassificationCounts(code);
   const totalAiClassified =
@@ -104,7 +104,6 @@ export default async function StatePage({
   const displayedOperators = summary.topOperators.slice(0, TOP_OPERATORS_DISPLAY);
   const extraOperators = summary.topOperators.length - displayedOperators.length;
 
-  // --- Templated overview prose (SEO Task 1.1) ----------------------------
   // Every figure below is read directly off `summary`; nothing here is
   // fetched, invented, or estimated. Each branch just phrases a zero count
   // gracefully instead of printing an awkward "0 MW" / "0 sites" line.
@@ -148,9 +147,6 @@ export default async function StatePage({
 
       <Breadcrumb items={crumbs} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="State profile"
         title={<>Data centers in {stateName}</>}
@@ -161,9 +157,6 @@ export default async function StatePage({
         }
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}
-      {/* ------------------------------------------------------------------ */}
       <div className="max-w-2xl space-y-4">
         <p className="text-base leading-relaxed text-muted-foreground">
           {overviewSentence}
@@ -178,9 +171,6 @@ export default async function StatePage({
         )}
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         stats={[
           { value: summary.count, label: "Sites" },
@@ -200,9 +190,6 @@ export default async function StatePage({
         total.
       </p>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § By type                                                           */}
-      {/* ------------------------------------------------------------------ */}
       {summary.count > 0 && (
         <section
           aria-labelledby="facility-type-heading"
@@ -232,9 +219,6 @@ export default async function StatePage({
         </section>
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § By status                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="status-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -265,9 +249,6 @@ export default async function StatePage({
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Community reception                                               */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="community-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -324,11 +305,9 @@ export default async function StatePage({
         )}
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § AI classification (SEO Task 6.3): cross-link callout, mirrors the */}
-      {/* Community-reception callout's conditional-render approach — renders */}
-      {/* nothing when this state has no AI-classified facilities.           */}
-      {/* ------------------------------------------------------------------ */}
+      {/* § AI classification: cross-link callout, mirrors the
+          Community-reception callout's conditional-render approach — renders
+          nothing when this state has no AI-classified facilities. */}
       {totalAiClassified > 0 && (
         <section
           aria-labelledby="ai-classification-heading"
@@ -377,9 +356,6 @@ export default async function StatePage({
         </section>
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Operators                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="operators-heading"
         className="space-y-4 border-t border-border pt-10"
@@ -404,9 +380,6 @@ export default async function StatePage({
         )}
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Facilities                                                        */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="facilities-heading"
         className="space-y-4 border-t border-border pt-10"

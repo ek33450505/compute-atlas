@@ -98,9 +98,6 @@ export default async function AiPage() {
 
       <Breadcrumb items={CRUMBS} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="AI classification"
         title="AI data centers by state"
@@ -113,9 +110,6 @@ export default async function AiPage() {
         </p>
       ) : (
         <>
-          {/* ------------------------------------------------------------------ */}
-          {/* Overview prose + classification explainer                          */}
-          {/* ------------------------------------------------------------------ */}
           <div className="max-w-2xl space-y-4">
             <p className="text-base leading-relaxed text-muted-foreground">
               Compute Atlas flags data-center records with a discernible AI or
@@ -143,9 +137,6 @@ export default async function AiPage() {
             </p>
           </div>
 
-          {/* ------------------------------------------------------------------ */}
-          {/* Survey stats row                                                    */}
-          {/* ------------------------------------------------------------------ */}
           <SurveyStatRow
             stats={[
               { value: totalAiClassified, label: "AI-classified" },
@@ -155,9 +146,6 @@ export default async function AiPage() {
             ]}
           />
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § States                                                            */}
-          {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="states-heading"
             className="space-y-4 border-t border-border pt-10"

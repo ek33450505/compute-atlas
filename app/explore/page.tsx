@@ -115,9 +115,6 @@ export default async function ExplorePage() {
     >
       <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "Explore" }]} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <header className="relative">
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-2">
@@ -138,9 +135,6 @@ export default async function ExplorePage() {
         <div className="border-t border-border" />
       </header>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Lens grid                                                           */}
-      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="explore-list-heading" className="space-y-4">
         <h2 id="explore-list-heading" className="sr-only">
           Explore by lens

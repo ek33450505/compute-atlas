@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * /map — immersive full-bleed map page (Phase 1c).
+ * /map — immersive full-bleed map page.
  *
  * Renders Explorer in map mode at full viewport width — no max-width container,
  * no page-level padding, no title strip. The sticky header (h-16 = 4 rem) sits

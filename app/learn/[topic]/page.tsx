@@ -115,7 +115,7 @@ async function getTopicContent(slug: string): Promise<TopicContent | undefined> 
             : "No tracked data center carries an AI classification yet.",
         // Labels and order come from lib/ai-classification.ts — the same source
         // /about and /ai render from. Hand-writing them here was a fourth copy
-        // of three strings PR #181 collapsed everywhere else.
+        // of three strings collapsed everywhere else.
         stats: AI_CLASSIFICATION_ENTRIES.map(({ key, label }) => ({
           value: String(aiCounts[key]),
           label,
@@ -266,21 +266,12 @@ export default async function LearnTopicPage({
 
       <Breadcrumb items={crumbs} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead eyebrow="Learn" title={topic.title} dek={topic.dek} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Cited explainer (editor-approved prose; only some topics have one)  */}
-      {/* ------------------------------------------------------------------ */}
       {topic.explainer && (
         <Explainer explainer={topic.explainer} exemplars={exemplars} />
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Explainer (dataset-grounded, no fabricated figures)                 */}
-      {/* ------------------------------------------------------------------ */}
       <div className="max-w-2xl space-y-4">
         <p className="text-base leading-relaxed text-muted-foreground">
           {content.explainer}
@@ -299,15 +290,9 @@ export default async function LearnTopicPage({
         )}
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <h2 className="sr-only">Key statistics</h2>
       <SurveyStatRow stats={content.stats} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Breakdown                                                         */}
-      {/* ------------------------------------------------------------------ */}
       {content.breakdown && content.breakdown.length > 0 && (
         <section
           aria-labelledby="breakdown-heading"

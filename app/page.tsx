@@ -83,9 +83,6 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: datasetJsonLdString({ dateModified }) }}
       />
-      {/* ------------------------------------------------------------------ */}
-      {/* Hero                                                                */}
-      {/* ------------------------------------------------------------------ */}
       {/* min-height is responsive: on phones the globe is replaced by a
           shorter static plate (h-[40vh], see hero-globe-dynamic.tsx), so
           reserving a full 60vh here would hand that saving straight back as
@@ -146,12 +143,10 @@ export default async function HomePage() {
         />
 
         <div className="relative z-10 space-y-4 pt-8 pb-10">
-          {/* Overline */}
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
             {`United States · Edition v${edition.version} · 39.5°N 98.5°W`}
           </p>
 
-          {/* Headline */}
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl max-w-4xl">
             America&rsquo;s data centers, mapped and sourced.
           </h1>
@@ -199,11 +194,9 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Below the hero: stats + cross-links + primary CTA, grouped as one   */}
-      {/* unit on the plain parchment page background — reads clearly as     */}
-      {/* "below the hero," not "in the map."                                */}
-      {/* ------------------------------------------------------------------ */}
+      {/* Below the hero: stats + cross-links + primary CTA, grouped as one
+          unit on the plain parchment page background — reads clearly as
+          "below the hero," not "in the map." */}
       <div className="border-t border-border pt-10 plate-reveal">
         {/* Survey ledger + pipeline-scale signature */}
         <SurveyLedger
@@ -233,9 +226,6 @@ export default async function HomePage() {
         />
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Notable sites                                                       */}
-      {/* ------------------------------------------------------------------ */}
       <div className="plate-reveal">
         <h2 className="font-display text-2xl text-foreground mb-5">
           Notable sites
@@ -250,7 +240,6 @@ export default async function HomePage() {
                 href={`/facilities/${f.id}`}
                 className="neatline group flex flex-col gap-2 rounded-sm border border-border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                {/* Name */}
                 <span className="font-display text-base leading-snug text-foreground group-hover:text-primary transition-colors">
                   {f.name}
                 </span>
@@ -263,13 +252,11 @@ export default async function HomePage() {
                   <StatusBadge status={f.status} className="shrink-0" />
                 </div>
 
-                {/* Location */}
                 <span className="font-mono text-xs text-muted-foreground">
                   {f.location.city ? `${f.location.city}, ` : ""}
                   {f.location.state}
                 </span>
 
-                {/* Capacity */}
                 {cap !== null && (
                   <span className="font-mono text-xs text-muted-foreground">
                     {cap >= 1000
@@ -278,7 +265,6 @@ export default async function HomePage() {
                   </span>
                 )}
 
-                {/* Coordinates */}
                 <span
                   aria-label={`Coordinates: ${f.location.lat.toFixed(3)} degrees North, ${Math.abs(f.location.lon).toFixed(3)} degrees West`}
                   className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground"

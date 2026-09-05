@@ -14,7 +14,7 @@ import type { Facility, Source } from "@/lib/schema";
 import { FacilitySourceIndexPicker } from "@/app/admin/facilities/facility-source-index-picker";
 
 // ---------------------------------------------------------------------------
-// jobs{} / community{} fieldsets (Phase 2b-4).
+// jobs{} / community{} fieldsets.
 //
 // Both are plain OPTIONAL nested objects (no arrays), each with its own
 // `sourceIndex?` referencing `sources[]` via the shared

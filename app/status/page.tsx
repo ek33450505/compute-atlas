@@ -53,9 +53,6 @@ export default async function StatusIndexPage() {
     >
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "By status" }]} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Lifecycle status"
         title="By status"
@@ -68,9 +65,6 @@ export default async function StatusIndexPage() {
         }
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         stats={[
           { value: totalSites.toLocaleString(), label: "Tracked sites" },
@@ -86,9 +80,6 @@ export default async function StatusIndexPage() {
         ]}
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Overview prose                                                      */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="status-overview-heading"
         className="max-w-2xl space-y-4"
@@ -114,9 +105,6 @@ export default async function StatusIndexPage() {
         </p>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Status grid                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="status-list-heading" className="space-y-4">
         <h2 id="status-list-heading" className="sr-only">
           Browse by status

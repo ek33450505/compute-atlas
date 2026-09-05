@@ -33,7 +33,6 @@ export default async function AboutPage() {
   return (
     <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
       <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "About" }]} />
-      {/* ---- Masthead ---- */}
       <header className="relative">
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
@@ -53,7 +52,6 @@ export default async function AboutPage() {
         <div className="border-t border-border" />
       </header>
 
-      {/* ---- About ---- */}
       <section aria-labelledby="about-method-heading" className="space-y-8">
         <h2 id="about-method-heading" className="sr-only">
           About &amp; method

@@ -11,24 +11,24 @@ import { Label } from "@/components/ui/label";
 import type { Source } from "@/lib/schema";
 
 // ---------------------------------------------------------------------------
-// Reusable sourceIndex picker (Phase 2b-3).
+// Reusable sourceIndex picker.
 //
 // Given the CURRENT in-form `sources[]` array, renders a `Select` listing
 // each populated source by a short label (kind + truncated url/label) and
 // emits the selected array index, or `undefined` for "none".
 //
 // Shared by `statusHistory[].sourceIndex` and `subsidies[].sourceIndex` in
-// this batch; reused again by `jobs.sourceIndex`/`community.sourceIndex` in
-// 2b-4 — kept generic (no statusHistory/subsidies-specific naming) so those
-// call sites can drop it in unchanged.
+// this batch; reused again by `jobs.sourceIndex`/`community.sourceIndex` —
+// kept generic (no statusHistory/subsidies-specific naming) so those call
+// sites can drop it in unchanged.
 //
 // Renders off the LIVE `sources` prop on every render, not a snapshot taken
 // at mount — sources can be added/removed in the same session before submit
-// (2b-2's array editor), so the option list always reflects what's actually
-// in the form right now. This does NOT retroactively fix a `sourceIndex`
-// that already points at a since-removed/reordered source (see the known,
-// accepted positional-index tradeoff noted in the security review of
-// Phase 2b-2 and the plan) — it only guarantees the PICKER itself never
+// via the sources[] array editor, so the option list always reflects what's
+// actually in the form right now. This does NOT retroactively fix a
+// `sourceIndex` that already points at a since-removed/reordered source (see
+// the known, accepted positional-index tradeoff noted in the security
+// review and the plan) — it only guarantees the PICKER itself never
 // *offers* a currently-invalid index.
 // ---------------------------------------------------------------------------
 

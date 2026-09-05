@@ -139,7 +139,6 @@ export function MapFilterSubheader({
     <div className="border-b border-border bg-background">
       {/* ── Always-visible summary row ──────────────────────────────────── */}
       <div className="flex items-center gap-2 px-4 min-h-[44px]">
-        {/* Cartographic crosshair glyph */}
         <span
           className="font-mono text-sm text-muted-foreground shrink-0"
           aria-hidden="true"
@@ -147,12 +146,10 @@ export function MapFilterSubheader({
           ⌖
         </span>
 
-        {/* Section title */}
         <span className="font-mono text-xs font-semibold uppercase tracking-widest text-foreground shrink-0">
           Filters
         </span>
 
-        {/* Active-filter count badge */}
         {activeCount > 0 && (
           <span
             className="inline-flex h-4 min-w-4 items-center justify-center rounded-sm bg-primary px-1 font-mono text-[10px] font-semibold text-primary-foreground shrink-0"
@@ -175,7 +172,6 @@ export function MapFilterSubheader({
           Showing {filteredCount} of {totalCount} facilities
         </p>
 
-        {/* Spacer */}
         <div className="flex-1 min-w-0" />
 
         {/* "View as table →" cross-link — hidden on mobile to keep bar compact */}

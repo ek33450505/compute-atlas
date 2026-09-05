@@ -162,7 +162,6 @@ export default function ApiPage() {
   return (
     <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
       <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "API" }]} />
-      {/* ---- Masthead ---- */}
       <header className="relative">
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
@@ -191,7 +190,6 @@ export default function ApiPage() {
         <div className="border-t border-border" />
       </header>
 
-      {/* ---- Reading the data ---- */}
       <section aria-labelledby="reads-heading" className="space-y-4">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           § Reading the data
@@ -218,7 +216,6 @@ export default function ApiPage() {
         </p>
       </section>
 
-      {/* ---- Public writes ---- */}
       <section aria-labelledby="writes-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           § Contributing data
@@ -236,7 +233,6 @@ export default function ApiPage() {
         <EndpointTable endpoints={WRITE_ENDPOINTS} />
       </section>
 
-      {/* ---- Limits, caching & attribution ---- */}
       <section aria-labelledby="limits-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           § Limits, caching & attribution
@@ -346,7 +342,6 @@ export default function ApiPage() {
         </dl>
       </section>
 
-      {/* ---- How to cite ---- */}
       <section aria-labelledby="citation-heading" className="space-y-6 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           § How to cite
@@ -438,7 +433,6 @@ export default function ApiPage() {
         </dl>
       </section>
 
-      {/* ---- curl examples ---- */}
       <section aria-labelledby="examples-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           § Examples
@@ -459,7 +453,6 @@ curl ${siteConfig.url}/api/stats`}</code>
         </div>
       </section>
 
-      {/* ---- Provenance & submissions ---- */}
       <section aria-labelledby="submissions-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           § Provenance

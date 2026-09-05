@@ -88,9 +88,6 @@ export function CollectionPage({
 
       <Breadcrumb items={crumbs} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <header className="space-y-4 pb-2">
         <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
           {title}
@@ -101,9 +98,6 @@ export function CollectionPage({
         <div className="border-t border-border" />
       </header>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       {statRow.length > 0 && (
         <div className="flex flex-wrap gap-8 border-b border-border pb-8">
           {statRow.map((stat) => (
@@ -119,9 +113,6 @@ export function CollectionPage({
         </div>
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Facility grid                                                       */}
-      {/* ------------------------------------------------------------------ */}
       {facilities.length === 0 ? (
         <p className="text-base text-muted-foreground">{emptyMessage}</p>
       ) : (
