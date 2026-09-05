@@ -1,16 +1,64 @@
 import type { NextConfig } from "next";
 
 /**
- * Baseline security headers applied to every route. Deliberately does NOT
- * include Content-Security-Policy — an enforcing CSP needs explicit
- * allowances for MapLibre GL + inline styles and a browser-verified pass;
- * that's deferred to its own follow-up rather than bundled into this fix.
+ * Content-Security-Policy — REPORT-ONLY. Violations surface only in the
+ * browser console; there is deliberately no `report-to`/`report-uri`
+ * endpoint yet (that's a later addition, not an oversight — this step is
+ * about gathering evidence, not routing it anywhere).
+ *
+ * Every non-'self' origin below is evidenced by a real subresource this app
+ * loads (checked 2026-09-04) — not a speculative allowance:
+ *   - https://tiles.openfreemap.org — vector tiles, glyphs, and sprite for
+ *     the basemap style (public/basemap/parchment.json is fetched
+ *     same-origin, but its `tiles`/`glyphs`/`sprite` fields point here;
+ *     see lib/map.ts's BASEMAP_STYLE_URL comment).
+ *   - https://services.arcgisonline.com — Esri World Imagery satellite
+ *     raster tiles (lib/map.ts SATELLITE_TILE_URL).
+ *   - https://nominatim.openstreetmap.org — the map's location-search
+ *     geocoder (lib/geocode.ts), called via fetch().
+ *   - https://va.vercel-scripts.com — confirmed in
+ *     node_modules/@vercel/{analytics,speed-insights}/dist/index.js:
+ *     both packages load their bootstrap script from here ONLY when
+ *     `isDevelopment()` is true (local `npm run dev`); production resolves
+ *     to the same-origin /_vercel/insights/script.js and
+ *     /_vercel/speed-insights/script.js, already covered by 'self'. Left in
+ *     so local dev testing (see flip criteria below) doesn't manufacture a
+ *     false violation.
+ *
+ * Deliberately NOT enforcing yet: script-src still needs 'unsafe-inline'
+ * for Next.js's inline bootstrap script, and a nonce-based tightening of
+ * that is the enforcement-phase task, not this one. Flip criteria: a week
+ * of clean browser consoles (no CSP violation lines) across `/`, `/map`
+ * (including satellite mode and the location-search geocoder),
+ * `/facilities/*`, and `/admin/login` — then swap this header for a real
+ * `Content-Security-Policy` and add a report endpoint.
+ */
+const CSP_REPORT_ONLY_DIRECTIVES = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://tiles.openfreemap.org https://services.arcgisonline.com",
+  "connect-src 'self' https://tiles.openfreemap.org https://services.arcgisonline.com https://nominatim.openstreetmap.org",
+  "worker-src 'self' blob:",
+  "child-src blob:",
+  "font-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'self'",
+  "form-action 'self'",
+].join("; ");
+
+/**
+ * Baseline security headers applied to every route. Includes the
+ * REPORT-ONLY CSP above; an *enforcing* Content-Security-Policy is still
+ * deferred to its own follow-up (see that comment for the flip criteria).
  */
 const BASELINE_SECURITY_HEADERS = [
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  { key: "Content-Security-Policy-Report-Only", value: CSP_REPORT_ONLY_DIRECTIVES },
 ];
 
 /**

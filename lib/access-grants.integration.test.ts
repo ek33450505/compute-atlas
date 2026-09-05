@@ -13,6 +13,7 @@ import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 import { apiAccessGrantsTable } from "@/lib/db/schema";
 import { EMAIL_SEND_CAP_MAX, checkAccessGrantRateLimit, checkAccessGrantEmailSendCap } from "@/lib/rate-limit";
+import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 // Imported after the mock above so its transitive import of lib/db/client
 // resolves against the mocked module. requestAccessGrant doesn't call
@@ -53,6 +54,12 @@ describe("requestAccessGrant", () => {
     expect(rows[0].email).toBe("reader@example.com"); // lowercased + trimmed
     expect(rows[0].status).toBe("pending");
     expect(rows[0].accessToken).toBeNull();
+    // Stored confirmToken is the sha256 hash, never the raw value handed back for the email.
+    expect(isHashedToken(rows[0].confirmToken)).toBe(true);
+    if (result.ok && result.confirm) {
+      expect(rows[0].confirmToken).toBe(hashToken(result.confirm.confirmToken));
+      expect(rows[0].confirmToken).not.toBe(result.confirm.confirmToken);
+    }
   });
 
   it("rejects an invalid email with a 400 and inserts nothing", async () => {
@@ -95,9 +102,9 @@ describe("requestAccessGrant", () => {
 
   it("duplicate request for an already-active email: generic ok, no second row", async () => {
     const input = { email: "active@example.com" };
-    await requestAccessGrant(input, "iphash-5");
-    const [row] = await tdb.db.select().from(apiAccessGrantsTable);
-    await confirmAccessGrant(row.confirmToken);
+    const first = await requestAccessGrant(input, "iphash-5");
+    const rawConfirm = first.ok && first.confirm ? first.confirm.confirmToken : "";
+    await confirmAccessGrant(rawConfirm);
 
     const second = await requestAccessGrant(input, "iphash-5");
     expect(second.ok).toBe(true);
@@ -143,10 +150,11 @@ describe("requestAccessGrant", () => {
 
 describe("confirmAccessGrant", () => {
   it("flips a pending row to active and mints an accessToken", async () => {
-    await requestAccessGrant({ email: "reader@example.com" }, "iphash-6");
+    const requestResult = await requestAccessGrant({ email: "reader@example.com" }, "iphash-6");
+    const rawConfirm = requestResult.ok && requestResult.confirm ? requestResult.confirm.confirmToken : "";
     const [row] = await tdb.db.select().from(apiAccessGrantsTable);
 
-    const result = await confirmAccessGrant(row.confirmToken);
+    const result = await confirmAccessGrant(rawConfirm);
     expect(result.status).toBe("active");
     if (result.status === "active") {
       expect(result.accessToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
@@ -160,29 +168,100 @@ describe("confirmAccessGrant", () => {
     expect(updated.accessToken).not.toBeNull();
     expect(updated.confirmedAt).not.toBeNull();
     expect(updated.expiresAt).not.toBeNull();
+    // Both tokens are stored as sha256 hashes, never the raw values returned to the caller.
+    expect(isHashedToken(updated.confirmToken)).toBe(true);
+    expect(isHashedToken(updated.accessToken!)).toBe(true);
+    if (result.status === "active") {
+      expect(updated.accessToken).toBe(hashToken(result.accessToken));
+      expect(updated.accessToken).not.toBe(result.accessToken);
+    }
   });
 
   it("is single-use: a second confirm of the same token is invalid and does not reissue a new accessToken", async () => {
-    await requestAccessGrant({ email: "reader@example.com" }, "iphash-7");
+    const requestResult = await requestAccessGrant({ email: "reader@example.com" }, "iphash-7");
+    const rawConfirm = requestResult.ok && requestResult.confirm ? requestResult.confirm.confirmToken : "";
     const [row] = await tdb.db.select().from(apiAccessGrantsTable);
 
-    const first = await confirmAccessGrant(row.confirmToken);
+    const first = await confirmAccessGrant(rawConfirm);
     expect(first.status).toBe("active");
     const firstToken = first.status === "active" ? first.accessToken : null;
 
-    const second = await confirmAccessGrant(row.confirmToken);
+    const second = await confirmAccessGrant(rawConfirm);
     expect(second.status).toBe("invalid");
 
     const [updated] = await tdb.db
       .select()
       .from(apiAccessGrantsTable)
       .where(eq(apiAccessGrantsTable.id, row.id));
-    expect(updated.accessToken).toBe(firstToken); // unchanged — no silent reissue
+    // unchanged — no silent reissue. Stored value is the hash of the token minted on the first confirm.
+    expect(updated.accessToken).toBe(hashToken(firstToken!));
   });
 
   it("returns 'invalid' for an unknown token and for an empty token", async () => {
     expect((await confirmAccessGrant("bogus-token")).status).toBe("invalid");
     expect((await confirmAccessGrant("")).status).toBe("invalid");
+  });
+});
+
+describe("confirmAccessGrant — legacy raw-token dual-read", () => {
+  it("confirms a pre-hashing row stored with a raw confirmToken, upgrades confirmToken to a hash, and stores the newly-minted accessToken hashed too", async () => {
+    const rawLegacyToken = "legacy-raw-confirm-token-not-hashed";
+    const [inserted] = await tdb.db
+      .insert(apiAccessGrantsTable)
+      .values({
+        email: "legacy@example.com",
+        status: "pending",
+        confirmToken: rawLegacyToken,
+      })
+      .returning({ id: apiAccessGrantsTable.id });
+
+    const result = await confirmAccessGrant(rawLegacyToken);
+    expect(result.status).toBe("active");
+
+    const [updated] = await tdb.db
+      .select()
+      .from(apiAccessGrantsTable)
+      .where(eq(apiAccessGrantsTable.id, inserted.id));
+    expect(updated.status).toBe("active");
+    expect(isHashedToken(updated.confirmToken)).toBe(true);
+    expect(updated.confirmToken).toBe(hashToken(rawLegacyToken));
+    expect(isHashedToken(updated.accessToken!)).toBe(true);
+    if (result.status === "active") {
+      expect(updated.accessToken).toBe(hashToken(result.accessToken));
+    }
+
+    // Status is no longer 'pending', so a second confirm attempt (even
+    // through the now-upgraded hash) reports invalid instead of reissuing —
+    // same single-use guarantee as the non-legacy path.
+    const second = await confirmAccessGrant(rawLegacyToken);
+    expect(second.status).toBe("invalid");
+  });
+});
+
+describe("confirmAccessGrant — stolen-hash rejection", () => {
+  it("rejects the stored hash itself as a presented token (closes the stolen-hash-as-bearer bypass)", async () => {
+    const requestResult = await requestAccessGrant({ email: "reader@example.com" }, "iphash-stolen-hash");
+    const rawConfirm = requestResult.ok && requestResult.confirm ? requestResult.confirm.confirmToken : "";
+    const [row] = await tdb.db.select().from(apiAccessGrantsTable);
+    const stolenHash = row.confirmToken; // exactly what a DB leak would expose
+    expect(isHashedToken(stolenHash)).toBe(true);
+    expect(stolenHash).toBe(hashToken(rawConfirm));
+
+    // Presenting the STOLEN HASH itself (never the raw token) must not authenticate.
+    const result = await confirmAccessGrant(stolenHash);
+    expect(result.status).toBe("invalid");
+
+    // Untouched — still pending, no accessToken minted by the stolen hash.
+    const [unchanged] = await tdb.db
+      .select()
+      .from(apiAccessGrantsTable)
+      .where(eq(apiAccessGrantsTable.id, row.id));
+    expect(unchanged.status).toBe("pending");
+    expect(unchanged.accessToken).toBeNull();
+
+    // The genuine raw token still works — the guard doesn't break the real path.
+    const genuine = await confirmAccessGrant(rawConfirm);
+    expect(genuine.status).toBe("active");
   });
 });
 

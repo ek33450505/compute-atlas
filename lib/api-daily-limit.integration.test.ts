@@ -13,6 +13,7 @@ import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 import { apiAccessGrantsTable, apiDailyUsageTable } from "@/lib/db/schema";
 import { hashIp } from "@/lib/rate-limit";
+import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 import { checkDailyApiGate, API_DAILY_LIMIT_MAX } from "@/lib/api-daily-limit";
 
@@ -170,5 +171,105 @@ describe("checkDailyApiGate", () => {
       .where(eq(apiAccessGrantsTable.id, inserted.id));
     expect(updated.requestCount).toBe(1);
     expect(updated.lastUsedAt).not.toBeNull();
+  });
+
+  it("a hash-stored accessToken (post-hardening confirm) bypasses via the primary hash-first lookup", async () => {
+    const rawToken = "already-hashed-flow-token";
+    await tdb.db.insert(apiAccessGrantsTable).values({
+      email: "hashed-usage@example.com",
+      status: "active",
+      confirmToken: "confirm-hashed",
+      accessToken: hashToken(rawToken),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+
+    const result = await checkDailyApiGate(
+      makeRequest({ "x-real-ip": "18.18.18.18", authorization: `Bearer ${rawToken}` })
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  it("legacy dual-read: a raw-stored accessToken bypasses via fallback and is upgraded to its hash", async () => {
+    const rawToken = "legacy-raw-access-token";
+    const [inserted] = await tdb.db
+      .insert(apiAccessGrantsTable)
+      .values({
+        email: "legacy-usage@example.com",
+        status: "active",
+        confirmToken: "confirm-legacy",
+        accessToken: rawToken,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      })
+      .returning({ id: apiAccessGrantsTable.id });
+
+    const result = await checkDailyApiGate(
+      makeRequest({ "x-real-ip": "17.17.17.17", authorization: `Bearer ${rawToken}` })
+    );
+    expect(result.ok).toBe(true);
+
+    const [updated] = await tdb.db
+      .select()
+      .from(apiAccessGrantsTable)
+      .where(eq(apiAccessGrantsTable.id, inserted.id));
+    expect(isHashedToken(updated.accessToken!)).toBe(true);
+    expect(updated.accessToken).toBe(hashToken(rawToken));
+    expect(updated.requestCount).toBe(1);
+
+    // The raw link still works after the upgrade — now via the hash-first path.
+    const second = await checkDailyApiGate(
+      makeRequest({ "x-real-ip": "17.17.17.17", authorization: `Bearer ${rawToken}` })
+    );
+    expect(second.ok).toBe(true);
+    const [updatedAgain] = await tdb.db
+      .select()
+      .from(apiAccessGrantsTable)
+      .where(eq(apiAccessGrantsTable.id, inserted.id));
+    expect(updatedAgain.requestCount).toBe(2);
+  });
+
+  it("rejects the stored accessToken hash itself as a presented bearer (closes the stolen-hash-as-bearer bypass)", async () => {
+    const rawToken = "genuine-raw-access-token-for-stolen-hash-test";
+    const storedHash = hashToken(rawToken);
+    const [inserted] = await tdb.db
+      .insert(apiAccessGrantsTable)
+      .values({
+        email: "stolen-hash-victim@example.com",
+        status: "active",
+        confirmToken: "confirm-stolen-hash-test",
+        accessToken: storedHash,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        requestCount: 0,
+      })
+      .returning({ id: apiAccessGrantsTable.id });
+
+    // Presenting the STOLEN HASH itself as the bearer must fall through to
+    // the anonymous IP-day path, not bypass via the grant.
+    const result = await checkDailyApiGate(
+      makeRequest({ "x-real-ip": "19.19.19.19", authorization: `Bearer ${storedHash}` })
+    );
+    // A fresh IP under the anonymous cap still returns ok:true either way —
+    // result.ok alone can't distinguish "bypassed via the stolen hash" from
+    // "fell through and passed anonymously anyway". The grant row being
+    // untouched is the real discriminator.
+    expect(result.ok).toBe(true);
+
+    const [unchanged] = await tdb.db
+      .select()
+      .from(apiAccessGrantsTable)
+      .where(eq(apiAccessGrantsTable.id, inserted.id));
+    expect(unchanged.requestCount).toBe(0);
+    expect(unchanged.lastUsedAt).toBeNull();
+
+    // The genuine raw token still bypasses correctly, from a different IP so
+    // the anonymous-path assertion above can't mask a broken primary lookup.
+    const genuineResult = await checkDailyApiGate(
+      makeRequest({ "x-real-ip": "20.20.20.20", authorization: `Bearer ${rawToken}` })
+    );
+    expect(genuineResult.ok).toBe(true);
+    const [updated] = await tdb.db
+      .select()
+      .from(apiAccessGrantsTable)
+      .where(eq(apiAccessGrantsTable.id, inserted.id));
+    expect(updated.requestCount).toBe(1);
   });
 });

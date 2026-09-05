@@ -144,8 +144,8 @@ export const subscriptionsTable = pgTable(
     targetType: text("target_type").notNull(), // facility (legacy: state | all)
     targetId: text("target_id"), // facility id (slug); legacy: 2-letter state code, or null for 'all'
     status: text("status").notNull().default("pending"), // pending | confirmed | unsubscribed
-    confirmToken: text("confirm_token").notNull(), // raw 256-bit base64url, single-use (double-opt-in)
-    unsubscribeToken: text("unsubscribe_token").notNull(), // raw 256-bit base64url, embedded in every email
+    confirmToken: text("confirm_token").notNull(), // sha256 hash (64 hex) of the raw 256-bit base64url single-use (double-opt-in) token; raw is shown once to its owner in the confirm email, so a DB leak yields no usable credential — see lib/token-hash.ts
+    unsubscribeToken: text("unsubscribe_token").notNull(), // deliberately RAW, not hashed — 256-bit base64url; lib/notify.ts must embed this, readable, in every future alert email, and its leak blast radius is unsubscribe-only, not data access
     submitterIpHash: text("submitter_ip_hash"), // for subscribe rate-limiting
     confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
     unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
@@ -237,14 +237,14 @@ export type ContactMessageRow = typeof contactMessagesTable.$inferSelect;
 
 /**
  * Email-verified, revocable grant of a higher API request ceiling — NOT a
- * user account. Same raw-single-use-token conventions as `subscriptionsTable`
- * above (no hashing/signing — see that table's comment for the rationale):
- * `confirmToken` is the one-time magic-link token, `accessToken` is the
- * long-lived bearer credential minted only once, on confirm. This table is
- * self-contained (schema + email + request/confirm routes) — nothing outside
- * this file's Unit reads `accessToken` yet; wiring it into the actual
- * `/api/facilities`-family rate gate is a separate unit, done below in
- * `apiDailyUsageTable`.
+ * user account. `confirmToken` is the one-time magic-link token, `accessToken`
+ * is the long-lived bearer credential minted only once, on confirm — both are
+ * stored as a sha256 hash of their raw value (see the per-column comments
+ * below and lib/token-hash.ts), same convention as `subscriptionsTable.confirmToken`
+ * above. This table is self-contained (schema + email + request/confirm
+ * routes) — nothing outside this file's Unit reads `accessToken` yet; wiring
+ * it into the actual `/api/facilities`-family rate gate is a separate unit,
+ * done below in `apiDailyUsageTable`.
  */
 export const apiAccessGrantsTable = pgTable(
   "api_access_grants",
@@ -253,8 +253,8 @@ export const apiAccessGrantsTable = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     email: text("email").notNull(), // stored lowercased + trimmed
     status: text("status").notNull().default("pending"), // pending | active | revoked
-    confirmToken: text("confirm_token").notNull(), // raw 256-bit base64url, single-use magic link
-    accessToken: text("access_token"), // raw 256-bit base64url, set on confirm; null until active
+    confirmToken: text("confirm_token").notNull(), // sha256 hash (64 hex) of the raw 256-bit base64url single-use magic-link token; raw shown once to its owner — see lib/token-hash.ts
+    accessToken: text("access_token"), // sha256 hash (64 hex) of the raw 256-bit base64url bearer token; set on confirm, null until active; raw shown once to its owner — see lib/token-hash.ts
     submitterIpHash: text("submitter_ip_hash"),
     confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
     expiresAt: timestamp("expires_at", { withTimezone: true }), // confirmedAt + 90 days

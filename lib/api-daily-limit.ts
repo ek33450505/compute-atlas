@@ -3,6 +3,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
 import { apiAccessGrantsTable, apiDailyUsageTable } from "@/lib/db/schema";
 import { extractTrustedClientIp, hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
+import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 export const API_DAILY_LIMIT_MAX = 1000;
 
@@ -55,19 +56,47 @@ export async function checkDailyApiGate(
     const token = extractBearerToken(request);
 
     if (token) {
-      const rows = await db
+      const hashedBearer = hashToken(token);
+      let rows = await db
         .select({ id: apiAccessGrantsTable.id, expiresAt: apiAccessGrantsTable.expiresAt })
         .from(apiAccessGrantsTable)
-        .where(and(eq(apiAccessGrantsTable.accessToken, token), eq(apiAccessGrantsTable.status, "active")));
+        .where(and(eq(apiAccessGrantsTable.accessToken, hashedBearer), eq(apiAccessGrantsTable.status, "active")));
+      let isLegacyRawMatch = false;
+      if (rows.length === 0 && !isHashedToken(token)) {
+        // Legacy fallback: row predates hashing and still stores the raw
+        // bearer token. A hit here is best-effort upgraded to its hash below,
+        // alongside the existing usage-counter bump (see lib/token-hash.ts).
+        // Gated on `!isHashedToken(token)` to close a stolen-stored-hash
+        // bypass: without this guard, presenting the 64-hex hash itself (e.g.
+        // from a DB leak) would miss the hash-first lookup (hash-of-hash) but
+        // then match THIS raw-equality fallback directly against the stored
+        // value, authenticating with no raw token ever having existed. A
+        // genuine raw token is always 43-char base64url and can never be 64
+        // lowercase hex, so no real caller is affected.
+        rows = await db
+          .select({ id: apiAccessGrantsTable.id, expiresAt: apiAccessGrantsTable.expiresAt })
+          .from(apiAccessGrantsTable)
+          .where(and(eq(apiAccessGrantsTable.accessToken, token), eq(apiAccessGrantsTable.status, "active")));
+        isLegacyRawMatch = true;
+      }
       const grant = rows[0];
       if (grant && (!grant.expiresAt || grant.expiresAt > new Date())) {
         await db
           .update(apiAccessGrantsTable)
-          .set({ requestCount: sql`${apiAccessGrantsTable.requestCount} + 1`, lastUsedAt: new Date() })
+          .set(
+            isLegacyRawMatch
+              ? {
+                  requestCount: sql`${apiAccessGrantsTable.requestCount} + 1`,
+                  lastUsedAt: new Date(),
+                  accessToken: hashedBearer,
+                }
+              : { requestCount: sql`${apiAccessGrantsTable.requestCount} + 1`, lastUsedAt: new Date() }
+          )
           .where(eq(apiAccessGrantsTable.id, grant.id))
           .catch(() => {
-            // Usage counter is visibility-only (per apiAccessGrantsTable's doc
-            // comment) — a failed bump must never block the request it authorizes.
+            // Usage counter (and, on a legacy row, the hash upgrade) is
+            // best-effort — per apiAccessGrantsTable's doc comment, a failed
+            // bump must never block the request it authorizes.
           });
         return { ok: true };
       }
