@@ -14,7 +14,7 @@
  * Run: npm run check:drift (local, reads .env.local)
  * Or:  npx tsx scripts/check-neon-drift.ts (CI, reads DATABASE_URL from env)
  *
- * Uses relative imports — tsx does not resolve the `@/*` path alias.
+ * Uses relative imports, matching the other scripts in this folder.
  */
 import { readFileSync } from "node:fs";
 import { facilitiesTable } from "../lib/db/schema";

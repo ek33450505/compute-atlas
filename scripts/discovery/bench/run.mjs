@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-// Local-model bench for Compute Atlas Track 5 (field extraction from cited sources).
+// Local-model bench for Compute Atlas's field-extraction lane (field extraction from cited sources).
 //
 //   node run.mjs <model-tag> [field,field,...]     -> writes result-<model>.json
 //   node rescore.mjs                               -> scores every result against truth.json
 //
-// Scored on REAL cached pages from the live dataset, never synthetic text: s92's
-// lesson is that 268 tests + 3 review passes + 17 killed mutants all cleared a
+// Scored on REAL cached pages from the live dataset, never synthetic text: the
+// hard lesson here is that 268 tests + 3 review passes + 17 killed mutants all cleared a
 // tool that failed on its first real page.
 //
 // Ground truth lives in truth.json, hand-verified by reading context. It is NOT
 // derived from the DB record -- a facility's recorded value frequently comes from
 // a different source than the page under test.
 //
-// ── The system prompt is a THREE-WAY CONJUNCTION (measured s97) ──────────────
+// ── The system prompt is a THREE-WAY CONJUNCTION ──────────────
 // Remove any one of these and Tract Altoona's 1GW silently becomes null:
 //   1. the GW->MW conversion instruction
 //   2. "(quote the ORIGINAL units as written)" -- without it the verbatim-quote

@@ -14,8 +14,7 @@
  *
  * Run via: tsx scripts/discovery/existing-facilities.ts --state=TX
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, matching scripts/discovery/submit-candidates.ts.
+ * Uses relative imports throughout, matching scripts/discovery/submit-candidates.ts.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";

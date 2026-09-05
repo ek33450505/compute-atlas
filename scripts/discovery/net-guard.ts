@@ -1,7 +1,7 @@
 /**
  * Shared SSRF-guard, retry/backoff, and bounded-concurrency primitives.
  *
- * Extracted verbatim from check-sources.ts (Track 1, Task 1) so they can be
+ * Extracted verbatim from check-sources.ts (Task 1) so they can be
  * reused by the (untrusted, model-proposed) candidate-source verification
  * path without duplicating hard-won correctness logic. check-sources.ts
  * imports these back rather than redefining them; its own behavior is

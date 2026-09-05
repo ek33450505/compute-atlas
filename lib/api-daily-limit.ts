@@ -24,7 +24,7 @@ function extractBearerToken(request: Request): string | null {
 }
 
 /**
- * Gate for the facilities-family read API's Track B2 daily-volume ceiling.
+ * Gate for the facilities-family read API's daily-volume ceiling.
  * A valid, active, unexpired access-grant bearer token bypasses this
  * entirely — token holders are bounded only by the existing in-memory burst
  * limiter (`checkApiRateLimit`, unchanged, still runs first in every route),

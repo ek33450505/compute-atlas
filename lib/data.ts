@@ -433,7 +433,7 @@ export async function getStatusCounts(): Promise<Record<Status, number>> {
  * (operational or planned) desc, then name A→Z (deterministic tie-break).
  * Backs the /status/[status] landing pages. Reads the shared
  * `loadFacilities()` cache — no new uncached per-request DB read (see that
- * function's doc comment on the s51 ISR-write-blowout lesson).
+ * function's doc comment on the ISR-write-blowout lesson).
  */
 export async function getFacilitiesByStatus(status: Status): Promise<Facility[]> {
   const facilities = await loadFacilities();
@@ -725,7 +725,7 @@ function isUnverifiedMegaproject(f: Facility): boolean {
  * (`capacityMw.planned`) descending, tie-broken by name A→Z. Excludes
  * cancelled facilities and `isUnverifiedMegaproject` outliers before
  * ranking. Mirrors `getFacilitiesByWaterUsage`'s filter→sort→slice shape
- * (Session 7, Task 7.1) applied to `capacityMw.planned` instead.
+ * applied to `capacityMw.planned` instead.
  */
 export async function getFacilitiesRankedByPlannedMw(n = 20): Promise<Facility[]> {
   const facilities = await loadFacilities();
@@ -1469,7 +1469,7 @@ export async function getDefeatedProjects(): Promise<Facility[]> {
  * normalizes away the live data's mixed `"X County"` / bare `"X"` county
  * strings (see `lib/metros.ts` doc comment). Facilities with no county on
  * record never match. Reads the shared `loadFacilities()` cache — no new
- * uncached per-request DB read (see that function's doc comment on the s51
+ * uncached per-request DB read (see that function's doc comment on the
  * ISR-write-blowout lesson). Unknown slug returns `[]`.
  */
 export async function getFacilitiesByMetro(slug: string): Promise<Facility[]> {

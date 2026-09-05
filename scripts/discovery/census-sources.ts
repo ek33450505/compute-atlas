@@ -1,5 +1,5 @@
 /**
- * Source-verification census — runs the Track 1 verification gate
+ * Source-verification census — runs the verification gate
  * (verify-source.ts) over the whole live dataset and reports where a cited
  * source does not actually back the record.
  *
@@ -49,8 +49,7 @@
  * `--out` picks up the newest existing report in discovery-logs/ and always says
  * which file it read and how many records it found, including zero.
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path alias,
- * matching scripts/discovery/check-sources.ts and submit-candidates.ts.
+ * Uses relative imports throughout, matching scripts/discovery/check-sources.ts and submit-candidates.ts.
  */
 import { createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
@@ -184,7 +183,7 @@ export interface RunCensusOptions {
 /**
  * Numeric hints below this are too collision-prone to be evidence: a hint of
  * `2` matches a bare `\b2\b` anywhere on the page — dates, list numbers,
- * paragraph counts (s91 review concern).
+ * paragraph counts (a prior review concern).
  */
 export const MIN_NUMERIC_HINT = 10;
 

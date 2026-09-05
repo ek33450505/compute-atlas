@@ -9,7 +9,7 @@
  *
  * ## The single most important constraint
  *
- * This project has a hard, measured rule (s86/s87/s90): a local model is 0/5
+ * This project has a hard, measured rule: a local model is 0/5
  * at PROPOSING facts and 12/12 at CHECKING one. For a lead we already have
  * the URL (a human supplied it) and its page text, so extraction is grounded
  * rather than open-ended discovery — but the rule still binds:
@@ -31,7 +31,7 @@
  * ## Flow (see `processLead`)
  *
  * 1. Fetch the lead's URL. A fetch failure leaves the lead `new` (a
- *    bot-walled page is not a bad tip — s87) and does not count against it.
+ *    bot-walled page is not a bad tip) and does not count against it.
  * 2. Ask the model to extract name/operator/facilityType/status/city/state/
  *    capacityMw, explicitly instructed to return null for anything the page
  *    does not state. A failed or malformed model call is treated exactly
@@ -83,12 +83,7 @@
  * read/write access to tables with no public API surface, run with
  * `--env-file=.env.local` for DATABASE_URL.
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias at the entry point, matching the rest of scripts/discovery/. (The
- * modules imported below use `@/*` internally, e.g. lib/leads.ts's own
- * `@/lib/db/client` — tsx resolves those transitively via tsconfig.json's
- * `paths`, exactly as it already does for extract-fields.ts's import of
- * lib/enrichment-update.ts.)
+ * Uses relative imports throughout, matching the rest of scripts/discovery/.
  */
 import { facilitySchema } from "../../lib/schema";
 import { buildCreatePayload, type CreateContributeInput } from "../../lib/contribute";

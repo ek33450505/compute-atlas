@@ -271,7 +271,7 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
     // Real case: flexential-hillsboro-5-or / capacityMw.operational. The page
     // states "...358,000-square-foot, 36‑megawatt, two‑story facility"
     // using U+2011 (non-breaking hyphen), not ASCII '-'. This was measured as
-    // breaking both implementations until the dash-class fix (s97).
+    // breaking both implementations until the dash-class fix.
     const page = pageTextByFacility.get("flexential-hillsboro-5-or")!;
     const quote = "Hillsboro 5, at 4975 NE Starr Blvd., is a 358,000-square-foot, 36‑megawatt, two‑story facility.";
 

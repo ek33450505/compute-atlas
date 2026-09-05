@@ -18,7 +18,7 @@ import type { Facility } from "@/lib/schema";
 
 // Imported after the mock above so its transitive import of lib/db/client
 // resolves against the mocked module. subscribeToTarget no longer calls
-// sendConfirmEmail directly (Fix 1, s65 security review) — it hands back a
+// sendConfirmEmail directly (a prior security-review fix) — it hands back a
 // `confirm` signal for the route to act on, so lib/email needs no mock here.
 import { subscribeToTarget, confirmSubscription, unsubscribeByToken } from "@/lib/subscribe";
 

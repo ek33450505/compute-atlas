@@ -40,7 +40,7 @@ function revalidateForFacility(doc: Facility, prevDoc?: Facility): void {
  * doesn't change. The insert itself, and the log-and-continue-on-failure
  * design it implements — losing one audit row is recoverable, whereas
  * failing a facility save because the audit table hiccuped would be a worse
- * outcome (judgment call per Phase 5a of the admin-ui-part2 plan) — now live
+ * outcome (a deliberate judgment call) — now live
  * in the leaf, shared with `scripts/sync-to-neon.ts` and `scripts/seed.ts`
  * (previously three separate copies of this same body, kept separate only
  * because this file also imports `next/cache` at module scope, which throws

@@ -27,8 +27,7 @@
  * `--out` must name a `.jsonl` file under discovery-logs/ — the same guard
  * census-sources.ts uses, so a typo can never truncate a real data file.
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path alias,
- * matching scripts/discovery/census-sources.ts and check-sources.ts.
+ * Uses relative imports throughout, matching scripts/discovery/census-sources.ts and check-sources.ts.
  */
 import { createWriteStream, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";

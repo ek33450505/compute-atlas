@@ -31,7 +31,7 @@
  * Run: npm run check:schema (local, reads .env.local)
  * Or:  npx tsx scripts/check-schema-drift.ts (CI, reads DATABASE_URL from env)
  *
- * Uses relative imports — tsx does not resolve the `@/*` path alias.
+ * Uses relative imports, matching the other scripts in this folder.
  */
 import { eq, getTableName, is, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";

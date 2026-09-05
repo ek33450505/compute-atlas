@@ -226,7 +226,7 @@ describe("prefilter", () => {
   it('matches capacity with en dash (U+2013) separator', () => {
     // Comprehensive coverage for the prefilter regex (POWER_UNIT_RE). This case
     // uses an en dash, a real published-prose punctuation mark, as the only
-    // capacity mention on a page. Before the dash-class fix (s97), the prefilter
+    // capacity mention on a page. Before the dash-class fix, the prefilter
     // regex would silently reject this page, never reaching the model — making
     // the resulting gap indistinguishable from "the page does not state capacity".
     expect(prefilter('The facility is a 36–megawatt data center', 'capacityMw.operational')).toBe(true);
@@ -1247,7 +1247,7 @@ describe("runExtract — sibling value collision guard (Guard 2)", () => {
 // sources the moment ONE of them was readable, regardless of whether it
 // actually stated any requested field — measured over the live dataset, this
 // opened only ~30% of a gap-facility's cited sources and reported a confident
-// "not stated" after reading a fraction of the evidence. Track 5 must now
+// "not stated" after reading a fraction of the evidence. The field-extraction lane must now
 // read through a facility's cited sources IN ORDER until every requested
 // field is filled or sources are exhausted.
 describe("runExtract — reads through multiple cited sources (defect 4)", () => {

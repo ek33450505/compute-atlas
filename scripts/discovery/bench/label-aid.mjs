@@ -1,6 +1,6 @@
 // Labeling aid. Does NOT decide anything -- it surfaces the evidence a human must
-// read. s96 wrote 3 of 14 labels from assumption and every error blamed a model
-// for being right; s97 then found the DB's value often comes from a DIFFERENT
+// read. An earlier pass wrote 3 of 14 labels from assumption and every error blamed a model
+// for being right; a later pass then found the DB's value often comes from a DIFFERENT
 // source than the page under test (apple-maiden-nc's page never mentions Maiden).
 // So: the DB value is a HINT, never a label.
 import { readFileSync } from "node:fs";

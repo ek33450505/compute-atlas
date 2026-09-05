@@ -1,5 +1,5 @@
 /**
- * Track 5 companion tool: CHECKS values already recorded on live facilities
+ * Companion tool to the field-extraction lane: CHECKS values already recorded on live facilities
  * against the sources those facilities already cite. `extract-fields.ts`
  * FILLS missing fields; this tool does the opposite and never fills
  * anything — it is read-only with respect to the dataset.
@@ -213,8 +213,7 @@
  * callers corrupt each other's runs. Coordinate with whoever owns the
  * current sweep before invoking `main()` for real.
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, matching the rest of scripts/discovery/.
+ * Uses relative imports throughout, matching the rest of scripts/discovery/.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";

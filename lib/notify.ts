@@ -41,7 +41,7 @@ export async function notifySubscribersOfChange(
 
     const statusLabel = STATUS_META[facility.status].label;
 
-    // NOTE (MVP scale, reviewed s65): sends run sequentially and inline within
+    // NOTE (MVP scale, security-reviewed): sends run sequentially and inline within
     // approveSubmission, so a large confirmed-subscriber set slows the approve
     // response. Fine at current volumes; move to a queue / background send if
     // subscriber counts grow.

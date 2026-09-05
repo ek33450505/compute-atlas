@@ -1,4 +1,4 @@
-// Quote grounding for Track 5 — shared by run.mjs (records it) and rescore.mjs
+// Quote grounding for the field-extraction lane — shared by run.mjs (records it) and rescore.mjs
 // (RECOMPUTES it, so a gate bug is fixable without re-spending a model run).
 //
 // ── Why this is not a substring test ────────────────────────────────────────
@@ -28,7 +28,7 @@
 // onSiteGenerationMw. Mechanical grounding bounds fabrication, never semantics.
 // That gap is what human review is for; do not let a green gate imply otherwise.
 
-// ⚠️ NORMALISATION IS THE WHOLE BALLGAME (measured s97). Under whitespace+lowercase
+// ⚠️ NORMALISATION IS THE WHOLE BALLGAME. Under whitespace+lowercase
 // only, the verbatim check killed 10 of 26 CORRECT extractions. Not one was a
 // fabrication: the model wraps quotes in literal \" marks ("\"540 MW\"",
 // "\"1.4 gigawatts\"") and the page carries undecoded HTML entities (&#8217;, &#160;,
@@ -48,7 +48,7 @@ const softNorm = (s) => String(s ?? "").replace(/\s+/g, " ").trim().toLowerCase(
 const UNIT_MW = { kw: 0.001, kilowatt: 0.001, kilowatts: 0.001, mw: 1, megawatt: 1, megawatts: 1, gw: 1000, gigawatt: 1000, gigawatts: 1000 };
 
 // Separator that can join a number to its unit in compound-adjective prose
-// ("36-megawatt"). A real page (s97 bench, flexential-hillsboro-5-or) wrote
+// ("36-megawatt"). A real page (bench corpus, flexential-hillsboro-5-or) wrote
 // this with U+2011 NON-BREAKING HYPHEN ("36‑megawatt"), not ASCII '-', and
 // en/em dashes ("36–megawatt") are ordinary published-prose punctuation, not
 // exotic — an ASCII-only `-?` silently missed all of them, turning a real,
@@ -103,7 +103,7 @@ export function quoteVerbatim(quote, pageText) {
   if (!q) return null;
   const page = norm(pageText);
   if (page.includes(q)) return true;
-  // 🔴 ORDER OF OPERATIONS (s97): split the RAW quote on sentence boundaries, THEN
+  // 🔴 ORDER OF OPERATIONS: split the RAW quote on sentence boundaries, THEN
   // normalise each fragment. Normalising first strips the '.' characters this regex
   // needs, collapsing every stitched quote into a single fragment that can never
   // match — silently disabling the stitching allowance that is the whole reason

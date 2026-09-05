@@ -1,4 +1,4 @@
-// Shared field-kind declarations for the Track 5 bench -- imported by BOTH
+// Shared field-kind declarations for the field-extraction bench -- imported by BOTH
 // run.mjs (builds the model prompt) and rescore.mjs (scores the result).
 //
 // Precedent: quote.mjs is a shared module for exactly this reason ("a gate

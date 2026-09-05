@@ -17,8 +17,7 @@
  * shared with the candidate-source verification path and live in
  * ./net-guard.ts — this file imports them rather than redefining them.
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, matching scripts/seed.ts and scripts/discovery/submit-candidates.ts.
+ * Uses relative imports throughout, matching scripts/seed.ts and scripts/discovery/submit-candidates.ts.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
