@@ -48,3 +48,38 @@ describe("retired-facility redirects", () => {
     }
   });
 });
+
+/**
+ * Guards the report-only CSP in `next.config.ts`.
+ *
+ * Deliberately does NOT snapshot the full header value — that would make
+ * the test fail on every legitimate new map-tile host added later. Instead
+ * it checks presence plus a small, meaningful sample of directives: that
+ * defaults are locked down, plugins are disabled, and the policy names real
+ * evidenced origins rather than a wildcard.
+ */
+describe("Content-Security-Policy-Report-Only header", () => {
+  const siteWideCsp = async () => {
+    const all = (await nextConfig.headers?.()) ?? [];
+    const siteWide = all.find((rule) => rule.source === "/:path*");
+    return siteWide?.headers.find(
+      (h) => h.key === "Content-Security-Policy-Report-Only"
+    );
+  };
+
+  it("is present on the site-wide header rule", async () => {
+    expect(await siteWideCsp()).toBeDefined();
+  });
+
+  it("locks down defaults and disables plugins", async () => {
+    const csp = await siteWideCsp();
+    expect(csp?.value).toContain("default-src 'self'");
+    expect(csp?.value).toContain("object-src 'none'");
+  });
+
+  it("allowlists the map's real external origins, not a wildcard", async () => {
+    const csp = await siteWideCsp();
+    expect(csp?.value).toContain("nominatim.openstreetmap.org");
+    expect(csp?.value).not.toContain("*");
+  });
+});
