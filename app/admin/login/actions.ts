@@ -4,11 +4,13 @@ import { pbkdf2Sync, timingSafeEqual } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { SESSION_COOKIE_NAME, createSessionValue } from "@/lib/admin-session";
+import {
+  SESSION_COOKIE_NAME,
+  SESSION_MAX_AGE_SECONDS,
+  createSessionValue,
+} from "@/lib/admin-session";
 import { extractTrustedClientIp, hashIp } from "@/lib/rate-limit";
 import { isLoginRateLimited, recordFailedLogin, safeLoginRedirect } from "./login-guards";
-
-const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 export interface LoginState {
   error?: string;
