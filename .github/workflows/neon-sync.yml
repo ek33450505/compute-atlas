@@ -163,15 +163,64 @@ jobs:
         continue-on-error: true
         run: npm run build:mapdata
 
+      # ADDITIVE GUARD — the machine half of a gate that was never actually run.
+      #
+      # The PR body has always carried "Confirm data/siting-context.json changes
+      # are ADDITIVE (a `value → null` is data loss, not a refresh)". This PR
+      # auto-merges, so no human has ever read that checkbox. This step performs
+      # it, and it is the reason auto-merge can stay on.
+      #
+      # It is NOT redundant with the maintainer's approval. Approval happens in
+      # /admin BEFORE this build runs and vouches for the DATA. This vouches for
+      # the ARTIFACT — whether USGS NHD / HIFLD / WRI Aqueduct degraded during
+      # the ~27min rebuild. A pre-build click cannot approve a post-build
+      # artifact, so the two gates are not interchangeable.
+      #
+      # WHY THE EXISTING CIRCUIT BREAKER IS NOT ENOUGH: build-map-data.mjs aborts
+      # only after NHD_CONSECUTIVE_FAILURE_BUDGET (10) CONSECUTIVE facilities
+      # fail BOTH NHD layers. A SCATTERED partial outage never trips that: each
+      # affected facility silently loses `nearestWater` (the failure path returns
+      # `{ok:false, features:[]}`, the key is then omitted, and nothing preserves
+      # the prior value) while the build still exits 0.
+      #
+      # WHAT A PASSING CHECK LOOKS LIKE WHILE THE BUG IS PRESENT: it does not
+      # pass. Probed by planting a violation 2026-09-05 — one dropped field, one
+      # nulled field, one removed entry — and the script exited 1 naming all
+      # three with their old values. On the same day's real run, three transient
+      # NHD HTTP 502s still produced 1355→1384, +29 added, 0 lost, 0 nulled: the
+      # mechanism is real and that day's blast radius was zero, which is exactly
+      # the difference this step makes visible instead of assumed.
+      #
+      # continue-on-error so the failure is HANDLED (discard + hold the PR open)
+      # rather than aborting the job and leaving no PR at all.
+      - name: Verify siting-context changes are additive
+        id: additive
+        if: steps.check-drift.outputs.drift == 'true' && steps.mapdata.outcome == 'success'
+        continue-on-error: true
+        run: node scripts/check-siting-additive.mjs
+
       # FAIL-CLOSED: revert every build:mapdata output so a partially written
       # siting-context.json can never reach the PR. Paths here MUST stay in sync
       # with `add-paths` below — a path in one list but not the other reintroduces
       # exactly the gap this change exists to close. Authoritative output list is
       # the header of scripts/build-map-data.mjs.
-      - name: Discard partial map data on failure
-        if: steps.check-drift.outputs.drift == 'true' && steps.mapdata.outcome == 'failure'
+      #
+      # Fires on EITHER cause: mapdata crashed, or it succeeded but its output
+      # was not additive. When mapdata fails the additive step is skipped, whose
+      # outcome is 'skipped' — never 'failure' — so the two causes cannot
+      # double-fire and the message below always names the real one.
+      - name: Discard generated map data on failure
+        if: >-
+          steps.check-drift.outputs.drift == 'true'
+          && (steps.mapdata.outcome == 'failure' || steps.additive.outcome == 'failure')
+        env:
+          MAPDATA_OUTCOME: ${{ steps.mapdata.outcome }}
         run: |
-          echo "::error::build:mapdata FAILED — discarding partial artifacts. The PR will contain facility data only; data/siting-context.json will be STALE for any new facility until the next successful run or a manual 'npm run build:mapdata'."
+          if [ "$MAPDATA_OUTCOME" = "failure" ]; then
+            echo "::error::build:mapdata FAILED — discarding partial artifacts. The PR will contain facility data only; data/siting-context.json will be STALE for any new facility until the next successful run or a manual 'npm run build:mapdata'."
+          else
+            echo "::error::build:mapdata SUCCEEDED but its output was NOT additive — it dropped or nulled siting-context fields that exist at HEAD (the step above names them). Discarding the regenerated artifacts rather than publishing data loss; data/siting-context.json will be STALE for any new facility until a clean rerun."
+          fi
           git checkout -- \
             data/siting-context.json \
             public/data/water.geojson \
@@ -193,6 +242,7 @@ jobs:
         if: steps.check-drift.outputs.drift == 'true'
         env:
           MAPDATA_OUTCOME: ${{ steps.mapdata.outcome }}
+          ADDITIVE_OUTCOME: ${{ steps.additive.outcome }}
         run: |
           # shellcheck disable=SC2016  # single quotes are deliberate: the backticks
           # below are literal markdown for the PR body, not command substitution.
@@ -200,6 +250,8 @@ jobs:
             echo "note<<MAPNOTE_EOF"
             if [ "$MAPDATA_OUTCOME" = "failure" ]; then
               echo '⚠️ **build:mapdata FAILED this run** — map artifacts were discarded and are NOT in this PR. Any new facility here will render without its "Siting context" panel until a successful run or a manual `npm run build:mapdata`.'
+            elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+              echo '⛔ **build:mapdata output was NOT additive** — it dropped or nulled `data/siting-context.json` fields that exist on `main`, so the regenerated artifacts were discarded and are NOT in this PR. This usually means a transient USGS NHD / HIFLD / WRI outage during the rebuild. Auto-merge is disabled for this PR: read the "Verify siting-context changes are additive" step for the exact ids, then rerun the workflow once the upstream service is healthy.'
             else
               echo '✅ Map data regenerated — `data/siting-context.json` and the `public/data/` overlays are included, so new facilities have their "Siting context" panel.'
             fi
@@ -280,6 +332,7 @@ jobs:
           steps.check-drift.outputs.drift == 'true'
           && env.NEON_SYNC_PAT != ''
           && steps.mapdata.outcome != 'failure'
+          && steps.additive.outcome != 'failure'
         env:
           GH_TOKEN: ${{ env.NEON_SYNC_PAT }}
           # Env-var indirection rather than direct ${{ }} interpolation into the

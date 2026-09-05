@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 
 import { logout } from "@/app/admin/login/actions";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const NEON_SYNC_WORKFLOW_URL =
+  "https://github.com/ek33450505/compute-atlas/actions/workflows/neon-sync.yml";
 
 // Defense-in-depth: the admin area is cookie-gated, but it must never be
 // indexed even if a link to it leaks.
@@ -49,11 +54,23 @@ export default function AdminLayout({
             </Link>
           </nav>
         </div>
-        <form action={logout}>
-          <Button type="submit" variant="outline" size="sm">
-            Log out
-          </Button>
-        </form>
+        <div className="flex items-center gap-2">
+          <a
+            href={NEON_SYNC_WORKFLOW_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Publish snapshot (opens in new tab)"
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+          >
+            <ExternalLink className="size-3.5" aria-hidden="true" />
+            Publish snapshot
+          </a>
+          <form action={logout}>
+            <Button type="submit" variant="outline" size="sm">
+              Log out
+            </Button>
+          </form>
+        </div>
       </header>
       <div className="flex-1 px-6 py-6">{children}</div>
     </div>
