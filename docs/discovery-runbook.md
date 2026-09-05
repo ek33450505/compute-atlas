@@ -85,6 +85,24 @@ launchctl bootout gui/$(id -u)/com.compute-atlas.discovery
 
 ## Running manually
 
+### Trigger the real scheduled job (preferred)
+
+Run the actual launchd job instead of the raw script. This runs the pipeline in launchd's environment (its own PATH, env vars, and stdout/stderr redirection), matching the scheduled invocation exactly.
+
+```bash
+npm run discovery:now
+```
+
+This is preferred over `bash scripts/discovery/run.sh` because it exercises the production scheduler, not an ad-hoc interactive shell. The difference matters: launchd once fired correctly while headless `claude -p` failed inside it, and the pipeline staged zero candidates for six days — recorded in the comment block at the top of `scripts/discovery/run.sh` (the 2026-08-14 note: "heartbeat.json recorded claudeStatus=no_array every day for SIX consecutive days and nothing surfaced it"). A manual run that does not reproduce the scheduled environment can pass while the scheduled one is broken. Use `discovery:now` for a missed or extra round; use the raw `bash scripts/discovery/run.sh` form only when you deliberately need to override env vars (`DISCOVERY_DRY_RUN`, `DISCOVERY_STATES`, `STATES_PER_RUN`, etc.), since `launchctl kickstart` cannot pass those.
+
+To force-restart a run already in flight (killing it first):
+
+```bash
+launchctl kickstart -k gui/$(id -u)/com.compute-atlas.discovery
+```
+
+**Why this is needed:** macOS `StartCalendarInterval` does NOT catch up a scheduled run missed while the machine was off or asleep — it waits for the next occurrence. Observed 2026-09-05: the Mac booted at 13:32:43, 32 minutes after the 13:00 schedule; `launchctl print` reported `runs = 0` / `last exit code = (never exited)`, and that day's round simply never happened with no error anywhere. Without a manual trigger, no discovery runs that day at all. The watchdog (see [Discovery watchdog](#discovery-watchdog) below) detects this on its own schedule in GitHub Actions; `discovery:now` is the operator's manual recovery tool.
+
 ### Dry run
 
 Exercises the harness end to end without making any API calls or writes. Skips existing-facilities fetch but still runs check-sources (read-only).
@@ -137,6 +155,37 @@ Run tests (unit + integration):
 npx vitest run scripts/discovery/*.test.ts
 bats tests/discovery/run.bats
 ```
+
+## Discovery watchdog
+
+An off-machine monitor in GitHub Actions detects when the local discovery pipeline has not run at all (the failure mode `run.sh` cannot self-detect, since it only fires when it runs).
+
+**Why off-machine?** `run.sh` already alerts on its own failures — desktop notification plus a nonzero exit — but it documents its own blind spot: it cannot detect "launchd never fired at all". A watchdog on the same machine shares that blind spot exactly. macOS `StartCalendarInterval` does NOT catch up a missed run: if the machine is asleep/off at 13:00 local, the run simply never happens, and nothing on that machine errors (there's nothing there to error — the job never fired). A monitor running in GitHub Actions can detect this gap even if the Mac stays asleep indefinitely.
+
+**Mechanism:** `run.sh` writes `discovery-logs/heartbeat.json` after every run (successful or degraded). `run.sh` then publishes it to a `discovery_heartbeat` row in Neon, invoking `scripts/discovery/publish-heartbeat.ts` from inside the same non-dry-run heartbeat block — so `DISCOVERY_DRY_RUN=true` never writes to Neon. A publish failure does not abort the run (the discovery work is already complete by that point and must not be lost), but it is appended to `FAILURES`, so the run still exits nonzero and still fires the desktop notification. To publish a heartbeat by hand, run `npm run discovery:heartbeat`. The `.github/workflows/discovery-watchdog.yml` workflow runs daily at 23:00 UTC (~5–6 hours after the 13:00-local scheduled run) and invokes `npx tsx scripts/discovery/check-heartbeat.ts`, which reads the `discovery_heartbeat` row from Neon and checks its freshness. It calls the script directly rather than the `check:heartbeat` npm script because that script carries `--env-file=.env.local`, which does not exist on a CI runner; there `DATABASE_URL` arrives from the workflow's job env.
+
+**Fails closed:** The script exits nonzero if:
+- `DATABASE_URL` is not set
+- `DISCOVERY_STALE_HOURS` is set but unparseable as a positive number
+- No `discovery_heartbeat` row exists (expected only before the first run after this feature's deploy; any other time means the publisher is broken)
+- `last_run_at` is older than the configured threshold (default `DISCOVERY_STALE_HOURS=36`, deliberately matching `run.sh`'s own stale-check threshold so both agree on what "stale" means)
+
+A monitor that silently passes when it cannot check, or when the thing it is meant to detect (silence) has in fact occurred, is worse than no monitor — that is the exact gap this feature exists to close.
+
+**Scope:** Freshness only — "did a discovery run happen recently at all". A run that happened but produced a degraded status still passes the watchdog (with a warning printed); `run.sh` already alerts locally for degraded runs, so the watchdog does not re-judge run quality.
+
+**Manual check:** Verify the watchdog locally (reads `.env.local` for `DATABASE_URL`):
+
+```bash
+npm run check:heartbeat
+```
+
+**Deploy order matters:** The three pieces are safe only in sequence:
+1. `npm run db:migrate` applies the `discovery_heartbeat` table schema (one-time)
+2. A discovery run publishes the first heartbeat row (via `publish-heartbeat.ts`, invoked from `run.sh`)
+3. Only then is the watchdog meaningful
+
+Between merge and step 2, the workflow WILL fail — first on the missing table, then on the missing row — and that is intentional rather than a bug to work around: discovery genuinely is not being monitored yet during that window. The window typically lasts ~24 hours (until the next 13:00 local run fires).
 
 ## Reviewing candidates and updates
 

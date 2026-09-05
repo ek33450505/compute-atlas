@@ -297,3 +297,32 @@ export const apiDailyUsageTable = pgTable(
 );
 
 export type ApiDailyUsageRow = typeof apiDailyUsageTable.$inferSelect;
+
+/**
+ * Single-row heartbeat published by the LOCAL discovery pipeline
+ * (`scripts/discovery/run.sh`, via `scripts/discovery/publish-heartbeat.ts`)
+ * after every run. This table exists solely because the pipeline's actual
+ * failure mode is "launchd never fired at all" — `run.sh` already writes a
+ * heartbeat to the gitignored `discovery-logs/heartbeat.json` on the
+ * maintainer's Mac, but that file is invisible to anything off-machine.
+ * Neon is the one place both the Mac (via `.env.local`) and a GitHub Actions
+ * watchdog (via a repo secret) can both reach, so publishing the heartbeat
+ * here is what lets an external, always-on process detect "no run happened"
+ * rather than only "a run happened and failed" (which `run.sh` already
+ * self-detects and cannot escalate off-machine).
+ *
+ * `id` is always the literal `"singleton"` — there is exactly one row,
+ * upserted in place, not a history table. `states` mirrors the per-state
+ * array from `heartbeat.json` (`runId`/`state`/`claudeStatus`/`elapsedSecs`)
+ * as opaque JSON; nothing here re-validates its shape.
+ */
+export const discoveryHeartbeatTable = pgTable("discovery_heartbeat", {
+  id: text("id").primaryKey(), // constant "singleton" — one row, upserted
+  lastRunAt: timestamp("last_run_at", { withTimezone: true }).notNull(),
+  status: text("status").notNull(), // "ok" | "degraded"
+  failureCount: integer("failure_count").notNull().default(0),
+  states: jsonb("states"), // per-state array from heartbeat.json, opaque
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type DiscoveryHeartbeatRow = typeof discoveryHeartbeatTable.$inferSelect;

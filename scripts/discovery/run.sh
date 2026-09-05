@@ -684,6 +684,21 @@ $HEARTBEAT_ENTRIES
 }
 EOF
   log "wrote heartbeat -> $LOG_DIR/heartbeat.json (status=$_hb_status states=${HB_STATES[*]} statuses=${HB_STATUSES[*]})"
+
+  # Publish the just-written heartbeat to Neon: discovery-logs/ is gitignored
+  # and never leaves this Mac, so the off-machine GitHub Actions watchdog
+  # (.github/workflows/discovery-watchdog.yml) has no way to read
+  # heartbeat.json directly — Neon is the one store both this machine and CI
+  # can reach. The discovery work above is already done by this point, so a
+  # publish failure must not abort the run and lose it — but per this file's
+  # own "a silent instrument is not monitoring" rule (see the block below),
+  # it must not fail silently either: log it and record a FAILURES entry so
+  # the run still exits nonzero and the desktop notification still fires.
+  if ! npx tsx --env-file=.env.local scripts/discovery/publish-heartbeat.ts \
+    >"$LOG_DIR/publish-heartbeat.log" 2>>"$LOG_DIR/publish-heartbeat.err"; then
+    log "WARN: publish-heartbeat failed — continuing (see publish-heartbeat.err)"
+    FAILURES+=("heartbeat: publish failed")
+  fi
 fi
 
 # --- alert + exit status -----------------------------------------------------
