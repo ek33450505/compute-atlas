@@ -5734,6 +5734,66 @@
     }
   },
   {
+    "id": "atlas-agro-richland-data-center-campus-wa",
+    "name": "Atlas Agro Richland Data Center Campus",
+    "operator": "Atlas Agro North America",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 46.36,
+      "lon": -119.325,
+      "city": "Richland",
+      "county": "Benton",
+      "street": "2100 Horn Rapids Road",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 320
+    },
+    "announcedDate": "2025-09-22",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-02",
+        "note": "Richland City Council unanimously approved a land-option agreement with Atlas Agro for 275 acres at 2100 Horn Rapids Road, with a $250,000 nonrefundable option fee.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tricitiesbusinessnews.com/articles/richland-oks-option-agreement-for-atlas-agro-data-center",
+        "label": "Richland OKs option agreement for Atlas Agro data center",
+        "publisher": "Tri-Cities Area Journal of Business",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.columbiariverkeeper.org/wp-content/uploads/2026/02/2026.02.26-Data-Center-Closer-Look-Report.pdf",
+        "label": "A Closer Look: Columbia River Data Centers (February 2026) — Benton County, Washington",
+        "publisher": "Columbia Riverkeeper",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/know-4-major-data-center-120000272.html",
+        "label": "What to know about 4 major data center proposals for Tri-Cities area",
+        "publisher": "Tri-City Herald (via Yahoo News)",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Swiss fertilizer developer Atlas Agro offered the City of Richland just under $24 million for 275 acres in the Northwest Advanced Clean Energy Park, adjacent to its planned zero-carbon nitrate fertilizer plant. The campus would comprise five data center buildings of roughly 500,000 sq ft each, with construction targeted to begin in 2027. Columbia Riverkeeper's February 2026 report puts the campus's power requirement at at least 320 MW. Power would come via a Bonneville Power Administration line serving both the data center and the fertilizer plant. Atlas Agro's North American president describes the data center as 'a partner that helps us build the necessary power and utility infrastructure.' Coordinates are an approximate geocode of the stated address.",
+    "investmentUsd": 500000000,
+    "landAcres": 275,
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "atlas-compute-ai-data-center-campus-fort-pierce-fl",
     "name": "Atlas Compute AI Data Center Campus",
     "operator": "Atlas Compute (infrastructure by Penguin Solutions)",
@@ -9235,13 +9295,14 @@
     "id": "aws-wallula-gap-walla-walla-wa",
     "name": "AWS Wallula Gap Campus",
     "operator": "Amazon Web Services",
-    "status": "under_construction",
+    "status": "proposed",
     "confidence": "confirmed",
     "location": {
       "lat": 46.0726,
       "lon": -118.9135,
       "city": "Wallula",
       "county": "Walla Walla",
+      "street": "Sundance Road, Wallula Gap Business Park",
       "state": "WA",
       "precision": "exact"
     },
@@ -9255,6 +9316,12 @@
         "date": "2026",
         "note": "A ~$4.8B, ~300 MW data center in Walla Walla County (Wallula), widely reported to be AWS",
         "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-09-05",
+        "note": "Walla Walla County's own project page and local reporting show the campus is still in permitting, not construction. The county held a pre-application meeting on April 29, 2026, issued a Notice of Incomplete Application on June 23, 2026, and issued a Notice of Complete Application on August 24, 2026 (files SDP26-01 and SEPA26-05). As of September 1, 2026 no final land-use decision has been made and construction has not been initiated. The record's current 'under_construction' status is not supported by these sources.",
+        "sourceIndex": 6
       }
     ],
     "sources": [
@@ -9291,9 +9358,30 @@
         "publisher": "NBC Right Now",
         "retrievedAt": "2026-08-22",
         "kind": "press"
+      },
+      {
+        "url": "https://elkhornmediagroup.com/amazons-proposed-data-center-application-deemed-complete-by-walla-walla-county/",
+        "label": "Amazon's proposed data center application deemed complete by Walla Walla County",
+        "publisher": "Elkhorn Media Group",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wwcowa.gov/government/community_development/amazon_data_center_faqs.php",
+        "label": "Amazon Data Center FAQs — application milestones (SDP26-01 / SEPA26-05)",
+        "publisher": "Walla Walla County Community Development Department",
+        "retrievedAt": "2026-09-05",
+        "kind": "permit"
+      },
+      {
+        "url": "https://elkhornmediagroup.com/amazons-proposed-data-center-application-deemed-complete-by-walla-walla-county/",
+        "label": "Amazon's proposed data center application deemed complete by Walla Walla County",
+        "publisher": "Elkhorn Media Group",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-22",
+    "lastUpdated": "2026-09-05",
     "notes": "~$4.8B, ~300 MW campus near Wallula, Walla Walla County; operator reported (not officially confirmed) to be AWS → confidence reported. Coordinates are the Wallula area centroid. Operator confirmed as Amazon Data Services when the Port of Walla Walla amended the buyer from Advance Phase LLC to Amazon Data Services (Feb 12, 2026 commission vote; >550 acres for >$36M land) — confidence upgraded to confirmed. The reported ~$4.8B (DCD) / ~$5B (local) campus figure is an estimate across ~4 phases, not a firm pledge -> investmentUsd omitted. Port projects ~720 direct+indirect jobs at full build-out (projection) -> jobs honest-zero. Eligible for Washington's rural-county server-equipment sales/use-tax exemption (RCW 82.08.986) but no DOR certificate is confirmed -> subsidy honest-zero. Water source and cooling type are undisclosed pending SEPA (no water rights were conveyed in the land deal).",
     "energy": {
       "source": "grid",
@@ -11643,6 +11731,55 @@
     "facilityType": "data_center"
   },
   {
+    "id": "blue-fern-cle-elum-data-center-wa",
+    "name": "Blue Fern Cle Elum Data Center",
+    "operator": "Blue Fern Development",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.18,
+      "lon": -120.97,
+      "city": "Cle Elum",
+      "county": "Kittitas",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "announcedDate": "2026-07-28",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-28",
+        "note": "Blue Fern Development publicly proposed a 100,000 sq ft, 20 MW data center near Interstate 90 in Cle Elum.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.spokesman.com/stories/2026/aug/05/cle-elum-passed-a-data-center-ban-one-might-be-bui/",
+        "label": "Cle Elum passed a data center ban. One might be built there anyway",
+        "publisher": "The Spokesman-Review",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Roughly 100,000 sq ft near Interstate 90, inside a residential and commercial development already under construction in Cle Elum. Developer projects 20 to 40 full-time positions. Because the site is covered by a pre-existing development agreement with the city, it may proceed despite the moratorium. Single-source; coordinates are an approximate geocode of the described location.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer describes a closed-loop cooling system using about 80,000 gallons in the first year and significantly less thereafter because the water recirculates."
+    },
+    "investmentUsd": 200000000,
+    "community": {
+      "status": "contested",
+      "notes": "Cle Elum's city council voted unanimously to introduce a six-month data-center moratorium and scheduled a Sept. 8, 2026 public hearing plus an advisory committee to study power, water, wastewater, tax and jobs impacts; council members said the developer's claims needed verification.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "blue-ladder-wolcott-white-county-in",
     "name": "Wolcott Data Center",
     "operator": "Blue Ladder Development",
@@ -12040,6 +12177,78 @@
     "lastUpdated": "2026-08-19",
     "notes": "Thinly sourced: only one page naming this project could be fetched this session (Oklahoma Watch and its syndication partners returned 403/429). The lessee's full legal name, parcel acreage and the Commissioners of the Land Office vote were visible only in search summaries and are deliberately NOT asserted here. Confidence 'rumored' pending a fetched primary source.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "boxminer-la-pine-or",
+    "name": "Boxminer La Pine Bitcoin Mining Facility",
+    "operator": "Boxminer (Hidden Pines LLC)",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.6745541,
+      "lon": -121.4913298,
+      "city": "La Pine",
+      "county": "Deschutes",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-05-27",
+        "note": "La Pine City Council voted unanimously to reject the proposed 20 MW facility in the La Pine Industrial Park.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.opb.org/article/2026/05/28/la-pine-rejects-data-center-central-oregon/",
+        "label": "A small Central Oregon town shoots down data center development",
+        "publisher": "Oregon Public Broadcasting",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.bendsource.com/news/localnews/la-pine-rejects-proposed-data-center-amid-public-outcry/",
+        "label": "La Pine Rejects Proposed Data Center Amid Public Outcry",
+        "publisher": "The Source Weekly (Bend)",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://bendbulletin.com/2026/05/14/la-pine-residents-pack-meeting-to-oppose-proposed-data-center/",
+        "label": "La Pine residents pack meeting to oppose proposed data center",
+        "publisher": "The Bulletin (Bend)",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Proposed bitcoin-mining facility on roughly 19.5-20 acres of the 330-acre La Pine Industrial Park east of U.S. Highway 97. Boxminer is operated by Hidden Pines LLC of San Diego. Job estimates were contested — the developer cited up to 80, then about 50, while the city manager's analysis suggested about 5 — so no jobs figure is recorded here. Coordinates are a street-level approximation near Reed Road; the exact parcel is not published.",
+    "energy": {
+      "source": "grid",
+      "utility": "Midstate Electric Cooperative",
+      "notes": "The proposal's own figures implied a draw of roughly 15 times the City of La Pine's total electricity use."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Described by the developer as air-cooled rather than water-cooled, using a closed-loop system in which the air, water or glycol recirculates."
+    },
+    "landAcres": 19.5,
+    "community": {
+      "status": "opposed",
+      "notes": "Roughly five hours of public comment preceded a unanimous La Pine City Council vote against the project on 27 May 2026; residents cited power draw, noise, light and the small-town character of the city. Residents subsequently began gathering signatures for a November 2026 ballot measure to regulate noise and lighting at any future data center.",
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "coolingType": "air",
+      "powerArrangement": "grid"
+    }
   },
   {
     "id": "breaker-street-data-center-jessup-lackawanna-pa",
@@ -13057,6 +13266,65 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "centeris-south-hill-puyallup-wa",
+    "name": "Centeris South Hill Campus (SH1/SH2)",
+    "operator": "Centeris (The Benaroya Company)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.136,
+      "lon": -122.272,
+      "city": "Puyallup",
+      "county": "Pierce",
+      "street": "1023 39th Avenue SE",
+      "postalCode": "98374",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2017-11-02",
+        "note": "Data Center Frontier reported Colocation Northwest leasing up to 7 MW of IT capacity at the operating South Hill campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacenterfrontier.com/centeris-signs-7-megawatt-lease-in-seattle-data-center/",
+        "label": "Centeris Signs 7 Megawatt Lease in Seattle Data Center",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://cloudandcolocation.com/colocation-provider/centeris/",
+        "label": "Centeris Data Center Locations (SH1 and SH2, Puyallup, WA)",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://mrsc.org/stay-informed/mrsc-insight/august-2026/data-centers",
+        "label": "What the Data Center Boom Means for Washington Local Governments",
+        "publisher": "Municipal Research and Services Center (MRSC)",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Two data center buildings — SH1 at 1023 39th Avenue SE and SH2 at 1015 39th Avenue SE, Puyallup — on an 86-acre campus with a dedicated on-site substation rated to 50 MW, expandable in 25 MW increments. SH1 is a 56,000 sq ft LEED Gold facility; a 176,000 sq ft powered shell adjoins it. Colocation Northwest (IsoFusion) leases up to 7 MW. Owned by The Benaroya Company, which entered the data center business in 2010; the site previously housed semiconductor operations. MRSC's August 2026 summary reports 21 full-time employees plus 50-100 third-party vendor employees. Coordinates are an approximate geocode of the SH1 address.",
+    "landAcres": 86,
+    "jobs": {
+      "permanent": 21,
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "centersquare-abq1-albuquerque-nm",
@@ -18942,6 +19210,49 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "coresite-hillsboro-or",
+    "name": "CoreSite Hillsboro Data Campus (HI1/HI2)",
+    "operator": "CoreSite",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5594015,
+      "lon": -122.9522867,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "street": "5420 NE Sewell Avenue",
+      "postalCode": "97124",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-05",
+        "note": "Development-review application DR-012-26 filed for a phased 547,239 sq ft campus on land CoreSite Real Estate Hillsboro, LLC bought in September 2025 for $21,196,812; still under Type II administrative review with no staff report or Notice of Decision issued.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hillsboroherald.com/coresite-proposes-massive-multi-story-hillsboro-data-campus-opposite-county-homes-and-over-wetlands-a-showdown-is-brewing/",
+        "label": "CoreSite Proposes Massive Multi-Story Hillsboro Data Campus Opposite County Homes And Over Wetlands (case file DR-012-26)",
+        "publisher": "The Hillsboro Herald",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Two-building phased campus totalling 547,239 sq ft on a 19.73-acre parcel; Phase 2 building HI2 is a four-storey, 92-foot data hall. Applicant of record is CoreSite Real Estate Hillsboro, LLC. No megawatt figure has been published. CoreSite has no other tracked Oregon site.",
+    "landAcres": 19.73,
+    "community": {
+      "status": "contested",
+      "notes": "Neighbouring property owners filed letters of concern over Oregon white oak removal via a fee-in-lieu buyout, wetland and greenway encroachment, and the 92-foot four-storey Phase 2 building. Opponents are pressing the city to elevate the application from Type II administrative review to a Type III public hearing.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "coresite-la1-los-angeles-ca",
@@ -25439,6 +25750,36 @@
     ],
     "lastUpdated": "2026-08-31",
     "notes": "110,000 sq ft single-storey building on Digital Realty's 40-acre master-planned Franklin Park campus. Distinct from the four tracked Digital Realty IL records, which are in Elk Grove Village (CH1, CH2) and Chicago (ORD10 at 350 E Cermak, ORD11 at 600 S Federal) — none in Franklin Park. Coordinates geocoded from the published street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-pdx10-or",
+    "name": "Digital Realty PDX10",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5476034,
+      "lon": -122.891975,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "street": "3825 NW Aloclek Street",
+      "postalCode": "97124",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/portland/pdx10",
+        "label": "Digital Realty PDX10 data center page (address, 48,000 ft², LEED Gold)",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "48,000 ft² (4,450 m²) operating colocation facility in Hillsboro, LEED Gold certified, with N+1 cooling and 2N UPS options. Digital Realty publishes no IT-load figure for this building. Compute Atlas already tracks Digital Realty PDX11 and PDX12; PDX10 is a separate, separately-addressed building.",
     "facilityType": "data_center"
   },
   {
@@ -33077,6 +33418,98 @@
     "aiClassification": "likely"
   },
   {
+    "id": "flexential-portland-hillsboro-5-or",
+    "name": "Flexential Portland - Hillsboro 5",
+    "operator": "Flexential",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.5564617,
+      "lon": -122.9394058,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "street": "4975 NE Starr Boulevard",
+      "postalCode": "97124",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 36
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-09",
+        "note": "Described by Flexential as a 358,000 sq ft, 36 MW facility under construction and expected to come online the following year.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-05-28",
+        "note": "Flexential closed on the purchase of the Hillsboro 4 and Hillsboro 5 buildings, describing Hillsboro 5 as an operational two-storey multi-tenant facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/flexential-secures-strategic-real-estate-ownership-in-hillsboro-oregon-with-acquisition-of-two-data-center-properties-302783801.html",
+        "label": "Flexential Secures Strategic Real Estate Ownership in Hillsboro, Oregon, with Acquisition of Two Data Center Properties",
+        "publisher": "Flexential via PR Newswire",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/flexential-acquires-prime-property-in-hillsboro-plans-new-data-center-as-next-phase-of-expansion-302546009.html",
+        "label": "Flexential Acquires Prime Property in Hillsboro, Plans New Data Center as Next Phase of Expansion",
+        "publisher": "Flexential via PR Newswire",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "358,000 sq ft two-storey multi-tenant building on the NE Starr Boulevard campus, adjacent to the tracked Hillsboro 4. Built as a T5 build-to-suit and bought by Flexential in May 2026.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "flexential-portland-hillsboro-6-or",
+    "name": "Flexential Portland - Hillsboro 6",
+    "operator": "Flexential",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.5472442,
+      "lon": -122.8910057,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "street": "3935 NE Aloclek Place",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 27
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09",
+        "note": "Flexential announced the acquisition of the 3935 NE Aloclek Place property, across from its Hillsboro 1 data center, for a planned 350,000 sq ft two-storey, 27 MW facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/flexential-acquires-prime-property-in-hillsboro-plans-new-data-center-as-next-phase-of-expansion-302546009.html",
+        "label": "Flexential Acquires Prime Property in Hillsboro, Plans New Data Center as Next Phase of Expansion",
+        "publisher": "Flexential via PR Newswire",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Planned sixth Flexential building in Hillsboro: 350,000 sq ft, two storeys, 27 MW. Coordinates are a street-level approximation of NE Aloclek Place; the exact parcel has not been geocoded. Local reporting places the project inside the City of Hillsboro's 120-day data-center land-use moratorium adopted 27 July 2026.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "flexential-raleigh-ral02-ral03-nc",
     "name": "Flexential Raleigh (RAL02/RAL03)",
     "operator": "Flexential",
@@ -34856,6 +35289,83 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "goldendale-energy-storage-klickitat-wa",
+    "name": "Goldendale Energy Storage Project",
+    "operator": "Rye Development / Copenhagen Infrastructure Partners",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.725,
+      "lon": -120.67,
+      "city": "Goldendale",
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "announcedDate": "2026-01-22",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-01-22",
+        "note": "FERC issued a 40-year license — the largest new energy project FERC has approved in a dozen years.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ryedevelopment.com/federal-energy-regulatory-commission-issues-40-year-license-to-the-goldendale-energy-storage-project.html",
+        "label": "FERC Issues 40-Year License to the Goldendale Energy Storage Project",
+        "publisher": "Rye Development",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://goldendaleenergystorage.com/news.html",
+        "label": "Goldendale Energy Storage Project — News and project overview",
+        "publisher": "Goldendale Energy Storage Project",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nwpb.org/local/2026-05-01/part-of-an-old-aluminum-smelter-along-the-columbia-river-could-soon-get-cleaned-up-an-energy-project-is-helping-fast-track-the-work",
+        "label": "Part of an old aluminum smelter along the Columbia River could soon get cleaned up",
+        "publisher": "Northwest Public Broadcasting",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.columbiariverkeeper.org/wp-content/uploads/2026/02/2026.02.26-Data-Center-Closer-Look-Report.pdf",
+        "label": "A Closer Look: Columbia River Data Centers (February 2026) — Klickitat County, Washington",
+        "publisher": "Columbia Riverkeeper",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Sited on the former Columbia Gorge Aluminum smelter grounds roughly eight miles southeast of Goldendale, adjacent to John Day Dam, and immediately adjacent to STACK Infrastructure's proposed Goldendale data center campus (tracked separately). Construction is expected to take four to five years and to generate more than $10 million a year for Klickitat County. Washington Department of Ecology has split the smelter cleanup into three phases; the first covers the storage project's lower pool, with excavation possibly starting as early as January 2027. Coordinates are an approximate geocode of the described smelter site.",
+    "energy": {
+      "source": "hydro"
+    },
+    "investmentUsd": 2000000000,
+    "jobs": {
+      "construction": 3000,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "The Yakama Nation opposes the development, which affects Pushpum, a site of cultural and religious significance; part of the project area is on federal Army Corps of Engineers land subject to Tribal treaty rights.",
+      "sourceIndex": 3
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "hydro",
+      "notes": "Closed-loop pumped-storage hydropower using an upper and a lower reservoir on the grounds of the former Columbia Gorge Aluminum smelter, near John Day Dam. Designed to store up to 12 hours of electricity and deliver 1,200 MW of on-demand generation."
+    }
   },
   {
     "id": "google-arcola-loudoun-va",
@@ -38484,9 +38994,16 @@
         "publisher": "WaterWatch of Oregon",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://datacenters.google/locations/oregon/",
+        "label": "The Dalles, Oregon — Google Data Center Location (Google's own site page)",
+        "publisher": "Google",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-05",
     "energy": {
       "source": "hydro",
       "utility": "Northern Wasco County PUD",
@@ -39724,6 +40241,36 @@
         "sourceIndex": 0
       }
     ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "h5-data-centers-portland-or",
+    "name": "H5 Data Centers Portland",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5318147,
+      "lon": -122.6839805,
+      "city": "Portland",
+      "county": "Multnomah",
+      "street": "1233 NW 12th Avenue, Suite 201",
+      "postalCode": "97209",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/portland-data-center.html",
+        "label": "H5 Data Centers Portland data center (42,000 SF, 1233 NW 12th Avenue)",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "42,000 SF carrier-neutral colocation facility in Portland's Pearl District with N+1 CRAC cooling, N+1 UPS, 2 MW of generator backup and 48-hour diesel runtime. H5 publishes no critical IT-load figure. No H5 site is currently tracked in Oregon.",
     "facilityType": "data_center"
   },
   {
@@ -49218,9 +49765,16 @@
         "publisher": "Meta",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://datacenters.atmeta.com/asset/prineville-data-center-info-sheet/",
+        "label": "Meta's Prineville Data Center info sheet (current URL for the Prineville fact sheet)",
+        "publisher": "Meta",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-05",
     "energy": {
       "source": "grid",
       "utility": "Pacific Power (PacifiCorp)",
@@ -50501,6 +51055,59 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "microsoft-columbia-quincy-wa",
+    "name": "Microsoft Columbia Data Center (Quincy)",
+    "operator": "Microsoft",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.2333,
+      "lon": -119.8667,
+      "city": "Quincy",
+      "county": "Grant",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2007-05",
+        "note": "The data center building opened in April 2007 and became fully operational in May 2007.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Columbia_Data_Center",
+        "label": "Columbia Data Center (Microsoft, Quincy, Washington)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.spokesman.com/stories/2026/jul/26/where-agriculture-meets-technology-inside-the-smal/",
+        "label": "Where agriculture meets technology: Inside the small Washington town that became a data center hub",
+        "publisher": "The Spokesman-Review",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.columbiariverkeeper.org/wp-content/uploads/2026/02/2026.02.26-Data-Center-Closer-Look-Report.pdf",
+        "label": "A Closer Look: Columbia River Data Centers (February 2026) — Grant County, Washington",
+        "publisher": "Columbia Riverkeeper",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Microsoft's first Quincy data center, on land bought in 2006. Began as a 500,000 sq ft building and reached about 800,000 sq ft across two buildings on a 270-acre complex by 2016; reported to draw 30-50 MW in 2012. No current capacity figure is asserted — Microsoft does not release the size or capacity of its Quincy facilities, and the 2012 figure is stale. Microsoft has roughly 400 employees in Quincy across its facilities there. Grant County PUD supplies power. Coordinates are the published minute-precision location (47°14'N 119°52'W).",
+    "energy": {
+      "utility": "Grant County PUD"
+    },
+    "landAcres": 270,
+    "facilityType": "data_center"
   },
   {
     "id": "microsoft-conover-catawba-county-nc",
@@ -52115,6 +52722,7 @@
       "lon": -120.2,
       "city": "Malaga",
       "county": "Chelan",
+      "street": "Malaga Alcoa Highway",
       "state": "WA",
       "precision": "exact"
     },
@@ -52178,9 +52786,44 @@
         "publisher": "Microsoft",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.wenatcheeworld.com/business/chelan-county-pud-commissioners-ok-energy-contract-with-microsoft-for-malaga-data-center-buildings/article_75835428-510f-4b96-b302-f1e681b64b2b.html",
+        "label": "Chelan County PUD commissioners OK energy contract with Microsoft for Malaga data center buildings",
+        "publisher": "The Wenatchee World",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.columbiariverkeeper.org/wp-content/uploads/2026/02/2026.02.26-Data-Center-Closer-Look-Report.pdf",
+        "label": "A Closer Look: Columbia River Data Centers (February 2026) — Chelan County: 24 MW existing / 288 MW planned",
+        "publisher": "Columbia Riverkeeper",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cascadepbs.org/the-newsfeed-2/2026/08/washington-state-grapples-with-the-ai-data-center-boom/",
+        "label": "Washington state grapples with the AI data center boom",
+        "publisher": "Cascade PBS",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://local.microsoft.com/blog/malaga-datacenter-project-overview/",
+        "label": "Malaga datacenter project overview",
+        "publisher": "Microsoft Local",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.govtech.com/computing/washington-utility-district-oks-4m-investment-in-microsoft-substation",
+        "label": "Washington Utility District OKs $4M Investment in Microsoft Substation",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-05",
     "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. 288 MW figure from secondary aggregator Cleanview only; primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; original statusHistory incorrectly dated under_construction to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway. A Building-1 permit cites ~72 peak-shift staff (a single-building figure, not a facility employment total); no confirmed total campus capital-expenditure figure is public. Go-live check 2026-08-08: NO citable operational date exists. Microsoft's own Malaga project page gives a first-phase construction window concluding in early 2026 but states plainly that \"Completion of construction does not indicate datacenter operation/availability\", and publishes no energization or service date. Secondary reporting that the first building would be \"powered in August and fully operational by late 2026\" is forward-looking and was not used to move the status. Remains under_construction. Microsoft's own Quincy/Central Washington community page states it \"operates datacenters in Quincy and is developing new datacenters in Malaga and East Wenatchee\" — positively confirming the site is not yet operational.",
     "energy": {
       "source": "hydro",
@@ -57818,6 +58461,46 @@
     "facilityType": "data_center"
   },
   {
+    "id": "oracle-hillsboro-or",
+    "name": "Oracle Hillsboro Data Center",
+    "operator": "Oracle",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5437211,
+      "lon": -122.8944315,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "street": "3295 NE 83rd Avenue",
+      "postalCode": "97124",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 7
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://dcpulse.com/project/oracle-3295-ne-83rd-ave-hillsboro-oregon-data-center",
+        "label": "Oracle Hillsboro Data Center — 3295 NE 83rd Ave, ~91,000 sq ft, ~7.0 MW total electrical utility capacity",
+        "publisher": "DC Pulse",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/oracle-hillsboro-1",
+        "label": "Oracle: Hillsboro 1 Data Center — 91,000 sq ft, fully operational, built 2001",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Single-tenant Oracle Cloud Infrastructure facility of approximately 91,000 sq ft with around 7.0 MW of total electrical utility capacity. Baxtel dates the building to 2001. No Oracle site is currently tracked in Oregon.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "oracle-salt-lake-city-ut",
     "name": "Oracle Salt Lake City",
     "operator": "Oracle",
@@ -58802,6 +59485,39 @@
     "facilityType": "data_center"
   },
   {
+    "id": "pittock-block-portland-or",
+    "name": "Pittock Block (PTOR1)",
+    "operator": "1547 Critical Systems Realty",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5215436,
+      "lon": -122.680704,
+      "city": "Portland",
+      "county": "Multnomah",
+      "street": "921 SW Washington Street",
+      "postalCode": "97205",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 8
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://1547realty.com/data-centers/portland/",
+        "label": "1547 Critical Systems Realty — Portland (Pittock Block / PTOR1): 302,262 sq ft, 8 MW",
+        "publisher": "1547 Critical Systems Realty",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Carrier hotel in downtown Portland: 302,262 sq ft, 8 MW capacity, five on-site generators providing 7 MW of backup, 16 fiber carriers, 170+ service providers, seven subsea cable landings and an AWS Direct Connect location. Home of the Pittock Internet Exchange (NWAX).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "plan-c-crypto-fayetteville-cumberland-county-nc",
     "name": "Plan C Crypto Fayetteville (Dedication Drive)",
     "operator": "Plan C Crypto",
@@ -58907,6 +59623,62 @@
       "offtaker": "Omaha Public Power District",
       "notes": "Spread across roughly 500 acres of privately owned land near Yutan in Saunders County. \"OPPD has a power purchase agreement with the facility's developer and owner/operator, the AES Corporation.\" Described as OPPD's first utility-scale solar project and the largest in Nebraska to date."
     }
+  },
+  {
+    "id": "pnnl-ai-data-center-richland-wa",
+    "name": "PNNL AI Data Center",
+    "operator": "Battelle Memorial Institute (Pacific Northwest National Laboratory)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 46.348,
+      "lon": -119.279,
+      "city": "Richland",
+      "county": "Benton",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-26",
+        "note": "PNNL confirmed it is 'considering the possibility of a small data center due to increased focus on AI at PNNL'; the RFI response window had closed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.spokesman.com/stories/2026/apr/26/ai-data-center-with-a-different-mission-being-cons/",
+        "label": "AI data center with a different mission being considered in Tri-Cities",
+        "publisher": "The Spokesman-Review",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.tricitiesbusinessnews.com/articles/pnnl-data-centers",
+        "label": "DOE eyes PNNL to 'power the AI revolution'",
+        "publisher": "Tri-Cities Area Journal of Business",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/know-4-major-data-center-120000272.html",
+        "label": "What to know about 4 major data center proposals for Tri-Cities area",
+        "publisher": "Tri-City Herald (via Yahoo News)",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Battelle, which operates PNNL for the Department of Energy, issued a request for information for an on-premises next-generation AI compute data center to train and operationalize large language models for scientific and national government missions. Roughly 2 MW at a possible 2028 launch, with potential future expansion to about 40 MW. This would be DOE-funded and DOE-operated, not a private operator building on federal land. No construction decision has been made — this is an RFI-stage proposal only. Coordinates are an approximate geocode of the PNNL campus in Richland.",
+    "energy": {
+      "notes": "The request for information sought vendor input on on-site power options if utility distribution is limited, containerized or modular structures, power purchase agreements, solar and nuclear supply, and heat reuse for industrial processes."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "pointone-lower-moncure-road-lee-county-nc",
@@ -65850,6 +66622,51 @@
     "aiClassification": "likely"
   },
   {
+    "id": "roundhouse-cascade-locks-or",
+    "name": "Roundhouse Cascade Locks Data Center",
+    "operator": "Roundhouse Digital Infrastructure",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.6678863,
+      "lon": -121.8963113,
+      "city": "Cascade Locks",
+      "county": "Hood River",
+      "street": "1400 Columbia Gorge Way",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 30
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2023-07",
+        "note": "The Port of Cascade Locks and Roundhouse jointly announced the project would be discontinued before construction.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/roundhouse-cascade-locks-or",
+        "label": "Roundhouse: Cascade Locks, OR Data Center — cancelled before construction",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Proposed $100 million, up-to-30 MW facility on land leased from the Port of Cascade Locks, cancelled in July 2023. Distinct from the tracked Abundant Mines crypto operation, which is a separate tenant at the same port. Coordinates are approximate (Port of Cascade Locks).",
+    "investmentUsd": 100000000,
+    "community": {
+      "status": "opposed",
+      "notes": "Local opposition — including the successful recall of two officials who had approved the deal — preceded the Port of Cascade Locks' decision to cancel, with concerns centred on utility rate increases.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "rowan-bauxite-ii-frederick-md",
     "name": "Rowan Digital Infrastructure Bauxite II",
     "operator": "Rowan Digital Infrastructure",
@@ -66534,6 +67351,68 @@
     "facilityType": "data_center"
   },
   {
+    "id": "sabey-intergate-quincy-campus-wa",
+    "name": "Sabey Intergate.Quincy Campus",
+    "operator": "Sabey Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.247,
+      "lon": -119.83,
+      "city": "Quincy",
+      "county": "Grant",
+      "street": "2200 M Street NE",
+      "postalCode": "98848",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 70
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-18",
+        "note": "Cascade PBS toured Sabey's fifth and newest building on the Quincy campus, 15 years after the company first arrived; four more data halls are planned once electricity capacity catches up.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/sabey-intergate-quincy-building-b",
+        "label": "Sabey: Intergate.Quincy (Building B) — 2200 M Street NE, Quincy, Washington",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cascadepbs.org/the-newsfeed-2/2026/08/washington-state-grapples-with-the-ai-data-center-boom/",
+        "label": "Washington state grapples with the AI data center boom",
+        "publisher": "Cascade PBS",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://sabeydatacenters.com/locations",
+        "label": "Sabey Data Centers — Locations (SDC Quincy, SDC Columbia, SDC Seattle)",
+        "publisher": "Sabey Data Centers",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Sabey's Quincy campus (SDC Quincy / Intergate.Quincy), launched in 2011 at 2200 M Street NE, now spans more than 525,000 sq ft across five purpose-built buildings (A, B, D, E and one more). This is a distinct campus from Sabey's Intergate.Columbia in East Wenatchee (4405 Grant Road) already tracked, and from the Intergate.East and Intergate.West campuses in the Seattle area. Coordinates are an approximate geocode of the campus address.",
+    "energy": {
+      "utility": "Grant County PUD",
+      "notes": "Cascade PBS reports the entire campus is capped at 70 MW — the maximum it can draw at one time from the local utility. Sabey markets low power rates and proximity to the regional grid as siting drivers."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Sabey markets the campus's mild, dry climate as suited to efficient evaporative cooling."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "sabey-intergate-west-building-a-wa",
     "name": "Sabey Intergate.West Building A",
     "operator": "Sabey Data Centers",
@@ -66638,6 +67517,7 @@
       "lon": -119.339,
       "city": "Umatilla",
       "county": "Umatilla",
+      "street": "Wanapa Road",
       "state": "OR",
       "precision": "exact"
     },
@@ -66723,9 +67603,23 @@
         "publisher": "Sabey Data Centers",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://sabeydatacenters.com/locations/sdc-umatilla",
+        "label": "SDC Umatilla — Sabey Data Centers location page (120 MW+ aggregate capacity, McNary Dam hydro, build timeline)",
+        "publisher": "Sabey Data Centers",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://eastoregonian.com/2026/07/15/714000-square-foot-data-center-construction-under-way-in-umatilla/",
+        "label": "714,000-square-foot data center construction under way in Umatilla",
+        "publisher": "East Oregonian",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-05",
     "notes": "Two-building, 714,540 sq ft multi-tenant campus. Groundbreaking originally Q1 2025, revised to 2024 per DCD; construction start as of July 2026 not independently confirmed. Investment figures conflicting across sources ($520M in one report, ~$950M in another); investmentUsd omitted. Coordinates are Umatilla city centroid. Planned capacity revised from 100 MW to 150 MW: the campus is described as designed to support more than 150 megawatts. Sabey's own materials give a more conservative \"120 MW+\", which is consistent rather than contradictory.",
     "energy": {
       "source": "mixed",
@@ -66858,6 +67752,43 @@
     "aiClassification": "likely"
   },
   {
+    "id": "salcido-broadway-grant-county-wa",
+    "name": "Salcido Broadway Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.2,
+      "lon": -119.45,
+      "county": "Grant",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-09",
+        "note": "Operator says the site was expanded to 2 MW in September 2023.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (Broadway)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "Salcido's first Grant County site, expanded to 2 MW in September 2023; the operator describes it as high-security data processing for AI and cryptocurrency systems. Salcido does not publish a street address or town for this site, so the coordinates are a Grant County approximation and should be refined before publication.",
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "salcido-cashmere-cashmere-wa",
     "name": "Salcido Cashmere Data Center",
     "operator": "Salcido Enterprises, LLC",
@@ -66940,6 +67871,88 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "salcido-eller-douglas-county-wa",
+    "name": "Salcido ELLER Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.74,
+      "lon": -119.69,
+      "county": "Douglas",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 4
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2018-09",
+        "note": "Operator says the site renovation was completed in September 2018.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (ELLER)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "4 MW of dedicated high-density electrical service with dedicated fiber feeds in Douglas County; renovation completed September 2018. Distinct from Salcido's tracked Pangborn site, which is a separate 10 MW, four-building Douglas County facility completed in May 2018. Salcido does not publish a street address or town for ELLER, so the coordinates are a Douglas County approximation and should be refined before publication.",
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "salcido-entiat-chelan-county-wa",
+    "name": "Salcido Entiat Data Center",
+    "operator": "Salcido Enterprises, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.6743,
+      "lon": -120.2093,
+      "city": "Entiat",
+      "county": "Chelan",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-07",
+        "note": "Operator says deployment of 2 MW of data space took place in July 2023.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.salcidoenterprises.tech/data-centers",
+        "label": "Salcido Enterprises — Data Centers (Entiat)",
+        "publisher": "Salcido Enterprises, LLC",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.columbiariverkeeper.org/wp-content/uploads/2026/02/2026.02.26-Data-Center-Closer-Look-Report.pdf",
+        "label": "A Closer Look: Columbia River Data Centers (February 2026) — Chelan County hosts at least three Salcido Enterprises facilities",
+        "publisher": "Columbia Riverkeeper",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "2 MW of data space deployed July 2023 for cryptocurrency mining and AI capacity, in Chelan County. Columbia Riverkeeper's February 2026 report independently notes Chelan County hosts at least three Salcido facilities, consistent with Cashmere, Columbia and Entiat. The operator does not publish a street address; the city and coordinates are inferred from the site's name and are marked approximate.",
+    "facilityType": "crypto_mining"
   },
   {
     "id": "salcido-fortress-quincy-wa",
@@ -70165,6 +71178,7 @@
       "precision": "exact"
     },
     "capacityMw": {
+      "planned": 40,
       "operational": 36
     },
     "statusHistory": [],
@@ -70189,13 +71203,21 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.stackinfra.com/locations/americas/portland/por01/",
+        "label": "POR01 – Hillsboro, STACK Infrastructure (18 acres, 40 MW campus capacity)",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-09-05",
     "notes": "Confirmed operational, 36MW expansion capacity, part of Portland's 3-campus cluster.",
     "energy": {
       "utility": "Portland General Electric (PGE)"
     },
+    "landAcres": 18,
     "facilityType": "data_center"
   },
   {
@@ -70246,13 +71268,21 @@
         "publisher": "STACK Infrastructure",
         "retrievedAt": "2026-08-16",
         "kind": "other"
+      },
+      {
+        "url": "https://www.stackinfra.com/locations/americas/portland/por02/",
+        "label": "POR02 – Hillsboro, STACK Infrastructure (15 acres, 24 MW critical IT load)",
+        "publisher": "STACK Infrastructure",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-09-05",
     "notes": "One of STACK's 3 confirmed operational Portland-area campuses (POR01/02/03, 250MW total).",
     "energy": {
       "utility": "Portland General Electric (PGE)"
     },
+    "landAcres": 15,
     "facilityType": "data_center"
   },
   {
@@ -78437,6 +79467,36 @@
     "facilityType": "data_center"
   },
   {
+    "id": "us-signal-or01-bend-or",
+    "name": "US Signal OR01 Bend",
+    "operator": "US Signal",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.086105,
+      "lon": -121.2830411,
+      "city": "Bend",
+      "county": "Deschutes",
+      "street": "20845 Sockeye Place",
+      "postalCode": "97701",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://ussignal.com/data-centers/or01-bend/",
+        "label": "US Signal OR01 Bend Data Center (20845 Sockeye Place, Bend, OR 97701)",
+        "publisher": "US Signal",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "LEED-certified Tier 3 colocation facility with a 2,000 kW N+1 generator, 2500 kVA utility feeds, 256-ton N+1 HVAC and 2N UPS. US Signal publishes no square footage or critical IT-load figure on this page, so none is recorded. The only tracked Central Oregon facilities are the Prineville hyperscale campuses; Bend has no record.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "us-signal-wi01-madison-wi",
     "name": "US Signal WI01 Madison",
     "operator": "US Signal",
@@ -79135,6 +80195,8 @@
       "lon": -119.8144903,
       "city": "Quincy",
       "county": "Grant",
+      "street": "2101 M Street NE",
+      "postalCode": "98848",
       "state": "WA",
       "precision": "exact"
     },
@@ -79160,12 +80222,32 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://vantage-dc.com/data-center-locations/north-america/quincy-washington/",
+        "label": "Quincy, Washington Data Center Campus — 2101 M Street NE, Quincy, WA 98848",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://vantage-dc.com/news/vantage-data-centers-completes-development-of-89mw-1billion-quincy-washington-campus/",
+        "label": "Vantage Data Centers Completes Development of 89MW, $1 Billion Quincy, Washington Campus",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-09-05",
     "notes": "2101 M Street NE, Quincy, Grant County WA; WA1 campus with WA11/WA12/WA13 buildings, 89MW total, per DCD + Vantage's own site.",
     "energy": {
-      "utility": "PUD No 2 of Grant County"
+      "source": "hydro",
+      "utility": "PUD No 2 of Grant County",
+      "notes": "Vantage says Grant County PUD's two large-scale hydroelectric dams produce an average of 1,050 MW annually and that hydro is more than 66% of the utility's generation mix; it markets GCPUD as offering the lowest per-kW rates in the country."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Campus uses a closed-loop chilled-water system with air-side economizers and CRAH units, with N+1 redundancy; Vantage reports water utilization efficiency approaching zero litres/kW/hr."
     },
     "facilityType": "data_center"
   },
@@ -79409,6 +80491,69 @@
       "utility": "PUD No 2 of Grant County"
     },
     "landAcres": 68,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "vantage-wa13-quincy-wa",
+    "name": "Vantage WA13",
+    "operator": "Vantage Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.247,
+      "lon": -119.83,
+      "city": "Quincy",
+      "county": "Grant",
+      "street": "2101 M Street NE",
+      "postalCode": "98848",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 64
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-10-18",
+        "note": "Vantage announced delivery of WA13, the third and final facility on its Quincy (WA1) campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://vantage-dc.com/news/vantage-data-centers-completes-development-of-89mw-1billion-quincy-washington-campus/",
+        "label": "Vantage Data Centers Completes Development of 89MW, $1 Billion Quincy, Washington Campus",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://vantage-dc.com/data-center-locations/north-america/quincy-washington/",
+        "label": "Quincy, Washington Data Center Campus",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/quincy",
+        "label": "Quincy, WA data center facility directory (Vantage WA11/WA12/WA13)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-05",
+    "notes": "530,000 sq ft building adding 64 MW of IT capacity on Vantage's 68-acre Quincy (WA1) campus at 2101 M Street NE, bringing the campus to 89 MW across nearly 775,000 sq ft. Uses Tier 4 generators to reduce particulate and NOx emissions. Construction began in late 2022 and the building was delivered Oct. 18, 2023. Sibling buildings WA11 and WA12 are already tracked separately; the 89 MW and 68 acres are campus-level figures and are not attributed to this building. Coordinates are an approximate geocode of the campus address.",
+    "energy": {
+      "source": "hydro",
+      "utility": "Grant County PUD",
+      "notes": "Vantage says Grant County PUD's two large-scale hydroelectric dams produce an average of 1,050 MW annually and that hydro accounts for more than 66% of the utility's generation mix."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop air-cooled chiller system. Vantage reports the campus's closed-loop chilled-water design with air-side economizers brings water utilization efficiency close to zero litres/kW/hr."
+    },
     "facilityType": "data_center"
   },
   {

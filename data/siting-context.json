@@ -1716,6 +1716,29 @@
       "rock": "Sandstone"
     }
   },
+  "atlas-agro-richland-data-center-campus-wa": {
+    "nearestWater": {
+      "name": "Yakima River",
+      "kind": "river",
+      "distanceMi": 2.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "atlas-compute-ai-data-center-campus-fort-pierce-fl": {
     "nearestWater": {
       "name": "Moore Creek",
@@ -3527,6 +3550,25 @@
       "rock": "Sandstone"
     }
   },
+  "blue-fern-cle-elum-data-center-wa": {
+    "nearestWater": {
+      "name": "Tillman Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "blue-ladder-wolcott-white-county-in": {
     "nearestWater": {
       "name": "Hoagland Ditch",
@@ -3669,6 +3711,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "boxminer-la-pine-or": {
+    "nearestWater": {
+      "name": "Little Deschutes River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "breaker-street-data-center-jessup-lackawanna-pa": {
@@ -4016,6 +4077,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "centeris-south-hill-puyallup-wa": {
+    "nearestWater": {
+      "name": "McMillin Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "centersquare-abq1-albuquerque-nm": {
@@ -6073,6 +6153,25 @@
     "aquifer": {
       "name": "Denver Basin Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "coresite-hillsboro-or": {
+    "nearestWater": {
+      "name": "Storey Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "coresite-la1-los-angeles-ca": {
@@ -8323,6 +8422,25 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "digital-realty-pdx10-or": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "digital-realty-pdx11-or": {
@@ -11249,6 +11367,44 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "flexential-portland-hillsboro-5-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "flexential-portland-hillsboro-6-or": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "flexential-raleigh-ral02-ral03-nc": {
     "nearestWater": {
       "name": "Stirrup Iron Creek",
@@ -11878,6 +12034,29 @@
     "groundwaterDecline": {
       "cat": 1,
       "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "goldendale-energy-storage-klickitat-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "google-arcola-loudoun-va": {
@@ -13162,6 +13341,25 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "h5-data-centers-portland-or": {
+    "nearestWater": {
+      "name": "Willamette River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "h5-data-centers-quincy-campus-wa": {
@@ -16443,6 +16641,29 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "microsoft-columbia-quincy-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "microsoft-conover-catawba-county-nc": {
     "nearestWater": {
       "name": "McLin Creek",
@@ -18700,6 +18921,25 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "oracle-hillsboro-or": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "oracle-salt-lake-city-ut": {
     "nearestWater": {
       "name": "City Creek",
@@ -19022,6 +19262,25 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "pittock-block-portland-or": {
+    "nearestWater": {
+      "name": "Willamette River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "plan-c-crypto-fayetteville-cumberland-county-nc": {
     "nearestWater": {
       "name": "Beaver Creek",
@@ -19061,6 +19320,29 @@
     },
     "aquifer": {
       "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "pnnl-ai-data-center-richland-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -21177,6 +21459,25 @@
       "label": "Low (<10%)"
     }
   },
+  "roundhouse-cascade-locks-or": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "rowan-bauxite-ii-frederick-md": {
     "nearestWater": {
       "name": "Doubs Branch",
@@ -21382,6 +21683,29 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "sabey-intergate-quincy-campus-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 4.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "sabey-intergate-west-building-a-wa": {
     "nearestWater": {
       "name": "Duwamish River",
@@ -21477,6 +21801,29 @@
       "label": "Low (<10%)"
     }
   },
+  "salcido-broadway-grant-county-wa": {
+    "nearestWater": {
+      "name": "Moses Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "salcido-cashmere-cashmere-wa": {
     "nearestWater": {
       "name": "Wenatchee River",
@@ -21501,6 +21848,52 @@
     "nearestTransmission": {
       "voltageKv": 230,
       "distanceMi": 2.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "salcido-eller-douglas-county-wa": {
+    "nearestWater": {
+      "name": "Jameson Lake",
+      "kind": "lake",
+      "distanceMi": 4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 9.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "salcido-entiat-chelan-county-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.4
     },
     "waterStress": {
       "cat": 0,
@@ -24548,9 +24941,9 @@
   },
   "tierpoint-oklahoma-city-ok": {
     "nearestWater": {
-      "name": "Thompson Lake",
-      "kind": "lake",
-      "distanceMi": 3.4
+      "name": "North Canadian River",
+      "kind": "river",
+      "distanceMi": 1
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -24563,9 +24956,9 @@
   },
   "tierpoint-omaha-bellevue-ne": {
     "nearestWater": {
-      "name": "Base Lake",
-      "kind": "lake",
-      "distanceMi": 3.1
+      "name": "Mud Creek",
+      "kind": "river",
+      "distanceMi": 0.5
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -24627,9 +25020,9 @@
   },
   "tierpoint-st-louis-olive-mo": {
     "nearestWater": {
-      "name": "Compton Hill Reservoir",
-      "kind": "lake",
-      "distanceMi": 2.4
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.9
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -24790,9 +25183,9 @@
   },
   "tract-caldwell-valley-uhland-tx": {
     "nearestWater": {
-      "name": "Soil Conservation Service Site 7 Reservoir",
-      "kind": "lake",
-      "distanceMi": 1.3
+      "name": "Plum Creek",
+      "kind": "river",
+      "distanceMi": 0.5
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -25224,6 +25617,25 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "us-signal-or01-bend-or": {
+    "nearestWater": {
+      "name": "Deschutes River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "us-signal-wi01-madison-wi": {
     "nearestWater": {
       "name": "Lake Monona",
@@ -25563,6 +25975,29 @@
     "nearestTransmission": {
       "voltageKv": 230,
       "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "vantage-wa13-quincy-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 4.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
     },
     "waterStress": {
       "cat": 4,
