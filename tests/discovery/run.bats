@@ -1114,3 +1114,245 @@ EOF
 	[[ "$extract_line" == *"--limit=60"* ]]
 	[[ "$verify_line" == *"--limit=40"* ]]
 }
+
+# --- retention-prune lane (#238) ---------------------------------------------
+# scripts/retention-prune.ts's own logic (windows, per-table back-up-or-abort)
+# is unit tested separately; these tests cover only run.sh's shell wiring
+# (run.sh:637-646) — that the lane fires on a live run with --apply, is
+# skipped on a dry run, and that its failure is non-fatal but still visibly
+# recorded via FAILURES/exit-status/notification, mirroring the field-
+# extraction lane tests above.
+
+@test "retention-prune.ts is invoked on a live run with --apply" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	retention_line="$(grep "retention-prune.ts" "$NPX_CALL_LOG" | head -1)"
+	[ -n "$retention_line" ]
+	[[ "$retention_line" == *"--apply"* ]]
+}
+
+@test "dry-run skips the retention-prune lane entirely" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[[ "$output" == *"DISCOVERY_DRY_RUN=true — skipping retention-prune lane"* ]]
+
+	# Anchor: prove the run actually reached the point where the lane would
+	# fire, same rationale as the field-extraction dry-run test above — without
+	# this, "retention-prune.ts is absent" is vacuous.
+	[ -s "$NPX_CALL_LOG" ]
+	grep -q "check-sources.ts" "$NPX_CALL_LOG"
+	! grep -q "retention-prune.ts" "$NPX_CALL_LOG"
+}
+
+@test "a retention-prune failure is non-fatal — later lanes still run" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	# Overrides setup()'s npx fake to add a retention-prune.ts failure case;
+	# every other case is copied verbatim from setup() so the rest of the
+	# run's control flow is unaffected.
+	cat >"$BIN_DIR/npx" <<EOF
+#!/usr/bin/env bash
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*)
+	exec "$REAL_NPX" "\$@"
+	;;
+*existing-facilities.ts*)
+	echo ""
+	exit 0
+	;;
+*submit-candidates.ts*)
+	exit 0
+	;;
+*check-sources.ts*)
+	exit 1
+	;;
+*retention-prune.ts*)
+	exit 1
+	;;
+*)
+	exit 0
+	;;
+esac
+EOF
+	chmod +x "$BIN_DIR/npx"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"WARN: retention prune failed"* ]]
+	[[ "$output" == *"discovery batch complete"* ]]
+	# Lanes that run AFTER retention-prune in run.sh (heartbeat write + publish)
+	# still executed despite the failure above them.
+	grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
+	[ -f "$LOG_DIR/heartbeat.json" ]
+}
+
+@test "a retention-prune failure appends to FAILURES and fires the desktop notification" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	cat >"$BIN_DIR/npx" <<EOF
+#!/usr/bin/env bash
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*)
+	exec "$REAL_NPX" "\$@"
+	;;
+*existing-facilities.ts*)
+	echo ""
+	exit 0
+	;;
+*submit-candidates.ts*)
+	exit 0
+	;;
+*check-sources.ts*)
+	exit 1
+	;;
+*retention-prune.ts*)
+	exit 1
+	;;
+*)
+	exit 0
+	;;
+esac
+EOF
+	chmod +x "$BIN_DIR/npx"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
+	[[ "$output" == *"retention: prune failed"* ]]
+	[ -s "$NOTIFY_CALL_LOG" ]
+	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+}
+
+# --- heartbeat-publish lane (#238) --------------------------------------------
+# publish-heartbeat.ts's own logic is unit tested separately; these tests cover
+# only run.sh's shell wiring (run.sh:688-701) — the lane sits INSIDE the same
+# "if DISCOVERY_DRY_RUN != true" block that writes heartbeat.json (run.sh:656),
+# so a dry run must never reach Neon at all. There is no distinct "skipping
+# heartbeat publish" log line (the guard has no else branch), so the
+# not-invoked tests below assert absence directly rather than a log message.
+
+@test "publish-heartbeat.ts is invoked on a live run" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
+	[ -f "$LOG_DIR/heartbeat.json" ]
+}
+
+@test "dry-run skips the heartbeat-publish lane entirely" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# Anchor, same rationale as the retention-prune dry-run test above.
+	[ -s "$NPX_CALL_LOG" ]
+	grep -q "check-sources.ts" "$NPX_CALL_LOG"
+	! grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
+}
+
+@test "a dry run never writes to Neon — heartbeat.json itself is also never written" {
+	# Stated as its own test, separate from the mechanical "not invoked" test
+	# above, because this is a deliberate design decision whose regression
+	# would be silent: publish-heartbeat.ts has no independent guard of its
+	# own — it is only ever reachable because it sits inside the SAME block
+	# that writes heartbeat.json. A future refactor that gives the publish
+	# call its own condition (e.g. "publish anyway if there were failures")
+	# could satisfy the test above (still not invoked in the common case)
+	# while quietly weakening the guard. Asserting BOTH halves of the shared
+	# guard — the write AND the publish — is what pins the actual safety
+	# property instead of one incidental symptom of it.
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[ ! -f "$LOG_DIR/heartbeat.json" ]
+	! grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
+}
+
+@test "a publish-heartbeat failure is non-fatal — the run still reaches its final alert/exit logic" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	cat >"$BIN_DIR/npx" <<EOF
+#!/usr/bin/env bash
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*)
+	exec "$REAL_NPX" "\$@"
+	;;
+*existing-facilities.ts*)
+	echo ""
+	exit 0
+	;;
+*submit-candidates.ts*)
+	exit 0
+	;;
+*check-sources.ts*)
+	exit 1
+	;;
+*publish-heartbeat.ts*)
+	exit 1
+	;;
+*)
+	exit 0
+	;;
+esac
+EOF
+	chmod +x "$BIN_DIR/npx"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"WARN: publish-heartbeat failed"* ]]
+	[[ "$output" == *"FAIL: discovery run finished with"*"failure"* ]]
+	# heartbeat.json is written BEFORE the publish call in run.sh, so it must
+	# still exist even though the publish itself failed.
+	[ -f "$LOG_DIR/heartbeat.json" ]
+}
+
+@test "a publish-heartbeat failure appends to FAILURES and fires the desktop notification" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	cat >"$BIN_DIR/npx" <<EOF
+#!/usr/bin/env bash
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*)
+	exec "$REAL_NPX" "\$@"
+	;;
+*existing-facilities.ts*)
+	echo ""
+	exit 0
+	;;
+*submit-candidates.ts*)
+	exit 0
+	;;
+*check-sources.ts*)
+	exit 1
+	;;
+*publish-heartbeat.ts*)
+	exit 1
+	;;
+*)
+	exit 0
+	;;
+esac
+EOF
+	chmod +x "$BIN_DIR/npx"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"heartbeat: publish failed"* ]]
+	[ -s "$NOTIFY_CALL_LOG" ]
+	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+}
