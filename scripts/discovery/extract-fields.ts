@@ -1,5 +1,5 @@
 /**
- * Track 5: fills missing fields on LIVE facilities by re-reading the sources
+ * The field-extraction lane: fills missing fields on LIVE facilities by re-reading the sources
  * those facilities already cite, using a local Ollama model. This is an
  * enrichment tool, not a discovery tool — it never proposes new facilities
  * and it never overwrites a curated value (see lib/enrichment-update.ts's
@@ -118,8 +118,7 @@
  * Never imports or touches the DB, never calls createSubmission — this
  * script's only write is the candidates file itself.
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, matching the rest of scripts/discovery/.
+ * Uses relative imports throughout, matching the rest of scripts/discovery/.
  */
 import { mkdirSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -226,7 +225,7 @@ export function selectGaps(facilities: Facility[], fields: ExtractableField[]): 
 // ============================================================================
 
 // Separator that can join a number to its unit in compound-adjective prose
-// ("36-megawatt"). A real page (s97 bench, flexential-hillsboro-5-or) wrote
+// ("36-megawatt"). A real page (bench corpus, flexential-hillsboro-5-or) wrote
 // this with U+2011 NON-BREAKING HYPHEN ("36‑megawatt"), not ASCII '-', and
 // en/em dashes ("36–megawatt") are ordinary published-prose punctuation, not
 // exotic — an ASCII-only `-?` silently missed all of them. That silence is
@@ -293,7 +292,7 @@ export function prefilter(text: string, field: ExtractableField): boolean {
 // Stage 3 — windowText: entity-anchored windowing for long documents
 // ============================================================================
 
-// Ported from scripts/discovery/bench/fetch-pages.mjs (s97) — see that file's
+// Ported from scripts/discovery/bench/fetch-pages.mjs — see that file's
 // header comment for the measured failure this exists to prevent: a 20k-char
 // HEAD slice of an 809k-char SEC filing contained zero MW figures and not
 // even the facility's name. Windows are anchored on the ENTITY, never the
@@ -363,7 +362,7 @@ export function windowText(text: string, name: string, city?: string): WindowRes
   // Rank by rarity, not by token order: anchoring on a common token (e.g. the
   // operator's own name appearing throughout a filing) merges every window
   // into one giant span whose budget-clamped prefix is pure boilerplate —
-  // head truncation wearing a windowing costume. See fetch-pages.mjs (s97).
+  // head truncation wearing a windowing costume. See fetch-pages.mjs.
   byToken.sort((a, b) => a.indices.length - b.indices.length);
 
   const hits: number[] = [];
@@ -621,11 +620,11 @@ export async function extractField(
 // Stage 5 — quote gate: mechanical, can only ever DOWNGRADE a model "yes"
 // ============================================================================
 
-// Ported from scripts/discovery/bench/quote.mjs (s97). See that file's header for
+// Ported from scripts/discovery/bench/quote.mjs. See that file's header for
 // why this is not a plain substring test: three stricter rules were tried and
 // each false-rejected genuinely correct answers (line-wrapped quotes,
 // sentence-stitched quotes, and short-but-real quotes like "Capacity 1,000
-// kW" or "~48 MW"). NORMALIZATION IS THE WHOLE BALLGAME (measured s97): under
+// kW" or "~48 MW"). NORMALIZATION IS THE WHOLE BALLGAME: under
 // whitespace-only normalization this killed 10 of 26 CORRECT extractions —
 // not fabrications, just literal `\"` quote marks and undecoded HTML entities
 // around a genuine span. Collapsing both sides to alphanumerics+spaces fixed
@@ -1758,7 +1757,7 @@ function gapKey(facilityId: string, field: ExtractableField): string {
 export const CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD = 25;
 
 /**
- * Runs the full Track 5 pipeline over `facilities`. Gaps are grouped by
+ * Runs the full field-extraction pipeline over `facilities`. Gaps are grouped by
  * facility, then `processFacilitySources` reads through that facility's
  * cited sources — as many as it takes to fill every requested field, never
  * just the first readable one (defect 4) — before this function tallies the

@@ -133,7 +133,7 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
   };
 
   // -------------------------------------------------------------------------
-  // Map-only mode — immersive full-bleed layout (Phase 1c)
+  // Map-only mode — immersive full-bleed layout
   // Filter sub-header sits in normal document flow ABOVE the map; the map
   // flexes to fill the remaining viewport height below the site header (4 rem).
   // -------------------------------------------------------------------------
@@ -200,7 +200,7 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
   }
 
   // -------------------------------------------------------------------------
-  // Table-only mode — /table page (Phase 1d(b)).
+  // Table-only mode — /table page.
   // Reuses the shared nuqs filter state so /map and /table share one URL
   // schema; the "View map" cross-link copies the current query so filters
   // carry between the two views.

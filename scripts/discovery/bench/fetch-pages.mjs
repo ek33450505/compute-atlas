@@ -1,10 +1,10 @@
 // Refresh the page cache from targets.json. Tries each source until one returns
 // readable HTML.
 //
-// NEVER regexes a PDF's bytes (s96: produced a phantom "93, 4" across ~10
+// NEVER regexes a PDF's bytes (produced a phantom "93, 4" across ~10
 // records) -- PDFs are skipped by extension AND by content-type.
 //
-// s97 -- ⚠️ HEAD-TRUNCATION IS A SILENT EVIDENCE-DESTROYER. The first cut of this
+// ⚠️ HEAD-TRUNCATION IS A SILENT EVIDENCE-DESTROYER. The first cut of this
 // script kept text.slice(0, 20000). For the two SEC filings in the set (809k and
 // 333k chars) that slice held the XBRL header and cover page: zero MW figures,
 // not even the facility name. Labeling those pages against the DB's recorded

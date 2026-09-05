@@ -21,9 +21,7 @@
  * Run: npm run retention:prune               (dry run — read-only, safe anytime)
  *      npm run retention:prune -- --apply    (writes — see safety contract above)
  *
- * Uses relative imports — tsx does not resolve the `@/*` path alias, which is
- * a Next.js/tsconfig-plugin feature, not a Node runtime one (mirrors
- * scripts/check-neon-drift.ts and scripts/export.ts).
+ * Uses relative imports, matching scripts/check-neon-drift.ts and scripts/export.ts.
  */
 import { appendFileSync, mkdirSync, statSync } from "node:fs";
 import path from "node:path";

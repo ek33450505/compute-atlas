@@ -5,7 +5,7 @@
  * `{ enrichmentUpdate, provenance }` fill-missing intents, validates and
  * dedupes them against the live facility set, and stages the survivors
  * as `pending` submissions via POST /api/submissions. Never writes live
- * facilities directly — that stays a human decision via the Phase 4 CLI
+ * facilities directly — that stays a human decision via the CLI
  * (`scripts/submissions.ts`).
  *
  * `statusUpdate` and `enrichmentUpdate` intents exist to avoid reconstructing
@@ -26,8 +26,7 @@
  * Run via: tsx scripts/discovery/submit-candidates.ts <candidates.json> [flags]
  * Requires API_ADMIN_TOKEN in the environment (e.g. via --env-file=.env.local).
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, matching scripts/seed.ts and scripts/submissions.ts.
+ * Uses relative imports throughout, matching scripts/seed.ts and scripts/submissions.ts.
  */
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";

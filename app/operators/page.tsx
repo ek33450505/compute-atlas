@@ -73,18 +73,12 @@ export default async function OperatorsIndexPage() {
       />
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Operators" }]} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="By operator"
         title="Operators"
         dek="Who is building it. Every company running tracked capacity, ranked by disclosed megawatts. Operators with no disclosed figure are listed separately — undisclosed is not the same as small."
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         stats={[
           { value: rows.length.toLocaleString(), label: "Operators" },
@@ -94,9 +88,6 @@ export default async function OperatorsIndexPage() {
         ]}
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Overview prose                                                      */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="operators-overview-heading"
         className="max-w-2xl space-y-4"
@@ -117,9 +108,6 @@ export default async function OperatorsIndexPage() {
         </p>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Operator grid                                                       */}
-      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="operators-list-heading" className="space-y-4">
         <h2 id="operators-list-heading" className="sr-only">
           All tracked operators
@@ -148,9 +136,6 @@ export default async function OperatorsIndexPage() {
         </ul>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Zero-capacity operators — collapsed by default                     */}
-      {/* ------------------------------------------------------------------ */}
       {undisclosed.length > 0 && (
         <details className="group border-t border-border pt-6">
           <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">

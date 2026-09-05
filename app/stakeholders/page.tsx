@@ -50,18 +50,12 @@ export default async function StakeholdersIndexPage() {
       />
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Stakeholders" }]} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="People"
         title="Stakeholders"
         dek="Named people with a documented stake in specific tracked facilities — founders, owners, investors, executives, board members, landowners, and public officials with an on-record role."
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Editorial standard                                                  */}
-      {/* ------------------------------------------------------------------ */}
       <section className="max-w-2xl space-y-4">
         <p className="text-base leading-relaxed text-muted-foreground">
           A person is listed here against a facility only where a cited
@@ -73,9 +67,6 @@ export default async function StakeholdersIndexPage() {
         </p>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         stats={[
           { value: people.length.toLocaleString(), label: "People" },
@@ -84,9 +75,6 @@ export default async function StakeholdersIndexPage() {
         ]}
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Stakeholder grid                                                    */}
-      {/* ------------------------------------------------------------------ */}
       {people.length === 0 ? (
         <p className="text-base text-muted-foreground">
           No stakeholders are on file yet. Check back soon &mdash; this page

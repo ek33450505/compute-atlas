@@ -89,9 +89,6 @@ export default async function OppositionPage() {
 
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Opposition" }]} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Community friction"
         title="Data center opposition across the United States"
@@ -111,9 +108,6 @@ export default async function OppositionPage() {
         </p>
       ) : (
         <>
-          {/* ------------------------------------------------------------------ */}
-          {/* Overview (dataset-derived)                                          */}
-          {/* ------------------------------------------------------------------ */}
           <div className="max-w-2xl space-y-4 text-base text-muted-foreground">
             <p>
               Compute Atlas has sourced {total} facilities with a documented friction
@@ -134,9 +128,6 @@ export default async function OppositionPage() {
             </p>
           </div>
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § Notable 2026 cases                                                */}
-          {/* ------------------------------------------------------------------ */}
           {notableCases.length > 0 && (
             <section
               aria-labelledby="notable-cases-heading"
@@ -177,14 +168,8 @@ export default async function OppositionPage() {
             </section>
           )}
 
-          {/* ------------------------------------------------------------------ */}
-          {/* Survey stats row                                                    */}
-          {/* ------------------------------------------------------------------ */}
           <SurveyStatRow stats={surveyStats} />
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § Withdrawn or defeated                                             */}
-          {/* ------------------------------------------------------------------ */}
           {defeatedProjects.length > 0 && (
             <section
               aria-labelledby="defeated-heading"
@@ -240,9 +225,6 @@ export default async function OppositionPage() {
             </section>
           )}
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § By reception                                                      */}
-          {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="reception-heading"
             className="space-y-6 border-t border-border pt-10"
@@ -268,9 +250,6 @@ export default async function OppositionPage() {
             </div>
           </section>
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § The sites                                                         */}
-          {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="sites-heading"
             className="space-y-8 border-t border-border pt-10"

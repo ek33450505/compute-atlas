@@ -1,6 +1,6 @@
 /**
  * Shared shallow top-level diff utility. Computes a stored/computed diff at
- * write time (Phase 5a) rather than persisting two full before/after doc
+ * write time rather than persisting two full before/after doc
  * columns — `facility_history.diff` stores the array this returns.
  *
  * Generalizes the shallow diff already inline in

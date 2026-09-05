@@ -7,8 +7,7 @@
  * Requires API_ADMIN_TOKEN in .env.local; API_BASE_URL defaults to
  * http://localhost:3000.
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, which is a Next.js/tsconfig-plugin feature, not a Node runtime one.
+ * Uses relative imports throughout, matching the other scripts in this folder.
  */
 import { readFileSync } from "node:fs";
 

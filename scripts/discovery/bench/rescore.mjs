@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Scores every result-*.json against truth.json.
 //
-// Reports PRECISION and RECALL separately, not just a single total. The s96 bench
+// Reports PRECISION and RECALL separately, not just a single total. An earlier bench
 // used one asymmetric score, and that score cannot distinguish "extracts well" from
 // "abstains on everything" without help -- granite4:32b scored joint-best on
 // hallucination rate purely by returning null 100% of the time (0/6 recall).

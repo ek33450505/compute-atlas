@@ -20,7 +20,7 @@ import { sourceKindEnum, type Source } from "@/lib/schema";
 import { useFocusAfterRemove } from "@/lib/use-focus-after-remove";
 
 // ---------------------------------------------------------------------------
-// sources[] array editor (Phase 2b-2).
+// sources[] array editor.
 //
 // facilitySchema requires `sources: min 1` — this editor enforces that same
 // floor in the UI (disable "Remove" on the last remaining row) in addition

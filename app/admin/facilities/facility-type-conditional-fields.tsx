@@ -26,7 +26,7 @@ import type { GenerationTechnology } from "@/lib/generation";
 import type { FacilityType } from "@/lib/facility-type";
 
 // ---------------------------------------------------------------------------
-// facilityType-conditional fieldsets (Phase 2b-4) — the 3 branches of
+// facilityType-conditional fieldsets — the 3 branches of
 // `facilitySchema`'s discriminated union, switched on the form's CURRENT
 // `facilityType`. Only the active branch is rendered; the other two
 // branches' state slices are untouched here (facility-form.tsx's

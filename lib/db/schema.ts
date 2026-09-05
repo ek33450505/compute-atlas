@@ -80,7 +80,7 @@ export type FacilityRow = typeof facilitiesTable.$inferSelect;
  * Staging queue for discovered/submitted facility candidates. A submission
  * is either a `create` (payload is a full Facility doc) or an `update`
  * (payload is a partial patch against `targetFacilityId`) — approving one
- * promotes it via the Phase 3 `createFacility`/`updateFacility` write
+ * promotes it via the `createFacility`/`updateFacility` write
  * primitives, so the same validation and revalidation apply either way.
  */
 export const submissionsTable = pgTable(
@@ -275,7 +275,7 @@ export type ApiAccessGrantRow = typeof apiAccessGrantsTable.$inferSelect;
 /**
  * Durable per-IP daily request counter for the public facilities-family read
  * API (`GET /api/facilities`, `/api/search`, `/api/stats`, `/api/schema`,
- * `/api/facilities/[id]`) — Track B2's anonymous ceiling. One row per
+ * `/api/facilities/[id]`) — the anonymous daily ceiling. One row per
  * (ipHash, UTC calendar day), incremented atomically via upsert. This is
  * deliberately separate from `lib/api-rate-limit.ts`'s in-memory burst
  * limiter (60/min): that one resets on cold start and can't hold a day-long

@@ -13,7 +13,7 @@ import {
 import type { Facility } from "@/lib/schema";
 
 // ---------------------------------------------------------------------------
-// energy{} / water{} fieldsets (Phase 2b-4).
+// energy{} / water{} fieldsets.
 //
 // Both are plain OPTIONAL nested objects with no arrays — a simple grouped
 // set of inputs each, no add/remove/reorder machinery like the array

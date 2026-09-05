@@ -35,7 +35,7 @@ const provenanceSchema = z.object({
 /**
  * Envelope-only validation at submit time — this is a human-in-the-loop
  * queue, so the pipeline may stage imperfect candidates. Full `facilitySchema`
- * validation happens at approve time via the Phase 3 write primitives.
+ * validation happens at approve time via the write primitives.
  */
 export const submissionInputSchema = z
   .object({
@@ -94,7 +94,7 @@ export async function listSubmissions(status?: string): Promise<SubmissionRow[]>
 }
 
 /**
- * Promotes a pending submission to a live facility via the Phase 3 write
+ * Promotes a pending submission to a live facility via the write
  * primitives, then marks the submission `approved`. If the primitive rejects
  * (e.g. schema-invalid payload), the submission is left `pending` so it can
  * be fixed and retried rather than silently lost.

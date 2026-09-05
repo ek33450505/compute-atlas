@@ -21,8 +21,7 @@
  *   npx tsx --env-file=.env.local scripts/backfill-facility-history.ts            (writes)
  * (requires DATABASE_URL in .env.local — i.e. it targets prod Neon)
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, which is a Next.js/tsconfig-plugin feature, not a Node runtime one.
+ * Uses relative imports throughout, matching the other scripts in this folder.
  */
 import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";

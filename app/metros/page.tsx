@@ -65,18 +65,12 @@ export default async function MetrosIndexPage() {
     >
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "By metro" }]} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Metro areas"
         title="By metro"
         dek="Curated clusters of counties driving the buildout, from Northern Virginia to the Permian Basin. Each metro links to the full, source-cited list."
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         stats={[
           { value: METROS.length.toLocaleString(), label: "Metros" },
@@ -86,9 +80,6 @@ export default async function MetrosIndexPage() {
         ]}
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Overview prose                                                      */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="metros-overview-heading"
         className="max-w-2xl space-y-4"
@@ -110,9 +101,6 @@ export default async function MetrosIndexPage() {
         </p>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Metro grid                                                          */}
-      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="metro-list-heading" className="space-y-4">
         <h2 id="metro-list-heading" className="sr-only">
           Browse by metro

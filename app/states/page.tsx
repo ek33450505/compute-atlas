@@ -69,18 +69,12 @@ export default async function StatesIndexPage() {
       />
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "States" }]} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="By geography"
         title="States"
         dek="Where the buildout is landing. Every state with at least one tracked facility, ranked by how many sites it carries. Capacity is shown where operators disclose it — most don’t, so the megawatt figures rank a subset, not the field."
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         stats={[
           { value: rows.length.toLocaleString(), label: "States" },
@@ -90,9 +84,6 @@ export default async function StatesIndexPage() {
         ]}
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Overview prose                                                      */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="states-overview-heading"
         className="max-w-2xl space-y-4"
@@ -112,9 +103,6 @@ export default async function StatesIndexPage() {
         </p>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* State grid                                                          */}
-      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="states-list-heading" className="space-y-4">
         <h2 id="states-list-heading" className="sr-only">
           All tracked states

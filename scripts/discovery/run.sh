@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scheduled harness for the discovery pipeline. Fail-closed by default: does
 # nothing unless DISCOVERY_ENABLED=true. Never writes live facilities — the
-# submit step only ever POSTs to /api/submissions (Phase 4 staging queue),
+# submit step only ever POSTs to /api/submissions (the staging queue),
 # and the discovery step itself is read-only research. Never git commits or
 # pushes. Intended to be run by launchd (see com.compute-atlas.discovery.plist)
 # or manually for testing.
@@ -510,7 +510,7 @@ if ! npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_D
   log "WARN: source-liveness check failed — continuing (see check-sources.err)"
 fi
 
-# --- field-extraction + field-verification lane (Track F0 step 3) ----------
+# --- field-extraction + field-verification lane (step 3) ----------
 # Global, not per-state — same rationale as source-liveness above. Skipped
 # entirely on a dry run because, unlike check-sources, this lane writes a
 # candidates file and stages rows to the submissions queue; a dry run should

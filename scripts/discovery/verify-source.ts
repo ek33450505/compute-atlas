@@ -8,7 +8,7 @@
  * The local model NEVER gets the final word. It proposes a verdict and a
  * quote; every JS-side "mechanical" check below can only downgrade that
  * proposal (to "rejected"), never upgrade it. This mirrors the project's
- * repeated, measured lesson (s86/s87/s90): small local models fabricate
+ * repeated, measured lesson: small local models fabricate
  * plausible-looking source text, and a "trust the label" gate does not catch
  * that — only re-deriving the answer from the actual page text does.
  *
@@ -589,7 +589,7 @@ export async function verifySource(url: string, claim: VerifyClaim, deps: Verify
   }
 
   // Direct fetch failed. This is what separates a bot-walled real source
-  // (this project has hit datacenters.com/lncompute.com bot-walls, s87) from
+  // (this project has hit datacenters.com/lncompute.com bot-walls) from
   // one that never existed — try the Wayback Machine before giving up.
   const originalFailure = describeFetchFailure(fetchResult);
   const fetchImpl = deps.fetchImpl ?? fetch;

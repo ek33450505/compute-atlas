@@ -12,8 +12,7 @@
  * Run via: npm run db:export  (requires DATABASE_URL in .env.local)
  * Optional: --out=<path> to write somewhere other than data/facilities.json.
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, which is a Next.js/tsconfig-plugin feature, not a Node runtime one.
+ * Uses relative imports throughout, matching the other scripts in this folder.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";

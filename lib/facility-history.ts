@@ -23,8 +23,7 @@ import type { DiffEntry } from "@/lib/doc-diff";
  * Deliberately log-and-continue on failure rather than throwing or rolling
  * back the caller's facility mutation — losing one audit row is recoverable;
  * failing (or rolling back) a facility write because the audit table
- * hiccuped would be a worse outcome. (Judgment call per Phase 5a of the
- * admin-ui-part2 plan.) Returns `true`/`false` instead so each caller can
+ * hiccuped would be a worse outcome. (A deliberate judgment call.) Returns `true`/`false` instead so each caller can
  * decide how loudly to surface a failure: `lib/facility-write.ts` carries it
  * on `WriteResult.historyRecorded`, `sync-to-neon.ts` collects the failing
  * ids and exits non-zero, and `seed.ts` relies on the `console.error` below

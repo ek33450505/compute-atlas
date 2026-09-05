@@ -19,8 +19,7 @@
  *          npm run db:seed -- --force (also overwrites existing rows from JSON)
  * (requires DATABASE_URL in .env.local)
  *
- * Uses relative imports throughout — tsx does not resolve the `@/*` path
- * alias, which is a Next.js/tsconfig-plugin feature, not a Node runtime one.
+ * Uses relative imports throughout, matching the other scripts in this folder.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";

@@ -71,7 +71,6 @@ export default async function OperatorPage({
 
   const facilities = await getFacilitiesByOperator(operatorName);
 
-  // --- Templated overview prose (SEO Task 2.1) -----------------------------
   // Every figure below is read directly off `summary`/`facilities`; nothing
   // here is fetched, invented, or estimated. Each branch just phrases a zero
   // count gracefully instead of printing an awkward "0 MW" boast.
@@ -110,9 +109,6 @@ export default async function OperatorPage({
 
       <Breadcrumb items={crumbs} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Operator profile"
         title={<>{operatorName} data centers</>}
@@ -123,9 +119,6 @@ export default async function OperatorPage({
         }
       />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Overview (SEO: templated, dataset-derived prose — no new fields)    */}
-      {/* ------------------------------------------------------------------ */}
       <div className="max-w-2xl space-y-4">
         <p className="text-base leading-relaxed text-muted-foreground">
           {overviewSentence}
@@ -137,9 +130,6 @@ export default async function OperatorPage({
         )}
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         stats={[
           { value: summary.count, label: "Sites" },
@@ -156,9 +146,6 @@ export default async function OperatorPage({
         operator total.
       </p>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § By type                                                           */}
-      {/* ------------------------------------------------------------------ */}
       {summary.count > 0 && (
         <section
           aria-labelledby="facility-type-heading"
@@ -188,9 +175,6 @@ export default async function OperatorPage({
         </section>
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § By status                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="status-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -221,9 +205,6 @@ export default async function OperatorPage({
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Facilities                                                        */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="facilities-heading"
         className="space-y-4 border-t border-border pt-10"

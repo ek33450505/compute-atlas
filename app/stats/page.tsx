@@ -123,9 +123,6 @@ export default async function StatsPage() {
       className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16 space-y-12"
     >
       <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "Stats" }]} />
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <header className="relative">
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
@@ -164,9 +161,6 @@ export default async function StatsPage() {
         <div className="border-t border-border" />
       </header>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Survey stats row                                                    */}
-      {/* ------------------------------------------------------------------ */}
       <SurveyStatRow
         stats={[
           { value: total.toLocaleString("en-US"), label: "Sites tracked" },
@@ -193,9 +187,6 @@ export default async function StatsPage() {
         total.
       </p>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § By type                                                           */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="facility-type-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -227,9 +218,6 @@ export default async function StatsPage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Energy                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="energy-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -285,9 +273,6 @@ export default async function StatsPage() {
         })()}
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Water use                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="water-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -353,9 +338,6 @@ export default async function StatsPage() {
         })()}
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § By status                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="status-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -384,9 +366,6 @@ export default async function StatsPage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Community reception                                               */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="community-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -439,9 +418,6 @@ export default async function StatsPage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Data coverage                                                     */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="coverage-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -475,9 +451,6 @@ export default async function StatsPage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Evidence quality                                                  */}
-      {/* ------------------------------------------------------------------ */}
       <section
         aria-labelledby="evidence-heading"
         className="space-y-6 border-t border-border pt-10"
@@ -538,9 +511,6 @@ export default async function StatsPage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* § Geography & Operators (two-column grid)                           */}
-      {/* ------------------------------------------------------------------ */}
       <div className="grid gap-10 sm:grid-cols-2">
         {/* § Geography */}
         <section

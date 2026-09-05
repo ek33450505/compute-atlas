@@ -62,8 +62,8 @@ async function sendViaResend(
     const result = await resend.emails.send(payload);
     if (result.error) {
       // Log only the error type, not the raw Resend error object — it can
-      // echo the recipient address back on a validation failure (s65
-      // security review, Fix 3).
+      // echo the recipient address back on a validation failure (caught in
+      // a prior security review).
       console.error(`${logLabel} failed:`, result.error?.name ?? "unknown");
       return { sent: false };
     }

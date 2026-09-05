@@ -57,8 +57,8 @@ function isUniqueViolation(err: unknown): boolean {
  * On a genuine new subscription, returns `{ok:true, confirm}` instead of
  * sending the email itself — the caller (the route) schedules the actual
  * send AFTER the response goes out, so response latency can't distinguish
- * the new-subscription path from the generic-success paths (Fix 1, s65
- * security review).
+ * the new-subscription path from the generic-success paths (a prior
+ * security-review fix).
  */
 export async function subscribeToTarget(
   rawInput: unknown,
@@ -83,7 +83,7 @@ export async function subscribeToTarget(
   const targetId = data.targetId!;
   const targetLabel = facility.name;
 
-  // Per-address send cap (Fix 2, s65 security review): the IP rate limit
+  // Per-address send cap (a prior security-review fix): the IP rate limit
   // alone doesn't stop a distributed attacker from email-bombing one victim
   // by varying targetId/IP. This check runs on BOTH the eventual-new and
   // eventual-duplicate paths below (both reach this point before the
@@ -110,12 +110,12 @@ export async function subscribeToTarget(
     // The confirm email is NOT sent here. The route sends it AFTER this
     // function returns (via next/server's `after()`), so that response
     // latency is identical whether this is a new subscription or one of the
-    // generic-success no-send paths above/below (Fix 1, s65 security
-    // review) — awaiting the send inline made the duplicate path (immediate
+    // generic-success no-send paths above/below (a prior security-review
+    // fix) — awaiting the send inline made the duplicate path (immediate
     // return) measurably faster than the new-subscription path (waits on
     // the network), leaking whether the (email,target) pair already existed.
     //
-    // KNOWN LIMITATION (MVP, reviewed s65): the send result is still not
+    // KNOWN LIMITATION (MVP, security-reviewed): the send result is still not
     // acted on by anything here. If this first confirm email fails (e.g.
     // Resend down), the pending row persists and a retry hits the
     // active-subscription unique index (23505) → generic success with no

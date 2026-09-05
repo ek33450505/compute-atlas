@@ -14,7 +14,7 @@ import { FacilitySourceIndexPicker } from "@/app/admin/facilities/facility-sourc
 import { useFocusAfterRemove } from "@/lib/use-focus-after-remove";
 
 // ---------------------------------------------------------------------------
-// subsidies[] array editor (Phase 2b-3).
+// subsidies[] array editor.
 //
 // `facilitySchema.subsidies` is fully optional (`z.array(...).optional()`,
 // no default in the schema) — the form state always carries a real array

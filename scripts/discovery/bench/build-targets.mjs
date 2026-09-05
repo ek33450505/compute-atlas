@@ -1,5 +1,5 @@
 // Build targets.json from the LIVE DB (data/facilities.json), not hand-typed.
-// s97: ground truth must come from the record, and the record's shape is
+// Ground truth must come from the record, and the record's shape is
 // capacityMw:{planned,operational} + energy:{source,utility,onSiteGenerationMw}.
 // Keeps the original 7 (already hand-labeled, carry known traps) and adds a
 // bucket-balanced set: both-capacities, operational-only, planned-only,
@@ -35,10 +35,10 @@ const ADD = [
 // Hand-labeled cases with NO live DB row. Kept deliberately: the Flexential page is
 // the bench's best entity-binding trap (36 MW for Hillsboro 5, vs 360 MW company-wide
 // and 108 MW for a Dallas site). The page states "Hillsboro 5 is 358,000 square feet
-// with 36 megawatts capacity" -- verified by reading, s97.
+// with 36 megawatts capacity" -- verified by reading.
 // ⚠️ SURFACED, NOT FIXED: Hillsboro 5 is absent from the live dataset even though this
 // source names it, while flexential-portland-hillsboro-3-or is recorded at
-// operational:36. Worth checking for an s87-shaped right-number/wrong-site binding.
+// operational:36. Worth checking for a right-number/wrong-site binding error like ones seen before.
 const MANUAL = {
   "flexential-hillsboro-5-or": {
     id: "flexential-hillsboro-5-or", name: "Flexential Hillsboro 5",

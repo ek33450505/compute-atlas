@@ -55,9 +55,6 @@ export default function LearnIndexPage() {
 
       <Breadcrumb items={CRUMBS} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Learn"
         title="Data center glossary"
@@ -68,9 +65,6 @@ export default function LearnIndexPage() {
         </p>
       </PageMasthead>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Topic list                                                          */}
-      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="topics-list-heading" className="space-y-4">
         <h2 id="topics-list-heading" className="sr-only">
           All glossary topics

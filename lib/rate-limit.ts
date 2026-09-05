@@ -231,8 +231,8 @@ export const EMAIL_SEND_CAP_MAX = 5; // confirm emails per address per window
  * Per-recipient cap on confirm-email sends, independent of the per-IP rate
  * limit above. The IP limit doesn't stop a distributed attacker from
  * email-bombing one victim by varying targetId (and IP) across requests —
- * this bounds sends to a single address regardless of source (s65 security
- * review, Fix 2). `email` is expected pre-normalized (lowercased/trimmed) by
+ * this bounds sends to a single address regardless of source (a prior
+ * security-review fix). `email` is expected pre-normalized (lowercased/trimmed) by
  * the caller.
  */
 export async function checkEmailSendCap(email: string): Promise<{ ok: boolean }> {
@@ -267,7 +267,7 @@ export async function checkAccessGrantRateLimit(ipHash: string): Promise<{ ok: b
 /**
  * Per-recipient cap on bulk-access-request magic-link emails, independent of
  * the per-IP rate limit above — mirrors `checkEmailSendCap`'s reasoning
- * (s65 security review, Fix 2): the IP limit alone doesn't stop a
+ * (a prior security-review fix): the IP limit alone doesn't stop a
  * distributed attacker from email-bombing one victim across IPs. `email` is
  * expected pre-normalized (lowercased/trimmed) by the caller.
  */

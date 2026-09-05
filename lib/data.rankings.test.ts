@@ -383,8 +383,8 @@ describe("capacity-ranking helpers (outlier sanity guard)", () => {
 });
 
 // capacityReporting: the disclosed-capacity denominator surfaced on the
-// /states/[state] and /operators/[operator] detail pages (Track A honest
-// denominators). Mirrors the existing communityReporting counter — see
+// /states/[state] and /operators/[operator] detail pages (the
+// honest-denominators work). Mirrors the existing communityReporting counter — see
 // computeStateSummary / getOperatorSummary in lib/data.ts. Uses the same
 // mocked-DB fixture pattern as the ranking suite above so mix/all/none
 // scenarios are deterministic rather than sampled off the real dataset.

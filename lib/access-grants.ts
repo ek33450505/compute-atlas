@@ -41,7 +41,7 @@ const ACTIVE_GRANT_STATUSES = ["pending", "active"] as const;
  * the email itself — the caller (the route) schedules the actual send AFTER
  * the response goes out via `after()`, so response latency can't distinguish
  * the new-request path from the generic-success paths (same timing-leak fix
- * as subscribeToTarget, s65 security review).
+ * as subscribeToTarget, from a prior security review).
  */
 export async function requestAccessGrant(
   rawInput: unknown,
@@ -59,7 +59,7 @@ export async function requestAccessGrant(
 
   const email = data.email.trim().toLowerCase();
 
-  // Per-address send cap (mirrors subscribeToTarget's Fix 2): checked before
+  // Per-address send cap (mirrors subscribeToTarget's per-address send cap): checked before
   // the duplicate-grant lookup so both the eventual-new and
   // eventual-duplicate paths reach it before any DB write, keeping the
   // function timing-symmetric.

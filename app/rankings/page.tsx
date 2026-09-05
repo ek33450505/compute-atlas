@@ -70,9 +70,6 @@ export default async function RankingsPage() {
 
       <Breadcrumb items={CRUMBS} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Masthead                                                            */}
-      {/* ------------------------------------------------------------------ */}
       <PageMasthead
         eyebrow="Rankings"
         title="Biggest data center projects, operators and states by disclosed capacity"
@@ -85,9 +82,6 @@ export default async function RankingsPage() {
         </p>
       ) : (
         <>
-          {/* ------------------------------------------------------------------ */}
-          {/* Overview prose                                                      */}
-          {/* ------------------------------------------------------------------ */}
           <div className="max-w-2xl space-y-4">
             <p className="text-base leading-relaxed text-muted-foreground">
               Three views over the same{" "}
@@ -110,9 +104,6 @@ export default async function RankingsPage() {
             </p>
           </div>
 
-          {/* ------------------------------------------------------------------ */}
-          {/* Survey stats row                                                    */}
-          {/* ------------------------------------------------------------------ */}
           <SurveyStatRow
             stats={[
               { value: stats.count, label: "Facilities" },
@@ -122,9 +113,6 @@ export default async function RankingsPage() {
             ]}
           />
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § Biggest projects                                                  */}
-          {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="projects-heading"
             className="space-y-4 border-t border-border pt-10"
@@ -155,9 +143,6 @@ export default async function RankingsPage() {
             )}
           </section>
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § Operators with the most disclosed capacity                       */}
-          {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="operators-heading"
             className="space-y-4 border-t border-border pt-10"
@@ -202,9 +187,6 @@ export default async function RankingsPage() {
             )}
           </section>
 
-          {/* ------------------------------------------------------------------ */}
-          {/* § States with the most disclosed capacity                          */}
-          {/* ------------------------------------------------------------------ */}
           <section
             aria-labelledby="states-heading"
             className="space-y-4 border-t border-border pt-10"

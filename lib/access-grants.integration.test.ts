@@ -16,8 +16,8 @@ import { EMAIL_SEND_CAP_MAX, checkAccessGrantRateLimit, checkAccessGrantEmailSen
 
 // Imported after the mock above so its transitive import of lib/db/client
 // resolves against the mocked module. requestAccessGrant doesn't call
-// sendBulkAccessEmail directly (mirrors subscribeToTarget's Fix 1, s65
-// security review) — it hands back a `confirm` signal for the route to act
+// sendBulkAccessEmail directly (mirrors subscribeToTarget's prior
+// security-review fix) — it hands back a `confirm` signal for the route to act
 // on, so lib/email needs no mock here.
 import { requestAccessGrant, confirmAccessGrant } from "@/lib/access-grants";
 
