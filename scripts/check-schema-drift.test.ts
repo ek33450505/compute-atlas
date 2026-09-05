@@ -15,10 +15,11 @@ import {
   SchemaDriftError,
 } from "./check-schema-drift";
 
-const ALL_EIGHT_TABLES = [
+const ALL_NINE_TABLES = [
   "api_access_grants",
   "api_daily_usage",
   "contact_messages",
+  "discovery_heartbeat",
   "facilities",
   "facility_history",
   "leads",
@@ -32,7 +33,7 @@ const ALL_EIGHT_TABLES = [
 
 describe("getExpectedTableNames", () => {
   it("derives every pgTable export from lib/db/schema.ts, not a hardcoded list", () => {
-    expect(getExpectedTableNames()).toEqual(ALL_EIGHT_TABLES);
+    expect(getExpectedTableNames()).toEqual(ALL_NINE_TABLES);
   });
 });
 
@@ -60,7 +61,7 @@ describe("runSchemaDriftCheck", () => {
     const report = await runSchemaDriftCheck();
 
     expect(report.missingTables).toEqual([]);
-    expect(report.presentTables).toEqual(ALL_EIGHT_TABLES);
+    expect(report.presentTables).toEqual(ALL_NINE_TABLES);
   });
 
   it("reports a zero-row WARNING signal (not a failure) when api_daily_usage has no rows for the given day", async () => {
@@ -101,13 +102,13 @@ describe("runSchemaDriftCheck", () => {
     const err = await runSchemaDriftCheck(expectedWithFake).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(SchemaDriftError);
     expect((err as SchemaDriftError).report.missingTables).toEqual(["totally_fake_table_xyz"]);
-    expect((err as SchemaDriftError).report.presentTables).toEqual(ALL_EIGHT_TABLES);
+    expect((err as SchemaDriftError).report.presentTables).toEqual(ALL_NINE_TABLES);
   });
 
   it("throws SchemaDriftError when a table the code expects is dropped from the live database — reproduces the PR #222 incident directly", async () => {
     // Use a dedicated PGlite instance for this test only: dropping a table
     // is not something tdb.reset()'s TRUNCATE can undo, and every other test
-    // in this file depends on the shared instance keeping all 8 tables.
+    // in this file depends on the shared instance keeping all 9 tables.
     const isolated = await makeTestDb();
     try {
       await isolated.client.exec(`DROP TABLE "api_daily_usage"`);
