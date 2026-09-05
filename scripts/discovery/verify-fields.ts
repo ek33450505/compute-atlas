@@ -157,12 +157,17 @@
  * an invariant to be separately verified.
  *
  * THIS TRIPLE-LEVEL ACCOUNTING HAS A BLIND SPOT: a value whose facility cites
- * no sources at all, or was never reached because of an abort, contributes
- * ZERO triples — not even an `unreachable` one, since there was nothing to
- * even attempt fetching. (Since F1, a PDF-only facility no longer falls into
- * this blind spot — every cited source, PDF or HTML, is now actually fetched,
- * so it contributes at least one real triple, `unreachable` if the fetch or
- * extraction fails.) Such a value is invisible to the five
+ * no sources at all, was never reached because of an abort, or cites ONLY
+ * non-document sources (issue #230 — every citation is an ArcGIS/OSM/
+ * Nominatim shape `isNonDocumentSource` skips before ever attempting a
+ * fetch), contributes ZERO triples — not even an `unreachable` one, since
+ * there was nothing to even attempt fetching. (Since F1, a PDF-only facility
+ * no longer falls into this blind spot — every cited DOCUMENT source, PDF or
+ * HTML, is actually fetched, so it contributes at least one real triple,
+ * `unreachable` if the fetch or extraction fails; #230 reopens a narrower,
+ * EXPECTED version of the same gap for non-document-only facilities, closed
+ * the same way — see `UncheckedReason.allSourcesNonDocument`.) Such a value
+ * is invisible to the five
  * outcome counters and, without a second layer, indistinguishable in the
  * output from a value that was fully checked. That is the exact shape of the
  * incident that motivated the abort guard below: a balanced-looking report
@@ -243,6 +248,7 @@ import { fetchPageText } from "./fetch-page-text";
 import { fetchPdfText } from "./fetch-pdf-text";
 import { findWaybackSnapshotUrl } from "./wayback";
 import { loadFacilities } from "./load-facilities";
+import { isNonDocumentSource } from "./non-document-source";
 
 // Note on reuse: `buildUserPrompt` and `fieldJsonSchema` (also exported by
 // extract-fields.ts) are NOT imported here directly — this tool never calls
@@ -517,6 +523,17 @@ interface FacilityVerifyResult {
    * consecutive-failure streak the same way a fully-readable page does —
    * only a genuine CONNECTION failure should ever increment it. */
   sawAnyThin: boolean;
+  /** Count of this facility's cited sources skipped by `isNonDocumentSource`
+   * (issue #230) — never fetched, never pushed into `results` at all (choice
+   * (a): a skip contributes NO triple, see `VerifyFieldsSummary.
+   * sourcesSkippedNonDocument`'s doc-comment). Because a skip never touches
+   * `results`, `sawAnyReadable`, or `sawAnyThin`, it also never perturbs the
+   * consecutive-fetch-failure streak in `runVerify`: that streak only
+   * increments when `results.length > 0` (i.e. at least one REAL fetch was
+   * attempted and every one failed), so a facility whose sources were ALL
+   * skipped — `results.length === 0` — is silently exempt from both
+   * incrementing and resetting it, exactly as required. */
+  sourcesSkippedNonDocument: number;
 }
 
 /**
@@ -584,6 +601,7 @@ async function verifyFacility(
   const results: SourceVerification[] = [];
   let sawAnyReadable = false;
   let sawAnyThin = false;
+  let sourcesSkippedNonDocument = 0;
 
   /** Pushes one `unreachable` triple per field under check for `sourceUrl`,
    * optionally tagged with archive provenance — the shared tail of every
@@ -604,6 +622,23 @@ async function verifyFacility(
   };
 
   for (const source of facility.sources) {
+    // Issue #230: an ArcGIS FeatureServer/MapServer endpoint, an Esri item
+    // viewer, or a Nominatim geocoder lookup cannot be read as a document —
+    // skip it BEFORE any fetch is attempted, so it produces NO triple at all
+    // (never an `unreachable` one — that reads as "we tried to check this
+    // fact and could not," which is false; we never tried, because a
+    // document-reading fetch was never the right tool for this URL). Tallied
+    // separately in `sourcesSkippedNonDocument` — never counted in
+    // `sourceChecksAttempted` (see that field's and `isNonDocumentSource`'s
+    // doc-comments for the measured 14.4%/624-of-4,401/307-facility figures).
+    // The source itself remains a real, kept citation; only the fetch
+    // attempt is skipped.
+    if (isNonDocumentSource(source)) {
+      sourcesSkippedNonDocument++;
+      console.log(`skipped-non-document: ${facility.id} — ${source.url}`);
+      continue;
+    }
+
     const fetchResult = await fetchSourceText(source.url, deps, fetchState);
 
     if (!fetchResult.ok) {
@@ -685,7 +720,7 @@ async function verifyFacility(
     }
   }
 
-  return { results, sawAnyReadable, sawAnyThin };
+  return { results, sawAnyReadable, sawAnyThin, sourcesSkippedNonDocument };
 }
 
 // ============================================================================
@@ -709,21 +744,28 @@ export interface RunVerifyOptions {
  * Why a value contributed ZERO attempted (facility, field, source) triples —
  * see `VerifyFieldsSummary.uncheckedValues`'s doc-comment for why this is a
  * first-class finding, not an absence. `noSources` (a data-completeness gap
- * upstream of this tool: nothing was ever cited) and `abortedBeforeReached`
+ * upstream of this tool: nothing was ever cited), `abortedBeforeReached`
  * (says nothing about the facility's own sources — only that the run stopped
  * before reaching it, see `runVerify`'s abort design; re-running covers it,
- * no data fix implied) are the only two REACHABLE reasons, since F1: every
- * cited source — PDF or HTML — is now actually fetched, so a reached facility
- * with at least one source always contributes at least one triple (a failed
- * fetch or a too-thin read still yields an `unreachable` triple). `unclassified`
- * is kept ONLY as a structural safety net, mirroring extract-fields.ts's own
- * `unclassified` counter (see that field's doc-comment there): if this reason
- * is ever produced, that is a genuine accounting bug in this file, not a data
- * characteristic — a reached facility with sources somehow contributed zero
- * triples despite the invariant above. It should never appear in a correct
- * run.
+ * no data fix implied), and `allSourcesNonDocument` (issue #230: every cited
+ * source is an ArcGIS/OSM/Nominatim shape `isNonDocumentSource` skips before
+ * any fetch — a real citation, just not one this tool's document-reading
+ * pipeline can check) are the only three REACHABLE reasons. Since F1, every
+ * cited DOCUMENT source — PDF or HTML — is actually fetched, so a reached
+ * facility with at least one document-shaped source always contributes at
+ * least one triple (a failed fetch or a too-thin read still yields an
+ * `unreachable` triple); since #230, a facility whose sources are ALL
+ * non-document shapes contributes none at all, by design, and must be
+ * classified as `allSourcesNonDocument` rather than falling through to the
+ * `unclassified` safety net below. `unclassified` is kept ONLY as a
+ * structural safety net, mirroring extract-fields.ts's own `unclassified`
+ * counter (see that field's doc-comment there): if this reason is ever
+ * produced, that is a genuine accounting bug in this file, not a data
+ * characteristic — a reached facility with at least one document-shaped
+ * source somehow contributed zero triples despite the invariant above. It
+ * should never appear in a correct run.
  */
-export type UncheckedReason = "noSources" | "abortedBeforeReached" | "unclassified";
+export type UncheckedReason = "noSources" | "abortedBeforeReached" | "allSourcesNonDocument" | "unclassified";
 
 export interface UncheckedValue {
   facilityId: string;
@@ -778,6 +820,20 @@ export interface VerifyFieldsSummary {
    * in exactly one outcome bucket, the value-level one proves every SELECTED
    * value was either attempted at all, or is explicitly flagged as not. */
   sourceChecksAttempted: number;
+  /** Total cited sources skipped by `isNonDocumentSource` (issue #230) across
+   * every facility this run reached — an ArcGIS FeatureServer/MapServer
+   * endpoint, an Esri item viewer, or a Nominatim geocoder lookup that cannot
+   * be read as a document. Deliberately NOT counted in
+   * `sourceChecksAttempted` and NOT a sixth `VerifyOutcome` (choice (a) —
+   * see `verifyFacility`'s skip branch): a skip means "we never tried to
+   * check this source as a document," a materially different claim than
+   * `unreachable`'s "we tried and could not," so folding it into either the
+   * triple-level or the five-outcome accounting would misrepresent what
+   * actually happened. A source is still a real citation after being
+   * skipped — this counter exists purely for run-level observability (how
+   * much of a sweep's source list was structurally unreadable), never as a
+   * data-quality signal about the facility itself. */
+  sourcesSkippedNonDocument: number;
   confirmed: number;
   /** THE PAYLOAD — see file header. */
   disagreements: number;
@@ -877,6 +933,7 @@ export async function runVerify(
     valuesUnchecked: 0,
     uncheckedValues: [],
     sourceChecksAttempted: 0,
+    sourcesSkippedNonDocument: 0,
     confirmed: 0,
     disagreements: 0,
     unconfirmed: 0,
@@ -933,6 +990,7 @@ export async function runVerify(
   for (const { facility, fields } of byFacility.values()) {
     reachedFacilityIds.add(facility.id);
     const result = await verifyFacility(facility, fields, deps, fetchState);
+    summary.sourcesSkippedNonDocument += result.sourcesSkippedNonDocument;
     for (const item of result.results) {
       summary.results.push(item);
       summary.sourceChecksAttempted++;
@@ -1003,15 +1061,25 @@ export async function runVerify(
       reason = "abortedBeforeReached";
     } else if (check.facility.sources.length === 0) {
       reason = "noSources";
+    } else if (check.facility.sources.every((s) => isNonDocumentSource(s))) {
+      // Issue #230: every cited source is an ArcGIS/OSM/Nominatim shape that
+      // `verifyFacility` skips before ever attempting a fetch — a real
+      // citation, just not one this tool's document-reading pipeline can
+      // check. Distinct from `unclassified` below: this is an EXPECTED,
+      // structurally understood reason a facility can contribute zero
+      // triples, not an accounting bug — so it must be classified explicitly
+      // here rather than falling through to the loud `unclassified` log.
+      reason = "allSourcesNonDocument";
     } else {
-      // Structurally unreachable since F1: a REACHED facility with at least
-      // one cited source always contributes at least one triple now that
-      // every source — PDF or HTML — is actually fetched (a failed fetch or
-      // too-thin read still yields an `unreachable` triple). Reaching this
-      // branch means that invariant broke — a genuine accounting bug in this
-      // file, not a data characteristic (mirrors extract-fields.ts's own
-      // `unclassified` sentinel) — so it is logged loudly rather than
-      // silently swallowed.
+      // Structurally unreachable since F1/#230: a REACHED facility with at
+      // least one DOCUMENT-shaped cited source always contributes at least
+      // one triple now that every such source — PDF or HTML — is actually
+      // fetched (a failed fetch or too-thin read still yields an
+      // `unreachable` triple), and an all-non-document facility is already
+      // classified above. Reaching this branch means that invariant broke —
+      // a genuine accounting bug in this file, not a data characteristic
+      // (mirrors extract-fields.ts's own `unclassified` sentinel) — so it is
+      // logged loudly rather than silently swallowed.
       reason = "unclassified";
       console.error(
         `unclassified: ${check.facility.id} ${check.field} — reached facility with sources but zero attempted ` +
@@ -1134,6 +1202,14 @@ function printHumanSummary(summary: VerifyFieldsSummary): void {
     console.log(
       `\n(${summary.recoveredViaArchive} of ${summary.sourceChecksAttempted} triples were classified from a ` +
         `Wayback-archived snapshot after the live URL failed — see each result's viaArchive/archiveUrl.)`
+    );
+  }
+
+  if (summary.sourcesSkippedNonDocument > 0) {
+    console.log(
+      `\n(${summary.sourcesSkippedNonDocument} cited source(s) were skipped as non-document — ArcGIS/OSM/Nominatim ` +
+        `shapes isNonDocumentSource never attempts to fetch — see non-document-source.ts. Still real citations, ` +
+        `just not counted in sourceChecksAttempted.)`
     );
   }
 

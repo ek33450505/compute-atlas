@@ -319,6 +319,219 @@ describe("runVerify — unreachable", () => {
 });
 
 // ============================================================================
+// Issue #230: ArcGIS/OSM/Nominatim citations are real provenance but cannot
+// be read as documents — `verifyFacility` must skip them BEFORE ever calling
+// `fetchSourceText`, producing NO triple at all (never `unreachable`). See
+// non-document-source.ts and this file's UncheckedReason.allSourcesNonDocument
+// doc-comment.
+// ============================================================================
+
+describe("runVerify — skips non-document sources before fetching (issue #230)", () => {
+  it("skips an ArcGIS FeatureServer source without fetching it, and still reads an ordinary article source", async () => {
+    const facility = makeFacility({
+      id: "mixed-sources-facility",
+      capacityMw: { operational: 100 },
+      sources: [
+        {
+          url: "https://gis.example.gov/arcgis/rest/services/Territory/FeatureServer/0/query",
+          label: "GIS layer",
+          retrievedAt: "2026-01-01",
+          kind: "other",
+        },
+        { url: "https://example.com/article", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
+      ],
+    });
+
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url.includes("FeatureServer")) {
+          throw new Error("fetchPageTextImpl must not be called for a skipped non-document source");
+        }
+        return {
+          ok: true,
+          text: `The facility has an operational capacity of 100 MW. ${"Filler sentence about the site. ".repeat(20)}`,
+          finalUrl: url,
+          httpStatus: 200,
+        };
+      },
+      fetchPdfTextImpl: unexpectedPdfFetch,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null },
+      }),
+      now: fixedNow,
+      sleep: noopSleep,
+      fetchImpl: waybackNeverCalled(),
+    };
+
+    const summary = await runVerify([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(summary.sourcesSkippedNonDocument).toBe(1);
+    expect(summary.sourceChecksAttempted).toBe(1); // only the article source was attempted
+    expect(summary.confirmed).toBe(1);
+    expect(summary.valuesUnchecked).toBe(0); // the value WAS checked, via the article source
+  });
+
+  it("skips a kind: 'osm' source regardless of its URL shape, without fetching it", async () => {
+    const facility = makeFacility({
+      id: "osm-kind-facility",
+      capacityMw: { operational: 100 },
+      sources: [
+        { url: "https://www.openstreetmap.org/way/12345", label: "OSM way", retrievedAt: "2026-01-01", kind: "osm" },
+      ],
+    });
+
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: async () => {
+        throw new Error("fetchPageTextImpl must not be called for an osm-kind source");
+      },
+      fetchPdfTextImpl: unexpectedPdfFetch,
+      callOllamaImpl: async () => {
+        throw new Error("callOllamaImpl must not be called — no source was ever readable");
+      },
+      now: fixedNow,
+      sleep: noopSleep,
+      fetchImpl: waybackNeverCalled(),
+    };
+
+    const summary = await runVerify([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(summary.sourcesSkippedNonDocument).toBe(1);
+    expect(summary.sourceChecksAttempted).toBe(0);
+  });
+
+  it("still fetches the recorded TDLR permit false-positive URLs normally (not skipped)", async () => {
+    const facility = makeFacility({
+      id: "tdlr-facility",
+      capacityMw: { operational: 100 },
+      sources: [
+        {
+          url: "https://www.tdlr.texas.gov/TABS/Search/Project/TABS2025023484",
+          label: "TDLR permit record",
+          retrievedAt: "2026-01-01",
+          kind: "permit",
+        },
+      ],
+    });
+
+    let fetched = false;
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: async (url) => {
+        fetched = true;
+        return {
+          ok: true,
+          text: `The facility has an operational capacity of 100 MW. ${"Filler sentence about the site. ".repeat(20)}`,
+          finalUrl: url,
+          httpStatus: 200,
+        };
+      },
+      fetchPdfTextImpl: unexpectedPdfFetch,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 100, verbatimQuote: "operational capacity of 100 MW", reasonIfNull: null },
+      }),
+      now: fixedNow,
+      sleep: noopSleep,
+      fetchImpl: waybackNeverCalled(),
+    };
+
+    const summary = await runVerify([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(fetched).toBe(true);
+    expect(summary.sourcesSkippedNonDocument).toBe(0);
+    expect(summary.confirmed).toBe(1);
+  });
+
+  it("classifies a facility whose sources are ALL non-document as allSourcesNonDocument, not unreachable or unclassified", async () => {
+    const facility = makeFacility({
+      id: "all-non-document-facility",
+      capacityMw: { operational: 100 },
+      sources: [
+        {
+          url: "https://gis.example.gov/arcgis/rest/services/Territory/FeatureServer/0/query",
+          label: "GIS layer",
+          retrievedAt: "2026-01-01",
+          kind: "other",
+        },
+        { url: "https://nominatim.openstreetmap.org/search?q=example", label: "Geocode", retrievedAt: "2026-01-01", kind: "other" },
+      ],
+    });
+
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: async () => {
+        throw new Error("fetchPageTextImpl must not be called — every source on this facility is non-document");
+      },
+      fetchPdfTextImpl: unexpectedPdfFetch,
+      callOllamaImpl: async () => {
+        throw new Error("callOllamaImpl must not be called — no source was ever readable");
+      },
+      now: fixedNow,
+      sleep: noopSleep,
+      fetchImpl: waybackNeverCalled(),
+    };
+
+    const summary = await runVerify([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    // Zero triples attempted for this facility — neither `unreachable` nor
+    // any other outcome — but the value is explicitly flagged, never silently
+    // dropped and never misreported via the `unclassified` accounting-bug path.
+    expect(summary.sourceChecksAttempted).toBe(0);
+    expect(summary.sourcesSkippedNonDocument).toBe(2);
+    expect(summary.valuesChecked).toBe(0);
+    expect(summary.valuesUnchecked).toBe(1);
+    expect(summary.uncheckedValues).toEqual([
+      expect.objectContaining({ facilityId: "all-non-document-facility", reason: "allSourcesNonDocument" }),
+    ]);
+
+    // The reconciliation identity must still hold exactly.
+    const sum = summary.confirmed + summary.disagreements + summary.unconfirmed + summary.noMention + summary.unreachable;
+    expect(sum).toBe(summary.sourceChecksAttempted);
+    expect(sum).toBe(summary.results.length);
+    expect(summary.valuesChecked + summary.valuesUnchecked).toBe(summary.valuesConsidered);
+  });
+
+  it("does not perturb the consecutive-fetch-failure abort streak — an all-non-document facility is not evidence of a network collapse", async () => {
+    // One facility per streak "slot," each with ONLY non-document sources —
+    // if skips were mistakenly treated as fetch failures, this would trip
+    // CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD. It must not.
+    const facilities = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD + 5 }, (_, i) =>
+      makeFacility({
+        id: `all-non-document-${i}`,
+        capacityMw: { operational: 100 },
+        sources: [
+          {
+            url: `https://gis.example.gov/arcgis/rest/services/Territory${i}/FeatureServer/0/query`,
+            label: "GIS layer",
+            retrievedAt: "2026-01-01",
+            kind: "other",
+          },
+        ],
+      })
+    );
+
+    const deps: VerifyFieldsDeps = {
+      fetchPageTextImpl: async () => {
+        throw new Error("fetchPageTextImpl must not be called — every source is non-document");
+      },
+      fetchPdfTextImpl: unexpectedPdfFetch,
+      callOllamaImpl: async () => {
+        throw new Error("callOllamaImpl must not be called");
+      },
+      now: fixedNow,
+      sleep: noopSleep,
+      fetchImpl: waybackNeverCalled(),
+    };
+
+    const summary = await runVerify(facilities, { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(summary.aborted).toBe(false);
+    expect(summary.abortReason).toBeNull();
+    expect(summary.valuesUnchecked).toBe(facilities.length);
+    expect(summary.uncheckedValues.every((u) => u.reason === "allSourcesNonDocument")).toBe(true);
+  });
+});
+
+// ============================================================================
 // Wayback fallback — recovering a source whose DIRECT fetch failed with
 // http_error/network_error. See verify-fields.ts's WAYBACK FALLBACK section.
 // ============================================================================

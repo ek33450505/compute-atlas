@@ -1371,6 +1371,115 @@ describe("runExtract — reads through multiple cited sources (defect 4)", () =>
   });
 });
 
+// Issue #230: an ArcGIS/OSM/Nominatim citation is real provenance but cannot
+// be fetched as a document — `processFacilitySources` must skip it BEFORE
+// ever calling `fetchSourceText`, so it never counts as read and never
+// produces a fetch-failure log line indistinguishable from a genuine
+// bot-wall. See `non-document-source.ts` for the measured 14.4%/624-of-4,401
+// figure this guards against.
+describe("runExtract — skips non-document sources before fetching (issue #230)", () => {
+  function makeMultiSourceFacility(id: string, urls: string[]): Facility {
+    return {
+      id,
+      name: "Multi Source Facility",
+      operator: "Test Operator",
+      status: "operational",
+      facilityType: "data_center",
+      confidence: "confirmed",
+      location: { lat: 30, lon: -90, city: "Testville", state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: urls.map((url, i) => ({
+        url,
+        label: `Source ${i + 1}`,
+        retrievedAt: "2026-01-01",
+        kind: "press" as const,
+      })),
+      lastUpdated: "2026-01-01",
+    };
+  }
+
+  it("skips an ArcGIS FeatureServer source without fetching it, and still reads the ordinary article source", async () => {
+    const facility = makeMultiSourceFacility("non-document-facility", [
+      "https://gis.example.gov/arcgis/rest/services/Territory/FeatureServer/0/query",
+      "https://example.com/article",
+    ]);
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        if (url.includes("FeatureServer")) {
+          throw new Error("fetchPageTextImpl must not be called for a skipped non-document source");
+        }
+        return {
+          ok: true,
+          text: `The facility has an operational capacity of 22 MW. ${"Filler sentence about the site. ".repeat(20)}`,
+          finalUrl: url,
+          httpStatus: 200,
+        };
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 22, verbatimQuote: "operational capacity of 22 MW", reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(summary.extracted).toBe(1);
+    expect(summary.sourcesRead).toBe(1); // the skipped source never counts toward sourcesRead
+  });
+
+  it("skips a kind: 'osm' source regardless of its URL shape, without fetching it", async () => {
+    const facility = makeMultiSourceFacility("osm-kind-facility", ["https://www.openstreetmap.org/way/12345"]);
+    facility.sources = [{ ...facility.sources[0]!, kind: "osm" }];
+
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async () => {
+        throw new Error("fetchPageTextImpl must not be called for an osm-kind source");
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => {
+        throw new Error("callOllamaImpl must not be called — no source was ever readable");
+      },
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(summary.sourcesRead).toBe(0);
+    expect(summary.extracted).toBe(0);
+  });
+
+  it("still fetches the recorded TDLR permit false-positive URLs normally (not skipped)", async () => {
+    const facility = makeMultiSourceFacility("tdlr-facility", ["https://www.tdlr.texas.gov/TABS/Search/Project/TABS2025023484"]);
+
+    let fetched = false;
+    const deps: RunExtractDeps = {
+      fetchPageTextImpl: async (url) => {
+        fetched = true;
+        return {
+          ok: true,
+          text: `The facility has an operational capacity of 22 MW. ${"Filler sentence about the site. ".repeat(20)}`,
+          finalUrl: url,
+          httpStatus: 200,
+        };
+      },
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => ({
+        ok: true,
+        data: { value: 22, verbatimQuote: "operational capacity of 22 MW", reasonIfNull: null },
+      }),
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+    };
+
+    const summary = await runExtract([facility], { fields: ["capacityMw.operational"], runId: "test-run" }, deps);
+
+    expect(fetched).toBe(true);
+    expect(summary.extracted).toBe(1);
+  });
+});
+
 // Regression: `unreadable`/`fetchFailures` used to increment ONCE PER
 // FACILITY even though `gapsConsidered` is a PER-FIELD count — a facility
 // with 2 requested fields and no readable source landed 1 field in
