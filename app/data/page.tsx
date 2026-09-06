@@ -8,6 +8,8 @@ import { PageMasthead } from "@/components/page-masthead";
 import { ExportButtons } from "@/components/explorer/export-buttons";
 import { breadcrumbJsonLdString, DATASET_DOI_URL } from "@/lib/seo";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Get the data",
   description:

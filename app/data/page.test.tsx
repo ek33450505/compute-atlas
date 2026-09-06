@@ -1,5 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import type { DataCenterFacility } from "@/lib/schema";
 import type { DatasetEdition } from "@/lib/dataset-edition";
@@ -164,5 +166,70 @@ describe("DataPage", () => {
     for (const s of strings) {
       expect(s).not.toMatch(/&(mdash|ndash|rsquo|lsquo|middot|amp|nbsp);/);
     }
+  });
+});
+
+/**
+ * Regression guard for the /data staleness bug (2026-09-05): app/data/page.tsx
+ * was the only facility-reading aggregate page with no `export const
+ * revalidate`, so it silently inherited the root layout's 86400s (24h) floor
+ * instead of the 3600s (1h) timer every sibling aggregate page uses — its
+ * download-count aria-label lagged prod by 21 facilities with no error.
+ *
+ * These pages are async server components with their own DB-reading and
+ * heavy-component (Explorer, MapLibre) dependency trees, so importing them
+ * directly here would mean mocking each one's tree just to read a single
+ * top-level export. Reading the source text and parsing the `export const
+ * revalidate` literal (same approach as lib/search-index.guard.test.ts)
+ * decouples this guard from each page's implementation.
+ */
+function readSource(relativePath: string): string {
+  return readFileSync(join(process.cwd(), relativePath), "utf8");
+}
+
+// Matches `export const revalidate = <value>;` and captures <value> — a bare
+// integer (seconds) or the literal `false` (Next.js's "never revalidate").
+const REVALIDATE_EXPORT = /^export const revalidate = (\d+|false);$/m;
+
+/** Returns a page's declared `revalidate` value as a string, or null if absent. */
+function getRevalidate(relativePath: string): string | null {
+  const match = readSource(relativePath).match(REVALIDATE_EXPORT);
+  return match ? match[1] : null;
+}
+
+// The facility-reading aggregate pages that must self-heal within the hour —
+// each carries the "facilities" cache tag (see lib/cache-tags.ts) and must
+// agree on how often it revalidates, or one silently drifts onto the 24h
+// root-layout floor the way /data did.
+const AGGREGATE_PAGES = [
+  "app/page.tsx",
+  "app/stats/page.tsx",
+  "app/table/page.tsx",
+  "app/ai/page.tsx",
+  "app/map/page.tsx",
+  "app/data/page.tsx",
+];
+
+describe("revalidate: /data must not drift from its aggregate-page siblings", () => {
+  it("app/data/page.tsx declares revalidate = 3600", () => {
+    expect(getRevalidate("app/data/page.tsx")).toBe("3600");
+  });
+
+  it("every facility-reading aggregate page declares the same revalidate value", () => {
+    const values = AGGREGATE_PAGES.map((path) => ({ path, value: getRevalidate(path) }));
+
+    // Sanity check on the extraction itself, mirroring
+    // lib/search-index.guard.test.ts: if the regex stopped matching every
+    // page's declaration, all values would be null and the "all equal"
+    // assertion below would pass vacuously.
+    for (const { path, value } of values) {
+      expect(value, `${path} is missing an "export const revalidate" declaration`).not.toBeNull();
+    }
+
+    const distinctValues = new Set(values.map((v) => v.value));
+    expect(
+      distinctValues.size,
+      `revalidate values diverge across aggregate pages: ${JSON.stringify(values)}`
+    ).toBe(1);
   });
 });
