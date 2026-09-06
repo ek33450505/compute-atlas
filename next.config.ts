@@ -125,7 +125,19 @@ const nextConfig: NextConfig = {
         // Next's default for `public/` is `max-age=0, must-revalidate`,
         // which left 8.3 MB of geojson uncacheable at both Vercel and
         // Cloudflare (measured `cf-cache-status: DYNAMIC`, 2026-08-21).
-        source: "/data/:path*",
+        //
+        // `:path+` (one or more segments), NOT `:path*` (zero or more).
+        // `app/data/page.tsx` is a real HTML route at bare `/data`, and
+        // `:path*` also matches the empty remainder — so the asset rule was
+        // shadowing that page with a day-long edge cache plus a 7-day
+        // stale-while-revalidate tail, well past anything a redeploy or ISR
+        // revalidation could dislodge. It served a stale record count on
+        // prod for a full day before being caught (2026-09-05). `:path+`
+        // still matches `/data/water.geojson` etc.; it just requires at
+        // least one path segment, so the bare route is excluded. See
+        // next.config.test.ts's "asset-cache headers don't shadow app
+        // routes" block — do not simplify this back to `:path*`.
+        source: "/data/:path+",
         headers: [
           {
             key: "Cache-Control",
@@ -134,7 +146,11 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/basemap/:path*",
+        // No `app/basemap/` route exists, so `:path*` vs `:path+` is
+        // currently moot here — kept as `:path+` anyway for consistency
+        // with the `/data` rule above, since both serve the same kind of
+        // build-generated static asset and should read the same way.
+        source: "/basemap/:path+",
         headers: [
           {
             key: "Cache-Control",
@@ -144,6 +160,11 @@ const nextConfig: NextConfig = {
       },
       {
         // Vendored font files never change content under a fixed name.
+        // `app/fonts/` also doesn't exist, so `:path*` is harmless here too;
+        // left as `:path*` (not widened to `:path+` like the two rules
+        // above) because this header value is unique to fonts rather than
+        // shared with another static-asset rule, so there's no matching
+        // pattern to stay consistent with.
         source: "/fonts/:path*",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
