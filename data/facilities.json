@@ -11953,10 +11953,24 @@
         "publisher": "GlobeNewswire (via Manila Times)",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.utahbusiness.com/industry/2025/11/05/data-center-creekstone-energy-joule-capital-partners-millard-county-fillmore/",
+        "label": "Millard County commissioner on data-center incentives — Creekstone Energy / BluSky AI Delta Gigasite named",
+        "publisher": "Utah Business",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
+      },
+      {
+        "url": "https://delta.utah.gov/bc",
+        "label": "Boards and Commissions — Delta City (no Community Reinvestment Agency or Redevelopment Agency listed)",
+        "publisher": "Delta City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-25",
-    "notes": "A specific 25-acre BluSky AI parcel and building within Creekstone Energy's already-tracked Delta Gigasite campus (creekstone-delta-ut) — tracked separately because it is a distinct operator/tenant with its own land agreement, consistent with how this tracker distinguishes co-located operators elsewhere.",
+    "notes": "A specific 25-acre BluSky AI parcel and building within Creekstone Energy's already-tracked Delta Gigasite campus (creekstone-delta-ut) — tracked separately because it is a distinct operator/tenant with its own land agreement, consistent with how this tracker distinguishes co-located operators elsewhere. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Millard County Commissioner Bill Wright is on the record (Utah Business, Nov 2025) extending the county's standing \"no special treatment\" statement to name Creekstone Energy's Delta Gigasite — where BluSky AI holds a 50 MW agreement — specifically: \"the county did not give either development any special treatment or incentives to bring the historic data centers to the area.\" Delta City's own Boards and Commissions page lists no Community Reinvestment Agency or Redevelopment Agency among its active public bodies. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "landAcres": 25,
     "facilityType": "data_center"
   },
@@ -11992,10 +12006,31 @@
         "publisher": "GlobeNewswire (via Manila Times)",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1416090/000109690625001096/imii-20250626.htm",
+        "label": "BluSky AI Inc. Form 8-K (filed July 7, 2025) — Milford, Beaver County power and ground-lease terms",
+        "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
+        "retrievedAt": "2026-09-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1416090/000109690625001096/bsai_ex10z2.htm",
+        "label": "Ground Lease with Option to Purchase — BluSky AI Inc. and Wild Mustang Ventures, LLC (June 30, 2025), Exhibit 10.2 to Form 8-K",
+        "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
+        "retrievedAt": "2026-09-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.milfordcityutah.com/government/boards-commissions",
+        "label": "Boards & Commissions — Milford City (no Redevelopment Agency or Community Reinvestment Agency listed)",
+        "publisher": "Milford City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-25",
-    "notes": "BluSky AI's first secured modular 'SkyMod' site, distinct from its Nephi (Juab County) and Delta (Millard County) sites already/also tracked; 51.6 acres leased from Wild Mustang Ventures LLC.",
+    "notes": "BluSky AI's first secured modular 'SkyMod' site, distinct from its Nephi (Juab County) and Delta (Millard County) sites already/also tracked; 51.6 acres leased from Wild Mustang Ventures LLC. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. BluSky AI's own SEC-filed Form 8-K and the underlying Ground Lease with Option to Purchase (Wild Mustang Ventures, LLC, June 30, 2025) were read directly and contain no property-tax, abatement, tax-increment-financing, or PILOT provisions. Neither Milford City (four active public bodies, none a CRA/RDA) nor Beaver County has a Community Reinvestment Agency or Redevelopment Agency; Milford City's own \"Economic Development\" link points off-site to a county tourism page, not an incentive program. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "source": "grid",
       "utility": "grid-interconnected power assigned via Digital Asset Management, LLC",
@@ -14647,10 +14682,24 @@
         "publisher": "PRWeb",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.midvale.utah.gov/government/departments/redevelopment_agency/index.php",
+        "label": "Redevelopment Agency — Midvale City (three project areas: Bingham Junction, Jordan Bluffs, Main Street)",
+        "publisher": "Midvale City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.midvale.utah.gov/government/departments/recorder_s_office/midvale_city_resolutions.php",
+        "label": "Midvale City Resolutions index",
+        "publisher": "Midvale City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-25",
-    "notes": "Phase 1 (32MW, four 8MW modules) is operational and being marketed for lease; two additional phases (~80MW more) are planned. Some third-party trackers report a larger total (up to 160MW) than the operator's own site; treated as unconfirmed beyond the operator's stated 112MW total.",
+    "notes": "Phase 1 (32MW, four 8MW modules) is operational and being marketed for lease; two additional phases (~80MW more) are planned. Some third-party trackers report a larger total (up to 160MW) than the operator's own site; treated as unconfirmed beyond the operator's stated 112MW total. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Midvale's RDA runs three project areas (Bingham Junction, Jordan Bluffs, Main Street); 983 W Center St falls outside Main Street's boundary, but which of the two overlapping former-Superfund redevelopment areas, Bingham Junction or Jordan Bluffs, actually contains the parcel was not resolved — the \"View 78\" campus name loosely ties to Jordan Bluffs via a nearby apartment development, but this is not confirmed. Midvale's own resolutions index lists no agreement naming Cirrus, a data center, or 983 W Center St. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -21744,10 +21793,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Dugway_Proving_Ground",
+        "label": "Dugway Proving Ground — ownership and jurisdiction (U.S. Army-owned federal land, unincorporated Tooele County)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
       }
     ],
     "lastUpdated": "2026-07-24",
-    "notes": "Conditionally selected, currently in exclusive negotiations with the US Army (not finalized); expected completion ~2029. Would be CyrusOne's first Utah facility, developed in partnership with Carlyle. Framed as AI-driven Army infrastructure ('AI is a strategic asset... force multiplier' per the Army Secretary) rather than marketed as a standalone AI-brand product. Coordinates are approximate. In exclusive negotiations with the US Army as of the cited source.",
+    "notes": "Conditionally selected, currently in exclusive negotiations with the US Army (not finalized); expected completion ~2029. Would be CyrusOne's first Utah facility, developed in partnership with Carlyle. Framed as AI-driven Army infrastructure ('AI is a strategic asset... force multiplier' per the Army Secretary) rather than marketed as a standalone AI-brand product. Coordinates are approximate. In exclusive negotiations with the US Army as of the cited source. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. — structural, not merely unresearched: Dugway Proving Ground is U.S. Army-owned federal land in unincorporated Tooele County, which sits outside any county/municipal property-tax roll, so a Title 17C Community Reinvestment Agency increment or abatement is not possible here regardless of county policy. Any public-sector instrument would be a federal Army real-estate arrangement, not a local or state subsidy, and the site remains in exclusive negotiations, not a finalized agreement. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "source": "grid",
       "utility": "PacifiCorp"
@@ -22998,9 +23054,31 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/sitemap/notice/1039853.html",
+        "label": "Public notice — Gateway Redevelopment Area boundary amendment (Bluffdale RDA)",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.bluffdale.gov/DocumentCenter/View/3522/Jordan-Crossing-CRA-Draft-Plan-PDF",
+        "label": "Jordan Crossing Community Reinvestment Project Area — Draft Plan",
+        "publisher": "Bluffdale City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.databank.com/resources/blogs/tax-incentives-add-to-attractiveness-of-databanks-salt-lake-data-centers/",
+        "label": "Tax Incentives Add to Attractiveness of DataBank's Salt Lake Data Centers",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-05",
+        "kind": "other"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Bluffdale's RDA runs three project areas — Gateway Redevelopment Area and Eastern Bluffdale EDA on the Redwood Road/Bangerter Highway corridor, and Jordan Crossing CRA along the Jordan River near the Utah County border — and DataBank's Granite Point campus on Pony Express Road falls outside all three by street-corridor and section/township/range legal-description cross-reference, not a parcel-level GIS overlay. The Jordan Crossing CRA's own draft plan names four illustrative development sites and none is Granite Point, DataBank, or Pony Express Road; no RDA board minutes or agenda mentions either. DataBank's own marketing blog names only the statewide sales-tax exemption on data-center equipment as an incentive for its Salt Lake-area sites — an entity-level, self-executing state exemption, not a Bluffdale-specific award. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Per-building on-site power from DataBank's own campus page: SLC2 10 MW (45,000 sq ft), SLC3 10 MW (53,000 sq ft), SLC4 9 MW (34,000 sq ft), SLC5 20 MW (90,000 sq ft), plus SLC6 at 11 MW available with 'another 11 megawatts to come online in the future' — 60 MW live across the five buildings, with roughly 11 MW of stated headroom at SLC6."
     },
@@ -23433,9 +23511,24 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://cra.slc.gov/projects/central-business-district/",
+        "label": "Central Business District Project Area — Redevelopment Agency of Salt Lake City",
+        "publisher": "Redevelopment Agency of Salt Lake City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://cra.slc.gov/wp-content/uploads/2021/12/SLCRDA_FY2021_FINAL.pdf",
+        "label": "Redevelopment Agency of Salt Lake City — FY2021 Annual/Audit Report",
+        "publisher": "Redevelopment Agency of Salt Lake City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. 179 Social Hall Avenue sits within the RDA's Central Business District (CBD) project-area boundary (bounded by North Temple/500 South and 400 West/200 East) — but sitting inside a project area is not itself a subsidy. The CBD's own published list of RDA-funded participation developments names exactly four projects (Paperbox Lofts, The Aster, 150 Main, West Quarter), none at Social Hall Avenue and none a data center, and a full-text search of the RDA's FY2021 annual/audit report returned zero mentions of \"Social Hall.\" Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -27470,9 +27563,24 @@
         "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-08-16",
         "kind": "press"
+      },
+      {
+        "url": "https://mccmeetingspublic.blob.core.usgovcloudapi.net/sojordanut-meet-5c77a92d3b554728bf67b91e7e009dac/ITEM-Attachment-001-f0e4eafd922043329648698ba0077660.pdf",
+        "label": "South Jordan City FY 2024-25 Tentative Budget — Redevelopment Agency section (all 11 RDA/CDA/EDA project areas)",
+        "publisher": "South Jordan City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://mccmeetingspublic.blob.core.usgovcloudapi.net/sojordanut-meet-974b3762cc76457ba50aa12674d4a602/ITEM-Attachment-001-e60a92d2ce134faabd49b6a5ff53e5cd.pdf",
+        "label": "South Jordan RDA — Southwest Quadrant Urban Center Community Reinvestment Project Area Plan and staff report (adopted April 5, 2022)",
+        "publisher": "South Jordan City Redevelopment Agency",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-16",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. South Jordan's FY2024-25 tentative budget enumerates all 11 RDA/CDA/EDA project areas the city has ever run, active or completed, by name — none is eBay, Topaz, Daybreak, or Kennecott, and the completed pre-2008 areas predate the 2009-built Topaz campus. A separate 2022-adopted CRA (initially mislabeled \"Daybreak Commerce Park\" in a staff-report boilerplate paragraph, formally the Southwest Quadrant Urban Center Community Reinvestment Project Area) was chased down and confirmed to be an unrelated greenfield transit-oriented project led by VP Daybreak Holdings/Larry H. Miller Company, not eBay. Historical state-level GOED EDTIF awards to eBay Inc. (2008 and 2011) are on the public record but are entity-level, not a South Jordan site agreement, and this pass could not independently verify their reported dollar figures. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Data Center Knowledge reports '7.2 megawatts of capacity in phase 1, with a 30 megawatt substation on site' — the 30 MW is substation capacity for future phases, not IT load, so capacityMw records the 7.2 MW phase-1 figure. Efficiency features reported at opening: 400V power distribution, in-row cooling, hot air containment, and an expected PUE of 1.4. The building is LEED Gold certified."
     },
@@ -31549,9 +31657,24 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/498543.pdf",
+        "label": "Redevelopment Agency of the City of Orem — meeting minutes, May 14, 2019 (only Project 90-08 remained active)",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1444291.pdf",
+        "label": "Orem City RDA FY2026-27 budget public-hearing notice (University Place CDA)",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Orem's RDA minutes record only one project area active as of 2019 (Project 90-08), and current FY2026-27 RDA activity is concentrated entirely in the University Place CDA at the mall redevelopment roughly 200m west of Fibernet's 1145 South 800 East site — outside that project area's described boundary by street-corridor cross-reference, not a parcel-level GIS check. No source names Fibernet in any Orem RDA record. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Fibernet's own colocation page states the Orem facility supports 'more than 1 Megawatt of power' across 'up to 40,000 sq. ft.' — recorded as 1 MW, which is a floor, not a precise rating. A small independent colocation site rather than a hyperscale campus."
     },
@@ -33753,10 +33876,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://cra.slc.gov/project-areas/",
+        "label": "Project Areas — Redevelopment Agency of Salt Lake City (8 current RDA/CRA project areas)",
+        "publisher": "Redevelopment Agency of Salt Lake City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "44,550 sqft, 2.65MW.",
+    "notes": "44,550 sqft, 2.65MW. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. None of Salt Lake City's 8 RDA/CRA project areas' published boundary descriptions place 572 South Delong St inside them — it sits south of Depot District's 400 South line and east of the 9 Line corridor — but this exclusion rests on published boundary descriptions, not a parcel-level GIS overlay (Salt Lake County's parcel viewer could not be queried this session). No source names Flexential in any RDA participation agreement, project-area annual report, or board minutes. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
     },
@@ -33800,10 +33930,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://rda.slc.gov/projects/north-temple-project-area/",
+        "label": "North Temple Project Area — Redevelopment Agency of Salt Lake City",
+        "publisher": "Redevelopment Agency of Salt Lake City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "22,539 sqft, 490kW, distinct from Downtown/Millcreek SLC sites.",
+    "notes": "22,539 sqft, 490kW, distinct from Downtown/Millcreek SLC sites. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Flexential's Fair Park site (118 South 1000 West) sits south of North Temple, on the opposite side of the corridor from the RDA's North Temple Project Area transit-oriented redevelopment activity; the project area's own boundary-map PDF could not be retrieved this session to confirm the exact southern boundary line, so this is a published-description exclusion, not a parcel-level GIS check. No RDA participation agreement, project-area page, or board minutes names Flexential or a Fair Park data center. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
     },
@@ -33894,10 +34031,24 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.millcreekut.gov/208/Community-Reinvestment-Agency",
+        "label": "Community Reinvestment Agency — Millcreek City (six project areas)",
+        "publisher": "Millcreek City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://ut-millcreek.civicplus.com/DocumentCenter/View/4320/Project-Area-Plan--West-Millcreek-CRA",
+        "label": "West Millcreek Community Reinvestment Area — Project Area Plan",
+        "publisher": "Millcreek City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "3949 South 200 East, 36,000 sqft, 2N UPS, distinct from Downtown/Fair Park SLC sites.",
+    "notes": "3949 South 200 East, 36,000 sqft, 2N UPS, distinct from Downtown/Fair Park SLC sites. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Millcreek's West Millcreek CRA — the one project area geographically plausible for 3949 South 200 East, with 200 East as its described eastern boundary — lists exactly three named participation agreements on record (Artesian Springs, Opus Green, The Howick), and none is Flexential or its predecessor brand ViaWest. Two other Millcreek CRAs (Millcreek Center, Woodland Avenue) were ruled out by boundary description on different cross-streets. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
     },
@@ -41066,6 +41217,7 @@
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found in available reporting. All three cited sources (KSL x2, American Public Power Association) frame the project purely as private investment (\"$750 million in private investment\") and jobs, with no tax, grant, or incentive mechanism named. This is an absence in available reporting, not an exhaustive check: Brigham City's own municipal site was unreachable this session (intermittent DNS resolution), so its CRA/RDA board agendas could not be checked directly, and Utah's MIDA site was also unreachable (redirects to an unrelated login page). Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Holtec's SMR-300 small modular reactor. KSL reports 'Four to 10 small modular reactors' at 'perhaps 300 megawatts of power' each, totalling '1.2 to 3 gigawatts if four to 10 are built'. capacityMw.planned records 1200 MW — the LOW end of that announced range (4 x 300 MW) — because the upper bound depends on a buildout nobody has committed to. Beyond generation, the partners intend to manufacture SMR technology in Brigham City for export. The project is part of Governor Cox's 'Operation Gigawatt' initiative and 'will undergo full state and federal review'."
     },
@@ -55593,9 +55745,17 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.provo.gov/869/Redevelopment-Areas",
+        "label": "Redevelopment Areas — Provo City (3 RDA project areas, 5 CDA project areas)",
+        "publisher": "Provo City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Provo has 3 RDA and 5 CDA project areas; no participation agreement, TIF, or incentive naming Newfold Digital or Ace Data Center (the building's owner) was found in any of them. The site's East Bay-area address does not match the published prose description of the downtown-core project areas, but that exclusion rests on boundary descriptions, not a parcel-level GIS overlay. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -72999,7 +73159,7 @@
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "Hansel Valley and Locomotive Valley, western Box Elder County near Lucin, UT. 60 planned data centers on initial 10,000-acre phase. 9GW is full-buildout figure; Phase 1 ~3GW. Total cost projected $100B+ at full buildout; only $20M invested as of mid-2026. Designed by Gensler. Environmental permitting via Utah DEQ expected to take ~2 years. MIDA oversight provides state-level approval authority. Coordinates are approximate for western Box Elder County; exact site boundaries unpublished.",
+    "notes": "Hansel Valley and Locomotive Valley, western Box Elder County near Lucin, UT. 60 planned data centers on initial 10,000-acre phase. 9GW is full-buildout figure; Phase 1 ~3GW. Total cost projected $100B+ at full buildout; only $20M invested as of mid-2026. Designed by Gensler. Environmental permitting via Utah DEQ expected to take ~2 years. MIDA oversight provides state-level approval authority. Coordinates are approximate for western Box Elder County; exact site boundaries unpublished. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Box Elder County's own Stratos Project Fact Sheet states directly: \"No County funds are required to build the project. All funds will come from the developers and private investors.\" A May 2026 MIDA interlocal agreement covers land-use and permitting review governance (a development review committee, subdivision/site-plan requirements), not a tax-increment or abatement arrangement, and MIDA's own project-area records — which could confirm or rule out a tax-increment component — were unreachable this session (mida.utah.gov redirected to an unrelated login page). Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "source": "on_site_gas",
       "utility": "Raft Rural Electric Co-op Inc",
@@ -73275,9 +73435,17 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.santaquin.gov/DocumentCenter/View/5806/2023-05-01_notice_of_intent_to_transfer_property_-_cdra_santaquin_final",
+        "label": "Notice of Intent to Provide Assistance Pursuant to Section 17C-1-207 (West Fields Community Reinvestment Project Area), May 1, 2023",
+        "publisher": "Santaquin City Community Development and Renewal Agency",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. The one Santaquin CDRA/RDA document directly confirmed, a May 2023 Notice of Intent to Transfer Property, covers a 0.69-acre parcel for the unrelated \"West Fields\" Community Reinvestment Project Area, not the 20-100MW Ridge Farms Road site. A separately-named 2022 \"Summit Ridge Commercial Development\" Master Development Agreement is a car-dealership site-plan agreement (per search-engine summaries, not a direct read of the agreement itself) — a name collision, not this project's record. The city's full council/RDA meeting-minutes archive was not searched exhaustively, so this is an evidenced absence in the documents checked, not an exhaustive clearance. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Off-grid by design. KSL reports it 'will not be connected to the city's electric grid, it will use a series of smaller engines to power itself using natural gas'. Gardner's planned-projects table gives 100 MW nameplate with a 2027 operational year and lists the status as under construction."
     },
@@ -81314,10 +81482,17 @@
         "publisher": "Server Country",
         "retrievedAt": "2026-08-25",
         "kind": "other"
+      },
+      {
+        "url": "https://www.ksl.com/article/51611520/residents-voice-concerns-over-proposed-data-center-regulations-in-spanish-fork",
+        "label": "Residents voice concerns over proposed data center regulations in Spanish Fork",
+        "publisher": "KSL.com",
+        "retrievedAt": "2026-09-05",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-08-25",
-    "notes": "Proposed retrofit of a ~1M sq ft former Fingerhut distribution warehouse at the mouth of Spanish Fork Canyon; faced significant resident opposition at an August 20, 2026 public hearing; not yet zoned for the use.",
+    "notes": "Proposed retrofit of a ~1M sq ft former Fingerhut distribution warehouse at the mouth of Spanish Fork Canyon; faced significant resident opposition at an August 20, 2026 public hearing; not yet zoned for the use. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. The company is on record declining to seek one: \"Volition is not requesting any tax breaks, Chavez said, and instead would be generating around $44 million in tax revenue for the city, school district and other taxing entities.\" No Spanish Fork RDA/CRA project area or participation agreement naming Volition or the site was located. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "source": "other",
       "notes": "Proposed energy-independent design using Bloom Energy fuel cells for on-site power generation, per servercountry.org; closed-loop water cooling system."
@@ -81440,9 +81615,17 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/498543.pdf",
+        "label": "Redevelopment Agency of the City of Orem — meeting minutes, May 14, 2019 (only Project 90-08 remained active)",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Voonami's 510 East Technology Way site sits inside the Canyon Park Technology Center, associated with Orem's Project 85-02 — but the same 2019 RDA minutes establishing only Project 90-08 remained active confirm 85-02 had already stopped collecting tax increment years before any current-year subsidy could apply, and current FY2026-27 RDA activity is entirely at the unrelated University Place CDA. No source names Voonami in any Orem RDA record. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
