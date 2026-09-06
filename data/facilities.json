@@ -2246,15 +2246,51 @@
         "publisher": "Aligned Data Centers",
         "retrievedAt": "2026-09-02",
         "kind": "other"
+      },
+      {
+        "url": "https://www.deseret.com/2018/11/27/20659830/jordan-school-board-votes-to-support-tax-incentives-for-paypal-data-center-in-west-jordan/",
+        "label": "Jordan School Board votes to support tax incentives for PayPal data center in West Jordan",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://kutv.com/news/local/pay-pal-commits-to-west-jordan-will-get-68-million-in-tax-rebates",
+        "label": "PayPal commits to West Jordan, will get $6.8 million in tax rebates",
+        "publisher": "KUTV",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.ksl.com/article/46451408/west-jordan-paypal-data-center-is-just-1-step-away-from-being-approved",
+        "label": "West Jordan PayPal data center is just 1 step away from being approved",
+        "publisher": "KSL.com",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-09-02",
+    "notes": "West Jordan Redevelopment Agency participation agreements identified for the Pepper River site (former Fairchild Semiconductor plant, 3333 W 9000 South): a ~2018 agreement rebating Aligned Energy's municipal energy tax, capped at $5,000,000 over 10 years, and a 2018/2019 agreement rebating PayPal (the building's anchor tenant) 60% of the personal-property tax increment on its data-center servers, capped at $6,820,303 over 10 years, with no increment requested on real property. The primary RDA participation-agreement text and the FY2024 RDA budget PDF could not be extracted in this pass (pdftotext/WebFetch failures on both government PDFs); these terms are as reported by three contemporaneous news outlets (Deseret News, KUTV, KSL), not read directly from the agreement itself.",
     "energy": {
       "notes": "Data Center Frontier reports SLC-02 as 'The 240,000 square foot facility offers 48 megawatts of capacity, and can be expanded to 60 MW' and describes regional power available at 5.8 cents per kilowatt hour with free-air cooling viable 75-80 percent of the year. No campus-wide MW total was found on a source that was actually read, so capacityMw is omitted rather than assembled from third-party aggregator figures."
     },
     "water": {
       "coolingType": "closed_loop"
     },
+    "subsidies": [
+      {
+        "program": "West Jordan Redevelopment Agency participation agreement with Aligned Energy — rebate of the city's municipal energy tax, capped at $5,000,000 over a 10-year period",
+        "jurisdiction": "West Jordan, Salt Lake County, UT",
+        "year": "2018",
+        "sourceIndex": 5
+      },
+      {
+        "program": "West Jordan Redevelopment Agency participation agreement with PayPal — 60% rebate of the personal-property tax increment on data-center server equipment, capped at $6,820,303 over a 10-year period (no increment requested on real property)",
+        "jurisdiction": "West Jordan, Salt Lake County, UT",
+        "year": "2019",
+        "sourceIndex": 6
+      }
+    ],
     "landAcres": 55,
     "facilityType": "data_center"
   },
@@ -2294,9 +2330,17 @@
         "publisher": "Aligned Data Centers",
         "retrievedAt": "2026-09-02",
         "kind": "other"
+      },
+      {
+        "url": "https://www.wvc-ut.gov/ArchiveCenter/ViewFile/Item/3376",
+        "label": "West Valley City Fund 22 (Redevelopment Agency) adopted budget, FY2023-24 — project-area tax-increment ledger",
+        "publisher": "West Valley City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-09-02",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. West Valley City's Fund 22 (Redevelopment Agency) adopted budget itemizes every currently active RDA/CRA project area by name (5600 West Gateway, East 3500 A, North Central, Jordan River, Willow Wood, Hercules Hill A, Hercules Hill B, Decker Lake, Northwest, Granger Crossing, Southwest, South Redwood Road, Fairbourne/Market St, City Center) with no per-recipient breakout, and none is named for Beagley Road; no city or state filing names Aligned. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "water": {
       "coolingType": "closed_loop"
     },
@@ -28185,9 +28229,17 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.wvc-ut.gov/ArchiveCenter/ViewFile/Item/3376",
+        "label": "West Valley City Fund 22 (Redevelopment Agency) adopted budget, FY2023-24 — project-area tax-increment ledger",
+        "publisher": "West Valley City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. West Valley City's Fund 22 (Redevelopment Agency) adopted budget itemizes every currently active RDA/CRA project area by name with no boundary description resolving to 2302 S President's Dr, and no line item, city filing, or state record names EdgeConneX. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -33889,10 +33941,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.westjordan.utah.gov/economic-development/redevelopment/",
+        "label": "West Jordan Redevelopment Agency — project areas",
+        "publisher": "West Jordan City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "3949 S Campus View Dr, West Jordan UT 84084 (SLC09) per DataCenterJournal.",
+    "notes": "3949 S Campus View Dr, West Jordan UT 84084 (SLC09) per DataCenterJournal. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. No participation agreement, tax abatement, or incentive names Flexential, ViaWest (its predecessor brand at this site), or Consonus Technologies (the facility's original builder); West Jordan's own Redevelopment Agency page lists six named project areas by street range (Town Center, Industrial Park, Southwire, Spratling, Downtown, Briarwood), none of which covers the Campus View Drive corridor. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
     },
@@ -36006,9 +36065,17 @@
         "publisher": "Grist",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.thecooldown.com/green-business/eagle-mountain-property-tax-hike-referendum/",
+        "label": "Eagle Mountain property tax hike triggers referendum — incentive recipients named (Meta, QTS)",
+        "publisher": "The Cool Down",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Every Eagle Mountain Community Reinvestment Area with a data-center purpose (Sweetwater #2, #3, #4, and Triple Tail) has a named beneficiary and none is Google — Sweetwater #2/#3 are QTS's, Sweetwater #4 is Meta's, and Triple Tail is Tract's — and a same-week rewrite of the SLTrib incentives story names only Meta and QTS as recipients of Eagle Mountain's data-center tax breaks, not Google. Google's October 2021 land purchase also predates by roughly 2.5 years the only geographically plausible project area (Triple Tail, whose drafting the Agency did not authorize until April 2024). Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Grist reports Google's Eagle Mountain project is 'delayed due to energy constraints' and that the company is waiting to build. No interconnection or generation detail was found in the sources read."
     },
@@ -58570,9 +58637,24 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.deseret.com/2008/5/19/20253264/oracle-to-build-data-center-in-west-jordan/",
+        "label": "Oracle to build data center in West Jordan — GOED tax rebate and Economic Development Area reported",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/operations-and-management/oracle-confirms-285m-utah-data-center",
+        "label": "Oracle confirms $285M Utah data center — up to $15 million in state tax incentives",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "A Governor's Office of Economic Development (GOED) state tax rebate reported at more than $15 million, and a local West Jordan Economic Development Area (EDA) reimbursing a portion of Oracle's property-tax increment (reported at \"nearly $10 million,\" for property acquisition and site improvements), were reported in May 2008 for this project. As of that reporting the local EDA's structure was still pending (\"Representatives from local governments will meet sometime in July to determine the structure of the incentive\"), and construction was halted from March 2009 to 2010; no document located in this session confirms the local EDA was finalized or survived the halt. Recorded as reported in 2008, not confirmed executed — no subsidies entry added, since reported eligibility for an incentive is not the same as a confirmed award.",
     "energy": {
       "notes": "Computerworld describes the building as 'roughly 240,000 square feet in size', built to support Oracle's software-as-a-service business (CRM on Demand and the then-forthcoming Fusion Applications suite). Construction was suspended without public explanation in 2009 and had resumed by April 2010. Grist and the Lehi Free Press both list Oracle among the Salt Lake County data centers approved for diesel standby generators in recent years. No MW rating appeared on any page actually read, so capacityMw is omitted."
     },
@@ -63664,9 +63746,32 @@
         "publisher": "Kem C. Gardner Policy Institute, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1003911.pdf",
+        "label": "Eagle Mountain RDA Board packet — Sweetwater Industrial Park CRA #3 Amended Project Area Plan & Participation Agreement terms (August 1, 2023)",
+        "publisher": "Eagle Mountain Redevelopment Agency via Utah Public Notice Website",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1158232.pdf",
+        "label": "Eagle Mountain RDA Board packet — Sweetwater #3 CRA Participation Agreement Second Amendment (QTS Eagle Mountain I, LLC), August 20, 2024",
+        "publisher": "Eagle Mountain Redevelopment Agency via Utah Public Notice Website",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Sweetwater Industrial Park Community Reinvestment Project Area #3 (Eagle Mountain Redevelopment Agency, Title 17C): 61% of Real Property Tax Increment plus 74% of Personal Property Tax Increment, reimbursed per Phase for 20 years per phase (not to exceed 40 years total), from Utah County, Alpine School District, Eagle Mountain City, Central Utah Water Conservancy District, and the Unified Fire Service Area. The signed CRA Participation Agreement's Participant is QTS Eagle Mountain I, LLC — there is no separate agreement naming \"QTS Eagle Mountain II, LLC.\" This parcel (38:707:0002, 98.043 acres) is covered by the Sweetwater CRA #3 agreement with QTS Eagle Mountain I, LLC, which explicitly includes this parcel's acreage: the Agreement's own recitals and the amended Project Area's Table 1 Parcel List define the ~193-acre Project Area, and its terms, as spanning both the QTS Eagle Mountain I parcel (38:707:0001, 95.153 acres) and the QTS Eagle Mountain II parcel by acreage. A 2nd Amendment (approved August 20, 2024) changed only the payment mechanics — allowing personal-property reimbursements to be paid directly to QTS's colocation end-clients — and did not alter the 61%/74%/20yr/40yr terms.",
+    "subsidies": [
+      {
+        "program": "Sweetwater Industrial Park Community Reinvestment Project Area #3 (Title 17C) — 61% of Real Property Tax Increment plus 74% of Personal Property Tax Increment reimbursed per phase, 20 years per phase (40-year maximum); Participation Agreement signed with QTS Eagle Mountain I, LLC, which by its own terms covers this parcel's acreage",
+        "jurisdiction": "Eagle Mountain City, UT",
+        "year": "2023",
+        "sourceIndex": 1
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -74395,9 +74500,17 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.wvc-ut.gov/ArchiveCenter/ViewFile/Item/3376",
+        "label": "West Valley City Fund 22 (Redevelopment Agency) adopted budget, FY2023-24 — project-area tax-increment ledger",
+        "publisher": "West Valley City",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. West Valley City's Fund 22 (Redevelopment Agency) adopted budget itemizes every currently active RDA/CRA project area by name with no boundary or line item tying it to 1385 W 2200 S, and no city filing or state record names Syringa Networks. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -78302,13 +78415,43 @@
         "publisher": "KSL.com",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1158232.pdf",
+        "label": "Eagle Mountain RDA Board Meeting packet — Triple Tail Project Area Plan, Exhibit C Parcel List (August 20, 2024)",
+        "publisher": "Eagle Mountain Redevelopment Agency via Utah Public Notice Website",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://pscdocs.utah.gov/electric/24docs/2403543/336619PtnIntrvnTract11-20-2024.pdf",
+        "label": "Petition to Intervene of Tract Capital Management, LP, UTLCO Eagle Mtn., LLC, and UTLCO Eagle Mtn. Two, LLC (Utah PSC Docket No. 24-035-43)",
+        "publisher": "Utah Public Service Commission",
+        "retrievedAt": "2026-09-05",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1237341.pdf",
+        "label": "Notice of Interlocal Agreements — Eagle Mountain Redevelopment Agency, Utah County, Alpine School District, Eagle Mountain City, Central Utah Water Conservancy District, and Unified Fire Service Area (Triple Tail Project Area)",
+        "publisher": "Eagle Mountain Redevelopment Agency via Utah Public Notice Website",
+        "retrievedAt": "2026-09-05",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Triple Tail Community Reinvestment Project Area (Eagle Mountain Redevelopment Agency, Title 17C): 55% of property-tax increment for 40 years to Utah County ($101,979,662 cap), Alpine School District ($904,447,677 cap), Eagle Mountain City (no stated cap), and the Unified Fire District ($209,244,856 cap), plus 55% for 20 years to the Central Utah Water Conservancy District ($2,487,309/phase cap), and a 35% rebate of Eagle Mountain City's Electric ME Tax for 40 years. No single document found in this session names Tract inside the Triple Tail record by name — the attribution rests on a two-document chain: the RDA's own Project Area Plan parcel list (Exhibit C) names the project area's largest landowner as UTLCO Eagle Mtn Two, LLC (671.49 of 1,170.44 acres), and a separate Utah Public Service Commission filing (Docket No. 24-035-43, Petition to Intervene) identifies UTLCO Eagle Mtn., LLC and UTLCO Eagle Mtn. Two, LLC as subsidiaries of Tract Capital Management, LP. Treat the Tract attribution as inferred from these two independently-sourced primary documents, not as stated by any single filing.",
     "energy": {
       "utility": "Rocky Mountain Power",
       "notes": "Tract states it 'is in the queue with Rocky Mountain Power to deliver more than 400 megawatts via new transmission infrastructure by 2028.' This is queued interconnection capacity for a master-planned park, not built or energized capacity."
     },
+    "subsidies": [
+      {
+        "program": "Triple Tail Community Reinvestment Project Area (Title 17C Community Reinvestment Agency) — 55% of property-tax increment for 40 years to Utah County, Alpine School District, Eagle Mountain City, and the Unified Fire District (55% for 20 years to Central Utah Water Conservancy District), each subject to a per-entity cap, plus a 35% rebate of Eagle Mountain City's Electric ME Tax",
+        "jurisdiction": "Eagle Mountain City / Utah County, UT",
+        "year": "2024",
+        "sourceIndex": 4
+      }
+    ],
     "landAcres": 668,
     "community": {
       "notes": "Eagle Mountain Mayor Tom Westmoreland is quoted in the city-hosted release welcoming the acquisition: 'we look forward to working with partners like Tract to develop new campuses and expand our emergence as a tech hub while maintaining our small-town charm.' Scott Cuthbertson, president and CEO of the Economic Development Corporation of Utah, credited 'Tract's leadership in minimizing water impact.' No organized opposition surfaced in the sources read."
@@ -82146,6 +82289,7 @@
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. The only public agreement located for the Stadion parcel is a Planning Commission zoning/development agreement (noise variance to 75 dB, above-ground power distribution lines, public-infrastructure obligations) with no tax-increment, abatement, or CRA participation content; a full-text search of every locatable Eagle Mountain RDA CRA project-area document (Sweetwater #3, #4, #5) for \"Stadion\", \"Aquila\", or \"Williams\" returned no hits. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Eagle Mountain City's own hearing documents describe the project verbatim: 'Williams is an independent power producer. They are looking to co-locate a natural gas power facility on the Stadion parcel to facilitate the Meta data center expansion. The new natural gas facility would be located on the Stadion property, which is zoned RTI. Pursuant to the Stadion development agreement, natural gas power is a permitted accessory use on the property.' Williams sought code exceptions — 'they are asking to be allowed to go up to 75 dB in sound. This exceeds the City's nighttime limit, which is 65dB' — and permission 'to use above ground power distribution lines on the property'. ⚠️ NO capacity figure is recorded: neither city document states MW. Secondary coverage circulates a 520 MW figure (two 200 MW sites, a 12.5-year Meta PPA, and an 18.9-mile Aquila Pipeline), but every page carrying it was 403 or did not mention Utah when opened, so it is deliberately NOT recorded here."
     },
