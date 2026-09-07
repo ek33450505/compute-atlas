@@ -5,6 +5,24 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.32.0](https://github.com/ek33450505/compute-atlas/compare/v1.31.0...v1.32.0) (2026-09-07)
+
+
+### Features
+
+* **admin-session:** add expiring HMAC-signed admin session cookie ([#245](https://github.com/ek33450505/compute-atlas/issues/245)) ([e9f0702](https://github.com/ek33450505/compute-atlas/commit/e9f07021238c1ee8efbd2e11d1e96783a54d42a8)), closes [#237](https://github.com/ek33450505/compute-atlas/issues/237)
+* **data:** add public dataset download page ([85a3a2e](https://github.com/ek33450505/compute-atlas/commit/85a3a2eac5dbd42dcd9220c65f8d20c6b28fa3f4))
+* **explore:** add Download lens linking to /data page ([256f298](https://github.com/ek33450505/compute-atlas/commit/256f298af3c0843bb9e2a7c48f808d2920952e9d))
+* **export:** add source_count and primary_source_url to CSV export ([1c50465](https://github.com/ek33450505/compute-atlas/commit/1c504652a8b25140c55cf1587b18495c7a6e20cd))
+* **nav:** link /data page from header, footer, homepage, and contact flow ([54fc718](https://github.com/ek33450505/compute-atlas/commit/54fc718cd47a822d896ae56034a69280d5e4e956))
+
+
+### Bug Fixes
+
+* **api:** add Zenodo DOI to persistent identifier citation ([024b3e5](https://github.com/ek33450505/compute-atlas/commit/024b3e558759969e1a779b0a2bc16828b2066e9c))
+* **ci:** hold the sync PR open when build:mapdata fails ([#227](https://github.com/ek33450505/compute-atlas/issues/227)) ([e7cc5b5](https://github.com/ek33450505/compute-atlas/commit/e7cc5b58033bbbc635bbdbf75007854ab2a2a8d2))
+* **neon-sync:** add PAT preflight verification and correct token comments ([#240](https://github.com/ek33450505/compute-atlas/issues/240)) ([415193e](https://github.com/ek33450505/compute-atlas/commit/415193e6c5b542edb14f129989861d595e85cffd))
+
 ## [1.31.0](https://github.com/ek33450505/compute-atlas/compare/v1.30.0...v1.31.0) (2026-09-03)
 
 
