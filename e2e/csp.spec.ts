@@ -126,11 +126,20 @@ test("harness sanity: a deliberately disallowed resource IS detected", async ({ 
     .toBeGreaterThan(0);
 
   const violations = await watcher.get();
-  const found = violations.some(
-    (v) =>
-      v.blockedURI.includes("example.com") ||
-      /example\.com/i.test(v.violatedDirective)
-  );
+  // Match the host exactly rather than with a substring: `blockedURI` is
+  // attacker-shaped in the general case (any origin can appear in it), and a
+  // substring test would also accept e.g. "https://example.com.evil.test/".
+  // Not a security control here — it is a test assertion — but the loose form
+  // is the same shape CodeQL flags as js/incomplete-url-substring-sanitization,
+  // and being exact costs nothing. `blockedURI` is not always a URL ("eval",
+  // "inline"), hence the try/catch.
+  const found = violations.some((v) => {
+    try {
+      return new URL(v.blockedURI).hostname === "example.com";
+    } catch {
+      return false;
+    }
+  });
   expect(found, `expected a violation naming example.com, got: ${JSON.stringify(violations)}`).toBe(
     true
   );
