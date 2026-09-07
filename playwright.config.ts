@@ -55,7 +55,14 @@ export default defineConfig({
   webServer: {
     command: "npm run build && npm run start",
     url: "http://localhost:3000",
-    reuseExistingServer: true,
+    // Deliberately NOT reusing an existing server. On 2026-09-07 a stale
+    // next-server left running from an earlier session served ~2-day-old
+    // build output to every local run, so e2e/csp.spec.ts reported 5/5 green
+    // for a fix that CI (which always builds fresh) correctly failed. A
+    // suite whose job is to produce evidence must not silently test a build
+    // nobody asked for. The cost is a rebuild per local run; that is the
+    // right trade for a check that is only worth anything if it is trusted.
+    reuseExistingServer: false,
     timeout: 240_000,
   },
 });

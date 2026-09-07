@@ -32,6 +32,12 @@ interface CspViolation {
   violatedDirective: string;
   blockedURI: string;
   documentURI: string;
+  /** Where the offending code lives. Absent on console-derived records and on
+   * some violation kinds, but for `blockedURI: "eval"` this is the only thing
+   * that identifies WHICH bundle called it — without it a failure says only
+   * "something on this page evals", which is not actionable. */
+  sourceFile?: string;
+  lineNumber?: number;
 }
 
 /**
@@ -87,6 +93,8 @@ async function installCspListener(page: Page): Promise<void> {
         violatedDirective: e.violatedDirective,
         blockedURI: e.blockedURI,
         documentURI: e.documentURI,
+        sourceFile: e.sourceFile,
+        lineNumber: e.lineNumber,
       });
     });
   });
@@ -94,7 +102,11 @@ async function installCspListener(page: Page): Promise<void> {
 
 function formatViolations(violations: CspViolation[], route: string): string {
   return `${route}: expected 0 CSP violations, found ${violations.length}:\n${violations
-    .map((v) => `  - directive="${v.violatedDirective}" blockedURI="${v.blockedURI}"`)
+    .map(
+      (v) =>
+        `  - directive="${v.violatedDirective}" blockedURI="${v.blockedURI}"` +
+        (v.sourceFile ? ` at ${v.sourceFile}:${v.lineNumber ?? "?"}` : "")
+    )
     .join("\n")}`;
 }
 

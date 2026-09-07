@@ -2,6 +2,27 @@ import { z } from "zod";
 import { STATUS_ORDER } from "@/lib/status";
 import { httpUrlSchema } from "@/lib/intake-fields";
 
+/**
+ * Disable Zod's JIT schema compilation, which builds validators with the
+ * `Function` constructor. Our Content-Security-Policy's `script-src`
+ * deliberately omits `'unsafe-eval'` (see next.config.ts), and this module is
+ * pulled into the client bundle — `facilityTypeEnum.options` feeds the
+ * explorer's filter parsing — so the JIT path fired a real
+ * `securitypolicyviolation` on /map (issue #236, caught by e2e/csp.spec.ts).
+ *
+ * Note it is not only the compile step that reports: Zod probes for eval
+ * availability with a `try { Function("") }`, and a strict CSP reports that
+ * caught call as a violation even though the throw is swallowed. Zod skips the
+ * probe entirely under `jitless`, which is why setting this — rather than
+ * relying on the throw being caught — is what actually silences it.
+ *
+ * Set here rather than in an app entry point because this is the module that
+ * defines the schemas, so any importer gets the config before it can parse.
+ * The cost is validation throughput; this codebase validates in bulk at
+ * publish/build time, not in a per-request hot path.
+ */
+z.config({ jitless: true });
+
 export const statusEnum = z.enum(STATUS_ORDER);
 export const aiClassificationEnum = z.enum(["confirmed", "likely", "mixed_use"]);
 export const confidenceEnum = z.enum(["confirmed", "reported", "rumored"]);
