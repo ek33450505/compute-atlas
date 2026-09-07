@@ -9,6 +9,7 @@ import Map, {
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 
+import { mapLib } from "@/lib/maplibre-csp";
 import { BASEMAP_STYLE_URL, INITIAL_VIEW_STATE } from "@/lib/map";
 import type { Status } from "@/lib/status";
 
@@ -212,6 +213,7 @@ export function HeroGlobe({
     >
       <Map
         ref={mapRef}
+        mapLib={mapLib}
         mapStyle={BASEMAP_STYLE_URL}
         initialViewState={initialViewState}
         style={{ width: "100%", height: "100%" }}

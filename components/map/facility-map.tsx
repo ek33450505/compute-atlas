@@ -16,6 +16,7 @@ import { circle } from "@turf/circle";
 import { Crosshair, Radius, SlidersHorizontal } from "lucide-react";
 import type { FeatureCollection, Polygon } from "geojson";
 
+import { mapLib } from "@/lib/maplibre-csp";
 import {
   BASEMAP_STYLE_URL,
   INITIAL_VIEW_STATE,
@@ -1178,6 +1179,7 @@ export function FacilityMap({
 
         <Map
           ref={mapRef}
+          mapLib={mapLib}
           mapStyle={BASEMAP_STYLE_URL}
           initialViewState={INITIAL_VIEW_STATE}
           style={{ width: "100%", height: "100%" }}

@@ -3,6 +3,7 @@
 import Map, { Marker } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 
+import { mapLib } from "@/lib/maplibre-csp";
 import { BASEMAP_STYLE_URL } from "@/lib/map";
 import { getStatusColor } from "@/lib/status";
 import { formatLocation } from "@/lib/format";
@@ -39,6 +40,7 @@ export function FacilityMiniMap({ facility }: FacilityMiniMapProps) {
       className="h-64 w-full rounded-lg border overflow-hidden"
     >
       <Map
+        mapLib={mapLib}
         mapStyle={BASEMAP_STYLE_URL}
         initialViewState={{
           longitude: location.lon,
