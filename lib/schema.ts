@@ -16,10 +16,17 @@ import { httpUrlSchema } from "@/lib/intake-fields";
  * probe entirely under `jitless`, which is why setting this — rather than
  * relying on the throw being caught — is what actually silences it.
  *
- * Set here rather than in an app entry point because this is the module that
- * defines the schemas, so any importer gets the config before it can parse.
- * The cost is validation throughput; this codebase validates in bulk at
- * publish/build time, not in a per-request hot path.
+ * Set here rather than in an app entry point so it lands wherever the schemas
+ * do. Note this does NOT guarantee it runs before every schema is CONSTRUCTED
+ * — `lib/intake-fields.ts` is imported above and builds `httpUrlSchema` first.
+ * That is fine because Zod compiles at PARSE time, not definition time, so any
+ * parse through the shared module instance sees `jitless`.
+ *
+ * The cost is validation throughput. Validation is mostly bulk work at
+ * publish/build time, but not exclusively: `lib/contribute.ts` and
+ * `lib/submissions.ts` each `safeParse` per request on the intake endpoints.
+ * Those are low-frequency human submission paths, so the tradeoff is
+ * acceptable — but it is a request path, not zero.
  */
 z.config({ jitless: true });
 
