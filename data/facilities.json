@@ -216,6 +216,9 @@
       "state": "NY",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 15
+    },
     "poweredBy": "Con Edison grid",
     "statusHistory": [],
     "sources": [
@@ -246,9 +249,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/hudson-ix-to-add-2mw-of-capacity-at-60-hudson-in-nyc/",
+        "label": "Hudson IX to Add 2MW of Capacity at 60 Hudson in NYC",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-09-08",
     "notes": "Landmarked 1930 Art Deco former Western Union building in TriBeCa, Manhattan — the East Coast's most important carrier hotel / interconnection point, hosting 100+ telecom and data-center tenants. Represented as ONE consolidated facility record rather than one per tenant, since the physical building is the meaningful unit. Total building size is 1,149,619 sq ft, 24 stories + basement, per an authoritative SEC EDGAR CMBS filing (2023) — this is whole-building square footage, not data-center-specific space. No whole-building data-center power (MW) figure is disclosed by any verifiable primary source; a 50MW figure appears on aggregator sites but traces to an unverified 2014 reference and is not repeated here as fact. The one solidly-verified tenant figure: Hudson Interxchange (HIX) occupies ~173,000 sq ft with a 15MW Con Edison feed (+2MW expansion announced), confirmed via Data Center Dynamics (2024-08-21). Figures for Digital Realty and DataBank's space in this building could not be independently confirmed from primary sources in this research pass (conflicting numbers across aggregator sites) and are deliberately omitted rather than guessed — capacityMw is left unset for the same reason (no reliable whole-building total exists). Coordinates are a building-level geocode from a map aggregator, not independently verified against a primary GIS source.",
     "energy": {
       "utility": "Con Edison"
@@ -9622,6 +9632,56 @@
     "aiClassification": "likely"
   },
   {
+    "id": "barrio-energy-tyler-smith-county-tx",
+    "name": "Barrio Energy Tyler Data Center (West Erwin Street)",
+    "operator": "Barrio Energy / Barrio Resources LLC (with Vulcan Core)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.351,
+      "lon": -95.3127,
+      "city": "Tyler",
+      "county": "Smith",
+      "street": "1101–1105 West Erwin Street",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 12
+    },
+    "announcedDate": "2026-06-17",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-03",
+        "note": "Zoning Board of Adjustment rejected Barrio's appeal as untimely; litigation/appeal path ongoing."
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://tylerpaper.com/2026/06/17/data-center-developer-addresses-concerns-about-proposed-bitcoin-mining-facility-planned-for-downtown-tyler/",
+        "label": "Data center developer addresses concerns about proposed Bitcoin mining facility in Tyler",
+        "publisher": "Tyler Morning Telegraph",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kltv.com/2026/09/03/proposed-tyler-cryptocurrency-mining-center-denied-again/",
+        "label": "Proposed Tyler cryptocurrency mining center denied again",
+        "publisher": "KLTV",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-08",
+    "community": {
+      "status": "litigation",
+      "notes": "Tyler's Planning & Zoning Commission denied Barrio's special-use permit in July 2026; the Zoning Board of Adjustment unanimously rejected a separate, untimely-filed Barrio appeal on 2026-09-03. A timely-filed appeal of the original P&Z denial remains on hold, and Barrio has a 10-day window to seek state-court review. Residents cited noise, heat discharge, water/cooling chemicals, and property-value concerns.",
+      "sourceIndex": 1
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "beacon-golden-valley-ca",
     "name": "Golden Valley Technology Hub",
     "operator": "Beacon Data Centers (w/ California Resources Corp)",
@@ -10455,6 +10515,51 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "big-digital-energy-10netzero-hood-county-tx",
+    "name": "Big Digital Energy–10NetZero Hood County AI Data Center Campus",
+    "operator": "Big Digital Energy, Inc. / 10NetZero, Inc. (50/50 joint venture)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.44194,
+      "lon": -97.76472,
+      "county": "Hood",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 311,
+      "operational": 17
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-20",
+        "note": "Site acquisition completed via 50/50 JV."
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/07/20/3329715/0/en/Big-Digital-Energy-and-10NetZero-Complete-Acquisition-of-Hood-County-Texas-Site.html",
+        "label": "Big Digital Energy and 10NetZero Complete Acquisition of Hood County, Texas Site",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1218683/000121390026075248/ea029690001ex99-2.htm",
+        "label": "Big Digital Energy SEC exhibit re: Hood County / DFW-area site LOI",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-09-08",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-09-08",
+    "notes": "Repurposing a power-ready ~50-acre industrial site (30,000+ sq ft of existing structures, 17 MW operational grid power, on-site gas pipelines) into an AI/HPC datacenter campus; acquisition completed 2026-07-20. AI datacenter build-out itself has not yet begun.",
+    "landAcres": 50,
+    "facilityType": "data_center"
   },
   {
     "id": "big-elk-solar-washington-ne",
@@ -12050,6 +12155,7 @@
       "lon": -111.83632,
       "city": "Nephi",
       "county": "Juab",
+      "street": "1358 N 200 W, Nephi, UT",
       "state": "UT",
       "precision": "approximate"
     },
@@ -12078,9 +12184,16 @@
         "publisher": "Nephi City",
         "retrievedAt": "2026-09-04",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://sec.gov/Archives/edgar/data/1416090/000149315225014760/ex99-1.htm",
+        "label": "BluSky AI Inc. Form 8-K Exhibit 99.1 — Letter of Intent for Nephi, UT Site",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-09-08",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-09-08",
     "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy found. Nephi City's Community Reinvestment Agency fund is tied to a hotel project area rather than this site, and no CRA participation agreement naming this project was located. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. Recorded as no-evidence-found rather than a fully closed absence: the Nephi project-area budget PDF did not return readable text on retrieval.",
     "energy": {
       "notes": "4 MW at full activation. The company release notes Nephi 'recently completed a project to increase the town's energy capacity from 29 megawatts to 85 megawatts', which is the municipal utility's headroom, NOT this facility's capacity. Modular deployment using the company's SkyMod data center modules on a pad of approximately 100 x 150 feet."
@@ -23415,9 +23528,16 @@
         "label": "Dallas Innovates — DataBank Announces New 480MW North Texas Data Center Campus Featuring Eight Two-Story Data Centers",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.databank.com/resources/press-releases/databank-secures-2-0b-of-construction-financing-for-first-three-data-centers-on-new-south-dallas-campus/",
+        "label": "DataBank Secures $2.0B of Construction Financing for First Three Data Centers on New South Dallas Campus",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-09-08",
     "notes": "292-acre, 8-building campus. Distinct operator/site from Compass Datacenters' separate Red Oak, TX campus (same town, different companies).",
     "investmentUsd": 837000000,
     "landAcres": 292,
@@ -29465,6 +29585,45 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "energy-vault-snyder-scurry-county-tx",
+    "name": "Energy Vault Snyder AI Campus",
+    "operator": "Energy Vault, Inc.",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.7138,
+      "lon": -100.9112,
+      "city": "Snyder",
+      "county": "Scurry",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "announcedDate": "2026-07-27",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-07-27",
+        "note": "Groundbreaking announced."
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://usdatacenterprojects.com/texas/energy-vault-breaks-ground-on-ai-data-center-campus-in-snyder-texas",
+        "label": "Energy Vault breaks ground on AI Data Center Campus in Snyder, Texas",
+        "publisher": "US Data Center Projects",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-08",
+    "notes": "Phased buildout: ~8 MW initial phase, ~25 MW phase two, with up to 500 MW long-term expansion planned. Uses Crusoe Spark modular data center units under a commercial agreement with Crusoe Cloud. Target commercial operation Q1 2027.",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "energysolutions-kewaunee-new-nuclear-wi",
@@ -42381,6 +42540,44 @@
     }
   },
   {
+    "id": "hyperdatagrid-lufkin-angelina-county-tx",
+    "name": "HyperDataGrid Lufkin Data Center (Former Timber Mill Site)",
+    "operator": "HyperDataGrid",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.3383,
+      "lon": -94.7292,
+      "city": "Lufkin",
+      "county": "Angelina",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-13",
+        "note": "County judge confirmed the project; land clearing begun."
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://usdatacenterprojects.com/texas/hyperdatagrid-plans-data-center-on-former-timber-mill-site-near-lufkin-texas",
+        "label": "HyperDataGrid plans data center on former timber mill site near Lufkin, Texas",
+        "publisher": "US Data Center Projects",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-08",
+    "notes": "Sited on a former timber-mill parcel on Highway 103 West / Ben Dunn Road; land clearing underway, electrical and water agreements reportedly secured, ~12-month timeline to operational status. Closed-loop liquid, direct-to-chip cooling planned.",
+    "landAcres": 40,
+    "facilityType": "data_center"
+  },
+  {
     "id": "hyperscale-data-dowagiac-mi",
     "name": "Hyperscale Data Dowagiac Campus",
     "operator": "Hyperscale Data, Inc.",
@@ -48682,9 +48879,16 @@
         "publisher": "Texas Tribune",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://datacenters.atmeta.com/2026/03/big-things-are-happening-el-paso/",
+        "label": "Big things are happening, El Paso!",
+        "publisher": "Meta Data Centers",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-09-08",
     "notes": "Campus located in far Northeast El Paso near Texas-New Mexico state line on approximately 1,000 acres; coordinates are approximate city-area centroid, exact parcel not publicly identified. Meta's third Texas data center. Campus can scale to 1 GW. Construction jobs figure (4,000) reflects updated peak estimate from March 2026 $10B expansion announcement.",
     "energy": {
       "source": "mixed",
@@ -60301,9 +60505,23 @@
         "publisher": "Data Center Frontier",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/machine-learning/article/55326541/how-coreweave-and-poolside-are-teaming-up-in-west-texas-to-build-the-next-generation-of-ai-data-centers",
+        "label": "How CoreWeave and Poolside Are Teaming Up in West Texas to Build the Next Generation of AI Data Centers",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://press.airstreet.com/p/poolside-launches-project-horizon-ai-compute",
+        "label": "Compute, power, intelligence: Poolside goes full-stack with Project Horizon",
+        "publisher": "Poolside AI",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-09-08",
     "notes": "2 GW AI training campus on a 568-acre parcel of the Mitchell family's Longfellow Ranch in Pecos County, near Fort Stockton. Coordinate anchored on Fort Stockton (nearest named town in coverage); exact parcel not publicly disclosed. CoreWeave was original anchor tenant (15-year, 250 MW lease, 40,000 Nvidia GB300 GPUs) but terminated the lease in late March 2026 after Poolside's Series C funding round failed to close; site reported idle as of mid-2026.",
     "energy": {
       "source": "on_site_gas",
@@ -60727,6 +60945,52 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "powerhouse-circle-t-westlake-tx",
+    "name": "PowerHouse Circle T Data Center Campus",
+    "operator": "PowerHouse Data Centers",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.9972,
+      "lon": -97.2083,
+      "city": "Westlake",
+      "street": "13580 Denton Highway",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2026-08-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-07",
+        "note": "Filed with and approved by Westlake planning and zoning commission."
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://westlaketx.portal.civicclerk.com/event/194/files/agenda/5473",
+        "label": "Westlake Planning & Zoning Commission agenda — Circle T Data Center",
+        "publisher": "Town of Westlake, TX",
+        "retrievedAt": "2026-09-08",
+        "kind": "permit"
+      },
+      {
+        "url": "https://usdatacenterprojects.com/texas/powerhouse-files-plans-for-300-mw-circle-t-data-center-campus-in-westlake-texas",
+        "label": "PowerHouse files plans for 300 MW Circle T Data Center Campus in Westlake, Texas",
+        "publisher": "US Data Center Projects",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-08",
+    "notes": "Four-building campus (300,000 sq ft each) at the NE corner of US-377 and Westport Parkway; owner of record Circle T Owner LP. Local Westlake planning-and-zoning approval obtained as of August 2026.",
+    "landAcres": 87.96,
+    "facilityType": "data_center"
   },
   {
     "id": "powerhouse-ctp-02-va",
@@ -64397,6 +64661,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "qts-lancium-hall-county-tx",
+    "name": "QTS–Lancium Hall County Data Center Campus",
+    "operator": "QTS Data Centers / Lancium",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.394,
+      "lon": -100.8954,
+      "city": "Turkey",
+      "county": "Hall",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-14",
+        "note": "Joint announcement by QTS and Lancium."
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://q.com/news/qts-and-lancium-announce-data-center-campus-in-hall-county-texas/",
+        "label": "QTS and Lancium Announce Data Center Campus in Hall County, Texas",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-08",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Company states the facility will use closed-loop cooling with no water consumption for cooling operations."
+    },
+    "investmentUsd": 10000000000,
+    "jobs": {
+      "construction": 7000,
+      "permanent": 350,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "qts-marvel-bessemer-al",
     "name": "QTS Bessemer (Project Marvel)",
     "operator": "QTS Data Centers",
@@ -67282,9 +67590,23 @@
         "publisher": "Rowan Digital Infrastructure",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://rowan.digital/portfolio/temple/",
+        "label": "Temple | 300 MW Hyperscale Data Center Campus | Texas",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-09-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.kwtx.com/2026/08/12/rowan-digital-infrastructure-seeks-approval-6th-final-data-center-temple/",
+        "label": "Rowan Digital Infrastructure seeks approval for 6th and final data center in Temple",
+        "publisher": "KWTX",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-09-08",
     "notes": "300 MW campus in Temple, Bell County; $3B financing secured, operations targeted 2027. Distinct from Rowan's separately-tracked Frederick, MD campus. Coordinates are the Temple area centroid. The '$3B' figure is green debt financing (May 2026), not campus capex; the abatement cites a ~$700M minimum investment floor -> investmentUsd omitted. ~600 construction / ~40 permanent jobs projected (abatement requires >=48 permanent) -> jobs honest-zero.",
     "energy": {
       "source": "grid",
@@ -68647,6 +68969,57 @@
       "technology": "natural_gas",
       "unitCount": 2,
       "notes": "Two Siemens Energy SGT6-9000HL turbines in combined-cycle configuration, described as hydrogen-ready. Built on the former Alcoa Sandow industrial site, replacing 1950s-era coal generation."
+    }
+  },
+  {
+    "id": "sangha-renewables-ector-county-tx",
+    "name": "Sangha Renewables Ector County Bitcoin Mining Facility",
+    "operator": "Sangha Renewables",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.8633,
+      "lon": -102.3656,
+      "city": "Odessa",
+      "county": "Ector",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 19.9
+    },
+    "announcedDate": "2025-12-12",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-12-12",
+        "note": "Ribbon-cutting/energization ceremony."
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://bitcoinmagazine.com/news/sangha-energizes-20-bitcoin-mining",
+        "label": "Sangha Opens 20MW Bitcoin Mining Facility In Texas",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/sangha-partners-with-totalenergies-to-energize-199mw-solar-powered-bitcoin-mining-site-in-ector-county-texas/",
+        "label": "Sangha partners with TotalEnergies to energize 19.9MW solar powered Bitcoin mining site in Ector County, Texas",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-08",
+    "energy": {
+      "source": "solar",
+      "notes": "Behind-the-meter off a 150 MW solar farm in Ector County owned/operated by TotalEnergies; partner Links Genco."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "behind_meter"
     }
   },
   {
@@ -72126,7 +72499,7 @@
     "id": "stargate-abilene-tx",
     "name": "Stargate Abilene",
     "operator": "OpenAI / Oracle / Crusoe",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 32.4487,
@@ -72153,6 +72526,12 @@
         "date": "2025-02",
         "note": "Ground broken; Crusoe providing infrastructure; ~4 of 8 buildings reported operational by late 2025",
         "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-09-08",
+        "note": "Buildings 1-4 of the 8-building campus are confirmed operational (509k H100-equivalents, 421 MW IT power) and running OpenAI training/inference on Oracle Cloud Infrastructure as of 2026-07-28; buildings 5-8 are structurally complete but not yet confirmed operational.",
+        "sourceIndex": 8
       }
     ],
     "sources": [
@@ -72211,9 +72590,16 @@
         "publisher": "Epoch AI",
         "retrievedAt": "2026-08-16",
         "kind": "other"
+      },
+      {
+        "url": "https://epoch.ai/data/ai-data-centers/directory/openai-stargate-abilene",
+        "label": "OpenAI Stargate Abilene | AI Data Centers",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-09-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-09-08",
     "energy": {
       "source": "mixed",
       "utility": "AEP Texas",
@@ -80000,6 +80386,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "valar-atomics-ward-250-orangeville-ut",
+    "name": "Valar Atomics Ward 250 Test Reactor (Utah San Rafael Energy Lab)",
+    "operator": "Valar Atomics",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.2269,
+      "lon": -111.0561,
+      "city": "Orangeville",
+      "county": "Emery",
+      "street": "800 N Coal Haul Rd",
+      "postalCode": "84537",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 5
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://energylab.utah.gov/nuclear-energy/valar-atomics/",
+        "label": "Valar Atomics | Utah San Rafael Energy Lab",
+        "publisher": "Utah Office of Energy Development",
+        "retrievedAt": "2026-09-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.ans.org/news/2026-06-22/article-8136/valars-ward-250-reaches-criticality-in-utah/",
+        "label": "Valar's Ward 250 reaches criticality in Utah",
+        "publisher": "American Nuclear Society / Nuclear Newswire",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox13now.com/news/politics/a-waterless-ai-data-center-a-big-experiment-is-under-way-in-rural-utah",
+        "label": "A waterless AI data center? A big experiment is under way in rural Utah",
+        "publisher": "FOX 13 News Utah",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-08",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "offtaker": "NVIDIA",
+      "notes": "Ward 250 is a 100-kWt TRISO-fueled, helium-cooled high-temperature gas reactor (HTGR) test unit at the Utah San Rafael Energy Lab. It achieved full-power fueled criticality on 2026-06-18 — the first DOE-authorized advanced reactor built and operated independently outside the national-laboratory system — and was used to power an NVIDIA DGX Spark AI chip in a public demonstration. The design is intended to scale to a 5 MW unit. NVIDIA has announced plans for a future AI factory in Emery County tied to this site; no timeline given."
+    }
+  },
+  {
     "id": "valley-oak-shinn-street-fremont-ca",
     "name": "Valley Oak Partners Shinn Street Data Center",
     "operator": "Valley Oak Partners",
@@ -81623,9 +82060,23 @@
         "publisher": "KSL.com",
         "retrievedAt": "2026-09-05",
         "kind": "press"
+      },
+      {
+        "url": "https://www.fox13now.com/news/local-news/central-utah/data-center-company-ponders-moving-on-after-spanish-fork-leaders-delay-title-15-vote",
+        "label": "Data Center company ponders moving on after Spanish Fork leaders delay Title 15 vote",
+        "publisher": "FOX 13 News Utah",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ksl.com/article/51611520/residents-voice-concerns-over-proposed-data-center-regulations-in-spanish-fork",
+        "label": "Residents voice concerns over proposed data center regulations in Spanish Fork",
+        "publisher": "KSL.com",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-25",
+    "lastUpdated": "2026-09-08",
     "notes": "Proposed retrofit of a ~1M sq ft former Fingerhut distribution warehouse at the mouth of Spanish Fork Canyon; faced significant resident opposition at an August 20, 2026 public hearing; not yet zoned for the use. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. The company is on record declining to seek one: \"Volition is not requesting any tax breaks, Chavez said, and instead would be generating around $44 million in tax revenue for the city, school district and other taxing entities.\" No Spanish Fork RDA/CRA project area or participation agreement naming Volition or the site was located. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "source": "other",
@@ -81636,6 +82087,11 @@
       "notes": "500,000 gallons for initial fill; ~250,000 gallons/year thereafter, per proposal terms discussed at the August 20, 2026 city council meeting."
     },
     "investmentUsd": 4000000000,
+    "community": {
+      "status": "opposed",
+      "notes": "At an Aug 19, 2026 Spanish Fork City Council public hearing, nearly two hours of public comment ran almost unanimously against the project over unverified environmental claims, wildlife/water-resource risk, and proximity to residences; the council tabled the Title 15 zoning amendments the project needs to proceed.",
+      "sourceIndex": 4
+    },
     "facilityType": "data_center"
   },
   {
