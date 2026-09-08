@@ -18942,21 +18942,17 @@
   },
   "oracle-salt-lake-city-ut": {
     "nearestWater": {
-      "name": "City Creek",
-      "kind": "river",
-      "distanceMi": 1.2
+      "name": "Decker Lake",
+      "kind": "lake",
+      "distanceMi": 3.3
     },
     "nearestTransmission": {
       "voltageKv": 345,
-      "distanceMi": 4.2
+      "distanceMi": 0.6
     },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
-    },
-    "groundwaterDecline": {
-      "cat": 1,
-      "label": "Low - Medium (0-2 cm/y)"
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
@@ -21218,13 +21214,13 @@
   },
   "regence-salt-lake-city-ut": {
     "nearestWater": {
-      "name": "City Creek",
+      "name": "Big Cottonwood Creek",
       "kind": "river",
-      "distanceMi": 1.2
+      "distanceMi": 0
     },
     "nearestTransmission": {
       "voltageKv": 345,
-      "distanceMi": 4.2
+      "distanceMi": 5.8
     },
     "waterStress": {
       "cat": 3,
@@ -22218,21 +22214,17 @@
   },
   "senawave-salt-lake-city-ut": {
     "nearestWater": {
-      "name": "City Creek",
-      "kind": "river",
-      "distanceMi": 1.2
+      "name": "Decker Lake",
+      "kind": "lake",
+      "distanceMi": 0.6
     },
     "nearestTransmission": {
       "voltageKv": 345,
-      "distanceMi": 4.2
+      "distanceMi": 0.3
     },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
-    },
-    "groundwaterDecline": {
-      "cat": 1,
-      "label": "Low - Medium (0-2 cm/y)"
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
