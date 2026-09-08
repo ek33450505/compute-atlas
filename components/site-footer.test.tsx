@@ -104,8 +104,11 @@ describe("SiteFooter", () => {
   it("renders every Data & project column link with the correct href", () => {
     render(<SiteFooter />);
     expect(
-      screen.getByRole("link", { name: /Data & methodology/i })
+      screen.getByRole("link", { name: "About the project" })
     ).toHaveAttribute("href", "/about");
+    expect(
+      screen.getByRole("link", { name: "Methodology" })
+    ).toHaveAttribute("href", "/methodology");
     expect(screen.getByRole("link", { name: "API" })).toHaveAttribute(
       "href",
       "/api"
