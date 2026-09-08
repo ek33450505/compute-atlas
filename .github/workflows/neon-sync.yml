@@ -176,6 +176,18 @@ jobs:
       # the ~27min rebuild. A pre-build click cannot approve a post-build
       # artifact, so the two gates are not interchangeable.
       #
+      # BASELINE IS origin/main, NOT THE CHECKED-OUT HEAD. The rebuild takes
+      # ~30 min, so anything merged during it leaves this job's HEAD stale and a
+      # recomputation that is CORRECT for the new state reads as data loss. That
+      # cost a false positive on 2026-09-08 (run 34227078474): the job started
+      # 12:36:57Z on 11f9d13, #256 merged 12:50:24Z moving two Salt Lake City
+      # facilities off a shared placeholder centroid onto real coordinates, and
+      # at 13:09:08Z this step flagged their recomputed groundwaterDecline as
+      # dropped — the old values had been computed at a fabricated coordinate.
+      # The script fetches origin/main itself; if that fails it falls back to
+      # HEAD, which is at-or-behind origin/main and therefore STRICTER, never
+      # more permissive. See scripts/check-siting-additive.mjs.
+      #
       # WHY THE EXISTING CIRCUIT BREAKER IS NOT ENOUGH: build-map-data.mjs aborts
       # only after NHD_CONSECUTIVE_FAILURE_BUDGET (10) CONSECUTIVE facilities
       # fail BOTH NHD layers. A SCATTERED partial outage never trips that: each
