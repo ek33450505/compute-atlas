@@ -1,0 +1,80 @@
+# Fails loudly if Google reports that it was BLOCKED when it last crawled us.
+#
+# WHY THIS EXISTS:
+# Cloudflare returned HTTP 403 to Googlebot for roughly five days
+# (2026-07-31 to 2026-08-04, measured 2026-09-08). Five state hubs were still
+# frozen in Google's index as "Blocked due to access forbidden (403)" weeks
+# later and had to be re-submitted by hand. Nothing caught it while it was
+# happening: the sitemap stayed Valid with 0 errors, check:drift stayed green,
+# CI stayed green, and the site returned 200 to every request we made
+# ourselves. Every signal we had was measuring the wrong thing — none of them
+# asked what GOOGLE saw. Cloudflare has 403'd Googlebot on this property
+# before (s94), so this is a recurring failure mode, not a one-off.
+#
+# WHY A SEPARATE WORKFLOW, NOT A STEP IN ci.yml:
+# The thing being measured is production's behaviour toward a third party. It
+# has nothing to do with the contents of any PR, and it can go red on a day
+# when nobody pushed anything — which is exactly the day you most want to
+# know. A PR gate would also be useless: the state it reads only changes when
+# Googlebot next crawls, which is unrelated to when CI runs.
+#
+# WHY "GREEN" IS NOT AUTOMATICALLY "PASSED":
+# scripts/check-googlebot-access.ts exits 0 when no credential is available,
+# so a missing or rotated secret does not turn this red. That is deliberate —
+# a credential problem should not masquerade as a Googlebot problem. But it
+# means green can also mean "did not run", so the Report step below prints
+# which of the two happened. A silently-skipping canary is then visible in the
+# run log instead of looking identical to a passing one — the exact class of
+# blind spot this workflow exists to close.
+#
+# SETUP (one-time): add a repository secret GSC_SERVICE_ACCOUNT_JSON holding
+# the full JSON of a Google service account with read access to the
+# sc-domain:compute-atlas.com Search Console property. Locally the same script
+# reads ~/.config/gsc-mcp/service-account.json instead — where the GSC MCP
+# server already keeps it — so `npm run check:googlebot` works with no setup.
+name: Googlebot Access Canary
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # 06:00 UTC daily — clear of neon-sync (08:00), release-please (09:00 Mon), drift-alert (22:00), discovery-watchdog (23:00)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  googlebot-access:
+    name: Verify Google is not being blocked
+    runs-on: ubuntu-latest
+    # Job-level rather than step-level env is a deliberate choice, matching
+    # drift-alert.yml's handling of DATABASE_URL. Step-level would be
+    # marginally tighter least-privilege, but two steps need this value and
+    # the repo's established convention is job-level; consistency wins over a
+    # difference that changes no real exposure here (npm ci runs no lifecycle
+    # scripts that could read it out).
+    env:
+      GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      # `[ -z ... ]` is a shell built-in test: it inspects the value without
+      # printing it, so the private key never reaches the log.
+      - name: Report whether the canary can actually run
+        run: |
+          if [ -z "${GSC_SERVICE_ACCOUNT_JSON}" ]; then
+            echo "::warning::GSC_SERVICE_ACCOUNT_JSON is not set — the canary will SKIP, not pass. Add the repository secret to arm it."
+          else
+            echo "Credential present; canary will run against sc-domain:compute-atlas.com."
+          fi
+
+      # No pipe, no tee: `npm run` is the last command, so its exit status is
+      # the step's exit status. A pipeline here would report the exit code of
+      # the pipe's final element and swallow a real failure — a trap this repo
+      # has hit more than once.
+      - name: Ask Google what it saw on its last crawl
+        run: npm run check:googlebot
