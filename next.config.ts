@@ -16,6 +16,15 @@ import type { NextConfig } from "next";
  *     raster tiles (lib/map.ts SATELLITE_TILE_URL).
  *   - https://nominatim.openstreetmap.org — the map's location-search
  *     geocoder (lib/geocode.ts), called via fetch().
+ *   - https://static.cloudflareinsights.com — Cloudflare Web Analytics'
+ *     beacon.min.js, injected by the Cloudflare proxy in front of production.
+ *     It does NOT exist in a local build, so no local check can see it: it was
+ *     found by running the e2e/csp.spec.ts listener against PRODUCTION on
+ *     2026-09-07, where it was the ONLY violation, on 7 of 10 route families
+ *     swept (/, /map, /table, /facilities/*, /admin/login, /learn/*,
+ *     /contribute). That asymmetry is the point — a local harness is necessary
+ *     but not sufficient for this header, because the proxy adds subresources
+ *     the app never declares.
  *   - https://va.vercel-scripts.com — confirmed in
  *     node_modules/@vercel/{analytics,speed-insights}/dist/index.js:
  *     both packages load their bootstrap script from here ONLY when
@@ -35,7 +44,7 @@ import type { NextConfig } from "next";
  */
 const CSP_REPORT_ONLY_DIRECTIVES = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
+  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://tiles.openfreemap.org https://services.arcgisonline.com",
   "connect-src 'self' https://tiles.openfreemap.org https://services.arcgisonline.com https://nominatim.openstreetmap.org",
