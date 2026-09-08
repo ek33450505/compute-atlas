@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import facilities from "@/data/facilities.json";
 import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 import { CSP_REPORT_PATH } from "@/lib/csp-report";
+import { operatorSlug } from "@/lib/operator-slug";
 import nextConfig from "./next.config";
 
 /**
@@ -51,6 +52,61 @@ describe("retired-facility redirects", () => {
     for (const redirect of await facilityRedirects()) {
       expect(redirect.permanent, `${redirect.source} should be permanent`).toBe(true);
     }
+  });
+});
+
+/**
+ * Guards the retired-operator redirect list in `next.config.ts`.
+ *
+ * Mirrors the retired-facility guards above, plus one more: operator slugs
+ * are DERIVED (via `operatorSlug()`), not hand-assigned like facility ids, so
+ * a redirect chain (a source that is also some other redirect's destination)
+ * is a real failure mode here in a way it isn't for facilities — a future
+ * curation edit could easily add a new retirement pointing at an already-
+ * retired slug instead of the live one.
+ */
+describe("retired-operator redirects", () => {
+  const liveOperatorSlugs = new Set(
+    (facilities as { operator: string }[]).map((f) => operatorSlug(f.operator))
+  );
+
+  const operatorRedirects = async () => {
+    const all = (await nextConfig.redirects?.()) ?? [];
+    return all.filter((r) => r.source.startsWith("/operators/"));
+  };
+
+  const slugOf = (path: string) => path.replace("/operators/", "");
+
+  it("never redirects away from a slug that is still a live operator", async () => {
+    const shadowed = (await operatorRedirects())
+      .map((r) => slugOf(r.source))
+      .filter((slug) => liveOperatorSlugs.has(slug));
+
+    expect(shadowed).toEqual([]);
+  });
+
+  it("only redirects to slugs that are live operators", async () => {
+    const dangling = (await operatorRedirects())
+      .map((r) => slugOf(r.destination))
+      .filter((slug) => !liveOperatorSlugs.has(slug));
+
+    expect(dangling).toEqual([]);
+  });
+
+  it("marks retired-operator redirects permanent so link equity carries over", async () => {
+    for (const redirect of await operatorRedirects()) {
+      expect(redirect.permanent, `${redirect.source} should be permanent`).toBe(true);
+    }
+  });
+
+  it("never chains a redirect source into another redirect's destination", async () => {
+    const redirects = await operatorRedirects();
+    const sources = new Set(redirects.map((r) => slugOf(r.source)));
+    const chained = redirects
+      .map((r) => slugOf(r.destination))
+      .filter((slug) => sources.has(slug));
+
+    expect(chained).toEqual([]);
   });
 });
 
