@@ -12431,7 +12431,7 @@
       }
     ],
     "lastUpdated": "2026-09-01",
-    "notes": "Approximately 8 miles north of Newcastle, roughly 20 miles from Cedar City; application on hold pending the county's data-center moratorium.",
+    "notes": "Approximately 8 miles north of Newcastle, roughly 20 miles from Cedar City; application on hold pending the county's data-center moratorium. Subsidies checked (2026-09-08): structural zero — the project is proposed and on hold under Iron County's moratorium, and no Iron County or Newcastle CRA/RDA was found to execute a pre-approval participation agreement; Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "source": "mixed",
       "notes": "Planned hybrid power: 300MW solar, 1,200MWh battery storage, and 1.5GW natural gas generation."
@@ -31705,9 +31705,24 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.draperutah.gov/media/5baoyq5c/adopted-budget-cra-fy26-final.pdf",
+        "label": "Draper City Community Reinvestment Agency FY2025-26 adopted budget — six active project-area divisions itemized",
+        "publisher": "Draper City",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.draperutah.gov/media/sfkbgezm/acfr-fy22-draper-city.pdf",
+        "label": "Draper City FY2022 Annual Comprehensive Financial Report, Note 13 (RDA Commitments and Tax Abatements) — three abatement agreements citywide, none a data centre; most recent ACFR located",
+        "publisher": "Draper City",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Draper City's Community Reinvestment Agency's FY2025-26 adopted budget itemizes six active project areas (West Freeway, Sand Hills, Crescent, East Bangerter, Frontrunner, South Mountain) with no line item for this site; the FY2022 audited financial statements (the most recent located) name only three abatement recipients citywide (Utah Steakburgers, BG Vista/Draper Holdings, Pluralsight), none a data centre. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -32436,9 +32451,17 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1088841.pdf",
+        "label": "Cottonwood Heights CDRA — Canyon Centre CDA Analysis (LRB Public Finance Advisors, 20 Feb 2024); Canyon Centre is the agency's only established project area and lies at a different location from this site",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Cottonwood Heights' CDRA (created 2006) has established exactly one project area citywide, Canyon Centre CDA (3700 East 7000 South, at Fort Union Blvd/Wasatch Blvd) — a materially different location from this site at 6340 South 3000 East — per a 2024 CDRA project-area analysis; no other project area or agreement is documented. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -33984,10 +34007,17 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1403855.pdf",
+        "label": "Lindon City FY2024-25 Annual Comprehensive Financial Report — Note 11 (project-area tax increment, \"700 N CDA\") and Note 12 (GASB 77 tax-abatement disclosure, one agreement citywide)",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-07-23",
-    "notes": "HIPAA/HITRUST/PCI-DSS certified facility per WebSearch corroboration; distinct from South Valley/West Jordan site.",
+    "notes": "HIPAA/HITRUST/PCI-DSS certified facility per WebSearch corroboration; distinct from South Valley/West Jordan site. Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Lindon City's audited FY2024-25 financial statements name exactly one active RDA tax-increment project area (\"700 N CDA\") and, under the required GASB 77 tax-abatement disclosure, exactly one RDA abatement agreement citywide (Doug Smith Autoplex/KIA in the \"RDA #3\" project area near Lindon Park Drive) — neither covers 333 South 520 West. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
     },
@@ -46399,9 +46429,17 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.ogdencity.gov/1216/RDA-Projects",
+        "label": "Ogden City RDA — the nine active project areas with their terms; none references 526 W 17th Street or Lumen",
+        "publisher": "Ogden City",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Ogden City RDA's nine active project areas (CBD Mall, Ogden River, East Washington, Trackline, Kiesel, Adams, Continental, Flagship, Airport) carry no mention of the 526 W 17th Street facility or of Lumen in their published descriptions, board minutes, or bond packets; the only named tax-increment recipient found in RDA search results is Williams International, unrelated to this site. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -46452,7 +46490,13 @@
       "city": "Salt Lake City",
       "county": "Salt Lake",
       "state": "UT",
-      "precision": "approximate"
+      "precision": "representative_multi_site",
+      "multiSite": {
+        "states": [
+          "UT"
+        ],
+        "siteCountNote": "Aggregates three physically distinct Lumen facilities in the Salt Lake City area — Salt Lake 1 (572 South Delong), Salt Lake 2 (5035 Harold Gatty Drive, near the airport) and Salt Lake 4 (address unresolved). The listed coordinates are an illustrative city-area point, not any one building."
+      }
     },
     "capacityMw": {
       "operational": 6
@@ -46465,9 +46509,31 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/lumen-salt-lake-1",
+        "label": "Lumen Salt Lake 1 — 572 South Delong, Salt Lake City; one of three distinct facilities aggregated by this record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/lumen-salt-lake-2",
+        "label": "Lumen Salt Lake 2 — 5035 Harold Gatty Drive, Salt Lake City; one of three distinct facilities aggregated by this record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://cra.slc.gov/project-areas/",
+        "label": "Redevelopment Agency of Salt Lake City — the eight active project areas; none names Lumen or its predecessor entities",
+        "publisher": "Redevelopment Agency of Salt Lake City",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal/operator level (2026-09-08): no site-level subsidy found. The Redevelopment Agency of Salt Lake City's FY2016 annual report and Salt Lake City Council District 2's public summary of its CRA project areas name no beneficiary matching Lumen (or its predecessor entities CenturyLink/Level 3/Qwest). Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. Note this record aggregates three physically distinct Lumen facilities (Salt Lake 1, 2 and 4) at different addresses across the city, so no single site-level check applies to all three; a fuller Good Jobs First Subsidy Tracker check for Lumen Technologies as a national parent company was attempted but blocked (HTTP 403) and remains unresolved.",
     "facilityType": "data_center"
   },
   {
@@ -58734,8 +58800,8 @@
     "status": "operational",
     "confidence": "reported",
     "location": {
-      "lat": 40.75962,
-      "lon": -111.8868,
+      "lat": 40.736391,
+      "lon": -112.005741,
       "city": "Salt Lake City",
       "county": "Salt Lake",
       "state": "UT",
@@ -58749,9 +58815,24 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacentermap.com/usa/utah/salt-lake-city/oracle-salt-lake-city/",
+        "label": "Oracle Salt Lake City — data centre directory listing (1499-1521 S 4800 W, Salt Lake City, UT 84104). Address read from the search index only: the page was bot-walled on direct fetch and its content is not independently verified.",
+        "publisher": "DataCenterMap",
+        "retrievedAt": "2026-09-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://cra.slc.gov/project-areas/",
+        "label": "Redevelopment Agency of Salt Lake City — the eight active project areas, all downtown-core or North Temple/9-Line corridors; none covers 4800 West",
+        "publisher": "Redevelopment Agency of Salt Lake City",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. The Redevelopment Agency of Salt Lake City's FY2016 annual report and Salt Lake City Council District 2's public summary of its CRA project areas name no beneficiary matching Oracle, and no general web search surfaced an incentive award; a candidate address (1499-1521 S 4800 W) sits well outside the footprint of all eight RDA project areas, which cluster downtown and along the North Temple/9-Line corridors. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. Distinct from the separately tracked Oracle West Jordan campus (Project Sequoia).",
     "facilityType": "data_center"
   },
   {
@@ -66118,9 +66199,9 @@
     "status": "operational",
     "confidence": "reported",
     "location": {
-      "lat": 40.75962,
-      "lon": -111.8868,
-      "city": "Salt Lake City",
+      "lat": 40.633117,
+      "lon": -111.809456,
+      "city": "Cottonwood Heights",
       "county": "Salt Lake",
       "state": "UT",
       "precision": "approximate"
@@ -66136,9 +66217,24 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=2890+E+Cottonwood+Pkwy%2C+UT+84121&benchmark=Public_AR_Current&vintage=Current_Current&layers=Incorporated+Places&format=json",
+        "label": "US Census Geocoder — 2890 E Cottonwood Pkwy resolves to Incorporated Place \"Cottonwood Heights\" (GEOID 4916270), Salt Lake County, despite a USPS mailing label reading \"Salt Lake City\". This is Regence's Utah office address; its use as the data-center site is inferred, not independently confirmed.",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-09-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1088841.pdf",
+        "label": "Cottonwood Heights CDRA — Canyon Centre CDA Analysis (LRB Public Finance Advisors, 20 Feb 2024); Canyon Centre is the agency's only project area and does not cover this address",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Cottonwood Heights' Community Development and Renewal Agency (CDRA, established 2006) has created exactly one project area in its history — the Canyon Centre CDA at 3700 East 7000 South, a different site — and its dedicated financial analysis (LRB Public Finance Advisors, Feb 2024) does not mention this address or Regence. No Cottonwood Heights or Salt Lake County filing found naming Regence in connection with an incentive, subsidy, RDA, or abatement. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. Note: no source confirms this address houses a data center rather than Regence's general Utah corporate/insurance office.",
     "facilityType": "data_center"
   },
   {
@@ -69008,12 +69104,12 @@
     "status": "operational",
     "confidence": "reported",
     "location": {
-      "lat": 40.75962,
-      "lon": -111.8868,
-      "city": "Salt Lake City",
+      "lat": 40.71216,
+      "lon": -111.964329,
+      "city": "West Valley City",
       "county": "Salt Lake",
       "state": "UT",
-      "precision": "approximate"
+      "precision": "exact"
     },
     "statusHistory": [],
     "sources": [
@@ -69023,9 +69119,24 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/3047-parkway-boulevard-west-valley-city/senawave/datacenter/salt-lake-city",
+        "label": "Senawave Salt Lake City — building listing (3047 Parkway Boulevard, West Valley City, UT 84119); used to establish the street address, which the US Census Geocoder places inside the West Valley City incorporated boundary (GEOID 4983470)",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.wvc-ut.gov/ArchiveCenter/ViewFile/Item/3376",
+        "label": "West Valley City Fund 22 (Redevelopment Agency) adopted budget — project-area tax-increment ledger; Decker Lake shows $0 increment from FY2020-21 onward",
+        "publisher": "West Valley City",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. West Valley City's Redevelopment Agency reports tax-increment activity only in aggregate by project area (Fund 22 adopted budget; ACFR FY2024-2025 Note 15, per Utah Code 17C-1-605(1)) — no per-recipient breakout in either document, and no filing names Senawave. The nearest named project area, Decker Lake, shows $0 tax increment collected in every year since FY2020-21 and does not appear in the current ACFR disclosure at all, so no RDA subsidy is currently active in that area regardless of parcel boundaries. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -79675,9 +79786,17 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://cra.slc.gov/project-areas/",
+        "label": "Redevelopment Agency of Salt Lake City — the eight active project areas; none names Unisys",
+        "publisher": "Redevelopment Agency of Salt Lake City",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. The Redevelopment Agency of Salt Lake City's FY2016 annual report and Salt Lake City Council District 2's public summary of its CRA project areas name no beneficiary matching Unisys, and no general web search surfaced an incentive award. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. The facility's exact site is not independently confirmed (candidate address: 480 N 2200 W, Salt Lake City — corroborated by two business directories but not tied to the data centre specifically by any source).",
     "facilityType": "data_center"
   },
   {
@@ -80013,9 +80132,24 @@
         "publisher": "Kem C. Gardner Policy Institute, David Eccles School of Business, University of Utah",
         "retrievedAt": "2026-08-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1286199.pdf",
+        "label": "St. George Redevelopment Agency FY2025-26 budget agenda packet — itemizes all six currently active project areas by fund number and name",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-09-08",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/business/new-data-center-project-in-utah",
+        "label": "New data center project in Utah — the facility was built by Kay Traveller of Tonaquint Development on land within the privately developed Tonaquint Business Park",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-08-15",
+    "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. St. George's FY2025-26 Redevelopment Agency budget itemizes every currently active project area by name (Central Business District CDA, Dixie Center EDA, Ft. Pierce CDA #1, Ft. Pierce CDA #2, Millcreek CDA, and Tech Ridge CDA — formerly the St. George Airport Community Development Project Area), none covering the Tonaquint corridor at 1108 West 1600 South; the facility instead sits within Tonaquint Business Park, a privately developed park built by the site's own developer to attract tech companies, not a public redevelopment district. No city or state filing names Valor C3. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 sales-tax exemption is self-executing.",
     "facilityType": "data_center"
   },
   {
@@ -83236,10 +83370,24 @@
         "publisher": "The Salt Lake Tribune",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://inlandportauthority.utah.gov/wp-content/uploads/Petition-for-TV-PID.pdf",
+        "label": "Petition Requesting the Creation of TV Public Infrastructure District (26 March 2024) — petitioner/owner Zenith Bolinder, LLC (a Delaware LLC), contact sponsor Charles Akerlow, representing 100% of surface property owners within the proposed district",
+        "publisher": "Utah Inland Port Authority",
+        "retrievedAt": "2026-09-08",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.ksl.com/article/51145917/80m-bond-offering-100-acres-under-contract-tooele-countys-inland-port-project-underway",
+        "label": "$80M bond offering, 100 acres under contract: Tooele County's Inland Port project underway — states Zenith Bolinder LLC is \"a partnership with longtime Utah developer Zenith Development\" and names Chuck Akerlow as Zenith Development's managing director",
+        "publisher": "KSL",
+        "retrievedAt": "2026-09-08",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-08-25",
-    "notes": "500MW on-site gas-fired data center campus (~200-600 acre portion of a larger ~600-acre Tooele Valley Public Infrastructure District development that also includes a truck stop, hotel, and warehouses near I-80); backed by Utah Inland Port Authority financing. Developer plans a reverse-osmosis plant discharging ~250,000 gallons/day of brine into Great Salt Lake wetlands, drawing significant local opposition.",
+    "notes": "500MW on-site gas-fired data center campus (~200-600 acre portion of a larger ~600-acre Tooele Valley Public Infrastructure District development that also includes a truck stop, hotel, and warehouses near I-80); backed by Utah Inland Port Authority financing. Developer plans a reverse-osmosis plant discharging ~250,000 gallons/day of brine into Great Salt Lake wetlands, drawing significant local opposition. Subsidies checked (2026-09-08): no site-level subsidy confirmed for this parcel. A $4.875M Utah Inland Port Authority Infrastructure Bank loan was reported in April 2024 to Zenith Bolinder, LLC — the Delaware LLC that petitioned UIPA in March 2024 to create the Tooele Valley Public Infrastructure District, representing 100% of surface property owners within it, and which KSL describes as \"a partnership with longtime Utah developer Zenith Development\"; Charles Akerlow appears both as the petition's contact sponsor and as Zenith Development's managing director. The two are affiliated but are not the same legal entity, the loan terms were not confirmed against a primary document, and the district's boundary exhibit is a scanned image that could not be read — so whether that loan reaches this data-centre parcel is unresolved. UIPA's executive director stated in July 2026 that the authority's involvement covers transportation within a 600-acre portion and does not extend to the southern section planned for the data centre.",
     "energy": {
       "source": "on_site_gas"
     },
