@@ -7,8 +7,15 @@ import {
   buildStatusRoutes,
   buildMetroRoutes,
   buildLearnRoutes,
+  MIN_FACILITIES_FOR_OPERATOR_SITEMAP,
 } from "@/app/sitemap";
-import { getAllFacilities, getStates, getOperators, operatorSlug } from "@/lib/data";
+import {
+  getAllFacilities,
+  getStates,
+  getOperators,
+  operatorSlug,
+  getFacilitiesByMetro,
+} from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
 import { METROS } from "@/lib/metros";
@@ -58,16 +65,50 @@ describe("sitemap", () => {
     }
   });
 
-  it("operator routes count equals getOperators().length, with no undefined slugs", async () => {
+  it("operator routes count equals the number of operators with >= MIN_FACILITIES_FOR_OPERATOR_SITEMAP facilities, with no undefined slugs", async () => {
     const operatorRoutes = await buildOperatorRoutes();
     const operators = await getOperators();
-    expect(operatorRoutes).toHaveLength(operators.length);
-    for (const name of operators) {
+    const facilities = await getAllFacilities();
+    const multiFacilityOperators = operators.filter(
+      (name) =>
+        facilities.filter((f) => f.operator === name).length >=
+        MIN_FACILITIES_FOR_OPERATOR_SITEMAP
+    );
+    expect(operatorRoutes).toHaveLength(multiFacilityOperators.length);
+    for (const name of multiFacilityOperators) {
       const expectedUrl = `${siteConfig.url}/operators/${operatorSlug(name)}`;
       const entry = operatorRoutes.find((r) => r.url === expectedUrl);
       expect(entry).toBeDefined();
       expect(entry!.url).not.toContain("undefined");
     }
+  });
+
+  it("an operator with >= MIN_FACILITIES_FOR_OPERATOR_SITEMAP facilities IS present in buildOperatorRoutes() output", async () => {
+    const operatorRoutes = await buildOperatorRoutes();
+    const operators = await getOperators();
+    const facilities = await getAllFacilities();
+    const multiFacilityOperator = operators.find(
+      (name) =>
+        facilities.filter((f) => f.operator === name).length >=
+        MIN_FACILITIES_FOR_OPERATOR_SITEMAP
+    );
+    expect(multiFacilityOperator).toBeDefined();
+    const expectedUrl = `${siteConfig.url}/operators/${operatorSlug(multiFacilityOperator!)}`;
+    const urls = operatorRoutes.map((r) => r.url);
+    expect(urls).toContain(expectedUrl);
+  });
+
+  it("an operator with exactly 1 facility is NOT present in buildOperatorRoutes() output", async () => {
+    const operatorRoutes = await buildOperatorRoutes();
+    const operators = await getOperators();
+    const facilities = await getAllFacilities();
+    const singleFacilityOperator = operators.find(
+      (name) => facilities.filter((f) => f.operator === name).length === 1
+    );
+    expect(singleFacilityOperator).toBeDefined();
+    const excludedUrl = `${siteConfig.url}/operators/${operatorSlug(singleFacilityOperator!)}`;
+    const urls = operatorRoutes.map((r) => r.url);
+    expect(urls).not.toContain(excludedUrl);
   });
 
   it("status routes include /status and all 5 /status/:value routes", async () => {
@@ -92,6 +133,53 @@ describe("sitemap", () => {
     }
     // 1 index + 27 per-metro entries, no duplicates.
     expect(metroRoutes).toHaveLength(METROS.length + 1);
+  });
+
+  it("metro hub lastModified is derived from that metro's OWN facilities via getFacilitiesByMetro, not the whole-dataset max", async () => {
+    const testStart = Date.now();
+    const metroRoutes = await buildMetroRoutes();
+    const facilities = await getAllFacilities();
+    const datasetMax = Math.max(
+      ...facilities.map((f) => new Date(f.lastUpdated).getTime())
+    );
+
+    let sawEntryEarlierThanDatasetMax = false;
+    for (const m of METROS) {
+      const expectedUrl = `${siteConfig.url}/metros/${m.slug}`;
+      const entry = metroRoutes.find((r) => r.url === expectedUrl);
+      expect(entry).toBeDefined();
+
+      // Membership reuses the SAME helper app/metros/[metro]/page.tsx uses
+      // to render the hub (getFacilitiesByMetro), so the sitemap and the
+      // page can never disagree about which facilities belong to a metro.
+      const metroFacilities = await getFacilitiesByMetro(m.slug);
+      const expectedMax = Math.max(
+        ...metroFacilities.map((f) => new Date(f.lastUpdated).getTime())
+      );
+      const actual = entry!.lastModified as Date;
+      expect(actual.getTime()).toBe(expectedMax);
+      // Proves the value is real facility data, not build-time "now".
+      expect(actual.getTime()).toBeLessThan(testStart);
+
+      if (expectedMax < datasetMax) sawEntryEarlierThanDatasetMax = true;
+    }
+
+    // If every metro happened to contain a facility updated on the exact
+    // dataset-max date, the "own facilities, not the whole-dataset max"
+    // claim above would be unfalsifiable by this suite. Verified against
+    // the real dataset (2026-09-08): 25 of 27 metros are strictly earlier.
+    expect(sawEntryEarlierThanDatasetMax).toBe(true);
+  });
+
+  it("/metros index entry still carries the whole-dataset max lastModified", async () => {
+    const metroRoutes = await buildMetroRoutes();
+    const facilities = await getAllFacilities();
+    const expectedMax = Math.max(
+      ...facilities.map((f) => new Date(f.lastUpdated).getTime())
+    );
+    const indexEntry = metroRoutes.find((r) => r.url === `${siteConfig.url}/metros`);
+    expect(indexEntry).toBeDefined();
+    expect((indexEntry!.lastModified as Date).getTime()).toBe(expectedMax);
   });
 
   it("learn routes include /learn and all 5 /learn/:slug routes, derived from GLOSSARY_TOPICS", async () => {
@@ -147,7 +235,12 @@ describe("sitemap", () => {
     const operatorRoutes = await buildOperatorRoutes();
     const facilities = await getAllFacilities();
     const operators = await getOperators();
-    for (const name of operators) {
+    const multiFacilityOperators = operators.filter(
+      (name) =>
+        facilities.filter((f) => f.operator === name).length >=
+        MIN_FACILITIES_FOR_OPERATOR_SITEMAP
+    );
+    for (const name of multiFacilityOperators) {
       const expectedUrl = `${siteConfig.url}/operators/${operatorSlug(name)}`;
       const entry = operatorRoutes.find((r) => r.url === expectedUrl);
       expect(entry).toBeDefined();
