@@ -71,6 +71,22 @@ const CSP_COMMON_DIRECTIVES = [
   "connect-src 'self' https://tiles.openfreemap.org https://services.arcgisonline.com https://nominatim.openstreetmap.org",
   "worker-src 'self' blob:",
   "child-src blob:",
+  // ⚠️ `frame-src` is stated EXPLICITLY and must stay that way. Its fallback
+  // chain is `child-src` FIRST, and only then `default-src` — so with
+  // `child-src blob:` above and no entry here, framing resolved to `blob:`
+  // alone: same-origin iframes blocked, blob: iframes allowed, which is the
+  // inverse of the intent and of what `default-src 'self'` would suggest to
+  // a reader. Verified in a browser against this build, not inferred:
+  // appending a `/table` iframe reported `frame-src -> /table`.
+  //
+  // `'none'` rather than `'self'` because nothing in the app frames anything
+  // (zero frame-src violations across both the production sweep and
+  // e2e/csp.spec.ts, under a policy with this same fallback), so `'self'`
+  // would be an unevidenced allowance — and this list only carries origins a
+  // real subresource needs. Anything that legitimately needs to iframe later
+  // will fail against a directive that says so, instead of against an
+  // invisible fallback.
+  "frame-src 'none'",
   "font-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",

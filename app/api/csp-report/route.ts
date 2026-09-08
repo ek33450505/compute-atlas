@@ -1,11 +1,17 @@
 import { extractTrustedClientIp, normaliseIpForBucketing } from "@/lib/rate-limit";
 import {
   MAX_CSP_REPORT_BYTES,
+  checkCspReportGlobalLimit,
   checkCspReportRateLimit,
   isExtensionNoise,
   logCspReport,
   normaliseCspReports,
 } from "@/lib/csp-report";
+
+/** 429 with an empty body — this endpoint never returns anything readable. */
+function tooManyReports(retryAfter: number): Response {
+  return new Response(null, { status: 429, headers: { "Retry-After": String(retryAfter) } });
+}
 
 /**
  * Receiver for the `report-uri` directive on the enforcing CSP in
@@ -29,10 +35,16 @@ import {
 export async function POST(request: Request): Promise<Response> {
   const ip = normaliseIpForBucketing(extractTrustedClientIp(request.headers));
 
-  const gate = checkCspReportRateLimit(ip);
-  if (!gate.ok) {
-    return new Response(null, { status: 429, headers: { "Retry-After": String(gate.retryAfter) } });
-  }
+  // Per-IP first, then the all-callers ceiling — and the first failure must
+  // SHORT-CIRCUIT, not merely win. A request already rejected on its own
+  // bucket has to leave the shared budget untouched, or one noisy IP would
+  // spend the global allowance on requests it was never going to be served,
+  // starving every other visitor's reports.
+  const ipGate = checkCspReportRateLimit(ip);
+  if (!ipGate.ok) return tooManyReports(ipGate.retryAfter);
+
+  const globalGate = checkCspReportGlobalLimit();
+  if (!globalGate.ok) return tooManyReports(globalGate.retryAfter);
 
   // Checked twice on purpose. `content-length` lets an oversized body be
   // rejected before it is read, but it is caller-supplied and may be absent

@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import type { MockInstance } from "vitest";
 
 import {
+  CSP_REPORT_GLOBAL_LIMIT_MAX,
   CSP_REPORT_LIMIT_MAX,
   MAX_CSP_REPORT_BYTES,
   __resetCspReportRateLimit,
@@ -259,6 +260,80 @@ describe("POST /api/csp-report", () => {
       }
 
       expect((await POST(req(reportBody(), { ip: "198.51.100.5" }))).status).toBe(204);
+    });
+
+    /**
+     * The per-IP limit alone is defeatable: `extractTrustedClientIp` trusts
+     * `cf-connecting-ip`, which a caller reaching the Vercel origin directly
+     * can forge to mint a fresh bucket per request. These cover the ceiling
+     * that bounds the resulting log volume regardless of how many buckets a
+     * caller manufactures.
+     */
+    describe("global ceiling", () => {
+      /** Rotates the IP every request, exactly as a spoofing caller would. */
+      const spoofed = (i: number) => `198.51.100.${i % 250}`;
+
+      it("stops accepting reports once the all-callers cap is reached", async () => {
+        let accepted = 0;
+        for (let i = 0; i < CSP_REPORT_GLOBAL_LIMIT_MAX + 25; i++) {
+          const res = await POST(req(reportBody(), { ip: spoofed(i) }));
+          if (res.status === 204) accepted++;
+        }
+
+        expect(accepted).toBe(CSP_REPORT_GLOBAL_LIMIT_MAX);
+      });
+
+      it("bounds logged volume even when every request carries a fresh IP", async () => {
+        for (let i = 0; i < CSP_REPORT_GLOBAL_LIMIT_MAX + 25; i++) {
+          await POST(req(reportBody(), { ip: spoofed(i) }));
+        }
+
+        const violations = loggedEvents(warn).filter((e) => e.event === "csp-violation");
+        expect(violations).toHaveLength(CSP_REPORT_GLOBAL_LIMIT_MAX);
+      });
+
+      /**
+       * A cap that truncates silently reads as "no violations were
+       * reported" — the exact confusion this endpoint exists to end. The
+       * breach is announced once per window, not once per dropped request,
+       * so the announcement can't itself become the flood.
+       */
+      it("announces the breach exactly once rather than dropping silently", async () => {
+        for (let i = 0; i < CSP_REPORT_GLOBAL_LIMIT_MAX + 25; i++) {
+          await POST(req(reportBody(), { ip: spoofed(i) }));
+        }
+
+        const floods = loggedEvents(warn).filter((e) => e.event === "csp-report-flood");
+        expect(floods).toHaveLength(1);
+      });
+
+      /**
+       * A request already rejected on its own bucket must not spend the
+       * shared allowance, or one noisy IP would starve every other
+       * visitor's reports without ever being served itself.
+       */
+      it("does not spend the shared budget on requests rejected per-IP", async () => {
+        // The noisy IP must attempt MORE than the whole global budget, or
+        // this assertion cannot fail: with fewer attempts the shared budget
+        // survives either way and the test passes against a route that
+        // checks both gates eagerly — which is precisely the bug it exists
+        // to catch. Verified by mutation: the eager form fails this.
+        const noisy = "203.0.113.99";
+        for (let i = 0; i < CSP_REPORT_GLOBAL_LIMIT_MAX + 50; i++) {
+          await POST(req(reportBody(), { ip: noisy }));
+        }
+
+        // Short-circuiting means the noisy IP spent only its own
+        // CSP_REPORT_LIMIT_MAX of the shared budget, not all 250 attempts,
+        // so everyone else can still report.
+        let accepted = 0;
+        for (let i = 0; i < 50; i++) {
+          const res = await POST(req(reportBody(), { ip: `192.0.2.${i}` }));
+          if (res.status === 204) accepted++;
+        }
+
+        expect(accepted).toBe(50);
+      });
     });
   });
 });

@@ -99,6 +99,27 @@ describe("Content-Security-Policy header", () => {
   });
 
   /**
+   * `frame-src` must stay stated OUTRIGHT. Its fallback chain is `child-src`
+   * first and `default-src` only after that — so with `child-src blob:` in
+   * the policy and no `frame-src` entry, framing silently resolved to
+   * `blob:` alone: same-origin iframes blocked, `blob:` iframes permitted.
+   * That is the inverse of what `default-src 'self'` reads as, and under the
+   * previous report-only header it never blocked anything, so nothing would
+   * have surfaced it. Confirmed in a browser against a real enforcing build,
+   * which reported `frame-src -> /table` for an appended same-origin iframe.
+   *
+   * Deleting this directive is therefore not a simplification — it is a
+   * behaviour change that this assertion exists to stop.
+   */
+  it("states frame-src explicitly rather than inheriting the child-src fallback", async () => {
+    const csp = await siteWideCsp();
+    expect(csp?.value).toContain("frame-src 'none'");
+    // The trap only exists because `child-src` is present; if that is ever
+    // dropped, this test's rationale changes and should be re-read.
+    expect(csp?.value).toContain("child-src blob:");
+  });
+
+  /**
    * `report-uri` pointing anywhere but the route that exists produces an
    * endpoint nothing ever posts to — which presents exactly like a site with
    * no violations. Asserting against the shared constant (which the route

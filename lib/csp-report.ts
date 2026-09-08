@@ -46,6 +46,24 @@ export const CSP_REPORT_LIMIT_MAX = 20;
 export const CSP_REPORT_LIMIT_WINDOW_MS = 60_000;
 
 /**
+ * Ceiling on reports accepted per window across ALL callers.
+ *
+ * The per-IP limit above is defeatable: `extractTrustedClientIp` trusts
+ * `cf-connecting-ip` first, which is authoritative only for requests that
+ * actually came through Cloudflare — a caller reaching the Vercel origin
+ * directly can forge it and mint a fresh bucket per request. Every other
+ * endpoint using that helper has a second backstop (a DB-backed daily gate,
+ * or CDN caching that keeps repeat traffic away from the function
+ * entirely); this one had none, so a spoofing caller could drive unbounded
+ * log volume, which on Vercel is a billing line as well as alert fatigue.
+ *
+ * Set far above any real broken page: browsers coalesce repeat violations of
+ * the same directive on the same document, so a genuinely broken deploy
+ * produces reports proportional to *visitors*, not to page views.
+ */
+export const CSP_REPORT_GLOBAL_LIMIT_MAX = 200;
+
+/**
  * Hard ceiling on tracked IP buckets, enforced by FIFO eviction on the
  * new-IP insertion path — same shape and rationale as `MAX_BUCKETS` in
  * `lib/api-rate-limit.ts`. Deliberately a SEPARATE map from that module's:
@@ -88,9 +106,60 @@ export function checkCspReportRateLimit(
   return { ok: false, retryAfter };
 }
 
-/** Test-only: clears bucket state between cases. */
+interface GlobalWindow {
+  count: number;
+  windowStart: number;
+  /** Whether this window's breach has already been announced. */
+  announced: boolean;
+}
+
+const globalWindow: GlobalWindow = { count: 0, windowStart: 0, announced: false };
+
+/**
+ * Fixed-window check across all callers, applied after the per-IP one.
+ *
+ * Announces the breach exactly once per window rather than silently
+ * dropping. A cap that truncates without saying so reads as "no violations
+ * were reported", which is the precise confusion this whole endpoint exists
+ * to end — and during a flood the fact of the flood is itself the finding.
+ */
+export function checkCspReportGlobalLimit(
+  now: number = Date.now()
+): { ok: boolean; retryAfter: number } {
+  if (now - globalWindow.windowStart >= CSP_REPORT_LIMIT_WINDOW_MS) {
+    globalWindow.windowStart = now;
+    globalWindow.count = 1;
+    globalWindow.announced = false;
+    return { ok: true, retryAfter: 0 };
+  }
+
+  globalWindow.count++;
+  if (globalWindow.count <= CSP_REPORT_GLOBAL_LIMIT_MAX) {
+    return { ok: true, retryAfter: 0 };
+  }
+
+  if (!globalWindow.announced) {
+    globalWindow.announced = true;
+    console.warn(
+      JSON.stringify({
+        event: "csp-report-flood",
+        detail: "global per-window cap reached; further reports dropped this window",
+        cap: CSP_REPORT_GLOBAL_LIMIT_MAX,
+        windowMs: CSP_REPORT_LIMIT_WINDOW_MS,
+      })
+    );
+  }
+
+  const retryAfter = Math.ceil((globalWindow.windowStart + CSP_REPORT_LIMIT_WINDOW_MS - now) / 1000);
+  return { ok: false, retryAfter };
+}
+
+/** Test-only: clears per-IP and global window state between cases. */
 export function __resetCspReportRateLimit(): void {
   buckets.clear();
+  globalWindow.count = 0;
+  globalWindow.windowStart = 0;
+  globalWindow.announced = false;
 }
 
 /** Test-only: current bucket count, to verify the FIFO ceiling holds. */
@@ -201,6 +270,9 @@ function fromReportingApi(inner: unknown): NormalisedCspReport | null {
   const r = inner as Record<string, unknown>;
   return {
     documentPath: toPath(r.documentURL),
+    // Not a copy-paste slip: the Reporting-API body carries only
+    // `effectiveDirective`, with no separate violated-directive field, so
+    // both are sourced from it deliberately.
     violatedDirective: str(r.effectiveDirective),
     effectiveDirective: str(r.effectiveDirective),
     blockedUri: str(r.blockedURL),
