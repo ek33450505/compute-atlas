@@ -88,7 +88,12 @@ export function SiteFooter() {
             <ul className="space-y-1 text-sm text-muted-foreground">
               <li>
                 <Link href="/about" className={NAV_LINK_CLASS}>
-                  Data &amp; methodology
+                  About the project
+                </Link>
+              </li>
+              <li>
+                <Link href="/methodology" className={NAV_LINK_CLASS}>
+                  Methodology
                 </Link>
               </li>
               <li>

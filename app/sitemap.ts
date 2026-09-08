@@ -1,5 +1,12 @@
 import type { MetadataRoute } from "next";
-import { getAllFacilities, getStates, getOperators, operatorSlug, getStakeholders } from "@/lib/data";
+import {
+  getAllFacilities,
+  getStates,
+  getOperators,
+  operatorSlug,
+  getStakeholders,
+  getFacilitiesByMetro,
+} from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
 import { METROS } from "@/lib/metros";
@@ -214,20 +221,46 @@ export async function buildStateRoutes(): Promise<MetadataRoute.Sitemap> {
 }
 
 /**
+ * Minimum facility count for an operator hub to be SUBMITTED in the
+ * sitemap. Measured 2026-09-08 against Google Search Console (90-day
+ * window 2026-06-10 to 2026-09-08): 547 distinct operators, 403 of them
+ * (74%) have exactly ONE facility. Those 403 single-facility hubs were
+ * 19% of the 2,088-URL sitemap but produced only 1.24% of impressions and
+ * 8 clicks in 90 days (index rate 32% vs 56% for multi-facility hubs),
+ * while `/states/virginia` — high commercial intent — sat "Discovered -
+ * currently not indexed, last crawled: Never": Google was rationing crawl
+ * budget against a long tail of hubs that render only a masthead, two
+ * generated sentences, progress bars pinned at 0%/100%, and one row
+ * linking to the facility page they restate. This is a sitemap-submission
+ * change only — the routes themselves stay live, crawlable, and
+ * internally linked (deliberately NOT noindex), so the 129 single-facility
+ * hubs that DO earn impressions keep them.
+ */
+export const MIN_FACILITIES_FOR_OPERATOR_SITEMAP = 2;
+
+/**
  * Builds per-operator route entries for the sitemap.
  * Exported separately so it can be unit-tested without Next.js.
+ * Operators with fewer than MIN_FACILITIES_FOR_OPERATOR_SITEMAP facilities
+ * are omitted from submission — see the constant's doc comment for why.
  */
 export async function buildOperatorRoutes(): Promise<MetadataRoute.Sitemap> {
   const [names, facilities] = await Promise.all([getOperators(), getAllFacilities()]);
-  return names.map((name) => {
-    const operatorFacilities = facilities.filter((f) => f.operator === name);
-    return {
+  return names
+    .map((name) => {
+      const operatorFacilities = facilities.filter((f) => f.operator === name);
+      return { name, operatorFacilities };
+    })
+    .filter(
+      ({ operatorFacilities }) =>
+        operatorFacilities.length >= MIN_FACILITIES_FOR_OPERATOR_SITEMAP
+    )
+    .map(({ name, operatorFacilities }) => ({
       url: `${siteConfig.url}/operators/${operatorSlug(name)}`,
       lastModified: maxLastUpdated(operatorFacilities),
       changeFrequency: "weekly" as const,
       priority: 0.6,
-    };
-  });
+    }));
 }
 
 /**
@@ -292,13 +325,35 @@ export async function buildStatusRoutes(): Promise<MetadataRoute.Sitemap> {
 
 /**
  * Builds the /metros index + 27 per-metro route entries for the sitemap.
- * Structurally mirrors buildStatusRoutes: `lastModified` uses the whole
- * dataset's max `lastUpdated` for every entry (index + all metros), kept
- * identical to its status-lens sibling rather than computing a per-metro
- * max. Exported separately so it can be unit-tested without Next.js.
+ * The index entry's `lastModified` uses the whole dataset's max
+ * `lastUpdated` (it genuinely reflects the whole set). Each per-metro
+ * entry's `lastModified` is that metro's OWN facilities' max `lastUpdated`,
+ * matching buildStateRoutes/buildOperatorRoutes — membership is determined
+ * by `getFacilitiesByMetro` (lib/data.ts), the SAME helper
+ * app/metros/[metro]/page.tsx uses to render the hub, so the sitemap and
+ * the page can never disagree about which facilities belong to a metro.
+ * (Contrast buildStatusRoutes, which deliberately keeps the whole-dataset
+ * max for every entry: any facility's status change can alter any status
+ * page, so a per-status max would be wrong there — that one must NOT be
+ * changed to match this.) Exported separately so it can be unit-tested
+ * without Next.js.
+ *
+ * The 28 loader calls below are ONE data load, not 28. `loadFacilities`
+ * (lib/data.ts:179) is assigned once at module scope from a factory whose
+ * body returns `reactCache(...)`, so the memoized function itself is stable
+ * and dedupes per request. That the request scope exists here is not an
+ * assumption: this same sitemap already depends on it for `unstable_cache`,
+ * which lib/data.ts documents as requiring the Next.js request-scoped cache
+ * context — if that scope were absent during sitemap generation, facility
+ * caching would already be broken site-wide, and it is not. Checked
+ * 2026-09-08 in response to a review concern; don't re-litigate without
+ * re-reading those two lines.
  */
 export async function buildMetroRoutes(): Promise<MetadataRoute.Sitemap> {
-  const facilities = await getAllFacilities();
+  const [facilities, metroFacilities] = await Promise.all([
+    getAllFacilities(),
+    Promise.all(METROS.map((m) => getFacilitiesByMetro(m.slug))),
+  ]);
   const lastModified = maxLastUpdated(facilities);
   return [
     {
@@ -307,9 +362,9 @@ export async function buildMetroRoutes(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.7,
     },
-    ...METROS.map((m) => ({
+    ...METROS.map((m, i) => ({
       url: `${siteConfig.url}/metros/${m.slug}`,
-      lastModified,
+      lastModified: maxLastUpdated(metroFacilities[i]),
       changeFrequency: "weekly" as const,
       priority: 0.7,
     })),

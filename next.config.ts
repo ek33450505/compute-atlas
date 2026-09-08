@@ -166,6 +166,196 @@ const RETIRED_FACILITY_REDIRECTS = [
   },
 ];
 
+/**
+ * Permanent redirects for operator hub slugs that no longer exist.
+ *
+ * Measured 2026-09-08 via Google Search Console: 34 URLs earned impressions
+ * in the last 90 days but are absent from the current sitemap. 32 of them are
+ * operator hubs (`/operators/[slug]`) returning a hard 404, verified with
+ * curl. Operator slugs are derived from a facility's `operator` string via
+ * `operatorSlug()` (`lib/operator-slug.ts`), so any curation edit to that
+ * string — normalizing a name, dropping a landowner/JV aside, correcting an
+ * end-customer attribution — silently orphans the previously-indexed hub.
+ * Facilities already had a retirement map (`RETIRED_FACILITY_REDIRECTS`
+ * above); operators had none until now.
+ *
+ * Facility counts noted per entry are the live count on the destination hub
+ * as of 2026-09-08, to help a future reader sanity-check drift.
+ */
+const RETIRED_OPERATOR_REDIRECTS = [
+  {
+    source: "/operators/amazon-web-services-via-birchwood-power-partners",
+    destination: "/operators/amazon-web-services", // 45
+    permanent: true,
+  },
+  {
+    source: "/operators/amazon-web-services-with-reb-investment-company-llc-as-landowner",
+    destination: "/operators/amazon-web-services", // 45
+    permanent: true,
+  },
+  {
+    source: "/operators/beale-infrastructure-aws-confirmed-end-customer",
+    destination: "/operators/beale-infrastructure", // 6
+    permanent: true,
+  },
+  {
+    source: "/operators/beale-infrastructure-end-user-unnamed",
+    destination: "/operators/beale-infrastructure", // 6
+    permanent: true,
+  },
+  {
+    source: "/operators/bitdeer-technologies-group",
+    destination: "/operators/bitdeer", // 7
+    permanent: true,
+  },
+  {
+    source: "/operators/bitdeer-via-subsidiary-whitetail-creek-llc",
+    destination: "/operators/bitdeer", // 7
+    permanent: true,
+  },
+  {
+    source: "/operators/cipher-mining",
+    destination: "/operators/cipher-digital", // 9
+    permanent: true,
+  },
+  {
+    source: "/operators/core-scientific-coreweave-is-anchor-customer",
+    destination: "/operators/core-scientific", // 10
+    permanent: true,
+  },
+  {
+    source:
+      "/operators/core-scientific-site-owner-coreweave-dalton-ii-llc-sublessee-operator",
+    destination: "/operators/core-scientific", // 10
+    permanent: true,
+  },
+  {
+    // CoreSite is an American Tower company, but the subject of the hub is
+    // CoreSite (16 facilities) — American Tower itself only has 2 — so
+    // "coresite", not "american-tower", is the correct successor.
+    source: "/operators/coresite-american-tower",
+    destination: "/operators/coresite", // 16
+    permanent: true,
+  },
+  {
+    source: "/operators/crusoe-energy-lancium-clean-campus",
+    destination: "/operators/crusoe", // 4
+    permanent: true,
+  },
+  {
+    source: "/operators/crusoe-with-blue-energy",
+    destination: "/operators/crusoe", // 4
+    permanent: true,
+  },
+  {
+    source: "/operators/cyrusone-in-exclusive-negotiations-with-the-us-army",
+    destination: "/operators/cyrusone", // 22
+    permanent: true,
+  },
+  {
+    source: "/operators/galaxy-digital-holdings",
+    destination: "/operators/galaxy-digital", // 3
+    permanent: true,
+  },
+  {
+    source: "/operators/google-montauk-innovations-llc",
+    destination: "/operators/google", // 51
+    permanent: true,
+  },
+  {
+    source: "/operators/google-with-intersect-power",
+    destination: "/operators/google", // 51
+    permanent: true,
+  },
+  {
+    source: "/operators/meta-greater-kudu-llc",
+    destination: "/operators/meta", // 28
+    permanent: true,
+  },
+  {
+    source: "/operators/metrobloks-lincoln-property-company",
+    destination: "/operators/metrobloks", // 4
+    permanent: true,
+  },
+  {
+    // The successor record, new-day-ports-technology-campus-piketon-oh, has a
+    // `notes` field stating it was "formerly tracked under the
+    // pre-announcement Ohio entity New Day Data Centers LLC"; its operator is
+    // now "SB Energy". sb-energy currently has one facility, so it is
+    // excluded from the sitemap by a separate change, but the route stays
+    // live and crawlable — the redirect target remains valid.
+    source: "/operators/new-day-data-centers-llc-w-doe-softbank-sb-energy",
+    destination: "/operators/sb-energy", // 1
+    permanent: true,
+  },
+  {
+    source: "/operators/ntt",
+    destination: "/operators/ntt-global-data-centers", // 15
+    permanent: true,
+  },
+  {
+    source: "/operators/ntt-global-data-centers-americas",
+    destination: "/operators/ntt-global-data-centers", // 15
+    permanent: true,
+  },
+  {
+    source: "/operators/pacifico-energy-data-center-tenant-unidentified",
+    destination: "/operators/pacifico-energy", // 2
+    permanent: true,
+  },
+  {
+    source: "/operators/powerhouse-data-centers-arep",
+    destination: "/operators/powerhouse-data-centers", // 10
+    permanent: true,
+  },
+  {
+    source:
+      "/operators/powerhouse-data-centers-jv-with-chirisa-technology-parks-and-blue-owl-real-estate",
+    destination: "/operators/powerhouse-data-centers", // 10
+    permanent: true,
+  },
+  {
+    source: "/operators/powerhouse-data-centers-pennsylvania-data-center-partners",
+    destination: "/operators/powerhouse-data-centers", // 10
+    permanent: true,
+  },
+  {
+    source: "/operators/qts",
+    destination: "/operators/qts-data-centers", // 29
+    permanent: true,
+  },
+  {
+    source: "/operators/qts-blackstone",
+    destination: "/operators/qts-data-centers", // 29
+    permanent: true,
+  },
+  {
+    source: "/operators/qts-data-centers-blackstone",
+    destination: "/operators/qts-data-centers", // 29
+    permanent: true,
+  },
+  {
+    source: "/operators/sentinel-data-centers-jgt2-redevelopment",
+    destination: "/operators/sentinel-data-centers", // 3
+    permanent: true,
+  },
+  {
+    source: "/operators/tierpoint-llc",
+    destination: "/operators/tierpoint", // 21
+    permanent: true,
+  },
+  {
+    source: "/operators/vantage",
+    destination: "/operators/vantage-data-centers", // 17
+    permanent: true,
+  },
+  {
+    source: "/operators/vantage-data-centers-for-openai-oracle",
+    destination: "/operators/vantage-data-centers", // 17
+    permanent: true,
+  },
+];
+
 const nextConfig: NextConfig = {
   /**
    * `/methodology` (app/methodology/page.tsx, via lib/methodology.ts) reads
@@ -181,7 +371,7 @@ const nextConfig: NextConfig = {
   },
 
   async redirects() {
-    return RETIRED_FACILITY_REDIRECTS;
+    return [...RETIRED_FACILITY_REDIRECTS, ...RETIRED_OPERATOR_REDIRECTS];
   },
 
   async headers() {

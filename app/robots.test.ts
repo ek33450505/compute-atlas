@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import robots from "@/app/robots";
+import robots, { BLOCKED_AI_CRAWLERS } from "@/app/robots";
 import { siteConfig } from "@/lib/site";
 
 describe("robots", () => {
@@ -26,5 +26,34 @@ describe("robots", () => {
   it("points at the site's sitemap.xml", () => {
     const result = robots();
     expect(result.sitemap).toBe(`${siteConfig.url}/sitemap.xml`);
+  });
+
+  it("does NOT block Google-Extended (regression guard: this dataset wants to be cited in Gemini/AI Overviews)", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    const userAgents = ruleList.map((rule) => rule.userAgent);
+    expect(userAgents).not.toContain("Google-Extended");
+  });
+
+  it("disallows / for every entry in BLOCKED_AI_CRAWLERS, with no allow", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+
+    for (const agent of BLOCKED_AI_CRAWLERS) {
+      const rule = ruleList.find((r) => r.userAgent === agent);
+      expect(rule).toBeDefined();
+      expect(rule?.disallow).toBe("/");
+      expect(rule?.allow).toBeUndefined();
+    }
+  });
+
+  it("keeps the '*' group's allow/disallow behavior intact alongside the AI-crawler rules", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    const wildcard = ruleList[0];
+
+    expect(wildcard.userAgent).toBe("*");
+    expect(wildcard.allow).toBe("/");
+    expect(wildcard.disallow).toEqual(["/admin/", "/api/"]);
   });
 });
