@@ -1,7 +1,11 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import facilities from "@/data/facilities.json";
 import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
+import { CSP_REPORT_PATH } from "@/lib/csp-report";
 import nextConfig from "./next.config";
 
 /**
@@ -51,7 +55,8 @@ describe("retired-facility redirects", () => {
 });
 
 /**
- * Guards the report-only CSP in `next.config.ts`.
+ * Guards the enforcing CSP in `next.config.ts` (issue #236, flipped
+ * 2026-09-07).
  *
  * Deliberately does NOT snapshot the full header value — that would make
  * the test fail on every legitimate new map-tile host added later. Instead
@@ -59,17 +64,26 @@ describe("retired-facility redirects", () => {
  * defaults are locked down, plugins are disabled, and the policy names real
  * evidenced origins rather than a wildcard.
  */
-describe("Content-Security-Policy-Report-Only header", () => {
-  const siteWideCsp = async () => {
+describe("Content-Security-Policy header", () => {
+  const headerOn = async (source: string, key: string) => {
     const all = (await nextConfig.headers?.()) ?? [];
-    const siteWide = all.find((rule) => rule.source === "/:path*");
-    return siteWide?.headers.find(
-      (h) => h.key === "Content-Security-Policy-Report-Only"
-    );
+    return all.find((rule) => rule.source === source)?.headers.find((h) => h.key === key);
   };
+
+  const siteWideCsp = () => headerOn("/:path*", "Content-Security-Policy");
 
   it("is present on the site-wide header rule", async () => {
     expect(await siteWideCsp()).toBeDefined();
+  });
+
+  /**
+   * The whole point of #236 was to stop *reporting* violations and start
+   * blocking them. A regression that reintroduced the `-Report-Only` suffix
+   * would leave every other assertion in this file passing while the policy
+   * did nothing at all — the failure is invisible unless named explicitly.
+   */
+  it("enforces rather than only reporting", async () => {
+    expect(await headerOn("/:path*", "Content-Security-Policy-Report-Only")).toBeUndefined();
   });
 
   it("locks down defaults and disables plugins", async () => {
@@ -82,6 +96,79 @@ describe("Content-Security-Policy-Report-Only header", () => {
     const csp = await siteWideCsp();
     expect(csp?.value).toContain("nominatim.openstreetmap.org");
     expect(csp?.value).not.toContain("*");
+  });
+
+  /**
+   * `frame-src` must stay stated OUTRIGHT. Its fallback chain is `child-src`
+   * first and `default-src` only after that — so with `child-src blob:` in
+   * the policy and no `frame-src` entry, framing silently resolved to
+   * `blob:` alone: same-origin iframes blocked, `blob:` iframes permitted.
+   * That is the inverse of what `default-src 'self'` reads as, and under the
+   * previous report-only header it never blocked anything, so nothing would
+   * have surfaced it. Confirmed in a browser against a real enforcing build,
+   * which reported `frame-src -> /table` for an appended same-origin iframe.
+   *
+   * Deleting this directive is therefore not a simplification — it is a
+   * behaviour change that this assertion exists to stop.
+   */
+  it("states frame-src explicitly rather than inheriting the child-src fallback", async () => {
+    const csp = await siteWideCsp();
+    expect(csp?.value).toContain("frame-src 'none'");
+    // The trap only exists because `child-src` is present; if that is ever
+    // dropped, this test's rationale changes and should be re-read.
+    expect(csp?.value).toContain("child-src blob:");
+  });
+
+  /**
+   * `report-uri` pointing anywhere but the route that exists produces an
+   * endpoint nothing ever posts to — which presents exactly like a site with
+   * no violations. Asserting against the shared constant (which the route
+   * directory is named for) is what keeps the producer and the receiver from
+   * drifting apart.
+   */
+  it("routes violation reports to the endpoint that actually exists", async () => {
+    const csp = await siteWideCsp();
+    expect(csp?.value).toContain(`report-uri ${CSP_REPORT_PATH}`);
+    expect(existsSync(join(process.cwd(), "app", CSP_REPORT_PATH, "route.ts"))).toBe(true);
+  });
+
+  /**
+   * Regression guard for the one genuine security regression the flip could
+   * have introduced. Per spec, a browser honouring an enforcing
+   * `frame-ancestors` ignores `X-Frame-Options` entirely — so a site-wide
+   * `frame-ancestors 'self'` with no admin override would silently demote
+   * `/admin/*` from its `X-Frame-Options: DENY` to same-origin framing.
+   * Under the previous report-only header this directive was inert, so the
+   * downgrade could only ever appear at the moment of the flip.
+   */
+  describe("admin framing", () => {
+    it("keeps the site-wide policy at same-origin framing", async () => {
+      expect((await siteWideCsp())?.value).toContain("frame-ancestors 'self'");
+    });
+
+    it("blocks framing outright on /admin, not merely same-origin", async () => {
+      const adminCsp = await headerOn("/admin/:path*", "Content-Security-Policy");
+      expect(adminCsp, "/admin must override the site-wide frame-ancestors").toBeDefined();
+      expect(adminCsp?.value).toContain("frame-ancestors 'none'");
+      expect(adminCsp?.value).not.toContain("frame-ancestors 'self'");
+    });
+
+    it("still sends X-Frame-Options: DENY for pre-CSP-Level-2 browsers", async () => {
+      expect((await headerOn("/admin/:path*", "X-Frame-Options"))?.value).toBe("DENY");
+    });
+
+    /**
+     * Header rules replace by key rather than merging directives, so the
+     * admin value must be a COMPLETE policy. Overriding with the one
+     * differing directive would drop `default-src`, `object-src` and the
+     * rest on precisely the site's most sensitive routes.
+     */
+    it("restates the full policy on /admin rather than one directive", async () => {
+      const adminCsp = await headerOn("/admin/:path*", "Content-Security-Policy");
+      expect(adminCsp?.value).toContain("default-src 'self'");
+      expect(adminCsp?.value).toContain("object-src 'none'");
+      expect(adminCsp?.value).toContain(`report-uri ${CSP_REPORT_PATH}`);
+    });
   });
 });
 

@@ -157,6 +157,44 @@ test("harness sanity: a deliberately disallowed resource IS detected", async ({ 
   );
 });
 
+/**
+ * Second self-check, added when the policy went ENFORCING (issue #236): the
+ * `report-uri` channel actually delivers.
+ *
+ * This is the same class of gap the sanity test above closes. A report
+ * endpoint that no browser ever posts to produces zero reports — which is
+ * indistinguishable from a site with zero violations, and would leave the
+ * one thing that makes enforcement observable quietly broken. Nothing in the
+ * unit tests can catch that: they call the route handler directly and so
+ * prove only that it parses what it is given, never that a browser aims a
+ * real report at it.
+ *
+ * Listening on the CONTEXT rather than the page: a violation report is
+ * emitted by the browser's own reporting machinery, not by page script, so
+ * it is not reliably attributed to the originating frame.
+ */
+test("report-uri delivers a real violation to the report endpoint", async ({ page }) => {
+  const reportPosted = page
+    .context()
+    .waitForEvent("request", {
+      predicate: (r) => r.method() === "POST" && r.url().includes("/api/csp-report"),
+      timeout: 15_000,
+    });
+
+  await page.goto("/");
+
+  // Same canary as the sanity test — img-src has no allowance for example.com.
+  await page.evaluate(() => {
+    const img = document.createElement("img");
+    img.src = "https://example.com/csp-report-delivery-canary.png";
+    document.body.appendChild(img);
+  });
+
+  const request = await reportPosted;
+  const body = request.postData() ?? "";
+  expect(body, "the delivered report should name the blocked canary").toContain("example.com");
+});
+
 // ---------------------------------------------------------------------------
 // Real routes — the four families named in next.config.ts's flip criterion.
 // ---------------------------------------------------------------------------
