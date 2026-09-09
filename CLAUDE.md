@@ -128,6 +128,14 @@ reuses existing nearestWater/nearestTransmission values, which is precisely what
 lack. Diff-read the result — it should be additive (fills and new entries), and any
 `value → null` is data loss, not a refresh.
 
+Forgetting it is now caught rather than discovered later: `lib/siting-context.test.ts` asserts
+every id in `data/facilities.json` has an entry in `data/siting-context.json`, so a wave that
+skips `build:mapdata` turns the required `typecheck · lint · test` check red instead of shipping
+silently. This covers the **manual** path specifically — `neon-sync.yml`'s additive guard only
+ever ran inside the automated workflow, so a maintainer syncing by hand bypassed it entirely.
+The reverse direction is deliberately NOT asserted: retiring a facility needs a raw Neon delete
+and legitimately leaves a stale siting entry behind.
+
 Why it matters: the site reads Neon live, so data never needed a build. Editing the
 file and shipping it through git made every correction a Vercel deploy, and left
 drift (`check:drift`, the `neon-sync` workflow) to be detected and repaired
