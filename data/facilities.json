@@ -555,6 +555,59 @@
     }
   },
   {
+    "id": "active-infrastructure-spring-valley-tech-park-loudoun-va",
+    "name": "Spring Valley Technology Park",
+    "operator": "Active Infrastructure",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.008,
+      "lon": -77.523,
+      "city": "Ashburn",
+      "county": "Loudoun",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-23",
+        "note": "The Loudoun County Planning Commission voted unanimously to recommend denial of application LEGI-2024-0074 on July 23, 2026; the application still awaits a Board of Supervisors decision.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.loudounnow.com/news/active-infrastructure-eyes-3m-square-feet-of-data-centers-along-evergreen-mills/article_6cfbeb62-2e1f-491a-8fe0-8b23736a9c38.html",
+        "label": "Active Infrastructure Eyes 3M Square Feet of Data Centers Along Evergreen Mills",
+        "publisher": "Loudoun Now",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://loudounwildlife.org/2026/01/spring-valley-technology-park/",
+        "label": "Spring Valley Technology Park (LEGI-2024-0074)",
+        "publisher": "Loudoun Wildlife Conservancy",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.pecva.org/region/loudoun/data-centers-in-loudoun-a-primer/",
+        "label": "Data Centers in Loudoun: A Primer",
+        "publisher": "The Piedmont Environmental Council",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Application LEGI-2024-0074. Ten data center buildings up to 100 feet tall, three electrical substations and a backup power storage facility on the east side of Evergreen Mills Road south of Watson Road, in Loudoun's Transition Policy Area near Goose Creek. Rezoning sought from Transitional Residential-10 to Industrial Park. Sources give different footprints — Loudoun Now reports 325 acres and 3.25 million sq ft; Loudoun Wildlife Conservancy reports 362 acres and up to 3.5 million sq ft — so no landAcres value is recorded here rather than picking between them. The southern half comprises 13 parcels of the Spring Valley subdivision with existing single-family homes; one parcel holds an 1880s house and a family cemetery.",
+    "energy": {
+      "notes": "Loudoun Wildlife Conservancy describes proposed natural gas-powered hydrogen fuel cells with on-site battery storage and three substations; Loudoun Now reports Tier 4 generators throughout. No generation capacity figure has been published."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "adp-ladysmith-data-hub-caroline-va",
     "name": "ADP Ladysmith Data Hub",
     "operator": "ADP Ladysmith Data Hub, LLC",
@@ -949,10 +1002,18 @@
         "publisher": "WOSU Public Media",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://athensindependent.com/data-centers-across-appalachian-ohio/",
+        "label": "Appalachian Ohio a target for data centers",
+        "publisher": "Athens County Independent",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "Part of a multi-tenant redevelopment of the shuttered Pixelle paper mill (closed 2025) alongside Amphibian Aerospace Industries, U.S. Medical Glove Company, and U.S. Box Company. The widely-reported $1.5B figure covers the FULL multi-tenant campus (aerospace + medical device + box company + data center), not Aligned's data-center portion alone -- entity/campus-wide, not site-specific; omitted as investmentUsd for that reason. No street address specific to the data-center building has been reported; location uses the mill's mailing address as an approximate anchor.",
+    "investmentUsd": 1500000000,
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -969,6 +1030,9 @@
       "county": "Coshocton",
       "state": "OH",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 340
     },
     "poweredBy": "AEP Ohio (PJM grid)",
     "announcedDate": "2025",
@@ -1035,9 +1099,16 @@
         "publisher": "eGeneration Foundation",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://athensindependent.com/data-centers-across-appalachian-ohio/",
+        "label": "Appalachian Ohio a target for data centers",
+        "publisher": "Athens County Independent",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
+    "lastUpdated": "2026-09-09",
     "notes": "Brownfield redevelopment of former AEP Conesville coal plant (2 GW, operational 62 years, closed May 2020). Frontier Group of Companies acquired the plant in 2020 and built the Conesville Industrial Park across ~2,500 acres; Aligned purchased a 197-acre parcel. Aligned describes the project as 'AI/HPC' and 'Gigascale' in its press materials, and this is its third Ohio campus (others: Perkins Township/Sandusky, 96 MW total; Pataskala). Multi-building campus — renderings show up to four buildings; second, third, and fourth buildings referenced at groundbreaking. Capacity MW not publicly disclosed. Investment described as 'multi-billion dollar' — no firm figure confirmed; field omitted per policy. Construction jobs described as 'thousands'; permanent roles as 'hundreds of high-quality long-term positions' — projections only, numeric fields omitted. Aligned is exploring on-site nuclear power (SMRs) for this campus and nearby Zanesville/Cambridge sites; no agreement confirmed. Coordinates approximate (village-level). Site infrastructure funding note: the Coshocton Port Authority received a $58.7M grant (Ohio Dept of Development All Ohio Future Fund, announced July 21, 2025) for utility upgrades, water/wastewater extensions, and roadway improvements across the broader industrial park — this benefits Aligned indirectly but is not a direct subsidy to Aligned and is therefore not listed under subsidies.",
     "energy": {
       "source": "grid",
@@ -1049,6 +1120,11 @@
       "notes": "No cooling type or water consumption data disclosed. Former coal plant had access to Muskingum River cooling water infrastructure; Aligned has not confirmed whether this will be utilized."
     },
     "landAcres": 197,
+    "jobs": {
+      "construction": 1800,
+      "permanent": 149,
+      "sourceIndex": 7
+    },
     "community": {
       "status": "supported",
       "notes": "Strong positive reception at October 2025 groundbreaking. Coshocton County Commissioners and Port Authority executive director spoke favorably. Site revitalization fills a significant local tax and employment gap left by AEP plant closure (plant formerly provided ~10% of River View Local Schools' annual budget and employed ~600 workers). Broader Ohio policy context: a proposed constitutional amendment that would ban large data centers was under debate at the time of announcement; some community and policy advocates cited this project as evidence of the economic value data centers bring to rural counties.",
@@ -5087,6 +5163,47 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "ardent-technologies-wilmington-clinton-oh",
+    "name": "Ardent Technologies Wilmington Data Center",
+    "operator": "Ardent Technologies",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.4453393,
+      "lon": -83.8285375,
+      "city": "Wilmington",
+      "county": "Clinton",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-19",
+        "note": "Wilmington City Council voted 5-2 to rezone 500 acres for a second data center, separate from the AWS site.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.whio.com/news/local/another-500-acres-land-zoned-second-data-center-wilmington/KXXP722G6ZD4LMQV2Z6U4UJUQE/",
+        "label": "Another 500 acres of land zoned for second data center in Wilmington",
+        "publisher": "WHIO",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Second Wilmington data center rezoning, bringing the city's total data-center-zoned land to roughly 1,000 acres. Capacity, investment and job figures were not disclosed in the reporting. Distinct from the AWS campus on the city's south side.",
+    "landAcres": 500,
+    "community": {
+      "status": "contested",
+      "notes": "Wilmington City Council rezoned the 500 acres on a 5-2 vote on February 19, 2026; one council member urged slowing the process and opponents said they were organizing a ballot-referendum legal challenge.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "arizona-land-consulting-camelback-creek-tonopah-az",
     "name": "Camelback Creek",
     "operator": "Arizona Land Consulting",
@@ -7444,10 +7561,35 @@
         "publisher": "Franklin County Auditor GIS / Assessor",
         "retrievedAt": "2026-07-19",
         "kind": "other"
+      },
+      {
+        "url": "https://hilliardohio.gov/fuel-cells/",
+        "label": "Fuel Cells — City of Hilliard",
+        "publisher": "City of Hilliard, Ohio",
+        "retrievedAt": "2026-09-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://stopohiodatacenters.org/franklin-county",
+        "label": "Hilliard, Ohio: Amazon Cosgray Data Center & Bloom Fuel Cells | Franklin County",
+        "publisher": "Ohio Data Centers (stopohiodatacenters.org)",
+        "retrievedAt": "2026-09-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-19",
+    "lastUpdated": "2026-09-09",
     "notes": "Separate AWS Hilliard campus on Cosgray Road, in active litigation: the City of Hilliard appealed an Ohio EPA air permit for a 228-unit Bloom Energy fuel-cell array (73MW, the largest fuel-cell array in North America), and AWS is separately seeking a permit for 158 diesel backup generators. Approved by the Ohio Power Siting Board under Ohio's HB15 behind-the-meter law, overriding local zoning. Distinct from the Scioto Darby campus. Coordinates are now parcel-exact via the Franklin County Auditor (parcel 050-011455, 4580-4640 Cosgray Rd, Amazon Data Services Inc, data-center use class, ~95 ac).",
+    "energy": {
+      "source": "grid",
+      "utility": "AEP Ohio (Ohio Power Company)",
+      "onSiteGenerationMw": 72.9,
+      "notes": "228 Bloom Energy solid-oxide fuel cell units totalling 72.9 MW, to be built and operated behind the meter by Ohio Power Company (an AEP Ohio subsidiary) on about 6.4 acres at 4186 Scioto Darby Creek Road, serving Amazon Data Services only and not exporting to the grid. Ohio Power Siting Board approval 2025-09-22; construction began January 2026; in service expected September 2027."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Hilliard has asked AEP and Bloom Energy to install carbon-capture technology, citing an air permit that allows emissions of up to 1.45 million pounds of CO2 per day, and the air permit is in administrative-court litigation. The array sits adjacent to an elementary school and a neighborhood park.",
+      "sourceIndex": 4
+    },
     "facilityType": "data_center"
   },
   {
@@ -9205,9 +9347,16 @@
         "publisher": "Food & Water Watch",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wvxu.org/local-news/2026-08-25/adams-county-ohio-utility-costs-data-center-amazon",
+        "label": "Adams County residents fear environmental and utility costs of possible data center",
+        "publisher": "WVXU",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "No formal development proposal has been filed with Adams County per county officials as of Aug 2026, but a U.S. Army Corps of Engineers Nationwide Permit 39 was issued 2026-02-18 covering site work, and the county's own AWS project page states initial earthwork is expected in 2026 (general contractor not yet determined).",
     "energy": {
       "source": "grid",
@@ -9288,6 +9437,47 @@
     "community": {
       "status": "mixed",
       "notes": "Board of Supervisors approved the rezoning on a 5-2 vote (Oct 2023)."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "aws-trenton-madison-st-clair-butler-oh",
+    "name": "AWS Trenton / Madison–St. Clair Township Campus",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.4808905,
+      "lon": -84.4577222,
+      "city": "Trenton",
+      "county": "Butler",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-25",
+        "note": "Both townships objected to the annexation petition, leaving next steps to Butler County commissioners.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wcpo.com/news/local-news/in-your-community/butler-county/townships-move-to-capture-future-data-center-tax-revenue-as-trenton-pursues-annexation",
+        "label": "Townships move to capture future data center tax revenue as Trenton pursues annexation",
+        "publisher": "WCPO",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Roughly 600 acres in Madison and St. Clair townships straddling Wayne Madison and Hawkins roads, reported as a second AWS campus of about 18 buildings with an estimated project value near $690 million. The reporting also references a separate 141-acre site already inside Trenton city limits; a 141-acre Prologis campus (Project Mila) is tracked separately at Trenton and no source read here links the two, so no relationship is asserted.",
+    "landAcres": 600,
+    "community": {
+      "status": "contested",
+      "notes": "Madison Township and St. Clair Township trustees rejected Trenton's Type 3 expedited annexation petition in late August 2026, citing environmental and road-maintenance concerns, amid a dispute over competing TIF terms (townships: 10-year/75%; Trenton: 30-year/100%).",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -9630,6 +9820,62 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "aws-wilmington-clinton-oh",
+    "name": "AWS Wilmington Data Center Campus",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.4453393,
+      "lon": -83.8285375,
+      "city": "Wilmington",
+      "county": "Clinton",
+      "street": "1488 S US 68",
+      "postalCode": "45177",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-07",
+        "note": "Wilmington City Council approved annexation and Light Industrial zoning for the site.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.chooseclintoncountyoh.org/news/data-center-faqs",
+        "label": "Data Center FAQs — Clinton County",
+        "publisher": "Choose Clinton County",
+        "retrievedAt": "2026-09-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.whio.com/news/local/another-500-acres-land-zoned-second-data-center-wilmington/KXXP722G6ZD4LMQV2Z6U4UJUQE/",
+        "label": "Another 500 acres of land zoned for second data center in Wilmington",
+        "publisher": "WHIO",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Nine data center buildings totaling about 1.92 million sq ft on a 471-acre parcel on the south side of Wilmington. AWS is funding $25+ million in shared public infrastructure (sewer trunk lines, water main, a 1 million-gallon water tower, and road work on U.S. 68 and SR 730). A separate, later rezoning added roughly 500 more acres in the city for a second, different developer's project.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Project materials describe a direct evaporative cooling system using outside air roughly 97% of the year, with an estimated 6 million gallons of water per year."
+    },
+    "investmentUsd": 4000000000,
+    "landAcres": 471,
+    "jobs": {
+      "construction": 200,
+      "permanent": 100,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "barrio-energy-tyler-smith-county-tx",
@@ -10907,9 +11153,16 @@
         "publisher": "U.S. Securities and Exchange Commission",
         "retrievedAt": "2026-07-08",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/03/16/3256231/0/en/Bitdeer-Announces-February-2026-Production-and-Operations-Update.html",
+        "label": "Bitdeer Announces February 2026 Production and Operations Update",
+        "publisher": "Bitdeer Technologies Group via GlobeNewswire",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-08",
+    "lastUpdated": "2026-09-09",
     "notes": "Clarington, Monroe County; 570 MW via an AEP Ohio LOA, targeted available by end of Q3 2026. Bitdeer transitioning from bitcoin mining toward HPC/AI. Coordinates are the Clarington area centroid. No Clarington-specific capex, water, or jobs figures are disclosed; Bitdeer's 2026 mining capex guidance is company-wide and excludes AI/HPC. Some cooling/jobs figures in secondary coverage describe Bitdeer's separate Shalersville (Portage County) site, not Clarington.",
     "energy": {
       "source": "grid",
@@ -10977,7 +11230,7 @@
     "id": "bitdeer-massillon-stark-county-oh",
     "name": "Bitdeer Massillon Facility",
     "operator": "Bitdeer",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 40.77069,
@@ -10988,7 +11241,8 @@
       "precision": "exact"
     },
     "capacityMw": {
-      "planned": 221
+      "planned": 221,
+      "operational": 100
     },
     "statusHistory": [
       {
@@ -11002,6 +11256,12 @@
         "date": "2025-11",
         "note": "First miners begin operating; a fire the same month damages 2 of the ~24-26 planned buildings (~26MW), with re-energization of those buildings targeted for end of September 2026. Remainder phased toward full 221MW through 2026.",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-09-09",
+        "note": "Bitdeer's February 2026 production and operations update reports 100 MW currently online at the Massillon, Ohio site, with a further ~26 MW in two fire-damaged buildings to be rebuilt and energized by the end of September 2026 and the remaining 95 MW energizing in phases. The tracked status was under_construction as of 2025-11.",
+        "sourceIndex": 6
       }
     ],
     "sources": [
@@ -11039,9 +11299,23 @@
         "publisher": "Stark County GIS / Assessor",
         "retrievedAt": "2026-07-18",
         "kind": "other"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/03/16/3256231/0/en/Bitdeer-Announces-February-2026-Production-and-Operations-Update.html",
+        "label": "Bitdeer Announces February 2026 Production and Operations Update",
+        "publisher": "Bitdeer Technologies Group via GlobeNewswire",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/03/16/3256231/0/en/Bitdeer-Announces-February-2026-Production-and-Operations-Update.html",
+        "label": "Bitdeer Announces February 2026 Production and Operations Update",
+        "publisher": "Bitdeer Technologies Group via GlobeNewswire",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-18",
+    "lastUpdated": "2026-09-09",
     "notes": "1115 Industrial Ave SW, Massillon, Stark County (an alternate address, 2527-2799 9th St SW, appears in one aggregator listing and may reflect the same multi-street parcel — not independently reconciled). 24-26 buildings (~40x110 ft each), 21,000+ ASIC mining machines, ~$22/hr starting wage, ~$82,000 average salary, no property tax abatement received. Explicitly distinct from Bitdeer's Whitetail Creek facility (1047 Belmont Ave, Niles/Weathersfield Township, Trumbull County — different city, county, and address, ~40 miles away) and from Bitdeer Clarington — Bitdeer's own coverage treats Massillon, Niles, and Clarington as three separate Ohio sites. Pure Bitcoin/ASIC mining with no AI/HPC framing in any source found (unlike Clarington and the proposed Shalersville site) — no aiClassification set. Coordinates are an approximate geocode; exact address should be reconciled against Stark County GIS/auditor parcel records in a future pass.",
     "investmentUsd": 100000000,
     "landAcres": 31,
@@ -14420,10 +14694,20 @@
         "publisher": "News and Sentinel",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://athensindependent.com/data-centers-across-appalachian-ohio/",
+        "label": "Appalachian Ohio a target for data centers",
+        "publisher": "Athens County Independent",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-09-09",
     "notes": "HashWorks Powered Land Waterford LLC has assembled just over 500 acres in Waterford Township and filed for a 25 MGD Muskingum River surface-water withdrawal; local reporting ties the leasing LLCs to Sabre 56 and Cipher Digital for a potential 200MW crypto-mining/HPC/AI facility, but Washington County commissioners stated no deal has been finalized and Cipher's ownership stake is undocumented -- confidence kept at rumored. Distinct site from the Center Township/Morgan County 'Ulysses' project.",
+    "water": {
+      "notes": "HashWorks Powered Land Waterford LLC has registered a water withdrawal facility with a capacity of 25 million gallons per day. This is a registered withdrawal capacity, not measured or projected facility water use, and no cooling method has been disclosed."
+    },
     "landAcres": 500,
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
@@ -20983,6 +21267,54 @@
     "facilityType": "data_center"
   },
   {
+    "id": "crusoe-project-flash-franklin-va",
+    "name": "Project Flash (Summit View Business Park)",
+    "operator": "Crusoe",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.9979,
+      "lon": -79.8922,
+      "city": "Rocky Mount",
+      "county": "Franklin",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07-16",
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-08-16",
+        "note": "Boone District Supervisor Mike Meredith announced the county had received verification that the project would not move forward. No agreements were ever reached and no votes were taken on data center development in Franklin County.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://web.archive.org/web/20260819034221/https://www.datacenterdynamics.com/en/news/crusoe-linked-to-potential-data-center-project-in-franklin-county-virginia/",
+        "label": "Crusoe linked to potential data center project in Franklin County, Virginia",
+        "publisher": "Data Center Dynamics (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.smithmountaineagle.com/news/project-flash-initiative-shut-down-by-franklin-county-board-of-supervisors/article_27ab1925-77b5-428e-9a12-13ca0d2c3918.html",
+        "label": "\"Project Flash\" initiative shut down by Franklin County Board of Supervisors",
+        "publisher": "Smith Mountain Eagle",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Project surfaced via Freedom of Information Act requests to Franklin County; the county had been in discussions with Crusoe since November 2025. County-owned Summit View Business Park totals 540 acres along US 220 and reportedly has grid and natural gas infrastructure; roughly 150 acres of it were under discussion. DCD reported the project 'may total 50-100MW' — a range, not a settled figure, so no capacity value is recorded here.",
+    "community": {
+      "status": "opposed",
+      "notes": "More than 100 residents gathered at the Scruggs Volunteer Fire Department over water, electricity and quality-of-life impacts; residents learned of the project only through FOIA requests and demanded answers from the county.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "crusoe-walden-co",
     "name": "Crusoe Energy Digital Flare Mitigation — Oxbow Well Pad",
     "operator": "NYDIG DFM",
@@ -23802,6 +24134,54 @@
     }
   },
   {
+    "id": "db-stu-mount-orab-brown-oh",
+    "name": "Mount Orab Mega-Site Data Center Campus",
+    "operator": "DB Stu LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.0275659,
+      "lon": -83.919652,
+      "city": "Mount Orab",
+      "county": "Brown",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-12",
+        "note": "Village council passed an emergency zoning rewrite and a Community Reinvestment Area resolution accommodating the mega-site.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.browncountypress.com/news/19046/mt-orab-council-member-takes-steps-to-stop-possible-data-center-construction",
+        "label": "Mt. Orab council member takes steps to stop possible data center construction",
+        "publisher": "Brown County Press",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://stopohiodatacenters.org/brown-county",
+        "label": "Mt. Orab, Ohio: DB Stu LLC Mega-Site | Brown County",
+        "publisher": "Ohio Data Centers (stopohiodatacenters.org)",
+        "retrievedAt": "2026-09-09",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "More than 1,000 contiguous acres at the southeast corner of Mount Orab village were sold to DB Stu LLC, a Delaware LLC whose Ohio tax-mailing address runs through Vorys, Sater, Seymour and Pease in Columbus. Capacity, investment and the end user remain undisclosed under NDAs; reported capacity figures circulating publicly are not confirmed by any filing read here, so none is recorded.",
+    "landAcres": 1000,
+    "community": {
+      "status": "contested",
+      "notes": "The mayor and village council members signed nondisclosure agreements before residents learned of the project; council member Eric Lang rescinded his NDA and on February 3, 2026 introduced ordinances for 180-day data center and small-modular-reactor permit moratoria plus a permanent ban on commercial nuclear facilities.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "dc-blox-atlanta-west-ga",
     "name": "DC BLOX Atlanta West (ATL1)",
     "operator": "DC BLOX",
@@ -24866,6 +25246,50 @@
       "utility": "Georgia Power"
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-aurora-ai-factory-manassas-va",
+    "name": "Aurora AI Factory",
+    "operator": "Digital Realty",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.7509,
+      "lon": -77.4753,
+      "city": "Manassas",
+      "county": "Prince William",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 96
+    },
+    "announcedDate": "2025-10-28",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-10-30",
+        "note": "DCD reported the 96MW Aurora data center as under construction, being built by Digital Realty and slated for operations in the first half of 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://web.archive.org/web/20260215011608/https://www.datacenterdynamics.com/en/news/nvidia-to-deploy-emerald-ais-orchestration-software-at-96mw-aurora-data-center-in-manassas-virginia/",
+        "label": "Nvidia to deploy Emerald AI's orchestration software at 96MW Aurora data center in Manassas, Virginia",
+        "publisher": "Data Center Dynamics (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Nvidia's 'Aurora AI factory', built by Digital Realty on an existing Digital Realty site near Nokesville Road and Prince William Parkway. Billed as the first facility built to a new industry certification for flexible power, developed by Nvidia with Emerald AI, EPRI and grid operator PJM, and deploying Emerald AI's Emerald Conductor software to shift AI workloads in response to grid conditions. Operator is recorded as Digital Realty (owner/builder); Nvidia is the named tenant. Status is held at under_construction because no source consulted confirms it has entered service, only that operations were 'slated for' the first half of 2026.",
+    "energy": {
+      "source": "grid",
+      "notes": "Designed as a 'power-flexible' grid-connected facility rather than one relying on on-site generation; Emerald AI advisor Tyler Norris framed this explicitly as an alternative to on-site generation or storage."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "digital-realty-aus11-tx",
@@ -26949,9 +27373,16 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-08-27",
         "kind": "other"
+      },
+      {
+        "url": "https://www.vpm.org/news/2025-11-25/dominion-energy-virginia-scc-electric-bill-natural-gas-plant-cerc",
+        "label": "State regulators partially OK Dominion Energy bill increases",
+        "publisher": "VPM News",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "$1.47B Dominion 'reliability center' driven by data-center load growth; sited on the retired Chesterfield Power Station footprint south of Richmond.",
     "energy": {
       "source": "on_site_gas",
@@ -27002,16 +27433,88 @@
         "publisher": "VPM News",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://www.vpm.org/news/2026-05-11/dominion-energy-gas-plant-cumberland-energy-center-scc-cerc-hamlet",
+        "label": "Dominion Energy plans for state's biggest gas plant in Cumberland",
+        "publisher": "VPM News",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "Planned on roughly 900 acres in northern Cumberland County between the James River and Duncan Store Road. Would be the largest gas plant in Virginia at 3 GW. Distinct from the already-tracked Chesterfield Energy Reliability Center. Coordinates are an approximate geocode of northern Cumberland County along the James River, not a surveyed site point.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Proposed 3,000MW combined-cycle plant designed to run continuously rather than as a peaker — the largest natural gas generator in Virginia if built, though below the Bath County Pumped Storage Station's maximum output. Sited in northern Cumberland County on about 900 acres between the James River and Duncan Store Road. As of May 2026 Dominion had not yet filed a conditional use permit application and the project remained subject to local and state review and public hearings."
+    },
     "landAcres": 900,
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
       "notes": "Combined-cycle design intended to operate around the clock rather than as a peaker plant. Announced amid Dominion's projected data center load growth."
     }
+  },
+  {
+    "id": "dp-facilities-mineral-gap-wise-va",
+    "name": "Mineral Gap Data Center",
+    "operator": "DP Facilities",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.987,
+      "lon": -82.53,
+      "city": "Wise",
+      "county": "Wise",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2015",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2018-05-15",
+        "note": "DP Facilities' release describes the 65,000 sq ft Mineral Gap facility as operating and Uptime Institute Tier III certified — the first designed and constructed Tier III data center in Virginia. Wise County Economic Development records it as established in 2017 and still operating.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.dpfacilities.com/in-the-news/65-million-minderal-gap-data-center-to-be-built/",
+        "label": "$65 Million 'Mineral Gap' Data Center to be Built in Wise County",
+        "publisher": "DP Facilities",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.dpfacilities.com/news-releases/virginias-first-designed-and-constructed-tier-iii-data-center-expanding-into-d-c-metro-area/",
+        "label": "Virginia's First Designed and Constructed Tier III Data Center Expanding Into D.C. Metro Area",
+        "publisher": "DP Facilities",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://elevatewisecounty.com/top-industries/data-centers/",
+        "label": "Data Centers — Wise County Economic Development",
+        "publisher": "Wise County Economic Development",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "65,000 sq ft high-security colocation facility on 22 acres of the Lonesome Pine Regional Business & Technology Park, serving federal and state government agencies and commercial clients. Physical security includes K-rated, US Department of State certified anti-ram fencing, wedge barriers, a perimeter blast berm and 24/7 armed security; the facility holds HITRUST certification. Wise County reports it employs over 20 people and is the county's second-highest source of improved real estate tax revenue. In 2023 it installed what the county describes as Virginia's first commercial-scale solar field on previously coal-mined land, a 3.6MW array.",
+    "energy": {
+      "source": "mixed",
+      "onSiteGenerationMw": 3.6,
+      "notes": "Wise County Economic Development reports a 3.6MW solar array on former coal-mined land supplying the site, alongside grid supply; the county calls it Virginia's first commercial-scale solar field on reclaimed mine land."
+    },
+    "investmentUsd": 65000000,
+    "landAcres": 22,
+    "jobs": {
+      "permanent": 40,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "dpo-wisconsin-rapids-hpc-wi",
@@ -28726,9 +29229,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-26",
         "kind": "other"
+      },
+      {
+        "url": "https://edgecore.com/new-louisa-county-virginia-data-center-campus/",
+        "label": "EdgeCore Digital Infrastructure Announces Plans to Invest $17B+ in Louisa County, VA through the Development of 1.1+ Gigawatt Data Center Campus",
+        "publisher": "EdgeCore Digital Infrastructure",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-09",
     "notes": "697-acre / 3.9M sq ft high-density campus in Shannon Hill Regional Business Park, Louisa County, less than 1 mile from I-64 Exit 148 (Shannon Hill). Coordinates are an approximate geocode of the Shannon Hill interchange, not a parcel-confirmed point.",
     "energy": {
       "source": "grid",
@@ -29424,6 +29934,36 @@
       ],
       "notes": "First phase of the Enbridge-Meta Cowboy Project. Meta has contracted 100% of the facility's output under a long-term power purchase agreement. Enbridge's own project page describes the wider Cowboy Solar development in two phases (400 MW solar with 200 MW/1,600 MWh storage, and 365 MW solar with 133 MW storage); the 365 MW recorded here is the Meta-contracted phase as stated in the May 2026 announcement."
     }
+  },
+  {
+    "id": "encore-technologies-blu1-blue-ash-oh",
+    "name": "Encore Technologies BLU1 (Blue Ash)",
+    "operator": "Encore Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.277612,
+      "lon": -84.36949,
+      "city": "Blue Ash",
+      "county": "Hamilton",
+      "street": "11515 Grooms Rd",
+      "postalCode": "45242",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=OH&limit=200",
+        "label": "PeeringDB facility registry — Ohio (API query)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-09",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Greater Cincinnati colocation facility registered in PeeringDB with building-level coordinates.",
+    "facilityType": "data_center"
   },
   {
     "id": "enerfore-pleasant-valley-tioga-nd",
@@ -40946,6 +41486,53 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "harner-sr-14-ravenna-portage-oh",
+    "name": "SR-14 Data Center Proposal (Ravenna)",
+    "operator": "Ray Harner (landowner-developer)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.157557,
+      "lon": -81.242047,
+      "city": "Ravenna",
+      "county": "Portage",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-20",
+        "note": "Ravenna City Council adopted a one-year citywide moratorium on data center construction in response to the proposal.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://theportager.com/ravenna-city-council-rushes-to-block-potential-data-center-proposal",
+        "label": "Ravenna City Council rushes to block potential data center proposal",
+        "publisher": "The Portager",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://stopohiodatacenters.org/data-center-near-my-home-ohio",
+        "label": "Data Center Near My Home in Ohio? Find Out for Your County — Portage County entry",
+        "publisher": "Ohio Data Centers (stopohiodatacenters.org)",
+        "retrievedAt": "2026-09-09",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Proposed on a State Route 14 parcel directly across from UH Portage Medical Center in Ravenna. Acreage, capacity and end user have not been made public; the landowner declined to comment. Distinct from Bitdeer's Shalersville Township campus elsewhere in Portage County.",
+    "community": {
+      "status": "opposed",
+      "notes": "Ravenna City Council's planning committee moved to impose a one-year citywide data center moratorium after public opposition; the moratorium was adopted April 20, 2026.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "heartland-industrial-park-sullivan-county-in",
     "name": "Heartland Industrial Park (Fluidstack Sullivan County Campus)",
     "operator": "Fluidstack",
@@ -41152,6 +41739,68 @@
     "lastUpdated": "2026-08-24",
     "notes": "Per reporting dated 2025-08-28 (byline), all building permits and stormwater approvals were complete and the site was described by the county's director of services as 'ready to have the key turned on,' pending only a permanent access easement from the neighboring Missouri National Guard Armory for the final occupancy permit. Would be Jefferson County's first Bitcoin mining facility. No more recent (2026) reporting confirming occupancy or operational status was found this session.",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "hhhunt-hunting-hawk-technology-park-hanover-va",
+    "name": "Hunting Hawk Technology Park",
+    "operator": "HHHunt",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.657,
+      "lon": -77.626,
+      "city": "Glen Allen",
+      "county": "Hanover",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 900
+    },
+    "announcedDate": "2025-09",
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-01-29",
+        "note": "HHHunt withdrew its rezoning application two weeks after the Hanover Planning Commission recommended denial on January 15, 2026, and before a scheduled February 25 Board of Supervisors vote.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.vpm.org/news/2026-01-20/hanover-hunting-hawk-data-center-hhhunt-wyndham-ashland-road-clark",
+        "label": "Hanover Planning Commission nixes Hunting Hawk Technology Park proposal",
+        "publisher": "VPM News",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://virginiabusiness.com/developer-withdraws-hanover-data-center-campus-proposal/",
+        "label": "Developer withdraws Hanover data center campus proposal",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "http://web.archive.org/web/20260203121049/https://www.datacenterdynamics.com/en/news/900mw-data-center-campus-plan-withdrawn-in-hanover-county-virginia/",
+        "label": "900MW data center campus plan withdrawn in Hanover County, Virginia",
+        "publisher": "Data Center Dynamics (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Ten buildings totalling 3.9 million sq ft on land adjacent to Hunting Hawk Golf Club off Ashland Road, on the Hanover-Henrico line near western Henrico's Wyndham neighborhood. Sources give 400 acres of data center development within a 468-acre rezoning request, with three electrical substations and no on-site generation or wastewater plant. HHHunt owns the land and had previously sought to build an over-55 community there; that plan collapsed after a 2019 court loss to Henrico County over a disputed connector road. The 900MW figure comes from a campus marketing flyer, per DCD.",
+    "water": {
+      "notes": "HHHunt stated approximately 10,500 gallons of water daily using a reusable cooling system; private water and sewer systems that would not connect to county utilities were proposed."
+    },
+    "landAcres": 468,
+    "community": {
+      "status": "opposed",
+      "notes": "Hundreds of residents from Hanover, Henrico and Goochland attended hearings citing traffic, water use, noise and rural-character impacts. Supervisor Susan Dibble said the proposal was not in compliance with the county's comprehensive plan and was 'simply not a good project in the right place'.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "hickory-grove-generating-station-ia",
@@ -44302,6 +44951,102 @@
     }
   },
   {
+    "id": "jk-land-cross-mill-center-leesburg-va",
+    "name": "Cross Mill Center",
+    "operator": "JK Land Holdings",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.0781,
+      "lon": -77.5575,
+      "city": "Leesburg",
+      "county": "Loudoun",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-07-15",
+        "note": "The Loudoun County Board of Supervisors approved the rezoning 5-4 on July 15, 2025, changing the 22-acre parcel from Joint Land Management Area to Planned Development - Industrial Park, with Chair Phyllis J. Randall casting the deciding vote.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.loudounnow.com/news/supervisors-narrowly-approve-data-center-near-leesburg/article_3e355c29-4dbc-42df-bdb9-37d86f3013ad.html",
+        "label": "Supervisors Narrowly Approve Data Center Near Leesburg",
+        "publisher": "Loudoun Now",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.pecva.org/region/loudoun/data-centers-in-loudoun-a-primer/",
+        "label": "Data Centers in Loudoun: A Primer",
+        "publisher": "The Piedmont Environmental Council",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Up to 556,746 sq ft of data center use on 22 acres at the intersection of Sycolin Road and Crosstrail Boulevard near Leesburg Executive Airport; the approval alternatively permits up to 416,000 sq ft of warehouse/distribution or 218,000 sq ft of industrial use. Proffers bury lower-voltage distribution lines, keep high-voltage transmission above ground and bar an on-site substation. PEC records Cross Mill Center as one of two data center rezonings the Board approved in the past year.",
+    "landAcres": 22,
+    "community": {
+      "status": "contested",
+      "notes": "Four supervisors — Michael Turner, Juli E. Briskman, Laura A. TeKrony and Sylvia R. Glass — opposed, citing strain on power infrastructure and the additional transmission lines and substations it would require countywide.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "jk-land-greenlin-park-leesburg-va",
+    "name": "Greenlin Park",
+    "operator": "JK Land Holdings",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.064,
+      "lon": -77.524,
+      "city": "Leesburg",
+      "county": "Loudoun",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2024-07",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-02-19",
+        "note": "The Loudoun County Board of Supervisors approved the rezoning 5-4 on February 19, 2025, changing the site from Transitional Residential-10 and Joint Land Management Area-20 to Industrial Park.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.loudounnow.com/news/300-mw-data-center-approved-south-of-leesburg/article_31050264-efb4-11ef-a1fa-c79d17f045f1.html",
+        "label": "300 MW Data Center Approved South of Leesburg",
+        "publisher": "Loudoun Now",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.pecva.org/region/loudoun/data-centers-in-loudoun-a-primer/",
+        "label": "Data Centers in Loudoun: A Primer",
+        "publisher": "The Piedmont Environmental Council",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "1.4 million sq ft of data center and utility substation use on 83 acres south of Leesburg, on the west side of Sycolin Road bounded by Shreve Mill Road and the Dulles Greenway; property owned by Chuck Kuhn through JK Land Holdings. Originally proposed at 2.1 million sq ft; scaled back after opposition at a September 2024 public hearing. Approval limits power draw to 300MW for five years and building height to 55 feet, and requires upgraded generators, added screening and noise limits, stormwater mitigation, water-use restrictions, and three years of energy-use monitoring and reporting.",
+    "landAcres": 83,
+    "facilityType": "data_center"
+  },
+  {
     "id": "joliet-technology-center-il",
     "name": "Joliet Technology Center",
     "operator": "HW Technology Park (Hillwood Investment Properties / PowerHouse Data Centers)",
@@ -44813,6 +45558,70 @@
     "notes": "Proposed campus on 180 acres on 101st Avenue east of Deep River County Park, at up to $900 million and reported to bring hundreds of jobs. Described as early-stage.",
     "investmentUsd": 900000000,
     "landAcres": 180,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lakeland-equity-east-55th-cleveland-oh",
+    "name": "East 55th Street Data Center (Slavic Village)",
+    "operator": "Lakeland Equity Group",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.461694,
+      "lon": -81.651208,
+      "city": "Cleveland",
+      "county": "Cuyahoga",
+      "street": "3560 East 55th Street",
+      "postalCode": "44105",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-06",
+        "note": "Permit application filed with the City of Cleveland Building Department.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-05-14",
+        "note": "City of Cleveland rejected the permit application.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://neo-trans.blog/2026/05/06/1-6b-data-center-planned-in-cleveland/",
+        "label": "$1.6B data center planned in Cleveland",
+        "publisher": "NEOtrans",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/city-cleveland-rejects-permit-1-171223986.html",
+        "label": "City of Cleveland rejects permit for $1.6B data center in Slavic Village",
+        "publisher": "WKYC via Yahoo News",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Three two-story buildings totaling roughly 300,000 sq ft on a 35-acre site between I-77 and East 55th Street, currently owned by Morabito Enterprises. No end user was identified. Recorded as cancelled because the city rejected the permit application; the developer's next steps were not stated.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Plans described closed-loop cooling with water drawn from nearby watersheds or a Northeast Ohio Regional Sewer District stormwater overflow tunnel then under construction."
+    },
+    "investmentUsd": 1600000000,
+    "landAcres": 35,
+    "community": {
+      "status": "opposed",
+      "notes": "Mayor Justin Bibb's administration rejected the building permit on May 14, 2026; a city spokesperson cited serious concerns about hyperscale, standalone data centers in neighborhoods, and City Council was concurrently weighing a moratorium.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -46016,6 +46825,43 @@
       "permanent": 225,
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ls-power-old-ridge-road-hanover-va",
+    "name": "Old Ridge Road Data Center Campus",
+    "operator": "LS Power",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.859,
+      "lon": -77.4536,
+      "city": "Doswell",
+      "county": "Hanover",
+      "street": "10165 Old Ridge Road",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-05",
+        "note": "New York-based LS Power withdrew its zoning request for the Old Ridge Road site in a letter from the developer's attorney to Hanover County; no replacement zoning application had been filed as of late June 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://web.archive.org/web/20260724010609/https://richmondbizsense.com/2026/06/26/one-data-center-project-pulled-and-another-delayed-in-hanover, as-supervisors-reinstitute-equipment-tax/",
+        "label": "One data center project pulled and another delayed in Hanover, as supervisors reinstitute equipment tax",
+        "publisher": "Richmond BizSense (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Campus was envisioned as three or four data center buildings on 200 acres near Kings Dominion, per the latest site plan submitted to the county. An LLC tied to LS Power is listed as contract purchaser of the two-parcel assemblage; it is unclear whether the land sale remains pending. LS Power previously owned the Doswell Energy Center gas plant on the other side of Old Ridge Road and sold it to NRG Energy in 2026.",
+    "landAcres": 200,
     "facilityType": "data_center"
   },
   {
@@ -47830,9 +48676,16 @@
         "publisher": "Data Center Frontier",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "http://web.archive.org/web/20260721131420/https://richmondbizsense.com/2026/07/21/documents-reveal-details-on-data-center-projects-in-petersburgs-pipeline/",
+        "label": "Documents reveal details on several data center projects in Petersburg's pipeline",
+        "publisher": "Richmond BizSense (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "Four-building campus totalling roughly 1.2 million sq ft on 74 acres, served by a planned 300 MW substation; the 104 MW figure is the reported supported IT load at full buildout, not the substation rating. Menlo's own site markets the project as 'Richmond Virginia Data Center'. Coordinates are an approximate geocode of the cited street address.",
     "landAcres": 74,
     "facilityType": "data_center"
@@ -53554,6 +54407,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "microsoft-panhandle-road-mecklenburg-va",
+    "name": "Microsoft Panhandle Road Campus (AVC17 expansion)",
+    "operator": "Microsoft",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.6674,
+      "lon": -78.3897,
+      "city": "Boydton",
+      "county": "Mecklenburg",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-04",
+        "note": "Microsoft filed with the US Army Corps of Engineers to develop 490 acres adjacent to its existing AVC17 campus; the entire approval and construction process is expected to take four to five years.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://web.archive.org/web/20260819033426/https://www.datacenterdynamics.com/en/news/microsoft-files-to-expand-data-center-campus-in-mecklenburg-county-virginia/",
+        "label": "Microsoft files to expand data center campus in Mecklenburg County, Virginia",
+        "publisher": "Data Center Dynamics (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "New campus on 490 acres south of Highway 58 and east of Panhandle Road, adjacent to the existing AVC17 campus and able to 'utilize nearby existing data center infrastructure' per the application. Three one-story data center buildings plus access roads, an on-site electrical substation and a water storage facility, to be built in two phases. Size and capacity were not disclosed. Application cites the southern Virginia Regional Network Group, where DCD reports existing data centers are outgrowing design capacity.",
+    "landAcres": 490,
+    "facilityType": "data_center"
+  },
+  {
     "id": "microsoft-pecos-tx",
     "name": "Microsoft Pecos Data Center Campus",
     "operator": "Microsoft",
@@ -58053,9 +58943,16 @@
         "publisher": "WTVR CBS 6",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "http://web.archive.org/web/20260721131420/https://richmondbizsense.com/2026/07/21/documents-reveal-details-on-data-center-projects-in-petersburgs-pipeline/",
+        "label": "Documents reveal details on several data center projects in Petersburg's pipeline",
+        "publisher": "Richmond BizSense (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "Three-building campus on a 75-acre undeveloped site between I-95 and County Drive, in a federal opportunity zone. An LLC tied to NuVu purchased the site in November 2025 for $4.12 million. Details came from Petersburg city documents released under FOIA. The live publisher page is bot-walled, so the cited source is the Wayback Machine capture actually retrieved. Coordinates are an approximate geocode of the cited street address, not a parcel-confirmed point.",
     "energy": {
       "source": "grid",
@@ -59810,6 +60707,44 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "penzance-chantilly-premier-fairfax-va",
+    "name": "Chantilly Premier",
+    "operator": "Penzance",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.8943,
+      "lon": -77.4311,
+      "city": "Chantilly",
+      "county": "Fairfax",
+      "street": "4151 Auto Park Circle",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-01",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-10-09",
+        "note": "Penzance broke ground on the three-story, roughly 236,000 sq ft facility after securing more than $100 million in construction financing from QuadReal Property Group; delivery targeted for the first half of 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ffxnow.com/2025/10/10/developer-breaks-ground-on-100m-data-center-building-in-chantilly/",
+        "label": "Developer breaks ground on $100M data center building in Chantilly",
+        "publisher": "FFXnow",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Roughly 12-acre site adjacent to Chantilly Auto Park south of Route 50. The Fairfax County Board of Supervisors approved the rezoning 8-1 in January 2024 over neighbour objections about height, traffic and environmental impacts; the approval permitted either a 150,000 sq ft warehouse or a data center up to 402,000 sq ft, and the building under construction is 236,000 sq ft. Reported as fully preleased, tenant undisclosed.",
+    "landAcres": 12,
+    "facilityType": "data_center"
   },
   {
     "id": "percheron-data-center-or",
@@ -65311,6 +66246,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "qts-van-wert-oh",
+    "name": "QTS Van Wert Data Center Campus",
+    "operator": "QTS Data Centers",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.8696461,
+      "lon": -84.5829261,
+      "city": "Van Wert",
+      "county": "Van Wert",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-05-29",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-29",
+        "note": "City of Van Wert and QTS jointly announced the campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://q.com/news/city-of-van-wert-and-qts-announce-data-center-campus-in-northwest-ohio/",
+        "label": "City of Van Wert and QTS Announce Data Center Campus in Northwest Ohio",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Announced May 29, 2026 with roughly $10 billion of projected capital investment and $200 million in projected tax revenue over 20 years, plus a $100,000 Vantage Career Center partnership and a community betterment fund. Acreage and building count were not stated in the announcement read here.",
+    "energy": {
+      "source": "grid",
+      "utility": "American Electric Power",
+      "notes": "QTS says it will fund 100% of necessary energy infrastructure improvements at no cost to existing energy users, working with AEP."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "QTS states the campus will use a closed-loop cooling system that eliminates water consumption for cooling operations."
+    },
+    "investmentUsd": 10000000000,
+    "jobs": {
+      "construction": 1500,
+      "permanent": 200,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "qts-white-oak-technology-park-ii-henrico-va",
     "name": "QTS White Oak Technology Park II (RIC5)",
     "operator": "QTS Data Centers",
@@ -65549,6 +66535,49 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "quantum-park-data-center-ashburn-loudoun-va",
+    "name": "Quantum Park Data Center Expansion",
+    "operator": "Quantum Park LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.011,
+      "lon": -77.464,
+      "city": "Ashburn",
+      "county": "Loudoun",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-12",
+        "note": "The Loudoun County Planning Commission voted 7-1-1 on February 12, 2026 to recommend approval of the zoning concept plan amendment; the Board of Supervisors is scheduled to decide on October 20, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.loudountimes.com/news/politics_and_government/levels_of_government/county/planning-commission-sends-quantum-park-data-center-project-to-supervisors/article_2529879e-8cdc-4a1f-a376-28d748b851bd.html",
+        "label": "Planning Commission sends Quantum Park data center project to supervisors",
+        "publisher": "Loudoun Times-Mirror",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.pecva.org/region/loudoun/data-centers-in-loudoun-a-primer/",
+        "label": "Data Centers in Loudoun: A Primer — Upcoming Decisions",
+        "publisher": "The Piedmont Environmental Council",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Loudoun County application LEGI-2023-0097. Continued conversion of the former Verizon Federal Operations campus — now branded Quantum Park — between Loudoun County Parkway and Waxpool Road in Ashburn to data center use. The amendment would permit additional data center, substation and office uses; reporting describes two new data center buildings and a substation on roughly 40 acres within the office campus. The applicant lowered building heights and changed architects before the commission vote. Commissioner Dale Polen opposed.",
+    "landAcres": 40,
+    "facilityType": "data_center"
+  },
+  {
     "id": "quiet-data-centers-enfield-halifax-county-nc",
     "name": "Project Q — Quiet Data Centers Enfield (Halifax County)",
     "operator": "Quiet Data Centers Halifax Inc.",
@@ -65688,6 +66717,36 @@
     "notes": "capacityMw deliberately omitted: the operator's own site advertises 175 MW while third-party listings report ~40 MW, and no filing reconciles the two. Coordinates are an Oklahoma City centroid approximation; the street address is exact.",
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "racksquared-columbus-oh",
+    "name": "Racksquared Data Center (Columbus)",
+    "operator": "Racksquared Data Centers, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.966878,
+      "lon": -82.992615,
+      "city": "Columbus",
+      "county": "Franklin",
+      "street": "325 E Spring Street",
+      "postalCode": "43215",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=OH&limit=200",
+        "label": "PeeringDB facility registry — Ohio (API query)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-09",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Downtown Columbus colocation facility registered in PeeringDB with building-level coordinates. Capacity and floor area are not recorded here because no primary source stating them was read.",
+    "facilityType": "data_center"
   },
   {
     "id": "radius-dc-raleigh-1-wake-county-nc",
@@ -66413,9 +67472,23 @@
         "publisher": "PR Newswire",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/red-post-energy-and-wise-innovation-hub-venture-oasis-execute-letter-of-intent-to-advance-power-infrastructure-for-major-data-center-development-in-southwest-virginia-302645511.html",
+        "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) Execute Letter of Intent to Advance Power Infrastructure for Major Data Center Development in Southwest Virginia",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://appvoices.org/2026/03/13/wise-county-maverick-project/",
+        "label": "Wise County considers new gas infrastructure for data center project",
+        "publisher": "Appalachian Voices",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "Dedicated phased power project (up to 600 MW) anchoring a planned Wise County data-center hub; coordinates approximate to the Lonesome Pine Regional Business & Technology Park.",
     "energy": {
       "source": "other",
@@ -67767,6 +68840,63 @@
       "status": "opposed",
       "notes": "More than 50 residents attended the June 1, 2026 Lakeland City Commission meeting to oppose the proposed 'Project Swan' hyperscale data center, with 18 speaking against it during audience comments. Resident Magdalene DuPree called the project 'a bad fit' and objected to a facility 'extracting value from us.' A grassroots petition campaign and coalition rally pushed the City Commission to consider a temporary data-center moratorium. No organized support for the project was documented in coverage reviewed.",
       "sourceIndex": 3
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "saadia-holding-athens-dover-township-oh",
+    "name": "Saadia Holding Athens–Dover Township Data Center",
+    "operator": "Saadia Holding LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.3700911,
+      "lon": -82.1323674,
+      "city": "The Plains",
+      "county": "Athens",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-14",
+        "note": "Saadia Holding LLC first contacted the Athens County planner about land-use regulations for the site.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://athensindependent.com/possible-athens-data-center/",
+        "label": "(Updated) NY company exploring Athens County data center",
+        "publisher": "Athens County Independent",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://athensindependent.com/data-centers-across-appalachian-ohio/",
+        "label": "Appalachian Ohio a target for data centers",
+        "publisher": "Athens County Independent",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "A roughly 250,000 sq ft facility proposed on nearly 300 acres across six parcels fronting U.S. 33 along the Athens–Dover township line, across from Athens High School. Land is owned by NML Gallia LLC. No formal development application had been filed as of late July 2026.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The company described a closed-loop cooling system requiring about 100,000 gallons to fill initially and 10,000–20,000 gallons monthly for maintenance."
+    },
+    "landAcres": 300,
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Athens Township trustees (Aug 1, 2026), Athens City Council (Aug 3, 2026) and the Athens County commissioners (Aug 4, 2026) each adopted one-year data center moratoria after residents packed July 28 meetings.",
+      "sourceIndex": 1
     },
     "facilityType": "data_center"
   },
@@ -70176,6 +71306,44 @@
     "investmentUsd": 13000000,
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "sharpless-wellington-road-bristow-va",
+    "name": "Wellington Road Data Center Campus (Sharpless)",
+    "operator": "Sharpless Enterprises LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.746,
+      "lon": -77.523,
+      "city": "Bristow",
+      "county": "Prince William",
+      "street": "6201 Wellington Road",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023-11",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-03-07",
+        "note": "The US Army Corps of Engineers North Atlantic Division approved the 181-acre data center complex application on March 7, 2024. The site's existing heavy industrial zoning already accommodates data centers, so separate county approval is not required.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.insidenova.com/news/business/army-corps-of-engineers-greenlights-bristow-data-center-complex/article_49d8ed9a-dd87-11ee-9f08-d383b6399e7e.html",
+        "label": "Army Corps of Engineers greenlights Bristow data center complex",
+        "publisher": "InsideNoVa",
+        "retrievedAt": "2026-09-09",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Four data center buildings, an electric substation, auxiliary equipment structures and a small administrative building on 181 acres along the north side of Wellington Road west of Piney Branch Lane, just north of the Jiffy Lube Live amphitheater. The land was previously owned by Atlantic Research Corp, which produced and tested missiles and rockets under Department of Defense contract until 2005. Sharpless Enterprises is a Delaware-registered entity that trade press has linked to Google; that link is reported rather than confirmed by the applicant, so the operator field records the filing entity only.",
+    "landAcres": 181,
+    "facilityType": "data_center"
   },
   {
     "id": "sholes-wind-energy-center-wayne-ne",
@@ -73595,10 +74763,22 @@
         "publisher": "WCHS",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://athensindependent.com/data-centers-across-appalachian-ohio/",
+        "label": "Appalachian Ohio a target for data centers",
+        "publisher": "Athens County Independent",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-09",
     "notes": "At 1476 County Road 1A; land sold by the Lawrence County Economic Development Corp. Construction began around December 2025. A 5,178-signature opposition petition sparked a moratorium push in neighboring Ironton.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Reported as powered by a combination of hydrogen, natural gas and solar."
+    },
+    "landAcres": 40,
     "community": {
       "status": "contested",
       "notes": "A 5,178-signature opposition petition sparked a moratorium push in neighboring Ironton; construction is proceeding."
@@ -75859,6 +77039,66 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "takanock-project-tallmadge-strasburg-va",
+    "name": "Project Tallmadge",
+    "operator": "Takanock, LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.9893,
+      "lon": -78.3589,
+      "city": "Strasburg",
+      "county": "Shenandoah",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 180
+    },
+    "announcedDate": "2025-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-22",
+        "note": "Developer Takanock proposing a 180MW, 87-acre campus on land already zoned industrial, so data center use is by-right; additional permitting targeted for Q3 2027 with construction beginning the same quarter.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://web.archive.org/web/20260819034219/https://www.datacenterdynamics.com/en/news/87-acre-project-tallmadge-to-be-built-in-strasburg-virginia/",
+        "label": "87-acre 'Project Tallmadge' to be built in Strasburg, Virginia",
+        "publisher": "Data Center Dynamics (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nvdaily.com/nvdaily/strasburg-data-center-proposal-prompts-questions-on-water-use-hydrogen-oversight/article_de441640-97e6-528b-a0e8-74085176ceb3.html",
+        "label": "Strasburg data center proposal prompts questions on water use, hydrogen, oversight",
+        "publisher": "The Northern Virginia Daily",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "87-acre site on Borden Mowery Drive near Interstate 81 Exit 296 and the Mercury Paper plant in Strasburg's industrial park; roughly 2 million sq ft planned. Takanock develops the land and intends to sell to an as-yet-unnamed operator. Construction reported as potentially starting in late 2027 and concluding around 2030.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 400,
+      "notes": "Takanock told DCD the campus brings its own power via 400MW of front-of-the-meter on-site natural gas generation; the project fact sheet states natural gas turbines, described locally as capable of switching to hydrogen in future."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Takanock spokesperson told DCD the data center will use closed-loop cooling; local reporting cites an estimated ~4,000 gallons per day of water use (about 1.46 million gallons annually) with a near-waterless closed-loop chilled system."
+    },
+    "landAcres": 87,
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "talen-montour-ct-expansion-derry-township-montour-pa",
@@ -82280,6 +83520,44 @@
     "facilityType": "data_center"
   },
   {
+    "id": "wagner-properties-wagner-road-petersburg-va",
+    "name": "Wagner Road Data Center Campus",
+    "operator": "Wagner Properties",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.2279,
+      "lon": -77.4019,
+      "city": "Petersburg",
+      "county": "Petersburg",
+      "street": "1161 Wagner Road",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-04",
+        "note": "Petersburg's interim planning director confirmed Wagner's site plan was approved in April 2026, nearly two years after first submission. Land is zoned M-2, where data centers are by-right under a 2024 city zoning change, so no council approval or public hearing was required.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://web.archive.org/web/20260721131420/https://richmondbizsense.com/2026/07/21/documents-reveal-details-on-data-center-projects-in-petersburgs-pipeline/",
+        "label": "Documents reveal details on several data center projects in Petersburg's pipeline",
+        "publisher": "Richmond BizSense (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-09",
+    "notes": "Three buildings on 27 acres of a 73-acre site west of Wagner Road alongside railroad tracks; owner Joseph Wagner is working with Legacy Engineering of Fredericksburg. The land is owned by GFYA LLC, an entity tied to Potomac, Maryland real estate agent Jacob Manevich, which bought it from Wagner Properties Inc. in 2024 for $950,000. Next step is a land disturbance permit, not applied for as of late June 2026. Details come from city documents obtained by Richmond BizSense via FOIA.",
+    "landAcres": 73,
+    "facilityType": "data_center"
+  },
+  {
     "id": "wahawk-power-waterloo-ia",
     "name": "Wahawk Power Data Center",
     "operator": "Wahawk Power, LLC",
@@ -82411,9 +83689,16 @@
         "publisher": "Richmond BizSense",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "http://web.archive.org/web/20260721131420/https://richmondbizsense.com/2026/07/21/documents-reveal-details-on-data-center-projects-in-petersburgs-pipeline/",
+        "label": "Documents reveal details on several data center projects in Petersburg's pipeline",
+        "publisher": "Richmond BizSense (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "Six data center buildings on a 175-acre site — the former CSX Collier Yard property, now city-owned. Developed through Warrenton Group's TWG Data arm, with engineering by Timmons Group. No capacity or investment figure published. Coordinates are an approximate geocode of the cited street address.",
     "landAcres": 175,
     "facilityType": "data_center"
@@ -82706,9 +83991,16 @@
         "publisher": "WWBT NBC12",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "http://web.archive.org/web/20260724010609/https://richmondbizsense.com/2026/06/26/one-data-center-project-pulled-and-another-delayed-in-hanover-as-supervisors-reinstitute-equipment-tax/",
+        "label": "One data center project pulled and another delayed in Hanover, as supervisors reinstitute equipment tax",
+        "publisher": "Richmond BizSense (via Internet Archive)",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "Zoning sought for data center facilities on 78 acres (rezoning from mixed use to limited industrial, plus a height waiver to 75 feet) within an overall 180-acre campus straddling the Hanover–Ashland line; the Ashland portion was approved by town council in 2024. LLCs tied to WestDulles own the campus properties. landAcres records the overall 180-acre campus, not the 78-acre rezoning request. Coordinates are an approximate geocode of the cited street address.",
     "landAcres": 180,
     "facilityType": "data_center"
@@ -83339,13 +84631,33 @@
         "publisher": "PR Newswire",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/red-post-energy-and-wise-innovation-hub-venture-oasis-execute-letter-of-intent-to-advance-power-infrastructure-for-major-data-center-development-in-southwest-virginia-302645511.html",
+        "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) Execute Letter of Intent to Advance Power Infrastructure for Major Data Center Development in Southwest Virginia",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://appvoices.org/2026/03/13/wise-county-maverick-project/",
+        "label": "Wise County considers new gas infrastructure for data center project",
+        "publisher": "Appalachian Voices",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-09-09",
     "notes": "Phased technology/data-center hub planned over ~10 years at the Lonesome Pine Regional Business & Technology Park (adjacent to Lonesome Pine Regional Airport) on former mined land in Wise County — a multi-tenant cluster co-located with the existing Mineral Gap data center. Developer Wise Innovation Hub Venture LLC (branded 'OASIS') signed a 2025-12-18 LOI with Red Post Energy for dedicated power; compute capacity and named end-users not yet disclosed, so capacity is omitted.",
     "energy": {
       "source": "other",
+      "onSiteGenerationMw": 600,
       "notes": "To be served by the phased Maverick Project (up to 600 MW; hydrogen preferred, natural gas fallback) developed by Red Post Energy Group."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Appalachian Voices reports Wise County residents learned of the project in late 2025 through a LinkedIn post rather than official county channels and raised transparency concerns; as of early March 2026 no additional public information was available. Appalachian Voices opposes the gas approach and advocates renewables instead, citing the solar array serving the nearby Mineral Gap data center.",
+      "sourceIndex": 8
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
