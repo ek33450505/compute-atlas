@@ -227,6 +227,15 @@ function printSummaryTable(results: WorkflowClassification[]): void {
   }
 }
 
+/**
+ * Repeated verbatim in every report this script can emit — including the
+ * "could not check" one — so no generated issue ever overstates the guarantee.
+ */
+const SELF_STALENESS_NOTE =
+  "_This check cannot detect its own staleness. If `automation-health.yml` itself stops " +
+  "running, nothing here will say so — one level of recursion is where this stops, and " +
+  "pretending otherwise would be the same false-confidence bug this check exists to fix._";
+
 function buildMarkdownReport(
   results: WorkflowClassification[],
   owner: string,
@@ -255,12 +264,64 @@ function buildMarkdownReport(
     }
   }
   lines.push("---");
-  lines.push(
-    "_This check cannot detect its own staleness. If `automation-health.yml` itself stops " +
-      "running, nothing here will say so — one level of recursion is where this stops, and " +
-      "pretending otherwise would be the same false-confidence bug this check exists to fix._"
-  );
+  lines.push(SELF_STALENESS_NOTE);
   return lines.join("\n");
+}
+
+/**
+ * The report for the paths where the check could not run AT ALL — no token, no
+ * repo slug. Deliberately shaped like the normal report so it travels the same
+ * route to the same reader, and so it reads as a PROBLEM rather than as an
+ * absence. "Could not check" is the one verdict most easily mistaken for
+ * "nothing to report".
+ */
+export function buildCannotCheckReport(reason: string): string {
+  return [
+    "# Automation health report",
+    "",
+    "**The health check could not run at all.** This is not a clean bill of health:",
+    "nothing was verified, so any monitored workflow may be dead and unreported.",
+    "",
+    `- **Reason:** ${reason}`,
+    "",
+    "---",
+    SELF_STALENESS_NOTE,
+  ].join("\n");
+}
+
+/**
+ * The ONLY place either outcome signal is written — and it always writes both.
+ *
+ * Both "cannot check" paths in `main()` used to call `process.exit(1)`
+ * directly. That set the exit code but left `healthy` unwritten in
+ * $GITHUB_OUTPUT, and the workflow gates issue-filing on
+ * `steps.health.outputs.healthy == 'false'` — so an unset value SKIPPED it.
+ * The run went red and no issue was opened. Red runs having no reader is the
+ * entire reason this script exists, which made the one branch meant to shout
+ * "I could not check" the one branch that stayed silent.
+ *
+ * Putting the report file and the step output behind a single call is what
+ * stops them drifting apart again: there is no longer a way to emit one
+ * without the other.
+ */
+export function emitOutcome(opts: {
+  healthy: boolean;
+  markdown: string;
+  out: string | null;
+  /**
+   * Only GITHUB_OUTPUT is ever read. Typed as exactly that rather than as
+   * NodeJS.ProcessEnv, which this project augments with a required NODE_ENV
+   * and so cannot be satisfied by a test fixture without an `as` cast.
+   */
+  env?: { GITHUB_OUTPUT?: string };
+}): void {
+  const env = opts.env ?? process.env;
+  if (opts.out) {
+    writeFileSync(opts.out, opts.markdown, "utf8");
+  }
+  if (env.GITHUB_OUTPUT) {
+    writeFileSync(env.GITHUB_OUTPUT, `healthy=${opts.healthy}\n`, { flag: "a" });
+  }
 }
 
 function parseArgs(argv: string[]): { out: string | null } {
@@ -276,21 +337,27 @@ function parseArgs(argv: string[]): { out: string | null } {
 async function main() {
   const { out } = parseArgs(process.argv.slice(2));
 
+  // Fails closed AND audibly: emits the same two signals as an unhealthy
+  // verdict before exiting, so "could not check" reaches the issue rather than
+  // dying as a red X.
+  function cannotCheck(reason: string): never {
+    console.error(
+      `${reason} Failing closed: 'could not check' must never be reported as 'healthy'.`
+    );
+    emitOutcome({ healthy: false, markdown: buildCannotCheckReport(reason), out });
+    process.exit(1);
+  }
+
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
-    console.error(
-      "GITHUB_TOKEN is not set — cannot query the Actions API. Failing closed: " +
-        "'could not check' must never be reported as 'healthy'."
-    );
-    process.exit(1);
+    cannotCheck("GITHUB_TOKEN is not set — cannot query the Actions API.");
   }
 
   const repoSlug = process.env.GITHUB_REPOSITORY;
   if (!repoSlug || !repoSlug.includes("/")) {
-    console.error(
+    cannotCheck(
       `GITHUB_REPOSITORY is not set (or malformed: "${repoSlug ?? ""}") — cannot query the Actions API.`
     );
-    process.exit(1);
   }
   const [owner, repo] = repoSlug.split("/");
 
@@ -317,16 +384,10 @@ async function main() {
 
   printSummaryTable(results);
 
-  const markdown = buildMarkdownReport(results, owner, repo);
-  if (out) {
-    writeFileSync(out, markdown, "utf8");
-    console.log(`Wrote markdown report to ${out}`);
-  }
-
   const healthy = results.every((r) => r.state === "ok");
-
-  if (process.env.GITHUB_OUTPUT) {
-    writeFileSync(process.env.GITHUB_OUTPUT, `healthy=${healthy}\n`, { flag: "a" });
+  emitOutcome({ healthy, markdown: buildMarkdownReport(results, owner, repo), out });
+  if (out) {
+    console.log(`Wrote markdown report to ${out}`);
   }
 
   process.exit(healthy ? 0 : 1);
