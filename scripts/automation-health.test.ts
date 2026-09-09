@@ -8,6 +8,7 @@ import {
   buildCannotCheckReport,
   classifyWorkflow,
   emitOutcome,
+  pickLatestSuccess,
   type WorkflowConfig,
   type WorkflowRun,
 } from "./automation-health";
@@ -109,6 +110,72 @@ describe("classifyWorkflow", () => {
     const result = classifyWorkflow(WEEKLY, [run(9 * 24, { conclusion: "success" })], NOW);
     expect(result.state).toBe("stale");
   });
+
+  // The 4th argument is the newest SUCCESS of any event type — normally a
+  // `workflow_dispatch` a maintainer ran to verify a fix. It may clear a
+  // FAILING verdict and nothing else. Real case: drift-alert was fixed and
+  // dispatch-verified on 2026-09-09 while its 6 scheduled failures (Sep 3-8)
+  // were still the only scheduled history, so this check reported an
+  // already-fixed workflow as broken.
+  describe("repaired-but-not-yet-rescheduled", () => {
+    const SIX_FAILURES: WorkflowRun[] = [
+      run(2, { conclusion: "failure" }),
+      run(26, { conclusion: "failure" }),
+      run(50, { conclusion: "failure" }),
+      run(74, { conclusion: "failure" }),
+      run(98, { conclusion: "failure" }),
+      run(122, { conclusion: "failure" }),
+    ];
+
+    it("clears FAILING when a success is newer than the newest scheduled failure", () => {
+      const dispatchedAt = new Date(NOW.getTime() - 1 * 60 * 60 * 1000).toISOString();
+      const result = classifyWorkflow(DAILY, SIX_FAILURES, NOW, dispatchedAt);
+
+      expect(result.state).toBe("ok");
+      expect(result.streak).toBe(0);
+      expect(result.detail).toContain("treating as repaired");
+      // Must stay honest that the schedule itself has not re-confirmed yet.
+      expect(result.detail).toContain("next scheduled run");
+    });
+
+    it("does NOT clear FAILING when the success predates the newest failure", () => {
+      const staleSuccess = new Date(NOW.getTime() - 200 * 60 * 60 * 1000).toISOString();
+      const result = classifyWorkflow(DAILY, SIX_FAILURES, NOW, staleSuccess);
+
+      expect(result.state).toBe("failing");
+      expect(result.streak).toBe(6);
+    });
+
+    it("does NOT mask a NEW scheduled failure that lands after the success", () => {
+      // Newest scheduled failure is 2h old; the dispatch success is 10h old.
+      const dispatchedAt = new Date(NOW.getTime() - 10 * 60 * 60 * 1000).toISOString();
+      const result = classifyWorkflow(DAILY, SIX_FAILURES, NOW, dispatchedAt);
+
+      expect(result.state).toBe("failing");
+      expect(result.streak).toBe(6);
+    });
+
+    it("does NOT clear STALE — a dispatch proves the job, never the schedule", () => {
+      const justNow = NOW.toISOString();
+      const result = classifyWorkflow(DAILY, [run(40, { conclusion: "success" })], NOW, justNow);
+
+      expect(result.state).toBe("stale");
+    });
+
+    it("does NOT clear NEVER-RUN — a dead cron stays reported", () => {
+      const justNow = NOW.toISOString();
+      const result = classifyWorkflow(DAILY, [], NOW, justNow);
+
+      expect(result.state).toBe("never-run");
+    });
+
+    it("is unchanged from previous behaviour when no success timestamp is known", () => {
+      const result = classifyWorkflow(DAILY, SIX_FAILURES, NOW, null);
+
+      expect(result.state).toBe("failing");
+      expect(result.streak).toBe(6);
+    });
+  });
 });
 
 // The workflow decides whether to open an issue from
@@ -171,5 +238,41 @@ describe("buildCannotCheckReport", () => {
 
   it("carries the same self-staleness caveat as the normal report", () => {
     expect(buildCannotCheckReport("boom")).toContain("cannot detect its own staleness");
+  });
+});
+
+// Guards the one assumption the repair check rests on that no unit test could
+// otherwise reach: that the "newest success" lookup really did return a
+// success. GitHub silently ignores unknown query parameters, so a plausible
+// edit to `fetchLatestSuccessAt`'s URL (`conclusion=success`, which this
+// endpoint does not implement) would return the newest run of ANY conclusion.
+// Measured 2026-09-09: `?status=success` gave total_count 0 on a workflow whose
+// 12 runs were all failures, while `?conclusion=success` gave all 12 back.
+// Checking locally makes the repair check correct regardless.
+describe("pickLatestSuccess", () => {
+  const at = (iso: string, conclusion: string | null): WorkflowRun => ({
+    status: "completed",
+    conclusion,
+    created_at: iso,
+  });
+
+  it("returns the timestamp when the run really did succeed", () => {
+    expect(pickLatestSuccess([at("2026-09-09T12:40:34Z", "success")])).toBe(
+      "2026-09-09T12:40:34Z"
+    );
+  });
+
+  it("returns null for a FAILED run — the server-side filter is not trusted", () => {
+    expect(pickLatestSuccess([at("2026-09-09T16:22:00Z", "failure")])).toBeNull();
+  });
+
+  it("returns null for other non-success conclusions", () => {
+    expect(pickLatestSuccess([at("2026-09-09T16:22:00Z", "cancelled")])).toBeNull();
+    expect(pickLatestSuccess([at("2026-09-09T16:22:00Z", "timed_out")])).toBeNull();
+    expect(pickLatestSuccess([at("2026-09-09T16:22:00Z", null)])).toBeNull();
+  });
+
+  it("returns null when there are no runs at all", () => {
+    expect(pickLatestSuccess([])).toBeNull();
   });
 });
