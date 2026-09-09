@@ -310,14 +310,30 @@ fi
 # auto-revert to STEADY_CAP/day. No manual step to revert — the date does it.
 # MAX_CANDIDATES in the environment always overrides (escape hatch / tests).
 # Caps raised 2026-08-14 (10/5 -> 25/15, ~3x) once the timeout/permission fixes
-# above restored real daily yield. Applied PER STATE below (a ceiling per
-# submit call, not a per-batch total) — it is a ceiling, not a target;
-# observed yield is ~10/state against a cap of 25, so covering multiple
-# states per run does not mean e.g. 50 rows/day.
+# above restored real daily yield. Steady raised again 2026-09-09 (15 -> 25):
+# measured from Neon that day, the prior 14 days ran ~14-34 approved
+# submissions/day against a pending queue of 0 (the maintainer clears it
+# daily), with several days at 29-34 — consistent with the ceiling binding on
+# some lanes.
+# NOTE: the burst window expired 2026-08-19 (BURST_START_DATE + BURST_DAYS), so
+# compute_cap already returns STEADY_CAP every run; with steady now also 25,
+# burst and steady are the same number and the self-reverting mechanism is a
+# no-op in practice. It still works — it just no longer changes anything. Kept
+# deliberately: re-dating BURST_START_DATE with a higher BURST_CAP is how the
+# next time-boxed catch-up push gets its auto-revert for free.
+# Applied PER SUBMIT CALL below (a ceiling per call, not a per-batch total).
+# There are STATES_PER_RUN of those calls inside the per-state loop, plus ONE
+# more for the enrichment lane, which runs once per batch outside the loop — so
+# the real nightly ceiling is (STATES_PER_RUN x cap) + cap = 75 at the current
+# defaults (2 x 25 + 25), not 50.
+# It is a ceiling, not a target: whole-run yield measured ~14-34 approved/day
+# across all states, i.e. the busiest days sit around 45% of that ceiling.
+# Headroom is real but not vast — raising STATES_PER_RUN or the cap raises what
+# the maintainer may have to review in a day.
 BURST_START_DATE="2026-07-30"   # date the self-reverting cap shipped
 BURST_DAYS=20
 BURST_CAP=25
-STEADY_CAP=15
+STEADY_CAP=25
 
 compute_cap() {
   # BSD (macOS) and GNU (Linux/CI) date differ; try BSD -j -f first, then GNU -d.

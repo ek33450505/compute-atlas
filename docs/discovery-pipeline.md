@@ -218,11 +218,19 @@ rejection is not proof that a citation is bad.
   set `DISCOVERY_ENABLED` — enabling it is a separate, deliberate step.
 - **Bounded per run:** `STATES_PER_RUN` states per run (default 2) from the
   rotation cursor, each capped at `--max` candidates (new + updated combined).
-  The cap is **per state**, and it **self-reverts**: 25/day for the first 20
-  days from the burst-start date baked into `run.sh`, then automatically 15/day
-  — no manual step to revert. It is a ceiling, not a target: observed yield is
-  ~10 per state, so covering two states does not mean 50 rows. `MAX_CANDIDATES`
-  in the environment overrides the computed cap (escape hatch / tests).
+  The cap **self-reverts**: burst for the first 20 days from the burst-start
+  date baked into `run.sh`, then the steady value — no manual step to revert.
+  Both values are currently **25**, and the burst window expired 2026-08-19, so
+  the mechanism still runs but no longer changes the number; it is retained
+  deliberately so the next time-boxed catch-up gets its auto-revert for free by
+  re-dating the burst start with a higher burst cap.
+  The cap applies **per submit call**: one per state inside the rotation loop,
+  **plus** a separate enrichment submit that runs once per batch outside it. So
+  the real nightly ceiling is `(STATES_PER_RUN × cap) + cap` — 75 at the current
+  defaults. It is a ceiling, not a target: measured from Neon on 2026-09-09, the
+  prior 14 days ran ~14–34 approved submissions/day across all states, against a
+  pending queue of 0. `MAX_CANDIDATES` in the environment overrides the computed
+  cap (escape hatch / tests).
 - **Fail-loud source verification:** every candidate's source URLs are fetched
   and mechanically checked against the claim before staging (see the gate
   above). If the local Ollama model is unreachable or not pulled, the check
