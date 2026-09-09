@@ -20,12 +20,21 @@
 #
 # check-neon-drift.ts is deliberately non-blocking (always exits 0, see its
 # own header) so other callers of `npm run check:drift` keep that contract.
-# This workflow does NOT change that script; it greps its output instead, so
-# the shared drift detector stays exactly as advisory as it already was.
+# This workflow does NOT change that script; it classifies its output instead,
+# so the shared drift detector stays exactly as advisory as it already was.
+# That exit-0-always contract is what makes a non-zero exit here a reliable
+# signal that the detector could not run at all.
 #
-# The grep below intentionally omits the leading "✓ " — grep -q performs an
-# unanchored substring search, so it matches the full line regardless; kept
-# without the glyph so the pattern stays plain ASCII in this file.
+# The greps below intentionally omit the leading "✓ " — grep -q performs an
+# unanchored substring search, so they match the full line regardless; kept
+# without the glyph so the patterns stay plain ASCII in this file.
+#
+# THIS WORKFLOW FAILED ALL SIX OF ITS FIRST RUNS (2026-09-03 .. 2026-09-08)
+# and every one of those failures reported the wrong cause. Two independent
+# defects, both now fixed below: it invoked the detectors through npm scripts
+# carrying `--env-file=.env.local` (absent on a runner → node exit 9, before
+# any DB connection), and it collapsed "the detector could not run" into
+# "drift is present". Read the step comments before editing either.
 name: Neon Drift Alert
 
 on:
@@ -51,30 +60,86 @@ jobs:
           cache: npm
       - run: npm ci
 
+      # UNCONDITIONAL, and the first thing that runs. Every step below is
+      # gated on `env.DATABASE_URL != ''`, so without this guard an unset or
+      # empty secret SKIPS all of them and the job finishes GREEN having
+      # verified nothing at all — a silent pass on the exact condition this
+      # workflow exists to detect. That is the same fail-open shape as the
+      # six-night failure this file was just fixed for, one layer up, so it
+      # is closed here rather than left as the next thing to discover.
+      #
+      # Failing closed is right for this workflow specifically: it runs only
+      # on `schedule` and `workflow_dispatch` in this repo, where the secret
+      # is configured. A fork lacking the secret SHOULD fail loudly rather
+      # than report a drift check it never performed.
+      #
+      # The per-step `if: env.DATABASE_URL != ''` conditions below are now
+      # unreachable-when-empty and kept only as defence in depth — do not
+      # read them as "skipping is acceptable".
+      - name: Verify DATABASE_URL is configured
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::DATABASE_URL is not configured or is empty, so NOTHING below can run. Failing closed: a drift alert that verified nothing must never report success. Set the DATABASE_URL repository secret (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+          echo "DATABASE_URL is configured."
+
       # Runs BEFORE the JSON drift check, and with continue-on-error, so both
       # kinds of drift are reported in one run rather than the first failure
       # hiding the second. Schema drift is the more urgent of the two: a
       # missing table means shipped code is silently inert.
+      #
+      # Invoked as `npx tsx <script>` rather than the `check:schema` npm script,
+      # matching ci.yml:76, neon-sync.yml:147 and discovery-watchdog.yml:81. The
+      # npm script carries `--env-file=.env.local`, which does not exist on a
+      # runner: node aborts with `node: .env.local: not found` and exit 9 BEFORE
+      # opening a database connection. This workflow shipped with the npm form
+      # and failed all 6 of its runs (2026-09-03 .. 2026-09-08) for that reason
+      # alone, while reporting a missing production table. DATABASE_URL arrives
+      # from the job env above.
       - name: Check deployed schema matches code
         if: env.DATABASE_URL != ''
         id: schema
         continue-on-error: true
-        run: npm run check:schema
+        run: npx tsx scripts/check-schema-drift.ts
 
+      # THREE outcomes, not two. The original form asked one question ("does the
+      # output contain the success line?") and treated every other answer as
+      # "drift is present" — so a detector that never ran read identically to
+      # real drift. It could also never report at all: `OUTPUT="$(...)"` as the
+      # first command under `bash -e` aborts the whole step on a non-zero exit,
+      # so `converged=false` was never written and BOTH the stuck-PR report and
+      # the drift failure below were SKIPPED. The alert failed open on precisely
+      # the condition it exists to catch.
+      #
+      # The classification rules live in scripts/classify-drift-output.sh, NOT
+      # inline here, so they can be tested: tests/workflows/run.bats drives all
+      # five real fixtures (including the verbatim 2026-09-08 crash output)
+      # through the same script this step calls. Logic embedded in a YAML `run:`
+      # block cannot be exercised without dispatching the workflow, which is
+      # how the original one-grep version shipped broken and stayed broken.
+      #
+      # rc is captured the instant the command returns and echoed as a plain
+      # command — never through a pipe, which would report the pipe's status
+      # instead (see the drift-alert postmortem and CLAUDE.md's note on `tee`).
       - name: Check JSON <-> Neon drift
         if: env.DATABASE_URL != ''
         id: drift
         run: |
-          OUTPUT="$(npm run check:drift 2>&1)"
+          set +e
+          OUTPUT="$(npx tsx scripts/check-neon-drift.ts 2>&1)"
+          rc=$?
+          set -e
           echo "$OUTPUT"
-          if echo "$OUTPUT" | grep -q "No drift detected between JSON and Neon"; then
-            echo "converged=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "converged=false" >> "$GITHUB_OUTPUT"
-          fi
+          echo "drift detector exit code: $rc"
+          STATE="$(printf '%s\n' "$OUTPUT" | scripts/classify-drift-output.sh "$rc")"
+          echo "classified state: $STATE"
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
 
+      # Only for REAL drift. A broken detector has no sync PR to blame, and
+      # naming one would point the reader at the wrong thing entirely.
       - name: Report a stuck sync PR, if one exists
-        if: env.DATABASE_URL != '' && steps.drift.outputs.converged == 'false'
+        if: env.DATABASE_URL != '' && steps.drift.outputs.state == 'drifted'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -84,18 +149,35 @@ jobs:
             || true
 
       - name: Fail if not converged
-        if: env.DATABASE_URL != '' && steps.drift.outputs.converged == 'false'
+        if: env.DATABASE_URL != '' && steps.drift.outputs.state == 'drifted'
         run: |
           echo "::error::JSON<->Neon drift is still present past the daily sync's expected convergence window. See the drift output above and docs/architecture (or npm run check:drift locally) to diagnose."
           exit 1
 
-      # `always()` is load-bearing, not decoration: the step above exits 1
+      # A SEPARATE failure from real drift, deliberately worded so the two can
+      # never be confused again. This is the state the workflow spent its first
+      # six runs in while claiming a production table was missing.
+      - name: Fail if the drift detector could not run
+        if: always() && env.DATABASE_URL != '' && steps.drift.outputs.state == 'detector-broken'
+        run: |
+          echo "::error::The JSON<->Neon drift detector did not run to completion, so THIS WORKFLOW LEARNED NOTHING about drift today. This is not a report that drift exists — it is the absence of a report. Read the detector output above for the cause (a non-zero exit means the script could not start; a '::notice::drift check errored' line means it started but could not reach Neon)."
+          exit 1
+
+      # `always()` is load-bearing, not decoration: the steps above exit 1
       # without continue-on-error, which would otherwise skip every later step
       # — so a JSON drift failure would silently mask a schema drift failure,
       # the exact masking this ordering exists to prevent.
-      - name: Fail if the deployed schema drifted from the code
+      #
+      # The message states what FAILED, not what it believes the cause to be.
+      # check-schema-drift.ts exits 1 for three different reasons — missing
+      # tables, an unset DATABASE_URL, and an unreachable database — and the
+      # previous wording asserted the first as fact for all three. On
+      # 2026-09-08 the real cause was that node never started, and this step
+      # nonetheless reported a missing production table. The script's own
+      # output distinguishes the cases correctly; defer to it.
+      - name: Fail if the deployed schema check did not pass
         if: always() && env.DATABASE_URL != '' && steps.schema.outcome == 'failure'
         run: |
-          echo "::error::A table declared in lib/db/schema.ts is missing from the live database: a migration reached main but was never applied. Fix with 'npm run db:migrate' against production, then re-run this workflow."
-          echo "::error::This is the failure mode that silently disabled the daily API cap on 2026-09-03. Nothing caught it: CI was green, the deploy succeeded, and every public API route kept returning 200 while the gate failed open on every request."
+          echo "::error::The deployed-schema check failed — read its output above for which of these it was. If it names missing tables, a migration reached main but was never applied: fix with 'npm run db:migrate' against production, then re-run this workflow. If it reports an unset or unreachable DATABASE_URL, the schema was NOT verified either way."
+          echo "::error::Missing tables are the failure mode that silently disabled the daily API cap on 2026-09-03. Nothing caught it: CI was green, the deploy succeeded, and every public API route kept returning 200 while the gate failed open on every request."
           exit 1
