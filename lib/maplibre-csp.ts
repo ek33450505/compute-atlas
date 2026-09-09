@@ -1,43 +1,40 @@
 /**
- * Shared CSP-safe MapLibre GL setup for every consumer that renders a
+ * Shared MapLibre GL setup for every consumer that renders a
  * react-map-gl/maplibre <Map>: facility-map.tsx (/map),
  * hero-globe.tsx (homepage), and facility-mini-map.tsx (per-facility page).
  *
- * Why: the standard `maplibre-gl` entry point compiles style expressions
- * with `new Function`, which trips `script-src` under an enforcing CSP with
- * no `'unsafe-eval'` (see next.config.ts's CSP_REPORT_ONLY_DIRECTIVES —
- * script-src deliberately omits 'unsafe-eval'). `dist/maplibre-gl-csp.js`
- * is the package's own CSP-safe build for exactly this case (GitHub issue
- * #236); it was previously unused, leaving `/map` as the sole route family
- * still producing a CSP violation (`directive="script-src"
- * blockedURI="eval"`) in e2e/csp.spec.ts.
+ * Why this module exists (GitHub issue #236 / PR #253, enforcing CSP with no
+ * `'unsafe-eval'` — see next.config.ts's CSP directives): on maplibre-gl v5,
+ * the standard entry point required a separate CSP-safe build to avoid
+ * `script-src 'unsafe-eval'` violations. As of maplibre-gl v6, that split
+ * build no longer exists — v6 dropped `new Function`/`eval` from the standard
+ * bundle entirely, so the ESM-only standard entry point is CSP-safe on its
+ * own (per MapLibre's official v5→v6 migration guide).
  *
- * The CSP build doesn't inline its worker bundle (that's the other half of
- * what makes it CSP-safe — no worker created via a stringified-source blob
- * URL), so it has to be told explicitly where to fetch the worker script.
- * `new URL(..., import.meta.url)` is a build-time-resolved asset reference
- * — both webpack (this app's build, see next.config.ts / package.json's
- * `next build`) and Turbopack recognize this exact form and emit the target
- * as a bundled static asset with a content-hashed production URL, so this
- * survives a production build without a hand-maintained copy of the worker
- * file under public/ that could drift out of sync with the installed
- * maplibre-gl version on an upgrade.
+ * What v6 still requires explicitly: the worker no longer runs from an
+ * inlined blob URL, but from a real file (`maplibre-gl/dist/maplibre-gl-worker.mjs`),
+ * so bundler consumers (webpack/Turbopack, per this app's `next build`) must
+ * still point `setWorkerUrl` at it. `new URL(..., import.meta.url)` is a
+ * build-time-resolved asset reference that both webpack and Turbopack
+ * recognize, emitting the target as a bundled static asset with a
+ * content-hashed production URL — this survives a production build without
+ * a hand-maintained copy of the worker file under public/ that could drift
+ * out of sync with the installed maplibre-gl version on an upgrade.
  *
  * Every consumer MUST import `mapLib` from here rather than importing
  * `maplibre-gl` directly: `@vis.gl/react-maplibre`'s `reuseMaps` pool
  * (`Maplibre.savedMaps`, a single static array) is shared across every
- * `<Map reuseMaps>` in the app regardless of which mapLib built the pooled
- * instance — mixing the standard and CSP builds across consumers would let
- * a pooled standard-build instance (still eval-based) reach /map, or a
- * pooled CSP-build instance reach a consumer that never set its worker URL.
- * Importing this one module everywhere keeps every pooled instance
- * identical. See facility-mini-map.tsx for why that map deliberately does
- * NOT pass `reuseMaps` — the same pool.
+ * `<Map reuseMaps>` in the app regardless of which mapLib instance built the
+ * pooled entry — mixing separately-constructed maplibregl instances across
+ * consumers would let a pooled instance from one built at consumer A reach
+ * consumer B unexpectedly. Importing this one module everywhere keeps every
+ * pooled instance identical. See facility-mini-map.tsx for why that map
+ * deliberately does NOT pass `reuseMaps` — the same pool.
  */
-import * as maplibregl from "maplibre-gl/dist/maplibre-gl-csp";
+import * as maplibregl from "maplibre-gl";
 
 maplibregl.setWorkerUrl(
-  new URL("maplibre-gl/dist/maplibre-gl-csp-worker.js", import.meta.url).href
+  new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).href
 );
 
 /** Pass to every `<Map mapLib={mapLib}>` in this app — see module doc above. */
