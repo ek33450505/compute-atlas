@@ -82,6 +82,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # WHY THIS EXISTS: automation-health.yml — the watchdog added the day
+      # before to catch dead scheduled workflows — shipped on 2026-09-09 with
+      # `${{ runner.temp }}` inside a job-level `env:`, where the `runner`
+      # context is not available. GitHub rejects that at PARSE time, so the
+      # file never ran at all: zero jobs, a 0-second red run on every push, the
+      # 13:00 UTC schedule never firing, and the workflow registered under its
+      # path instead of its `name:`. Nothing in CI could catch it, because CI
+      # only ever exercised the workflows that already parsed. A workflow that
+      # cannot start is invisible to every test written inside it.
+      #
+      # WHY IT LIVES IN THIS JOB AND NOT ITS OWN: `name: BATS tests` is one of
+      # exactly two required status-check contexts in main's branch protection
+      # ("typecheck · lint · test" is the other). A separate `actionlint` job
+      # would be the tidier home and the wrong one — not being a required
+      # context, it could go red while the merge stayed available, which is the
+      # same "correct check that gates nothing" trap described on the e2e job
+      # below. ⛔ Do not rename this job to match its widened scope; the name
+      # IS the branch-protection contract.
+      #
+      # Pinned by version and verified by checksum, matching the full-SHA
+      # pinning used for every action in this repo. 1.7.12 is also the version
+      # on the maintainer's machine, so a local `actionlint .github/workflows/*.yml`
+      # returns the same verdict as CI instead of a version-skew disagreement.
+      # ubuntu-latest ships shellcheck, which actionlint auto-detects for `run:`
+      # blocks; that matches the local setup too, and no workflow here uses
+      # python, so pyflakes being absent changes nothing either way.
+      - name: Lint GitHub Actions workflow files
+        run: |
+          set -euo pipefail
+          VERSION=1.7.12
+          SHA256=8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+          TARBALL="actionlint_${VERSION}_linux_amd64.tar.gz"
+          curl -fsSL -o "$RUNNER_TEMP/$TARBALL" \
+            "https://github.com/rhysd/actionlint/releases/download/v${VERSION}/${TARBALL}"
+          echo "${SHA256}  ${RUNNER_TEMP}/${TARBALL}" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$TARBALL" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -color .github/workflows/*.yml
+
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"

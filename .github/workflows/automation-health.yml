@@ -50,10 +50,6 @@ jobs:
   health:
     name: Report unhealthy scheduled workflows
     runs-on: ubuntu-latest
-    env:
-      # Declared once at job level so the producing step and the consuming
-      # steps cannot drift to different paths.
-      REPORT: ${{ runner.temp }}/health.md
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -61,6 +57,28 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+
+      # $REPORT is exported here rather than declared in a job-level `env:`,
+      # and that is a correctness fix, not a style preference.
+      #
+      # `jobs.<job_id>.env` cannot see the `runner` context — only github,
+      # needs, strategy, matrix, vars, secrets and inputs are available there.
+      # So `REPORT: ${{ runner.temp }}/health.md` at job level was a workflow
+      # VALIDATION error, which GitHub reports at parse time, not at run time:
+      # it never read this file at all. Every trigger from 2026-09-09 produced
+      # a 0-second run with zero jobs, the workflow registered under its path
+      # instead of its `name:`, and the 13:00 UTC schedule never fired once.
+      # The watchdog written to catch dead automation was itself dead from
+      # birth, and — as the header notes — is structurally unable to say so.
+      #
+      # RUNNER_TEMP is the ambient environment variable carrying the same
+      # value into any `run:` block, with no expression context involved, and
+      # $GITHUB_ENV still gives every later step one shared definition, which
+      # is what the job-level `env:` was reaching for. Now enforced: ci.yml's
+      # `actionlint` step fails the PR on this class of error, so a workflow
+      # that cannot start can no longer reach main.
+      - name: Resolve the report path
+        run: echo "REPORT=$RUNNER_TEMP/health.md" >> "$GITHUB_ENV"
 
       # continue-on-error so an unhealthy result still reaches the issue steps
       # below; the job is failed deliberately at the very end instead. The
