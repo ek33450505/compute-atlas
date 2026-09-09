@@ -93,6 +93,15 @@ jobs:
         run: bats tests/discovery/run.bats
       - name: vercel ignore-gate BATS
         run: bats tests/vercel/run.bats
+      # Covers scripts/classify-drift-output.sh, which decides whether the
+      # nightly drift alert reports "converged", "drifted", or "detector
+      # broke". Wired in deliberately: that logic previously lived inline in a
+      # workflow `run:` block, where nothing could exercise it, and it shipped
+      # broken and stayed broken for six nights. A correct test that runs in no
+      # workflow is indistinguishable from no test — see the Playwright note
+      # below for the same lesson learned the same way.
+      - name: drift-classifier BATS
+        run: bats tests/workflows/run.bats
 
   # Playwright covers what vitest structurally cannot: vitest calls page functions
   # directly and never exercises Next's HTTP layer, so it is blind to status-code

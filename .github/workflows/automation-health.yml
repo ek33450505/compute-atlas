@@ -1,0 +1,133 @@
+# Reports when a SCHEDULED workflow has stopped working — and reports it
+# somewhere a human actually looks.
+#
+# WHY THIS EXISTS:
+# drift-alert.yml failed six consecutive nightly runs (2026-09-03 .. 2026-09-08)
+# and nobody noticed. The non-noticing is the bug this file addresses; the
+# broken classification inside drift-alert.yml was fixed separately. CI failures
+# get seen because they block a PR someone is waiting on. A scheduled failure
+# emits an email that gets filtered, so six red nights read exactly like six
+# green ones. The maintainer works the backlog through `gh issue list`, so this
+# opens an ISSUE — the surface that reaches them — and ALSO fails red, so there
+# are two independent signals rather than one.
+#
+# WHY RUN FRESHNESS, NOT OUTPUT PRESENCE:
+# neon-sync.yml correctly opens no PR when there is no drift, so "no sync PR
+# today" cannot distinguish a healthy quiet day from a dead chain. The scheduled
+# RUN happens either way, so freshness of the run is the signal that separates
+# them. It also catches GitHub disabling scheduled workflows after 60 days of
+# repository inactivity, which produces no failure event at all — only silence.
+# A STALE SUCCESS is therefore treated as unhealthy: it means the schedule
+# stopped firing, not that the job is fine.
+#
+# ⛔ KNOWN AND DELIBERATE LIMIT: this workflow cannot detect its OWN staleness.
+# One level of recursion is where this stops. A watchdog for the watchdog would
+# have the same hole one layer further out, and pretending the hole is closed
+# would recreate the false confidence this exists to remove. The generated issue
+# body states this explicitly, so a reader is never misled about the guarantee.
+name: Automation Health
+
+on:
+  schedule:
+    # 13:00 UTC daily (09:00 EDT) — clear of every monitored cron (06 canary,
+    # 08 neon-sync, 09 Mon release-please, 22 drift-alert, 23 watchdog) and
+    # early in the maintainer's day, so a new issue is seen the same morning.
+    # The exact hour is not load-bearing: the staleness budgets are 36h/8d
+    # precisely so this check is never in a race with the jobs it watches.
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read # required to read OTHER workflows' run history
+  issues: write # required to open/update/close the tracking issue
+
+concurrency:
+  group: automation-health
+  cancel-in-progress: false
+
+jobs:
+  health:
+    name: Report unhealthy scheduled workflows
+    runs-on: ubuntu-latest
+    env:
+      # Declared once at job level so the producing step and the consuming
+      # steps cannot drift to different paths.
+      REPORT: ${{ runner.temp }}/health.md
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      # continue-on-error so an unhealthy result still reaches the issue steps
+      # below; the job is failed deliberately at the very end instead. The
+      # script exits 1 when anything is unhealthy AND when it cannot check at
+      # all (missing token) — "could not check" must never read as "healthy".
+      #
+      # Invoked as `npx tsx` deliberately: the npm-script form would carry
+      # `--env-file=.env.local`, which does not exist on a runner. That exact
+      # mistake is what broke drift-alert.yml for six consecutive nights.
+      - name: Check scheduled workflow health
+        id: health
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: npx tsx scripts/automation-health.ts --out="$REPORT"
+
+      - name: Open or update the tracking issue
+        if: steps.health.outputs.healthy == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TITLE="Automation health: a scheduled workflow needs attention"
+          # Idempotent: `gh issue create --label X` FAILS OUTRIGHT if label X
+          # does not exist, which would leave this watchdog unable to report —
+          # the exact silent-failure class it exists to catch. Verified absent
+          # on this repo 2026-09-09. `|| true` because a concurrent run (or a
+          # human) may have created it first; that is success, not an error.
+          gh label create automation-health \
+            --description "Opened by the Automation Health workflow" \
+            --color FBCA04 2>/dev/null || true
+          EXISTING="$(gh issue list --label automation-health --state open \
+            --json number --jq '.[0].number // empty')"
+          if [ -n "$EXISTING" ]; then
+            echo "Updating existing issue #$EXISTING"
+            gh issue comment "$EXISTING" --body-file "$REPORT"
+          else
+            echo "Opening a new tracking issue"
+            gh issue create --title "$TITLE" --label automation-health \
+              --body-file "$REPORT"
+          fi
+
+      # Self-clearing: a recovered chain closes its own issue, so a stale open
+      # issue is never mistaken for a live problem. Without this the issue
+      # becomes permanent furniture and gets ignored — the same fate as the
+      # notification emails this workflow exists to route around.
+      - name: Close the tracking issue once everything is healthy
+        if: steps.health.outputs.healthy == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          EXISTING="$(gh issue list --label automation-health --state open \
+            --json number --jq '.[0].number // empty')"
+          if [ -n "$EXISTING" ]; then
+            gh issue close "$EXISTING" \
+              --comment "All monitored scheduled workflows are healthy again as of this run. Closing automatically."
+          else
+            echo "All healthy; no open automation-health issue to close."
+          fi
+
+      # The second signal, and deliberately LAST: if this ran earlier, its
+      # failure would skip the reporting steps above and the only record would
+      # be the red X that nobody reads — reproducing the original bug.
+      - name: Fail the run if anything is unhealthy
+        if: steps.health.outcome == 'failure'
+        run: |
+          echo "::error::One or more scheduled workflows are failing, stale, or were never run — see the step output above and the open 'automation-health' issue. A stale SUCCESS counts as unhealthy: it means the schedule stopped firing, not that the job is fine."
+          exit 1
