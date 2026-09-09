@@ -13,6 +13,10 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "scratchpad/**",
+    // Minified maplibre-gl worker bundles copied verbatim from node_modules by
+    // scripts/copy-maplibre-worker.mjs (see .gitignore). Vendored third-party
+    // output, not source — linting it produced ~1100 warnings of pure noise.
+    "public/maplibre/**",
   ]),
 ]);
 

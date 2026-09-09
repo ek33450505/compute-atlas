@@ -12,14 +12,28 @@
  * own (per MapLibre's official v5→v6 migration guide).
  *
  * What v6 still requires explicitly: the worker no longer runs from an
- * inlined blob URL, but from a real file (`maplibre-gl/dist/maplibre-gl-worker.mjs`),
- * so bundler consumers (webpack/Turbopack, per this app's `next build`) must
- * still point `setWorkerUrl` at it. `new URL(..., import.meta.url)` is a
- * build-time-resolved asset reference that both webpack and Turbopack
- * recognize, emitting the target as a bundled static asset with a
- * content-hashed production URL — this survives a production build without
- * a hand-maintained copy of the worker file under public/ that could drift
- * out of sync with the installed maplibre-gl version on an upgrade.
+ * inlined blob URL, but from a real file, so `setWorkerUrl` must point at one.
+ * It is served from `public/maplibre/` rather than referenced as a bundled
+ * asset (`new URL(..., import.meta.url)`): v6's worker module opens with a
+ * relative import of its `maplibre-gl-shared.mjs` sibling, and Next emits the
+ * worker verbatim under a content-hashed name without rewriting that import,
+ * so the worker requests a path that does not exist, 404s, and never boots —
+ * the style then never loads and the basemap renders blank with no error.
+ * `public/maplibre/` is a generated, gitignored copy written at build time
+ * from the installed package by `scripts/copy-maplibre-worker.mjs` (wired to
+ * `prebuild` and `predev` in package.json), so it cannot drift out of sync
+ * with the installed maplibre-gl version on an upgrade.
+ *
+ * Two honest limits of that arrangement. The worker URL below is root-absolute,
+ * so it assumes no `basePath`/`assetPrefix` is configured; if either is ever set,
+ * this path needs the same prefix. And because the copy is wired to `predev` /
+ * `prebuild`, invoking `next dev` / `next build` directly rather than through
+ * `npm run dev` / `npm run build` skips it and the worker 404s again, with
+ * nothing to catch it — always go through the npm scripts. `e2e/map-style.spec.ts`
+ * does not cover that bypass: its `webServer.command` is `npm run build`, so it
+ * runs `prebuild` itself. What it does cover is the symptom class, in a build it
+ * started — on `/` and `/map` it asserts `isStyleLoaded()` becomes true and that
+ * no response whose URL contains "maplibre" returned >= 400.
  *
  * Every consumer MUST import `mapLib` from here rather than importing
  * `maplibre-gl` directly: `@vis.gl/react-maplibre`'s `reuseMaps` pool
@@ -33,9 +47,7 @@
  */
 import * as maplibregl from "maplibre-gl";
 
-maplibregl.setWorkerUrl(
-  new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).href
-);
+maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
 /** Pass to every `<Map mapLib={mapLib}>` in this app — see module doc above. */
 export const mapLib = maplibregl;

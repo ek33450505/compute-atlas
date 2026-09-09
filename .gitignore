@@ -61,3 +61,7 @@ next-env.d.ts
 
 # Banner build intermediate — regenerate with scripts/make-banner.py
 docs/media/banner.svg
+
+# MapLibre worker + its shared sibling, copied from node_modules by
+# scripts/copy-maplibre-worker.mjs on prebuild/predev — generated, never edited
+/public/maplibre/
