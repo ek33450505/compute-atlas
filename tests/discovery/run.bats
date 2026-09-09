@@ -452,9 +452,14 @@ EOF
 	# the compute_cap block ran and logged its decision
 	[[ "$output" == *"review cap for"* ]]
 
-	# the submit call's --max is one of the two sane values (25 during the
-	# burst window, 15 after) — never empty, never something else
-	run grep -Eo -- "submit-candidates.ts .*--max=(25|15)" "$NPX_CALL_LOG"
+	# the submit call's --max is a bare run of digits that terminates cleanly at
+	# a space or end of line — i.e. never empty (`--max=`), never non-numeric
+	# (`--max=abc`), never a half-expanded value (`--max=25foo`). The specific
+	# number is deliberately NOT pinned here: both caps are 25 today, but the
+	# value is a maintainer knob and BURST_START_DATE is clock-dependent (see
+	# the block comment above), so pinning it would make this test fragile
+	# without guarding the bug class it exists for.
+	run grep -Eo -- "submit-candidates.ts .*--max=[0-9]+([[:space:]]|$)" "$NPX_CALL_LOG"
 	[ "$status" -eq 0 ]
 	[ -n "$output" ]
 }
