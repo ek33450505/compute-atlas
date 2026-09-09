@@ -119,7 +119,13 @@ const FAILURE_CONCLUSIONS = new Set(["failure", "timed_out", "cancelled"]);
 export function classifyWorkflow(
   cfg: WorkflowConfig,
   runs: WorkflowRun[],
-  now: Date
+  now: Date,
+  /**
+   * ISO timestamp of the newest SUCCESSFUL run of any event type (typically a
+   * `workflow_dispatch`), or null. See the repair check in the failing branch
+   * below for why this exists and exactly what it is allowed to override.
+   */
+  latestSuccessAt: string | null = null
 ): WorkflowClassification {
   const base = { file: cfg.file, name: cfg.name };
 
@@ -174,6 +180,43 @@ export function classifyWorkflow(
         break; // only the LEADING run of consecutive failures counts
       }
     }
+    // REPAIRED-BUT-NOT-YET-RESCHEDULED.
+    //
+    // The streak above is computed from SCHEDULED runs only, which answers
+    // "have the nightly runs been failing?" — but on its own it reports
+    // HISTORY, not STATE. A maintainer who fixes the bug and verifies with
+    // `workflow_dispatch` changes the state; the scheduled history cannot see
+    // that, and keeps alarming until the next cron fires (up to a full day).
+    // That is how a true-but-stale alert trains its reader to ignore it, which
+    // is the failure this whole script exists to prevent. Real instance:
+    // drift-alert was fixed and dispatch-verified on 2026-09-09, and this
+    // check still reported "6 consecutive failed runs".
+    //
+    // So a success NEWER than the newest failing scheduled run clears the
+    // FAILING verdict — and nothing else.
+    //
+    // ⛔ WHAT THIS DELIBERATELY DOES NOT DO, because each would re-open a hole:
+    //   - It cannot clear `stale` or `never-run`. Those are computed above from
+    //     scheduled runs alone, so a dead cron is still caught even when manual
+    //     dispatches keep succeeding. A dispatch proves the JOB works; only a
+    //     scheduled run proves the SCHEDULE works, and those stay separate.
+    //   - It cannot mask a NEW failure. The masking window closes at the very
+    //     next scheduled run: if that fails, its timestamp is newer than the
+    //     success and the streak reports again. Worst case is one cycle, and
+    //     the staleness budget still fires if the cron goes silent instead.
+    if (latestSuccessAt && new Date(latestSuccessAt) > new Date(newestCompleted.created_at)) {
+      return {
+        ...base,
+        state: "ok",
+        streak: 0,
+        lastRunAt,
+        detail:
+          `${streak} consecutive scheduled failure(s), but a later run succeeded at ` +
+          `${latestSuccessAt} — treating as repaired. The next scheduled run ` +
+          `(${cfg.cronDescription}) is the confirmation; a failure there reports again.`,
+      };
+    }
+
     return {
       ...base,
       state: "failing",
@@ -194,6 +237,63 @@ export function classifyWorkflow(
 
 interface GhRunsResponse {
   workflow_runs: WorkflowRun[];
+}
+
+/**
+ * Client-side guard on the "newest success" lookup. The server-side filter is
+ * NOT trusted on its own — see `fetchLatestSuccessAt` for why. Exported so the
+ * invariant is unit-tested rather than assumed.
+ */
+export function pickLatestSuccess(runs: WorkflowRun[]): string | null {
+  const run = runs[0];
+  return run && run.conclusion === "success" ? run.created_at : null;
+}
+
+/**
+ * Newest SUCCESSFUL run of the workflow across ALL event types, or null.
+ * Feeds the repair check in `classifyWorkflow`; kept as its own request because
+ * the main query is deliberately scheduled-runs-only.
+ *
+ * ⚠️ THE QUERY PARAMETER IS `status=success`, AND THAT IS CORRECT. Do not
+ * "fix" it to `conclusion=success`. This endpoint's `status` filter accepts
+ * conclusion values as well as statuses; there is no `conclusion` filter, and
+ * GitHub SILENTLY IGNORES unknown query parameters rather than erroring.
+ * Measured against this repo on 2026-09-09, using automation-health.yml, whose
+ * 12 runs were at the time ALL failures:
+ *
+ *   ?status=success      -> total_count 0   (filter honoured)
+ *   ?conclusion=success  -> total_count 12  (filter ignored — returns failures)
+ *
+ * So the "more correct looking" parameter would hand this function a FAILED run
+ * as though it were the latest success, and `classifyWorkflow` would clear a
+ * genuine failing verdict with it — creating exactly the masking hole the
+ * repair check is documented not to have. A code reviewer proposed that change
+ * on 2026-09-09; the commands above are how it was refuted.
+ *
+ * `pickLatestSuccess` re-checks the conclusion locally anyway, so this stays
+ * correct even if the filter's behaviour changes upstream.
+ */
+async function fetchLatestSuccessAt(
+  owner: string,
+  repo: string,
+  file: string,
+  token: string
+): Promise<string | null> {
+  const url =
+    `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${file}/runs` +
+    `?status=success&per_page=1`;
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`GitHub API ${res.status} fetching successes for ${file}: ${await res.text()}`);
+  }
+  const body = (await res.json()) as GhRunsResponse;
+  return pickLatestSuccess(body.workflow_runs);
 }
 
 async function fetchRuns(owner: string, repo: string, file: string, token: string): Promise<WorkflowRun[]> {
@@ -366,8 +466,11 @@ async function main() {
 
   for (const cfg of MONITORED_WORKFLOWS) {
     try {
-      const runs = await fetchRuns(owner, repo, cfg.file, token);
-      results.push(classifyWorkflow(cfg, runs, now));
+      const [runs, latestSuccessAt] = await Promise.all([
+        fetchRuns(owner, repo, cfg.file, token),
+        fetchLatestSuccessAt(owner, repo, cfg.file, token),
+      ]);
+      results.push(classifyWorkflow(cfg, runs, now, latestSuccessAt));
     } catch (err) {
       // A fetch error is itself an unhealthy signal — fail closed per-workflow
       // rather than skip it silently.
