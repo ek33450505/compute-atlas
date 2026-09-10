@@ -4241,6 +4241,25 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "brookfield-nextera-paducah-site-mccracken-ky": {
+    "nearestWater": {
+      "name": "Bayou Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "buckley-bros-pawhuska-ok": {
     "nearestWater": {
       "name": "Bird Creek",
@@ -8547,6 +8566,25 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "deltona-holder-industrial-park-citrus-county-fl": {
+    "nearestWater": {
+      "name": "Kings Bay",
+      "kind": "lake",
+      "distanceMi": 5.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Floridan Aquifer System",
+      "rock": "Carbonate-rock"
     }
   },
   "diamond-farms-gateway-digital-villa-ridge-mo": {
@@ -17235,6 +17273,25 @@
       "rock": "Sandstone"
     }
   },
+  "mcni-concord-township-hancock-county-ia": {
+    "nearestWater": {
+      "name": "East Branch Iowa River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 26.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Upper Carbonate Aquifer",
+      "rock": "Carbonate-rock"
+    }
+  },
   "menlo-digital-jamestown-drive-petersburg-va": {
     "nearestWater": {
       "name": "Blackwater Swamp",
@@ -17860,6 +17917,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "metered-mining-hammond-wi": {
+    "nearestWater": {
+      "name": "South Branch Kinnickinnic River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "metro-edge-imd1-chicago-il": {
@@ -19537,6 +19613,25 @@
       "label": "Low (<10%)"
     }
   },
+  "nextera-paducah-generation-mccracken-ky": {
+    "nearestWater": {
+      "name": "Bayou Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "nextera-rush-springs-solar-stephens-county-ok": {
     "nearestWater": {
       "name": "West Mud Creek",
@@ -20639,6 +20734,25 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "panattoni-burgin-mercer-county-ky": {
+    "nearestWater": {
+      "name": "Cane Run",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Ordovician Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "panther-creek-hpc-ai-campus-nesquehoning-pa": {
     "nearestWater": {
       "name": "Nesquehoning Creek",
@@ -21302,6 +21416,21 @@
     "aquifer": {
       "name": "Valley And Ridge Carbonate-rock Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "powerhouse-poe-carrollton-industrial-campus-carroll-county-ky": {
+    "nearestWater": {
+      "name": "Ohio River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "powerhouse-provident-grand-prairie-tx": {
@@ -26045,6 +26174,25 @@
       "rock": "Sandstone"
     }
   },
+  "surge-hancock-county-megasite-buck-creek-township-in": {
+    "nearestWater": {
+      "name": "Buck Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "switch-apex-industrial-park-north-las-vegas-nv": {
     "nearestWater": {
       "name": "Gypsum Wash",
@@ -29184,6 +29332,25 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "western-hospitality-partners-project-lincoln-oldham-county-ky": {
+    "nearestWater": {
+      "name": "North Fork Currys Fork",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "westin-building-digital-realty-seattle-sea10-wa": {
