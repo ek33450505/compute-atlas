@@ -256,6 +256,82 @@
       "rock": "Sandstone"
     }
   },
+  "adams-fork-harless-datacenter-logan-county-wv": {
+    "nearestWater": {
+      "name": "Island Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 11.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "adams-fork-harless-power-plant-logan-county-wv": {
+    "nearestWater": {
+      "name": "Island Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 11.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "adams-fork-wharncliffe-datacenter-mingo-county-wv": {
+    "nearestWater": {
+      "name": "Ben Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 15.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "adams-fork-wharncliffe-power-plant-mingo-county-wv": {
+    "nearestWater": {
+      "name": "Ben Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 15.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "adp-ladysmith-data-hub-caroline-va": {
     "nearestWater": {
       "name": "Lake Caroline",
@@ -2447,6 +2523,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "aws-costas-ridgeland-ms": {
+    "nearestWater": {
+      "name": "White Oak Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "aws-crosby-court-franklin-county-oh": {
     "nearestWater": {
       "name": "South Fork Indian Run",
@@ -3791,6 +3882,25 @@
     "aquifer": {
       "name": "Edwards-trinity Aquifer System",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "blockchain-power-blacksville-monongalia-county-wv": {
+    "nearestWater": {
+      "name": "Jakes Run",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "blockfusion-niagara-falls-ny": {
@@ -9469,6 +9579,25 @@
       "rock": "Carbonate-rock"
     }
   },
+  "duke-anderson-plant-anderson-county-sc": {
+    "nearestWater": {
+      "name": "Little Generostee Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "duke-energy-belews-creek-smr-stokes-county-nc": {
     "nearestWater": {
       "name": "Belews Lake",
@@ -12614,6 +12743,44 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "fundamental-data-ridgeline-datacenter-tucker-county-wv": {
+    "nearestWater": {
+      "name": "North Fork Blackwater River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.4
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "fundamental-data-ridgeline-power-plant-tucker-county-wv": {
+    "nearestWater": {
+      "name": "North Fork Blackwater River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.4
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "galaxy-digital-mcgregor-tx": {
     "nearestWater": {
       "name": "Harris Creek",
@@ -14431,6 +14598,25 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "hillwood-sterling-buick-city-flint-mi": {
+    "nearestWater": {
+      "name": "Flint River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "hixson-bloom-fuel-cells-mcminnville-tn": {
@@ -18441,6 +18627,44 @@
       "rock": "Carbonate-rock"
     }
   },
+  "mon-power-maidsville-energy-center-monongalia-county-wv": {
+    "nearestWater": {
+      "name": "Laurel Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.4
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "monarch-cloud-campus-generation-mason-county-wv": {
+    "nearestWater": {
+      "name": "Ohio River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "monarch-data-center-yerington-nv": {
     "nearestWater": {
       "name": "Walker River",
@@ -19755,6 +19979,29 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "okee-one-irsc-okeechobee-fl": {
+    "nearestWater": {
+      "name": "Taylor Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "oklahoma-ai-ventures-black-bear-noble-county-ok": {
@@ -21842,6 +22089,25 @@
       "label": "High (40-80%)"
     }
   },
+  "qts-kearneysville-berkeley-jefferson-wv": {
+    "nearestWater": {
+      "name": "Shaw Run",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "qts-lancium-hall-county-tx": {
     "nearestWater": {
       "name": "Turkey Creek",
@@ -22133,6 +22399,25 @@
     "groundwaterDecline": {
       "cat": 1,
       "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "quantum-frederick-campus-md": {
+    "nearestWater": {
+      "name": "Tuscarora Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "quantum-park-data-center-ashburn-loudoun-va": {
@@ -23400,6 +23685,71 @@
       "label": "High (40-80%)"
     }
   },
+  "santee-cooper-pinopolis-bess-berkeley-county-sc": {
+    "nearestWater": {
+      "name": "Lake Moultrie",
+      "kind": "lake",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "santee-cooper-rainey-expansion-anderson-county-sc": {
+    "nearestWater": {
+      "name": "Whitner Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "santee-cooper-winyah-cts-georgetown-county-sc": {
+    "nearestWater": {
+      "name": "Greens Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "scalematrix-san-diego-ca": {
     "nearestWater": {
       "name": "Tecolote Creek",
@@ -23584,6 +23934,29 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Carbonate-rock Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "sentinel-grove-technology-park-fort-pierce-fl": {
+    "nearestWater": {
+      "name": "Cowbone Creek",
+      "kind": "lake",
+      "distanceMi": 8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "sentinel-jay-me": {
@@ -24219,6 +24592,52 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "srs-ai-data-center-savannah-river-site-sc": {
+    "nearestWater": {
+      "name": "Steel Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "srs-energy-generation-savannah-river-site-sc": {
+    "nearestWater": {
+      "name": "Steel Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "stack-berry-hill-va": {
@@ -24971,6 +25390,29 @@
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "stream-data-centers-project-liberty-marion-county-sc": {
+    "nearestWater": {
+      "name": "Smith Swamp",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -27282,6 +27724,25 @@
       "rock": "Sandstone"
     }
   },
+  "valara-holdings-hpcc-generation-spartanburg-sc": {
+    "nearestWater": {
+      "name": "Richland Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "valley-oak-shinn-street-fremont-ca": {
     "nearestWater": {
       "name": "Alameda Creek",
@@ -28202,6 +28663,29 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "willow-lakes-west-midway-fort-pierce-fl": {
+    "nearestWater": {
+      "name": "Tenmile Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "winchester-gateway-data-center-frederick-va": {
     "nearestWater": {
       "name": "Hoge Run",
@@ -28308,6 +28792,29 @@
       "label": "High (40-80%)"
     }
   },
+  "xai-colossus-1-turbines-memphis-tn": {
+    "nearestWater": {
+      "name": "Lake McKellar",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "xai-colossus-2-memphis-tn": {
     "nearestWater": {
       "name": "Cypress Creek",
@@ -28398,6 +28905,29 @@
     "aquifer": {
       "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "yeehaw-junction-us-development-osceola-fl": {
+    "nearestWater": {
+      "name": "Saint Johns Marsh",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.6
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "yondr-cerberus-manassas-va": {
