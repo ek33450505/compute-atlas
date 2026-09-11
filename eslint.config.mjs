@@ -17,6 +17,10 @@ const eslintConfig = defineConfig([
     // scripts/copy-maplibre-worker.mjs (see .gitignore). Vendored third-party
     // output, not source — linting it produced ~1100 warnings of pure noise.
     "public/maplibre/**",
+    // Per-wave research scratch dirs (see .gitignore). Throwaway working
+    // artifacts from data waves, not application source — gitignoring them
+    // does not stop ESLint, which walks the filesystem rather than git.
+    "wave-*/**",
   ]),
 ]);
 

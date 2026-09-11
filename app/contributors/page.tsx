@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getContributorCredits } from "@/lib/data";
+import { getContributorCredits, type ContributorCredit } from "@/lib/data";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -19,6 +19,40 @@ export const metadata: Metadata = {
 };
 
 const CRUMBS = [{ label: "About", href: "/about" }, { label: "Contributors" }];
+
+/** A `ContributorCredit` plus its deduped anchor fragment — see `buildCreditsWithFragments`. */
+type CreditWithFragment = ContributorCredit & { fragment: string };
+
+/**
+ * `slugify()` (lib/operator-slug.ts) collapses ANY run of non-alphanumerics,
+ * so distinct attributions that differ only in punctuation — "Jane Doe" vs
+ * "Jane-Doe" vs "Jane_Doe" — all produce the same fragment. The dedupe query
+ * in `getContributorCredits` (lib/data.ts) groups on a coarser key
+ * (`lower(trim(...))`) than that, so `credits` can legitimately contain rows
+ * whose slugs collide even though every `attribution` string here is unique.
+ * Compute the fragment ONCE over the whole array, in render order (which is
+ * already the query's deterministic `count desc, normalized asc` order), so
+ * collisions get deterministic `-2`, `-3`, ... suffixes and the JSON-LD `url`
+ * and the `<li id>` can never disagree. Also guards the edge case where an
+ * attribution is punctuation-only and slugifies to "". Returns an enriched
+ * array (rather than a lookup `Map`) so callers get a required `fragment:
+ * string` field instead of `Map#get`'s `string | undefined`.
+ */
+function buildCreditsWithFragments(credits: ContributorCredit[]): CreditWithFragment[] {
+  const used = new Set<string>();
+
+  return credits.map((credit) => {
+    const base = slugify(credit.attribution) || "contributor";
+    let fragment = base;
+    let suffix = 2;
+    while (used.has(fragment)) {
+      fragment = `${base}-${suffix}`;
+      suffix += 1;
+    }
+    used.add(fragment);
+    return { ...credit, fragment };
+  });
+}
 
 /**
  * /contributors — public credit for people who filled the optional
@@ -51,6 +85,7 @@ const CRUMBS = [{ label: "About", href: "/about" }, { label: "Contributors" }];
 export default async function ContributorsPage() {
   const credits = await getContributorCredits();
   const totalCredits = credits.reduce((sum, c) => sum + c.count, 0);
+  const creditsWithFragments = buildCreditsWithFragments(credits);
 
   return (
     <div
@@ -63,13 +98,13 @@ export default async function ContributorsPage() {
           CRUMBS.map((c) => ({ name: c.label, url: c.href }))
         ) }}
       />
-      {credits.length > 0 && (
+      {creditsWithFragments.length > 0 && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: itemListJsonLdString(
-            credits.map((c) => ({
+            creditsWithFragments.map((c) => ({
               name: c.attribution,
-              url: `${siteConfig.url}/contributors#${slugify(c.attribution)}`,
+              url: `${siteConfig.url}/contributors#${c.fragment}`,
             }))
           ) }}
         />
@@ -111,10 +146,10 @@ export default async function ContributorsPage() {
               All credited contributors
             </h2>
             <ul className="max-w-2xl divide-y divide-border border-t border-b border-border">
-              {credits.map(({ attribution, count }) => (
+              {creditsWithFragments.map(({ attribution, count, fragment }) => (
                 <li
                   key={attribution}
-                  id={slugify(attribution)}
+                  id={fragment}
                   className="flex min-h-11 flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3"
                 >
                   <span className="text-sm text-foreground truncate">{attribution}</span>

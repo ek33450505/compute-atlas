@@ -31,7 +31,7 @@ export function FieldGapPrompt({ field, facilityId, facilityName, label }: Field
         defaultField={field as CorrectableKey}
         showIntro={false}
         triggerLabel={`Know ${label}?`}
-        triggerClassName={QUIET_ACTION_CLASS}
+        triggerClassName={`${QUIET_ACTION_CLASS} print:hidden`}
       />
     );
   }
@@ -39,7 +39,7 @@ export function FieldGapPrompt({ field, facilityId, facilityName, label }: Field
   // Not (yet) correctable — route to the lighter lead form instead of
   // promising an edit the system can't apply automatically.
   return (
-    <Link href="/contribute" className={QUIET_ACTION_CLASS}>
+    <Link href="/contribute" className={`${QUIET_ACTION_CLASS} print:hidden`}>
       Know a source for {label} on {facilityName}? Send us a link.
     </Link>
   );
@@ -72,7 +72,7 @@ const SECTION_LINK_CLASS =
  */
 export function SectionGapPrompt({ facilityName, label }: SectionGapPromptProps) {
   return (
-    <Link href="/contribute" className={SECTION_LINK_CLASS}>
+    <Link href="/contribute" className={`${SECTION_LINK_CLASS} print:hidden`}>
       Know a source for {label} on {facilityName}? Send us a link.
     </Link>
   );
