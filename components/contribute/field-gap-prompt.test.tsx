@@ -180,3 +180,118 @@ describe("SectionGapPrompt", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Print-only "Not recorded" marker — FIELD level only.
+//
+// SCOPE WARNING, read before adding to this block: jsdom loads no stylesheet
+// and evaluates no `@media print`, so NOTHING here can show the marker is
+// visible on paper or hidden on screen — every assertion below is about DOM
+// presence and the class/attribute contract only. The assertion that the
+// marker actually prints (and actually does not appear on screen) is
+// media-emulated in e2e/print-brief.spec.ts and lives there on purpose.
+// Test names say "in the DOM" rather than "in print" for that reason.
+//
+// SectionGapPrompt deliberately carries NO marker: a section-level gap has no
+// <dt> to be read against, and one self-naming line per empty section printed
+// as a run of orphan sentences. Those are consolidated into a single line at
+// the foot of the brief instead — lib/facility-gaps.ts +
+// components/facility/print-gap-summary.tsx, covered by their own tests.
+// ---------------------------------------------------------------------------
+
+/** The marker as rendered, or null. Not a visibility check — see above. */
+function notRecordedNode(): HTMLElement | null {
+  return screen.queryByText("Not recorded");
+}
+
+describe("print-only 'Not recorded' marker", () => {
+  it("is in the DOM alongside the correction trigger for a correctable field", () => {
+    render(
+      <FieldGapPrompt
+        field="jobs"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="permanent jobs"
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /know permanent jobs\?/i })).toBeInTheDocument();
+    expect(notRecordedNode()).toBeInTheDocument();
+  });
+
+  it("is in the DOM alongside the lead-form link for a non-correctable field", () => {
+    render(
+      <FieldGapPrompt
+        field="stakeholders"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="the stakeholders"
+      />
+    );
+
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/contribute");
+    expect(notRecordedNode()).toBeInTheDocument();
+  });
+
+  // A section-level gap has no <dt> beside it, so a self-naming marker here
+  // printed as an orphan sentence. The consolidated summary line replaced it;
+  // this pins that SectionGapPrompt is screen-only and prints nothing.
+  it("is absent from a section-level gap, which prints via the consolidated summary", () => {
+    render(<SectionGapPrompt facilityName="Test DC" label="economic impact data" />);
+
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/contribute");
+    expect(screen.queryByText(/^Not recorded/)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["correctable field", <FieldGapPrompt key="c" field="jobs" facilityId="f" facilityName="Test DC" label="permanent jobs" />],
+    ["non-correctable field", <FieldGapPrompt key="n" field="stakeholders" facilityId="f" facilityName="Test DC" label="the stakeholders" />],
+  ])(
+    "carries `hidden` + print:inline and no aria-hidden — %s (class contract only)",
+    (_case, element) => {
+      render(element);
+
+      const marker = screen.getByText("Not recorded");
+      // `hidden` is display:none, which is what keeps the marker out of the
+      // SCREEN accessibility tree. `aria-hidden` would have worked on screen
+      // too but would also have silenced it in print, where it is the only
+      // thing standing in for the value — so its absence is the contract.
+      expect(marker).toHaveClass("hidden", "print:inline");
+      expect(marker).not.toHaveAttribute("aria-hidden");
+    }
+  );
+
+  // The field marker is the bare words in every slot: the <dt> printed beside
+  // it already says what is missing, so naming the subject would duplicate it.
+  it("never names its own subject at field level", () => {
+    render(
+      <FieldGapPrompt
+        field="subsidies"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="a public subsidy"
+      />
+    );
+
+    expect(screen.getByText("Not recorded")).toHaveClass("print:inline");
+    expect(screen.queryByText(/Not recorded: /)).not.toBeInTheDocument();
+  });
+
+  it("does not disturb the screen affordance: the trigger keeps its own print:hidden", () => {
+    render(
+      <FieldGapPrompt
+        field="jobs"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="permanent jobs"
+      />
+    );
+
+    // The marker is additive: the prompt it stands in for must still hide
+    // itself in print, or paper would carry both the invite and the nil.
+    expect(screen.getByRole("button", { name: /know permanent jobs\?/i })).toHaveClass(
+      "print:hidden"
+    );
+    expect(notRecordedNode()).toBeInTheDocument();
+  });
+});

@@ -3,6 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatUsdCompact, formatTonsPerYear } from "@/lib/format";
 import { FieldGapPrompt, SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
+import {
+  hasEconomics,
+  hasEmissions,
+  hasEnergyWater,
+  hasSubsidies,
+} from "@/lib/facility-gaps";
 
 import { FactGroup, FactRow, MetaLine, SourceLink } from "./fact-row";
 
@@ -192,7 +198,10 @@ export function hasCivicImpact(facility: Facility): boolean {
 // --- Sub-section: Economics ---
 function EconomicsGroup({ facility }: { facility: Facility }) {
   const { investmentUsd, landAcres, jobs, id: facilityId, name: facilityName } = facility;
-  if (!investmentUsd && !landAcres && !jobs) {
+  // Emptiness predicates for every section live in lib/facility-gaps.ts, not
+  // inline here — the printed brief's consolidated nil line reads the same
+  // functions, and a local copy is exactly how the two would drift apart.
+  if (!hasEconomics(facility)) {
     return <SectionGapPrompt facilityName={facilityName} label="economic impact data" />;
   }
 
@@ -254,7 +263,7 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
 // --- Sub-section: Energy & water ---
 function EnergyWaterGroup({ facility }: { facility: Facility }) {
   const { energy, water, id: facilityId, name: facilityName } = facility;
-  if (!energy && !water) {
+  if (!hasEnergyWater(facility)) {
     return <SectionGapPrompt facilityName={facilityName} label="energy or water data" />;
   }
 
@@ -317,10 +326,10 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
 // unit is prohibited from emitting, and a truthy check would silently hide
 // that real regulatory fact.
 function EmissionsGroup({ facility }: { facility: Facility }) {
-  const { emissions } = facility;
-  if (!emissions) {
+  if (!hasEmissions(facility)) {
     return <SectionGapPrompt facilityName={facility.name} label="air permit data" />;
   }
+  const { emissions } = facility;
 
   const permitTypeLabel = emissions.permitType
     ? (permitTypeLabels[emissions.permitType] ?? emissions.permitType)
@@ -337,28 +346,12 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
 
   const unitGroups = emissions.unitGroups ?? [];
 
-  // Groups-only permits (e.g. xAI/MZX MS, which caps most pollutants only
-  // per turbine group with no facility-wide tonnage at all) must still
-  // render the panel — without this disjunct, a record with `unitGroups`
-  // but no top-level pollutants/permit metadata would compute `hasContent`
-  // false and the whole "Air permit" panel would silently render nothing.
-  const hasContent =
-    pollutantEntries.length > 0 ||
-    !!emissions.permitNumber ||
-    !!permitTypeLabel ||
-    !!emissions.issuingAgency ||
-    !!emissions.issuedDate ||
-    !!emissions.notes ||
-    !!basisLabel ||
-    !!emissions.unitsCovered ||
-    !!averagingPeriodLabel ||
-    unitGroups.length > 0;
-
-  // NOT converted to SectionGapPrompt (B1d): this is a second, inner guard
-  // for the rare case where `emissions` exists but every field within it is
-  // undefined — distinct from the `!emissions` guard above, which already
-  // covers "no emissions object at all." Left as a plain null return.
-  if (!hasContent) return null;
+  // No second content guard here on purpose. `hasEmissions` above IS the
+  // renderable-content test (it covers the groups-only permit case — e.g.
+  // xAI/MZX MS, which caps most pollutants per turbine group with no
+  // facility-wide tonnage at all — and the schema-valid `emissions: {}`
+  // case). A local copy of that test is what let the printed brief's summary
+  // claim this section was present while the group rendered nothing.
 
   return (
     <div>
@@ -560,8 +553,7 @@ function EnvironmentalGroup({ facility }: { facility: Facility }) {
 
 // --- Sub-section: Public subsidies ---
 function SubsidiesGroup({ facility }: { facility: Facility }) {
-  const { subsidies } = facility;
-  if (!subsidies || subsidies.length === 0) {
+  if (!hasSubsidies(facility)) {
     return (
       <FieldGapPrompt
         field="subsidies"
@@ -571,6 +563,7 @@ function SubsidiesGroup({ facility }: { facility: Facility }) {
       />
     );
   }
+  const { subsidies } = facility;
 
   return (
     <div>

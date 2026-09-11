@@ -71,6 +71,12 @@ vi.mock("@/components/facility/siting-context", () => ({
 vi.mock("@/components/facility/related-facilities", () => ({
   RelatedFacilities: () => null,
 }));
+// Async Server Component (it awaits missingSectionLabels, which queries the
+// power-link datasets). Its own behavior is covered by lib/facility-gaps.test.ts
+// and e2e/print-brief.spec.ts.
+vi.mock("@/components/facility/print-gap-summary", () => ({
+  PrintGapSummary: () => null,
+}));
 
 import FacilityPage, { generateMetadata } from "./page";
 
