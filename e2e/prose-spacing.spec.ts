@@ -52,6 +52,13 @@ const ROUTES = [
   // Both routes are here for those MIDDOT sites, which JOINED_ENTITY_PATTERN
   // below is what guards.
   //
+  // Added 2026-09-11: /gaps carried the same `{f.operator} &middot;
+  // {formatLocation(f)}` shape at app/gaps/page.tsx:319 (fixed by
+  // precomputing a single string, the same technique app/stats/page.tsx
+  // already used) but was never added to this list, leaving the newest and
+  // most interpolation-dense page unguarded against the exact bug this spec
+  // exists to catch.
+  //
   // ⚠️ Do NOT re-justify these routes by pointing at `Atlas&apos;s`
   // (app/crypto/page.tsx:111). An earlier version of this comment did, and it
   // was wrong twice over: `&apos;` is deliberately excluded from the entity
@@ -60,6 +67,7 @@ const ROUTES = [
   // a text chunk that FOLLOWS an interpolation; static prose is never at risk.
   "/rankings",
   "/crypto",
+  "/gaps",
 ] as const;
 
 // A word/digit character, then React's SSR text-node separator, then the

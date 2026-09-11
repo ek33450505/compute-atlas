@@ -63,6 +63,29 @@ export default function ContributePage() {
         </div>
       </details>
 
+      {/* Not sure what to send? */}
+      <section
+        aria-labelledby="gaps-pointer-heading"
+        className="space-y-3 border-t border-border pt-10"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Where to help
+        </p>
+        <h2 id="gaps-pointer-heading" className="font-display text-2xl text-foreground">
+          Not sure what to send?
+        </h2>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          <Link
+            href="/gaps"
+            className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            See where the dataset needs help
+          </Link>{" "}
+          &mdash; ranked by what a permit or utility filing can actually
+          resolve, with example facilities to start from.
+        </p>
+      </section>
+
       {/* Support the atlas */}
       <section
         aria-labelledby="support-heading"

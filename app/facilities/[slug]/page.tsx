@@ -31,6 +31,7 @@ import { StakeholdersSection } from "@/components/facility/stakeholders";
 import { PowerLinksSection } from "@/components/facility/power-links";
 import { SitingContextSection } from "@/components/facility/siting-context";
 import { RelatedFacilities } from "@/components/facility/related-facilities";
+import { PrintBriefButton } from "@/components/facility/print-brief-button";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
@@ -203,12 +204,16 @@ export default async function FacilityPage({
         <div className="border-t border-border" />
       </header>
 
-      {/* Compact CTA strip — same two actions as the full-size CTAs at the
-          end of the page (SuggestCorrection / WatchButton below), reachable
-          without scrolling past the whole record. Kept quiet (text-scale,
-          no bordered card) so it doesn't compete with the H1; the bottom
-          pair stays put as the canonical full-size CTA — this is additive. */}
+      {/* Compact CTA strip — print trigger plus the same two actions as the
+          full-size CTAs at the end of the page (SuggestCorrection /
+          WatchButton below), reachable without scrolling past the whole
+          record. Kept quiet (text-scale, no bordered card) so it doesn't
+          compete with the H1; the bottom pair stays put as the canonical
+          full-size CTA — this is additive. The strip itself is print:hidden
+          and PrintBriefButton carries the variant too (belt and suspenders —
+          it must never appear in the printout it produces). */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 print:hidden">
+        <PrintBriefButton />
         <SuggestCorrection
           facilityId={facility.id}
           facilityName={facility.name}

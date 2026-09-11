@@ -148,6 +148,29 @@ describe("CivicImpactSection — Economics gap prompts", () => {
     expect(link).toHaveAttribute("href", "/contribute");
   });
 
+  it("renders a per-field gap prompt inside a dt/dd pair, not as a bare <dl> child (WCAG 1.3.1 dl structure)", () => {
+    // Regression for a `dl element has direct children that are not
+    // allowed: div > a` axe violation — a FieldGapPrompt used to render as
+    // a bare `<div><a>...</a></div>` sibling of FactRow's `<div><dt/><dd/></div>`
+    // pairs inside the same `<dl>`. It must render through FactRow instead,
+    // so the gap prompt IS the `<dd>` of a normal term/definition pair.
+    const facility = makeFacility({ jobs: { permanent: 100 } });
+    render(<CivicImpactSection facility={facility} />);
+
+    const link = screen.getByRole("link", { name: /the investment amount/i });
+    expect(link.closest("dd")).toBeInTheDocument();
+    expect(link.closest("dd")?.previousElementSibling?.tagName).toBe("DT");
+
+    // Every direct child of the enclosing <dl> must be a <div> wrapping a
+    // dt/dd pair — never a bare <div><a>...</a></div>.
+    const dl = link.closest("dl") as HTMLElement;
+    for (const child of Array.from(dl.children)) {
+      expect(child.tagName).toBe("DIV");
+      expect(child.querySelector(":scope > dt")).toBeInTheDocument();
+      expect(child.querySelector(":scope > dd")).toBeInTheDocument();
+    }
+  });
+
   it("renders Economics with no gap prompts when investmentUsd, landAcres, and jobs are all present", () => {
     const facility = makeFacility({
       investmentUsd: 1_000_000,

@@ -53,6 +53,12 @@ import {
   getPoweredByGenerators,
   getRecentActivity,
   getQuarterlyPipelineSummary,
+  GAP_DIMENSIONS,
+  getDatasetGaps,
+  computeDatasetGaps,
+  getGapExamples,
+  computeGapExamples,
+  type GapDimension,
 } from "@/lib/data";
 import {
   facilitySchema,
@@ -1671,5 +1677,268 @@ describe("facilities cache payload compression", () => {
     ) as unknown[];
     expect(Array.isArray(roundTripped)).toBe(true);
     expect(roundTripped.length).toBe(original.length);
+  });
+});
+
+describe("computeDatasetGaps", () => {
+  /**
+   * Minimal valid DataCenterFacility fixture — only `status`, the gap
+   * fields, and `sources` vary per call site. Mirrors the
+   * makeGenerationFacility() pattern above (every required
+   * baseFacilityShape field supplied directly, no `as` cast).
+   */
+  function makeGapFacility(
+    overrides: Partial<DataCenterFacility> & { status: DataCenterFacility["status"] }
+  ): DataCenterFacility {
+    return {
+      id: "test-facility",
+      name: "Test Facility",
+      operator: "Test Operator",
+      confidence: "confirmed",
+      location: { lat: 35, lon: -90, state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [
+        {
+          url: "https://example.com",
+          label: "Source",
+          retrievedAt: "2024-01-01",
+          kind: "press",
+        },
+      ],
+      lastUpdated: "2024-01-01",
+      facilityType: "data_center",
+      ...overrides,
+    };
+  }
+
+  const ONE_SOURCE = [
+    { url: "https://example.com/1", label: "S1", retrievedAt: "2024-01-01", kind: "press" as const },
+  ];
+  const TWO_SOURCES = [
+    ...ONE_SOURCE,
+    { url: "https://example.com/2", label: "S2", retrievedAt: "2024-01-01", kind: "press" as const },
+  ];
+  const THREE_SOURCES = [
+    ...TWO_SOURCES,
+    { url: "https://example.com/3", label: "S3", retrievedAt: "2024-01-01", kind: "press" as const },
+  ];
+
+  // Missing every gap field, single source — the "everything is a gap" case.
+  const opMissing = makeGapFacility({
+    id: "op-missing",
+    name: "Bravo Site",
+    status: "operational",
+    sources: ONE_SOURCE,
+  });
+  // Missing every gap field but corroborated by 3 sources — proves
+  // singleSource is independent of the other 5 dimensions.
+  const ucMissingCorroborated = makeGapFacility({
+    id: "uc-missing",
+    name: "Alpha Site",
+    status: "under_construction",
+    sources: THREE_SOURCES,
+  });
+  // Every gap field filled, 2 sources — the "fully covered" fillable case;
+  // must not be counted as missing anything.
+  const opFilled = makeGapFacility({
+    id: "op-filled",
+    status: "operational",
+    capacityMw: { operational: 100 },
+    jobs: { permanent: 50 },
+    subsidies: [{ amountUsd: 1000, sourceIndex: 0 }],
+    water: { coolingType: "air" },
+    energy: { source: "grid" },
+    sources: TWO_SOURCES,
+  });
+  // Missing every gap field, single source, but NOT fillable (proposed) —
+  // real-dataset tests can't prove this exclusion exists (data/facilities.json
+  // always has some non-fillable facilities missing a field, whether or not
+  // an exclusion filter is applied), so a synthetic fixture is required to
+  // give the status-scoping assertions below real teeth.
+  const proposedMissing = makeGapFacility({
+    id: "proposed-missing",
+    status: "proposed",
+    sources: ONE_SOURCE,
+  });
+  const cancelledMissing = makeGapFacility({
+    id: "cancelled-missing",
+    status: "cancelled",
+    sources: ONE_SOURCE,
+  });
+  const permittedMissing = makeGapFacility({
+    id: "permitted-missing",
+    status: "permitted",
+    sources: ONE_SOURCE,
+  });
+
+  const fixture = [
+    opMissing,
+    ucMissingCorroborated,
+    opFilled,
+    proposedMissing,
+    cancelledMissing,
+    permittedMissing,
+  ];
+
+  it("returns all 6 GAP_DIMENSIONS keys", () => {
+    const gaps = computeDatasetGaps(fixture);
+    expect(Object.keys(gaps).sort()).toEqual([...GAP_DIMENSIONS].sort());
+  });
+
+  it("scopes fillableTotal to operational + under_construction only, excluding proposed/cancelled/permitted", () => {
+    const gaps = computeDatasetGaps(fixture);
+    // fillable population is opMissing, ucMissingCorroborated, opFilled = 3,
+    // NOT the full 6-facility fixture.
+    for (const dim of GAP_DIMENSIONS) {
+      expect(gaps[dim].fillableTotal).toBe(3);
+      expect(gaps[dim].allTotal).toBe(6);
+    }
+  });
+
+  it("counts capacity/jobs/subsidies/water/energy gaps only among the fillable population", () => {
+    const gaps = computeDatasetGaps(fixture);
+    for (const dim of ["capacity", "jobs", "subsidies", "water", "energy"] as GapDimension[]) {
+      // opMissing + ucMissingCorroborated are missing; opFilled is not.
+      expect(gaps[dim].fillableMissing).toBe(2);
+      // Same 2 plus the 3 non-fillable facilities, all of which are also
+      // missing every gap field — proposed/cancelled/permitted count toward
+      // `allMissing` even though they're excluded from `fillableMissing`.
+      expect(gaps[dim].allMissing).toBe(5);
+    }
+  });
+
+  it("counts singleSource independently — a 3-source fillable facility does not count even though it is missing every other field", () => {
+    const gaps = computeDatasetGaps(fixture);
+    // Only opMissing (1 source) counts among the fillable population;
+    // ucMissingCorroborated (3 sources) and opFilled (2 sources) do not.
+    expect(gaps.singleSource.fillableMissing).toBe(1);
+    // Across the whole dataset: opMissing + the 3 non-fillable single-source
+    // facilities = 4. opFilled (2 sources) and ucMissingCorroborated
+    // (3 sources) are excluded.
+    expect(gaps.singleSource.allMissing).toBe(4);
+  });
+
+  it("a fully-filled fillable facility is not counted as missing anything", () => {
+    const gaps = computeDatasetGaps([opFilled]);
+    for (const dim of GAP_DIMENSIONS) {
+      expect(gaps[dim].fillableMissing).toBe(0);
+    }
+  });
+});
+
+describe("computeGapExamples", () => {
+  function makeGapFacility(
+    overrides: Partial<DataCenterFacility> & { status: DataCenterFacility["status"] }
+  ): DataCenterFacility {
+    return {
+      id: "test-facility",
+      name: "Test Facility",
+      operator: "Test Operator",
+      confidence: "confirmed",
+      location: { lat: 35, lon: -90, state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [
+        { url: "https://example.com", label: "Source", retrievedAt: "2024-01-01", kind: "press" },
+      ],
+      lastUpdated: "2024-01-01",
+      facilityType: "data_center",
+      ...overrides,
+    };
+  }
+
+  const opNoCapacity = makeGapFacility({ id: "a", name: "Bravo Site", status: "operational" });
+  const ucNoCapacity = makeGapFacility({ id: "b", name: "Alpha Site", status: "under_construction" });
+  const opWithCapacity = makeGapFacility({
+    id: "c",
+    name: "Charlie Site",
+    status: "operational",
+    capacityMw: { operational: 500 },
+  });
+  const proposedNoCapacity = makeGapFacility({
+    id: "d",
+    name: "Delta Site",
+    status: "proposed",
+  });
+
+  it("excludes a non-fillable facility missing the field, even though it matches the predicate", () => {
+    const examples = computeGapExamples(
+      [opNoCapacity, ucNoCapacity, opWithCapacity, proposedNoCapacity],
+      "capacity"
+    );
+    expect(examples.map((f) => f.id)).not.toContain("d");
+  });
+
+  it("excludes a fillable facility that does not have the gap", () => {
+    const examples = computeGapExamples(
+      [opNoCapacity, ucNoCapacity, opWithCapacity, proposedNoCapacity],
+      "capacity"
+    );
+    expect(examples.map((f) => f.id)).not.toContain("c");
+  });
+
+  it("sorts by max capacity desc, tie-broken by name A→Z when capacity is equally undisclosed", () => {
+    const examples = computeGapExamples(
+      [opNoCapacity, ucNoCapacity, opWithCapacity, proposedNoCapacity],
+      "capacity"
+    );
+    // Both remaining examples (a, b) have no capacity at all, so the tie
+    // resolves to name order: "Alpha Site" (b) before "Bravo Site" (a).
+    expect(examples.map((f) => f.id)).toEqual(["b", "a"]);
+  });
+
+  it("respects the n parameter", () => {
+    const examples = computeGapExamples(
+      [opNoCapacity, ucNoCapacity, opWithCapacity, proposedNoCapacity],
+      "capacity",
+      1
+    );
+    expect(examples).toHaveLength(1);
+  });
+
+  it("defaults n to 6", () => {
+    const many = Array.from({ length: 10 }, (_, i) =>
+      makeGapFacility({ id: `many-${i}`, name: `Site ${i}`, status: "operational" })
+    );
+    expect(computeGapExamples(many, "capacity")).toHaveLength(6);
+  });
+});
+
+describe("getDatasetGaps", () => {
+  it("returns all 6 GAP_DIMENSIONS keys against the live dataset", async () => {
+    const gaps = await getDatasetGaps();
+    expect(Object.keys(gaps).sort()).toEqual([...GAP_DIMENSIONS].sort());
+  });
+
+  it("each dimension's counts are internally consistent (missing <= total, all >= fillable)", async () => {
+    const gaps = await getDatasetGaps();
+    const allFacilities = await getAllFacilities();
+    for (const dim of GAP_DIMENSIONS) {
+      const g = gaps[dim];
+      expect(g.fillableMissing).toBeGreaterThanOrEqual(0);
+      expect(g.fillableMissing).toBeLessThanOrEqual(g.fillableTotal);
+      expect(g.allMissing).toBeGreaterThanOrEqual(g.fillableMissing);
+      expect(g.allTotal).toBe(allFacilities.length);
+      expect(g.fillableTotal).toBeLessThanOrEqual(g.allTotal);
+    }
+  });
+
+  it("fillableTotal matches the count of operational + under_construction facilities", async () => {
+    const gaps = await getDatasetGaps();
+    const allFacilities = await getAllFacilities();
+    const expected = allFacilities.filter(
+      (f) => f.status === "operational" || f.status === "under_construction"
+    ).length;
+    expect(gaps.capacity.fillableTotal).toBe(expected);
+  });
+});
+
+describe("getGapExamples", () => {
+  it("every example is operational or under_construction — never a structural-zero proposed site", async () => {
+    for (const dim of GAP_DIMENSIONS) {
+      const examples = await getGapExamples(dim, 20);
+      for (const f of examples) {
+        expect(["operational", "under_construction"]).toContain(f.status);
+      }
+    }
   });
 });
