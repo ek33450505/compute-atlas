@@ -65,3 +65,6 @@ docs/media/banner.svg
 # MapLibre worker + its shared sibling, copied from node_modules by
 # scripts/copy-maplibre-worker.mjs on prebuild/predev — generated, never edited
 /public/maplibre/
+
+# Wave scratch artifacts — research working dirs, not part of the app
+wave-*/

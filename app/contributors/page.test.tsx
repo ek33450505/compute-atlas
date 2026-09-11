@@ -103,6 +103,59 @@ describe("ContributorsPage — populated list", () => {
   });
 });
 
+describe("ContributorsPage — punctuation-collision fragments (dedupe key coarser than slugify)", () => {
+  // "Jane Doe" and "Jane-Doe" differ only in internal punctuation. They are
+  // distinct rows from getContributorCredits — its GROUP BY key is
+  // lower(trim(...)), coarser than slugify()'s "collapse any run of
+  // non-alphanumerics" behavior — but both slugify() to "jane-doe". Without
+  // per-page de-duplication this produces two <li id="jane-doe"> elements:
+  // invalid HTML, and a JSON-LD url fragment that can't tell them apart.
+  const COLLIDING_CREDITS: ContributorCredit[] = [
+    { attribution: "Jane Doe", count: 2 },
+    { attribution: "Jane-Doe", count: 1 },
+  ];
+
+  beforeEach(() => {
+    mockGetContributorCredits.mockResolvedValue(COLLIDING_CREDITS);
+  });
+
+  it("assigns distinct, non-empty ids to attributions that collide under slugify()", async () => {
+    const { container } = render(await ContributorsPage());
+
+    const janeDoeRow = screen.getByText("Jane Doe").closest("li");
+    const janeDashDoeRow = screen.getByText("Jane-Doe").closest("li");
+    if (!janeDoeRow || !janeDashDoeRow) {
+      throw new Error("expected both colliding attributions to render as list items");
+    }
+
+    expect(janeDoeRow.id).toBe("jane-doe");
+    expect(janeDashDoeRow.id).not.toBe("");
+    expect(janeDashDoeRow.id).not.toBe(janeDoeRow.id);
+
+    // No duplicate DOM ids anywhere on the page — invalid HTML otherwise.
+    expect(container.querySelectorAll(`#${janeDoeRow.id}`)).toHaveLength(1);
+  });
+
+  it("keeps the JSON-LD ItemList url fragment in sync with the rendered <li id>", async () => {
+    const { container } = render(await ContributorsPage());
+
+    const janeDoeRow = screen.getByText("Jane Doe").closest("li");
+    const janeDashDoeRow = screen.getByText("Jane-Doe").closest("li");
+    if (!janeDoeRow || !janeDashDoeRow) {
+      throw new Error("expected both colliding attributions to render as list items");
+    }
+
+    const jsonLdScripts = container.querySelectorAll('script[type="application/ld+json"]');
+    const itemListScript = Array.from(jsonLdScripts).find((script) =>
+      script.innerHTML.includes("ItemList")
+    );
+    if (!itemListScript) throw new Error("expected an ItemList JSON-LD script");
+
+    expect(itemListScript.innerHTML).toContain(`#${janeDoeRow.id}`);
+    expect(itemListScript.innerHTML).toContain(`#${janeDashDoeRow.id}`);
+  });
+});
+
 describe("ContributorsPage — near-empty (n=1, the real current prod shape)", () => {
   // Matches live prod exactly as measured 2026-09-11: one distinct opted-in
   // handle ("Public Evidence Project") across 8 approved submissions. This

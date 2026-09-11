@@ -315,7 +315,7 @@ export default async function FacilityPage({
             ) : (
               <>
                 {capacity}
-                <div className="mt-1 print:hidden">
+                <div className="mt-1">
                   <ConfirmFactPrompt
                     field="capacityOperationalMw"
                     facilityId={facility.id}

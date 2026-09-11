@@ -168,9 +168,9 @@ describe("admin-session", () => {
     });
   });
 
-  describe("legacy v1 cookies (TRANSITION — see #237)", () => {
-    it("still verifies a valid v1 hash", () => {
-      expect(verifySessionCookie(legacyHash(TOKEN))).toBe(true);
+  describe("legacy v1 cookies (retired — see #237)", () => {
+    it("rejects a well-formed v1 hash of the correct token", () => {
+      expect(verifySessionCookie(legacyHash(TOKEN))).toBe(false);
     });
 
     it("rejects a v1 hash computed from the wrong token", () => {

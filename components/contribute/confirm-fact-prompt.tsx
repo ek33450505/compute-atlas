@@ -63,7 +63,10 @@ export function ConfirmFactPrompt({
 
   if (confirmed) {
     return (
-      <p role="status" className="font-sans text-sm normal-nums text-muted-foreground">
+      <p
+        role="status"
+        className="font-sans text-sm normal-nums text-muted-foreground print:hidden"
+      >
         Thanks for confirming.
       </p>
     );
@@ -77,7 +80,7 @@ export function ConfirmFactPrompt({
   const prompt = year ? `Last updated in ${year}. Still accurate?` : "Still accurate?";
 
   return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-sans normal-nums">
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-sans normal-nums print:hidden">
       <span className="text-sm text-muted-foreground">{prompt}</span>
       <button
         type="button"

@@ -122,6 +122,7 @@ describe("groupChangesByRecipient", () => {
   it("groups multiple changes for the same recipient into one group", () => {
     const changes: RecipientFacilityChange[] = [
       {
+        origin: "facility-watch",
         email: "a@example.com",
         unsubscribeToken: "t1",
         facilityName: "Facility A",
@@ -130,6 +131,7 @@ describe("groupChangesByRecipient", () => {
         status: "Operational",
       },
       {
+        origin: "facility-watch",
         email: "a@example.com",
         unsubscribeToken: "t2",
         facilityName: "Facility B",
@@ -150,6 +152,7 @@ describe("groupChangesByRecipient", () => {
   it("keeps different recipients in separate groups", () => {
     const changes: RecipientFacilityChange[] = [
       {
+        origin: "facility-watch",
         email: "a@example.com",
         unsubscribeToken: "t1",
         facilityName: "Facility A",
@@ -158,6 +161,7 @@ describe("groupChangesByRecipient", () => {
         status: "Operational",
       },
       {
+        origin: "facility-watch",
         email: "b@example.com",
         unsubscribeToken: "t2",
         facilityName: "Facility A",
@@ -175,6 +179,68 @@ describe("groupChangesByRecipient", () => {
 
   it("returns an empty array for no changes", () => {
     expect(groupChangesByRecipient([])).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// RecipientFacilityChange discriminated union — type-level pin for the
+// `origin` refactor. Before this refactor, `stateName` was an optional field
+// whose mere presence was the only signal for which email copy to send; a
+// caller building a state-digest change could simply forget to set it and
+// the object would compile fine (the exact defect this file's `origin`
+// header comment documents). This test proves the mistake is now a compile
+// error: `npm run typecheck` is the enforcement mechanism, and
+// `@ts-expect-error` below is the assertion that the error is actually
+// there — if a future edit widens `stateName` back to optional on the
+// state-digest branch, this directive becomes "unused" and typecheck fails,
+// which is the mutation-test signal for this exact regression (verified by
+// hand: reverting `stateName` to optional and running `npm run typecheck`
+// reports "Unused '@ts-expect-error' directive" at this line; restoring the
+// required field makes it pass again).
+// ---------------------------------------------------------------------------
+/**
+ * ⚠️ These two assert at COMPILE time, not run time. The `expect(...)` calls
+ * below are deliberately vacuous — `npm test` alone can NEVER fail them. The
+ * real gate is `npm run typecheck`: if `stateName` ever becomes optional
+ * again (or `origin` stops being required), the `@ts-expect-error` directives
+ * become UNUSED and tsc errors on them. Verified by mutation: reverting
+ * `stateName` to optional produces "Unused '@ts-expect-error' directive" on
+ * both, plus a genuine error where `sendStateDigestEmail` receives a possibly
+ * -undefined `stateName`. Do not "fix" these into runtime assertions — the
+ * constraint they pin is not observable at run time.
+ */
+describe("RecipientFacilityChange origin discriminator (type-level)", () => {
+  it("rejects an origin: 'state-digest' change missing stateName at compile time", () => {
+    // @ts-expect-error — origin: "state-digest" requires stateName; omitting
+    // it is the exact mistake the required `origin` discriminator exists to
+    // make impossible to construct silently.
+    const invalid: RecipientFacilityChange = {
+      origin: "state-digest",
+      email: "x@example.com",
+      unsubscribeToken: "t",
+      facilityName: "F",
+      facilitySlug: "f",
+      changeLabel: "record updated",
+      status: "Operational",
+    };
+    expect(invalid).toBeDefined();
+  });
+
+  it("rejects an origin: 'facility-watch' change that carries stateName at compile time", () => {
+    const invalid: RecipientFacilityChange = {
+      origin: "facility-watch",
+      email: "x@example.com",
+      unsubscribeToken: "t",
+      facilityName: "F",
+      facilitySlug: "f",
+      changeLabel: "record updated",
+      status: "Operational",
+      // @ts-expect-error — stateName does not exist on the facility-watch
+      // branch; a facility-watch change must never carry state-digest-only
+      // data.
+      stateName: "Tennessee",
+    };
+    expect(invalid).toBeDefined();
   });
 });
 

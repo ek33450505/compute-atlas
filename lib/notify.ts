@@ -16,41 +16,67 @@ import type { Facility } from "@/lib/schema";
  * (`buildStateDigestChanges` below) builds the same shape from a different
  * query (a state WHERE clause, a calendar trigger instead of a publish
  * trigger) and feeds it through this identical grouping + send path — but see
- * `stateName` below: the SHAPE is shared, the COPY is not, because the two
+ * `origin` below: the SHAPE is shared, the COPY is not, because the two
  * origins carry different truths about why the recipient is being emailed.
  */
-export interface RecipientFacilityChange {
+interface RecipientChangeBase {
   email: string;
   unsubscribeToken: string;
   facilityName: string;
   facilitySlug: string;
   changeLabel: string;
   status: string;
-  /**
-   * Set ONLY by `buildStateDigestChanges` (Theme D's monthly state digest) —
-   * the full name of the state this change belongs to (e.g. "Virginia").
-   * `sendGroupedChangeNotifications` uses its presence as the discriminator
-   * for which copy template to use: absent means the original
-   * per-facility-watch framing (byte-identical, unchanged); present means
-   * the state-digest framing (`sendStateDigestEmail`), which must name the
-   * state, state the monthly cadence, and — critically — render exactly ONE
-   * unsubscribe link per email even when several facilities in that state
-   * changed. That last point is not cosmetic: a state-digest recipient has
-   * exactly ONE subscription row (one email + one state), so every change in
-   * their group carries that SAME row's `unsubscribeToken` — unlike a
-   * facility-watch group, where each change is a DIFFERENT subscription row
-   * with its own token. Rendering N identical links each labelled
-   * "unsubscribe from this one" (correct for facility-watch, since its N
-   * changes really are N distinct subscriptions) would be false for a state
-   * digest: every one of those N links would silently unsubscribe the
-   * recipient from the WHOLE state, not "this one" facility.
-   */
-  stateName?: string;
 }
+
+/**
+ * A discriminated union on `origin`, REQUIRED — not inferred from an optional
+ * field's presence. This used to be one flat interface with an optional
+ * `stateName?: string`, whose mere presence was the only signal
+ * `sendGroupedChangeNotifications` had for which copy template to send. That
+ * shape could be built wrongly: a future caller could assemble a
+ * state-digest batch and simply forget to set `stateName` — an internally
+ * consistent group (single state, no mixing) that passes the runtime
+ * mixed-state guard below and silently gets the WRONG copy, because omitting
+ * an optional field is not an error. Making `origin` required turns that
+ * mistake into a compile error instead: there is no way to construct a
+ * `RecipientFacilityChange` without choosing a branch, and the
+ * `"state-digest"` branch cannot be constructed without `stateName` either.
+ *
+ * - `"facility-watch"`: the original per-facility-watch framing
+ *   (byte-identical, unchanged) — the recipient explicitly watched this
+ *   record. `stateName` does not exist on this branch.
+ * - `"state-digest"`: built ONLY by `buildStateDigestChanges` (Theme D's
+ *   monthly state digest) — routes to `sendStateDigestEmail`, which must
+ *   name the state, state the monthly cadence, and — critically — render
+ *   exactly ONE unsubscribe link per email even when several facilities in
+ *   that state changed. That last point is not cosmetic: a state-digest
+ *   recipient has exactly ONE subscription row (one email + one state), so
+ *   every change in their group carries that SAME row's `unsubscribeToken`
+ *   — unlike a facility-watch group, where each change is a DIFFERENT
+ *   subscription row with its own token. Rendering N identical links each
+ *   labelled "unsubscribe from this one" (correct for facility-watch, since
+ *   its N changes really are N distinct subscriptions) would be false for a
+ *   state digest: every one of those N links would silently unsubscribe the
+ *   recipient from the WHOLE state, not "this one" facility. `stateName` is
+ *   REQUIRED on this branch for the same reason `origin` itself is required
+ *   — so the wrong copy can never be built by omission.
+ */
+export type RecipientFacilityChange =
+  | ({ origin: "facility-watch" } & RecipientChangeBase)
+  | ({ origin: "state-digest"; stateName: string } & RecipientChangeBase);
+
+/**
+ * `Omit<UnionType, K>` does NOT distribute over a discriminated union's
+ * branches — TypeScript's built-in `Omit` collapses to the union's COMMON
+ * keys, which would silently drop `stateName` (present on only one branch)
+ * from the result. This distributes the omission per-branch instead, so
+ * `RecipientChangeGroup["changes"]` stays a proper discriminated union.
+ */
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
 export interface RecipientChangeGroup {
   email: string;
-  changes: Omit<RecipientFacilityChange, "email">[];
+  changes: DistributiveOmit<RecipientFacilityChange, "email">[];
 }
 
 /**
@@ -98,12 +124,13 @@ export function groupChangesByRecipient(
  * Sends one email per recipient group, selecting the template by ORIGIN
  * first, then by count:
  *
- * 1. A state-digest group (any change carries `stateName` — see that field's
- *    doc comment) always goes to `sendStateDigestEmail`, REGARDLESS of how
- *    many changes it has. A single-change state digest must still say "your
- *    monthly Virginia digest," never the facility-watch template's "the
- *    record you're watching changed" — that recipient never watched a
- *    record, they watched a state.
+ * 1. A state-digest group (`origin === "state-digest"` on its changes — see
+ *    the `RecipientFacilityChange` union's doc comment) always goes to
+ *    `sendStateDigestEmail`, REGARDLESS of how many changes it has. A
+ *    single-change state digest must still say "your monthly Virginia
+ *    digest," never the facility-watch template's "the record you're
+ *    watching changed" — that recipient never watched a record, they
+ *    watched a state.
  * 2. Otherwise (a facility-watch group), the original logic: the
  *    single-facility template (`sendChangeNotification`, unchanged
  *    content/copy) for exactly one change, or the multi-facility digest
@@ -119,32 +146,40 @@ export function groupChangesByRecipient(
  */
 async function sendGroupedChangeNotifications(groups: RecipientChangeGroup[]): Promise<void> {
   for (const group of groups) {
-    const stateName = group.changes[0]?.stateName;
-    // Defense-in-depth, purely additive: every change in a state-digest
-    // group must share the SAME state — the (email, state) grouping key
-    // `notifyStateSubscribersMonthly` passes guarantees this today (see
-    // groupChangesByRecipient's doc comment). If a future caller ever
-    // groups state-digest changes by email alone again (the exact regression
-    // this guard exists to catch), refuse to send rather than silently
-    // mailing a merged, mislabelled digest — no email address logged, per
-    // this file's existing convention.
-    if (stateName && group.changes.some((c) => c.stateName !== stateName)) {
-      console.error(
-        "sendGroupedChangeNotifications: a group mixed multiple states — refusing to send a mislabelled digest"
-      );
-      continue;
-    }
-    if (stateName) {
+    const first = group.changes[0];
+    // `groupChangesByRecipient` never emits an empty group, but read the
+    // discriminator off a value that is guaranteed to exist rather than
+    // re-indexing `group.changes[0]` (possibly stale/undefined) below.
+    if (!first) continue;
+
+    if (first.origin === "state-digest") {
+      const stateName = first.stateName;
+      // Defense-in-depth, purely additive: `origin` now guarantees every
+      // change in this branch IS a state digest (the type system enforces
+      // that at construction time) — what it can't guarantee is that they
+      // all name the SAME state, since two different states both produce
+      // `origin: "state-digest"` values. The (email, state) grouping key
+      // `notifyStateSubscribersMonthly` passes guarantees that today (see
+      // groupChangesByRecipient's doc comment). If a future caller ever
+      // groups state-digest changes by email alone again (the exact
+      // regression this guard exists to catch), refuse to send rather than
+      // silently mailing a merged, mislabelled digest — no email address
+      // logged, per this file's existing convention.
+      if (group.changes.some((c) => c.origin !== "state-digest" || c.stateName !== stateName)) {
+        console.error(
+          "sendGroupedChangeNotifications: a group mixed multiple states — refusing to send a mislabelled digest"
+        );
+        continue;
+      }
       await sendStateDigestEmail(group.email, stateName, group.changes);
     } else if (group.changes.length === 1) {
-      const change = group.changes[0];
       await sendChangeNotification({
         email: group.email,
-        facilityName: change.facilityName,
-        facilitySlug: change.facilitySlug,
-        changeLabel: change.changeLabel,
-        status: change.status,
-        unsubscribeToken: change.unsubscribeToken,
+        facilityName: first.facilityName,
+        facilitySlug: first.facilitySlug,
+        changeLabel: first.changeLabel,
+        status: first.status,
+        unsubscribeToken: first.unsubscribeToken,
       });
     } else {
       await sendChangeDigestEmail(group.email, group.changes);
@@ -341,6 +376,7 @@ export async function notifySubscribersOfChange(
     const statusLabel = STATUS_META[facility.status].label;
 
     const recipientChanges: RecipientFacilityChange[] = rows.map((row) => ({
+      origin: "facility-watch",
       email: row.email,
       unsubscribeToken: row.unsubscribeToken,
       facilityName: facility.name,
@@ -405,6 +441,7 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
       if (!facility || changeLabel === undefined) continue;
 
       recipientChanges.push({
+        origin: "facility-watch",
         email: row.email,
         unsubscribeToken: row.unsubscribeToken,
         facilityName: facility.name,
@@ -481,7 +518,7 @@ async function buildStateDigestChanges(since: Date): Promise<RecipientFacilityCh
     }
   }
 
-  const changesByState = new Map<string, Array<Omit<RecipientFacilityChange, "email" | "unsubscribeToken">>>();
+  const changesByState = new Map<string, Array<Omit<RecipientChangeBase, "email" | "unsubscribeToken">>>();
   for (const row of latestByFacility.values()) {
     const list = changesByState.get(row.facilityState) ?? [];
     list.push({
@@ -505,6 +542,7 @@ async function buildStateDigestChanges(since: Date): Promise<RecipientFacilityCh
     const stateName = stateNameFromCode(sub.state) ?? sub.state;
     for (const change of changes) {
       recipientChanges.push({
+        origin: "state-digest",
         email: sub.email,
         unsubscribeToken: sub.unsubscribeToken,
         stateName,
@@ -549,8 +587,14 @@ export async function notifyStateSubscribersMonthly(since: Date): Promise<void> 
     // Grouped by (email, state), NOT email alone — a recipient can hold
     // subscriptions to multiple states, and each must get its own,
     // self-consistent email (see groupChangesByRecipient's doc comment).
+    // `buildStateDigestChanges` only ever emits `origin: "state-digest"`
+    // changes, but the key function is typed against the full union, so
+    // `stateName` is only readable once narrowed by `origin`.
     await sendGroupedChangeNotifications(
-      groupChangesByRecipient(changes, (c) => `${c.email}::${c.stateName ?? ""}`)
+      groupChangesByRecipient(
+        changes,
+        (c) => `${c.email}::${c.origin === "state-digest" ? c.stateName : ""}`
+      )
     );
   } catch (err) {
     // Never log email addresses or tokens here — only the error.

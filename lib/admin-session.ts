@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 /**
  * Cookie name for the admin UI session. Distinct from the `Authorization:
@@ -131,44 +131,12 @@ function verifyV2SessionCookie(cookieValue: string, token: string): boolean {
 }
 
 /**
- * TRANSITION (2026-09-05): remove after one release — see #237.
- *
- * Verifies the legacy v1 cookie format: a bare `sha256(API_ADMIN_TOKEN)` hex
- * digest, with no version prefix, timestamp, or nonce. Identical
- * hash-then-`timingSafeEqual` idiom the whole v1 scheme has always used
- * (mirrors `lib/api-auth.ts`'s `requireAdmin`) — accepting it here isn't a
- * new weakness, since a v1 cookie's threat model (valid until the token
- * rotates) is exactly what it's always been. It exists only so admins
- * already logged in at deploy time aren't locked out: `actions.ts` issues
- * ONLY v2 values now, so every v1 cookie in the wild ages out naturally as
- * sessions expire or admins re-log-in. Once one release has passed with no
- * v1 cookies expected to remain live, delete this function, its call in
- * `verifySessionCookie`, and this comment.
- */
-function verifyLegacySessionCookie(cookieValue: string, token: string): boolean {
-  const expectedHash = createHash("sha256").update(token).digest();
-
-  // Buffer.from(str, "hex") never throws on invalid hex — it stops decoding
-  // at the first invalid character (or drops a trailing odd nibble) and
-  // returns whatever it managed to decode, so a malformed cookie value just
-  // yields a short buffer rather than an exception. The length check below
-  // is what actually rejects it.
-  const presentedHash = Buffer.from(cookieValue, "hex");
-
-  if (presentedHash.length !== expectedHash.length) {
-    return false;
-  }
-
-  return timingSafeEqual(presentedHash, expectedHash);
-}
-
-/**
  * Validates a session cookie against the current `API_ADMIN_TOKEN`.
  *
  * Fails CLOSED: if `API_ADMIN_TOKEN` is unset/empty, or the cookie is
  * missing/empty, every request is rejected — there is no "auth disabled"
- * mode. Dispatches on the `v2.` version prefix to the current scheme;
- * anything else falls through to the dated v1 transition path above.
+ * mode. Only the current `v2.` scheme is accepted; anything else (including
+ * the retired bare-hash v1 format — see #237) is rejected outright.
  */
 export function verifySessionCookie(cookieValue: string | undefined): boolean {
   const expected = process.env.API_ADMIN_TOKEN;
@@ -179,9 +147,9 @@ export function verifySessionCookie(cookieValue: string | undefined): boolean {
     return false;
   }
 
-  if (cookieValue.startsWith(`${SESSION_VERSION}.`)) {
-    return verifyV2SessionCookie(cookieValue, expected);
+  if (!cookieValue.startsWith(`${SESSION_VERSION}.`)) {
+    return false;
   }
 
-  return verifyLegacySessionCookie(cookieValue, expected);
+  return verifyV2SessionCookie(cookieValue, expected);
 }
