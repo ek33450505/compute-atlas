@@ -14,9 +14,9 @@ import {
   getCommunityReceptionCounts,
   getEnergySourceCounts,
   getAllFacilities,
-  type CoolingType,
   type EnergySource,
 } from "@/lib/data";
+import { COOLING_TYPE_ENTRIES } from "@/lib/energy";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
@@ -309,14 +309,10 @@ export default async function StatsPage() {
 
         {/* Cooling-method breakdown */}
         {(() => {
-          // Ordered by water intensity (high → minimal) — a rearrangement of CoolingType.
-          const coolingEntries: { key: CoolingType; label: string }[] = [
-            { key: "evaporative", label: "Evaporative (high water)" },
-            { key: "hybrid", label: "Hybrid" },
-            { key: "closed_loop", label: "Closed-loop (low water)" },
-            { key: "air", label: "Air-cooled (minimal)" },
-          ];
-          const coolingSum = coolingEntries.reduce(
+          // Order (water intensity, high → minimal) and labels come from
+          // lib/energy.ts's COOLING_TYPE_ENTRIES — the single source of
+          // truth, shared with any other cooling-type breakdown.
+          const coolingSum = COOLING_TYPE_ENTRIES.reduce(
             (sum, { key }) => sum + cooling[key],
             0
           );
@@ -325,7 +321,7 @@ export default async function StatsPage() {
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 Cooling method
               </p>
-              {coolingEntries.map(({ key, label }) => {
+              {COOLING_TYPE_ENTRIES.map(({ key, label }) => {
                 const count = cooling[key];
                 const pct =
                   coolingSum > 0 ? (count / coolingSum) * 100 : 0;
