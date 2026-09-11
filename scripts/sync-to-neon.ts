@@ -14,7 +14,9 @@
  * 44 adds and 51 corrections publishes the 44 and silently drops all 51.
  *
  * This script closes that gap: it applies adds AND updates, writes history
- * for every single change, and busts exactly the tags it touched. Data then
+ * for every single change, busts exactly the tags it touched, and notifies
+ * every confirmed subscriber watching an affected facility (batched one
+ * email per recipient, not one per facility — see lib/notify.ts). Data then
  * reaches prod without a build at all.
  *
  * `db:seed` is NOT retired — it remains the bootstrap tool for an empty
@@ -70,6 +72,7 @@ import { computeDocDiff, type DiffEntry } from "../lib/doc-diff";
 import { insertFacilityHistoryRow } from "../lib/facility-history";
 import { canonicalize, canonicalStringify, changedTopLevelKeys } from "../lib/canonical-json";
 import { tagsForFacility, isValidCacheTag, MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
+import { notifySubscribersOfChanges } from "../lib/notify";
 
 /**
  * `facility_history.source` for rows this tool writes — a new value alongside
@@ -333,6 +336,30 @@ export async function applySync(
     } catch (err) {
       result.failed.push({ id: change.id, error: errorMessage(err) });
     }
+  }
+
+  // Best-effort — mirrors lib/submissions.ts:150's approve-path call. A
+  // notification failure must never turn a successful publish into an error;
+  // notifySubscribersOfChanges never throws internally, but the try/catch
+  // here is belt-and-suspenders around building its input. One batched call
+  // covering every created + updated facility in this run (not one call per
+  // facility) is what lets a recipient watching several of them get ONE
+  // email instead of one per facility — see lib/notify.ts's
+  // notifySubscribersOfChanges doc comment.
+  try {
+    const changes = [
+      ...result.created.map((change) => ({
+        facility: change.doc,
+        changeLabel: "added to the atlas",
+      })),
+      ...result.updated.map((change) => ({
+        facility: change.doc,
+        changeLabel: "record updated",
+      })),
+    ];
+    await notifySubscribersOfChanges(changes);
+  } catch (err) {
+    console.error("subscriber notification failed", err);
   }
 
   return result;

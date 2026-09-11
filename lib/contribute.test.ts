@@ -221,6 +221,86 @@ describe("buildCorrectionPatch nested-merge safety", () => {
     const result = buildCorrectionPatch(existing, input, TODAY);
     expect("error" in result).toBe(true);
   });
+
+  it("appends a new subsidy record with the corrected amount, preserving existing subsidies", () => {
+    const existing = baseExistingFacility({
+      subsidies: [{ program: "Existing Abatement", amountUsd: 1_000_000 }],
+    });
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "subsidies",
+      value: 5_000_000,
+      sourceUrl: "https://example.com/subsidy-correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("payload" in result).toBe(true);
+    if ("payload" in result) {
+      const subsidies = result.payload.subsidies as Array<{ amountUsd?: number; sourceIndex?: number }>;
+      expect(subsidies).toHaveLength(2);
+      expect(subsidies[0]).toEqual({ program: "Existing Abatement", amountUsd: 1_000_000 });
+      expect(subsidies[1]).toEqual({ amountUsd: 5_000_000, sourceIndex: existing.sources.length });
+      const preview = { ...existing, ...result.payload, id: existing.id };
+      expect(facilitySchema.safeParse(preview).success).toBe(true);
+    }
+  });
+
+  it("points the new subsidy's sourceIndex at the correction's own appended source", () => {
+    const existing = baseExistingFacility({
+      subsidies: [{ program: "Existing Abatement", amountUsd: 1_000_000 }],
+    });
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "subsidies",
+      value: 5_000_000,
+      sourceUrl: "https://example.com/subsidy-correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("payload" in result).toBe(true);
+    if ("payload" in result) {
+      const subsidies = result.payload.subsidies as Array<{ sourceIndex?: number }>;
+      const sources = result.payload.sources as Array<{ label: string; url: string }>;
+      const newSubsidy = subsidies[subsidies.length - 1];
+      expect(newSubsidy.sourceIndex).toBeDefined();
+      const resolvedSource = sources[newSubsidy.sourceIndex as number];
+      expect(resolvedSource.label).toBe("Correction source");
+      expect(resolvedSource.url).toBe("https://example.com/subsidy-correction");
+    }
+  });
+
+  it("sets jobs.permanent while preserving jobs.construction", () => {
+    const existing = baseExistingFacility({
+      jobs: { construction: 300, permanent: 40 },
+    });
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "jobs",
+      value: 75,
+      sourceUrl: "https://example.com/jobs-correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("payload" in result).toBe(true);
+    if ("payload" in result) {
+      expect(result.payload.jobs).toEqual({ construction: 300, permanent: 75 });
+      const preview = { ...existing, ...result.payload, id: existing.id };
+      expect(facilitySchema.safeParse(preview).success).toBe(true);
+    }
+  });
+
+  it("rejects a correction targeting a deferred (not-yet-correctable) field like water", () => {
+    const existing = baseExistingFacility();
+    const input = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "water",
+      value: "closed_loop",
+      sourceUrl: "https://example.com/correction",
+    };
+    const parsed = contributeInputSchema.safeParse(input);
+    expect(parsed.success).toBe(false);
+  });
 });
 
 describe("contributeInputSchema length caps", () => {

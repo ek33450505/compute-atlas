@@ -33,7 +33,7 @@ function getResend(): Resend | null {
   return key ? new Resend(key) : null;
 }
 
-function escapeHtml(value: string): string {
+export function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
