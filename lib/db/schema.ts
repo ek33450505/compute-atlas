@@ -137,12 +137,19 @@ export const subscriptionsTable = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     email: text("email").notNull(), // stored lowercased + trimmed
-    // "facility" is the only type accepted for NEW subscriptions. Legacy rows may
-    // still hold "state" or "all"; those are inert — lib/notify.ts matches on
-    // targetType = "facility" only, so they are never selected for delivery.
-    // The column stays permissive so existing rows remain readable/unsubscribable.
-    targetType: text("target_type").notNull(), // facility (legacy: state | all)
-    targetId: text("target_id"), // facility id (slug); legacy: 2-letter state code, or null for 'all'
+    // "facility" and "state" are both LIVE target types, each with its own
+    // notify path in lib/notify.ts: notifySubscribersOfChange(s) matches
+    // targetType = "facility" only (immediate, per-change), and
+    // notifyStateSubscribersMonthly matches targetType = "state" only
+    // (batched, monthly digest — see that function's doc comment for the
+    // "nothing calls this yet" caveat). "all" is RETIRED, not merely
+    // dormant — a closing email went out to its subscribers 2026-09 and all
+    // 3 rows are unsubscribed; do not re-enable it as a selectable target.
+    // The column stays permissive (plain text, no enum/CHECK) so existing
+    // rows of any vintage remain readable/unsubscribable regardless of which
+    // target types are currently live.
+    targetType: text("target_type").notNull(), // facility | state (retired: all)
+    targetId: text("target_id"), // facility id (slug) or 2-letter state code; null only for the retired 'all' target
     status: text("status").notNull().default("pending"), // pending | confirmed | unsubscribed
     confirmToken: text("confirm_token").notNull(), // sha256 hash (64 hex) of the raw 256-bit base64url single-use (double-opt-in) token; raw is shown once to its owner in the confirm email, so a DB leak yields no usable credential — see lib/token-hash.ts
     unsubscribeToken: text("unsubscribe_token").notNull(), // deliberately RAW, not hashed — 256-bit base64url; lib/notify.ts must embed this, readable, in every future alert email, and its leak blast radius is unsubscribe-only, not data access

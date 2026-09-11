@@ -21,7 +21,7 @@ import type { Facility } from "@/lib/schema";
 // resolve against the mocked module.
 import { POST } from "./route";
 
-const seedDoc = facilitiesRaw[0] as unknown as Facility; // xai-colossus-memphis-tn
+const seedDoc = facilitiesRaw[0] as unknown as Facility; // 123net-dc1-southfield-mi
 
 function req(body: unknown, headers?: HeadersInit): Request {
   return new Request("http://localhost/api/contribute", {

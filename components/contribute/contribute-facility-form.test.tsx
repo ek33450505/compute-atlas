@@ -122,6 +122,20 @@ describe("ContributeFacilityForm — submit outcomes", () => {
     expect(screen.getByRole("button", { name: /submit another/i })).toBeInTheDocument();
   });
 
+  it("sets a review-window expectation and links to the public activity feed on success", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+
+    render(<ContributeFacilityForm />);
+    await fillRequiredFields(user);
+    await user.click(screen.getByRole("button", { name: /submit facility/i }));
+
+    await screen.findByText(/in the review queue/i);
+    expect(screen.getByText(/reviewed within about a week/i)).toBeInTheDocument();
+    const activityLink = screen.getByRole("link", { name: /public activity feed/i });
+    expect(activityLink).toHaveAttribute("href", "/activity");
+  });
+
   it("surfaces a field-level error from a 400 response's issues array", async () => {
     const user = userEvent.setup();
     mockFetchOnce({

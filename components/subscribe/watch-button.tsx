@@ -7,14 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-export type WatchTargetType = "facility";
+export type WatchTargetType = "facility" | "state";
 
 export interface WatchButtonProps {
   targetType: WatchTargetType;
-  /** Facility id. */
+  /** Facility id, or (for targetType="state") a 2-letter state code. */
   targetId: string;
   /** Trigger button copy, e.g. "Watch this facility". */
   label: string;
+  /**
+   * Overrides the default per-change description shown once the form
+   * expands ("Get an email when this changes..."). Callers whose cadence
+   * differs from immediate per-change delivery — e.g. a monthly state
+   * digest — MUST pass this, so the copy states that cadence explicitly
+   * rather than implying instant alerts it doesn't send.
+   */
+  description?: string;
   className?: string;
 }
 
@@ -81,7 +89,13 @@ type Outcome = "idle" | "success";
  * address was already subscribed, so every 201 shows the same "check your
  * email" copy (see lib/subscribe.ts).
  */
-export function WatchButton({ targetType, targetId, label, className }: WatchButtonProps) {
+export function WatchButton({
+  targetType,
+  targetId,
+  label,
+  description,
+  className,
+}: WatchButtonProps) {
   const [revealed, setRevealed] = useState(false);
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
@@ -164,7 +178,7 @@ export function WatchButton({ targetType, targetId, label, className }: WatchBut
         >
           <HoneypotField id={honeypotId} value={website} onChange={setWebsite} />
           <p className="text-sm text-muted-foreground">
-            Get an email when this changes. One click to unsubscribe, anytime.
+            {description ?? "Get an email when this changes. One click to unsubscribe, anytime."}
           </p>
           <div className="flex flex-col gap-1.5 sm:flex-row sm:items-end">
             <div className="flex flex-1 flex-col gap-1.5">

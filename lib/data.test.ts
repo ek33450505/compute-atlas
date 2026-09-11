@@ -52,6 +52,7 @@ import {
   getPoweredCampuses,
   getPoweredByGenerators,
   getRecentActivity,
+  getContributorCredits,
   getQuarterlyPipelineSummary,
   GAP_DIMENSIONS,
   getDatasetGaps,
@@ -1168,6 +1169,16 @@ describe("getRecentActivity", () => {
   // with getDb/hasDatabaseUrl mocked.
   it("returns an empty array when DATABASE_URL is unset", async () => {
     expect(await getRecentActivity()).toEqual([]);
+  });
+});
+
+describe("getContributorCredits", () => {
+  // This suite runs with no DATABASE_URL configured (matches the rest of
+  // this file), so it exercises the no-DB degrade path. The DB-backed
+  // aggregation/filter logic is covered separately in
+  // getContributorCredits.db.test.ts with getDb/hasDatabaseUrl mocked.
+  it("returns an empty array when DATABASE_URL is unset", async () => {
+    expect(await getContributorCredits()).toEqual([]);
   });
 });
 

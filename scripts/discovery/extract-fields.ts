@@ -129,7 +129,7 @@
 import { mkdirSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import type { Facility, Source } from "../../lib/schema";
+import { waterCoolingTypeEnum, type Facility, type Source } from "../../lib/schema";
 import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
@@ -178,12 +178,17 @@ const ENERGY_SOURCE_VALUES = [
 ] as const;
 type EnergySourceValue = (typeof ENERGY_SOURCE_VALUES)[number];
 
-// Mirrors lib/schema.ts's waterSchema.coolingType enum exactly — kept as a
-// local literal (rather than unwrapped from the zod schema) for a plain
-// JSON-schema `enum` array, same rationale as ENERGY_SOURCE_VALUES above. If
-// lib/schema.ts's enum ever changes, update this too. Order matters — it is
-// the benched order (see FIELD_DESCRIPTIONS["water.coolingType"] below).
-const COOLING_TYPE_VALUES = ["evaporative", "air", "closed_loop", "hybrid", "unknown"] as const;
+// Derived from lib/schema.ts's waterSchema.coolingType enum (rather than a
+// hand-retyped literal, unlike ENERGY_SOURCE_VALUES above) so the two can
+// never drift — still produces a plain JSON-schema `enum` array for the
+// prompt below. Order matters — it is the benched order (see
+// FIELD_DESCRIPTIONS["water.coolingType"] below); that benched order IS
+// waterCoolingTypeEnum's declared order in lib/schema.ts, verified
+// byte-identical to the previous hard-coded literal
+// (["evaporative","air","closed_loop","hybrid","unknown"]) before this
+// switched over. Do not reorder the enum in lib/schema.ts without
+// re-benching — that would silently change what this array feeds the model.
+const COOLING_TYPE_VALUES = waterCoolingTypeEnum.options;
 type CoolingTypeValue = (typeof COOLING_TYPE_VALUES)[number];
 
 // ============================================================================

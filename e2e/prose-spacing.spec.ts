@@ -68,6 +68,12 @@ const ROUTES = [
   "/rankings",
   "/crypto",
   "/gaps",
+  // Added 2026-09-11: /contributors is a new route this session. No
+  // entity-after-interpolation shape exists in app/contributors/page.tsx
+  // today (verified by reading it), but this list's whole point is to catch
+  // that shape appearing later without anyone remembering to add coverage —
+  // so it's added on shipping, not deferred until it grows the pattern.
+  "/contributors",
 ] as const;
 
 // A word/digit character, then React's SSR text-node separator, then the

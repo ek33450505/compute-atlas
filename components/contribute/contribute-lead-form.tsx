@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -144,8 +145,16 @@ export function ContributeLeadForm() {
             Thanks &mdash; the link is in the queue.
           </p>
           <p className="text-sm text-muted-foreground">
-            We check it against the source before anything is published.
-            Submissions are anonymous, so there&rsquo;s no status to track
+            Most submissions are reviewed within about a week. We check it
+            against the source before anything is published, and approved
+            changes appear on the{" "}
+            <Link
+              href="/activity"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              public activity feed
+            </Link>
+            . Submissions are anonymous, so there&rsquo;s no status to track
             this one.
           </p>
           <Button type="button" variant="outline" onClick={handleReset}>

@@ -16,7 +16,7 @@ import {
 } from "@/lib/format";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { formatCountyLabel } from "@/lib/metros";
-import { facilityJsonLdString, breadcrumbJsonLdString } from "@/lib/seo";
+import { buildFacilityJsonLd, facilityJsonLdString, breadcrumbJsonLdString } from "@/lib/seo";
 import type { Facility } from "@/lib/schema";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +35,10 @@ import { PrintBriefButton } from "@/components/facility/print-brief-button";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
+import { ConfirmFactPrompt } from "@/components/contribute/confirm-fact-prompt";
 import { WatchButton } from "@/components/subscribe/watch-button";
+import { ShareButton } from "@/components/share-button";
+import { SupportCta } from "@/components/support-cta";
 
 export const revalidate = false;
 
@@ -129,6 +132,10 @@ export default async function FacilityPage({
 
   const location = formatLocation(facility);
   const capacity = formatCapacity(facility);
+  // Reuses the same canonical absolute URL the page's own JSON-LD already
+  // builds (buildFacilityJsonLd's `url` field), rather than hand-
+  // concatenating siteConfig.url + a path a second time.
+  const canonicalUrl = buildFacilityJsonLd(facility).url;
   const isProvisional =
     facility.status === "proposed" || facility.status === "permitted";
   const isRumored = facility.confidence === "rumored";
@@ -214,6 +221,7 @@ export default async function FacilityPage({
           it must never appear in the printout it produces). */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 print:hidden">
         <PrintBriefButton />
+        <ShareButton title={facility.name} url={canonicalUrl} />
         <SuggestCorrection
           facilityId={facility.id}
           facilityName={facility.name}
@@ -297,7 +305,18 @@ export default async function FacilityPage({
                 label="the capacity"
               />
             ) : (
-              capacity
+              <>
+                {capacity}
+                <div className="mt-1 print:hidden">
+                  <ConfirmFactPrompt
+                    field="capacityOperationalMw"
+                    facilityId={facility.id}
+                    facilityName={facility.name}
+                    label="the capacity"
+                    vintage={facility.lastUpdated}
+                  />
+                </div>
+              </>
             )}
           </MastheadFactRow>
 
@@ -385,6 +404,25 @@ export default async function FacilityPage({
           label="Watch this facility"
         />
       </div>
+
+      <Separator />
+
+      {/* Support — the page's closing ask. 1,064 facility pages previously
+          carried none of the site's three existing SupportCta placements
+          (about/support/contribute), despite being the pages an organic
+          search visitor actually lands on. One honest line, no dollar
+          figures, per CLAUDE.md's de-sell editorial voice; print:hidden
+          since an ask has no place in the printed brief. */}
+      <section aria-labelledby="support-heading" className="print:hidden space-y-3">
+        <h2 id="support-heading" className="font-display text-xl text-foreground">
+          Support
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Compute Atlas is maintained by one person, source by source — if
+          that&rsquo;s useful to you, a one-off tip helps keep it running.
+        </p>
+        <SupportCta />
+      </section>
     </div>
   );
 }

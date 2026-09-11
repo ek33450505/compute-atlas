@@ -265,6 +265,19 @@ describe("SuggestCorrection — submit outcomes", () => {
     ).toBeInTheDocument();
   });
 
+  it("sets a review-window expectation and links to the public activity feed on success", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openAndFillSourceUrl(user);
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(screen.getByText(/reviewed within about a week/i)).toBeInTheDocument();
+    const activityLink = screen.getByRole("link", { name: /public activity feed/i });
+    expect(activityLink).toHaveAttribute("href", "/activity");
+  });
+
   it("surfaces a per-field error plus a top-level summary on 400 with multiple issues", async () => {
     mockFetchOnce({
       ok: false,

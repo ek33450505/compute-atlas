@@ -109,6 +109,20 @@ describe("ContributeLeadForm — submit outcomes", () => {
     expect(screen.getByRole("button", { name: /submit another/i })).toBeInTheDocument();
   });
 
+  it("sets a review-window expectation and links to the public activity feed on success", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+
+    render(<ContributeLeadForm />);
+    await user.type(screen.getByLabelText(/link to a source/i), "https://example.com/article");
+    await user.click(screen.getByRole("button", { name: /submit link/i }));
+
+    await screen.findByText(/in the queue/i);
+    expect(screen.getByText(/reviewed within about a week/i)).toBeInTheDocument();
+    const activityLink = screen.getByRole("link", { name: /public activity feed/i });
+    expect(activityLink).toHaveAttribute("href", "/activity");
+  });
+
   it("resets to the empty form when 'Submit another' is clicked", async () => {
     const user = userEvent.setup();
     mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });

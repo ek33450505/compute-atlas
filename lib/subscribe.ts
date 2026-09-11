@@ -5,13 +5,14 @@ import { getDb } from "@/lib/db/client";
 import { subscriptionsTable } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
 import { getFacilityById } from "@/lib/data";
+import { stateNameFromCode } from "@/lib/us-states";
 import { checkEmailSendCap } from "@/lib/rate-limit";
 import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 export const subscribeInputSchema = z
   .object({
     email: z.string().email().max(254),
-    targetType: z.enum(["facility"]),
+    targetType: z.enum(["facility", "state"]),
     targetId: z.string().max(120).optional(),
     website: z.string().optional(), // honeypot — real users never fill this
   })
@@ -77,12 +78,34 @@ export async function subscribeToTarget(
 
   const email = data.email.trim().toLowerCase();
 
-  const facility = await getFacilityById(data.targetId!);
-  if (!facility) {
-    return { ok: false, status: 400, error: "Unknown facility" };
+  // Resolves and validates the target by type: a facility subscription needs
+  // a real facility id (checked against the DB); a state subscription needs
+  // a real 2-letter state code (checked against the static US_STATE_NAMES
+  // map in lib/us-states.ts — no DB round trip needed). Both branches 400 on
+  // an unresolved target, with a distinct error string per branch ("Unknown
+  // facility" / "Unknown state") — that distinction leaks nothing, since the
+  // caller already supplied targetType and therefore already knows which
+  // kind of target it asked about.
+  let targetId: string;
+  let targetLabel: string;
+  if (data.targetType === "facility") {
+    const facility = await getFacilityById(data.targetId!);
+    if (!facility) {
+      return { ok: false, status: 400, error: "Unknown facility" };
+    }
+    targetId = data.targetId!;
+    targetLabel = facility.name;
+  } else {
+    // Normalized to uppercase before storing/comparing so "ca" and "CA" are
+    // one target, not two — matches location.state's stored convention.
+    const code = data.targetId!.toUpperCase();
+    const stateName = stateNameFromCode(code);
+    if (!stateName) {
+      return { ok: false, status: 400, error: "Unknown state" };
+    }
+    targetId = code;
+    targetLabel = stateName;
   }
-  const targetId = data.targetId!;
-  const targetLabel = facility.name;
 
   // Per-address send cap (a prior security-review fix): the IP rate limit
   // alone doesn't stop a distributed attacker from email-bombing one victim
