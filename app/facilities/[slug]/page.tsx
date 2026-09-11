@@ -33,6 +33,7 @@ import { PowerLinksSection } from "@/components/facility/power-links";
 import { SitingContextSection } from "@/components/facility/siting-context";
 import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { PrintBriefButton } from "@/components/facility/print-brief-button";
+import { PrintProvenanceFooter } from "@/components/facility/print-provenance-footer";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
@@ -150,8 +151,16 @@ export default async function FacilityPage({
     { label: facility.name },
   ];
 
+  // data-print-brief is the hook globals.css's @media print block uses to
+  // re-typeset this record as a dense stat sheet (see the print comment
+  // there) — scoped to this container so other printable pages keep the
+  // screen rhythm.
   return (
-    <div data-content-width="4xl" className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10">
+    <div
+      data-content-width="4xl"
+      data-print-brief
+      className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: facilityJsonLdString(facility) }}
@@ -164,7 +173,9 @@ export default async function FacilityPage({
           ),
         }}
       />
-      <Breadcrumb items={crumbs} />
+      {/* Screen navigation chrome — the printed brief carries its canonical
+          URL in the provenance footer instead. */}
+      <Breadcrumb items={crumbs} className="print:hidden" />
 
       {/* Plate masthead */}
       <header className="space-y-3">
@@ -431,6 +442,15 @@ export default async function FacilityPage({
         </p>
         <SupportCta />
       </section>
+
+      {/* Print-only: what makes the printout citable — where it came from,
+          when the record was curated, when it was printed, and the data
+          licence. Must stay the LAST child of the container. */}
+      <PrintProvenanceFooter
+        name={facility.name}
+        url={canonicalUrl}
+        lastUpdated={facility.lastUpdated}
+      />
     </div>
   );
 }

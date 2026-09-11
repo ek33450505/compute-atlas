@@ -412,11 +412,78 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
    the MapLibre theming above) so it beats the @layer base body colors
    regardless of source order. Interactive-only sections (map, correction CTA)
    are hidden at the call site via the `print:hidden` Tailwind variant instead
-   of here. */
+   of here.
+
+   Beyond the ink savings, the facility record is re-typeset for paper: the
+   screen layout is a reading page with display-scale headings and generous
+   air between sections, which printed as a 3-5 page document that was mostly
+   whitespace. The rules below turn it into a dense one-to-two-page stat
+   sheet WITHOUT dropping any cited fact — everything removed is a screen
+   affordance (headline scale, section gaps, decorative link icons), never
+   content. The sources panel in particular is compressed in type and leading
+   only; its labels, kinds, publishers, retrieval dates and expanded URLs all
+   still print, because those are the whole point of a citable printout.
+
+   What is scoped and what is not:
+   - The stat-sheet density — the root type scale, the gap collapse, the
+     heading sizes, the fact-grid padding — applies only where the facility
+     page's `data-print-brief` marker is present. Every other printable page
+     keeps its screen rhythm.
+   - The page-shell rules (`html`/`body` height, `body { display: block }`,
+     `main { flex: none }`) and `@page` are deliberately site-wide: they fix a
+     blank trailing page that affects every printout, not just this one.
+
+   Three mechanics worth knowing before editing:
+   - `html { font-size }` is the single lever that scales Tailwind's rem-based
+     type and spacing at once. Utilities emit absolute rem values (text-sm is
+     always 0.875rem), so shrinking a container's own font-size does nothing;
+     shrinking the root shrinks the whole scale proportionally.
+   - Which is why the root scale is scoped with `html:has([data-print-brief])`
+     and NOT by moving the declaration onto `[data-print-brief]` itself. `rem`
+     resolves against the root element, never against an ancestor, so that
+     move would read as a tidier scoping fix and silently compact nothing.
+     `:has()` on an ancestor of the marker is the only form that both scopes
+     and works — the same shape as the `body:has([data-content-width])` footer
+     rules above.
+   - Tailwind v4's `space-y-*` emits `margin-block-end` on `:not(:last-child)`,
+     NOT `margin-top`. Overrides must target the same edge or they silently
+     do nothing while looking correct in the source. */
+@page {
+  size: auto;
+  /* The page had no @page rule at all, so margins were the browser default
+     (typically ~0.5in all round, plus headers/footers). A slightly larger
+     bottom margin leaves room for the browser's own page-number chrome. */
+  margin: 14mm 14mm 16mm;
+}
+
 @media print {
+  /* Proportionally shrinks every rem-based Tailwind size — type, padding,
+     gaps — in one place. 12px root ≈ 0.75× the browser default. Gated on the
+     facility record's marker being somewhere in the document (see the
+     `:has()` note above) so no other page is re-scaled. */
+  html:has([data-print-brief]) {
+    font-size: 12px;
+  }
+
+  /* The sticky-footer shell (html.h-full > body.min-h-full.flex-col >
+     main.flex-1) stretches <main> to a full page box on paper, so even a
+     record that fits comfortably overflowed onto a blank second page. Height
+     is content-driven in print, and the column becomes a block box because
+     Chrome fragments block flow across pages more predictably than flex. */
+  html,
   body {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  body {
+    display: block !important;
     background: #fff !important;
     color: #000 !important;
+  }
+
+  main {
+    flex: none !important;
   }
 
   .graticule {
@@ -437,6 +504,90 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
     break-inside: avoid;
   }
 
+  /* ── Facility record → printed stat sheet ────────────────────────────────
+     Scoped to the facility page's own container (app/facilities/[slug]) so
+     these density choices don't re-typeset every other printable page. */
+
+  /* @page already supplies the margins; the container's own horizontal and
+     vertical padding utilities would double them up. */
+  [data-print-brief] {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  /* space-y-10 between ~16 sections was ~640px — 15% of the document. */
+  [data-print-brief] > :not(:last-child) {
+    margin-block-end: 0.8rem !important;
+  }
+
+  /* Same edge one level down: the per-section heading/content rhythm. */
+  [data-print-brief] section > :not(:last-child),
+  [data-print-brief] header > :not(:last-child) {
+    margin-block-end: 0.25rem !important;
+  }
+
+  [data-print-brief] li:not(:last-child) {
+    margin-block-end: 0.3rem !important;
+  }
+
+  /* The fact grids (Key facts, Siting context, each Civic impact group) keep
+     their two columns — that density is the point — but shed the card padding
+     and row gaps sized for a screen. */
+  [data-print-brief] dl {
+    gap: 0.35rem 1.5rem !important;
+    padding: 0.5rem !important;
+  }
+
+  /* The h1 is a 48px screen affordance; ~21pt still reads as the title. */
+  [data-print-brief] h1 {
+    font-size: 21pt;
+    line-height: 1.15;
+  }
+
+  /* Section headings stay — at print scale, not the 20px display size. */
+  [data-print-brief] h2 {
+    font-size: 11pt;
+    line-height: 1.2;
+  }
+
+  [data-print-brief] h3 {
+    font-size: 9.5pt;
+    line-height: 1.2;
+  }
+
+  /* Hairline <Separator> rules and the masthead's own border earn nothing on
+     paper once the gaps around them are gone. */
+  [data-print-brief] > [data-slot="separator"] {
+    display: none !important;
+  }
+
+  /* Decorative external-link icons ahead of every citation. */
+  [data-print-brief] a svg {
+    display: none !important;
+  }
+
+  /* The sources panel is the single largest block (~1280px on the richest
+     record). Compressed by type size and leading only — no content dropped. */
+  [data-print-sources] {
+    font-size: 8pt;
+    line-height: 1.3;
+  }
+
+  [data-print-sources] h2 {
+    font-size: 10pt;
+  }
+
+  [data-print-sources] a,
+  [data-print-sources] p,
+  [data-print-sources] span,
+  [data-print-sources] time {
+    font-size: inherit;
+  }
+
+  [data-print-sources] li > :not(:last-child) {
+    margin-block-end: 0 !important;
+  }
+
   /* Expand cited source links inline so a printed citation carries the URL,
      not just link text — scoped to the sources panel via its
      data-print-sources hook (components/facility/provenance-panel.tsx). */
@@ -445,5 +596,15 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
     font-size: 0.75em;
     word-break: break-all;
     color: #000;
+  }
+
+  /* Print-only provenance footer (components/facility/print-provenance-footer).
+     Last thing on the page, so it must not be orphaned onto a page of its own. */
+  [data-print-provenance] {
+    break-inside: avoid;
+    border-top: 1px solid #000;
+    padding-top: 0.35rem;
+    font-size: 7.5pt;
+    line-height: 1.35;
   }
 }
