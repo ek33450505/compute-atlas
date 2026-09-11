@@ -7,9 +7,9 @@
 # covers the production `next build` separately.
 #
 # WHICH JOBS CAN BLOCK A MERGE is decided by branch protection on `main`, NOT by
-# anything in this file. As of 2026-08-25 the required contexts are exactly
-# "typecheck · lint · test" and "BATS tests". The `e2e` job is deliberately NOT
-# among them — see the note on that job before changing this.
+# anything in this file. As of 2026-09-11 the required contexts are exactly
+# "typecheck · lint · test", "BATS tests", and "Playwright e2e" — see the note
+# on the e2e job below for why it was added and what changed.
 name: CI
 
 on:
@@ -148,13 +148,22 @@ jobs:
   # PR #180 — and nobody saw it, because Playwright ran in no workflow at all. A
   # correct test that never runs is indistinguishable from no test.
   #
-  # NON-BLOCKING BY BRANCH PROTECTION, NOT BY `continue-on-error`. This job is
-  # absent from main's required-status-check contexts, so a red e2e is plainly
-  # visible in the PR checks list while the merge stays available. That is the
-  # deliberate design: `continue-on-error: true` would report this job GREEN on
-  # failure, which recreates in a quieter form the exact invisibility this job
-  # exists to end. If e2e should ever gate merges, add it to the required contexts
-  # in branch protection — do not express that here.
+  # ⛔ REQUIRED SINCE 2026-09-11 — a red e2e now blocks the merge. Before this
+  # date the job was deliberately absent from main's required-status-check
+  # contexts, on the theory that a red run stayed visible in the PR checks list
+  # even though the merge button stayed available. In practice a red Playwright
+  # run merged to main unnoticed under that design, which is how two WCAG
+  # violations reached main. It was added to the required contexts to close that
+  # gap.
+  #
+  # BLOCKING IS STILL EXPRESSED VIA BRANCH PROTECTION, NOT `continue-on-error`,
+  # and that part of the design is unchanged and still load-bearing:
+  # `continue-on-error: true` would report this job GREEN on failure, which
+  # recreates the exact invisibility this job exists to end — now worse, since a
+  # green-on-failure job would also silently defeat the new required-context
+  # gate instead of merely looking fine in the checks list. If e2e should ever
+  # go back to non-blocking, remove it from the required contexts in branch
+  # protection — do not express that here.
   #
   # No build step: playwright.config.ts's `webServer` runs `npm run build && npm
   # run start` itself. The build needs no DATABASE_URL — server reads fall back to
@@ -163,7 +172,9 @@ jobs:
   # ⚠️ UNPROVEN TIMING on first run: that webServer builds ~1,500 static routes
   # inside a 240s `webServer.timeout` on a cold runner. If this job goes red with
   # a webServer timeout rather than assertion failures, the fix is raising
-  # `webServer.timeout` in playwright.config.ts — not "fixing" the tests.
+  # `webServer.timeout` in playwright.config.ts — not "fixing" the tests. That
+  # matters more now than it did before this job was required: a webServer
+  # timeout here blocks every merge to main, not just this job's own status.
   e2e:
     name: Playwright e2e
     runs-on: ubuntu-latest
