@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from "react";
+import { usePathname } from "next/navigation";
 import Map, {
   Marker,
   Popup,
@@ -33,6 +34,7 @@ import {
   type ViewportBounds,
 } from "@/lib/cluster";
 import { buildGraticuleGeoJSON, formatLatLon } from "@/lib/graticule";
+import { isEmbedRoute } from "@/components/footer-gate";
 import { FacilityMarker } from "@/components/map/facility-marker";
 import { ClusterMarker } from "@/components/map/cluster-marker";
 import { FacilityPopup } from "@/components/map/facility-popup";
@@ -104,6 +106,56 @@ interface FacilityMapProps {
    * is a separate, larger change than this prop — not done here.
    */
   isFiltered?: boolean;
+  /**
+   * When false, hides the location-search widget (top-left) and the entire
+   * "Tools" disclosure (top-right: compass, 3D toggle, basemap switch,
+   * radius-ring measurement tool, coordinate lock, and the layer-overlay
+   * control) — the map's heavier interactive chrome, which doesn't belong
+   * in a small, read-only `/embed/*` map dropped into a third-party page.
+   * Defaults to true, which preserves existing behavior for every current
+   * caller unchanged. NavigationControl (zoom +/-), ScaleControl, and
+   * MapLegend are NOT gated by this prop — they stay visible regardless,
+   * since even a chrome-free embed still needs basic zoom/pan controls and
+   * a way to read what the marker colors mean.
+   */
+  chrome?: boolean;
+  /**
+   * When true, every in-app link this map can render (currently: the popup's
+   * "View details →" link, and the sr-only "data table page" link below)
+   * opens in a new top-level tab (`target="_blank" rel="noopener"`) instead
+   * of navigating within the current document. Required for `/embed/*`,
+   * which ships `frame-ancestors *` scoped to that one route: `next/link`'s
+   * client-side soft navigation changes the URL without a new document load,
+   * so a same-tab "View details" click would carry the visitor into
+   * `/facilities/[slug]` — a route with its own, unvetted `frame-ancestors
+   * 'self'` — without the browser ever re-evaluating that policy against the
+   * embedding page's origin. See the `linksOpenInNewTab` doc comment on
+   * FacilityPopupProps (facility-popup.tsx) for the full threat model.
+   *
+   * The sr-only `/table` link is a plain hard `<a>`, not a soft nav — CSP
+   * already refuses it correctly inside a cross-origin frame, so it's not a
+   * security fix. It gets the same treatment purely for embed UX: without
+   * it, a screen-reader user following that link inside a framed embed hits
+   * a silently CSP-blocked navigation instead of a working new tab.
+   *
+   * `undefined` (the default) means "derive it from the route": the
+   * component calls `usePathname()` and escapes exactly when
+   * `isEmbedRoute(pathname)` (shared with HeaderGate/FooterGate in
+   * components/footer-gate.tsx) is true. An explicit `true`/`false` still
+   * overrides the derivation either way — this prop is a rare-case escape
+   * hatch, not the primary control surface. The default derives rather than
+   * being a flat `false` specifically so this is FAIL-SAFE: this was
+   * previously `false`-by-default with exactly one enforcing call site
+   * (`app/embed/states/[state]/page.tsx`), so a second `/embed/*` route, a
+   * nested map, or a refactor that simply dropped the prop would silently
+   * reopen the frame-escape hole above with no error anywhere — a security
+   * property that must be remembered by every future caller will eventually
+   * be forgotten by one of them. Deriving from the URL means the property
+   * holds for any map mounted under `/embed/*`, known caller or not, and
+   * the prop is left purely for the (currently hypothetical) case of a
+   * non-`/embed` route that still needs the same escape.
+   */
+  linksOpenInNewTab?: boolean;
 }
 
 /**
@@ -159,7 +211,16 @@ export function FacilityMap({
   heightClass = "h-[70vh] min-h-[420px]",
   surveyOnMount = false,
   isFiltered = true,
+  chrome = true,
+  linksOpenInNewTab,
 }: FacilityMapProps) {
+  // Fail-safe derivation (see the `linksOpenInNewTab` doc comment above): an
+  // explicit prop value always wins; omitting it entirely still escapes the
+  // frame on every `/embed/*` route because `escapeLinks` falls back to the
+  // route check rather than to a flat `false`.
+  const pathname = usePathname();
+  const escapeLinks = linksOpenInNewTab ?? isEmbedRoute(pathname);
+
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(
     null
   );
@@ -988,10 +1049,15 @@ export function FacilityMap({
         moves the camera to bring it into view; pan or zoom the map to
         reach other areas. A data table alternative listing every location is
         available at the{" "}
-        <a href="/table" className="underline">
+        <a
+          href="/table"
+          className="underline"
+          target={escapeLinks ? "_blank" : undefined}
+          rel={escapeLinks ? "noopener" : undefined}
+        >
           data table page
         </a>
-        .
+        {escapeLinks ? " (opens in new tab)." : "."}
       </p>
 
       {/*
@@ -1016,17 +1082,27 @@ export function FacilityMap({
          * fix with no visual change. Do not move this back after <Map> "for
          * readability" — that silently regresses tab order again.
          */}
-        {/* Top-left: location search widget */}
-        <div className="absolute top-3 left-3 z-20 max-w-[calc(100%-1rem)]">
-          <LocationSearch onSelect={handleGoToPlace} />
-        </div>
+        {/* Top-left: location search widget. Part of the "chrome" this map
+            can opt out of for a small read-only embed — see the `chrome`
+            prop doc comment above. */}
+        {chrome && (
+          <div className="absolute top-3 left-3 z-20 max-w-[calc(100%-1rem)]">
+            <LocationSearch onSelect={handleGoToPlace} />
+          </div>
+        )}
 
         {/*
          * Top-right: custom compass rose, stacked below NavigationControl.
          * NavigationControl (~29 px buttons × 2 = ~70 px) + margin → top-20 (~80 px).
          * Not a MapLibre control — a plain positioned element so it doesn't fight
-         * MapLibre's ctrl-group z-index stacking.
+         * MapLibre's ctrl-group z-index stacking. The whole Tools disclosure
+         * (this trigger button and its panel) is also part of `chrome` — every
+         * hook driving it below (showTools, the Escape handler, the
+         * toolsPanelMaxHeight measurement effect) stays mounted either way,
+         * since none of them do anything observable while this block doesn't
+         * render.
          */}
+        {chrome && (
         <div className="absolute top-20 right-2 z-30 flex flex-col items-end gap-2">
           {/* Single disclosure toggle for the compass/3D/basemap/layers/radius
               stack below — collapsed by default to maximize the visible map.
@@ -1176,6 +1252,7 @@ export function FacilityMap({
             </div>
           )}
         </div>
+        )}
 
         <Map
           ref={mapRef}
@@ -1544,6 +1621,7 @@ export function FacilityMap({
               <FacilityPopup
                 facility={selectedFacility}
                 onClose={handleClosePopup}
+                linksOpenInNewTab={escapeLinks}
               />
             </Popup>
           )}

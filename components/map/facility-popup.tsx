@@ -14,6 +14,31 @@ import type { Facility } from "@/lib/schema";
 interface FacilityPopupProps {
   facility: Facility;
   onClose: () => void;
+  /**
+   * When true, the "View details →" link opens the facility page in a new
+   * top-level tab (`target="_blank" rel="noopener"`) instead of a same-tab
+   * `next/link` soft navigation. Required whenever this popup can render
+   * inside a cross-origin iframe (currently only `/embed/*`): a soft nav
+   * changes `usePathname()` without a new document load, so the iframe's
+   * `frame-ancestors 'self'` on `/facilities/*` never gets a chance to
+   * re-evaluate the embedding origin — the framed page silently inherits
+   * the map's already-vetted frame-ancestors instead. Escaping to a new tab
+   * forces a real top-level navigation, which re-runs that check.
+   *
+   * Deliberately NOT folded into `chrome` (FacilityMap's chrome-visibility
+   * prop): "has no chrome" and "is cross-origin framed" are different facts
+   * that merely coincide on the current `/embed/*` route today — conflating
+   * them would make the next chrome-free-but-same-origin caller inherit a
+   * security property it never asked for. Defaults to false here, which
+   * preserves same-tab soft-navigation behavior for any OTHER caller of this
+   * component directly — but FacilityMap (this component's only real-world
+   * caller) never actually relies on that default: it always passes an
+   * already-resolved boolean, computed via `linksOpenInNewTab ??
+   * isEmbedRoute(pathname)` (see the `linksOpenInNewTab` doc comment on
+   * FacilityMapProps in facility-map.tsx), so the frame-escape decision is
+   * fail-safe by the time it reaches this component.
+   */
+  linksOpenInNewTab?: boolean;
 }
 
 /**
@@ -24,9 +49,15 @@ interface FacilityPopupProps {
  * - Escape key closes the popup (keydown listener scoped to document, cleaned up on unmount)
  * - External source link includes "opens in new tab" in its aria-label
  * - "View details →" link target (/facilities/:id) is M4; the link is safe to include now
+ * - When `linksOpenInNewTab` is set, "View details →" also carries "opens in
+ *   new tab" in its aria-label, same convention as the source link below it
  * - Close button returns focus to the triggering marker (managed by FacilityMap parent)
  */
-export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
+export function FacilityPopup({
+  facility,
+  onClose,
+  linksOpenInNewTab = false,
+}: FacilityPopupProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Move focus to the close button when the popup opens
@@ -253,6 +284,9 @@ export function FacilityPopup({ facility, onClose }: FacilityPopupProps) {
         <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
           <Link
             href={`/facilities/${facility.id}`}
+            target={linksOpenInNewTab ? "_blank" : undefined}
+            rel={linksOpenInNewTab ? "noopener" : undefined}
+            aria-label={linksOpenInNewTab ? "View details (opens in new tab)" : undefined}
             className="text-xs text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded py-1.5"
           >
             View details →

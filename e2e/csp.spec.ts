@@ -308,3 +308,113 @@ test("/map — zero CSP violations, including satellite mode and the location-se
   const violations = await watcher.get();
   expect(violations, formatViolations(violations, "/map")).toHaveLength(0);
 });
+
+// ---------------------------------------------------------------------------
+// The `/embed/*` scope (Ed approved `frame-ancestors *` for this path only,
+// 2026-09-11). Everything above this point asserts the ABSENCE of violations
+// via the browser's own CSP engine; these assert the actual served header
+// value, because a scoping bug here (the wrong rule winning, or the embed
+// rule accidentally widening a directive other than frame-ancestors) would
+// not show up as a "violation" in any browser — it would just silently be
+// the wrong policy. `response.headers()` reads what the server actually
+// sent, independent of whether the browser's CSP engine agrees with it.
+//
+// `app/embed/**` is being built by a parallel change and may not exist yet
+// when this spec runs. Next.js applies header rules to a route's response
+// regardless of status code (including a 404), so these assertions are
+// deliberately scoped to the HEADERS of the response, not its body or
+// status — they should pass whether the route 404s or renders.
+// ---------------------------------------------------------------------------
+
+test("/embed/states/or — Content-Security-Policy allows framing from any origin", async ({
+  page,
+}) => {
+  const response = await page.goto("/embed/states/or");
+  expect(response, "expected a response to /embed/states/or").not.toBeNull();
+
+  const csp = response!.headers()["content-security-policy"];
+  expect(csp, "expected a Content-Security-Policy header on the embed response").toBeDefined();
+  expect(csp).toContain("frame-ancestors *");
+});
+
+test("/embed/states/or — the embed scope relaxes framing only, not the rest of the policy", async ({
+  page,
+}) => {
+  const response = await page.goto("/embed/states/or");
+  const csp = response!.headers()["content-security-policy"] ?? "";
+
+  // Same hardening directives the site-wide and /admin scopes carry — proves
+  // CSP_EMBED is the full shared policy plus a widened frame-ancestors, not
+  // an independently-authored (and possibly weaker) one-off.
+  expect(csp).toContain("object-src 'none'");
+  expect(csp).toContain("base-uri 'self'");
+  expect(csp).toContain("default-src 'self'");
+});
+
+test("/admin/login — still refuses framing outright, embed scope did not leak in", async ({
+  page,
+}) => {
+  const response = await page.goto("/admin/login");
+  const headers = response!.headers();
+
+  expect(headers["content-security-policy"]).toContain("frame-ancestors 'none'");
+  expect(headers["content-security-policy"]).not.toContain("frame-ancestors *");
+  expect(headers["x-frame-options"]).toBe("DENY");
+});
+
+test("/ — still same-origin framing, embed scope did not leak in", async ({ page }) => {
+  const response = await page.goto("/");
+  const csp = response!.headers()["content-security-policy"] ?? "";
+
+  expect(csp).toContain("frame-ancestors 'self'");
+  expect(csp).not.toContain("frame-ancestors *");
+});
+
+// ---------------------------------------------------------------------------
+// Frame-escape links (components/map/facility-map.tsx's linksOpenInNewTab,
+// derived via isEmbedRoute() — see that prop's doc comment for the threat
+// model: a soft next/link nav out of an `/embed/*` map would carry a visitor
+// into `/facilities/[slug]`'s own, unvetted `frame-ancestors 'self'` without
+// the browser ever re-evaluating it against the embedding page's origin).
+//
+// Everything above this point is a MOCKED-next/link unit test
+// (facility-map.test.tsx, facility-popup.test.tsx) — that mock previously
+// dropped `target`/`rel` entirely, which would have let this exact
+// regression pass silently. These two tests assert against the REAL
+// rendered DOM of a production build instead.
+//
+// Scoped to the always-rendered sr-only "data table page" link
+// (facility-map.tsx), not the popup's "View details" link: FacilityMarker
+// buttons are real positioned DOM elements (not canvas-drawn), so opening a
+// popup is plausible in headless Chromium, but nothing in this repo's e2e
+// suite currently drives a marker click, and doing so here would add a new,
+// unproven interaction path (marker geometry + possible clustering at the
+// state-level survey-pass zoom) to a regression test whose only job is
+// proving `target`/`rel` land in real HTML. The sr-only link takes the exact
+// same `escapeLinks` value and is guaranteed present regardless of how many
+// facilities a state has or whether they cluster — so it's the more
+// reliable signal for this specific regression. The popup link itself is
+// NOT covered by a browser-level (non-mocked) assertion as of this test;
+// that gap is a known residual, not an oversight.
+// ---------------------------------------------------------------------------
+
+test("/embed/states/texas — the sr-only data-table link escapes to a new top-level tab", async ({
+  page,
+}) => {
+  await page.goto("/embed/states/texas");
+
+  const link = page.getByRole("link", { name: /data table page/i });
+  await expect(link).toHaveAttribute("target", "_blank");
+  const rel = await link.getAttribute("rel");
+  expect(rel).toContain("noopener");
+});
+
+test("/map — the same sr-only data-table link stays same-tab, proving the derivation discriminates by route", async ({
+  page,
+}) => {
+  await page.goto("/map");
+  await page.waitForSelector(".maplibregl-canvas-container", { state: "attached" });
+
+  const link = page.getByRole("link", { name: /data table page/i });
+  await expect(link).not.toHaveAttribute("target", "_blank");
+});

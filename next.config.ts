@@ -115,7 +115,7 @@ const CSP_COMMON_DIRECTIVES = [
  * sessions on. `app/api/csp-report/route.ts` already parses both wire
  * formats, so adopting `Reporting-Endpoints` later is a header-only change.
  */
-function buildCsp(frameAncestors: "'self'" | "'none'"): string {
+function buildCsp(frameAncestors: "'self'" | "'none'" | "*"): string {
   return [
     ...CSP_COMMON_DIRECTIVES,
     `frame-ancestors ${frameAncestors}`,
@@ -125,6 +125,17 @@ function buildCsp(frameAncestors: "'self'" | "'none'"): string {
 
 const CSP_SITE_WIDE = buildCsp("'self'");
 const CSP_ADMIN = buildCsp("'none'");
+
+/**
+ * `/embed/*` (Ed approved 2026-09-11) exists so third-party sites — a
+ * newsroom, a partner page — can iframe an Atlas view. That is the opposite
+ * problem from `/admin`: instead of narrowing who may frame the page, this
+ * scope has to allow ANY origin, because the embed's whole audience is
+ * "sites we don't know about in advance". An allowlist would defeat the
+ * point of an embed. See the `/embed/:path*` header rule below for the
+ * `X-Frame-Options` interaction this creates.
+ */
+const CSP_EMBED = buildCsp("*");
 
 /**
  * Baseline security headers applied to every route, including the enforcing
@@ -397,6 +408,35 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Content-Security-Policy", value: CSP_ADMIN },
         ],
+      },
+      {
+        // The public embed surface (app/embed/**, a parallel change — this
+        // rule only needs to know the path shape). Ed approved
+        // `frame-ancestors *` scoped to `/embed/*` only, 2026-09-11: the
+        // whole point of an embed is that any site can iframe it, so an
+        // origin allowlist would defeat the feature. See CSP_EMBED above.
+        //
+        // The baseline `/:path*` rule still applies `X-Frame-Options:
+        // SAMEORIGIN` to this path, and that cannot be deleted — Next.js
+        // header rules replace BY KEY, not merge (same fact the /admin rule
+        // above relies on), and there is no standards-track "allow any
+        // origin" value for X-Frame-Options (`ALLOWALL` is a non-standard,
+        // unimplemented extension — not used here). This is the same
+        // mechanism as the /admin split, pointed the other way: per the CSP
+        // spec (see buildCsp's comment), a browser that honours an
+        // ENFORCING `frame-ancestors` ignores `X-Frame-Options` entirely on
+        // that response — so `frame-ancestors *` below makes the inherited
+        // SAMEORIGIN a dead letter in any browser implementing CSP Level 2.
+        // Residual, stated honestly: a browser that predates CSP Level 2
+        // framing control would still honour SAMEORIGIN and refuse
+        // third-party framing here, contrary to intent. There is no fix for
+        // that residual that doesn't mean inventing a non-standard XFO
+        // value, so it is left as a known gap rather than papered over.
+        //
+        // As with /admin, this must restate the WHOLE policy, not just the
+        // differing directive.
+        source: "/embed/:path*",
+        headers: [{ key: "Content-Security-Policy", value: CSP_EMBED }],
       },
       {
         // Static map data and basemap style. Regenerated only by
