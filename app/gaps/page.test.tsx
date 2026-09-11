@@ -1,8 +1,9 @@
 import { vi, describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import type { Facility } from "@/lib/schema";
 import type { GapCount, GapDimension } from "@/lib/data";
+import { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
 
 // vi.mock calls are hoisted above imports by Vitest. Route the shared mocks
 // through vi.hoisted() so their initialization is hoisted alongside the
@@ -40,7 +41,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import GapsPage from "./page";
+import GapsPage, { GAP_SECTIONS } from "./page";
 
 const GAP_KEYS: GapDimension[] = [
   "capacity",
@@ -146,7 +147,7 @@ describe("GapsPage", () => {
     expect(screen.getByText(/738 of 1563 sites are missing it/)).toBeInTheDocument();
   });
 
-  it("renders an inline correction trigger for a correctable dimension (jobs) and a /contribute link for a non-correctable one (water)", async () => {
+  it("renders an inline correction trigger for a correctable dimension (jobs) and a /contribute link for a non-correctable one (needs a second source)", async () => {
     mockGetDatasetGaps.mockResolvedValue(makeGapCounts());
     mockGetGapExamples.mockImplementation((dim: GapDimension) => {
       if (dim === "jobs") {
@@ -154,9 +155,9 @@ describe("GapsPage", () => {
           makeFacility({ id: "jobs-gap", name: "Jobsville DC", status: "operational" }),
         ]);
       }
-      if (dim === "water") {
+      if (dim === "singleSource") {
         return Promise.resolve([
-          makeFacility({ id: "water-gap", name: "Waterville DC", status: "under_construction" }),
+          makeFacility({ id: "source-gap", name: "Sourceville DC", status: "under_construction" }),
         ]);
       }
       return Promise.resolve([]);
@@ -178,12 +179,12 @@ describe("GapsPage", () => {
       screen.getByRole("button", { name: /know permanent jobs\?/i })
     ).toBeInTheDocument();
 
-    // water has no structured correction field yet — FieldGapPrompt falls
-    // back to a plain /contribute link.
-    const waterLink = screen.getByRole("link", {
-      name: /know a source for the cooling method on waterville dc/i,
+    // singleSource ("secondSource") is the one remaining non-correctable
+    // dimension — FieldGapPrompt falls back to a plain /contribute link.
+    const sourceLink = screen.getByRole("link", {
+      name: /know a source for additional corroboration on sourceville dc/i,
     });
-    expect(waterLink).toHaveAttribute("href", "/contribute");
+    expect(sourceLink).toHaveAttribute("href", "/contribute");
 
     // The example facility names/links themselves render too. The link's
     // accessible name includes both child spans (name + operator/location),
@@ -192,6 +193,64 @@ describe("GapsPage", () => {
       "href",
       "/facilities/jobs-gap"
     );
+  });
+
+  // -------------------------------------------------------------------------
+  // Drift guard: the italic "Correctable directly below" / "No structured
+  // correction field yet" note under each section's "Where to look" is
+  // DERIVED (via isCorrectable in page.tsx) from CORRECTABLE_KEYS rather than
+  // a second, hand-maintained boolean per section — that hand-maintained
+  // boolean is exactly what drifted when CORRECTABLE_KEYS widened 2026-09-11
+  // to add water/energy, leaving a working correction button under a note
+  // that said no such form existed. This test renders the real page and
+  // checks the note against the actual rendered affordance (button vs link)
+  // for every GAP_SECTIONS entry, using the real CORRECTABLE_KEYS import —
+  // so a regression to a stale/hand-maintained flag fails here even though
+  // no boolean literal remains in page.tsx to eyeball.
+  // -------------------------------------------------------------------------
+  it("the correctable note under 'Where to look' agrees with the actual affordance rendered for every dimension", async () => {
+    mockGetDatasetGaps.mockResolvedValue(makeGapCounts());
+    mockGetGapExamples.mockImplementation((dim: GapDimension) =>
+      Promise.resolve([
+        makeFacility({ id: `${dim}-example`, name: `${dim} Example DC`, status: "operational" }),
+      ])
+    );
+    mockGetStats.mockResolvedValue({
+      count: 10,
+      states: 5,
+      operationalMw: 0,
+      plannedMw: 0,
+      underConstructionMw: 0,
+    });
+
+    const page = await GapsPage();
+    render(page);
+
+    expect(GAP_SECTIONS.length).toBeGreaterThan(0);
+
+    for (const section of GAP_SECTIONS) {
+      const region = screen.getByRole("region", { name: section.label });
+      const { field } = section.gapPromptFor({ status: "operational" });
+      const expectCorrectable = (CORRECTABLE_KEYS as readonly string[]).includes(field);
+
+      if (expectCorrectable) {
+        expect(
+          within(region).getByText(/correctable directly below/i)
+        ).toBeInTheDocument();
+        expect(within(region).queryAllByRole("button").length).toBeGreaterThan(0);
+        expect(
+          within(region).queryAllByRole("link", { name: /know a source for/i }).length
+        ).toBe(0);
+      } else {
+        expect(
+          within(region).getByText(/no structured correction field yet/i)
+        ).toBeInTheDocument();
+        expect(within(region).queryAllByRole("button").length).toBe(0);
+        expect(
+          within(region).queryAllByRole("link", { name: /know a source for/i }).length
+        ).toBeGreaterThan(0);
+      }
+    }
   });
 
   it("targets capacityOperationalMw for an operational example and capacityPlannedMw for an under_construction one", async () => {

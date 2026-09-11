@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import { getDatasetGaps, getGapExamples, getStats, type GapCount, type GapDimension } from "@/lib/data";
+import { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
 import type { Facility } from "@/lib/schema";
 import { formatLocation } from "@/lib/format";
 import { itemListJsonLdString } from "@/lib/seo";
@@ -50,10 +51,36 @@ interface GapSectionMeta {
   sentence: (gap: GapCount) => string;
   /** Concrete "where to look" guidance — the actual value-add of this page. */
   whereToLook: ReactNode;
-  /** Whether this dimension can be corrected directly on the page (drives the closing note under "Where to look"). */
-  correctable: boolean;
-  /** Maps an example facility to the field/label FieldGapPrompt should target. */
-  gapPromptFor: (f: Facility) => { field: string; label: string };
+  /**
+   * Maps an example facility to the field/label FieldGapPrompt should
+   * target. Only `status` is read (by capacity's branch below); every other
+   * section's gapPromptFor ignores its argument. Narrowed to
+   * `Pick<Facility, "status">` (rather than the full `Facility`) so
+   * `isCorrectable` below can evaluate it against a single representative
+   * object instead of a fabricated full Facility.
+   */
+  gapPromptFor: (f: Pick<Facility, "status">) => { field: string; label: string };
+}
+
+/**
+ * Derives whether a section is correctable from CORRECTABLE_KEYS instead of
+ * a second, hand-maintained boolean per section — that hand-maintained
+ * boolean is exactly what drifted: this file shipped a stale `correctable:
+ * false` on water/energy after CORRECTABLE_KEYS widened 2026-09-11 to
+ * include them, rendering a contradiction (a working correction button
+ * under a "no structured correction field yet" note). Mirrors the
+ * derivation components/contribute/field-gap-prompt.tsx already does for
+ * the button itself. Capacity's two branches (operational vs. planned
+ * capacity) are both CORRECTABLE_KEYS members today, so evaluating one
+ * representative status is enough — a future branch that disagreed on
+ * correctability would need this to check every status.
+ */
+const CORRECTABILITY_PREVIEW: Pick<Facility, "status"> = { status: "operational" };
+
+function isCorrectable(section: Pick<GapSectionMeta, "gapPromptFor">): boolean {
+  return (CORRECTABLE_KEYS as readonly string[]).includes(
+    section.gapPromptFor(CORRECTABILITY_PREVIEW).field
+  );
 }
 
 /**
@@ -61,12 +88,13 @@ interface GapSectionMeta {
  * principle this whole page is built around (see the callout box in the
  * rendered page): capacity, subsidies, and jobs share the clearest public
  * paper trail (permits, interconnection queues, and incentive-agreement
- * packets) and are correctable directly here; energy and water have a real
- * public record too but no structured correction form yet; single-source
- * records are a different kind of gap entirely (corroboration, not
- * discovery), so they close out the page rather than compete on count.
+ * packets); energy and water have a real public record too, and, as of the
+ * 2026-09-11 CORRECTABLE_KEYS widening, a structured correction form as
+ * well — all five are correctable directly here; single-source records are
+ * a different kind of gap entirely (corroboration, not discovery), so they
+ * close out the page rather than compete on count.
  */
-const GAP_SECTIONS = [
+export const GAP_SECTIONS = [
   {
     key: "capacity",
     label: "Capacity",
@@ -80,7 +108,6 @@ const GAP_SECTIONS = [
         an operator ever states one in a press release.
       </>
     ),
-    correctable: true,
     gapPromptFor: (f) =>
       f.status === "operational"
         ? { field: "capacityOperationalMw", label: "the operational capacity" }
@@ -100,7 +127,6 @@ const GAP_SECTIONS = [
         itself.
       </>
     ),
-    correctable: true,
     gapPromptFor: () => ({ field: "subsidies", label: "a subsidy amount" }),
   },
   {
@@ -115,7 +141,6 @@ const GAP_SECTIONS = [
         agreement, not just the headline number.
       </>
     ),
-    correctable: true,
     gapPromptFor: () => ({ field: "jobs", label: "permanent jobs" }),
   },
   {
@@ -129,7 +154,6 @@ const GAP_SECTIONS = [
         and the serving utility.
       </>
     ),
-    correctable: false,
     gapPromptFor: () => ({ field: "energy", label: "energy details" }),
   },
   {
@@ -143,7 +167,6 @@ const GAP_SECTIONS = [
         filing, are the primary public source for cooling method and usage.
       </>
     ),
-    correctable: false,
     gapPromptFor: () => ({ field: "water", label: "the cooling method" }),
   },
   {
@@ -158,7 +181,6 @@ const GAP_SECTIONS = [
         filing that confirms what is already on file is enough.
       </>
     ),
-    correctable: false,
     gapPromptFor: () => ({ field: "secondSource", label: "additional corroboration" }),
   },
 ] satisfies GapSectionMeta[];
@@ -282,7 +304,7 @@ export default async function GapsPage() {
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
               <strong className="font-medium text-foreground">Where to look: </strong>
               {section.whereToLook}{" "}
-              {section.correctable ? (
+              {isCorrectable(section) ? (
                 <span className="italic">
                   Correctable directly below &mdash; use the prompt on any example.
                 </span>
@@ -354,11 +376,21 @@ export default async function GapsPage() {
           id="gaps-cta-heading"
           title="Have a lead that does not fit above?"
         />
+        {/*
+          `stakeholders` is the only example named here on purpose. This
+          sentence used to read "stakeholders, emissions, community response",
+          but the 2026-09-11 CORRECTABLE_KEYS widening gave emissions and
+          community their own structured correction forms — citing them as
+          things that need the lead path would now send people the long way
+          round. `stakeholders` stays because it is deliberately excluded from
+          public intake (see CLAUDE.md and the CORRECTABLE_KEYS doc comment),
+          so the lead path really is the only route for it.
+        */}
         <p className="max-w-2xl text-base text-muted-foreground">
           A new facility, a status change, or a fact about something outside
-          these six dimensions &mdash; stakeholders, emissions, community
-          response &mdash; is just as useful. Send a link and we will take
-          it from there.
+          these six dimensions &mdash; stakeholders, or anything else worth
+          a second look &mdash; is just as useful. Send a link and we will
+          take it from there.
         </p>
         <Link
           href="/contribute"
