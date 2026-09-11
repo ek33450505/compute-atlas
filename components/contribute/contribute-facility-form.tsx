@@ -9,6 +9,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -837,9 +838,16 @@ export function ContributeFacilityForm() {
             Thank you &mdash; your submission is in the review queue.
           </p>
           <p className="text-sm text-muted-foreground">
-            Submissions are anonymous, so there&rsquo;s no way to track this
-            one&rsquo;s status. If it checks out, it&rsquo;ll appear on the
-            map after review.
+            Most submissions are reviewed within about a week. If it checks
+            out, it will appear on the map and on the{" "}
+            <Link
+              href="/activity"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              public activity feed
+            </Link>
+            . Submissions are anonymous, so there&rsquo;s no status to track
+            this one.
           </p>
           <Button type="button" variant="outline" onClick={handleReset}>
             Submit another
