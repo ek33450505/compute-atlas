@@ -4,6 +4,31 @@ import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 import { CORRECTABLE_KEYS, type CorrectableKey } from "@/lib/contribute-fields";
 import { QUIET_ACTION_CLASS } from "@/lib/utils";
 
+/**
+ * Print-only nil marker. Every gap prompt below is `print:hidden` — it is an
+ * affordance, useless on paper — which left the printed stat sheet rendering
+ * a bare label over whitespace. On a document meant to be cited, a blank
+ * reads as ZERO rather than UNKNOWN, so print says so explicitly.
+ *
+ * `hidden` is `display: none`, so the marker is absent from the screen
+ * accessibility tree without an `aria-hidden` that would also silence it in
+ * print. The print variant restores it for paper only. Kept quiet on the
+ * page — it is a nil marker, not data. (`text-muted-foreground` is 6.70:1 on
+ * parchment; see the contrast note on SECTION_LINK_CLASS below.)
+ *
+ * FIELD-level only, deliberately. It prints inline inside the `<dd>` of a
+ * dt/dd pair, where the `<dt>` already carries the label, so the marker is
+ * the bare words and reads as part of the grid. SECTION-level gaps have no
+ * `<dt>` and each self-naming line printed as its own orphan sentence; they
+ * are consolidated into one line at the foot of the brief instead — see
+ * components/facility/print-gap-summary.tsx.
+ */
+function NotRecorded() {
+  return (
+    <span className="hidden text-muted-foreground print:inline">Not recorded</span>
+  );
+}
+
 interface FieldGapPromptProps {
   /** Raw field key, e.g. "jobs" or "airPermit" — not assumed correctable. */
   field: string;
@@ -20,28 +45,39 @@ interface FieldGapPromptProps {
  * water/energy/emissions/community/stakeholders fast-follow) lights up the
  * correction affordance here automatically, with zero changes to this file.
  */
-export function FieldGapPrompt({ field, facilityId, facilityName, label }: FieldGapPromptProps) {
+export function FieldGapPrompt({
+  field,
+  facilityId,
+  facilityName,
+  label,
+}: FieldGapPromptProps) {
   const correctable = (CORRECTABLE_KEYS as readonly string[]).includes(field);
 
   if (correctable) {
     return (
-      <SuggestCorrection
-        facilityId={facilityId}
-        facilityName={facilityName}
-        defaultField={field as CorrectableKey}
-        showIntro={false}
-        triggerLabel={`Know ${label}?`}
-        triggerClassName={`${QUIET_ACTION_CLASS} print:hidden`}
-      />
+      <>
+        <SuggestCorrection
+          facilityId={facilityId}
+          facilityName={facilityName}
+          defaultField={field as CorrectableKey}
+          showIntro={false}
+          triggerLabel={`Know ${label}?`}
+          triggerClassName={`${QUIET_ACTION_CLASS} print:hidden`}
+        />
+        <NotRecorded />
+      </>
     );
   }
 
   // Not (yet) correctable — route to the lighter lead form instead of
   // promising an edit the system can't apply automatically.
   return (
-    <Link href="/contribute" className={`${QUIET_ACTION_CLASS} print:hidden`}>
-      Know a source for {label} on {facilityName}? Send us a link.
-    </Link>
+    <>
+      <Link href="/contribute" className={`${QUIET_ACTION_CLASS} print:hidden`}>
+        Know a source for {label} on {facilityName}? Send us a link.
+      </Link>
+      <NotRecorded />
+    </>
   );
 }
 
@@ -69,6 +105,12 @@ const SECTION_LINK_CLASS =
  * never one per hypothetical field inside it, which would be noise — and
  * keep it visually quieter (smaller, muted, italic) than a populated
  * section so an empty facility page doesn't read louder than a full one.
+ *
+ * Screen-only, and carries no print nil marker of its own: on paper the
+ * sections it stands in for are named together in one consolidated line
+ * (components/facility/print-gap-summary.tsx). Both read the SAME emptiness
+ * predicates from lib/facility-gaps.ts, so the summary and the sections
+ * cannot drift apart about what is missing.
  */
 export function SectionGapPrompt({ facilityName, label }: SectionGapPromptProps) {
   return (

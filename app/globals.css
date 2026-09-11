@@ -598,6 +598,25 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
     color: #000;
   }
 
+  /* Print-only consolidated nil line (components/facility/print-gap-summary).
+     Reads at the provenance footer's quiet scale — it is a note about the
+     record, not part of the record — and sits flush on the footer's own
+     top rule rather than taking the 0.8rem inter-section gap: the two are
+     one closing block, the rule is already the separator between them, and
+     on the thinnest record in the dataset that gap is the difference
+     between one printed page and two.
+
+     Selector is `[data-print-brief] > [...]`, not the bare attribute: the
+     0.8rem rule above is `[data-print-brief] > :not(:last-child)`, which is
+     also (0,2,0) and also !important — a bare `[data-print-gap-summary]`
+     loses to it on specificity and silently changes nothing. */
+  [data-print-brief] > [data-print-gap-summary] {
+    break-inside: avoid;
+    margin-block-end: 0 !important;
+    font-size: 7.5pt;
+    line-height: 1.35;
+  }
+
   /* Print-only provenance footer (components/facility/print-provenance-footer).
      Last thing on the page, so it must not be orphaned onto a page of its own. */
   [data-print-provenance] {

@@ -33,6 +33,7 @@ import { PowerLinksSection } from "@/components/facility/power-links";
 import { SitingContextSection } from "@/components/facility/siting-context";
 import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { PrintBriefButton } from "@/components/facility/print-brief-button";
+import { PrintGapSummary } from "@/components/facility/print-gap-summary";
 import { PrintProvenanceFooter } from "@/components/facility/print-provenance-footer";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
@@ -442,6 +443,11 @@ export default async function FacilityPage({
         </p>
         <SupportCta />
       </section>
+
+      {/* Print-only: one line naming every section this record has no data
+          for. Sits immediately above the provenance footer so the sheet ends
+          with what is known about the record, then what is not. */}
+      <PrintGapSummary facility={facility} />
 
       {/* Print-only: what makes the printout citable — where it came from,
           when the record was curated, when it was printed, and the data

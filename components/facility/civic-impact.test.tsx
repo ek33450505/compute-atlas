@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { CivicImpactSection, hasCivicImpact } from "./civic-impact";
+import {
+  hasEconomics,
+  hasEmissions,
+  hasEnergyWater,
+  hasSubsidies,
+} from "@/lib/facility-gaps";
 import type { DataCenterFacility, CryptoMiningFacility } from "@/lib/schema";
 
 /** Minimal data-center Facility stub with required fields. */
@@ -126,8 +132,11 @@ describe("CivicImpactSection — Economics gap prompts", () => {
     const facility = makeFacility({ energy: { source: "grid" } });
     render(<CivicImpactSection facility={facility} />);
 
-    const link = screen.getByText(/economic impact data/i);
-    expect(link.closest("a")).toHaveAttribute("href", "/contribute");
+    // By role, not text — the stronger form, and repo convention. `getByRole`
+    // throws on more than one match, which is the "exactly one" half of this
+    // test's name.
+    const link = screen.getByRole("link", { name: /economic impact data/i });
+    expect(link).toHaveAttribute("href", "/contribute");
     expect(screen.queryByRole("heading", { name: "Economics" })).not.toBeInTheDocument();
     expect(screen.queryByText("Investment")).not.toBeInTheDocument();
   });
@@ -354,7 +363,11 @@ describe("CivicImpactSection — Air permit (emissions)", () => {
     expect(screen.queryByText("Air permit")).not.toBeInTheDocument();
   });
 
-  it("renders nothing for emissions: {} (no pollutants, no permit metadata, no notes)", () => {
+  // Renamed from "renders nothing": it no longer does. An empty emissions
+  // object now takes the same gap-prompt path as an absent one — see
+  // "Air permit, empty emissions object" at the foot of this file for what
+  // it renders INSTEAD. The panel-absence assertions below are unchanged.
+  it("renders no Air permit panel for emissions: {} (no pollutants, no permit metadata, no notes)", () => {
     const facility = makeFacility({ emissions: {} });
     render(<CivicImpactSection facility={facility} />);
 
@@ -816,5 +829,110 @@ describe("CivicImpactSection — renders nothing when no civic fields present", 
     const facility = makeFacility();
     const { container } = render(<CivicImpactSection facility={facility} />);
     expect(container).toBeEmptyDOMElement();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Drift guard: the rendered empty-state prompts vs. lib/facility-gaps.ts
+//
+// The printed brief's consolidated nil line is built from the predicates in
+// lib/facility-gaps.ts; the groups below render their empty state from the
+// SAME functions. This test is what makes "the same" checkable — if a group
+// ever re-inlines its own condition (the shape all four of these were in
+// before), a fixture where the two disagree renders a gap prompt for a
+// section the summary calls recorded, or vice versa, and fails here.
+//
+// Every fixture keeps at least one civic datum so CivicImpactSection's own
+// outer hasCivicImpact guard doesn't return null before the groups run.
+// ---------------------------------------------------------------------------
+const CIVIC_SECTIONS = [
+  { name: "economics", predicate: hasEconomics, gapText: /economic impact data/i },
+  { name: "energy & water", predicate: hasEnergyWater, gapText: /energy or water data/i },
+  { name: "air permit", predicate: hasEmissions, gapText: /air permit data/i },
+  { name: "subsidies", predicate: hasSubsidies, gapText: /a public subsidy/i },
+] as const;
+
+describe("CivicImpactSection — empty states agree with lib/facility-gaps predicates", () => {
+  it.each([
+    // water without energy: the shape that catches an inlined `!energy`
+    // check, which would leave the group filled while the summary omits it.
+    ["water only", makeFacility({ water: { coolingType: "closed_loop" } })],
+    ["energy only", makeFacility({ energy: { source: "grid" } })],
+    ["land only", makeFacility({ landAcres: 295 })],
+    ["jobs only", makeFacility({ jobs: { permanent: 40 } })],
+    ["emissions only", makeFacility({ emissions: { permittedTpy: { nox: 10 } } })],
+    // Schema-valid but renders nothing: every emissionsSchema field is
+    // optional and the superRefine only fires once permittedTpy carries a
+    // defined pollutant. The group used to swallow this in a second, inner
+    // guard while hasEmissions reported the section present — the exact
+    // predicate/render disagreement this block exists to catch.
+    ["empty emissions object", makeFacility({ emissions: {} })],
+    // A citation with nothing to cite is the same case one field along.
+    ["emissions with only a sourceIndex", makeFacility({ emissions: { sourceIndex: 0 } })],
+    // A permitted 0.0 tpy limit is real data, not an absence — it must
+    // render, and must NOT be named as a gap.
+    [
+      "a zero pollutant limit",
+      makeFacility({ emissions: { permittedTpy: { nox: 0 }, basis: "facility_wide" } }),
+    ],
+    ["empty subsidies array", makeFacility({ energy: { source: "grid" }, subsidies: [] })],
+    [
+      "subsidies only",
+      makeFacility({ subsidies: [{ program: "Sales-tax exemption", sourceIndex: 0 }] }),
+    ],
+  ])("%s", (_case, facility) => {
+    render(<CivicImpactSection facility={facility} />);
+
+    for (const section of CIVIC_SECTIONS) {
+      const promptShown = screen.queryByText(section.gapText) !== null;
+      expect(
+        promptShown,
+        `${section.name}: prompt ${promptShown ? "shown" : "absent"}, predicate says ${
+          section.predicate(facility) ? "populated" : "empty"
+        }`
+      ).toBe(!section.predicate(facility));
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Regression: `emissions: {}` used to be swallowed by a second, inner guard.
+//
+// EmissionsGroup computed its own `hasContent` and returned bare `null` for an
+// emissions object with no renderable field, while `hasEmissions` reported the
+// section PRESENT because the object existed — so the printed brief's summary
+// omitted "air permit" on a page that showed no air permit. Latent rather than
+// live (5 of 1,571 exported records carry an emissions object, none empty),
+// but the module exists so that this class cannot occur.
+// ---------------------------------------------------------------------------
+describe("CivicImpactSection — Air permit, empty emissions object", () => {
+  it.each([
+    ["a bare object", {}],
+    ["only a sourceIndex", { sourceIndex: 0 }],
+  ])("renders the gap prompt and no panel for %s", (_case, emissions) => {
+    const facility = makeFacility({ emissions });
+    render(<CivicImpactSection facility={facility} />);
+
+    // The gap prompt renders INSTEAD of the panel — not alongside it, and not
+    // the bare `null` that left the section silently blank.
+    expect(
+      screen.getByRole("link", { name: /air permit data/i })
+    ).toHaveAttribute("href", "/contribute");
+    expect(
+      screen.queryByRole("heading", { name: "Air permit" })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/regulatory ceiling/i)).not.toBeInTheDocument();
+  });
+
+  it("still renders the panel for a permit whose only content is a 0.0 tpy limit", () => {
+    const facility = makeFacility({
+      emissions: { permittedTpy: { nox: 0 }, basis: "facility_wide" },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByRole("heading", { name: "Air permit" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /air permit data/i })
+    ).not.toBeInTheDocument();
   });
 });
