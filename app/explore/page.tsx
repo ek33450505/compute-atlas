@@ -82,6 +82,12 @@ const LENSES = [
       "Plain-language explainers behind the dataset — data center water and power use, what counts as an AI facility, and why communities push back.",
   },
   {
+    label: "Help fill the gaps",
+    href: "/gaps",
+    description:
+      "Where the dataset needs help, ranked by what a permit or utility filing can actually resolve — with concrete leads on where to look.",
+  },
+  {
     label: "Download",
     href: "/data",
     description:

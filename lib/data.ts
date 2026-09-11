@@ -966,6 +966,182 @@ export async function getEnergySourceCounts(): Promise<Record<EnergySource, numb
 }
 
 // ============================================================
+// Dataset-gap helpers (used by /gaps)
+// ============================================================
+
+/**
+ * The six dimensions /gaps tracks, in a stable canonical order. Page-level
+ * display order (ranked by how findable each gap actually is, not by raw
+ * count) is an editorial decision that lives in app/gaps/page.tsx, not here
+ * — this array only fixes an iteration order so `getDatasetGaps`' output is
+ * deterministic.
+ */
+export const GAP_DIMENSIONS = [
+  "capacity",
+  "energy",
+  "subsidies",
+  "jobs",
+  "water",
+  "singleSource",
+] as const;
+
+export type GapDimension = (typeof GAP_DIMENSIONS)[number];
+
+/**
+ * Per-dimension gap counts, scoped two ways:
+ *  - `fillableMissing`/`fillableTotal` — operational + under_construction
+ *    facilities only (see `isFillable`). This is the population /gaps leads
+ *    with: a live or building site's missing field is something a permit,
+ *    utility filing, or interconnection queue can genuinely resolve.
+ *  - `allMissing`/`allTotal` — the whole dataset, for context. Includes
+ *    `proposed` (and `cancelled`) sites, where most of these fields are
+ *    structural zeros — the underlying fact hasn't happened yet, not merely
+ *    unresearched — so this figure is shown alongside the fillable one,
+ *    never in its place.
+ */
+export interface GapCount {
+  fillableMissing: number;
+  fillableTotal: number;
+  allMissing: number;
+  allTotal: number;
+}
+
+/** True when a facility discloses no capacity figure at all (operational or planned). */
+function hasNoCapacity(f: Facility): boolean {
+  return getFacilityMaxMw(f) === undefined;
+}
+
+/** True when a facility's `jobs` block carries no figure. Mirrors getCivicCoverage's jobs predicate, inverted. */
+function hasNoJobs(f: Facility): boolean {
+  return !(f.jobs && (f.jobs.construction != null || f.jobs.permanent != null));
+}
+
+/** True when a facility discloses no subsidies. Mirrors getCivicCoverage's subsidies predicate, inverted. */
+function hasNoSubsidies(f: Facility): boolean {
+  return !(Array.isArray(f.subsidies) && f.subsidies.length > 0);
+}
+
+/** True when a facility's `water` block carries no figure. Mirrors getCivicCoverage's water predicate, inverted. */
+function hasNoWater(f: Facility): boolean {
+  return !(f.water && (f.water.coolingType || f.water.reportedMgd != null || f.water.notes));
+}
+
+/** True when a facility's `energy` block carries no figure. Mirrors getCivicCoverage's energy predicate, inverted. */
+function hasNoEnergy(f: Facility): boolean {
+  return !(
+    f.energy &&
+    (f.energy.source || f.energy.utility || f.energy.onSiteGenerationMw != null || f.energy.notes)
+  );
+}
+
+/**
+ * True when a facility cites exactly one source. Every facility has at
+ * least one (`sources` requires `.min(1)` at the schema level — see
+ * lib/schema.ts) so this is a corroboration gap, not a missing-field gap: a
+ * single citation is a different kind of ask (find a second source) than
+ * the other five dimensions (find the missing fact).
+ */
+function hasSingleSource(f: Facility): boolean {
+  return f.sources.length === 1;
+}
+
+const GAP_PREDICATES: Record<GapDimension, (f: Facility) => boolean> = {
+  capacity: hasNoCapacity,
+  energy: hasNoEnergy,
+  subsidies: hasNoSubsidies,
+  jobs: hasNoJobs,
+  water: hasNoWater,
+  singleSource: hasSingleSource,
+};
+
+/**
+ * True for facilities where a missing field is genuinely findable in the
+ * public record right now. `proposed` sites are deliberately excluded — for
+ * most of these dimensions the underlying fact doesn't exist yet (no jobs
+ * figure to find for a project that hasn't broken ground), so sending a
+ * contributor after one wastes their goodwill. `cancelled` sites are
+ * excluded for the same reason as elsewhere in this file (see `getStats`):
+ * a withdrawn project isn't worth researching further. `permitted` sites
+ * are excluded too — a permit alone doesn't yet fix jobs/subsidy figures
+ * the way a signed construction or interconnection filing does.
+ */
+function isFillable(f: Facility): boolean {
+  return f.status === "operational" || f.status === "under_construction";
+}
+
+/**
+ * Pure reducer over an already-loaded facility list — no data fetch, no I/O.
+ * Split out from `getDatasetGaps` so the fillable-population scoping (only
+ * operational + under_construction facilities count toward `fillable*`) can
+ * be exercised against a synthetic fixture — mirrors
+ * `computeGenerationBuildoutStats`'s reasoning: a test that only ever reads
+ * the real dataset can't prove a status filter exists, only that the
+ * current data happens to be consistent with one existing or not (a false
+ * proxy).
+ */
+export function computeDatasetGaps(facilities: Facility[]): Record<GapDimension, GapCount> {
+  const fillable = facilities.filter(isFillable);
+  return Object.fromEntries(
+    GAP_DIMENSIONS.map((dim) => {
+      const predicate = GAP_PREDICATES[dim];
+      const gapCount: GapCount = {
+        fillableMissing: fillable.filter(predicate).length,
+        fillableTotal: fillable.length,
+        allMissing: facilities.filter(predicate).length,
+        allTotal: facilities.length,
+      };
+      return [dim, gapCount];
+    })
+  ) as Record<GapDimension, GapCount>;
+}
+
+/**
+ * Returns per-dimension gap counts for /gaps. Thin async wrapper: fetches
+ * the live data and delegates the math to {@link computeDatasetGaps}.
+ */
+export async function getDatasetGaps(): Promise<Record<GapDimension, GapCount>> {
+  return computeDatasetGaps(await loadFacilities());
+}
+
+/**
+ * Pure reducer over an already-loaded facility list — no data fetch, no I/O.
+ * Split out from `getGapExamples` for the same reason as
+ * {@link computeDatasetGaps}: the fillable-population filter needs a
+ * synthetic fixture to prove it excludes `proposed`/`cancelled`/`permitted`
+ * facilities, since the real dataset can't demonstrate a filter's absence.
+ * Sorted by max capacity (operational or planned) desc, then name A→Z, so
+ * the largest / most recognizable sites surface first as recruitment
+ * examples.
+ */
+export function computeGapExamples(
+  facilities: Facility[],
+  dimension: GapDimension,
+  n = 6
+): Facility[] {
+  const predicate = GAP_PREDICATES[dimension];
+  return facilities
+    .filter((f) => isFillable(f) && predicate(f))
+    .sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    )
+    .slice(0, n);
+}
+
+/**
+ * Returns up to `n` example facilities missing the given dimension, scoped
+ * to the fillable population (operational + under_construction) — the same
+ * population `getDatasetGaps` counts against. Deliberately NOT scoped to
+ * the whole dataset — a `proposed` example would be exactly the kind of
+ * unfillable gap this page tries not to send anyone after. Thin async
+ * wrapper: fetches the live data and delegates to {@link computeGapExamples}.
+ */
+export async function getGapExamples(dimension: GapDimension, n = 6): Promise<Facility[]> {
+  return computeGapExamples(await loadFacilities(), dimension, n);
+}
+
+// ============================================================
 // Per-state helpers (used by state landing pages)
 // ============================================================
 
