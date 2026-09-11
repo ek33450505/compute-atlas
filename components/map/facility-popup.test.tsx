@@ -3,18 +3,27 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { FacilityPopup } from "./facility-popup";
 import type { Facility } from "@/lib/schema";
 
-// next/link renders to <a> — mock to avoid Next.js router-context dependency in jsdom
+// next/link renders to <a> — mock to avoid Next.js router-context dependency in jsdom.
+// target/rel/aria-label are forwarded (not just href/className/children) so the
+// linksOpenInNewTab tests below can assert on the real anchor attributes next/link
+// would produce.
 vi.mock("next/link", () => ({
   default: ({
     href,
     children,
     className,
+    target,
+    rel,
+    "aria-label": ariaLabel,
   }: {
     href: string;
     children: React.ReactNode;
     className?: string;
+    target?: string;
+    rel?: string;
+    "aria-label"?: string;
   }) => (
-    <a href={href} className={className}>
+    <a href={href} className={className} target={target} rel={rel} aria-label={ariaLabel}>
       {children}
     </a>
   ),
@@ -111,6 +120,27 @@ describe("FacilityPopup", () => {
     expect(screen.getByRole("link", { name: /opens in new tab/i }).className).toContain(
       "py-1.5"
     );
+  });
+
+  describe("linksOpenInNewTab (embed frame-escape)", () => {
+    it("defaults to a same-tab 'View details' link with no target attribute", () => {
+      render(<FacilityPopup facility={fixture} onClose={() => {}} />);
+      const link = screen.getByRole("link", { name: "View details →" });
+      expect(link).not.toHaveAttribute("target");
+      expect(link).not.toHaveAttribute("rel");
+    });
+
+    it("opens 'View details' in a new top-level tab when linksOpenInNewTab is set", () => {
+      render(
+        <FacilityPopup facility={fixture} onClose={() => {}} linksOpenInNewTab />
+      );
+      const link = screen.getByRole("link", { name: /view details/i });
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link.getAttribute("rel")).toContain("noopener");
+      // Accessible name follows the repo's existing "(opens in new tab)"
+      // convention (see the source link's aria-label a few lines below it).
+      expect(link).toHaveAccessibleName(/opens in new tab/i);
+    });
   });
 
   it("caps the card's max-width responsively so it can't overflow a narrow viewport", () => {

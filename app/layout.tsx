@@ -11,7 +11,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { FooterGate } from "@/components/footer-gate";
+import { FooterGate, HeaderGate } from "@/components/footer-gate";
 import { siteConfig } from "@/lib/site";
 import { siteJsonLdString } from "@/lib/seo";
 
@@ -93,7 +93,9 @@ export default function RootLayout({
             >
               Skip to main content
             </a>
-            <SiteHeader />
+            <HeaderGate>
+              <SiteHeader />
+            </HeaderGate>
             <main id="main-content" className="flex-1">
               {children}
             </main>

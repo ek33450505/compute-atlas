@@ -1,9 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { usePathname } from "next/navigation";
 import React, { forwardRef } from "react";
 import { FacilityMap } from "./facility-map";
 import type { Facility } from "@/lib/schema";
+
+// FacilityMap now calls usePathname() itself (to derive linksOpenInNewTab's
+// fail-safe default — see the doc comment on that prop in facility-map.tsx).
+// Mocked the same way footer-gate.test.tsx mocks it: a plain vi.fn(), since
+// there's no real Next.js router context in this jsdom render. Defaults to
+// "/" (a non-embed route) so every EXISTING test in this file — none of
+// which override this — keeps exercising the same "same-tab by default"
+// behavior it always has; only the tests in the "linksOpenInNewTab prop"
+// describe block below override it to an /embed/* path.
+vi.mock("next/navigation", () => ({
+  usePathname: vi.fn().mockReturnValue("/"),
+}));
 
 // Type definitions for global test state
 interface MockMapInstance {
@@ -356,8 +369,19 @@ vi.mock("@/components/map/cluster-marker", () => ({
 }));
 
 vi.mock("@/components/map/facility-popup", () => ({
-  FacilityPopup: ({ facility, onClose }: { facility: Facility; onClose: () => void }) => (
-    <div data-testid="facility-popup-content">
+  FacilityPopup: ({
+    facility,
+    onClose,
+    linksOpenInNewTab,
+  }: {
+    facility: Facility;
+    onClose: () => void;
+    linksOpenInNewTab?: boolean;
+  }) => (
+    <div
+      data-testid="facility-popup-content"
+      data-links-open-in-new-tab={String(linksOpenInNewTab)}
+    >
       <p>{facility.name}</p>
       <button onClick={onClose}>Close Popup</button>
     </div>
@@ -461,6 +485,11 @@ const facilityB: Facility = {
 describe("FacilityMap", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset the pathname mock to a non-embed route before every test —
+    // vi.clearAllMocks() clears call history but not a mock's configured
+    // return value, so a test that overrides this to an /embed/* path
+    // would otherwise leak that override into whichever test runs next.
+    vi.mocked(usePathname).mockReturnValue("/");
     // Reset matchMedia for each test. Defaults to a "wide and tall" (desktop)
     // viewport — matches: true only for the shared WIDE_AND_TALL_VIEWPORT_QUERY
     // (mocked to mockWideAndTallQuery above), false for every other query
@@ -1972,6 +2001,134 @@ describe("FacilityMap", () => {
 
       act(() => flushRaf()); // the cancelled frame was removed from pendingRaf — a no-op
       expect(screen.queryByText("10, -80")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("chrome prop (embed opt-out)", () => {
+    it("defaults to showing location search and the Tools disclosure (existing behavior unchanged)", () => {
+      render(<FacilityMap facilities={[]} />);
+      expect(screen.getByTestId("location-search")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /hide map tools/i })
+      ).toBeInTheDocument();
+    });
+
+    it("hides location search and the entire Tools disclosure when chrome={false}", () => {
+      render(<FacilityMap facilities={[]} chrome={false} />);
+      expect(screen.queryByTestId("location-search")).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /hide map tools/i })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /show map tools/i })
+      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("compass-rose")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("basemap-toggle")).not.toBeInTheDocument();
+    });
+
+    it("keeps navigation control, scale control, and the legend even when chrome={false}", () => {
+      render(<FacilityMap facilities={[]} chrome={false} />);
+      expect(screen.getByTestId("navigation-control")).toBeInTheDocument();
+      expect(screen.getByTestId("scale-control")).toBeInTheDocument();
+      expect(screen.getByTestId("map-legend")).toBeInTheDocument();
+    });
+
+    it("still renders facility markers when chrome={false}", async () => {
+      render(<FacilityMap facilities={[facilityA]} chrome={false} />);
+      expect(await screen.findByTestId("marker-fac-a")).toBeInTheDocument();
+    });
+  });
+
+  describe("linksOpenInNewTab prop (embed frame-escape)", () => {
+    it("defaults to false, threading unset (same-tab) behavior to the popup", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[facilityA]} />);
+
+      const marker = await screen.findByTestId("marker-fac-a");
+      await user.click(marker);
+
+      const popup = await screen.findByTestId("facility-popup-content");
+      expect(popup).toHaveAttribute("data-links-open-in-new-tab", "false");
+    });
+
+    it("threads linksOpenInNewTab={true} through to the popup", async () => {
+      const user = userEvent.setup();
+      render(<FacilityMap facilities={[facilityA]} linksOpenInNewTab />);
+
+      const marker = await screen.findByTestId("marker-fac-a");
+      await user.click(marker);
+
+      const popup = await screen.findByTestId("facility-popup-content");
+      expect(popup).toHaveAttribute("data-links-open-in-new-tab", "true");
+    });
+
+    it("the sr-only /table link is a same-tab hard nav by default (no target)", () => {
+      render(<FacilityMap facilities={[]} />);
+      const link = screen.getByRole("link", { name: /data table page/i });
+      expect(link).not.toHaveAttribute("target");
+      expect(link).not.toHaveAttribute("rel");
+    });
+
+    it("the sr-only /table link escapes to a new top-level tab when linksOpenInNewTab is set", () => {
+      render(<FacilityMap facilities={[]} linksOpenInNewTab />);
+      // "(opens in new tab)" is sibling text after the <a>, not inside it
+      // (a plain sr-only sentence, not an aria-label) — so it isn't part of
+      // the link's accessible name; assert on the two separately.
+      const link = screen.getByRole("link", { name: /data table page/i });
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link.getAttribute("rel")).toContain("noopener");
+      expect(screen.getByText(/opens in new tab/i)).toBeInTheDocument();
+    });
+
+    // Fail-safe derivation: with the prop OMITTED (not explicitly false),
+    // this map must still escape the frame on any /embed/* route, purely
+    // from usePathname() + isEmbedRoute() — proving the security property
+    // does not depend on a caller remembering to pass `linksOpenInNewTab`.
+    describe("derives from the route when the prop is omitted", () => {
+      it("escapes links on an /embed/* route with no prop passed at all", async () => {
+        vi.mocked(usePathname).mockReturnValue("/embed/states/texas");
+        const user = userEvent.setup();
+        render(<FacilityMap facilities={[facilityA]} />);
+
+        const marker = await screen.findByTestId("marker-fac-a");
+        await user.click(marker);
+        const popup = await screen.findByTestId("facility-popup-content");
+        expect(popup).toHaveAttribute("data-links-open-in-new-tab", "true");
+
+        const link = screen.getByRole("link", { name: /data table page/i });
+        expect(link).toHaveAttribute("target", "_blank");
+        expect(link.getAttribute("rel")).toContain("noopener");
+      });
+
+      it("does NOT escape links on a non-embed route with no prop passed", async () => {
+        vi.mocked(usePathname).mockReturnValue("/map");
+        const user = userEvent.setup();
+        render(<FacilityMap facilities={[facilityA]} />);
+
+        const marker = await screen.findByTestId("marker-fac-a");
+        await user.click(marker);
+        const popup = await screen.findByTestId("facility-popup-content");
+        expect(popup).toHaveAttribute("data-links-open-in-new-tab", "false");
+
+        const link = screen.getByRole("link", { name: /data table page/i });
+        expect(link).not.toHaveAttribute("target");
+      });
+
+      it("an explicit linksOpenInNewTab={false} still overrides an /embed/* route", async () => {
+        vi.mocked(usePathname).mockReturnValue("/embed/states/texas");
+        render(<FacilityMap facilities={[]} linksOpenInNewTab={false} />);
+
+        const link = screen.getByRole("link", { name: /data table page/i });
+        expect(link).not.toHaveAttribute("target");
+      });
+
+      it("an explicit linksOpenInNewTab={true} still overrides a non-embed route", async () => {
+        vi.mocked(usePathname).mockReturnValue("/map");
+        render(<FacilityMap facilities={[]} linksOpenInNewTab />);
+
+        const link = screen.getByRole("link", { name: /data table page/i });
+        expect(link).toHaveAttribute("target", "_blank");
+      });
     });
   });
 });
