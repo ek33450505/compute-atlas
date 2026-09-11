@@ -12,16 +12,21 @@ import { test, expect } from "@playwright/test";
 // mismatch). Measured on a facility page: 4 of its 11 buttons reached the
 // served HTML with NO accessible name at all; after the fix, 0 did.
 //
-// This spec differs from unit tests (jsdom `render()` calls in sibling test
-// files) because jsdom never performs server-side rendering — the JSX children
-// materialize identically whether or not they're passed through Base UI's
-// `render` prop. Unit tests pass even when the bug is present. Only raw
-// server HTML exposes it.
+// This spec uses Playwright with JavaScript disabled to fetch and parse the
+// raw server-rendered HTML via the browser's native parser (not regex). This
+// ensures the spec tests the actual SSR output without any client-side
+// hydration that would mask the bug. The browser's HTML parser is correct
+// where a regex cannot be — it properly handles attributes with `>` chars,
+// nested markup, and edge cases.
 //
 // The spec fetches raw SSR HTML for a small set of routes and fails if any
 // `<button>` element has empty text content AND no aria-label/aria-labelledby.
 // Legitimate empty buttons (e.g., icon buttons with aria-label) are exempted
 // because they carry an accessible name via the attribute.
+
+// Disable JavaScript so Playwright fetches and parses raw SSR HTML only,
+// never executing React hydration.
+test.use({ javaScriptEnabled: false });
 
 // Routes that render the affected components:
 // - `/facilities/meta-prineville-or`: renders SuggestCorrection's masthead
@@ -34,66 +39,30 @@ const ROUTES = [
   "/states/texas",
 ] as const;
 
-/**
- * Parse buttons from raw SSR HTML and report those with no accessible name.
- * A button has an accessible name if:
- *   - Its text content (tags stripped) is non-empty, OR
- *   - It carries aria-label or aria-labelledby
- */
-function findButtonsWithoutAccessibleName(html: string): Array<{
-  route: string;
-  tag: string;
-}> {
-  const results: Array<{ route: string; tag: string }> = [];
-
-  // Extract all <button>...</button> blocks. This regex captures opening tag
-  // + content + closing tag. The opening tag may span multiple lines or contain
-  // attributes with newlines.
-  const buttonRegex =
-    /<button[\s\S]*?>([\s\S]*?)<\/button>/gi;
-
-  let match;
-  while ((match = buttonRegex.exec(html)) !== null) {
-    const openingTagMatch = /<button[^>]*>/i.exec(match[0]);
-    if (!openingTagMatch) continue;
-
-    const openingTag = openingTagMatch[0];
-    const content = match[1];
-
-    // Check if the button has aria-label or aria-labelledby
-    const hasAriaLabel =
-      /\baria-label\s*=/i.test(openingTag) ||
-      /\baria-labelledby\s*=/i.test(openingTag);
-
-    // Strip HTML tags from content and trim
-    const textContent = content.replace(/<[^>]*>/g, "").trim();
-
-    // Fail if both conditions hold: no text + no aria attribute
-    if (textContent === "" && !hasAriaLabel) {
-      results.push({ route: "", tag: openingTag });
-    }
-  }
-
-  return results;
-}
-
 for (const route of ROUTES) {
   test(`${route} has no buttons without accessible names in SSR`, async ({
-    request,
+    page,
   }) => {
-    const response = await request.get(route);
-    expect(response.status()).toBe(200);
+    const res = await page.goto(route);
+    expect(res?.status()).toBe(200);
 
-    const html = await response.text();
-    const offenders = findButtonsWithoutAccessibleName(html);
-
-    const offenderList = offenders
-      .map((o) => `  ${o.tag}`)
-      .join("\n");
+    // Use the browser's HTML parser (via evaluateAll) to find all button
+    // elements. Filter for those with no accessible name.
+    const offenders = await page.locator("button").evaluateAll((btns) =>
+      btns
+        .filter((b) => {
+          const textContent = (b.textContent ?? "").trim();
+          const hasAriaLabel = b.getAttribute("aria-label");
+          const hasAriaLabelledby = b.getAttribute("aria-labelledby");
+          // Button lacks an accessible name if text is empty AND no aria attrs.
+          return !textContent && !hasAriaLabel && !hasAriaLabelledby;
+        })
+        .map((b) => b.outerHTML.slice(0, 160))
+    );
 
     expect(
       offenders,
-      `found ${offenders.length} button(s) without accessible name on ${route}:\n${offenderList}`
+      `on route ${route}: found ${offenders.length} button(s) without accessible name:\n${offenders.map((tag) => `  ${tag}`).join("\n")}`
     ).toHaveLength(0);
   });
 }
