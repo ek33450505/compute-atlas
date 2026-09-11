@@ -9,6 +9,7 @@ import {
   type PowerGenerationFacility,
   aiClassificationEnum,
   confidenceEnum,
+  waterCoolingTypeEnum,
 } from "@/lib/schema";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
@@ -889,14 +890,14 @@ export async function getWaterUsage(): Promise<WaterUsage> {
   return { reportingCount: reporting.length, totalMgd };
 }
 
-/** All 5 cooling type keys (stable, exhaustive set). */
-const COOLING_TYPE_KEYS = [
-  "evaporative",
-  "air",
-  "closed_loop",
-  "hybrid",
-  "unknown",
-] as const;
+/**
+ * All 5 cooling type keys (stable, exhaustive set) — derived from
+ * `waterCoolingTypeEnum` (lib/schema.ts) so this can never drift from the
+ * canonical enum. Order is byte-identical to the previous hand-retyped
+ * literal (["evaporative","air","closed_loop","hybrid","unknown"]),
+ * verified before switching this over.
+ */
+const COOLING_TYPE_KEYS = waterCoolingTypeEnum.options;
 
 export type CoolingType = (typeof COOLING_TYPE_KEYS)[number];
 
@@ -2097,6 +2098,112 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
     // feed rather than throwing into the homepage teaser / /activity page —
     // both render their existing empty state instead of the error boundary.
     console.warn("getRecentActivity: activity feed unavailable, degrading to empty", err);
+    return [];
+  }
+}
+
+// ============================================================
+// Public contributor credits (used by /contributors)
+// ============================================================
+
+/** One opted-in contributor handle and how many approved contributions it is credited on. */
+export interface ContributorCredit {
+  attribution: string;
+  count: number;
+}
+
+/**
+ * Returns opted-in public contributor credits, aggregated by attribution
+ * handle, sorted by contribution count desc then handle A→Z (case-insensitive).
+ *
+ * A handle is opt-in evidence only for the specific submission it was
+ * attached to (`submissionsTable.provenance ->> 'attribution'`) — this reuses
+ * the same join `getRecentActivity` uses above (facility_history INNER JOIN
+ * facilities, JOIN submissions on `submissions.id::text = facility_history.source`),
+ * which by construction only ever contains submissions that were actually
+ * approved: `approveSubmission` (lib/submissions.ts) writes the
+ * facility_history row via the create/update write primitives BEFORE it flips
+ * `submissions.status` to `"approved"`, so a still-pending or rejected
+ * submission never produces a history row to join against. The explicit
+ * `submissions.status = 'approved'` filter below is kept anyway as
+ * defense-in-depth, not because the join needs it.
+ *
+ * Count grain: `count(*)` here counts `facility_history` rows, which is safe
+ * only because that's 1:1 with approved submissions — `createFacility`,
+ * `updateFacility`/`writeStatusUpdate`/`writeEnrichmentUpdate` (all reached
+ * from `approveSubmission`) each call `recordFacilityHistory` exactly once
+ * per write (see lib/facility-write.ts), so one approval can never inflate a
+ * contributor's count with more than one row. A history-insert failure
+ * (`recordFacilityHistory` logs and returns `false` rather than throwing —
+ * see `insertFacilityHistoryRow` in lib/facility-history.ts) can only
+ * *under*-count a contribution, never double-count one.
+ *
+ * This also naturally credits leads promoted through the discovery
+ * leads-lane, with no separate `leadsTable` join: `scripts/discovery/leads-lane.ts`
+ * copies a promoted lead's own `attribution` field into the created
+ * submission's `provenance.attribution` at promotion time, so once that
+ * submission is approved its credit flows through this exact same path. A
+ * lead that is merely `promoted` (staged as a submission) but not yet
+ * approved has no facility_history row and is correctly excluded — leads
+ * have no "approved" status of their own to filter on (LEAD_STATUSES is
+ * `new | researching | promoted | dismissed`; see lib/lead-fields.ts). The
+ * `leads` table itself is never queried here.
+ *
+ * Case-insensitive dedupe: a handle is free text (only charset-restricted,
+ * `/^[A-Za-z0-9 _.-]+$/` — see lib/submissions.ts), so "Jane Doe" and
+ * "jane doe" must be one contributor, not two. Grouping happens on
+ * `lower(trim(attribution))` — trimmed too, so stray leading/trailing
+ * whitespace can't split one person into two rows either. Because the GROUP
+ * BY key is normalized, it can no longer be what's displayed (it would
+ * render everyone's handle lowercased), so the selected/displayed
+ * `attribution` is `min(attribution)` — an arbitrary-but-stable pick among
+ * that group's raw-cased variants (arbitrary in *which* casing wins when
+ * variants genuinely differ, stable in that repeat runs return the same
+ * one). This does mean a contributor whose casing varies across submissions
+ * could see a variant that isn't their most-recent or most-common casing —
+ * an acceptable, extremely rare cost for a public credit line, versus
+ * picking no deterministic winner at all.
+ *
+ * DB-only, same degrade-to-empty contract as `getRecentActivity`.
+ */
+export async function getContributorCredits(): Promise<ContributorCredit[]> {
+  if (!hasDatabaseUrl()) {
+    return [];
+  }
+
+  const db = getDb();
+
+  try {
+    const attribution = sql<string>`${submissionsTable.provenance} ->> 'attribution'`;
+    const normalizedAttribution = sql`lower(trim(${attribution}))`;
+
+    const rows = await db
+      .select({
+        attribution: sql<string>`min(${attribution})`,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(facilityHistoryTable)
+      .innerJoin(facilitiesTable, eq(facilityHistoryTable.facilityId, facilitiesTable.id))
+      // Cast submissions.id (uuid) to text rather than casting source::uuid —
+      // "admin-direct" rows aren't valid uuids and must simply not match.
+      // Mirrors getRecentActivity's join above.
+      .innerJoin(submissionsTable, sql`${submissionsTable.id}::text = ${facilityHistoryTable.source}`)
+      .where(
+        and(
+          inArray(facilityHistoryTable.changeType, ["create", "update"]),
+          eq(submissionsTable.status, "approved"),
+          sql`${attribution} IS NOT NULL`
+        )
+      )
+      .groupBy(normalizedAttribution)
+      .orderBy(desc(sql`count(*)`), normalizedAttribution);
+
+    return rows.map((row) => ({ attribution: row.attribution, count: Number(row.count) }));
+  } catch (err) {
+    // A live query failure (DB unreachable or over-quota) degrades to an
+    // empty credit list rather than throwing into the /contributors page —
+    // it renders its existing empty state instead of the error boundary.
+    console.warn("getContributorCredits: contributor credits unavailable, degrading to empty", err);
     return [];
   }
 }
