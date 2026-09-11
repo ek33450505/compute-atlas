@@ -17,9 +17,10 @@ export const NAV_LINKS = [
   { label: "Activity", href: "/activity" },
   { label: "Contribute", href: "/contribute" },
   { label: "About", href: "/about" },
+  { label: "Support", href: "/support" },
 ] as const;
 
-const MOBILE_NAV_GROUPS = [
+export const MOBILE_NAV_GROUPS = [
   {
     label: "Tools",
     links: [
@@ -42,6 +43,7 @@ const MOBILE_NAV_GROUPS = [
       { label: "Activity", href: "/activity" },
       { label: "About", href: "/about" },
       { label: "Contribute", href: "/contribute" },
+      { label: "Support", href: "/support" },
       { label: "Source on GitHub", href: siteConfig.repoUrl, external: true },
     ],
   },
