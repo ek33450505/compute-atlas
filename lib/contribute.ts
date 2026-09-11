@@ -142,6 +142,31 @@ const APPLY_FNS: Record<
   capacityPlannedMw: (existing, value) => ({
     capacityMw: { ...existing.capacityMw, planned: Number(value) },
   }),
+  // Appends a new subsidy record rather than overwriting the array — a
+  // correction here is "I found a subsidy the record doesn't list yet."
+  // `program`/`jurisdiction`/`year` are NOT capturable via this key — the
+  // correction UI's `valueKind` only supports a single text/number/enum/state
+  // value, and a composite subsidy entry needs a dedicated multi-field form.
+  // That is a fast-follow, not this pass; do not assume the record is
+  // complete just because it validates.
+  //
+  // `sourceIndex` is set to `existing.sources.length` — buildCorrectionPatch
+  // (below) calls `apply()` BEFORE appending the correction's own source via
+  // `patch.sources = [...existing.sources, correctionSource]`, so that index
+  // is exactly where the new source will land. A bare amountUsd with no
+  // sourceIndex would be unattributable to the source the contributor cited —
+  // this dataset's worst data-quality incident was conflating a bond
+  // authorization ceiling with a disbursed abatement, an error class this
+  // guards against by keeping every subsidy figure traceable to its source.
+  subsidies: (existing, value) => ({
+    subsidies: [
+      ...(existing.subsidies ?? []),
+      { amountUsd: Number(value), sourceIndex: existing.sources.length },
+    ],
+  }),
+  jobs: (existing, value) => ({
+    jobs: { ...existing.jobs, permanent: Number(value) },
+  }),
 };
 
 export const CORRECTABLE_FIELDS: CorrectableFieldDef[] = CORRECTABLE_FIELD_META.map(
