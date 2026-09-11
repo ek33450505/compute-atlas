@@ -14,6 +14,13 @@ const ROUTES = [
   "/methodology",
   "/api",
   "/data",
+  // Chrome-free layout shape (no header/footer, full-height map + a single
+  // attribution link) — never audited before. "texas" is prerendered
+  // (generateStaticParams iterates getStates(), i.e. states with
+  // facilities) so this exercises the populated map, not the empty-state
+  // branch; already used as a known-populated state in
+  // e2e/prose-spacing.spec.ts.
+  "/embed/states/texas",
 ] as const;
 
 // Tags covering WCAG 2.x AA + 2.2 AA
