@@ -24,7 +24,10 @@ import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
 import { SectionHeading } from "@/components/section-heading";
+import { StateEmbedSnippet } from "@/components/states/state-embed-snippet";
 import { aiClassificationEnum } from "@/lib/schema";
+import { siteConfig } from "@/lib/site";
+import { DATASET_DOI_URL } from "@/lib/seo";
 
 export const revalidate = false;
 
@@ -137,6 +140,12 @@ export default async function StatePage({
     { label: "States", href: "/states" },
     { label: stateName },
   ];
+
+  // Embed snippet + citation — both point at this exact page, so both are
+  // built from the same canonical URL rather than each deriving it separately.
+  const canonicalUrl = `${siteConfig.url}/states/${slug}`;
+  const embedUrl = `${siteConfig.url}/embed/states/${slug}`;
+  const embedSnippet = `<iframe src="${embedUrl}" width="100%" height="480" style="border:0" loading="lazy" title="Data centers in ${stateName} — Compute Atlas"></iframe>`;
 
   return (
     <div
@@ -395,6 +404,45 @@ export default async function StatePage({
             </li>
           ))}
         </ul>
+      </section>
+
+      <section
+        aria-labelledby="embed-heading"
+        className="space-y-4 border-t border-border pt-10"
+      >
+        <SectionHeading kicker="Embed" id="embed-heading" title="Embed this map" />
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          This map can be embedded on another page as a live, chrome-free
+          iframe, pre-scoped to {stateName}. Every embed keeps a permanent
+          attribution link back to this page.
+        </p>
+        <StateEmbedSnippet snippet={embedSnippet} stateName={stateName} />
+      </section>
+
+      <section
+        aria-labelledby="cite-heading"
+        className="space-y-4 border-t border-border pt-10"
+      >
+        <SectionHeading kicker="Citation" id="cite-heading" title="Cite this page" />
+        <blockquote className="max-w-2xl border-l-2 border-border pl-4 font-mono text-sm text-muted-foreground">
+          Kubiak, E. (n.d.). Data centers in {stateName}. Compute Atlas.{" "}
+          <a
+            href={canonicalUrl}
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            {canonicalUrl}
+          </a>
+        </blockquote>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          To cite the underlying dataset instead, use its permanent
+          identifier:{" "}
+          <a
+            href={DATASET_DOI_URL}
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            {DATASET_DOI_URL}
+          </a>
+        </p>
       </section>
     </div>
   );

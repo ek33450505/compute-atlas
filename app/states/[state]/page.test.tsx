@@ -47,6 +47,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+import { DATASET_DOI_URL } from "@/lib/seo";
 import StatePage, { generateMetadata } from "./page";
 
 function makeFacility(overrides: Partial<Facility> = {}): Facility {
@@ -170,5 +171,40 @@ describe("StatePage generateMetadata", () => {
   it("sets the canonical alternate to /states/<slug>", async () => {
     const metadata = await generateMetadata({ params: Promise.resolve({ state: "texas" }) });
     expect(metadata.alternates).toEqual({ canonical: "/states/texas" });
+  });
+});
+
+describe("StatePage embed snippet", () => {
+  it("renders an <iframe> snippet pointed at this state's embed route", async () => {
+    const page = await StatePage({ params: Promise.resolve({ state: "texas" }) });
+    const { getByText } = render(page);
+
+    const expectedSnippet =
+      '<iframe src="https://www.compute-atlas.com/embed/states/texas" width="100%" height="480" style="border:0" loading="lazy" title="Data centers in Texas — Compute Atlas"></iframe>';
+    expect(getByText(expectedSnippet)).toBeInTheDocument();
+  });
+
+  it("renders a copy control naming this state", async () => {
+    const page = await StatePage({ params: Promise.resolve({ state: "texas" }) });
+    const { getByRole } = render(page);
+
+    expect(
+      getByRole("button", { name: "Copy the embeddable map snippet for Texas" })
+    ).toBeInTheDocument();
+  });
+});
+
+describe("StatePage citation block", () => {
+  it("cites this page's own canonical URL and the dataset DOI", async () => {
+    const page = await StatePage({ params: Promise.resolve({ state: "texas" }) });
+    const { getByRole } = render(page);
+
+    expect(
+      getByRole("link", { name: "https://www.compute-atlas.com/states/texas" })
+    ).toHaveAttribute("href", "https://www.compute-atlas.com/states/texas");
+    expect(getByRole("link", { name: DATASET_DOI_URL })).toHaveAttribute(
+      "href",
+      DATASET_DOI_URL
+    );
   });
 });
