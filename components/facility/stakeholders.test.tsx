@@ -62,11 +62,15 @@ describe("hasStakeholders", () => {
 });
 
 describe("StakeholdersSection", () => {
-  it("renders nothing when the facility has no stakeholders", () => {
-    const { container } = render(
-      <StakeholdersSection facility={makeFacility()} />
-    );
-    expect(container).toBeEmptyDOMElement();
+  it("renders a SectionGapPrompt lead-path link when the facility has no stakeholders", () => {
+    render(<StakeholdersSection facility={makeFacility()} />);
+
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/contribute");
+    expect(link).toHaveTextContent(/a documented stakeholder/i);
+    expect(
+      screen.queryByRole("heading", { name: "Notable stakeholders" })
+    ).not.toBeInTheDocument();
   });
 
   it("renders a financial-interest entry with its source link", () => {

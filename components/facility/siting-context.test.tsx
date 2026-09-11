@@ -85,10 +85,15 @@ describe("SitingContextSection", () => {
     expect(screen.getByText(/HIFLD/)).toBeInTheDocument();
   });
 
-  it("returns null when the facility has no siting-context entry", () => {
+  it("renders a SectionGapPrompt lead-path link when the facility has no siting-context entry", () => {
     const facility = makeFacility({ id: "not-a-real-facility-id-xyz" });
-    const { container } = render(<SitingContextSection facility={facility} />);
-    expect(container).toBeEmptyDOMElement();
+    render(<SitingContextSection facility={facility} />);
+
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/contribute");
+    expect(link).toHaveTextContent(/the siting context/i);
+    expect(link).toHaveTextContent(/test datacenter/i);
+    expect(screen.queryByRole("heading", { name: "Siting context" })).not.toBeInTheDocument();
   });
 
   it("phrases a zero-distance waterway as 'On <name>'", () => {

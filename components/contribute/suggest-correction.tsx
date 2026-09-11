@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { issuesToFieldMap, FieldError, type FieldIssues } from "@/components/contribute/field-primitives";
 import { CORRECTABLE_FIELD_META, type CorrectableKey } from "@/lib/contribute-fields";
 import { STATUS_ORDER, STATUS_META } from "@/lib/status";
 import { US_STATE_NAMES } from "@/lib/us-states";
@@ -31,6 +32,17 @@ import { US_STATE_NAMES } from "@/lib/us-states";
 const STATE_OPTIONS = Object.entries(US_STATE_NAMES)
   .map(([code, name]) => ({ code, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
+
+// `items` for each <Select> — Base UI resolves the trigger's displayed label
+// from this, not from the rendered <SelectItem> children (mirrors
+// contribute-facility-form.tsx's fix for the same quirk). Each is derived
+// from the same source the <SelectItem>s below map over.
+const CORRECTABLE_FIELD_ITEMS = CORRECTABLE_FIELD_META.map((m) => ({
+  value: m.key,
+  label: m.label,
+}));
+const STATUS_ITEMS = STATUS_ORDER.map((s) => ({ value: s, label: STATUS_META[s].label }));
+const STATE_ITEMS = STATE_OPTIONS.map((s) => ({ value: s.code, label: s.name }));
 
 // ---------------------------------------------------------------------------
 // Payload building (pure helper — kept separate so it's unit-testable
@@ -70,39 +82,25 @@ export function buildCorrectionPayload(
 }
 
 // ---------------------------------------------------------------------------
-// Field-level error surfacing — the server validates the merged facility, so
-// issue paths may be nested. We don't map per-field; just surface the top
-// `error` plus the first issue message at the form level.
-// ---------------------------------------------------------------------------
-
-interface CorrectionIssue {
-  path: (string | number)[];
-  message: string;
-}
-
-function firstIssueMessage(issues: unknown): string | undefined {
-  if (!Array.isArray(issues) || issues.length === 0) return undefined;
-  const first = issues[0] as CorrectionIssue | undefined;
-  return first && typeof first.message === "string" ? first.message : undefined;
-}
-
-// ---------------------------------------------------------------------------
 // Honeypot (hidden from humans, off-screen not display:none) — copied from
-// contribute-facility-form.tsx's HoneypotField pattern.
+// contribute-facility-form.tsx's HoneypotField pattern. `id` is required
+// (not defaulted) since every instance on a page needs a useId()-derived one.
 // ---------------------------------------------------------------------------
 
 function HoneypotField({
+  id,
   value,
   onChange,
 }: {
+  id: string;
   value: string;
   onChange: (v: string) => void;
 }) {
   return (
     <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
-      <label htmlFor="correction-website">Website</label>
+      <label htmlFor={id}>Website</label>
       <input
-        id="correction-website"
+        id={id}
         name="website"
         type="text"
         tabIndex={-1}
@@ -114,32 +112,51 @@ function HoneypotField({
   );
 }
 
+/** Empty-state builder — a function (not a module-level constant) because the
+ * default targeted field now depends on the `defaultField` prop. */
+function emptyState(defaultField?: CorrectableKey): CorrectionFormState {
+  return {
+    field: defaultField ?? CORRECTABLE_FIELD_META[0].key,
+    value: "",
+    sourceUrl: "",
+    attribution: "",
+    note: "",
+    website: "",
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-
-const EMPTY_STATE: CorrectionFormState = {
-  field: CORRECTABLE_FIELD_META[0].key,
-  value: "",
-  sourceUrl: "",
-  attribution: "",
-  note: "",
-  website: "",
-};
 
 type SubmitOutcome = "idle" | "success";
 
 export function SuggestCorrection({
   facilityId,
   facilityName,
+  defaultField,
+  trigger,
+  showIntro = true,
 }: {
   facilityId: string;
   facilityName: string;
+  /** Pre-selects "What's wrong?" to this field instead of the first option —
+   * used by FieldGapPrompt to deep-link the dialog at a specific gap. */
+  defaultField?: CorrectableKey;
+  /** Custom dialog trigger, forwarded to the underlying Base UI `render` prop
+   * (which requires a single element, not arbitrary ReactNode). Defaults to
+   * the full-size "Suggest a correction" button used by the end-of-page CTA. */
+  trigger?: React.ReactElement;
+  /** Gates the "Compute Atlas is meant to be corrected..." intro paragraph —
+   * off by default for compact/inline instances (masthead strip, gap prompts). */
+  showIntro?: boolean;
 }) {
+  const uid = useId();
   const [open, setOpen] = useState(false);
-  const [state, setState] = useState<CorrectionFormState>(EMPTY_STATE);
+  const [state, setState] = useState<CorrectionFormState>(() => emptyState(defaultField));
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | undefined>(undefined);
+  const [errors, setErrors] = useState<FieldIssues>({});
   const [outcome, setOutcome] = useState<SubmitOutcome>("idle");
   const successRef = useRef<HTMLParagraphElement>(null);
 
@@ -148,8 +165,9 @@ export function SuggestCorrection({
   }, [outcome]);
 
   function resetForm() {
-    setState(EMPTY_STATE);
+    setState(emptyState(defaultField));
     setFormError(undefined);
+    setErrors({});
     setOutcome("idle");
   }
 
@@ -159,6 +177,7 @@ export function SuggestCorrection({
     e.preventDefault();
     if (submitting) return;
     setFormError(undefined);
+    setErrors({});
     setSubmitting(true);
 
     try {
@@ -182,8 +201,8 @@ export function SuggestCorrection({
 
       if ((res.status === 400 || res.status === 404 || res.status === 429) && json && typeof json === "object") {
         const body = json as { error?: string; issues?: unknown };
-        const detail = firstIssueMessage(body.issues);
-        setFormError([body.error, detail].filter(Boolean).join(" — ") || "Something went wrong. Please try again.");
+        setErrors(issuesToFieldMap(body.issues));
+        setFormError(body.error ?? "Please fix the errors below.");
         return;
       }
 
@@ -195,13 +214,30 @@ export function SuggestCorrection({
     }
   }
 
+  const fieldId = `${uid}-correction-field`;
+  const valueId = `${uid}-correction-value`;
+  const sourceId = `${uid}-correction-source`;
+  const sourceHintId = `${uid}-correction-source-hint`;
+  const attributionId = `${uid}-correction-attribution`;
+  const attributionHintId = `${uid}-correction-attribution-hint`;
+  const noteId = `${uid}-correction-note`;
+  const websiteId = `${uid}-correction-website`;
+  const valueErrorId = `${uid}-correction-value-error`;
+  const sourceErrorId = `${uid}-correction-source-error`;
+
+  const sourceDescribedBy = [sourceHintId, errors["sourceUrl"] ? sourceErrorId : null]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <div className="space-y-2">
-      <p className="text-sm text-muted-foreground">
-        Compute Atlas is meant to be corrected. If you have better,
-        source-backed data on this facility, suggest a change — it&rsquo;s
-        reviewed before anything updates.
-      </p>
+      {showIntro ? (
+        <p className="text-sm text-muted-foreground">
+          Compute Atlas is meant to be corrected. If you have better,
+          source-backed data on this facility, suggest a change — it&rsquo;s
+          reviewed before anything updates.
+        </p>
+      ) : null}
       <Dialog
         open={open}
         onOpenChange={(o) => {
@@ -209,8 +245,10 @@ export function SuggestCorrection({
           if (!o) resetForm();
         }}
       >
-        <DialogTrigger render={<Button variant="outline" className="min-h-11" />}>
-          Suggest a correction
+        <DialogTrigger
+          render={trigger ?? <Button variant="outline" className="min-h-11" />}
+        >
+          {trigger ? undefined : "Suggest a correction"}
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -246,20 +284,22 @@ export function SuggestCorrection({
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
               <HoneypotField
+                id={websiteId}
                 value={state.website}
                 onChange={(v) => setState((prev) => ({ ...prev, website: v }))}
               />
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="correction-field">What&rsquo;s wrong?</Label>
+                <Label htmlFor={fieldId}>What&rsquo;s wrong?</Label>
                 <Select
+                  items={CORRECTABLE_FIELD_ITEMS}
                   value={state.field}
                   onValueChange={(v) => {
                     if (v === null) return;
                     setState((prev) => ({ ...prev, field: v as CorrectableKey, value: "" }));
                   }}
                 >
-                  <SelectTrigger id="correction-field" className="w-full">
+                  <SelectTrigger id={fieldId} className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -273,24 +313,26 @@ export function SuggestCorrection({
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="correction-value">
+                <Label htmlFor={valueId}>
                   New value
                   <span aria-hidden="true" className="text-destructive"> *</span>
                 </Label>
                 {def.valueKind === "text" && (
                   <Input
-                    id="correction-value"
+                    id={valueId}
                     name="correction-value"
                     type="text"
                     value={state.value}
                     onChange={(e) => setState((prev) => ({ ...prev, value: e.target.value }))}
                     required
                     aria-required="true"
+                    aria-invalid={errors["value"] ? true : undefined}
+                    aria-describedby={errors["value"] ? valueErrorId : undefined}
                   />
                 )}
                 {def.valueKind === "number" && (
                   <Input
-                    id="correction-value"
+                    id={valueId}
                     name="correction-value"
                     type="number"
                     step="any"
@@ -299,17 +341,25 @@ export function SuggestCorrection({
                     onChange={(e) => setState((prev) => ({ ...prev, value: e.target.value }))}
                     required
                     aria-required="true"
+                    aria-invalid={errors["value"] ? true : undefined}
+                    aria-describedby={errors["value"] ? valueErrorId : undefined}
                   />
                 )}
                 {def.valueKind === "enum" && (
                   <Select
+                    items={STATUS_ITEMS}
                     value={state.value || null}
                     onValueChange={(v) => {
                       if (v === null) return;
                       setState((prev) => ({ ...prev, value: v }));
                     }}
                   >
-                    <SelectTrigger id="correction-value" className="w-full">
+                    <SelectTrigger
+                      id={valueId}
+                      className="w-full"
+                      aria-invalid={errors["value"] ? true : undefined}
+                      aria-describedby={errors["value"] ? valueErrorId : undefined}
+                    >
                       <SelectValue placeholder="Select a value" />
                     </SelectTrigger>
                     <SelectContent>
@@ -323,13 +373,19 @@ export function SuggestCorrection({
                 )}
                 {def.valueKind === "state" && (
                   <Select
+                    items={STATE_ITEMS}
                     value={state.value || null}
                     onValueChange={(v) => {
                       if (v === null) return;
                       setState((prev) => ({ ...prev, value: v }));
                     }}
                   >
-                    <SelectTrigger id="correction-value" className="w-full">
+                    <SelectTrigger
+                      id={valueId}
+                      className="w-full"
+                      aria-invalid={errors["value"] ? true : undefined}
+                      aria-describedby={errors["value"] ? valueErrorId : undefined}
+                    >
                       <SelectValue placeholder="Select a state" />
                     </SelectTrigger>
                     <SelectContent>
@@ -341,48 +397,51 @@ export function SuggestCorrection({
                     </SelectContent>
                   </Select>
                 )}
+                <FieldError id={valueErrorId} message={errors["value"]} />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="correction-source">
+                <Label htmlFor={sourceId}>
                   Source URL
                   <span aria-hidden="true" className="text-destructive"> *</span>
                 </Label>
                 <Input
-                  id="correction-source"
+                  id={sourceId}
                   name="correction-source"
                   type="url"
                   value={state.sourceUrl}
                   onChange={(e) => setState((prev) => ({ ...prev, sourceUrl: e.target.value }))}
                   required
                   aria-required="true"
-                  aria-describedby="correction-source-hint"
+                  aria-invalid={errors["sourceUrl"] ? true : undefined}
+                  aria-describedby={sourceDescribedBy || undefined}
                 />
-                <p id="correction-source-hint" className="text-xs text-muted-foreground">
+                <p id={sourceHintId} className="text-xs text-muted-foreground">
                   A public link that backs up this change.
                 </p>
+                <FieldError id={sourceErrorId} message={errors["sourceUrl"]} />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="correction-attribution">Your name or handle (optional)</Label>
+                <Label htmlFor={attributionId}>Your name or handle (optional)</Label>
                 <Input
-                  id="correction-attribution"
+                  id={attributionId}
                   name="correction-attribution"
                   type="text"
                   value={state.attribution}
                   onChange={(e) => setState((prev) => ({ ...prev, attribution: e.target.value }))}
                   maxLength={40}
-                  aria-describedby="correction-attribution-hint"
+                  aria-describedby={attributionHintId}
                 />
-                <p id="correction-attribution-hint" className="text-xs text-muted-foreground">
+                <p id={attributionHintId} className="text-xs text-muted-foreground">
                   Credited on the public activity feed. Leave blank to stay anonymous — no email addresses.
                 </p>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="correction-note">Note (optional)</Label>
+                <Label htmlFor={noteId}>Note (optional)</Label>
                 <textarea
-                  id="correction-note"
+                  id={noteId}
                   name="correction-note"
                   value={state.note}
                   onChange={(e) => setState((prev) => ({ ...prev, note: e.target.value }))}

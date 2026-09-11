@@ -170,6 +170,66 @@ function getPostedBody(): Record<string, unknown> {
   return JSON.parse(init.body as string);
 }
 
+// ---------------------------------------------------------------------------
+// Coordinate paste-and-split (B6a) — the manual lat/lon inputs stay usable;
+// this is an additive shortcut, not a replacement.
+// ---------------------------------------------------------------------------
+
+describe("ContributeFacilityForm — paste coordinates", () => {
+  it("populates both latitude and longitude fields from a pasted coordinate string", async () => {
+    const user = userEvent.setup();
+    render(<ContributeFacilityForm />);
+
+    const latInput = screen.getByLabelText(/latitude/i) as HTMLInputElement;
+    const lonInput = screen.getByLabelText(/longitude/i) as HTMLInputElement;
+    expect(latInput.value).toBe("");
+    expect(lonInput.value).toBe("");
+
+    await user.type(screen.getByLabelText(/paste coordinates/i), "39.51, -98.53");
+
+    expect(latInput.value).toBe("39.51");
+    expect(lonInput.value).toBe("-98.53");
+    expect(
+      await screen.findByText(/filled from pasted coordinates/i)
+    ).toBeInTheDocument();
+  });
+
+  it("preserves a negative longitude when populating the field (not just when parsing)", async () => {
+    const user = userEvent.setup();
+    render(<ContributeFacilityForm />);
+
+    await user.type(screen.getByLabelText(/paste coordinates/i), "39.51, -98.53");
+
+    const lonInput = screen.getByLabelText(/longitude/i) as HTMLInputElement;
+    expect(lonInput.value.startsWith("-")).toBe(true);
+  });
+
+  it("does not overwrite the manual fields while the pasted text is still incomplete", async () => {
+    const user = userEvent.setup();
+    render(<ContributeFacilityForm />);
+
+    await user.type(screen.getByLabelText(/paste coordinates/i), "39.51");
+
+    const latInput = screen.getByLabelText(/latitude/i) as HTMLInputElement;
+    const lonInput = screen.getByLabelText(/longitude/i) as HTMLInputElement;
+    expect(latInput.value).toBe("");
+    expect(lonInput.value).toBe("");
+  });
+
+  it("leaves manual lat/lon entry fully working as a fallback", async () => {
+    const user = userEvent.setup();
+    render(<ContributeFacilityForm />);
+
+    const latInput = screen.getByLabelText(/latitude/i) as HTMLInputElement;
+    const lonInput = screen.getByLabelText(/longitude/i) as HTMLInputElement;
+    await user.type(latInput, "30");
+    await user.type(lonInput, "-90");
+
+    expect(latInput.value).toBe("30");
+    expect(lonInput.value).toBe("-90");
+  });
+});
+
 describe("ContributeFacilityForm — attribution", () => {
   it("renders an optional attribution field", () => {
     render(<ContributeFacilityForm />);

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Zap, Plug } from "lucide-react";
 
 import type { Facility } from "@/lib/schema";
+import { SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { getPoweredCampuses, getPoweredByGenerators } from "@/lib/data";
 import { getGenerationTechnologyLabel } from "@/lib/generation";
 import { getStatusMeta } from "@/lib/status";
@@ -106,10 +107,17 @@ async function PoweredByGroup({ facility }: { facility: Facility }) {
 // Vitest under jsdom, and by any client-side re-render) cannot — resolving
 // here keeps the returned tree renderable by both.
 export async function PowerLinksSection({ facility }: { facility: Facility }) {
-  if (!(await hasPowerLinks(facility))) return null;
+  const isGenerator = facility.facilityType === "power_generation";
+  if (!(await hasPowerLinks(facility))) {
+    return (
+      <SectionGapPrompt
+        facilityName={facility.name}
+        label={isGenerator ? "what this facility powers" : "its power supply"}
+      />
+    );
+  }
 
   const headingId = `power-links-${facility.id}`;
-  const isGenerator = facility.facilityType === "power_generation";
   const group = isGenerator
     ? await PowersGroup({ facility })
     : await PoweredByGroup({ facility });
