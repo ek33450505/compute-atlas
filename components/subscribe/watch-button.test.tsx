@@ -98,6 +98,38 @@ describe("WatchButton — structure", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("renders a quiet text-scale trigger when quiet is set, keeping a 44px touch target and the accessible name", async () => {
+    render(
+      <WatchButton
+        targetType="facility"
+        targetId="facility-1"
+        label="Watch this facility"
+        quiet
+      />
+    );
+
+    const trigger = screen.getByRole("button", { name: "Watch this facility" });
+    expect(trigger).toHaveClass("min-h-11");
+    expect(trigger).toHaveClass("underline");
+  });
+
+  it("keeps the expanded email form's submit button a real button when quiet is set", async () => {
+    const user = userEvent.setup();
+    render(
+      <WatchButton
+        targetType="facility"
+        targetId="facility-1"
+        label="Watch this facility"
+        quiet
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Watch this facility" }));
+
+    expect(screen.getByRole("button", { name: "Watch" })).toBeInTheDocument();
+    expect(screen.getByLabelText(/^email$/i)).toBeInTheDocument();
+  });
+
   it("keeps the honeypot out of the tab order", async () => {
     const user = userEvent.setup();
     render(<WatchButton targetType="facility" targetId="facility-1" label="Watch this facility" />);

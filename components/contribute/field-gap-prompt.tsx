@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 import { CORRECTABLE_KEYS, type CorrectableKey } from "@/lib/contribute-fields";
+import { QUIET_ACTION_CLASS } from "@/lib/utils";
 
 interface FieldGapPromptProps {
   /** Raw field key, e.g. "jobs" or "airPermit" — not assumed correctable. */
@@ -11,9 +12,6 @@ interface FieldGapPromptProps {
   /** Human copy, e.g. "permanent jobs", "the air permit". */
   label: string;
 }
-
-const LINK_CLASS =
-  "text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
 
 /**
  * Turns a silent empty-field gap into a working invite. Eligibility is
@@ -32,11 +30,8 @@ export function FieldGapPrompt({ field, facilityId, facilityName, label }: Field
         facilityName={facilityName}
         defaultField={field as CorrectableKey}
         showIntro={false}
-        trigger={
-          <button type="button" className={LINK_CLASS}>
-            {`Know ${label}?`}
-          </button>
-        }
+        triggerLabel={`Know ${label}?`}
+        triggerClassName={QUIET_ACTION_CLASS}
       />
     );
   }
@@ -44,7 +39,7 @@ export function FieldGapPrompt({ field, facilityId, facilityName, label }: Field
   // Not (yet) correctable — route to the lighter lead form instead of
   // promising an edit the system can't apply automatically.
   return (
-    <Link href="/contribute" className={LINK_CLASS}>
+    <Link href="/contribute" className={QUIET_ACTION_CLASS}>
       Know a source for {label} on {facilityName}? Send us a link.
     </Link>
   );

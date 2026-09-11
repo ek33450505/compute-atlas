@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 import { CORRECTABLE_KEYS, type CorrectableKey } from "@/lib/contribute-fields";
+import { QUIET_ACTION_CLASS } from "@/lib/utils";
 
 interface ConfirmFactPromptProps {
   /** Raw field key, e.g. "capacityOperationalMw" — not assumed correctable. */
@@ -19,9 +20,6 @@ interface ConfirmFactPromptProps {
    *  vintage the call site can't back up. */
   vintage?: string;
 }
-
-const ACTION_CLASS =
-  "text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
 
 /**
  * Binary "still accurate?" prompt for a fact that is PRESENT but possibly
@@ -85,7 +83,7 @@ export function ConfirmFactPrompt({
         type="button"
         aria-label={`Yes, ${label} is still accurate`}
         onClick={() => setConfirmed(true)}
-        className={ACTION_CLASS}
+        className={QUIET_ACTION_CLASS}
       >
         Yes
       </button>
@@ -94,15 +92,9 @@ export function ConfirmFactPrompt({
         facilityName={facilityName}
         defaultField={field as CorrectableKey}
         showIntro={false}
-        trigger={
-          <button
-            type="button"
-            aria-label={`No, ${label} needs a correction`}
-            className={ACTION_CLASS}
-          >
-            No
-          </button>
-        }
+        triggerLabel="No"
+        triggerClassName={QUIET_ACTION_CLASS}
+        triggerAriaLabel={`No, ${label} needs a correction`}
       />
     </div>
   );

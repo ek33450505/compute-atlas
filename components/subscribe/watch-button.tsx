@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { Eye } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn, QUIET_ACTION_CLASS } from "@/lib/utils";
 
 export type WatchTargetType = "facility" | "state";
 
@@ -24,6 +25,14 @@ export interface WatchButtonProps {
    */
   description?: string;
   className?: string;
+  /**
+   * Renders the collapsed trigger as a quiet text-scale control instead of
+   * a bordered `<Button>` — used by the facility masthead's compact CTA
+   * strip (app/facilities/[slug]/page.tsx). Default false. The expanded
+   * email-capture form (and its submit button) is unaffected by this prop —
+   * it's a form action, not a trigger, and always stays a real button.
+   */
+  quiet?: boolean;
 }
 
 interface SubscribePayload {
@@ -95,6 +104,7 @@ export function WatchButton({
   label,
   description,
   className,
+  quiet = false,
 }: WatchButtonProps) {
   const [revealed, setRevealed] = useState(false);
   const [email, setEmail] = useState("");
@@ -156,6 +166,22 @@ export function WatchButton({
   }
 
   if (!revealed) {
+    if (quiet) {
+      return (
+        <button
+          type="button"
+          className={cn(
+            QUIET_ACTION_CLASS,
+            "inline-flex items-center gap-1.5 min-h-11",
+            className
+          )}
+          onClick={() => setRevealed(true)}
+        >
+          <Eye className="size-3.5" aria-hidden="true" />
+          {label}
+        </button>
+      );
+    }
     return (
       <Button
         type="button"
@@ -196,7 +222,14 @@ export function WatchButton({
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <Button type="submit" disabled={submitting} className="min-h-11">
+            {/* No min-h-11 here, deliberately — Input (components/ui/input.tsx)
+                is h-8 (32px); forcing this button to 44px stood it 12px
+                taller than the field it submits under sm:items-end. Default
+                Button size (h-8) matches the Input exactly. 32px still
+                clears WCAG 2.2 SC 2.5.8's 24x24px minimum, and this control
+                sits inside a form the user has already deliberately
+                opened. */}
+            <Button type="submit" disabled={submitting}>
               {submitting ? "Watching…" : "Watch"}
             </Button>
           </div>

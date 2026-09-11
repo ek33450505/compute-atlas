@@ -136,7 +136,9 @@ export function SuggestCorrection({
   facilityId,
   facilityName,
   defaultField,
-  trigger,
+  triggerLabel,
+  triggerClassName,
+  triggerAriaLabel,
   showIntro = true,
 }: {
   facilityId: string;
@@ -144,10 +146,26 @@ export function SuggestCorrection({
   /** Pre-selects "What's wrong?" to this field instead of the first option —
    * used by FieldGapPrompt to deep-link the dialog at a specific gap. */
   defaultField?: CorrectableKey;
-  /** Custom dialog trigger, forwarded to the underlying Base UI `render` prop
-   * (which requires a single element, not arbitrary ReactNode). Defaults to
-   * the full-size "Suggest a correction" button used by the end-of-page CTA. */
-  trigger?: React.ReactElement;
+  /**
+   * Custom trigger label. Passing this switches the trigger from the
+   * default full-size "Suggest a correction" `<Button>` to a quiet
+   * `<button className={triggerClassName}>`. IMPORTANT: the label is always
+   * passed as `DialogTrigger`'s children, never baked into the element
+   * handed to Base UI's `render` prop — `render` does NOT server-render the
+   * children of the element it's given, so a label embedded there is
+   * missing from the served HTML and produces a hydration mismatch (the bug
+   * this prop shape replaces — see git history for the empty
+   * `<button></button>` SSR defect).
+   */
+  triggerLabel?: React.ReactNode;
+  /** Classes for the custom trigger's `<button>` element. Ignored when
+   * `triggerLabel` is omitted (the default Button trigger keeps its own
+   * "Suggest a correction" styling). */
+  triggerClassName?: string;
+  /** Accessible-name override for the custom trigger, e.g. distinguishing
+   * ConfirmFactPrompt's visible "No" from its accessible "No, {label} needs
+   * a correction". */
+  triggerAriaLabel?: string;
   /** Gates the "Compute Atlas is meant to be corrected..." intro paragraph —
    * off by default for compact/inline instances (masthead strip, gap prompts). */
   showIntro?: boolean;
@@ -247,9 +265,19 @@ export function SuggestCorrection({
         }}
       >
         <DialogTrigger
-          render={trigger ?? <Button variant="outline" className="min-h-11" />}
+          render={
+            triggerLabel !== undefined ? (
+              <button
+                type="button"
+                className={triggerClassName}
+                aria-label={triggerAriaLabel}
+              />
+            ) : (
+              <Button variant="outline" className="min-h-11" />
+            )
+          }
         >
-          {trigger ? undefined : "Suggest a correction"}
+          {triggerLabel !== undefined ? triggerLabel : "Suggest a correction"}
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

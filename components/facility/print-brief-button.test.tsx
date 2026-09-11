@@ -28,11 +28,23 @@ describe("PrintBriefButton", () => {
 
   it("carries focus-visible styling", () => {
     render(<PrintBriefButton />);
-    // Baked into the shared Button primitive (components/ui/button.tsx) —
-    // asserted here directly so a future control doesn't regress to no
-    // focus ring the way an earlier one did.
+    // Quiet-treatment control (QUIET_ACTION_CLASS, lib/utils.ts) — asserted
+    // here directly so a future control doesn't regress to no focus ring
+    // the way an earlier one did.
     expect(
       screen.getByRole("button", { name: /print this brief/i })
-    ).toHaveClass("focus-visible:ring-ring/50");
+    ).toHaveClass(
+      "focus-visible:outline-none",
+      "focus-visible:ring-2",
+      "focus-visible:ring-ring",
+      "focus-visible:ring-offset-2"
+    );
+  });
+
+  it("preserves a 44px touch target despite the quiet text-scale styling", () => {
+    render(<PrintBriefButton />);
+    expect(
+      screen.getByRole("button", { name: /print this brief/i })
+    ).toHaveClass("min-h-11");
   });
 });

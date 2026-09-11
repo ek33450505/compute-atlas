@@ -2,8 +2,7 @@
 
 import { Share2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, QUIET_ACTION_CLASS } from "@/lib/utils";
 
 interface ShareButtonProps {
   title: string;
@@ -75,15 +74,17 @@ export function ShareButton({ title, url, text, className }: ShareButtonProps) {
   }
 
   return (
-    <Button
+    <button
       type="button"
-      variant="outline"
-      size="sm"
       aria-label={`Share ${title}`}
-      className={cn("motion-reduce:transition-none", className)}
+      className={cn(
+        QUIET_ACTION_CLASS,
+        "inline-flex items-center gap-1.5 min-h-11",
+        className
+      )}
       onClick={handleShare}
     >
-      <Share2 className="size-4" aria-hidden="true" /> Share
-    </Button>
+      <Share2 className="size-3.5" aria-hidden="true" /> Share
+    </button>
   );
 }
