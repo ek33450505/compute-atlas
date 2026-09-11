@@ -214,38 +214,38 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
       {investmentUsd !== undefined ? (
         <FactRow label="Investment">{formatUsdCompact(investmentUsd)}</FactRow>
       ) : (
-        <div>
+        <FactRow label="Investment">
           <FieldGapPrompt
             field="investmentUsd"
             facilityId={facilityId}
             facilityName={facilityName}
             label="the investment amount"
           />
-        </div>
+        </FactRow>
       )}
       {landAcres !== undefined ? (
         <FactRow label="Land">{landAcres.toLocaleString()} acres</FactRow>
       ) : (
-        <div>
+        <FactRow label="Land">
           <FieldGapPrompt
             field="landAcres"
             facilityId={facilityId}
             facilityName={facilityName}
             label="the land area"
           />
-        </div>
+        </FactRow>
       )}
       {jobsText ? (
         <FactRow label="Jobs">{jobsText}</FactRow>
       ) : (
-        <div>
+        <FactRow label="Jobs">
           <FieldGapPrompt
             field="jobs"
             facilityId={facilityId}
             facilityName={facilityName}
             label="jobs"
           />
-        </div>
+        </FactRow>
       )}
     </FactGroup>
   );
@@ -276,27 +276,27 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
             {energy.onSiteGenerationMw.toLocaleString()} MW
           </FactRow>
         ) : (
-          <div>
+          <FactRow label="On-site generation">
             <FieldGapPrompt
               field="energy.onSiteGenerationMw"
               facilityId={facilityId}
               facilityName={facilityName}
               label="on-site generation capacity"
             />
-          </div>
+          </FactRow>
         )}
         {coolingLabel && <FactRow label="Cooling">{coolingLabel}</FactRow>}
         {water?.reportedMgd !== undefined ? (
           <FactRow label="Water use">{water.reportedMgd.toLocaleString()} MGD</FactRow>
         ) : (
-          <div>
+          <FactRow label="Water use">
             <FieldGapPrompt
               field="water.reportedMgd"
               facilityId={facilityId}
               facilityName={facilityName}
               label="reported water use"
             />
-          </div>
+          </FactRow>
         )}
       </FactGroup>
       {energy?.notes && (

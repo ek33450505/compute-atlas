@@ -56,8 +56,14 @@ interface SectionGapPromptProps {
   label: string;
 }
 
+// `text-muted-foreground` (#5C5344 on #F5F1E6) is 6.70:1 — see the contrast
+// audit in app/globals.css. This used to carry `/70` opacity to read
+// quieter than a populated section, but that composited to ~#8A8275 on
+// #F5F1E6 = 3.36:1, below the 4.5:1 AA floor for normal text (WCAG 1.4.3).
+// Full-opacity muted-foreground plus text-xs + italic still reads distinctly
+// quieter than LINK_CLASS (text-sm, non-italic) without sacrificing AA.
 const SECTION_LINK_CLASS =
-  "text-xs italic text-muted-foreground/70 underline underline-offset-4 hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "text-xs italic text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
 
 /**
  * Whole-section/whole-group gap — an entire group has no data at all (e.g.
