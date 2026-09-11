@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Info } from "lucide-react";
+import { Info, Flag } from "lucide-react";
 
 import { getAllFacilityIds, getFacilityByIdCached, operatorSlug } from "@/lib/data";
 import { getStatusMeta } from "@/lib/status";
@@ -18,6 +18,7 @@ import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import { formatCountyLabel } from "@/lib/metros";
 import { buildFacilityJsonLd, facilityJsonLdString, breadcrumbJsonLdString } from "@/lib/seo";
 import type { Facility } from "@/lib/schema";
+import { cn, QUIET_ACTION_CLASS } from "@/lib/utils";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -191,11 +192,11 @@ export default async function FacilityPage({
           </Link>
         </p>
         <div className="flex flex-wrap items-center gap-2 pt-1">
+          <StatusBadge status={facility.status} />
           <Badge variant="outline">
             {FACILITY_TYPE_META[facility.facilityType]?.label ??
               facility.facilityType}
           </Badge>
-          <StatusBadge status={facility.status} className="text-base" />
           {(facility.facilityType === "data_center" ||
             facility.facilityType === "crypto_mining") &&
             facility.aiClassification && (
@@ -218,27 +219,34 @@ export default async function FacilityPage({
           compete with the H1; the bottom pair stays put as the canonical
           full-size CTA — this is additive. The strip itself is print:hidden
           and PrintBriefButton carries the variant too (belt and suspenders —
-          it must never appear in the printout it produces). */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 print:hidden">
+          it must never appear in the printout it produces). Every item is
+          one text-sm baseline (QUIET_ACTION_CLASS) with its own
+          `min-h-11` touch target and a leading icon (aria-hidden, so it
+          never leaks into the accessible name), rather than a mix of
+          default/sm Buttons and a bare text link at four different heights. */}
+      <div className="flex flex-wrap items-center gap-x-5 print:hidden">
         <PrintBriefButton />
         <ShareButton title={facility.name} url={canonicalUrl} />
         <SuggestCorrection
           facilityId={facility.id}
           facilityName={facility.name}
           showIntro={false}
-          trigger={
-            <button
-              type="button"
-              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-            >
+          triggerLabel={
+            <>
+              <Flag className="size-3.5" aria-hidden="true" />
               Spot an error?
-            </button>
+            </>
           }
+          triggerClassName={cn(
+            QUIET_ACTION_CLASS,
+            "inline-flex items-center gap-1.5 min-h-11"
+          )}
         />
         <WatchButton
           targetType="facility"
           targetId={facility.id}
           label="Watch this facility"
+          quiet
         />
       </div>
 

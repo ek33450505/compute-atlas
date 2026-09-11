@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Flag } from "lucide-react";
 
 import {
   SuggestCorrection,
@@ -118,7 +119,7 @@ describe("SuggestCorrection — structure", () => {
       <SuggestCorrection
         facilityId="facility-1"
         facilityName="Test DC"
-        trigger={<button type="button">Know operator?</button>}
+        triggerLabel="Know operator?"
       />
     );
 
@@ -128,6 +129,63 @@ describe("SuggestCorrection — structure", () => {
     expect(
       screen.queryByRole("button", { name: /^suggest a correction$/i })
     ).not.toBeInTheDocument();
+  });
+
+  // NOTE: jsdom never server-renders, so this (and the icon test below) pass
+  // whether or not the Base UI `render`-prop SSR bug is present. They pin the
+  // CLIENT-side contract only. The actual SSR guard — the one that fails when
+  // the label stops reaching the served HTML — is e2e/ssr-accessible-names.spec.ts.
+  it("passes the custom trigger's label as real text content, not just an accessible name (jsdom/client-side only — real SSR coverage lives in e2e/ssr-accessible-names.spec.ts)", () => {
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        triggerLabel="Know operator?"
+        triggerClassName="text-sm"
+      />
+    );
+
+    const trigger = screen.getByRole("button", { name: /know operator\?/i });
+    expect(trigger).toHaveTextContent("Know operator?");
+    expect(trigger).toHaveClass("text-sm");
+  });
+
+  it("renders a leading decorative icon inside a custom trigger without it leaking into the accessible name (jsdom/client-side; regression for the facility masthead strip's icon amendment)", () => {
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        triggerLabel={
+          <>
+            <Flag className="size-3.5" aria-hidden="true" data-testid="flag-icon" />
+            Spot an error?
+          </>
+        }
+      />
+    );
+
+    const trigger = screen.getByRole("button", { name: "Spot an error?" });
+    expect(trigger.querySelector('[data-testid="flag-icon"]')).toBeInTheDocument();
+    expect(trigger.querySelector('[data-testid="flag-icon"]')).toHaveAttribute(
+      "aria-hidden",
+      "true"
+    );
+  });
+
+  it("applies a custom accessible-name override independent of the visible label", () => {
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        triggerLabel="No"
+        triggerAriaLabel="No, the capacity needs a correction"
+      />
+    );
+
+    const trigger = screen.getByRole("button", {
+      name: "No, the capacity needs a correction",
+    });
+    expect(trigger).toHaveTextContent("No");
   });
 
   it("opens the dialog with the facility name and form fields on trigger click", async () => {
