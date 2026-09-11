@@ -294,16 +294,30 @@ Dry run (prints a summary, writes nothing) — the packaged form, with a curated
 field list already applied:
 
 ```bash
-npm run extract-fields                              # four fields: see note below
+npm run extract-fields                              # two bench-measured fields — see note below
 npm run extract-fields -- --facility=<facility-id>  # one facility
 ```
 
-The `extract-fields` **npm wrapper** carries `--fields=capacityMw.operational,energy.source,energy.utility,water.coolingType`
-(four fields, not two). The **nightly unattended lane** (`scripts/discovery/run.sh:579`) is correctly pinned to only
-`capacityMw.operational,water.coolingType` — the two fields cleared by bench measurement.
-The wrapper's four-field list includes `energy.source` and `energy.utility`, which are NOT flagged unsafe but
-remain unmeasured (zero bench labels); a maintainer using the wrapper can capture them, but they route through
-the staging gate like any unvetted field.
+The `extract-fields` **npm wrapper** and the **nightly unattended lane** (`ENRICHMENT_FIELDS` in
+`scripts/discovery/run.sh`) now pin the SAME two fields: `capacityMw.operational` and
+`water.coolingType` — the only two cleared by bench measurement. Both lists are guarded by BATS
+tests in `tests/discovery/run.bats`, each with negative assertions so an *appended* field is caught,
+not just a replaced list.
+
+> **Corrected 2026-09-11.** The wrapper previously carried a four-field list that also included
+> `energy.source` and `energy.utility`, and this runbook argued that was acceptable. It was not:
+> those two are **unmeasured** (zero bench labels), so the wrapper — the command a maintainer is
+> most likely to type by hand — staged values into the review queue with an unknown error rate,
+> while the scheduled job stayed correctly pinned. The convenient path was the unsafe one. If you
+> find `package.json` and `run.sh` disagreeing again, the BATS guards are authoritative; do not
+> "fix" one to match the other without re-reading this note.
+
+⛔ The remaining trap: omitting `--fields` entirely still returns the **full six-field default**,
+including two fields that FAILED the bench (`capacityMw.planned` P=75%, `energy.onSiteGenerationMw`
+P=50%). The bare `npx tsx scripts/discovery/extract-fields.ts` invocation is the unsafe one. Always
+pass `--fields` explicitly for any ad hoc run. (Mitigating gates: omitting `--out` is a dry run that
+writes nothing, and reaching `pending` still requires piping the candidates file through
+`submit-candidates.ts`, then a human approval.)
 
 `npm run verify-fields` deliberately does NOT bake in a field list, because it only
 re-checks values already recorded and writes nothing — the ship-safety caveat above

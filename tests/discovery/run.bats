@@ -1046,6 +1046,27 @@ EOF
 	[[ "$verify_line" != *"energy.utility"* ]]
 }
 
+@test "package.json's extract-fields npm script pins the same safe --fields allowlist" {
+	# run.sh's own invocation is pinned by the two tests above, but a maintainer
+	# is far more likely to type `npm run extract-fields` by hand than to read
+	# run.sh first. That script drifted to include the two unmeasured fields
+	# (energy.source, energy.utility) while run.sh stayed correct — the
+	# convenient path was the unsafe one. This reads package.json directly (no
+	# process invocation, no $HOME interaction needed) and asserts it matches
+	# run.sh's pinned list exactly.
+	script_line="$(grep '"extract-fields":' "$REPO_ROOT/package.json")"
+	[ -n "$script_line" ]
+	[[ "$script_line" == *"--fields=capacityMw.operational,water.coolingType"* ]]
+
+	# Same substring-match caveat as the run.sh tests above: a positive match
+	# alone cannot catch an APPENDED field, so these negative assertions do the
+	# actual enforcement.
+	[[ "$script_line" != *"capacityMw.planned"* ]]
+	[[ "$script_line" != *"energy.onSiteGenerationMw"* ]]
+	[[ "$script_line" != *"energy.source"* ]]
+	[[ "$script_line" != *"energy.utility"* ]]
+}
+
 @test "dry-run skips the field-extraction/verification lane entirely" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=true
