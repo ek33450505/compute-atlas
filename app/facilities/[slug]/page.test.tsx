@@ -1,4 +1,5 @@
 import { vi, describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
 
 import type { Facility } from "@/lib/schema";
 
@@ -9,12 +10,69 @@ const { mockGetFacilityByIdCached } = vi.hoisted(() => ({
   mockGetFacilityByIdCached: vi.fn(),
 }));
 
-vi.mock("@/lib/data", () => ({
-  getFacilityByIdCached: mockGetFacilityByIdCached,
-  getAllFacilityIds: vi.fn(),
+// operatorSlug is real (imported from the dependency-free lib/operator-slug
+// leaf via vi.importActual) — it's a pure slugify, no reason to stub it and
+// stubbing it would decouple the masthead operator-link href from reality.
+vi.mock("@/lib/data", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/operator-slug")>(
+    "@/lib/operator-slug"
+  );
+  return {
+    getFacilityByIdCached: mockGetFacilityByIdCached,
+    getAllFacilityIds: vi.fn(),
+    operatorSlug: actual.operatorSlug,
+  };
+});
+
+// next/link renders to <a> — mock to avoid Next.js router-context dependency
+// in jsdom (mirrors app/stakeholders/[person]/page.test.tsx).
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
 }));
 
-import { generateMetadata } from "./page";
+// The masthead-only tests below stub out every other facility-page section.
+// Several (PowerLinksSection, RelatedFacilities) are async Server Components,
+// which plain ReactDOM/RTL rendering in jsdom can't resolve — and the rest
+// are owned by sibling agents editing these files concurrently in this same
+// wave, so stubbing keeps this test isolated from unrelated in-flight edits.
+vi.mock("@/components/facility/status-timeline", () => ({
+  StatusTimeline: () => null,
+}));
+vi.mock("@/components/facility/provenance-panel", () => ({
+  ProvenancePanel: () => null,
+}));
+vi.mock("@/components/facility/facility-mini-map-dynamic", () => ({
+  FacilityMiniMapDynamic: () => null,
+}));
+vi.mock("@/components/facility/civic-impact", () => ({
+  CivicImpactSection: () => null,
+}));
+vi.mock("@/components/facility/stakeholders", () => ({
+  StakeholdersSection: () => null,
+}));
+vi.mock("@/components/facility/power-links", () => ({
+  PowerLinksSection: () => null,
+}));
+vi.mock("@/components/facility/siting-context", () => ({
+  SitingContextSection: () => null,
+}));
+vi.mock("@/components/facility/related-facilities", () => ({
+  RelatedFacilities: () => null,
+}));
+
+import FacilityPage, { generateMetadata } from "./page";
 
 function makeFacility(overrides: Partial<Facility> = {}): Facility {
   return {
@@ -197,5 +255,74 @@ describe("generateMetadata", () => {
     // "Solar" in the name makes "power-generation facility" redundant, but
     // the operator ("NextEra Energy") is unrelated to the name and stays.
     expect(metadata.title).toBe("Riverbend Solar Array — NextEra Energy in Fort Worth, TX");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Masthead gap prompts (Theme B / B1a) — capacity and powered-by are
+// CORRECTABLE_KEYS members so a missing value renders FieldGapPrompt's
+// inline "Know ...?" correction trigger; announcedDate is not (yet)
+// correctable, so a missing value renders the lighter /contribute lead
+// link instead. Same em-dash today, different affordance once wired — that
+// contrast is the thing under test, not FieldGapPrompt's own branching
+// (already covered by field-gap-prompt.test.tsx).
+// ---------------------------------------------------------------------------
+
+describe("FacilityPage masthead — capacity / powered-by / announced gap prompts", () => {
+  it("renders the correction trigger for missing capacity and powered-by, and the lead-form link for missing announced date", async () => {
+    const facility = makeFacility({
+      name: "Gapville Data Center",
+      // capacityMw, poweredBy, announcedDate all deliberately omitted.
+    });
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+
+    const page = await FacilityPage({
+      params: Promise.resolve({ slug: "test-facility" }),
+    });
+    render(page);
+
+    expect(
+      screen.getByRole("button", { name: /know the capacity\?/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /know who powers this facility\?/i })
+    ).toBeInTheDocument();
+
+    const announcedLink = screen.getByRole("link", {
+      name: /know a source for the announcement date/i,
+    });
+    expect(announcedLink).toHaveAttribute("href", "/contribute");
+
+    // No em-dash placeholders left over for the three wired fields.
+    expect(screen.queryByText("—")).not.toBeInTheDocument();
+  });
+
+  it("renders the populated value with no prompt when capacity, powered-by, and announced date are all present", async () => {
+    const facility = makeFacility({
+      name: "Fullville Data Center",
+      capacityMw: { operational: 150 },
+      poweredBy: "Grid — Dominion Energy",
+      announcedDate: "2025-03-01",
+    });
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+
+    const page = await FacilityPage({
+      params: Promise.resolve({ slug: "test-facility" }),
+    });
+    render(page);
+
+    expect(screen.getByText("150 MW")).toBeInTheDocument();
+    expect(screen.getByText("Grid — Dominion Energy")).toBeInTheDocument();
+    expect(screen.getByText("2025-03-01")).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: /know the capacity\?/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /know who powers this facility\?/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /know a source for the announcement date/i })
+    ).not.toBeInTheDocument();
   });
 });

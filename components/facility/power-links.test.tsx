@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PowerLinksSection, hasPowerLinks } from "./power-links";
+import { SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { getFacilityById } from "@/lib/data";
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency in jsdom
@@ -96,5 +97,27 @@ describe("PowerLinksSection — Powers (grid-region offtaker, no campus)", () =>
     expect(screen.getByText("Powers")).toBeInTheDocument();
     expect(screen.getByText("Microsoft")).toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PowerLinksSection — whole-group gap (no power links data at all)
+// ---------------------------------------------------------------------------
+describe("PowerLinksSection — whole-group gap", () => {
+  it("renders exactly one SectionGapPrompt lead-path link when no plant powers the facility, instead of a heading", async () => {
+    const facility = await getFacilityById("meta-prineville-or");
+    render(await PowerLinksSection({ facility: facility! }));
+
+    const links = screen.getAllByRole("link");
+    expect(links).toHaveLength(1);
+    expect(links[0]).toHaveAttribute("href", "/contribute");
+    expect(links[0]).toHaveTextContent(/its power supply/i);
+    expect(screen.queryByText("Power supply")).not.toBeInTheDocument();
+    expect(screen.queryByText("Powers")).not.toBeInTheDocument();
+  });
+
+  it("SectionGapPrompt used for the gap does not perform an eligibility check", () => {
+    render(<SectionGapPrompt facilityName="Test Plant" label="what this facility powers" />);
+    expect(screen.getByRole("link")).toHaveTextContent(/what this facility powers/i);
   });
 });

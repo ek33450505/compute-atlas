@@ -2,6 +2,7 @@ import type { Facility } from "@/lib/schema";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatUsdCompact, formatTonsPerYear } from "@/lib/format";
+import { FieldGapPrompt, SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 
 import { FactGroup, FactRow, MetaLine, SourceLink } from "./fact-row";
 
@@ -190,34 +191,72 @@ export function hasCivicImpact(facility: Facility): boolean {
 
 // --- Sub-section: Economics ---
 function EconomicsGroup({ facility }: { facility: Facility }) {
-  const { investmentUsd, landAcres, jobs } = facility;
-  if (!investmentUsd && !landAcres && !jobs) return null;
+  const { investmentUsd, landAcres, jobs, id: facilityId, name: facilityName } = facility;
+  if (!investmentUsd && !landAcres && !jobs) {
+    return <SectionGapPrompt facilityName={facilityName} label="economic impact data" />;
+  }
 
   const jobsText = (() => {
     if (!jobs) return null;
     const parts: string[] = [];
-    if (jobs.construction) parts.push(`${jobs.construction.toLocaleString()} construction`);
-    if (jobs.permanent) parts.push(`${jobs.permanent.toLocaleString()} permanent`);
+    // `!== undefined`, never truthy: a sourced 0 (e.g. a documented "no
+    // construction jobs" finding) is a real, established fact — a truthy
+    // check would hide it behind FieldGapPrompt as if it were unknown.
+    if (jobs.construction !== undefined)
+      parts.push(`${jobs.construction.toLocaleString()} construction`);
+    if (jobs.permanent !== undefined)
+      parts.push(`${jobs.permanent.toLocaleString()} permanent`);
     return parts.length > 0 ? parts.join(" · ") : null;
   })();
 
   return (
     <FactGroup title="Economics">
-      {investmentUsd !== undefined && (
+      {investmentUsd !== undefined ? (
         <FactRow label="Investment">{formatUsdCompact(investmentUsd)}</FactRow>
+      ) : (
+        <div>
+          <FieldGapPrompt
+            field="investmentUsd"
+            facilityId={facilityId}
+            facilityName={facilityName}
+            label="the investment amount"
+          />
+        </div>
       )}
-      {landAcres !== undefined && (
+      {landAcres !== undefined ? (
         <FactRow label="Land">{landAcres.toLocaleString()} acres</FactRow>
+      ) : (
+        <div>
+          <FieldGapPrompt
+            field="landAcres"
+            facilityId={facilityId}
+            facilityName={facilityName}
+            label="the land area"
+          />
+        </div>
       )}
-      {jobsText && <FactRow label="Jobs">{jobsText}</FactRow>}
+      {jobsText ? (
+        <FactRow label="Jobs">{jobsText}</FactRow>
+      ) : (
+        <div>
+          <FieldGapPrompt
+            field="jobs"
+            facilityId={facilityId}
+            facilityName={facilityName}
+            label="jobs"
+          />
+        </div>
+      )}
     </FactGroup>
   );
 }
 
 // --- Sub-section: Energy & water ---
 function EnergyWaterGroup({ facility }: { facility: Facility }) {
-  const { energy, water } = facility;
-  if (!energy && !water) return null;
+  const { energy, water, id: facilityId, name: facilityName } = facility;
+  if (!energy && !water) {
+    return <SectionGapPrompt facilityName={facilityName} label="energy or water data" />;
+  }
 
   const energySourceLabel = energy?.source
     ? (energySourceLabels[energy.source] ?? energy.source)
@@ -232,14 +271,32 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
       <FactGroup title="Energy & water">
         {energySourceLabel && <FactRow label="Energy source">{energySourceLabel}</FactRow>}
         {energy?.utility && <FactRow label="Utility">{energy.utility}</FactRow>}
-        {energy?.onSiteGenerationMw !== undefined && (
+        {energy?.onSiteGenerationMw !== undefined ? (
           <FactRow label="On-site generation">
             {energy.onSiteGenerationMw.toLocaleString()} MW
           </FactRow>
+        ) : (
+          <div>
+            <FieldGapPrompt
+              field="energy.onSiteGenerationMw"
+              facilityId={facilityId}
+              facilityName={facilityName}
+              label="on-site generation capacity"
+            />
+          </div>
         )}
         {coolingLabel && <FactRow label="Cooling">{coolingLabel}</FactRow>}
-        {water?.reportedMgd !== undefined && (
+        {water?.reportedMgd !== undefined ? (
           <FactRow label="Water use">{water.reportedMgd.toLocaleString()} MGD</FactRow>
+        ) : (
+          <div>
+            <FieldGapPrompt
+              field="water.reportedMgd"
+              facilityId={facilityId}
+              facilityName={facilityName}
+              label="reported water use"
+            />
+          </div>
         )}
       </FactGroup>
       {energy?.notes && (
@@ -261,7 +318,9 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
 // that real regulatory fact.
 function EmissionsGroup({ facility }: { facility: Facility }) {
   const { emissions } = facility;
-  if (!emissions) return null;
+  if (!emissions) {
+    return <SectionGapPrompt facilityName={facility.name} label="air permit data" />;
+  }
 
   const permitTypeLabel = emissions.permitType
     ? (permitTypeLabels[emissions.permitType] ?? emissions.permitType)
@@ -295,6 +354,10 @@ function EmissionsGroup({ facility }: { facility: Facility }) {
     !!averagingPeriodLabel ||
     unitGroups.length > 0;
 
+  // NOT converted to SectionGapPrompt (B1d): this is a second, inner guard
+  // for the rare case where `emissions` exists but every field within it is
+  // undefined — distinct from the `!emissions` guard above, which already
+  // covers "no emissions object at all." Left as a plain null return.
   if (!hasContent) return null;
 
   return (
@@ -498,7 +561,16 @@ function EnvironmentalGroup({ facility }: { facility: Facility }) {
 // --- Sub-section: Public subsidies ---
 function SubsidiesGroup({ facility }: { facility: Facility }) {
   const { subsidies } = facility;
-  if (!subsidies || subsidies.length === 0) return null;
+  if (!subsidies || subsidies.length === 0) {
+    return (
+      <FieldGapPrompt
+        field="subsidies"
+        facilityId={facility.id}
+        facilityName={facility.name}
+        label="a public subsidy"
+      />
+    );
+  }
 
   return (
     <div>
@@ -562,6 +634,14 @@ function CommunityGroup({ facility }: { facility: Facility }) {
 
 // --- Main export ---
 export function CivicImpactSection({ facility }: { facility: Facility }) {
+  // NOT converted to SectionGapPrompt: this is the true whole-SECTION guard
+  // (every sub-group below has nothing), left as a plain null return. Every
+  // sub-group already carries its own SectionGapPrompt/FieldGapPrompt for
+  // its slice — replacing this one too would stack a prompt on top of
+  // prompts already rendered by the sub-groups whenever *any* one of them
+  // has data, and would put a prompt on every sparse facility page when
+  // *none* of them do. See civic-impact.test.tsx's "renders nothing when
+  // hasCivicImpact is false" for the behavior this preserves.
   if (!hasCivicImpact(facility)) return null;
 
   const headingId = `civic-impact-${facility.id}`;

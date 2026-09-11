@@ -7,6 +7,7 @@ import {
   getSitingContext,
   splitRiskLabel,
 } from "@/lib/siting-context";
+import { SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { Separator } from "@/components/ui/separator";
 import { MastheadFactGrid, MastheadFactRow } from "./fact-row";
 
@@ -30,7 +31,7 @@ export function hasSitingContext(facility: Facility): boolean {
 export function SitingContextSection({ facility }: { facility: Facility }) {
   const context = getSitingContext(facility.id);
   if (!hasAnyDatum(context)) {
-    return null;
+    return <SectionGapPrompt facilityName={facility.name} label="the siting context" />;
   }
 
   const headingId = `siting-context-${facility.id}`;

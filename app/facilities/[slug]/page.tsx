@@ -33,6 +33,7 @@ import { SitingContextSection } from "@/components/facility/siting-context";
 import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
+import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { WatchButton } from "@/components/subscribe/watch-button";
 
 export const revalidate = false;
@@ -126,6 +127,7 @@ export default async function FacilityPage({
   }
 
   const location = formatLocation(facility);
+  const capacity = formatCapacity(facility);
   const isProvisional =
     facility.status === "proposed" || facility.status === "permitted";
   const isRumored = facility.confidence === "rumored";
@@ -201,6 +203,32 @@ export default async function FacilityPage({
         <div className="border-t border-border" />
       </header>
 
+      {/* Compact CTA strip — same two actions as the full-size CTAs at the
+          end of the page (SuggestCorrection / WatchButton below), reachable
+          without scrolling past the whole record. Kept quiet (text-scale,
+          no bordered card) so it doesn't compete with the H1; the bottom
+          pair stays put as the canonical full-size CTA — this is additive. */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 print:hidden">
+        <SuggestCorrection
+          facilityId={facility.id}
+          facilityName={facility.name}
+          showIntro={false}
+          trigger={
+            <button
+              type="button"
+              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              Spot an error?
+            </button>
+          }
+        />
+        <WatchButton
+          targetType="facility"
+          targetId={facility.id}
+          label="Watch this facility"
+        />
+      </div>
+
       {/* Provisional / rumored banner */}
       {showBanner && (
         <Card className="border-muted-foreground/30">
@@ -256,15 +284,38 @@ export default async function FacilityPage({
           </MastheadFactRow>
 
           <MastheadFactRow label="Capacity" valueClassName="mt-1 text-sm font-mono tabular-nums">
-            {formatCapacity(facility)}
+            {capacity === "—" ? (
+              <FieldGapPrompt
+                field="capacityOperationalMw"
+                facilityId={facility.id}
+                facilityName={facility.name}
+                label="the capacity"
+              />
+            ) : (
+              capacity
+            )}
           </MastheadFactRow>
 
           <MastheadFactRow label="Powered by">
-            {facility.poweredBy ?? "—"}
+            {facility.poweredBy ?? (
+              <FieldGapPrompt
+                field="poweredBy"
+                facilityId={facility.id}
+                facilityName={facility.name}
+                label="who powers this facility"
+              />
+            )}
           </MastheadFactRow>
 
           <MastheadFactRow label="Announced" valueClassName="mt-1 text-sm font-mono tabular-nums">
-            {facility.announcedDate ?? "—"}
+            {facility.announcedDate ?? (
+              <FieldGapPrompt
+                field="announcedDate"
+                facilityId={facility.id}
+                facilityName={facility.name}
+                label="the announcement date"
+              />
+            )}
           </MastheadFactRow>
 
           <MastheadFactRow label="Last updated" valueClassName="mt-1 text-sm font-mono tabular-nums">

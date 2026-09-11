@@ -99,6 +99,37 @@ describe("SuggestCorrection — structure", () => {
     ).toBeInTheDocument();
   });
 
+  it("hides the intro copy when showIntro is false", () => {
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        showIntro={false}
+      />
+    );
+
+    expect(
+      screen.queryByText(/compute atlas is meant to be corrected/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders a custom trigger in place of the default button", () => {
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        trigger={<button type="button">Know operator?</button>}
+      />
+    );
+
+    expect(
+      screen.getByRole("button", { name: /know operator\?/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /^suggest a correction$/i })
+    ).not.toBeInTheDocument();
+  });
+
   it("opens the dialog with the facility name and form fields on trigger click", async () => {
     const user = userEvent.setup();
     render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
@@ -131,6 +162,82 @@ describe("SuggestCorrection — structure", () => {
 });
 
 // ---------------------------------------------------------------------------
+// defaultField — pre-selects the "What's wrong?" select instead of always
+// falling back to CORRECTABLE_FIELD_META[0] (regression coverage for the
+// gap-prompt deep-link use case).
+// ---------------------------------------------------------------------------
+
+describe("SuggestCorrection — defaultField", () => {
+  it("pre-selects the targeted field instead of the first option", async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection facilityId="facility-1" facilityName="Test DC" defaultField="jobs" />
+    );
+
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+
+    const trigger = screen.getByRole("combobox", { name: /what.s wrong/i });
+    expect(trigger).toHaveTextContent("Permanent jobs");
+  });
+
+  it("re-applies defaultField (not index 0) when the dialog reopens after a reset", async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection facilityId="facility-1" facilityName="Test DC" defaultField="jobs" />
+    );
+
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+    // Change the selection away from the default.
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Facility name" }));
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toHaveTextContent(
+      "Facility name"
+    );
+
+    // Close without submitting — resetForm() should re-apply defaultField,
+    // not fall back to CORRECTABLE_FIELD_META[0].
+    await user.click(screen.getByRole("button", { name: /close/i }));
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toHaveTextContent(
+      "Permanent jobs"
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Multi-instance DOM id uniqueness — regression test for the id-collision
+// fix: two instances on one page previously shared hardcoded ids
+// (correction-field, correction-value, etc.), breaking every
+// htmlFor/aria-describedby association past the first instance.
+// ---------------------------------------------------------------------------
+
+describe("SuggestCorrection — multi-instance id uniqueness", () => {
+  it("produces no duplicate DOM ids when two instances are mounted and open", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <SuggestCorrection facilityId="facility-1" facilityName="Test DC" defaultField="jobs" />
+        <SuggestCorrection
+          facilityId="facility-1"
+          facilityName="Test DC"
+          defaultField="operator"
+        />
+      </>
+    );
+
+    const triggers = screen.getAllByRole("button", { name: /suggest a correction/i });
+    expect(triggers).toHaveLength(2);
+    await user.click(triggers[0]);
+    await user.click(triggers[1]);
+
+    const allIds = Array.from(document.querySelectorAll("[id]")).map((el) => el.id);
+    const uniqueIds = new Set(allIds);
+    expect(uniqueIds.size).toBe(allIds.length);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Submit outcomes
 // ---------------------------------------------------------------------------
 
@@ -158,18 +265,33 @@ describe("SuggestCorrection — submit outcomes", () => {
     ).toBeInTheDocument();
   });
 
-  it("surfaces the server error message on 400", async () => {
+  it("surfaces a per-field error plus a top-level summary on 400 with multiple issues", async () => {
     mockFetchOnce({
       ok: false,
       status: 400,
-      json: async () => ({ error: "Invalid value", issues: [{ path: ["value"], message: "too short" }] }),
+      json: async () => ({
+        error: "Please fix the errors below.",
+        issues: [
+          { path: ["value"], message: "too short" },
+          { path: ["sourceUrl"], message: "must be a valid URL" },
+        ],
+      }),
     });
     const user = userEvent.setup();
     await openAndFillSourceUrl(user);
 
     await user.click(screen.getByRole("button", { name: /submit correction/i }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(/invalid value/i);
+    const valueError = await screen.findByText("too short");
+    expect(valueError).toHaveAttribute("role", "alert");
+    const sourceError = await screen.findByText("must be a valid URL");
+    expect(sourceError).toHaveAttribute("role", "alert");
+
+    expect(screen.getByLabelText(/new value/i)).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText(/source url/i)).toHaveAttribute("aria-invalid", "true");
+
+    // Top-level summary stays alongside the field-level errors.
+    expect(screen.getByText("Please fix the errors below.")).toBeInTheDocument();
   });
 
   it("surfaces a generic message on network failure", async () => {

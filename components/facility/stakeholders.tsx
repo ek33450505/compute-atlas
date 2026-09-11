@@ -1,4 +1,5 @@
 import type { Facility } from "@/lib/schema";
+import { SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { Separator } from "@/components/ui/separator";
 
 import { FactGroup, FactRow, SourceLink } from "./fact-row";
@@ -63,7 +64,9 @@ function StakeholderRow({
 
 // --- Main export ---
 export function StakeholdersSection({ facility }: { facility: Facility }) {
-  if (!hasStakeholders(facility)) return null;
+  if (!hasStakeholders(facility)) {
+    return <SectionGapPrompt facilityName={facility.name} label="a documented stakeholder" />;
+  }
 
   const stakeholders = facility.stakeholders ?? [];
   const headingId = `stakeholders-${facility.id}`;

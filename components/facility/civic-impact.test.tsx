@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { CivicImpactSection, hasCivicImpact } from "./civic-impact";
 import type { DataCenterFacility, CryptoMiningFacility } from "@/lib/schema";
 
@@ -92,6 +92,75 @@ describe("CivicImpactSection — Economics", () => {
     render(<CivicImpactSection facility={facility} />);
     expect(screen.queryByText(/construction/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/permanent/i)).not.toBeInTheDocument();
+  });
+
+  // Regression: a sourced 0 (a documented "no jobs" finding, e.g. real
+  // record atterix-raton-digital-hub-nm) is established data, not a gap — it
+  // must render as "0 construction · 0 permanent" and must NOT trigger the
+  // "Know jobs?" gap prompt beside it. A truthy check on `jobs.construction`/
+  // `jobs.permanent` would drop both zeros and misrepresent known data as
+  // missing.
+  it("renders a sourced 0 for construction and permanent jobs, without a gap prompt", () => {
+    const facility = makeFacility({
+      investmentUsd: 1_000_000_000,
+      jobs: { construction: 0, permanent: 0, sourceIndex: 0 },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText(/0 construction · 0 permanent/)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /know jobs\?/i })
+    ).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Economics — gap prompts (whole-group SectionGapPrompt vs. per-field
+// FieldGapPrompt, correctable vs. non-correctable)
+// ---------------------------------------------------------------------------
+describe("CivicImpactSection — Economics gap prompts", () => {
+  it("renders exactly one SectionGapPrompt lead-path link, and no Economics heading, when investmentUsd/landAcres/jobs are all absent", () => {
+    // energy keeps hasCivicImpact true so CivicImpactSection actually renders
+    // its sub-groups (otherwise the whole section — a different, untouched
+    // guard — would return null before EconomicsGroup ever runs).
+    const facility = makeFacility({ energy: { source: "grid" } });
+    render(<CivicImpactSection facility={facility} />);
+
+    const link = screen.getByText(/economic impact data/i);
+    expect(link.closest("a")).toHaveAttribute("href", "/contribute");
+    expect(screen.queryByRole("heading", { name: "Economics" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Investment")).not.toBeInTheDocument();
+  });
+
+  it("renders a correction-dialog trigger for a missing jobs field inside an otherwise-populated Economics group", () => {
+    const facility = makeFacility({ investmentUsd: 1_000_000 });
+    render(<CivicImpactSection facility={facility} />);
+
+    expect(screen.getByText("Investment")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /know jobs\?/i })).toBeInTheDocument();
+  });
+
+  it("renders a lead-path link, not a correction dialog trigger, for a missing investmentUsd field inside an otherwise-populated Economics group", () => {
+    const facility = makeFacility({ jobs: { permanent: 100 } });
+    render(<CivicImpactSection facility={facility} />);
+
+    const link = screen.getByRole("link", { name: /the investment amount/i });
+    expect(link).toHaveAttribute("href", "/contribute");
+  });
+
+  it("renders Economics with no gap prompts when investmentUsd, landAcres, and jobs are all present", () => {
+    const facility = makeFacility({
+      investmentUsd: 1_000_000,
+      landAcres: 10,
+      jobs: { permanent: 50 },
+    });
+    render(<CivicImpactSection facility={facility} />);
+
+    const economicsGroup = screen
+      .getByRole("heading", { name: "Economics" })
+      .closest("div") as HTMLElement;
+    expect(within(economicsGroup).queryByRole("link")).not.toBeInTheDocument();
+    expect(within(economicsGroup).queryByRole("button")).not.toBeInTheDocument();
   });
 });
 
@@ -529,6 +598,14 @@ describe("CivicImpactSection — Public subsidies", () => {
     });
     render(<CivicImpactSection facility={facility} />);
     expect(screen.getByText("Subsidy")).toBeInTheDocument();
+  });
+
+  it("renders a correction-dialog trigger (not a lead-path link) when subsidies is absent", () => {
+    const facility = makeFacility({ investmentUsd: 1_000_000 });
+    render(<CivicImpactSection facility={facility} />);
+    expect(
+      screen.getByRole("button", { name: /know a public subsidy\?/i })
+    ).toBeInTheDocument();
   });
 });
 
