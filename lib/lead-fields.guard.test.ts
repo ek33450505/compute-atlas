@@ -68,3 +68,24 @@ describe("client bundle guard: lib/lead-fields.ts must stay a server-free leaf",
     expect(source).toMatch(/from\s+["']@\/lib\/lead-fields["']/);
   });
 });
+
+describe("client bundle guard: lib/contribute-fields.ts must stay a server-free leaf", () => {
+  // lib/contribute-fields.ts is imported by components/contribute/suggest-
+  // correction.tsx, a "use client" component, so it is genuinely reachable
+  // from the client bundle the same way lib/lead-fields.ts is above. It grew
+  // an import of communityStatusEnum/energySourceEnum/waterCoolingTypeEnum
+  // from lib/schema.ts, which is fine today (schema.ts only imports zod +
+  // the client-safe lib/status and lib/intake-fields leaves — see the note at
+  // the top of lib/schema.ts), but nothing stops that import list from
+  // growing a server-only dependency later. Guarding both files here means
+  // that regression fails this test instead of shipping a broken build.
+  it("lib/contribute-fields.ts does not import any server-only module", () => {
+    const source = readSource("lib/contribute-fields.ts");
+    expect(source).not.toMatch(DISALLOWED_IMPORT);
+  });
+
+  it("lib/schema.ts (the hop that makes lib/contribute-fields.ts safe) does not import any server-only module either", () => {
+    const source = readSource("lib/schema.ts");
+    expect(source).not.toMatch(DISALLOWED_IMPORT);
+  });
+});
