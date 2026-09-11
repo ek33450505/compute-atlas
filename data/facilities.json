@@ -105,10 +105,20 @@
         "publisher": "123NET",
         "retrievedAt": "2026-09-09",
         "kind": "other"
+      },
+      {
+        "url": "https://www.123.net/data-center-colocation/",
+        "label": "Leading Data Centers in Michigan for Optimal Connectivity - 123NET data center list",
+        "publisher": "123NET",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-09-11",
     "notes": "Carrier-neutral colocation. The operator's own facility list (retrieved 2026-09-09) states 8,000 sq ft at 24245 Northwestern Hwy, Southfield. No per-facility MW figure is published, so capacityMw is omitted; cooling medium not stated. Adjacent to but distinct from DC2 (24275 Northwestern Hwy). No investment, jobs, or incentive figures stated. Coordinates from the US Census geocoder for the street address on the operator's page; parcel not confirmed.",
+    "water": {
+      "coolingType": "closed_loop"
+    },
     "facilityType": "data_center"
   },
   {
@@ -134,10 +144,20 @@
         "publisher": "123NET",
         "retrievedAt": "2026-09-09",
         "kind": "other"
+      },
+      {
+        "url": "https://www.123.net/data-center-colocation/",
+        "label": "Leading Data Centers in Michigan for Optimal Connectivity - 123NET data center list",
+        "publisher": "123NET",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-09-11",
     "notes": "123NET's only west-Michigan site. The operator's own facility list (retrieved 2026-09-09) states 3,500 sq ft at 400 76th St SW, Byron Center. No per-facility MW figure published; cooling medium not stated. ⚠️ US Signal's MI02 facility page gives the identical street address, so this address appears to be a shared multi-operator building rather than a single-operator site; the two are proposed as separate operator records and a maintainer should confirm that reading. No investment, jobs, or incentive figures stated. Coordinates from the US Census geocoder; parcel not confirmed.",
+    "water": {
+      "coolingType": "closed_loop"
+    },
     "facilityType": "data_center"
   },
   {
@@ -3625,6 +3645,83 @@
     "investmentUsd": 427000000,
     "landAcres": 122,
     "facilityType": "data_center"
+  },
+  {
+    "id": "amazon-data-services-reno-storey-county-nv",
+    "name": "Amazon Data Services Reno Data Center Campus",
+    "operator": "Amazon Web Services",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.517683,
+      "lon": -119.479421,
+      "city": "Sparks",
+      "county": "Storey",
+      "street": "3800 Peru Drive",
+      "postalCode": "89437",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01-23",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-03-06",
+        "note": "NNDA announced Amazon had begun local hiring; AWS said 'As our first buildings come online, we are focused on hiring locally.'",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ndep.nv.gov/uploads/documents/ap7374-4768-proposed-action.pdf",
+        "label": "NDEP Notice of Proposed Action - Amazon Data Services, Inc., Class I Air Quality OPTC AP7374-4768, 3800 Peru Drive, Sparks NV",
+        "publisher": "Nevada Division of Environmental Protection",
+        "retrievedAt": "2026-09-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.ndep.nv.gov/uploads/documents/ap7374-4768-directors-review.pdf",
+        "label": "NDEP Director's Review and Preliminary Determination - Amazon facility, Storey County, Nevada",
+        "publisher": "Nevada Division of Environmental Protection",
+        "retrievedAt": "2026-09-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://cdn.prod.website-files.com/68aeb708d74bf84e3f77d2c6/69ab0bd143dbba8b5dc76824_NNDA%20Announces%20Hiring%20Event%20and%20Economic%20Opportunity%20for%20Amazon%20Data%20Center%202026.pdf",
+        "label": "NNDA press release: Hiring Event and Economic Opportunity for Amazon Data Center, Storey County (March 6, 2026)",
+        "publisher": "Northern Nevada Development Authority",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://newprojectmedia.com/origination-nv-energy-seeks-large-load-approvals-for-aws-prologis-novva-and-fleet-data-centers/",
+        "label": "NV Energy seeks large-load approvals for AWS, Prologis, Novva and Fleet data centers",
+        "publisher": "New Project Media",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-11",
+    "notes": "Located in the Tahoe-Reno Industrial Center approximately 15 miles east of Reno, in all or portions of Sections 10, 11, 14 and 15, T19N R22E, MDB&M. NNDA states the project sits at Switch's Citadel Campus; it is tracked separately here because Amazon Data Services, Inc. holds its own air permit, address and buildings. Coordinates are a street-level approximation from OpenStreetMap's Peru Drive geometry - no parcel-confirmed point was published.",
+    "energy": {
+      "source": "grid",
+      "utility": "NV Energy (Sierra Pacific Power Company)",
+      "notes": "NV Energy opened a PUCN docket on 2026-05-27 seeking approval of a Large Load Electric Service Agreement with Amazon Data Services, Inc. for electric service to future data center facilities in Sparks, Nevada."
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "AWS Global VP of Datacenter Operations and Delivery Kerry Person, March 2026: 'Our facilities in Reno will rely on direct air cooling the majority of the time. When water is required, it will come from an allotment specifically designated for industrial use.' Recorded as hybrid rather than air because the design uses water seasonally; no recirculating-circuit detail is published."
+    },
+    "emissions": {
+      "unitsCovered": "358 standby diesel-fired emergency generators, including main generators 1-342 rated 3,490 kW each (MTU/Rolls-Royce 20V4000G94S)",
+      "permitNumber": "AP7374-4768",
+      "permitType": "state_construction",
+      "issuingAgency": "Nevada Division of Environmental Protection - Bureau of Air Pollution Control",
+      "notes": "Class I Air Quality Operating Permit to Construct. Notice of Proposed Action issued 2026-01-23 (FIN A2648); written comments accepted until 2026-03-02. No permitted tonnage figures are recorded here because none were read this session.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "amazon-devlin-tech-park-va",
@@ -18843,6 +18940,61 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cobalt-cheyenne-las-vegas-nv",
+    "name": "Cobalt Cheyenne Data Center",
+    "operator": "Cobalt Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.2183822,
+      "lon": -115.26296,
+      "city": "Las Vegas",
+      "county": "Clark",
+      "street": "7710 W. Cheyenne Ave",
+      "postalCode": "89129",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 5.5
+    },
+    "announcedDate": "2013-02-07",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2013-02-07",
+        "note": "Ribbon-cutting reported by Data Center Knowledge; still listed as operational on dcmap.us in 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterknowledge.com/business/cobalt-opens-cheyenne-data-center-in-las-vegas",
+        "label": "Cobalt Opens Cheyenne Data Center in Las Vegas - 34,000 sq ft, 5.5 MW of critical power",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://cloudandcolocation.com/state/nevada/",
+        "label": "Nevada data center directory - Cobalt Data Centers Cheyenne, 7710 W. Cheyenne, Las Vegas, NV 89129",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://dcmap.us/markets/las-vegas/",
+        "label": "dcmap.us Las Vegas market listing - Cobalt Cheyenne, operational",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-11",
+    "notes": "34,000 sq ft, Tier III-compliant, capacity for more than 450 cabinets, 9.0 MVA of generation and 4.5 MVA of UPS. Operator is recorded as Cobalt Data Centers - the entity that built and opened the site per the cited 2013 press report. dcmap.us currently attributes the facility to T5 Data Centers; that change of ownership could not be confirmed from a primary source this session, so it is flagged here rather than asserted.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cogent-650-poydras-new-orleans-la",
     "name": "Cogent Communications New Orleans (650 Poydras)",
     "operator": "Cogent Communications",
@@ -19773,6 +19925,8 @@
       "lon": -119.4771513,
       "city": "McCarran",
       "county": "Storey",
+      "street": "100 Italy Drive",
+      "postalCode": "89434",
       "state": "NV",
       "precision": "approximate"
     },
@@ -19806,9 +19960,16 @@
         "publisher": "Colovore",
         "retrievedAt": "2026-08-29",
         "kind": "other"
+      },
+      {
+        "url": "https://ndep.nv.gov/uploads/documents/ap7374-5002-class-ii-aqop.pdf",
+        "label": "NDEP Class II Air Quality Operating Permit AP7374-5002 issued to Colovore Reno 1 LLC - physical address 100 Italy Drive, McCarran NV 89434, Section 11 T19N R22E, HA 83 Tracy Segment / Storey County",
+        "publisher": "Nevada Division of Environmental Protection",
+        "retrievedAt": "2026-09-11",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-29",
+    "lastUpdated": "2026-09-11",
     "notes": "Air permit places the project on the southeast corner of Italy Drive and SR 439, about 2.8 miles south of the I-80/439 interchange, in Section 11, T19N, R22E MDB&M (Air Quality Hydrographic Area 83, Tracy Segment). GOED approved $4,076,970 in abatements in August 2026 against a stated $30 million in capital-equipment investment and 10 jobs at an average $59/hour within five years; the $30M is an equipment figure, not total site capex, so it is not recorded as investmentUsd. Capacity is not recorded: no source read this session states a site MW figure.",
     "energy": {
       "source": "grid",
@@ -31360,6 +31521,53 @@
     "facilityType": "data_center"
   },
   {
+    "id": "edgeconnex-edclas01-las-vegas-nv",
+    "name": "EdgeConneX Las Vegas (EDCLAS01)",
+    "operator": "EdgeConneX",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0662784,
+      "lon": -115.1315773,
+      "city": "Las Vegas",
+      "county": "Clark",
+      "street": "1541 Pama Ln",
+      "postalCode": "89119",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.75
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-11",
+        "note": "Listed with status 'ok' in PeeringDB's facility registry and as operational on dcmap.us.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=NV&limit=200",
+        "label": "PeeringDB facility registry (Nevada) - EdgeConneX Las Vegas (EDCLAS01), 1541 Pama Ln, Las Vegas 89119",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://dcmap.us/markets/las-vegas/",
+        "label": "dcmap.us Las Vegas market listing - EdgeConneX Las Vegas EDCLAS01, operational, 0.75 MW",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-11",
+    "notes": "Edge colocation facility. Coordinates are an OpenStreetMap house-level geocode of the PeeringDB-registered address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "edgeconnex-liberty-road-douglas-county-ga",
     "name": "Liberty Road Data Center Campus (EdgeConneX)",
     "operator": "EdgeConneX (applicant East Village Dothan LLC)",
@@ -31952,6 +32160,7 @@
       "city": "McCarran",
       "county": "Storey",
       "street": "3000 NV-439",
+      "postalCode": "89434",
       "state": "NV",
       "precision": "approximate"
     },
@@ -31994,9 +32203,23 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-08-29",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=NV&limit=200",
+        "label": "PeeringDB facility registry (Nevada) - EdgeCore Reno 1, org EdgeCore Digital Infrastructure, 3000 USA Parkway, McCarran 89434",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://ndep.nv.gov/uploads/documents/ap7374-4772_AC12456-class-ii-aqop.pdf",
+        "label": "NDEP Class II Air Quality Operating Permit AP7374-4772 issued to MECP1 Reno 1, LLC (RNO1), 3000 USA Parkway, McCarran NV 89437 - Storey County, 126 diesel emergency generators plus 2 fire pumps",
+        "publisher": "Nevada Division of Environmental Protection",
+        "retrievedAt": "2026-09-11",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-29",
+    "lastUpdated": "2026-09-11",
     "notes": "Three hyperscale buildings totalling nearly 1 million sq ft at roughly 72 MW each. Sources diverge on framing: the 2023 announcement describes 136 acres in 'north Reno' supporting 400+ MW, while EdgeCore's current location page describes a 56-acre, 216 MW developed phase in the Tahoe-Reno Industrial Center (Storey County). The current page is treated as authoritative for the developed campus; the larger land position is recorded here rather than as capacity.",
     "water": {
       "coolingType": "hybrid",
@@ -35539,6 +35762,50 @@
       "offtaker": "Google (via NV Energy grid)",
       "notes": "Fervo's original commercial-pilot EGS facility, operational since Nov 2023 at ~3.5 MW gross — the first enhanced-geothermal plant to deliver power commercially. Google backed it as an early partner and frames it as powering the local grid serving its Nevada data centers. A larger, separate Fervo Nevada project — Corsac Station (Churchill County) under Nevada's PUC-approved Clean Transition Tariff — is the site that formally routes ~115 MW to Google and is tracked separately, not folded here."
     }
+  },
+  {
+    "id": "fiberhub-las1-las-vegas-nv",
+    "name": "Fiberhub LAS1",
+    "operator": "Fiberhub (VegasNAP, LLC)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.066019,
+      "lon": -115.138297,
+      "city": "Las Vegas",
+      "county": "Clark",
+      "street": "1110 Palms Airport Dr",
+      "postalCode": "89119",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-11",
+        "note": "Listed with status 'ok' in PeeringDB's facility registry and as operational on dcmap.us.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=NV&limit=200",
+        "label": "PeeringDB facility registry (Nevada) - Fiberhub LAS1, org Fiberhub, 1110 Palms Airport Dr, Las Vegas 89119",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://dcmap.us/markets/las-vegas/",
+        "label": "dcmap.us Las Vegas market listing - Fiberhub LAS1, operational",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-11",
+    "notes": "Carrier-neutral colocation facility near Harry Reid International Airport. Distinct from databank-las1-las-vegas-nv, which shares the 'LAS1' code but sits at 7185 Pollock Dr. No capacity figure was published by either cited source, so capacityMw is omitted. Coordinates are PeeringDB's registered facility point.",
+    "facilityType": "data_center"
   },
   {
     "id": "fibernet-orem-ut",
@@ -48767,6 +49034,54 @@
     "aiClassification": "likely"
   },
   {
+    "id": "jet-ai-moapa-clark-county-nv",
+    "name": "Jet.AI Moapa Data Center Campus",
+    "operator": "Jet.AI Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.6673648,
+      "lon": -114.584977,
+      "city": "Moapa",
+      "county": "Clark",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "announcedDate": "2025-12-23",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-23",
+        "note": "Jet.AI announced a planned joint venture with Choo Choo Express LLC to develop a 50 MW data center campus in Moapa.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/12/23/3209946/0/en/jet-ai-inc-jv-for-50mw-data-center-campus-in-moapa-nevada.html",
+        "label": "Jet.AI Inc. JV for 50MW Data Center Campus in Moapa, Nevada",
+        "publisher": "GlobeNewswire / Jet.AI Inc. (NASDAQ: JTAI)",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/markets/las-vegas/",
+        "label": "dcmap.us Las Vegas market listing - Jet.AI Moapa Data Center, Clark County, planned, 50 MW",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-11",
+    "notes": "Proposed joint venture: Choo Choo Express LLC would contribute the land, with an equity promote of roughly 70% Jet.AI / 30% CCE, pending definitive agreements and due diligence. Jet.AI expects to commit approximately $10 million over an anticipated two-year period - a corporate capital commitment, not a site construction figure, so investmentUsd is left unset. The site is adjacent to a remediated former coal plant now operating as a 200 MW battery storage facility, with access to transmission, natural gas, fiber and water. Coordinates are the Moapa settlement point from OpenStreetMap; no parcel location was published.",
+    "landAcres": 20,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "jigowatt-stanton-ne",
     "name": "Jigowatt Stanton Bitcoin Mine",
     "operator": "Jigowatt",
@@ -51832,9 +52147,30 @@
         "publisher": "Pahrump Valley Community News",
         "retrievedAt": "2026-08-29",
         "kind": "press"
+      },
+      {
+        "url": "https://mansetechcampus.com/",
+        "label": "Manse Technology Campus - project overview (developer site), Manse Road corridor, Pahrump, Nye County",
+        "publisher": "Manse Technology Campus",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://kiowacountypress.net/content/nevada-county-totally-bans-data-centers-over-appropriated-water-basin",
+        "label": "Nevada county totally bans data centers in over-appropriated water basin (Nevada Current syndication)",
+        "publisher": "Kiowa County Press / Nevada Current",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://pvtimes.com/news/data-centers-banned-in-pahrump-189671/",
+        "label": "Pahrump data center ban passes unanimously - Nye County Bill No. 2026-11, adopted 5-0 on Aug. 18, 2026",
+        "publisher": "Pahrump Valley Times",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-29",
+    "lastUpdated": "2026-09-11",
     "notes": "Formerly referred to as Project Blackjack; sited on the Manse Road corridor near the southern entrance to Pahrump along Highway 160, roughly 1,100 feet from the nearest homes. Developer states $18.4 billion of capital investment at full buildout and $114 million in annual Nye County property taxes; a separate figure of $8.4 billion appeared in other reporting and was not resolved this session, so the developer's own $18.4B is recorded. Design features include screening berms, rooftop parapets for sound reduction and a target of roughly 55 dB at the property line. No megawatt capacity has been disclosed. Construction is anticipated to begin in 2027 with a five-year buildout, pending approvals that the county moratorium currently blocks.",
     "water": {
       "notes": "Developer states water consumption of less than 300 acre-feet annually. Nye County's water district approved an emergency ban on new data centers in Pahrump's water basin to preserve groundwater."
@@ -59775,9 +60111,23 @@
         "publisher": "NVBEX",
         "retrievedAt": "2026-08-29",
         "kind": "press"
+      },
+      {
+        "url": "https://www.carsonnow.org/08/09/2026/massive-data-center-in-lyon-county-is-one-step-closer-to-being-built",
+        "label": "Massive data center in Lyon County is one step closer to being built - 1,000 MW, 4.6 million sq ft, 505 acres in Mason Valley; water estimates disputed",
+        "publisher": "Carson Now / The Nevada Independent",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://nevbex.com/2026/07/15/lyon-county-new-data-center-power-district/",
+        "label": "Lyon County Presses Ahead with Power Improvement District - Monarch described as eight two-story buildings plus an electrical substation",
+        "publisher": "NVBEX",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-29",
+    "lastUpdated": "2026-09-11",
     "notes": "Roughly 505 acres in Mason Valley near Yerington; a 4.6 million-square-foot campus with north and south sub-campuses, a battery energy storage system, a natural gas plant, a substation and power lines across two parcels. First phase would provide 150 MW of the 1,000 MW total. Copia Power has one year to file its final PUD. Lyon County is drafting a stricter data center ordinance that will not apply retroactively to Monarch.",
     "energy": {
       "source": "on_site_gas",
@@ -62297,6 +62647,77 @@
     },
     "investmentUsd": 200000000,
     "landAcres": 68,
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.3,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
+  },
+  {
+    "id": "novva-las-vegas-nicco-way-nv",
+    "name": "Novva Las Vegas Data Center",
+    "operator": "Novva Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.266299,
+      "lon": -115.0478715,
+      "city": "North Las Vegas",
+      "county": "Clark",
+      "street": "6115 Nicco Way",
+      "postalCode": "89115",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "announcedDate": "2022-09-13",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-11",
+        "note": "Novva's facility page presents the site as an operating colocation facility with 24x7 on-site staffing.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.novva.com/data-center-facilities/las-vegas/",
+        "label": "Novva Data Centers - Las Vegas facility specifications",
+        "publisher": "Novva Data Centers",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/novva-data-centers-announces-new-data-center-in-north-las-vegas-featuring-water-free-cooling-and-renewable-energy-301623117.html",
+        "label": "Novva Data Centers Announces New Data Center in North Las Vegas featuring Water-Free Cooling and Renewable Energy",
+        "publisher": "PR Newswire / Novva Data Centers",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/markets/las-vegas/",
+        "label": "dcmap.us Las Vegas market listing - Novva North Las Vegas, operational, 100 MW",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-11",
+    "notes": "Building area is stated as 275,000 sq ft in the 2022 announcement and 246,328 sq ft on Novva's current facility page; both figures are left uncollapsed here. Distinct from the operator's separate ~205-acre Apex Industrial Park land position. Coordinates are a street-level OpenStreetMap geocode of Nicco Way.",
+    "energy": {
+      "source": "grid",
+      "utility": "NV Energy",
+      "notes": "Renewable energy supply in partnership with NV Energy; wholly owned on-premise 100 MW substation."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Novva describes 'waterless cooling, ambient air cooling' with 5,310 tons of air-cooled capacity and perimeter fan walls (N+1). The 2022 announcement said the water-free design was expected to save approximately 150 to 200 million gallons of water a year."
+    },
+    "investmentUsd": 400000000,
+    "landAcres": 20,
     "facilityType": "data_center",
     "environmental": {
       "pue": 1.3,
@@ -64923,6 +65344,53 @@
     "generation": {
       "technology": "natural_gas",
       "notes": "Natural gas-fired combustion turbine intended as a peaker: MidAmerican expects it to run when load is at its peak, estimated at less than 10 percent of the year. Announced as part of MidAmerican's long-term generation plan to meet projected Iowa economic and customer demand growth. No offtaker is recorded — this is utility peaking capacity for the system, not contracted data center supply."
+    }
+  },
+  {
+    "id": "ormat-salt-wells-churchill-county-nv",
+    "name": "Salt Wells Geothermal Power Plant",
+    "operator": "Ormat Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.2948739,
+      "lon": -118.5724319,
+      "county": "Churchill",
+      "state": "NV",
+      "precision": "exact"
+    },
+    "announcedDate": "2026-01-05",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-01-05",
+        "note": "Existing Ormat plant near Fallon undergoing a major upgrade; PPA with Switch announced.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.switch.com/ormat-technologies-signs-20-year-ppa-with-switch-for-13mw-of-carbon-free-geothermal-capacity-to-power-data-centers/",
+        "label": "Ormat Technologies Signs 20-Year PPA with Switch for ~13MW of Carbon-Free Geothermal Capacity to Power Data Centers",
+        "publisher": "Switch",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://overpass-api.de/api/interpreter",
+        "label": "OpenStreetMap (via Overpass API) geothermal plant way 524684629, 'Salt Wells', Churchill County NV - site geometry centroid",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-11",
+    "notes": "Located near Fallon, Nevada. The OpenStreetMap feature still carries a stale 'ENEL Salt Wells LLC' operator tag; current ownership is taken from the January 2026 Ormat/Switch announcement, which describes it as 'Ormat's Salt Wells geothermal power plant'.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "geothermal",
+      "offtaker": "Switch",
+      "notes": "20-year PPA signed 2026-01-05 under which Switch buys approximately 13 MW from the plant to support its Nevada data centers - Ormat's first direct PPA with a data center operator. Energy deliveries are scheduled to begin in Q1 2030, following a major plant upgrade expected to complete in Q2 2026. Ormat holds an option to add an approximately 7 MW solar PV facility serving auxiliary load. The ~13 MW is the contracted slice, not the plant's nameplate capacity, so no capacityMw is recorded."
     }
   },
   {
@@ -82203,6 +82671,8 @@
       "lon": -119.3732,
       "city": "McCarran",
       "county": "Storey",
+      "street": "1 Superloop Circle",
+      "postalCode": "89434",
       "state": "NV",
       "precision": "exact"
     },
@@ -82267,9 +82737,23 @@
         "publisher": "PR Newswire (Switch)",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://ndep.nv.gov/uploads/documents/ap7375-3672-class-i-optc-1.pdf",
+        "label": "NDEP Class I Air Quality Operating Permit to Construct AP7375-3672 issued to Switch, Ltd. - physical address 1 Superloop Circle, McCarran NV 89434, HA 83 Tracy Segment / Storey County",
+        "publisher": "Nevada Division of Environmental Protection",
+        "retrievedAt": "2026-09-11",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=NV&limit=200",
+        "label": "PeeringDB facility registry (Nevada) - Switch Tahoe Reno, org Switch, Ltd., 1 Superloop Circle, McCarran 89434",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-11",
     "energy": {
       "source": "solar",
       "utility": "NV Energy (grid interconnect)",
@@ -87127,9 +87611,23 @@
         "publisher": "Cleanview",
         "retrievedAt": "2026-08-29",
         "kind": "other"
+      },
+      {
+        "url": "https://biologicaldiversity.org/programs/public_lands/pdfs/2026-0213-Boulder-City-Stay-Granted.pdf",
+        "label": "IBLA 2026-0213 / IBLA 2026-0216 stay order (Sept. 1, 2026) - City of Boulder City and Center for Biological Diversity v. BLM, Townsite Data Center amended right-of-way",
+        "publisher": "U.S. Department of the Interior, Interior Board of Land Appeals",
+        "retrievedAt": "2026-09-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.kjzz.org/business/2026-07-28/nevada-city-dubs-itself-a-test-case-for-data-centers-on-federal-lands-near-communities",
+        "label": "Nevada city dubs itself a test case for data centers on federal lands near communities - 81-acre BLM parcel in Eldorado Valley, BLM approval released June 26",
+        "publisher": "KJZZ",
+        "retrievedAt": "2026-09-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-29",
+    "lastUpdated": "2026-09-11",
     "notes": "Proposed as two warehouse-style server buildings plus a 230 kV substation, battery energy storage and perimeter fencing, maximum 40-foot height with dark-sky-compliant lighting. The city page states 200-300 construction/testing jobs and 25-40 permanent technical positions; these ranges are not recorded as point values in the jobs field. Reported as a joint venture of Skylar Capital, Arevon Energy and Overwatch Capital, but that ownership was read only in a search summary and is not asserted here. Status is kept at proposed rather than cancelled: the withdrawal was of the city-land application, not of the project.",
     "energy": {
       "source": "grid",
@@ -87932,6 +88430,58 @@
       "notes": "City hall and a library overflow room were packed for the March 5, 2026 hearing, with more than two hours of public comment focused on water sustainability and environmental impact; the council approved the agreement unanimously with one member absent.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tract-peru-shelf-storey-county-nv",
+    "name": "Peru Shelf Technology Park",
+    "operator": "Tract",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.545801,
+      "lon": -119.497162,
+      "county": "Storey",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 810
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-11",
+        "note": "Listed as under construction by Blackridge Research; Tract's own project page describes the campus as owned and in development with site energization in February 2027 and construction power available immediately.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tract.com/project/peru-shelf/",
+        "label": "Tract - Peru Shelf Technology Park project page (686 total acres, 810 MW, Storey County / Tahoe-Reno Industrial Center)",
+        "publisher": "Tract",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.blackridgeresearch.com/blog/upcoming-new-ai-hyperscale-data-center-projects-nevada",
+        "label": "Top 5 New Data Center Projects in Nevada (2026) - Tract Peru Shelf Technology Park, Storey County, 810 MW, under construction",
+        "publisher": "Blackridge Research",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://dcmap.us/counties/storey-county-nv/",
+        "label": "dcmap.us Storey County listing - Peru Shelf Technology Park, Tract, under construction, 810 MW",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-11",
+    "notes": "Parcels range from 183 to 277 acres; zoned for by-right data center use with 125-foot building height allowances. Distinct from Tract's Peru Ridge (517 acres / 230 MW), South Valley (1,534 acres / 1,215 MW), Sapphire (1,063 acres / 700 MW, the Silver Springs campus) and Virginia Highlands (8,590 acres / 2,500 MW) projects. Coordinates are an OpenStreetMap Peru Drive road point, not a parcel-confirmed location.",
+    "landAcres": 686,
     "facilityType": "data_center"
   },
   {
