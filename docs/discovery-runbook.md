@@ -268,10 +268,13 @@ quote gate; a PDF's raw bytes are never regexed.
 
 ### Usage
 
-> ⛔ **Always pass `--fields` explicitly.** Omitting it does NOT mean "the safe
-> default" — it means all six fields, including the two the bench measured as NOT
-> safe to ship (`capacityMw.planned` P=75%, `energy.onSiteGenerationMw` P=50%; see
-> the per-field table below). The pinned list is `capacityMw.operational`,
+> ⛔ **`--fields` is required.** `extract-fields.ts`'s own `parseArgs` now fails
+> closed: omitting `--fields` (or passing it present-but-empty — `--fields=`, or a
+> bare trailing `--fields`) throws immediately, naming the valid fields and a
+> correct example invocation, rather than silently sweeping all six fields —
+> including the two the bench measured as NOT safe to ship (`capacityMw.planned`
+> P=75%, `energy.onSiteGenerationMw` P=50%; see the per-field table below). The
+> pinned list is `capacityMw.operational`,
 > `water.coolingType` — both bench-measured: `capacityMw.operational` (P=100%/R=100%)
 > and `water.coolingType` (P=95%/R=95%). `energy.source` and `energy.utility` remain
 > **extractable but not pinned**: they were unmeasured (the bench could only score
@@ -312,11 +315,12 @@ not just a replaced list.
 > find `package.json` and `run.sh` disagreeing again, the BATS guards are authoritative; do not
 > "fix" one to match the other without re-reading this note.
 
-⛔ The remaining trap: omitting `--fields` entirely still returns the **full six-field default**,
-including two fields that FAILED the bench (`capacityMw.planned` P=75%, `energy.onSiteGenerationMw`
-P=50%). The bare `npx tsx scripts/discovery/extract-fields.ts` invocation is the unsafe one. Always
-pass `--fields` explicitly for any ad hoc run. (Mitigating gates: omitting `--out` is a dry run that
-writes nothing, and reaching `pending` still requires piping the candidates file through
+The bare `npx tsx scripts/discovery/extract-fields.ts` invocation (no `--fields`) now **throws and
+exits 1** instead of silently sweeping the full six-field default — the fail-open path that used to
+include two fields that FAILED the bench (`capacityMw.planned` P=75%, `energy.onSiteGenerationMw`
+P=50%) is closed. Always pass `--fields` explicitly for any ad hoc run regardless — the error message
+tells you how. (Independent mitigating gates, unchanged: omitting `--out` is a dry run that writes
+nothing, and reaching `pending` still requires piping the candidates file through
 `submit-candidates.ts`, then a human approval.)
 
 `npm run verify-fields` deliberately does NOT bake in a field list, because it only
@@ -342,7 +346,7 @@ npm run submissions -- approve <id> "reviewed and verified"
 
 **Flags:**
 - `--out <path>` — write candidates to a file (omit for dry run)
-- `--fields <list>` — comma-separated field names. **Defaults to all six fields, which is the unsafe set** — see the warning above; always pass it explicitly. An unknown name exits 1 rather than silently falling back to all six.
+- `--fields <list>` — comma-separated field names. **Required** — see the warning above; omitting it (or passing it empty) exits 1 rather than silently falling back to all six. An unknown name also exits 1 rather than silently falling back to all six.
 - `--limit N` — cap the run at N *gaps*, not N facilities. A gap is one missing field on one facility, so `--limit 100` with two fields requested covers roughly 50–67 facilities. Size runs accordingly.
 - `--facility <id>` — restrict the run to one facility. Composes with `--limit` rather than overriding it: facilities are filtered first, then the gap cap still applies to what remains.
 - `--run-id=<id>` — custom run ID (defaults to `track5-${timestamp}`)

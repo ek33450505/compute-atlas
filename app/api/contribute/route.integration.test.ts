@@ -37,6 +37,16 @@ beforeAll(async () => {
   tdb = await makeTestDb();
   vi.mocked(dbClient.getDb).mockReturnValue(tdb.db as never);
   vi.mocked(dbClient.hasDatabaseUrl).mockReturnValue(true);
+  // Corrections read the target facility via getFacilityById -> loadFacilities,
+  // which gates on readsUseDatabase() (see lib/db/client.ts), not
+  // hasDatabaseUrl() directly. Without this, "existing" silently falls back to
+  // the bundled data/facilities.json snapshot instead of the row seeded into
+  // tdb.db below — the correction tests would still pass (seedDoc is an
+  // unmodified copy of its JSON entry) but a seeded field that DIFFERS from
+  // the JSON snapshot would be silently ignored. Same pattern as
+  // app/api/leads/route.integration.test.ts and
+  // app/api/subscribe/route.integration.test.ts.
+  vi.mocked(dbClient.readsUseDatabase).mockReturnValue(true);
 });
 
 beforeEach(async () => {
@@ -168,5 +178,62 @@ describe("POST /api/contribute (public, unauthenticated happy path)", () => {
       .from(submissionsTable)
       .where(eq(submissionsTable.targetFacilityId, seedDoc.id));
     expect(submissionsAfter).toHaveLength(1);
+  });
+
+  it("correction: a nested-object field (water) merges into the existing sub-object instead of replacing it", async () => {
+    // seedDoc's own water has no reportedMgd — extend a local copy (not the
+    // shared fixture) so the preservation assertion below is meaningful.
+    const seedWithReportedMgd: Facility = {
+      ...seedDoc,
+      water: { ...seedDoc.water, reportedMgd: 5.2 },
+    };
+    await seedFacility(tdb.db, seedWithReportedMgd);
+
+    const res = await POST(
+      req({
+        kind: "correction",
+        targetFacilityId: seedWithReportedMgd.id,
+        field: "water",
+        value: "closed_loop",
+        sourceUrl: "https://example.com/correction",
+      })
+    );
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body.ok).toBe(true);
+
+    const rows = await tdb.db.select().from(submissionsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].status).toBe("pending");
+    expect(rows[0].kind).toBe("update");
+    expect(rows[0].targetFacilityId).toBe(seedWithReportedMgd.id);
+
+    const payload = rows[0].payload as {
+      water?: { coolingType?: string; reportedMgd?: number; notes?: string };
+    };
+    expect(payload.water?.coolingType).toBe("closed_loop");
+    // The point of this test: sibling sub-fields survive the merge.
+    expect(payload.water?.reportedMgd).toBe(5.2);
+    expect(payload.water?.notes).toBe(seedWithReportedMgd.water?.notes);
+  });
+
+  it("correction: an out-of-vocabulary enum value for a nested field (water) is rejected and writes no row", async () => {
+    await seedFacility(tdb.db, seedDoc);
+
+    const res = await POST(
+      req({
+        kind: "correction",
+        targetFacilityId: seedDoc.id,
+        field: "water",
+        value: "definitely-not-a-cooling-type",
+        sourceUrl: "https://example.com/correction",
+      })
+    );
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.ok).toBeUndefined();
+
+    const rows = await tdb.db.select().from(submissionsTable);
+    expect(rows).toHaveLength(0);
   });
 });

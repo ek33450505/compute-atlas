@@ -289,17 +289,151 @@ describe("buildCorrectionPatch nested-merge safety", () => {
     }
   });
 
-  it("rejects a correction targeting a deferred (not-yet-correctable) field like water", () => {
+  it("rejects a correction targeting a still-deferred field like stakeholders", () => {
     const existing = baseExistingFacility();
     const input = {
       kind: "correction",
       targetFacilityId: existing.id,
-      field: "water",
-      value: "closed_loop",
+      field: "stakeholders",
+      value: "Jane Doe",
       sourceUrl: "https://example.com/correction",
     };
     const parsed = contributeInputSchema.safeParse(input);
     expect(parsed.success).toBe(false);
+  });
+
+  it("sets water.coolingType while preserving reportedMgd and notes", () => {
+    const existing = baseExistingFacility({
+      water: { reportedMgd: 1.2, notes: "existing note" },
+    });
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "water",
+      value: "closed_loop",
+      sourceUrl: "https://example.com/water-correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("payload" in result).toBe(true);
+    if ("payload" in result) {
+      expect(result.payload.water).toEqual({
+        reportedMgd: 1.2,
+        notes: "existing note",
+        coolingType: "closed_loop",
+      });
+      const preview = { ...existing, ...result.payload, id: existing.id };
+      expect(facilitySchema.safeParse(preview).success).toBe(true);
+    }
+  });
+
+  it("rejects an invalid enum value for water", () => {
+    const existing = baseExistingFacility();
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "water",
+      value: "not-a-real-cooling-type",
+      sourceUrl: "https://example.com/correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("error" in result).toBe(true);
+  });
+
+  it("sets energy.source while preserving utility and onSiteGenerationMw", () => {
+    const existing = baseExistingFacility({
+      energy: { utility: "Dominion", onSiteGenerationMw: 5 },
+    });
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "energy",
+      value: "on_site_gas",
+      sourceUrl: "https://example.com/energy-correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("payload" in result).toBe(true);
+    if ("payload" in result) {
+      expect(result.payload.energy).toEqual({
+        utility: "Dominion",
+        onSiteGenerationMw: 5,
+        source: "on_site_gas",
+      });
+      const preview = { ...existing, ...result.payload, id: existing.id };
+      expect(facilitySchema.safeParse(preview).success).toBe(true);
+    }
+  });
+
+  it("rejects an invalid enum value for energy", () => {
+    const existing = baseExistingFacility();
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "energy",
+      value: "cold_fusion",
+      sourceUrl: "https://example.com/correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("error" in result).toBe(true);
+  });
+
+  it("sets emissions.permitNumber while preserving other emissions fields", () => {
+    const existing = baseExistingFacility({
+      emissions: { issuingAgency: "Texas CEQ", notes: "existing note" },
+    });
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "emissions",
+      value: "TCEQ-177263",
+      sourceUrl: "https://example.com/emissions-correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("payload" in result).toBe(true);
+    if ("payload" in result) {
+      expect(result.payload.emissions).toEqual({
+        issuingAgency: "Texas CEQ",
+        notes: "existing note",
+        permitNumber: "TCEQ-177263",
+      });
+      const preview = { ...existing, ...result.payload, id: existing.id };
+      expect(facilitySchema.safeParse(preview).success).toBe(true);
+    }
+  });
+
+  it("sets community.status while preserving community.notes", () => {
+    const existing = baseExistingFacility({
+      community: { notes: "existing note" },
+    });
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "community",
+      value: "contested",
+      sourceUrl: "https://example.com/community-correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("payload" in result).toBe(true);
+    if ("payload" in result) {
+      expect(result.payload.community).toEqual({
+        notes: "existing note",
+        status: "contested",
+      });
+      const preview = { ...existing, ...result.payload, id: existing.id };
+      expect(facilitySchema.safeParse(preview).success).toBe(true);
+    }
+  });
+
+  it("rejects an invalid enum value for community", () => {
+    const existing = baseExistingFacility();
+    const input: CorrectionContributeInput = {
+      kind: "correction",
+      targetFacilityId: existing.id,
+      field: "community",
+      value: "not-a-real-status",
+      sourceUrl: "https://example.com/correction",
+    };
+    const result = buildCorrectionPatch(existing, input, TODAY);
+    expect("error" in result).toBe(true);
   });
 });
 

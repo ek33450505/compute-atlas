@@ -75,10 +75,22 @@ export const capacityMwSchema = z.object({
   operational: z.number().positive().optional(),
 });
 
+// Named separately (rather than left inline) so lib/contribute-fields.ts can
+// import the exact enum for the public "energy" correction field instead of
+// retyping the member list by hand — the two must never drift.
+export const energySourceEnum = z.enum([
+  "grid",
+  "on_site_gas",
+  "nuclear",
+  "solar",
+  "wind",
+  "hydro",
+  "mixed",
+  "other",
+]);
+
 export const energySchema = z.object({
-  source: z
-    .enum(["grid", "on_site_gas", "nuclear", "solar", "wind", "hydro", "mixed", "other"])
-    .optional(),
+  source: energySourceEnum.optional(),
   utility: z.string().optional(),
   onSiteGenerationMw: z.number().positive().optional(),
   notes: z.string().optional(),
@@ -118,8 +130,20 @@ export const energySchema = z.object({
 // The two share the literal values "air" and "hybrid", so a mining value can
 // be assigned here and still pass validation; the definitions above are the
 // ones that apply to this field.
+// Named separately (rather than left inline) so lib/contribute-fields.ts can
+// import the exact enum for the public "water" correction field instead of
+// retyping the member list by hand — the two must never drift. See the
+// TIE-BREAKER rule above before treating any of these values as self-evident.
+export const waterCoolingTypeEnum = z.enum([
+  "evaporative",
+  "air",
+  "closed_loop",
+  "hybrid",
+  "unknown",
+]);
+
 export const waterSchema = z.object({
-  coolingType: z.enum(["evaporative", "air", "closed_loop", "hybrid", "unknown"]).optional(),
+  coolingType: waterCoolingTypeEnum.optional(),
   reportedMgd: z.number().nonnegative().optional(),
   notes: z.string().optional(),
 });

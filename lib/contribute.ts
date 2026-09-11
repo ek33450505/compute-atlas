@@ -167,6 +167,28 @@ const APPLY_FNS: Record<
   jobs: (existing, value) => ({
     jobs: { ...existing.jobs, permanent: Number(value) },
   }),
+  // Merges into the existing water object rather than replacing it, so a
+  // coolingType correction never clobbers reportedMgd/notes. See
+  // lib/schema.ts's tie-breaker comment on waterCoolingTypeEnum before
+  // assuming "air-cooled" marketing copy means this value is "air".
+  water: (existing, value) => ({
+    water: { ...existing.water, coolingType: value },
+  }),
+  energy: (existing, value) => ({
+    energy: { ...existing.energy, source: value },
+  }),
+  // permitNumber only — see the CORRECTABLE_FIELD_META comment in
+  // lib/contribute-fields.ts for why the tonnage sub-fields
+  // (permittedTpy.*, basis, unitGroups) are deliberately NOT wired through
+  // this single-value correction path.
+  emissions: (existing, value) => ({
+    emissions: { ...existing.emissions, permitNumber: String(value) },
+  }),
+  // community.notes is not touched — a correction here only ever changes the
+  // status enum, never the free-text explanation of it.
+  community: (existing, value) => ({
+    community: { ...existing.community, status: value },
+  }),
 };
 
 export const CORRECTABLE_FIELDS: CorrectableFieldDef[] = CORRECTABLE_FIELD_META.map(

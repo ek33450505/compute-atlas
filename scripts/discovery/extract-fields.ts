@@ -111,9 +111,15 @@
  *
  * Run via:
  *   npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
- *     --out <path> [--limit N] [--fields capacityMw.planned,energy.source] \
- *     [--facility <id>] [--run-id ID]
+ *     --fields capacityMw.operational,water.coolingType --out <path> \
+ *     [--limit N] [--facility <id>] [--run-id ID]
  *   (omit --out for a dry run: prints a summary, writes nothing)
+ *
+ *   --fields is REQUIRED (see parseArgs, below the CLI section): this script
+ *   STAGES candidates for human review, so the shortest command must not
+ *   silently sweep all six extractable fields — two of them failed the
+ *   accuracy bench (capacityMw.planned P=75%, energy.onSiteGenerationMw
+ *   P=50%) and are not safe to run unattended.
  *
  * Never imports or touches the DB, never calls createSubmission — this
  * script's only write is the candidates file itself.
@@ -2115,6 +2121,14 @@ interface CliArgs {
  * this stays a pure, testable function — `main()`'s existing
  * `.catch(err => { console.error(err); process.exit(1); })` chain reports and
  * exits for a real CLI invocation.
+ *
+ * ⚠️ The "omitted means all six" contract above is INTENTIONAL and must not
+ * change here — `verify-fields.ts` imports this exact function and relies on
+ * it, because verify-fields is read-only (stages nothing) so the ship-safety
+ * argument below does not apply to it. extract-fields.ts's OWN `parseArgs`
+ * (below) layers a stricter, script-specific requirement on top: it rejects
+ * `undefined` — i.e., requires `--fields` to be passed at all — before this
+ * function ever gets to apply its own default.
  */
 export function parseFieldsArg(raw: string | undefined): ExtractableField[] {
   if (raw === undefined) return [...EXTRACTABLE_FIELDS];
@@ -2167,7 +2181,14 @@ export function parseLimitArg(raw: string | undefined): number | undefined {
 export function parseArgs(argv: string[]): CliArgs {
   let outPath: string | undefined;
   let limit: number | undefined;
-  let fields: ExtractableField[] = [...EXTRACTABLE_FIELDS];
+  // Deliberately starts `undefined`, NOT `[...EXTRACTABLE_FIELDS]`. Unlike
+  // parseFieldsArg's own "omitted means all six" contract (which verify-fields.ts's
+  // read-only parseArgs still relies on, unchanged — see the doc-comment on
+  // parseFieldsArg), THIS script stages candidates for human review, so the
+  // shortest command must not silently sweep every extractable field. Resolved to
+  // a required, non-empty array before this function returns — see the fail-closed
+  // check after the loop below.
+  let fields: ExtractableField[] | undefined;
   let facilityId: string | undefined;
   let runId = `track5-${Date.now()}`;
 
@@ -2196,7 +2217,20 @@ export function parseArgs(argv: string[]): CliArgs {
     } else if (flag.startsWith("--limit=")) {
       limit = parseLimitArg(flag.slice("--limit=".length));
     } else if (flag === "--fields") {
-      fields = parseFieldsArg(argv[++i]);
+      // Mirror --limit's defensive shape above: a bare trailing `--fields`, or
+      // `--fields` immediately followed by another flag, supplies no value. Do NOT
+      // consume the next token as the value in that case — that would both swallow
+      // a real flag and (via parseFieldsArg's own `raw === undefined` contract)
+      // silently produce the unsafe six-field sweep this whole check exists to
+      // prevent. Treat "no value supplied" the same as the `--fields=` empty-string
+      // case below, and don't advance `i` past a token we didn't consume.
+      const next = argv[i + 1];
+      if (next !== undefined && !next.startsWith("--")) {
+        fields = parseFieldsArg(next);
+        i++;
+      } else {
+        fields = parseFieldsArg("");
+      }
     } else if (flag.startsWith("--fields=")) {
       fields = parseFieldsArg(flag.slice("--fields=".length));
     } else if (flag === "--facility") {
@@ -2206,6 +2240,24 @@ export function parseArgs(argv: string[]): CliArgs {
     } else if (flag.startsWith("--run-id=")) {
       runId = flag.slice("--run-id=".length);
     }
+  }
+
+  // Fail closed: `--fields` is REQUIRED for this script specifically (this is
+  // stricter than parseFieldsArg's own general contract — see its doc-comment).
+  // `fields` is `undefined` when the flag was never seen at all, and `[]` when it
+  // WAS seen but supplied no usable value (`--fields=`, or a bare trailing/
+  // flag-adjacent `--fields`) — both collapse to the same loud error rather than to
+  // the unsafe six-field default, because the shortest command must not also be the
+  // most dangerous one.
+  if (fields === undefined || fields.length === 0) {
+    throw new Error(
+      `--fields is required. extract-fields.ts stages candidates into the human review ` +
+        `queue, and two of the six extractable fields failed the accuracy bench ` +
+        `(capacityMw.planned P=75%, energy.onSiteGenerationMw P=50%) — they are not safe ` +
+        `to sweep unattended. Pass the bench-pinned safe fields explicitly, e.g.:\n` +
+        `  --fields=capacityMw.operational,water.coolingType\n` +
+        `Valid fields are: ${EXTRACTABLE_FIELDS.join(", ")}.`
+    );
   }
 
   return { outPath, limit, fields, facilityId, runId };

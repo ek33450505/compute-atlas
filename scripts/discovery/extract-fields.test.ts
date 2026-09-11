@@ -2334,7 +2334,7 @@ describe("parseArgs — --limit fail-open regression guard", () => {
   it("falls back to 500 (not undefined) for a non-numeric --limit=value", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     try {
-      const args = parseArgs(["--limit=abc"]);
+      const args = parseArgs(["--limit=abc", "--fields=capacityMw.operational"]);
       expect(args.limit).toBe(500);
       expect(args.limit).not.toBeUndefined();
       expect(warnSpy).toHaveBeenCalled();
@@ -2346,8 +2346,8 @@ describe("parseArgs — --limit fail-open regression guard", () => {
   it("falls back to 500 for --limit=0 and --limit=-5", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     try {
-      expect(parseArgs(["--limit=0"]).limit).toBe(500);
-      expect(parseArgs(["--limit=-5"]).limit).toBe(500);
+      expect(parseArgs(["--limit=0", "--fields=capacityMw.operational"]).limit).toBe(500);
+      expect(parseArgs(["--limit=-5", "--fields=capacityMw.operational"]).limit).toBe(500);
     } finally {
       warnSpy.mockRestore();
     }
@@ -2359,14 +2359,14 @@ describe("parseArgs — --limit fail-open regression guard", () => {
   });
 
   it("accepts a valid --limit=25 unchanged", () => {
-    const args = parseArgs(["--limit=25"]);
+    const args = parseArgs(["--limit=25", "--fields=capacityMw.operational"]);
     expect(args.limit).toBe(25);
   });
 
   it("applies the same fallback to the space-separated form (--limit abc)", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     try {
-      const args = parseArgs(["--limit", "abc"]);
+      const args = parseArgs(["--limit", "abc", "--fields=capacityMw.operational"]);
       expect(args.limit).toBe(500);
     } finally {
       warnSpy.mockRestore();
@@ -2376,7 +2376,7 @@ describe("parseArgs — --limit fail-open regression guard", () => {
   it("falls back to 500 (not undefined) for a bare trailing --limit with no value at all", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     try {
-      const args = parseArgs(["--limit"]);
+      const args = parseArgs(["--fields=capacityMw.operational", "--limit"]);
       expect(args.limit).toBe(500);
       expect(args.limit).not.toBeUndefined();
       expect(warnSpy).toHaveBeenCalled();
@@ -2397,8 +2397,62 @@ describe("parseArgs — --limit fail-open regression guard", () => {
   });
 
   it("still leaves limit undefined (unbounded) when --limit is omitted entirely — the over-correction guard", () => {
-    const args = parseArgs([]);
+    const args = parseArgs(["--fields=capacityMw.operational"]);
     expect(args.limit).toBeUndefined();
+  });
+});
+
+// Regression: extract-fields.ts STAGES candidates for human review, so (unlike
+// verify-fields.ts, which is read-only) the shortest command must not silently
+// sweep all six extractable fields — two of which failed the accuracy bench
+// (capacityMw.planned P=75%, energy.onSiteGenerationMw P=50%). `--fields` is
+// required for THIS script's own `parseArgs`, layered on top of
+// `parseFieldsArg`'s unchanged, more permissive contract (covered separately
+// below).
+describe("parseArgs — --fields required (fail-closed)", () => {
+  it("throws when --fields is omitted entirely", () => {
+    expect(() => parseArgs([])).toThrow(/--fields is required/);
+    expect(() => parseArgs(["--limit=25"])).toThrow(/--fields is required/);
+  });
+
+  it("throws on --fields= (present but empty)", () => {
+    expect(() => parseArgs(["--fields="])).toThrow(/--fields is required/);
+  });
+
+  it("throws on a bare trailing --fields with no value at all", () => {
+    expect(() => parseArgs(["--out=/tmp/x.json", "--fields"])).toThrow(/--fields is required/);
+  });
+
+  it("throws on --fields immediately followed by another flag, and does not swallow that flag", () => {
+    expect(() => parseArgs(["--fields", "--limit=25"])).toThrow(/--fields is required/);
+  });
+
+  it("a bare --fields does not swallow the flag right after it, once a real --fields appears later", () => {
+    const args = parseArgs(["--fields", "--facility=abc-1", "--fields=capacityMw.operational"]);
+    expect(args.facilityId).toBe("abc-1");
+    expect(args.fields).toEqual(["capacityMw.operational"]);
+  });
+
+  it("succeeds with --fields=capacityMw.operational,water.coolingType and returns exactly those two", () => {
+    const args = parseArgs(["--fields=capacityMw.operational,water.coolingType"]);
+    expect(args.fields).toEqual(["capacityMw.operational", "water.coolingType"]);
+  });
+
+  it("succeeds with the space-separated form (--fields <value>)", () => {
+    const args = parseArgs(["--fields", "capacityMw.operational"]);
+    expect(args.fields).toEqual(["capacityMw.operational"]);
+  });
+
+  // Contract regression, NOT a bug: verify-fields.ts imports parseFieldsArg
+  // directly and calls it with `raw === undefined` on its own read-only,
+  // read-nothing-writes-nothing path (see package.json's `verify-fields` script,
+  // which deliberately bakes in no field list, and run.sh's documented rationale).
+  // parseFieldsArg's "omitted means all six" default must NOT change — only
+  // extract-fields.ts's OWN parseArgs (tested above) layers a stricter,
+  // script-specific "must be present" requirement on top of it. Do not "fix" this
+  // one to throw too.
+  it("parseFieldsArg(undefined) still returns all six fields — the verify-fields.ts contract", () => {
+    expect(parseFieldsArg(undefined)).toEqual([...EXTRACTABLE_FIELDS]);
   });
 });
 
