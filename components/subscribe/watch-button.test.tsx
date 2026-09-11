@@ -28,6 +28,16 @@ describe("buildSubscribePayload", () => {
     const payload = buildSubscribePayload("jdoe@example.com", "facility", "facility-1", "bot-filled-this");
     expect(payload.website).toBe("bot-filled-this");
   });
+
+  it("builds a payload for a state target", () => {
+    const payload = buildSubscribePayload("jdoe@example.com", "state", "TX", "");
+    expect(payload).toEqual({
+      email: "jdoe@example.com",
+      targetType: "state",
+      targetId: "TX",
+      website: "",
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -50,6 +60,42 @@ describe("WatchButton — structure", () => {
 
     expect(screen.getByLabelText(/^email$/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Watch" })).toBeInTheDocument();
+  });
+
+  it("renders a state target with its own accessible trigger name and default per-change copy", async () => {
+    const user = userEvent.setup();
+    render(<WatchButton targetType="state" targetId="TX" label="Watch Texas" />);
+
+    expect(screen.getByRole("button", { name: "Watch Texas" })).toBeInTheDocument();
+    // Distinct from the facility trigger's name — no accessible-name collision
+    // if both were ever rendered on the same page.
+    expect(screen.queryByRole("button", { name: "Watch this facility" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Watch Texas" }));
+    expect(
+      screen.getByText("Get an email when this changes. One click to unsubscribe, anytime.")
+    ).toBeInTheDocument();
+  });
+
+  it("overrides the default description copy when one is passed, so a non-immediate cadence (e.g. monthly) is stated explicitly", async () => {
+    const user = userEvent.setup();
+    render(
+      <WatchButton
+        targetType="state"
+        targetId="TX"
+        label="Watch Texas — monthly digest"
+        description="Get a monthly email summarizing what changed in Texas. One click to unsubscribe, anytime."
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Watch Texas — monthly digest" }));
+
+    expect(
+      screen.getByText("Get a monthly email summarizing what changed in Texas. One click to unsubscribe, anytime.")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Get an email when this changes. One click to unsubscribe, anytime.")
+    ).not.toBeInTheDocument();
   });
 
   it("keeps the honeypot out of the tab order", async () => {

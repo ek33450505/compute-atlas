@@ -25,6 +25,7 @@ import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
 import { SectionHeading } from "@/components/section-heading";
 import { StateEmbedSnippet } from "@/components/states/state-embed-snippet";
+import { WatchButton } from "@/components/subscribe/watch-button";
 import { aiClassificationEnum } from "@/lib/schema";
 import { siteConfig } from "@/lib/site";
 import { DATASET_DOI_URL } from "@/lib/seo";
@@ -191,6 +192,15 @@ export default async function StatePage({
           },
         ]}
       />
+
+      <div className="print:hidden">
+        <WatchButton
+          targetType="state"
+          targetId={code}
+          label={`Watch ${stateName} — monthly digest`}
+          description={`Get a monthly email summarizing what changed for tracked facilities in ${stateName}. One click to unsubscribe, anytime.`}
+        />
+      </div>
 
       <p className="text-sm leading-relaxed text-muted-foreground">
         Capacity is disclosed for {summary.capacityReporting} of the{" "}

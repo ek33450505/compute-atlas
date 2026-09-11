@@ -21,7 +21,12 @@ import type { Facility } from "@/lib/schema";
 // resolves against the mocked module. subscribeToTarget no longer calls
 // sendConfirmEmail directly (a prior security-review fix) — it hands back a
 // `confirm` signal for the route to act on, so lib/email needs no mock here.
-import { subscribeToTarget, confirmSubscription, unsubscribeByToken } from "@/lib/subscribe";
+import {
+  subscribeInputSchema,
+  subscribeToTarget,
+  confirmSubscription,
+  unsubscribeByToken,
+} from "@/lib/subscribe";
 
 const facilitiesTyped = facilitiesRaw as unknown as Facility[];
 const seedDoc = facilitiesTyped[0]; // xai-colossus-memphis-tn
@@ -44,6 +49,47 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await tdb.client.close();
+});
+
+// Shape-only validation (no DB): does this look like a subscribe request?
+// Whether a "state" targetId is a REAL state code (uppercasing included) is a
+// semantic check the schema doesn't do — that's subscribeToTarget's job,
+// covered by the "valid state target" / "unknown state code" cases below.
+describe("subscribeInputSchema", () => {
+  it("accepts a valid state target", () => {
+    const result = subscribeInputSchema.safeParse({
+      email: "reader@example.com",
+      targetType: "state",
+      targetId: "tx",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a valid facility target", () => {
+    const result = subscribeInputSchema.safeParse({
+      email: "reader@example.com",
+      targetType: "facility",
+      targetId: "some-facility",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a targetType outside facility|state (e.g. the retired 'all')", () => {
+    const result = subscribeInputSchema.safeParse({
+      email: "reader@example.com",
+      targetType: "all",
+      targetId: "tx",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a state target with no targetId", () => {
+    const result = subscribeInputSchema.safeParse({
+      email: "reader@example.com",
+      targetType: "state",
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("subscribeToTarget", () => {
@@ -79,16 +125,38 @@ describe("subscribeToTarget", () => {
     }
   });
 
-  it("rejects a state target with a 400 (targetType is facility-only now)", async () => {
+  it("creates one pending subscription for a valid state target, uppercasing a lowercase code", async () => {
     const result = await subscribeToTarget(
       { email: "reader@example.com", targetType: "state", targetId: "tx" },
       "iphash-2"
     );
 
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.confirm).toEqual(
+        expect.objectContaining({
+          email: "reader@example.com",
+          targetLabel: "Texas",
+          confirmToken: expect.any(String),
+        })
+      );
+    }
+    const rows = await tdb.db.select().from(subscriptionsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].targetType).toBe("state");
+    expect(rows[0].targetId).toBe("TX"); // stored uppercase regardless of input casing
+  });
+
+  it("rejects an unknown state code with a 400 and inserts nothing", async () => {
+    const result = await subscribeToTarget(
+      { email: "reader@example.com", targetType: "state", targetId: "zz" },
+      "iphash-2b"
+    );
+
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.status).toBe(400);
-      expect(result.error).toBe("Invalid subscription");
+      expect(result.error).toBe("Unknown state");
     }
     expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(0);
   });
