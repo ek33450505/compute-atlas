@@ -1,5 +1,6 @@
 // @vitest-environment node
-import { beforeAll, beforeEach, afterAll, describe, it, expect, vi } from "vitest";
+import { randomUUID } from "node:crypto";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, it, expect, vi } from "vitest";
 import { eq } from "drizzle-orm";
 
 vi.mock("next/cache", () => ({
@@ -11,8 +12,8 @@ vi.mock("@/lib/db/client");
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { submissionsTable } from "@/lib/db/schema";
-import { hashIp } from "@/lib/rate-limit";
+import { submissionsTable, submissionNotifyRequestsTable } from "@/lib/db/schema";
+import { EMAIL_SEND_CAP_MAX, hashIp } from "@/lib/rate-limit";
 import facilitiesRaw from "@/data/facilities.json";
 import type { Facility } from "@/lib/schema";
 
@@ -51,6 +52,10 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await tdb.reset();
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
 });
 
 afterAll(async () => {
@@ -235,5 +240,122 @@ describe("POST /api/contribute (public, unauthenticated happy path)", () => {
 
     const rows = await tdb.db.select().from(submissionsTable);
     expect(rows).toHaveLength(0);
+  });
+});
+
+describe("POST /api/contribute — 'email me when reviewed' (SUBMISSION_NOTIFY_ENABLED)", () => {
+  it("flag OFF: a valid notifyEmail is silently ignored — 201, zero notify rows", async () => {
+    const res = await POST(req({ ...validCreateBody, notifyEmail: "contributor@example.com" }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag OFF: a malformed notifyEmail does not change the response — this is the oracle test the field is kept out of contributeInputSchema to prevent", async () => {
+    // Identical body to the flag-ON "malformed notifyEmail" case below (400
+    // there) — proving it's the flag, not the value, that decides the outcome.
+    const res = await POST(req({ ...validCreateBody, notifyEmail: "x" }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag ON: records exactly one row, email lowercased + trimmed", async () => {
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+
+    const res = await POST(req({ ...validCreateBody, notifyEmail: "  MiXeD@Example.COM  " }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    const rows = await tdb.db.select().from(submissionNotifyRequestsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].email).toBe("mixed@example.com");
+
+    const submissions = await tdb.db.select().from(submissionsTable);
+    expect(rows[0].submissionId).toBe(submissions[0].id);
+  });
+
+  it("flag ON: notifyEmail never reaches the stored submission payload or provenance", async () => {
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+
+    const res = await POST(req({ ...validCreateBody, notifyEmail: "should-not-leak@example.com" }));
+    expect(res.status).toBe(201);
+
+    const submissions = await tdb.db.select().from(submissionsTable);
+    expect(submissions).toHaveLength(1);
+    expect(JSON.stringify(submissions[0].payload)).not.toContain("should-not-leak@example.com");
+    expect(JSON.stringify(submissions[0].provenance)).not.toContain("should-not-leak@example.com");
+  });
+
+  it("flag ON, correction kind: a notify row is written too", async () => {
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+    await seedFacility(tdb.db, seedDoc);
+
+    const res = await POST(
+      req({
+        kind: "correction",
+        targetFacilityId: seedDoc.id,
+        field: "operator",
+        value: "New Op",
+        sourceUrl: "https://example.com/correction",
+        notifyEmail: "correction-notify@example.com",
+      })
+    );
+    expect(res.status).toBe(201);
+
+    const submissions = await tdb.db.select().from(submissionsTable);
+    expect(submissions).toHaveLength(1);
+    const rows = await tdb.db.select().from(submissionNotifyRequestsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].email).toBe("correction-notify@example.com");
+    expect(rows[0].submissionId).toBe(submissions[0].id);
+  });
+
+  it("flag ON, malformed notifyEmail: 400, zero notify rows, and zero submissions created", async () => {
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+
+    const res = await POST(req({ ...validCreateBody, notifyEmail: "x" }));
+    expect(res.status).toBe(400);
+    // issue.path must be ["notifyEmail"], not [] — the form's client-side
+    // issuesToFieldMap keys errors by issue.path[0], and a path-less issue
+    // can't attach to the email field (see notifyEmailFieldSchema's comment
+    // in lib/contribute.ts).
+    const body = await res.json();
+    expect(body.issues?.[0]?.path).toEqual(["notifyEmail"]);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag ON, honeypot tripped: zero notify rows and zero submissions", async () => {
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+
+    const res = await POST(req({ ...validCreateBody, website: "spam", notifyEmail: "bot@example.com" }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag ON: per-address cap — at EMAIL_SEND_CAP_MAX outstanding requests, writes no new row but still succeeds", async () => {
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+    const email = "capped@example.com";
+    for (let i = 0; i < EMAIL_SEND_CAP_MAX; i++) {
+      await tdb.db.insert(submissionNotifyRequestsTable).values({ submissionId: randomUUID(), email });
+    }
+
+    const res = await POST(req({ ...validCreateBody, notifyEmail: email }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    // The submission itself still succeeds — only the notify row is skipped.
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    const rows = await tdb.db.select().from(submissionNotifyRequestsTable);
+    expect(rows).toHaveLength(EMAIL_SEND_CAP_MAX); // unchanged — no new row added
   });
 });

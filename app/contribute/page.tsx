@@ -6,6 +6,7 @@ import { PageMasthead } from "@/components/page-masthead";
 import { ContributeLeadForm } from "@/components/contribute/contribute-lead-form";
 import { ContributeFacilityForm } from "@/components/contribute/contribute-facility-form";
 import { SupportCta } from "@/components/support-cta";
+import { submissionNotifyEnabled } from "@/lib/submission-notify";
 
 export const metadata: Metadata = {
   title: "Share a lead",
@@ -25,6 +26,12 @@ export const metadata: Metadata = {
  * (Breadcrumb -> header -> border-t -> body).
  */
 export default function ContributePage() {
+  // Read once per request, at render time — never cached at module scope.
+  // Passed down as a plain boolean; ContributeFacilityForm (a client
+  // component) never reads process.env itself. Leave ContributeLeadForm
+  // alone — it posts to /api/leads, a different table with no notify
+  // support.
+  const notifyEnabled = submissionNotifyEnabled();
   return (
     <div
       data-content-width="4xl"
@@ -59,7 +66,7 @@ export default function ContributePage() {
           </span>
         </summary>
         <div className="mt-6">
-          <ContributeFacilityForm />
+          <ContributeFacilityForm notifyEnabled={notifyEnabled} />
         </div>
       </details>
 

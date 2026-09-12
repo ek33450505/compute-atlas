@@ -35,6 +35,8 @@ import {
   contactMessagesTable,
   leadsTable,
   submissionsTable,
+  submissionNotifyRequestsTable,
+  submissionNotifySendsTable,
   subscribeAttemptsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
@@ -47,6 +49,8 @@ export const LEADS_RETENTION_DAYS = 365; // leads: delete promoted/dismissed row
 export const SUBMISSIONS_IP_HASH_RETENTION_DAYS = 90; // submissions: strip provenance.submitterIpHash from reviewed (non-pending) rows older than this many days (by reviewedAt) — the submission row itself is never deleted
 export const SUBSCRIPTIONS_UNSUBSCRIBED_RETENTION_DAYS = 30; // subscriptions: delete unsubscribed rows older than this many days (by unsubscribedAt)
 export const SUBSCRIBE_ATTEMPTS_RETENTION_DAYS = 2; // subscribe_attempts: delete rows older than this many days (by createdAt) — the cap window is 1h, so 2 days is already far beyond useful life
+export const SUBMISSION_NOTIFY_RETENTION_DAYS = 90; // submission_notify_requests: delete rows whose submission was never reviewed — otherwise a submission that never gets reviewed leaves its address sitting forever
+export const SUBMISSION_NOTIFY_SENDS_RETENTION_DAYS = 60; // submission_notify_sends: delete rows older than this many days (by createdAt) — comfortably beyond the 30-day SUBMISSION_NOTIFY_SEND_WINDOW_MS cap window (lib/rate-limit.ts), so pruning can never shorten the cap
 export const API_ACCESS_GRANTS_RETENTION_DAYS = 90; // api_access_grants: delete revoked-or-expired rows older than this many days (by revokedAt/expiresAt)
 export const API_DAILY_USAGE_RETENTION_DAYS = 35; // api_daily_usage: delete daily per-IP counters older than this many days (by the `day` text column)
 
@@ -186,6 +190,13 @@ function buildSteps(now: Date): RetentionStep[] {
   const subscribeAttemptsCutoff = daysAgo(now, SUBSCRIBE_ATTEMPTS_RETENTION_DAYS);
   const subscribeAttemptsPredicate = () => lt(subscribeAttemptsTable.createdAt, subscribeAttemptsCutoff);
 
+  const submissionNotifyCutoff = daysAgo(now, SUBMISSION_NOTIFY_RETENTION_DAYS);
+  const submissionNotifyPredicate = () => lt(submissionNotifyRequestsTable.createdAt, submissionNotifyCutoff);
+
+  const submissionNotifySendsCutoff = daysAgo(now, SUBMISSION_NOTIFY_SENDS_RETENTION_DAYS);
+  const submissionNotifySendsPredicate = () =>
+    lt(submissionNotifySendsTable.createdAt, submissionNotifySendsCutoff);
+
   const apiAccessGrantsCutoff = daysAgo(now, API_ACCESS_GRANTS_RETENTION_DAYS);
   const apiAccessGrantsPredicate = () =>
     or(
@@ -234,6 +245,31 @@ function buildSteps(now: Date): RetentionStep[] {
       action: "delete",
       selectCandidates: () => getDb().select().from(subscribeAttemptsTable).where(subscribeAttemptsPredicate()),
       mutate: () => getDb().delete(subscribeAttemptsTable).where(subscribeAttemptsPredicate()).returning(),
+    },
+    {
+      // "Email me when reviewed" requests. A submission that is never
+      // reviewed otherwise leaves this row — and the address in it — sitting
+      // forever; see SUBMISSION_NOTIFY_RETENTION_DAYS above. A reviewed
+      // submission's row is already gone well before this window matters
+      // (deleted immediately on send, per lib/submission-notify.ts), so this
+      // step only ever catches the never-reviewed case.
+      table: "submission_notify_requests",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(submissionNotifyRequestsTable).where(submissionNotifyPredicate()),
+      mutate: () => getDb().delete(submissionNotifyRequestsTable).where(submissionNotifyPredicate()).returning(),
+    },
+    {
+      // Persistent per-address send-attempt counter for the "email me when
+      // reviewed" cap (see submissionNotifySendsTable's doc comment in
+      // lib/db/schema.ts). Retained well past the 30-day cap window
+      // (SUBMISSION_NOTIFY_SENDS_RETENTION_DAYS = 60) so pruning can never
+      // shorten the cap itself.
+      table: "submission_notify_sends",
+      action: "delete",
+      selectCandidates: () =>
+        getDb().select().from(submissionNotifySendsTable).where(submissionNotifySendsPredicate()),
+      mutate: () =>
+        getDb().delete(submissionNotifySendsTable).where(submissionNotifySendsPredicate()).returning(),
     },
     {
       table: "api_access_grants",

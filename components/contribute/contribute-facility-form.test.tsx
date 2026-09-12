@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { ContributeFacilityForm } from "./contribute-facility-form";
+import { ContributeFacilityForm, buildContributePayload } from "./contribute-facility-form";
 
 // ---------------------------------------------------------------------------
 // fetch mock helpers
@@ -273,5 +273,110 @@ describe("ContributeFacilityForm — attribution", () => {
 
     await screen.findByText(/in the review queue/i);
     expect(getPostedBody()).not.toHaveProperty("attribution");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// "Email me when reviewed" (C1b, Unit C) — gated by the notifyEnabled prop,
+// which app/contribute/page.tsx derives from SUBMISSION_NOTIFY_ENABLED and
+// passes down. This component never reads process.env itself.
+// ---------------------------------------------------------------------------
+
+// Derives the state-object type from buildContributePayload's own (unexported)
+// parameter type rather than importing/duplicating ContributeFormState.
+type FormState = Parameters<typeof buildContributePayload>[0];
+
+function baseFormState(overrides: Partial<FormState> = {}): FormState {
+  return {
+    name: "New DC",
+    operator: "New Op",
+    state: "CA",
+    facilityType: "data_center",
+    status: "proposed",
+    lat: "30",
+    lon: "-90",
+    city: "",
+    capacityOperationalMw: "",
+    capacityPlannedMw: "",
+    sourceUrl: "https://example.com/press-release",
+    sourceLabel: "",
+    attribution: "",
+    notifyEmail: "",
+    note: "",
+    website: "",
+    ...overrides,
+  };
+}
+
+describe("ContributeFacilityForm — notify email (C1b)", () => {
+  it("does not render the notify-email field when notifyEnabled is false (the default)", () => {
+    render(<ContributeFacilityForm />);
+    expect(screen.queryByLabelText(/your email/i)).not.toBeInTheDocument();
+  });
+
+  it("omits notifyEmail from buildContributePayload's output when the flag is off, even if state carries a value", () => {
+    const payload = buildContributePayload(baseFormState({ notifyEmail: "someone@example.com" }));
+    expect(payload).not.toHaveProperty("notifyEmail");
+  });
+
+  it("renders the notify-email field, reachable by its accessible label, when notifyEnabled is true", () => {
+    render(<ContributeFacilityForm notifyEnabled />);
+    expect(screen.getByLabelText(/your email/i)).toBeInTheDocument();
+  });
+
+  it("associates the notify-email field with its 'used once, then deleted' description", () => {
+    render(<ContributeFacilityForm notifyEnabled />);
+    expect(screen.getByLabelText(/your email/i)).toHaveAccessibleDescription(/used once/i);
+  });
+
+  it("includes a trimmed notifyEmail in the submitted payload when the flag is on and a value is entered", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+
+    render(<ContributeFacilityForm notifyEnabled />);
+    await fillRequiredFields(user);
+    await user.type(screen.getByLabelText(/your email/i), "  someone@example.com  ");
+    await user.click(screen.getByRole("button", { name: /submit facility/i }));
+
+    await screen.findByText(/in the review queue/i);
+    expect(getPostedBody().notifyEmail).toBe("someone@example.com");
+  });
+
+  it("omits notifyEmail from the submitted payload when the flag is on but the field is left blank", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+
+    render(<ContributeFacilityForm notifyEnabled />);
+    await fillRequiredFields(user);
+    await user.click(screen.getByRole("button", { name: /submit facility/i }));
+
+    await screen.findByText(/in the review queue/i);
+    expect(getPostedBody()).not.toHaveProperty("notifyEmail");
+  });
+
+  it("surfaces a server-side 'Invalid notify email' rejection on the field via issuesToFieldMap", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({
+        error: "Invalid notify email",
+        // lib/contribute.ts wraps notifyEmailSchema in an object schema
+        // before parsing specifically so Zod's issue path is
+        // ["notifyEmail"], not [] — issuesToFieldMap needs a non-empty
+        // path[0] to attach an error to this field, same as every other
+        // field-level error in this form.
+        issues: [{ path: ["notifyEmail"], message: "Invalid email address" }],
+      }),
+    });
+
+    render(<ContributeFacilityForm notifyEnabled />);
+    await fillRequiredFields(user);
+    await user.type(screen.getByLabelText(/your email/i), "not-an-email");
+    await user.click(screen.getByRole("button", { name: /submit facility/i }));
+
+    const message = await screen.findByText("Invalid email address");
+    expect(message).toBeInTheDocument();
+    expect(message).toHaveAttribute("role", "alert");
   });
 });

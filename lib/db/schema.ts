@@ -223,6 +223,101 @@ export const subscribeAttemptsTable = pgTable(
 export type SubscribeAttemptRow = typeof subscribeAttemptsTable.$inferSelect;
 
 /**
+ * A one-shot "email me when this is reviewed" request against a single
+ * pending `submissions` row — NOT a subscription. A contributor asking to
+ * hear back about the submission they just filed has not subscribed to
+ * anything: there is no ongoing relationship, no double opt-in, and nothing
+ * to unsubscribe from. Modeling this as a `subscriptionsTable` row would hand
+ * them an unsubscribe token for a subscription they never made, and would
+ * make them visible to `notifySubscribersOfChange` / `notifyStateSubscribersMonthly`
+ * (lib/notify.ts), neither of which this request should ever participate in.
+ *
+ * The row is deleted the moment its one email is sent — and also on review
+ * when the send fails, since a request against an already-reviewed
+ * submission has nothing left to do either way. This is a single-fire
+ * request, not a durable record: nothing reads a `submission_notify_requests`
+ * row after its submission has been reviewed.
+ *
+ * `submissionId` carries no FK constraint, mirroring `facilityHistoryTable`'s
+ * loose-coupling convention above (a submission's lifecycle is independent of
+ * any row referencing its id). The unique index on `submissionId` makes
+ * recording the request idempotent per submission — a second request for the
+ * same submission is a no-op, not a second row.
+ *
+ * Deliberately no token column: a token would imply a link the recipient can
+ * act on (confirm, unsubscribe), and there is none here — the row is
+ * addressed by `submissionId` alone, written once by the intake, read once by
+ * the review path, and deleted right after.
+ */
+export const submissionNotifyRequestsTable = pgTable(
+  "submission_notify_requests",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    submissionId: uuid("submission_id").notNull(),
+    email: text("email").notNull(), // stored lowercased + trimmed; deleted immediately after its single send
+  },
+  (table) => [
+    uniqueIndex("submission_notify_submission_idx").on(table.submissionId),
+    index("submission_notify_email_created_idx").on(table.email, table.createdAt),
+  ]
+);
+
+export type SubmissionNotifyRequestRow = typeof submissionNotifyRequestsTable.$inferSelect;
+
+/**
+ * WHY THIS EXISTS: `checkSubmissionNotifyCap` (lib/rate-limit.ts) counts
+ * `submission_notify_requests` rows, but those rows are deleted the moment
+ * their submission is reviewed (see that table's doc comment above) — so it
+ * bounds *outstanding* requests per address, not how much mail an address
+ * actually receives. One actor can name the same victim address across
+ * several submissions from one IP (within the existing per-IP
+ * `checkRateLimit` budget) to fill that cap; the maintainer's ordinary review
+ * of the queue — approve OR reject, either sends the courtesy email and
+ * deletes the row — resets the cap to zero, so the attacker refills
+ * immediately and mail volume is unbounded over time, with the maintainer's
+ * own spam-cleanup as the delivery mechanism. This table is the persistent
+ * counter that closes that hole by surviving the notify-request row's
+ * deletion.
+ *
+ * WHY A HASH, NOT THE ADDRESS: the entire point of `submission_notify_requests`
+ * is that the address is discarded after its one use; a counter holding raw
+ * addresses would silently reintroduce exactly the retention that design
+ * avoids. `hashNotifyEmail` (lib/rate-limit.ts) salts and hashes the address
+ * the same way every `submitter_ip_hash` in this file pseudonymizes an IP —
+ * countable without being retained.
+ *
+ * WHY A SEPARATE TABLE, NOT A COLUMN: the rows that must be counted are
+ * precisely the ones whose `submission_notify_requests` row is being
+ * deleted — so by the time there's something to count against, there is
+ * nothing left on that row to carry the count.
+ *
+ * WHY ATTEMPTS, NOT SUCCESSFUL SENDS: same reasoning as `subscribeAttemptsTable`
+ * above (PR #288) — a counter that only increments on send *success* is free
+ * to anyone whose send never succeeds. This table is written before the send
+ * is attempted, not after it succeeds (see `recordSubmissionNotifySend` /
+ * `lib/submissions.ts`'s `notifySubmitterOfReview`), so a failing send still
+ * spends the target address's budget.
+ *
+ * Rows are pruned by `scripts/retention-prune.ts`
+ * (`SUBMISSION_NOTIFY_SENDS_RETENTION_DAYS`), set comfortably beyond the cap
+ * window so pruning can never shorten it.
+ */
+export const submissionNotifySendsTable = pgTable(
+  "submission_notify_sends",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    emailHash: text("email_hash").notNull(),
+  },
+  (table) => [
+    index("submission_notify_sends_hash_created_idx").on(table.emailHash, table.createdAt),
+  ]
+);
+
+export type SubmissionNotifySendRow = typeof submissionNotifySendsTable.$inferSelect;
+
+/**
  * Unstructured research inbox for bare tips — a URL and an optional one-line
  * note, submitted anonymously by the public. A lead is NOT a facility and NOT
  * a submission: it carries no facility payload, and nothing in

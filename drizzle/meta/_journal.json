@@ -78,6 +78,20 @@
       "when": 1789181538433,
       "tag": "0010_lyrical_trish_tilby",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789228458615,
+      "tag": "0011_nappy_carlie_cooper",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1789230385093,
+      "tag": "0012_lush_eddie_brock",
+      "breakpoints": true
     }
   ]
 }
