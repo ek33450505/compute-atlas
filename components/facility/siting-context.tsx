@@ -125,7 +125,14 @@ export function SitingContextSection({ facility }: { facility: Facility }) {
             </MastheadFactRow>
           )}
         </MastheadFactGrid>
-        <p className="mt-3 font-mono text-[10px] text-muted-foreground">
+        {/* data-print-note is the hook globals.css's @media print block uses
+            to compress this attribution to footnote scale. It is an honesty
+            statement, not decoration, so it is re-typeset for paper — never
+            hidden. */}
+        <p
+          data-print-note
+          className="mt-3 font-mono text-[10px] text-muted-foreground"
+        >
           Straight-line distances. Nearest named waterway via the USGS
           National Hydrography Dataset; nearest transmission line via HIFLD.
           Baseline water stress and groundwater trend describe the

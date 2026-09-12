@@ -295,3 +295,88 @@ describe("print-only 'Not recorded' marker", () => {
     expect(notRecordedNode()).toBeInTheDocument();
   });
 });
+
+// ---------------------------------------------------------------------------
+// `coveredByPrintSummary` — a FieldGapPrompt standing in for a WHOLE group.
+//
+// SubsidiesGroup (components/facility/civic-impact.tsx) replaces the group's
+// heading and list with this prompt, so there is no <dt> beside it and the
+// marker printed as a bare "Not recorded" naming nothing — under Civic impact,
+// on every record in the dataset, while the consolidated summary was ALREADY
+// reporting "public subsidies". Orphaned and duplicated at once.
+//
+// The screen half is the reason it is not simply switched to SectionGapPrompt:
+// `subsidies` IS in CORRECTABLE_KEYS, so this call site renders a real
+// correction dialog trigger, and SectionGapPrompt only ever renders the
+// lead-form link. The flag suppresses the PRINT marker and must leave the
+// screen affordance exactly as it was — that pair is what these tests pin.
+//
+// Per the scope warning above, this is DOM presence only. That the printed
+// page carries no unlabelled marker is asserted in e2e/print-brief.spec.ts,
+// where media can actually be emulated.
+// ---------------------------------------------------------------------------
+describe("FieldGapPrompt — coveredByPrintSummary", () => {
+  it("omits the marker from the DOM for a correctable field", () => {
+    render(
+      <FieldGapPrompt
+        field="subsidies"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="a public subsidy"
+        coveredByPrintSummary
+      />
+    );
+
+    expect(notRecordedNode()).not.toBeInTheDocument();
+  });
+
+  it("omits the marker from the DOM for a non-correctable field too", () => {
+    // Both return branches share one `printNil`, so a flag honoured on only
+    // the correctable path would still print an orphan from the other.
+    render(
+      <FieldGapPrompt
+        field="stakeholders"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="the stakeholders"
+        coveredByPrintSummary
+      />
+    );
+
+    expect(notRecordedNode()).not.toBeInTheDocument();
+  });
+
+  it("leaves the screen correction trigger untouched", () => {
+    render(
+      <FieldGapPrompt
+        field="subsidies"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="a public subsidy"
+        coveredByPrintSummary
+      />
+    );
+
+    // The whole point of keeping FieldGapPrompt here: a real dialog trigger,
+    // not the lead-form link SectionGapPrompt would have downgraded it to.
+    expect(
+      screen.getByRole("button", { name: /know a public subsidy\?/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+
+  it("defaults to off, so field-level slots keep their marker", () => {
+    // Without an explicit default assertion, deleting `= false` and letting
+    // the prop go undefined would read as harmless.
+    render(
+      <FieldGapPrompt
+        field="subsidies"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="a public subsidy"
+      />
+    );
+
+    expect(notRecordedNode()).toBeInTheDocument();
+  });
+});

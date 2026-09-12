@@ -452,8 +452,20 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
   size: auto;
   /* The page had no @page rule at all, so margins were the browser default
      (typically ~0.5in all round, plus headers/footers). A slightly larger
-     bottom margin leaves room for the browser's own page-number chrome. */
-  margin: 14mm 14mm 16mm;
+     bottom margin leaves room for the browser's own page-number chrome.
+
+     These margins are load-bearing twice over, in opposite directions, which
+     is why they are the first lever to reach for and the easiest to misread:
+       - The vertical pair sets the page's content BOX (Letter is 1056px tall
+         at 96dpi, so 12+14mm leaves 957.7px).
+       - The horizontal pair sets the printed column WIDTH (816px less
+         2x12mm = 725.3px), and a narrower column wraps more lines, so
+         tightening the sides makes the document TALLER.
+     Trimming 14/14/16 to 12/12/14 therefore pays twice on the thinnest
+     record: +15.1px of box and -14.5px of wrapped height. 12mm is still a
+     printable margin on every common printer, and the bottom stays the
+     larger of the two for the reason above. */
+  margin: 12mm 12mm 14mm;
 }
 
 @media print {
@@ -517,13 +529,13 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
 
   /* space-y-10 between ~16 sections was ~640px — 15% of the document. */
   [data-print-brief] > :not(:last-child) {
-    margin-block-end: 0.8rem !important;
+    margin-block-end: 0.6rem !important;
   }
 
   /* Same edge one level down: the per-section heading/content rhythm. */
   [data-print-brief] section > :not(:last-child),
   [data-print-brief] header > :not(:last-child) {
-    margin-block-end: 0.25rem !important;
+    margin-block-end: 0.2rem !important;
   }
 
   [data-print-brief] li:not(:last-child) {
@@ -534,8 +546,19 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
      their two columns — that density is the point — but shed the card padding
      and row gaps sized for a screen. */
   [data-print-brief] dl {
-    gap: 0.35rem 1.5rem !important;
-    padding: 0.5rem !important;
+    gap: 0.25rem 1.5rem !important;
+    padding: 0.35rem !important;
+  }
+
+  /* The explanatory note under a fact grid — currently the Siting context
+     attribution (components/facility/siting-context.tsx). It is an honesty
+     statement (USGS NHD / HIFLD / WRI Aqueduct credit, and the "not this
+     facility's measured water use" disclaimer), so it is compressed in type
+     and leading and never dropped: at 7.5pt it matches the consolidated nil
+     line below and reads as the same register of footnote. */
+  [data-print-brief] [data-print-note] {
+    font-size: 7.5pt;
+    line-height: 1.35;
   }
 
   /* The h1 is a 48px screen affordance; ~21pt still reads as the title. */

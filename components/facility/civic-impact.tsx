@@ -554,12 +554,18 @@ function EnvironmentalGroup({ facility }: { facility: Facility }) {
 // --- Sub-section: Public subsidies ---
 function SubsidiesGroup({ facility }: { facility: Facility }) {
   if (!hasSubsidies(facility)) {
+    // FieldGapPrompt, not SectionGapPrompt, even though this stands in for the
+    // whole group: `subsidies` IS in CORRECTABLE_KEYS (lib/contribute-fields.ts),
+    // so this renders a real SuggestCorrection trigger on screen. Swapping to
+    // SectionGapPrompt would silently downgrade that to the lead-form link.
+    // `coveredByPrintSummary` is what reconciles the two — see its doc comment.
     return (
       <FieldGapPrompt
         field="subsidies"
         facilityId={facility.id}
         facilityName={facility.name}
         label="a public subsidy"
+        coveredByPrintSummary
       />
     );
   }
