@@ -305,10 +305,20 @@
         "publisher": "Statesboro Herald",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.statesboroherald.com/local/statesboro-mayor-and-council-approve-rezoning-for-burkhalter-data-center-by-3-2-vote/",
+        "label": "Mayor and council approve rezoning for Burkhalter data center by 3-2 vote",
+        "publisher": "Statesboro Herald",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-12",
     "notes": "Two-story building of roughly 230,000 sq ft plus a 3/4-acre reserved Georgia Power substation site. The concept plan describes 40-90 MW and the developers applied to Georgia Power for a maximum of 99 MW; no single figure is asserted here. Owners named as Bobby Bagwell and Charles C. Way; the site is being zoned speculatively. Coordinates are approximate to Burkhalter Road pending parcel confirmation.",
+    "water": {
+      "coolingType": "closed_loop"
+    },
     "investmentUsd": 1200000000,
     "landAcres": 27,
     "facilityType": "data_center"
@@ -1514,6 +1524,70 @@
     "aiClassification": "likely"
   },
   {
+    "id": "aligned-coal-city-il",
+    "name": "Aligned Coal City Campus",
+    "operator": "Aligned Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.2575,
+      "lon": -88.303,
+      "city": "Coal City",
+      "county": "Grundy",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-11-25",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-12",
+        "note": "Village Board adopted non-binding TIF inducement resolutions 26-09 and 26-10 on 24 June 2026; no TIF district, redevelopment agreement or zoning approval has been granted.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hs.getobedio.com/blog/a-multi-billion-dollar-data-center-takes-a-step-forward-in-coal-city",
+        "label": "A Multi-Billion-Dollar Data Center Takes a Step Forward in Coal City",
+        "publisher": "Obedio",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.shawlocal.com/daily-journal/2026/08/05/aligned-data-centers-hosts-open-house-to-discuss-coal-city-campus-plans/",
+        "label": "Aligned Data Centers Hosts Open House to Discuss Coal City Campus Plans",
+        "publisher": "Shaw Local / Daily Journal",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Roughly 305 acres in the Coal City industrial park near the southeast corner of Reed and Carbon Hill Roads, with Aligned Data Centers (Acquisition) PropCo, LLC as operator and The Reed Group, LLC as the local landowner/developer. Investment is described only as 'multi-billions of dollars' by the developer, so no figure is recorded. Distinct from the three tracked Aligned ORD buildings in Northlake and Elk Grove Village.",
+    "energy": {
+      "source": "grid",
+      "utility": "ComEd",
+      "notes": "Developer-funded substation and switchyard connecting directly to the regional transmission system, described as at no cost to ratepayers."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.0415,
+      "notes": "Air-cooled heat rejection with a sealed closed-loop water circuit; projected water use roughly 41,500 gallons per day."
+    },
+    "landAcres": 305,
+    "jobs": {
+      "construction": 2000,
+      "permanent": 300,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Local coverage reports pushback over proximity to residential zones, Coal City Middle School and the Early Childhood Center; a Change.org petition opposes the campus. Aligned held a public open house on 5 August 2026.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "aligned-conesville-oh",
     "name": "Aligned Data Centers – Conesville Industrial Park",
     "operator": "Aligned Data Centers",
@@ -2034,6 +2108,8 @@
       "lon": -87.9175163,
       "city": "Northlake",
       "county": "Cook",
+      "street": "505 Northwest Ave",
+      "postalCode": "60164",
       "state": "IL",
       "precision": "exact"
     },
@@ -2096,9 +2172,16 @@
         "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-09-02",
         "kind": "press"
+      },
+      {
+        "url": "https://aligneddc.com/chicago-data-centers/",
+        "label": "Sustainable, AI-Ready Data Centers in Chicago, IL — ORD-01, ORD-02 and ORD-03 addresses, campus sizes and cooling design",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-09-12",
     "notes": "Confirmed via Aligned Chicago page and DatacenterDynamics ('Aligned completes first Chicago data center'); 505 Northwest Ave, Northlake, IL; 48MW, operational. AI/HPC (likely): Northlake ORD-01 hyperscale, adaptive AI/HPC cooling platform.",
     "energy": {
       "source": "grid",
@@ -2109,6 +2192,7 @@
       "coolingType": "hybrid",
       "notes": "Delta Cube (Delta³) adiabatic, air-cooled modular cooling system (evaporative-assisted air)."
     },
+    "landAcres": 18.5,
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -2143,9 +2227,16 @@
         "publisher": "Aligned Data Centers",
         "retrievedAt": "2026-08-17",
         "kind": "other"
+      },
+      {
+        "url": "https://aligneddc.com/chicago-data-centers/",
+        "label": "Sustainable, AI-Ready Data Centers in Chicago, IL — ORD-02 (501 Northwest Ave, Northlake) specifications",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-09-12",
     "notes": "Second Aligned building on the Northlake campus, adjacent to ORD-01 at 505 Northwest Ave. Tier III design, 100% uptime SLA. Operator page does not publish MW.",
     "water": {
       "coolingType": "closed_loop",
@@ -2185,15 +2276,43 @@
         "publisher": "Aligned Data Centers",
         "retrievedAt": "2026-08-17",
         "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — Aligned Data Centers (EGV) PropCo, LLC, Elk Grove Village (2023 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://aligneddc.com/chicago-data-centers/",
+        "label": "Sustainable, AI-Ready Data Centers in Chicago, IL — ORD-03 (50 NW Point Blvd, Elk Grove Village) specifications",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-09-12",
     "notes": "Aligned's third Chicago campus and its first in Elk Grove Village (36 acres, Tier III). STATUS IS PROVISIONAL: the operator page lists the campus without a delivery or in-service date, so under_construction is an inference — confirm against a delivery announcement before publishing.",
     "water": {
       "coolingType": "closed_loop",
       "notes": "Aligned's ORD campuses use Delta3 air cooling arrays on a closed-loop chilled water system with near-zero WUE."
     },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 17812500,
+        "jurisdiction": "Illinois",
+        "year": "2023",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 285000000,
     "landAcres": 36,
+    "jobs": {
+      "permanent": 21,
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -2698,7 +2817,7 @@
     "id": "aligned-shippingport-pa",
     "name": "Shippingport Industrial Park",
     "operator": "Aligned Data Centers",
-    "status": "permitted",
+    "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 40.63,
@@ -2707,6 +2826,9 @@
       "county": "Beaver",
       "state": "PA",
       "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2000
     },
     "statusHistory": [
       {
@@ -2720,6 +2842,12 @@
         "date": "2026-08-17",
         "note": "Conditional use largely granted. On January 28, 2026 Shippingport Borough Council approved most of Aligned's conditional use permit and related modifications for the campus ('Project Phoenix') — three data center buildings of 672,924, 638,000 and 638,000 sq ft plus a 147,000 sq ft warehouse/office building, on a 593-acre site of which roughly 400 acres would be graded, alongside a 70-acre natural gas power generation pad. Requested variances covered building height (45 ft to ~65 ft), clearing up to 75% of woodland, 24-hour construction noise, and a 65 dB noise limit measured at the nearest residence. PARTIAL: two noise-related items remain to be voted on, and mass grading, NPDES, stormwater and emergency management permits are filed but not yet issued.",
         "sourceIndex": 2
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-09-12",
+        "note": "Aligned Data Centers broke ground on the 2 GW 'Project Phoenix' campus in Shippingport on September 10, 2026, moving the site from permitted to under construction.",
+        "sourceIndex": 7
       }
     ],
     "sources": [
@@ -2764,16 +2892,46 @@
         "publisher": "TribLive (community op-ed by Elan Justice Pavlinich, Environmental Health Project)",
         "retrievedAt": "2026-08-19",
         "kind": "other"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/09/10/3359602/0/en/aligned-data-centers-and-shippingport-community-mark-revitalization-of-legacy-energy-site-with-groundbreaking-of-2-gw-project-phoenix-campus.html",
+        "label": "Aligned Data Centers and Shippingport Community Mark Revitalization of Legacy Energy Site with Groundbreaking of 2 GW \"Project Phoenix\" Campus",
+        "publisher": "Aligned Data Centers (GlobeNewswire)",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/09/10/3359602/0/en/aligned-data-centers-and-shippingport-community-mark-revitalization-of-legacy-energy-site-with-groundbreaking-of-2-gw-project-phoenix-campus.html",
+        "label": "Aligned Data Centers and Shippingport Community Mark Revitalization of Legacy Energy Site with Groundbreaking of 2 GW \"Project Phoenix\" Campus",
+        "publisher": "Aligned Data Centers (GlobeNewswire)",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://marcellusdrilling.com/2026/09/aligned-breaks-ground-on-10b-2-gw-data-center-in-beaver-county/",
+        "label": "Aligned Breaks Ground on $10B, 2 GW Data Center in Beaver County",
+        "publisher": "Marcellus Drilling News",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-09-12",
     "notes": "Two natural-gas-powered buildings in a 660-acre industrial park; construction potentially starting later 2026.",
     "energy": {
       "source": "on_site_gas",
       "notes": "Site plan for 'Project Phoenix' includes a 70-acre natural gas power generation pad serving the campus; roughly 400 of the 593 acres would be graded. A campus MW figure was not disclosed in this source."
     },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Aligned states zero-water operational cooling via a closed-loop recycling system; the campus is pursuing Green Globes certification."
+    },
     "investmentUsd": 10000000000,
     "landAcres": 660,
+    "jobs": {
+      "construction": 3000,
+      "permanent": 640,
+      "sourceIndex": 6
+    },
     "community": {
       "status": "mixed",
       "notes": "Local officials and Pennsylvania Gov. Josh Shapiro have criticized the pace and secrecy of the Shippingport-area data center buildout, and community groups have organized against nearby proposed data centers citing noise and environmental concerns; a nonprofit (Environmental Health Project) op-ed warned of health and financial burdens. A Shippingport resident and the Beaver County Corporation for Economic Development president voiced support/openness to the project (with caveats about energy costs), and reporting noted comparatively little organized public opposition to date.",
@@ -2991,7 +3149,7 @@
     "id": "allegheny-dc-springdale-cheswick-pa",
     "name": "Springdale Data Center (former Cheswick Generating Station)",
     "operator": "Allegheny DC Property Co., LLC",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "confirmed",
     "location": {
       "lat": 40.5425,
@@ -3011,6 +3169,12 @@
         "date": "2025-09",
         "note": "Conditional use application presented to Springdale planning commission; recommendation delayed to gather studies and resident comment.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-12",
+        "note": "Springdale Borough Council voted 5-2 on December 16, 2025 to grant Allegheny DC Property Company a conditional use permit for the data center at the former Cheswick Generating Station, moving it past 'proposed'.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -3034,9 +3198,16 @@
         "publisher": "BlackRidge Research",
         "retrievedAt": "2026-08-17",
         "kind": "other"
+      },
+      {
+        "url": "https://www.alleghenyfront.org/springdale-allegheny-county-data-center-approval/",
+        "label": "Springdale data center gets green light",
+        "publisher": "The Allegheny Front",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-09-12",
     "notes": "A 565,000 sq ft data center building plus a 200,000 sq ft cooling and facility-management building on the 47-acre former Cheswick Generating Station site in Springdale Borough. Allegheny DC Property Co., LLC is owned by investment firm Davidson Kempner. The proposal states the facility would be used largely for AI development.",
     "landAcres": 47,
     "community": {
@@ -8645,6 +8816,7 @@
       "lon": -76.1452,
       "city": "Salem Township",
       "county": "Luzerne",
+      "street": "1125 Electron Avenue",
       "state": "PA",
       "precision": "exact"
     },
@@ -8709,9 +8881,23 @@
         "publisher": "The Center Square (via Black Chronicle)",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://measuredai.substack.com/p/amazon-susquehanna-data-center-campus",
+        "label": "Amazon's Susquehanna Data Center Campus: A 1.92 GW Nuclear Bet in Pennsylvania",
+        "publisher": "Measured AI",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.timesleader.com/news/1752841/developers-tout-impacts-of-3-data-center-campuses-zoning-meeting-set-for-wednesday-on-4-3-glenbrook-group-project",
+        "label": "Developers tout impacts of 3 data center campuses; Zoning meeting set for Wednesday on 4-3 Glenbrook Group project",
+        "publisher": "Times Leader",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-09-12",
     "notes": "Adjacent to the 2.5GW Susquehanna Steam Electric Station. FERC blocked a proposed colocation agreement in April 2025, leading to the PPA structure instead. TeraWulf operates a separate Nautilus cryptomining facility (Nautilus) on the same property not included in this record.",
     "energy": {
       "source": "nuclear",
@@ -8740,6 +8926,10 @@
     ],
     "investmentUsd": 650000000,
     "landAcres": 1200,
+    "jobs": {
+      "permanent": 1000,
+      "sourceIndex": 6
+    },
     "community": {
       "status": "mixed",
       "notes": "Local sentiment is divided per Salem Township officials. The township signed nondisclosure agreements with data-center developers, drawing transparency criticism from a state legislator, and there has been significant residential turnover near the site (homes bought out). No organized litigation specific to this campus was identified.",
@@ -9409,6 +9599,62 @@
     "notes": "AWS's first Ohio campus outside the central-Ohio cluster, in Jefferson Township near I-71 & US-35 (adjacent to the Honda/LG EV battery plant). ~590 acres; $5B AWS investment (part of a larger multi-billion Fayette-area / statewide AWS commitment through 2030), announced Dec 2024 by AWS VP Roger Wehner; 30-year 100% CRA tax exemption approved; construction slated to begin early 2025. Capacity MW is NOT disclosed — AWS explicitly withheld building count/MW citing security — so capacityMw is omitted (a third-party ~1,800 MW estimate is unverified and not recorded). Coordinates approximate (Jeffersonville / township-level).",
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "aws-kline-township-schuylkill-pa",
+    "name": "AWS Kline Township Data Center Campus",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.8699957,
+      "lon": -76.0215859,
+      "city": "Kline Township",
+      "county": "Schuylkill",
+      "street": "Lofty Road",
+      "postalCode": "18245",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-17",
+        "note": "Preliminary and final land development plans remain under township review; Amazon requested an extension of the decision deadline to September 30, 2026 to address township professionals' comments.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://shensentinel.com/news/kline-supervisors-grant-extension-for-consideration-of-amazon-data-center-plans/",
+        "label": "Kline supervisors grant extension for consideration of Amazon data center plans",
+        "publisher": "The Shenandoah Sentinel",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://coalregioncanary.com/2026/06/21/amazon-web-services-reps-discuss-planned-data-center-project-schuylkill-county-kline-township/",
+        "label": "Amazon Rep: Schuylkill County Data Centers Only Need Cooling Water 4% of the Year",
+        "publisher": "Coal Region Canary",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Nine two-story data center buildings plus an administration building, a water building and a security building, totalling about 2.1-2.2 million sq ft, off Lofty Road near Route 309 and Interstate 81, across from van Hoekelen Greenhouses. Buildings stated as 'probably less than 80 feet' tall; first building completion expected 2028. Lofty Road is to be realigned near Route 309 with a new traffic light at Amazon's cost. Stated wages for the ~500 permanent roles are $80,000-$100,000, with about 90% requiring an associate degree or certificate.",
+    "energy": {
+      "utility": "PPL"
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "reportedMgd": 0.115,
+      "notes": "AWS representatives told the Kline Township planning commission the campus would cool on ambient air about 96% of the year and use water the remaining 4%. Stated permitted draw is 15,000 gallons per day domestic plus up to 100,000 gallons per day of non-contact cooling water, 115,000 gpd in total."
+    },
+    "jobs": {
+      "permanent": 500,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "aws-lake-anna-technology-campus-louisa-va",
@@ -13963,6 +14209,46 @@
     "aiClassification": "likely"
   },
   {
+    "id": "brennan-barrington-hills-il",
+    "name": "Brennan Barrington Hills Data Center",
+    "operator": "Brennan Investment Group",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.1049652,
+      "lon": -88.2408645,
+      "city": "Barrington Hills",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-09-12",
+        "note": "Brennan Investment Group withdrew the proposal on 28 January 2026, cancelling a 2 February plan commission presentation 'based on initial feedback'.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.shawlocal.com/northwest-herald/news/2026/01/29/2-billion-data-center-proposal-in-barrington-hills-withdrawn/",
+        "label": "$2 billion data center proposal in Barrington Hills withdrawn",
+        "publisher": "Shaw Local / Northwest Herald",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Proposed on land south of Penny Road and west of Pond Gate Drive in Barrington Hills. Acreage, building count and power capacity were never disclosed. The $2 billion figure is the investment stated for this site, not a company-wide total. Coordinates are the mapped Penny Road corridor and are approximate; the county is omitted because Barrington Hills spans four counties and the source does not identify which one contains the parcel.",
+    "investmentUsd": 2000000000,
+    "community": {
+      "status": "opposed",
+      "notes": "A Change.org petition gathered 1,303 signatures citing air pollution, water quality and tax concerns; the village said the matter was closed with no further discussion anticipated.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "bridgeport-data-center-campus-coweta-ga",
     "name": "Bridgeport Data Center Campus",
     "operator": "Undisclosed developer (Bridgeport Industrial Park)",
@@ -15053,6 +15339,44 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "cde-acquisitions-project-atlas-south-whitehall-lehigh-pa",
+    "name": "Project Atlas Data Center Campus (South Whitehall Township)",
+    "operator": "CDE Acquisitions, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.6400848,
+      "lon": -75.5443246,
+      "city": "South Whitehall Township",
+      "county": "Lehigh",
+      "street": "2747 North Cedar Crest Boulevard",
+      "postalCode": "18104",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-11",
+        "note": "Revised plan scheduled for a South Whitehall Township public hearing on June 11, 2026, after the developer cut the program from six buildings to three data center buildings plus support structures.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wfmz.com/news/area/lehighvalley/lehigh-county/allentown-area/plans-change-for-proposed-south-whitehall-data-center-here-s-what-s-on-the-table/article_5016b739-5f4e-497a-adfc-9c9811b8f980.html",
+        "label": "Plans change for proposed South Whitehall data center; here's what's on the table now",
+        "publisher": "WFMZ-TV 69 News",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Three parcels at 2493, 2807 and 2747 N. Cedar Crest Boulevard totalling 410 acres across from Parkland High School, owned by Jeras Corporation, with CDE Acquisitions, LLC of Atlanta as applicant. The revised program is three data center buildings of 492,285 sq ft each plus a 40,680 sq ft administration building and a 39,167 sq ft warehouse, 1,556,702 sq ft in total - down from six buildings over 5 million sq ft. Parking drops from 966 to 399 spaces and weekday trips from 3,865 to 1,154. Includes an on-site electrical substation, emergency generators and a private septic field, with a water main extension requested along Ritter Road. Three barns are to be restored and dedicated to the township; a brick house and farmstead would be removed. Stated construction start November 2029, completion April 2030.",
+    "landAcres": 410,
+    "facilityType": "data_center"
   },
   {
     "id": "centeris-south-hill-puyallup-wa",
@@ -18694,6 +19018,70 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cloverleaf-troy-il",
+    "name": "Cloverleaf Troy Data Center Campus",
+    "operator": "Cloverleaf Infrastructure",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.719,
+      "lon": -89.913,
+      "city": "Troy",
+      "county": "Madison",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-12",
+        "note": "No special-use permit application had been filed as of February 2026; site moved from farmland north of the interstate to farmland off Formosa Road after church-proximity objections.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.troyil.us/DocumentCenter/View/2026/20260107-Troy-Informative-Slides---No-Site",
+        "label": "Proposed Data Center Informational Meeting — Cloverleaf Infrastructure (City of Troy presentation)",
+        "publisher": "City of Troy, Illinois",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/troy-residents-grill-city-developer-110000674.html",
+        "label": "Troy residents grill city, developer about data centers. What did they learn?",
+        "publisher": "Belleville News-Democrat (via Yahoo News)",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Four data center buildings plus substation, office and warehouse proposed on farmland off Formosa Road near Collinsville Road. Cloverleaf is a powered-land developer; no end tenant has been named. A permanent-jobs estimate of 100-200 was given as a range and is not recorded as a single value. Coordinates are derived from the mapped road intersection and are approximate.",
+    "energy": {
+      "source": "grid",
+      "utility": "Ameren Illinois",
+      "notes": "Developer has requested 500 MW from Ameren, which is studying whether the grid can support the load; Cloverleaf states the data center will pay for all required generation and transmission upgrades."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.032,
+      "notes": "Closed-loop recycled-water cooling with an initial fill of about 1 million gallons and roughly 32,000 gallons per day ongoing. Cloverleaf's municipal presentation states no groundwater wells would be used, domestic water only."
+    },
+    "jobs": {
+      "construction": 1000,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "About 400 residents attended a 4.5-hour City of Troy meeting in February 2026; petitions circulated against the project while union representatives spoke in support.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cloverleaf-troy-mo",
     "name": "Cloverleaf Troy Campus",
     "operator": "Cloverleaf Infrastructure",
@@ -20221,6 +20609,64 @@
       "notes": "Compass describes 'advanced hybrid cooling that uses no water during operations'. Under the project's tie-breaker — a recirculating cooling circuit is closed_loop even where heat is finally rejected to air — this is recorded as closed_loop, not 'air'; the operator's own word 'hybrid' refers to the equipment, not to seasonal wet/dry switching."
     },
     "landAcres": 225,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "compass-hoffman-estates-il",
+    "name": "Compass Datacenters Hoffman Estates Campus",
+    "operator": "Compass Datacenters",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.0770709,
+      "lon": -88.2175155,
+      "city": "Hoffman Estates",
+      "county": "Cook",
+      "street": "3333 Beverly Road",
+      "postalCode": "60179",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-06-13",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-12",
+        "note": "Former seven-building Sears headquarters demolished; construction underway on the first of five planned hyperscale buildings.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.compassdatacenters.com/news/compass-kicks-off-development-of-its-first-hyperscale-campus-in-illinois/",
+        "label": "Compass Kicks Off Development of Its First Hyperscale Campus in Illinois",
+        "publisher": "Compass Datacenters",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/hyperscale/article/55089460/suburban-chicago-welcomes-compass-datacenters-major-hyperscale-development-on-legacy-sears-hq-site",
+        "label": "Suburban Chicago Welcomes Compass Datacenters' Major Hyperscale Development on Legacy Sears HQ Site",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Five hyperscale buildings, each over 250,000 sq ft, planned on the roughly 200-acre former Sears headquarters campus. Compass closed on the property in September 2023 for a reported $194 million; the $10 billion figure is the projected total local investment at full build-out, not a single building's cost.",
+    "energy": {
+      "source": "grid",
+      "utility": "ComEd"
+    },
+    "water": {
+      "notes": "Compass describes 'advanced hybrid cooling that uses no water during operations'; the source does not identify the heat-rejection method precisely enough to classify."
+    },
+    "investmentUsd": 10000000000,
+    "landAcres": 200,
+    "jobs": {
+      "construction": 1000,
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -22632,9 +23078,16 @@
         "publisher": "REBusinessOnline",
         "retrievedAt": "2026-08-17",
         "kind": "press"
+      },
+      {
+        "url": "https://rebusinessonline.com/coreweave-to-invest-6b-for-ai-based-data-center-in-lancaster-pennsylvania/",
+        "label": "CoreWeave to Invest $6B for AI-Based Data Center in Lancaster, Pennsylvania",
+        "publisher": "REBusinessOnline",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-09-12",
     "energy": {
       "source": "grid",
       "utility": "PPL Electric",
@@ -25332,6 +25785,59 @@
       "notes": "At a March 2024 Vint Hill Conservancy community meeting devoted largely to the CyrusOne campus, critics said the plans showed 45-foot buildings on elevated ground that would be obtrusive to residents roughly a third of a mile away, while conservancy president Chris Zumot publicly backed the project, telling the Fauquier Times the group \"feels for CyrusOne\" over county restrictions affecting it.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cyrusone-yorkville-chi11-il",
+    "name": "CyrusOne Yorkville Technology Campus (CHI-11)",
+    "operator": "CyrusOne",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.679,
+      "lon": -88.48,
+      "city": "Yorkville",
+      "county": "Kendall",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-12",
+        "note": "Approved by the City of Yorkville in 2024; water and sanitary improvements began in 2025 and site work in early 2026, with first building completion expected late 2027.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yorkville.il.us/940/C1-Yorkville-Cyrus-One-CHI-11-Data-Cente",
+        "label": "C1 Yorkville – Cyrus One CHI-11 Data Center Campus (Major PUD Amendment & Preliminary PUD Plan), case PZC 2026-03",
+        "publisher": "City of Yorkville, Illinois",
+        "retrievedAt": "2026-09-12",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/yorkville-technology-campus",
+        "label": "Yorkville Technology Campus",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Applicant C1 Yorkville, LLC, with Yorkville Nexus LLC, on roughly 228 acres east of Eldamain Road, north of the BNSF railroad and Faxon Road, west of Beecher Road. A 2026 major PUD amendment reduced the plan from nine two-story buildings (about 2,451,200 sq ft) to eight one-story buildings (about 2,163,800 sq ft maximum) and cut height from 70 ft to about 50 ft 10 in. Distinct from the tracked CyrusOne Aurora, Wood Dale and Sangamon County campuses. Coordinates are the centre of the described parcel boundaries and are approximate.",
+    "energy": {
+      "source": "grid",
+      "utility": "ComEd",
+      "notes": "Dedicated transmission infrastructure designed for the facility and funded by CyrusOne."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "CyrusOne describes a closed-loop air-cooled system that continuously circulates water within a sealed circuit inside the building, with minimal ongoing discharge in normal operation."
+    },
+    "landAcres": 228,
     "facilityType": "data_center"
   },
   {
@@ -30014,6 +30520,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "diversified-longhorn-pad-a-horton-township-elk-pa",
+    "name": "Longhorn Pad A Wellhead Bitcoin Mine",
+    "operator": "Diversified Production LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.2816445,
+      "lon": -78.7281388,
+      "city": "Horton Township",
+      "county": "Elk",
+      "postalCode": "15823",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-10",
+        "note": "Mines were powered up in October 2022 before permits were in hand; DEP issued a notice of violation for breaching state air pollution and noise law, and approved the permit in December 2022.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://capitalandmain.com/in-rural-pennsylvania-crypto-mining-offers-a-lifeline-for-dying-gas-wells",
+        "label": "In Rural Pennsylvania, Crypto Mining Offers a Lifeline for Dying Gas Wells",
+        "publisher": "Capital & Main",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Diversified Production LLC (a Diversified Energy PLC subsidiary) acquired the wells in November 2020, applied to mine bitcoin in June 2022 and powered up that October before the permit was issued. A sibling site, Longhorn Pad C, drew its own violation in March 2023 with permits approved in May 2023. Horton Township adopted a bitcoin mining ordinance requiring a fully enclosed building, under 50 decibels at the property line, and local permitting. As of the June 2024 source, DEP said full-time operation had not begun because permit-required sound mitigation had not been installed - so 'operational' here reflects an operating but intermittently run site, not full-rate production. No engine count, miner count or MW rating is published. Coordinate is a township-centroid geocode.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural gas from two on-pad fracking wells is funnelled directly into engines that power the mining computers."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "stranded_gas"
+    }
+  },
+  {
     "id": "dmg-blockchain-boardman-or",
     "name": "DMG Blockchain Boardman Facility",
     "operator": "DMG Blockchain Solutions",
@@ -32909,6 +33458,41 @@
     ],
     "lastUpdated": "2026-08-24",
     "notes": "Proposed converting a vacant, ~62,000 sq ft former injection-molding building into a 33MW data center. Elk River City Council unanimously rejected the zoning amendment 2026-07-06; the developer withdrew its application shortly after.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "elysian-partners-fairview-crossroads-fairview-township-york-pa",
+    "name": "Fairview Crossroads Data Center",
+    "operator": "Elysian Partners",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.1692628,
+      "lon": -76.8516507,
+      "city": "Fairview Township",
+      "county": "York",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-27",
+        "note": "Recorded as a proposed project by Boca Raton-based Elysian Partners; the tracker notes no public permit records have been linked to the development yet.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://poweredbywho.com/projects/1efe16d9-b280-4143-b0d2-d3977c162ad8",
+        "label": "Fairview Crossroads Data Center (Elysian Partners) - Fairview Township, PA",
+        "publisher": "PoweredByWho",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Developer is Elysian Partners, a Boca Raton, Florida commercial and industrial real estate firm. The source records no capacity figure and no geocoded parcel; the coordinate here is a township-centroid geocode. Reported acreage (80), square footage (750,000) and investment ($500 million) figures appeared only in search summaries and paywalled or 403-blocked pages this session and are deliberately not asserted as fields.",
     "facilityType": "data_center"
   },
   {
@@ -38673,6 +39257,55 @@
     "facilityType": "data_center"
   },
   {
+    "id": "fort-cherry-power-station-robinson-township-washington-pa",
+    "name": "Fort Cherry Power Station",
+    "operator": "Liberty Energy, Imperial Land Corporation and Range Resources - Appalachia (joint venture)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.35888,
+      "lon": -80.26809,
+      "city": "Robinson Township",
+      "county": "Washington",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-04-08",
+        "note": "Liberty Energy, Imperial Land Corporation and Range Resources - Appalachia announced a strategic alliance to develop a dedicated power generation facility in the Fort Cherry Development District.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://libertyenergy.com/liberty-imperial-land-corp-range-resources-energy-development-pennsylvania/",
+        "label": "Liberty Energy Inc., Imperial Land Corporation, and Range Resources to Support Strategic Energy Development in Washington County, Pennsylvania",
+        "publisher": "Liberty Energy",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Fort_Cherry_power_station",
+        "label": "Fort Cherry power station",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Dedicated generation for data centers, industrial facilities and other high-energy users in the Fort Cherry Development District industrial park. Global Energy Monitor records ownership as Range Resources - Appalachia, Liberty Energy and Imperial Land Corp at one third each, 1,000 MW gas turbine, pre-construction, with Pennsylvania SITES program funding received in October 2025. Coordinate is Global Energy Monitor's approximate point for the site.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Liberty Energy is to supply modular 25 MW gas-fired power blocks co-located with customers inside Imperial Land Corporation's Fort Cherry Development District, with on-site generation capacity able to scale to 1 GW or more as tenant demand grows. Fuelled by Marcellus natural gas."
+    }
+  },
+  {
     "id": "fort-spunky-pacifico-energy-hood-county-tx",
     "name": "Fort Spunky",
     "operator": "Pacifico Energy",
@@ -38964,6 +39597,52 @@
       "offtaker": "Meta Platforms (via PNM power purchase agreement)",
       "notes": "100 MW solar plus 100 MW battery storage (LG Energy Solution cells); EPC by SOLV Energy; sited on Ute Mountain Ute tribal land near the demolished San Juan Generating Station, connecting to PNM's grid near the decommissioned coal plant. Expected completion summer 2027. Sibling project on the same land parcel, Foxtail Flats (170 MW solar / 80 MW battery), serves a separate PPA with Los Alamos County (LANL/Sandia/Kirtland) and is not tracked here as it is not a data-center offtake."
     }
+  },
+  {
+    "id": "four-three-glenbrook-salem-township-luzerne-pa",
+    "name": "4-3 Glenbrook Group Salem Township Data Center Campus (Salem 3)",
+    "operator": "4-3 Glenbrook Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1078249,
+      "lon": -76.1791155,
+      "city": "Salem Township",
+      "county": "Luzerne",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 3500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-22",
+        "note": "Salem Township Planning Commission recommended the zoning expansion; the Board of Supervisors decision was pending as of August 22, 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.timesleader.com/news/1745226/1-2-billion-land-deal-for-second-data-center-project-in-salem-township-announced-by-4-3-group",
+        "label": "$1.2 billion land deal for second data center project in Salem Township announced by 4-3 Group",
+        "publisher": "Times Leader",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.timesleader.com/news/1752841/developers-tout-impacts-of-3-data-center-campuses-zoning-meeting-set-for-wednesday-on-4-3-glenbrook-group-project",
+        "label": "Developers tout impacts of 3 data center campuses; Zoning meeting set for Wednesday on 4-3 Glenbrook Group project",
+        "publisher": "Times Leader",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Referred to locally as 'Salem 3'. A 39-building campus (subject to change) assembled from more than 4,000 acres across roughly 194-200 landowners, with at least 80% of the assembled land intended to remain undeveloped green space. Stated potential power demand is roughly 3.5 to 4 gigawatts; capacityMw.planned records the lower bound of that published range. The group describes it as 'an energy and infrastructure development, not simply a data center development', with plans for an accompanying generation facility. Land-purchase figures are reported variously as a $1.2 billion deal and $1.4 billion in land purchases; because these are land prices rather than project investment, no investmentUsd is recorded. Coordinate is a township-centroid geocode shared with the separate QTS 'Salem 2' record.",
+    "landAcres": 4000,
+    "facilityType": "data_center"
   },
   {
     "id": "freestone-energy-center-fairfield-tx",
@@ -46303,9 +46982,23 @@
         "publisher": "Pennsylvania Department of Environmental Protection",
         "retrievedAt": "2026-09-01",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.homercityredevelopment.com/project-overview",
+        "label": "Project Overview - Homer City Redevelopment",
+        "publisher": "Homer City Redevelopment",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Homer_City_Generating_Station",
+        "label": "Homer City Generating Station",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-09-12",
     "notes": "Dedicated on-site power generation for the co-located Homer City Energy Campus data centers (tracked separately as homer-city-energy-campus-pa). Redevelopment of Pennsylvania's largest former coal plant into up to 4.5 GW of natural-gas generation via seven GE Vernova turbines; PA DEP air-quality plan approval issued 2025-11-20, first power targeted 2027. Same-site companion to the data-center record.",
     "energy": {
       "source": "on_site_gas",
@@ -46450,9 +47143,16 @@
         "publisher": "The Allegheny Front",
         "retrievedAt": "2026-08-16",
         "kind": "press"
+      },
+      {
+        "url": "https://www.homercityredevelopment.com/project-overview",
+        "label": "Project Overview - Homer City Redevelopment",
+        "publisher": "Homer City Redevelopment",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-09-12",
     "notes": "EPC contractor: Kiewit.",
     "energy": {
       "source": "on_site_gas",
@@ -46474,6 +47174,11 @@
     ],
     "investmentUsd": 10000000000,
     "landAcres": 3200,
+    "jobs": {
+      "construction": 10000,
+      "permanent": 1000,
+      "sourceIndex": 10
+    },
     "community": {
       "status": "mixed",
       "notes": "A strong local-revival narrative (an economic anchor after the 2023 coal-plant closure, backed by state officials) meets organized environmental opposition — the air permit drew 500+ comments and Clean Air Council opposition citing ~17M tons CO2e/year, potentially Pennsylvania's largest single pollution source. Developers project ~10,000 construction and ~1,000 permanent jobs.",
@@ -47550,6 +48255,48 @@
     "aiClassification": "likely"
   },
   {
+    "id": "inch-eastern-land-south-annville-lebanon-pa",
+    "name": "South Annville Township Data Center Campus (withdrawn)",
+    "operator": "Inch & Co. / Eastern Land & Resources Co. (1235 Martina Drive Owner)",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.290713,
+      "lon": -76.5192514,
+      "city": "South Annville Township",
+      "county": "Lebanon",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-05-13",
+        "note": "Counsel for the petitioner wrote to the Board of Supervisors that it had 'decided to no longer pursue the development of a data center in South Annville Township.'",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lebtown.com/2026/05/13/south-annville-twp-data-center-project-scrapped-after-grass-roots-opposition/",
+        "label": "South Annville Twp. data center project scrapped after grass-roots opposition",
+        "publisher": "LebTown",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "A $1.7 billion proposal for five buildings of about 150,000 sq ft each across roughly 99 acres on four parcels near Mount Pleasant Road and U.S. Route 422, west of Annville Borough, by York-based Inch & Co. in a joint venture with Eastern Land & Resources Co. The application sought rezoning of about 58 acres to I-1 industrial. Withdrawn May 13, 2026. Coordinate is a township-centroid geocode.",
+    "investmentUsd": 1700000000,
+    "landAcres": 99,
+    "community": {
+      "status": "opposed",
+      "notes": "A community organizer gathered more than 500 petition signatures, described as roughly one third of the township's adult population. The planning commission voted unanimously on May 5, 2026 against recommending the rezoning.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "infobunker-boone-ia",
     "name": "InfoBunker Underground Data Center",
     "operator": "InfoBunker, LLC",
@@ -48122,6 +48869,65 @@
       "notes": "Southwest Power Pool (SPP) grid; 1.6 GW allocation."
     },
     "landAcres": 2000,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
+    "id": "iron-city-wells-karthaus-township-clearfield-pa",
+    "name": "Iron City Wells A.I. Data Center",
+    "operator": "Iron City Wells, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1420054,
+      "lon": -78.1040324,
+      "city": "Karthaus Township",
+      "county": "Clearfield",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-01-31",
+        "note": "DEP issued an air quality plan approval for 15 natural gas-fired generators to power the data center; notice published in the January 31, 2026 PA Bulletin.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://paenvironmentdaily.blogspot.com/2026/01/dep-issues-air-quality-permit-for-15.html",
+        "label": "DEP Issues Air Quality Permit For 15 Natural Gas Generators To Power Iron City Wells, LLC Data Center In Karthaus Twp., Clearfield County",
+        "publisher": "PA Environment Digest",
+        "retrievedAt": "2026-09-12",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Application documents are held at DEP's Northcentral Regional Office, 208 West Third Street, Suite 101, Williamsport. Coordinate is a township-centroid geocode; the permit notice does not give a site address. No megawatt rating is stated for the generators, so capacity is not recorded.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "DEP air quality plan approval covers 15 natural gas-fired electric generators serving the data center."
+    },
+    "emissions": {
+      "permittedTpy": {
+        "nox": 19.93,
+        "co": 29.52,
+        "pm25": 3.03,
+        "pm10": 3.03,
+        "so2": 0.2,
+        "voc": 20.43,
+        "co2e": 51759,
+        "hapsTotal": 0.92
+      },
+      "basis": "facility_wide",
+      "unitsCovered": "15 natural gas-fired electric generators",
+      "permitType": "state_construction",
+      "issuingAgency": "Pennsylvania Department of Environmental Protection",
+      "issuedDate": "2026-01-31",
+      "notes": "Limits as printed in the January 31, 2026 PA Bulletin notice (page 671). The 3.03 tpy particulate figure is stated for particulate matter under 10 and under 2.5 microns together, and the sulfur limit is printed as 'sulfur oxides' rather than SO2. No averaging period is stated in the notice.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -53916,10 +54722,26 @@
         "publisher": "WTVO/WQRF MyStateline",
         "retrievedAt": "2026-08-03",
         "kind": "press"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — Goldframe LLC, DeKalb (2021 MOU, $800,000,000 commitment, 50 new jobs, underserved area)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-03",
+    "lastUpdated": "2026-09-12",
     "notes": "~2.3 million sq ft hyperscale data center; broke ground 2020, brought online November 2023.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 50000000,
+        "jurisdiction": "Illinois",
+        "year": "2021",
+        "sourceIndex": 3
+      }
+    ],
     "investmentUsd": 1000000000,
     "jobs": {
       "construction": 1200,
@@ -57375,12 +58197,32 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-08-03",
         "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — Microsoft Corporation, Elk Grove Village (2020 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-03",
+    "lastUpdated": "2026-09-12",
     "notes": "37-acre site in the Elk Grove Technology Park near O'Hare; up to three buildings totaling ~400,000 sq ft. First building valued at $123M (land purchased for $52M in Jan 2020).",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 15750000,
+        "jurisdiction": "Illinois",
+        "year": "2020",
+        "sourceIndex": 2
+      }
+    ],
     "investmentUsd": 123000000,
     "landAcres": 37,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -58318,6 +59160,75 @@
     "facilityType": "data_center"
   },
   {
+    "id": "microsoft-hoffman-estates-il",
+    "name": "Microsoft Hoffman Estates Data Center",
+    "operator": "Microsoft",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.0769632,
+      "lon": -88.1338875,
+      "city": "Hoffman Estates",
+      "county": "Cook",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2021-03",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-12",
+        "note": "Phase 1 building (250,000 sq ft) complete and in service; a second 150,000 sq ft building and an on-site substation are under construction.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — Microsoft Corporation, Hoffman Estates (2021 MOU, $275,000,000 commitment, 20 new jobs)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://baxtel.com/data-center/microsoft-hoffman-estates-1",
+        "label": "Microsoft Hoffman Estates 1 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://rejournals.com/the-data-center-revolution-microsoft-project-in-hoffman-estates-just-one-of-many-in-illinois/",
+        "label": "The data center revolution: Microsoft project in Hoffman Estates just one of many in Illinois",
+        "publisher": "REJournals",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "53-acre campus on the north side of Lakewood Boulevard near Barrington Road, approved by the Hoffman Estates Village Board in May 2021. Distinct from Microsoft's Elk Grove Village and Northlake sites. Investment figure is the capital-investment commitment recorded in the state MOU; a trade-press account attributes a higher figure to the campus, so the state number is used here as the documented commitment.",
+    "energy": {
+      "source": "grid",
+      "notes": "Campus plans include a dedicated on-site electrical substation, approved separately from the building site plans."
+    },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 17187500,
+        "jurisdiction": "Illinois",
+        "year": "2021",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 275000000,
+    "landAcres": 53,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "microsoft-irving-tx",
     "name": "Microsoft Irving Data Centers",
     "operator": "Microsoft",
@@ -58923,6 +59834,69 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "Microsoft's FIRST Iowa data center campus (planned since 2008, construction from 2010, expanded 2011/2013) - a two-building campus at/near 8855 Grand Ave, distinct from the already-tracked 'Ginger West' campus (11100 Booneville Rd). Address sourced from a secondary aggregator search summary (not independently fetched this session) but independently geocode-verified as a real West Des Moines / Dallas County address via OSM Nominatim. Annual property tax ~$1.6M and $10M public infrastructure investment per WDM Chamber page (not campus construction cost).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-northlake-il",
+    "name": "Microsoft Northlake Data Center",
+    "operator": "Microsoft",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.9231062,
+      "lon": -87.9182633,
+      "city": "Northlake",
+      "county": "Cook",
+      "street": "601 Northwest Avenue",
+      "postalCode": "60164",
+      "state": "IL",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-12",
+        "note": "Two-phase facility totalling roughly 707,000 sq ft, in service since 2009 and subsequently expanded under a 2021 state MOU.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — Microsoft Corporation, Northlake (2021 MOU, $388,134,927 commitment, 20 new jobs)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://baxtel.com/data-center/microsoft-chicago-northlake",
+        "label": "Microsoft Chicago Northlake Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Microsoft's Azure North Central US site at 601 Northwest Avenue, Northlake. The 158 MW figure is reported utility supply capacity from three on-site substations, not an IT load, so it is recorded under energy notes rather than capacityMw. The Aligned ORD-01/ORD-02 buildings already tracked sit on the same street but are separate operators and parcels.",
+    "energy": {
+      "source": "grid",
+      "notes": "Three 66 MVA on-site electrical substations reported to provide a total of 158 MW of utility power."
+    },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 24258433,
+        "jurisdiction": "Illinois",
+        "year": "2021",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 388134927,
+    "landAcres": 15,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -59620,6 +60594,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "midwest-power-investors-rochelle-il",
+    "name": "Steward Drive Data Center (Rochelle)",
+    "operator": "Midwest Power Investors LLC (LFF Industrial)",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.8979132,
+      "lon": -89.0482469,
+      "city": "Rochelle",
+      "county": "Ogle",
+      "street": "Steward Drive",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-09-12",
+        "note": "Rochelle City Council rejected the development agreement 0-7 on 27 April 2026 after tabling it in March.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.rockfordnewsfirst.com/2026/04/28/rochelle-city-council-unanimously-rejects-data-center-proposal/",
+        "label": "Rochelle City Council unanimously rejects data center proposal",
+        "publisher": "Rockford News First",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Proposed along Steward Drive in Rochelle, which operates its own municipal electric utility. The initial phase would have required at least 48 MW, with later phases expanding to about 150 MW; the recorded planned capacity is the full-build figure. The mayor cited projected Illinois capacity shortfalls from 2029.",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents raised concerns about environmental impact and utility bills during a roughly two-year review; the mayor asked the council to vote the development agreement down.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "milligan-1-wind-saline-ne",
     "name": "Milligan I Wind Project",
     "operator": "EDF Renewables",
@@ -60209,6 +61227,65 @@
       ],
       "notes": "Reported both as a 500 MW natural gas backup plant and as the initial self-supply source for the Monarch campus, alongside a battery energy storage system, before NV Energy grid supply phases in. Turbine count and permits are not yet sourced; state environmental permits remain outstanding."
     }
+  },
+  {
+    "id": "monarch-rock-air-rockford-il",
+    "name": "Rock Air Data Center Campus",
+    "operator": "Monarch Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.1514357,
+      "lon": -89.101077,
+      "city": "Rockford",
+      "street": "8685 Friday Road",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1400
+    },
+    "announcedDate": "2026-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-12",
+        "note": "State incentive agreement executed June 2026, before the program pause took effect on 1 July 2026; the City of Rockford was not a party to the agreement.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.rockfordnewsfirst.com/2026/07/01/incentive-deal-proposed-rockford-data-center-shows-possible-development-timeline/",
+        "label": "Incentive deal for proposed Rockford data center shows possible development timeline",
+        "publisher": "Rockford News First",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/states/illinois/",
+        "label": "Illinois Data Center Map — Monarch Rock Air Data Center Campus",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Phased 1,400 MW campus on roughly 1,300 acres south of Chicago–Rockford International Airport. The state agreement requires the facility in service by 11 March 2031, carbon neutrality within two years of operations starting, a minimum 20-year operating term and at least 100 employees (74 operations, 20 maintenance, 6 executive). The investment amount in the published agreement is redacted; the program's statutory floor is $250 million, so no investment figure is recorded here.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "jurisdiction": "Illinois",
+        "year": "2026",
+        "sourceIndex": 0
+      }
+    ],
+    "landAcres": 1300,
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "montana-property-group-high-falls-road-spalding-ga",
@@ -65077,6 +66154,70 @@
     "facilityType": "data_center"
   },
   {
+    "id": "oracle-elk-grove-village-il",
+    "name": "Oracle Elk Grove Village Data Center",
+    "operator": "Oracle",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0035588,
+      "lon": -88.0037711,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-12",
+        "note": "Oracle America, Inc. signed a 2025 Data Center Investment Program MOU for an Elk Grove Village project; no construction start has been publicly reported.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — Oracle America, Inc., Elk Grove Village (2025 MOU, $555,000,000 commitment, 20 new jobs)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://capitolnewsillinois.com/news/here-are-the-illinois-data-centers-on-track-for-more-than-650m-in-tax-credits/",
+        "label": "Here are the Illinois data centers on track for more than $650M in tax credits",
+        "publisher": "Capitol News Illinois",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://servercountry.org/data/projects/oracle-america-elk-grove-village-data-center-il/",
+        "label": "Oracle America — Elk Grove Village Data Center, Cook County",
+        "publisher": "Server Country",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "The state MOU is the only public record of this project; no street address, acreage or capacity has been disclosed. Coordinates are the Elk Grove Village municipal centroid, not a parcel. The largest single 2025 MOU commitment in the program.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 34687500,
+        "jurisdiction": "Illinois",
+        "year": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 555000000,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "oracle-hillsboro-or",
     "name": "Oracle Hillsboro Data Center",
     "operator": "Oracle",
@@ -65510,6 +66651,9 @@
       "state": "PA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 350
+    },
     "announcedDate": "2025-08-05",
     "statusHistory": [
       {
@@ -65553,10 +66697,25 @@
         "publisher": "Times News Online (via Yahoo Finance)",
         "retrievedAt": "2026-08-31",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wfmz.com/news/area/poconos-coal/carbon-county/public-meeting-to-be-held-thursday-on-data-center-proposal-in-carbon-county/article_246d8c60-4536-4460-a05c-b4f8b7fe86d8.html",
+        "label": "Public meeting to be held Thursday on data center proposal in Carbon County",
+        "publisher": "WFMZ-TV 69 News",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.tnonline.com/20260422/nesquehoning-data-center-plans-need-work/",
+        "label": "Nesquehoning data center plans need work",
+        "publisher": "Times News Online",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-12",
     "notes": "An HPC/AI data center campus in pre-construction design at the Panther Creek waste-coal power plant site in Nesquehoning, Carbon County, with T5 Data Centers providing pre-construction design, development-approval and construction guidance. This is a separate data_center record from the already-tracked Panther Creek plant / crypto-mining operation at the same site, following the same convention as the split Homer City generation and campus records. Trade reports of a 350 MW firm power contract by 2028 (scalable toward 500 MW+) and of a special exception permit from the Nesquehoning Planning Commission were not confirmed in the sources cited here, so capacityMw and a 'permitted' status are omitted.",
+    "landAcres": 103.95,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -68996,12 +70155,22 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.wvia.org/news/local/2026-02-18/residents-raise-questions-as-developer-describes-hazle-twp-data-center-plans-at-dep-hearing",
+        "label": "Residents raise questions as developer describes Hazle Twp. data center plans at DEP hearing",
+        "publisher": "WVIA",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-09-12",
     "notes": "Site: Humboldt North Industrial Park, Hazle Township, Luzerne County PA (within a larger ~3,000-acre industrial park); a few miles from Amazon's nuclear-adjacent data center campus (acquired from Talen Energy) - proximity only, AWS is NOT a confirmed tenant/operator for Project Hazelnut; NorthPoint's own project site names no end-tenant, describing this as a speculative build. Phased: Phase 1 (5 buildings) to begin Q4 2026, Phase 2 (3 buildings) Q1 2028, Phase 3 (7 buildings) Q2 2029. Developer projects ~900-1,300 construction jobs and ~900-950 permanent jobs ($50K-$158K salary range) - not yet delivered, so omitted from the jobs field; similarly $13.47M in projected county tax revenue over 20 years is a projection, not a subsidy. First surfaced publicly in connection with PA's Permit Fast Track Program (Executive Order 2024-04). NorthPoint's own site explicitly frames this as a general 'data center campus' supporting 'cloud platforms, digital payments, streaming, and healthcare systems' - no AI-specific language found; classified 'mixed_use' given hyperscale-tier campus scale makes AI workloads plausible even absent explicit branding.",
     "energy": {
       "utility": "PPL Electric"
+    },
+    "water": {
+      "notes": "At a February 2026 DEP hearing the developer described a maximum of 2.8 million gallons of treated wastewater from the Greater Hazleton Joint Sewer Authority, with domestic water supplied via CAN DO, which serves the Humboldt industrial parks; the campus's water usage was said to be able to reduce Black Creek by 5.5%. The source does not state an averaging period for the 2.8 million gallon figure, so no reportedMgd rate is recorded here."
     },
     "landAcres": 1283,
     "community": {
@@ -69444,6 +70613,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "prologis-allen-township-northampton-pa",
+    "name": "Prologis Allen Township Data Center (2500 Liberty Drive)",
+    "operator": "Prologis",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.7017264,
+      "lon": -75.4801064,
+      "city": "Allen Township",
+      "county": "Northampton",
+      "street": "2500 Liberty Drive",
+      "postalCode": "18067",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-03",
+        "note": "Allen Township supervisors unanimously granted conditional use approval to convert the existing warehouse into a data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.lehighvalleypublicmedia.org/northampton-county/allen-township-warehouse-could-become-lehigh-valleys-first-hyperscale-data-center",
+        "label": "Allen Township warehouse could become Lehigh Valley's first hyperscale data center",
+        "publisher": "Lehigh Valley Public Media",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Retrofit of an existing 1 million sq ft Prologis warehouse at 2500 Liberty Drive, about half a mile east of the Northampton borough line. The Lehigh Valley Planning Commission's comprehensive planning committee asked the developer for more information on operations, water and electricity use, cooling systems and emergency response plans before the full commission vote in April 2026. Coordinate is an OSM address geocode.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "prologis-mila-trenton-oh",
     "name": "Prologis Project Mila",
     "operator": "Prologis",
@@ -69624,6 +70830,50 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "prologis-project-steel-yorkville-il",
+    "name": "Project Steel Data Center Campus",
+    "operator": "Prologis",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.699,
+      "lon": -88.484,
+      "city": "Yorkville",
+      "county": "Kendall",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-06",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-12",
+        "note": "Yorkville City Council approved annexation, rezoning from R-1 to M-2, and the preliminary/final PUD on 24 March 2026, with one dissenting vote.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yorkville.il.us/905/Project-Steel-Data-Center-Campus-Annex-A",
+        "label": "Project Steel Data Center Campus (Annexation Agreement, Rezone, Preliminary PUD & PUD), case 2025-07",
+        "publisher": "City of Yorkville, Illinois",
+        "retrievedAt": "2026-09-12",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.yorkvilleherald.com/articles/yorkville-city-council-approves-project-steel-data-center-amid-resident-opposition",
+        "label": "Yorkville City Council Approves \"Project Steel\" Data Center Amid Resident Opposition",
+        "publisher": "Yorkville Herald",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Petitioner Prologis, L.P. as contract purchaser across 16 parcels totalling roughly 540 acres east of Eldamain Road between Corneils Road and Galena Road. Plans as revised in March 2026 call for 16 data center buildings totalling over 9 million sq ft plus three electrical substations, built in three phases over about 20 years, with first-phase construction anticipated in summer 2027. Power capacity has not been disclosed. Coordinates are the centre of the described parcel boundaries and are approximate.",
+    "landAcres": 540,
+    "facilityType": "data_center"
   },
   {
     "id": "prologis-rue-ferrari-san-jose-ca",
@@ -70971,9 +72221,16 @@
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
         "retrievedAt": "2026-08-31",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — Quality Technology Service (QTS), Chicago (2021 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-12",
     "notes": "30-acre campus; QTS describes a \"Two building facility at full build-out\" with \"Pre-leasing is now available for our second building\". The state report's estimated tax-benefit value is calculated at 6.25% of the $250,000,000 investment commitment, not money already received. Coordinates geocoded from the published street address.",
     "subsidies": [
       {
@@ -70984,6 +72241,11 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 250000000,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -72342,6 +73604,42 @@
       "utility": "SMUD"
     },
     "landAcres": 7,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "qts-salem-township-luzerne-pa",
+    "name": "QTS Salem Township Data Center Campus (Salem 2)",
+    "operator": "QTS Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1078249,
+      "lon": -76.1791155,
+      "city": "Salem Township",
+      "county": "Luzerne",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-22",
+        "note": "Zoning approval described as already progressing for a 12-building phased campus, with construction targeted for late 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.timesleader.com/news/1752841/developers-tout-impacts-of-3-data-center-campuses-zoning-meeting-set-for-wednesday-on-4-3-glenbrook-group-project",
+        "label": "Developers tout impacts of 3 data center campuses; Zoning meeting set for Wednesday on 4-3 Glenbrook Group project",
+        "publisher": "Times Leader",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Referred to locally as 'Salem 2'. QTS Data Centers, backed by Blackstone, with land aggregated by 4-3 Consulting LLC across about 1,700 acres bought from 96 landowners for more than $500 million. Coordinate is a township-centroid geocode; no parcel-level location has been published, and it therefore coincides with the coordinate used for the separate 4-3 Glenbrook 'Salem 3' record - the two are different land assemblages by different developers.",
+    "landAcres": 1700,
     "facilityType": "data_center"
   },
   {
@@ -79111,6 +80409,12 @@
         "publisher": "South Front Networks",
         "retrievedAt": "2026-09-04",
         "kind": "other"
+      },
+      {
+        "url": "https://southfront.io/",
+        "label": "Correction source",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
       }
     ],
     "lastUpdated": "2026-09-04",
@@ -79639,12 +80943,33 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — STACK Infrastructure, Elk Grove Village (2020 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-09-12",
     "notes": "Confirmed via operator page: 40MW, Elk Grove Village, one of two Chicago-area campuses.",
     "energy": {
       "utility": "ComEd"
+    },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 15625000,
+        "jurisdiction": "Illinois",
+        "year": "2020",
+        "sourceIndex": 3
+      }
+    ],
+    "investmentUsd": 250000000,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 3
     },
     "facilityType": "data_center"
   },
@@ -82005,10 +83330,31 @@
         "publisher": "Stream Data Centers",
         "retrievedAt": "2026-08-17",
         "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — SDC CHI I, LLC, Elk Grove Village (2021 MOU, underserved area)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-09-12",
     "notes": "155,189 sq ft facility with 31 MW of utility power; fully leased. Expanded in 2024 by 1.10 acres.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 15625000,
+        "jurisdiction": "Illinois",
+        "year": "2021",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 250000000,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -83937,12 +85283,33 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — T5@Chicago II, LLC, Elk Grove Village (2020 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-12",
     "notes": "T5 Chicago II at 200 Innovation Drive, Elk Grove Village, IL 60007 (commissioned by Forsythe 2014, acquired by T5 in 2016, 17.5MW). Confirmed via baxtel and Inflect colo directories; T5's own /locations/ page structure loaded but is client-side rendered so facility list could not be extracted directly from it. Capacity removed 2026-08-08: the 17.5 MW figure rested solely on a Baxtel listing, and other aggregators give a conflicting ~30 MW for the same address. OPERATOR ALSO UNVERIFIED: Data Center Knowledge reports Chicago among the T5 assets folded into STACK Infrastructure in Jan 2019, so “T5 Data Centers” may be stale here — but no source confirms whether THIS building (200 Innovation Drive, acquired by T5 from Forsythe in 2016) was among them, so it is left unchanged rather than guessed.",
     "energy": {
       "utility": "ComEd"
+    },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 15625000,
+        "jurisdiction": "Illinois",
+        "year": "2020",
+        "sourceIndex": 3
+      }
+    ],
+    "investmentUsd": 250000000,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 3
     },
     "facilityType": "data_center"
   },
@@ -83987,9 +85354,16 @@
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
         "retrievedAt": "2026-08-31",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — T5@Chicago III, LP, Northlake (2024 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-12",
     "notes": "Third T5 site in the Chicago market, distinct from the tracked T5 Chicago II (Elk Grove Village) and T5 Chicago IV (Grayslake). Subsidy value is the state's estimated tax benefit on a $252,000,000 investment commitment. Coordinates geocoded from the published street address.",
     "subsidies": [
       {
@@ -84000,6 +85374,11 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 252000000,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -84077,15 +85456,50 @@
         "publisher": "Village of Grayslake",
         "retrievedAt": "2026-08-03",
         "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Data Center Investment Program 2025 Annual Report — T5@Chicago IV, LP, Grayslake (2025 MOU)",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-12",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.villageofgrayslake.com/DocumentCenter/View/15282/T5-FAQ-sheet",
+        "label": "Approved Village of Grayslake Data Center Campus FAQs (updated 18 August 2026)",
+        "publisher": "Village of Grayslake, Illinois",
+        "retrievedAt": "2026-09-12",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.govtech.com/artificial-intelligence/data-center-could-be-largest-lake-county-ill-development",
+        "label": "Data Center Could Be Largest Lake County, Ill., Development",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-03",
+    "lastUpdated": "2026-09-12",
     "notes": "CHI IV in Grayslake, Lake County (~40 mi north of Chicago): up to 1.2 GW IT capacity with 1.6 GW secured ComEd power; envisions 20 × 60 MW buildings, Phase 1 (3 × 60 MW) targeted Q4 2027. Recorded as proposed (announced; no groundbreaking confirmed). Distinct from T5's Palmetto, GA campus. Coordinates are the Grayslake area centroid.",
     "energy": {
       "source": "grid",
       "utility": "ComEd",
       "notes": "1.6 GW of secured ComEd utility power via an on-site substation."
     },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.05,
+      "notes": "Village FAQ: closed-loop water cooling, with campus-wide average daily use of about 50,000 gallons for ordinary domestic purposes (roughly 2,500-3,500 gallons per building per day). Supply is Lake Michigan water via the Central Lake County Joint Action Water Agency, so no private wells are affected, and there is no groundwater discharge."
+    },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program",
+        "amountUsd": 15625000,
+        "jurisdiction": "Illinois",
+        "year": "2025",
+        "sourceIndex": 6
+      }
+    ],
     "landAcres": 400,
     "community": {
       "status": "contested",
@@ -88195,7 +89609,7 @@
     "id": "tract-morris-technology-park-il",
     "name": "Morris Technology Park",
     "operator": "Tract",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 41.36,
@@ -88214,6 +89628,12 @@
         "date": "2026",
         "note": "",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-12",
+        "note": "Tract's own 15 January 2026 announcement of its 343-acre Morris acquisition states the Morris Technology Park site is 'fully zoned and entitled' and that it has an executed Transmission Security Agreement with ComEd supporting 1 GW at full build-out. That places the project past announcement and into approved-but-not-yet-built. Initial energization is targeted for June 2028, with a full 1 GW load ramp by 2032.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -88237,9 +89657,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.tract.com/news/tract-enters-greater-chicago-market-with-the-acquisition-of-343-acres-to-be-developed-as-a-1gw-data-center-campus-known-as-the-morris-technology-park/",
+        "label": "Tract Enters Greater Chicago Market with the Acquisition of 343 Acres to be Developed as a 1GW Data Center Campus Known as the Morris Technology Park",
+        "publisher": "Tract",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-12",
     "notes": "343-acre master-planned data center campus in Morris (Grundy County), IL, developed by Tract as powered land/shell infrastructure. Fully zoned and entitled, with an executed Transmission Security Agreement (TSA) with Commonwealth Edison (ComEd) to support 1 GW (1,000 MW) of planned power at full build-out across ~2.9M sq ft.",
     "energy": {
       "utility": "ComEd"
@@ -92219,6 +93646,46 @@
     "aiClassification": "likely"
   },
   {
+    "id": "western-hospitality-partners-pekin-il",
+    "name": "Lutticken Farm Data Center (Pekin)",
+    "operator": "Western Hospitality Partners",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.5847113,
+      "lon": -89.58595,
+      "city": "Pekin",
+      "county": "Tazewell",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-09-12",
+        "note": "Mayor Mary Burress announced on 9 March 2026 that the city would not move forward; the developer formally terminated the purchase agreement in a 5 May 2026 letter.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nprillinois.org/illinois/2026-03-09/data-center-wont-be-built-in-pekin",
+        "label": "Data center won't be built in Pekin",
+        "publisher": "NPR Illinois",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Proposed on roughly one third of the city-owned 1,000-acre Lutticken Farm property north of Lutticken Lake. Acreage is not recorded because the source gives only a fraction of the whole property; no capacity or investment figure was disclosed. Coordinates are the mapped Lutticken Lake feature and are approximate.",
+    "community": {
+      "status": "opposed",
+      "notes": "The project drew vigorous opposition in Pekin and surrounding communities; the mayor's announcement that the city would not proceed drew applause from a packed council meeting, and a resident group, Protect Pekin, formed to oppose it.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "western-hospitality-partners-project-lincoln-oldham-county-ky",
     "name": "Project Lincoln: OC Data Center",
     "operator": "Western Hospitality Partners",
@@ -92436,6 +93903,52 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "white-rose-project-kilo-south-elgin-il",
+    "name": "Project Kilo Data Center (South Elgin)",
+    "operator": "White Rose Partners",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0007,
+      "lon": -88.2795,
+      "city": "South Elgin",
+      "county": "Kane",
+      "street": "33W304 Kenyon Road",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-12",
+        "note": "Concept plan pending before the South Elgin Planning and Zoning Commission; the August 2026 hearing date was left undecided after two cancellations.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.shawlocal.com/kane-county-chronicle/2026/07/28/data-center-developer-launches-website-to-allay-south-elgins-fears/",
+        "label": "Data center developer launches website to allay South Elgin's fears",
+        "publisher": "Shaw Local / Kane County Chronicle",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "A 200,000 sq ft building proposed on 20 acres at the northwest corner of Kenyon Road and Illinois Route 25, in unincorporated Elgin Township adjoining South Elgin. Managing partner Jeff Eigenbrood; the land is owned by a former Kane County Board member. No power capacity has been disclosed. Coordinates are derived from the mapped extent of Kenyon Road and are approximate.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer describes a closed-loop system requiring a one-time fill of less than half an Olympic pool, with ongoing operational water use projected below that of two average single-family homes."
+    },
+    "landAcres": 20,
+    "community": {
+      "status": "opposed",
+      "notes": "An online petition against the project had 8,347 signatures as of 28 July 2026; the developer launched an informational website in response, characterising the objections as misinformation.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "whitefiber-nc1-madison-nc",
