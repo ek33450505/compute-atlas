@@ -538,6 +538,21 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "aligned-coal-city-il": {
+    "nearestWater": {
+      "name": "Mazon River",
+      "kind": "river",
+      "distanceMi": 2.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "aligned-conesville-oh": {
     "nearestWater": {
       "name": "Morgan Run",
@@ -2770,6 +2785,25 @@
       "rock": "Carbonate-rock"
     }
   },
+  "aws-kline-township-schuylkill-pa": {
+    "nearestWater": {
+      "name": "Lofty Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "aws-lake-anna-technology-campus-louisa-va": {
     "nearestWater": {
       "name": "Sedges Creek",
@@ -4199,6 +4233,25 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "brennan-barrington-hills-il": {
+    "nearestWater": {
+      "name": "Galvins Lake",
+      "kind": "lake",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "bridgeport-data-center-campus-coweta-ga": {
     "nearestWater": {
       "name": "Little White Oak Creek",
@@ -4563,6 +4616,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "cde-acquisitions-project-atlas-south-whitehall-lehigh-pa": {
+    "nearestWater": {
+      "name": "Jordan Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "centeris-south-hill-puyallup-wa": {
@@ -5829,6 +5901,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "cloverleaf-troy-il": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "cloverleaf-troy-mo": {
     "nearestWater": {
       "name": "Trojan Lake (historical)",
@@ -6351,6 +6438,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "compass-hoffman-estates-il": {
+    "nearestWater": {
+      "name": "Beverly Lake",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "compass-lauderdale-meridian-ms": {
@@ -7891,6 +7997,25 @@
     },
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "cyrusone-yorkville-chi11-il": {
+    "nearestWater": {
+      "name": "Rob Roy Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
     }
   },
@@ -9705,6 +9830,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "diversified-longhorn-pad-a-horton-township-elk-pa": {
+    "nearestWater": {
+      "name": "Mead Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "dmg-blockchain-boardman-or": {
     "nearestWater": {
       "name": "Lake Umatilla",
@@ -10748,6 +10892,25 @@
     },
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "elysian-partners-fairview-crossroads-fairview-township-york-pa": {
+    "nearestWater": {
+      "name": "Fishing Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
     }
   },
@@ -12938,6 +13101,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "fort-cherry-power-station-robinson-township-washington-pa": {
+    "nearestWater": {
+      "name": "Robinson Run",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "fort-spunky-pacifico-energy-hood-county-tx": {
     "nearestWater": {
       "name": "Lake Granbury",
@@ -13065,6 +13247,25 @@
     "aquifer": {
       "name": "Colorado Plateaus Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "four-three-glenbrook-salem-township-luzerne-pa": {
+    "nearestWater": {
+      "name": "Walker Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "freestone-energy-center-fairfield-tx": {
@@ -15488,6 +15689,25 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "inch-eastern-land-south-annville-lebanon-pa": {
+    "nearestWater": {
+      "name": "Gingrich Run",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "infobunker-boone-ia": {
     "nearestWater": {
       "name": "Ioway Creek",
@@ -15622,6 +15842,25 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "iron-city-wells-karthaus-township-clearfield-pa": {
+    "nearestWater": {
+      "name": "Saltlick Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "iron-mountain-azp-1-az": {
@@ -18611,6 +18850,25 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "microsoft-hoffman-estates-il": {
+    "nearestWater": {
+      "name": "East Branch Poplar Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.3
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "microsoft-irving-tx": {
     "nearestWater": {
       "name": "Delaware Creek",
@@ -18757,6 +19015,29 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "microsoft-northlake-il": {
+    "nearestWater": {
+      "name": "Addison Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "microsoft-osmium-west-des-moines-ia": {
@@ -18971,6 +19252,25 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "midwest-power-investors-rochelle-il": {
+    "nearestWater": {
+      "name": "Lake Lida",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "milligan-1-wind-saline-ne": {
     "nearestWater": {
       "name": "South Fork Turkey Creek",
@@ -19174,6 +19474,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "monarch-rock-air-rockford-il": {
+    "nearestWater": {
+      "name": "Killbuck Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "montana-property-group-high-falls-road-spalding-ga": {
@@ -20758,6 +21077,29 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "oracle-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "oracle-hillsboro-or": {
     "nearestWater": {
       "name": "Rock Creek",
@@ -22129,6 +22471,25 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "prologis-allen-township-northampton-pa": {
+    "nearestWater": {
+      "name": "Dry Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "prologis-mila-trenton-oh": {
     "nearestWater": {
       "name": "Great Miami River",
@@ -22161,6 +22522,21 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "prologis-project-steel-yorkville-il": {
+    "nearestWater": {
+      "name": "Big Rock Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     }
   },
   "prologis-rue-ferrari-san-jose-ca": {
@@ -23055,6 +23431,25 @@
     "aquifer": {
       "name": "Central Valley Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "qts-salem-township-luzerne-pa": {
+    "nearestWater": {
+      "name": "Walker Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "qts-santa-clara-1-ca": {
@@ -29502,6 +29897,21 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "western-hospitality-partners-pekin-il": {
+    "nearestWater": {
+      "name": "Lutticken Lake",
+      "kind": "lake",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "western-hospitality-partners-project-lincoln-oldham-county-ky": {
     "nearestWater": {
       "name": "North Fork Currys Fork",
@@ -29572,6 +29982,25 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "white-rose-project-kilo-south-elgin-il": {
+    "nearestWater": {
+      "name": "Fox River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "whitefiber-nc1-madison-nc": {
