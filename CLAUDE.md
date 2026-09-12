@@ -82,9 +82,10 @@ gate. Still run `npm run typecheck && npm test` locally before opening a PR.
   BreadcrumbList/ItemList JSON-LD), with `show-more-list.tsx` for progressive
   reveal of long lists. Used by the by-status and by-metro lenses.
 - **Key routes:** `app/page.tsx` (home) · `app/map` · `app/table` · `app/explore/*`
-  + lens pages (`states`/`operators`/`power`/`opposition`/`status`/`metros`, incl.
-  `[state]`/`[operator]`/`[status]`/`[metro]` hubs) · `app/facilities/[slug]` ·
-  `app/contribute` · `app/activity` · `app/admin/*` · `app/api/*`.
+  + lens pages (`states`/`operators`/`power`/`opposition`/`status`/`metros`/`counties`,
+  incl. `[state]`/`[operator]`/`[status]`/`[metro]`/`[county]` hubs) ·
+  `app/facilities/[slug]` · `app/contribute` · `app/activity` · `app/admin/*` ·
+  `app/api/*`.
 
 ## Core invariant: no unreviewed write ever becomes a live facility
 
@@ -221,7 +222,7 @@ tool, not part of the deployed app.
   vercel-ignore`), never by local probes alone.
 - **Prod cache & bulk go-live:** The site has three independent cache tiers:
   - **Aggregate pages** (home/map/table/stats/explore) read `loadFacilities` with **1h ISR timer** (`revalidate: 3600`) and carry the `"facilities"` tag — they self-heal within the hour even if a tag bust is missed.
-  - **Scoped pages**: `/facilities/[slug]` (1064 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it floors at 86400s inherited from the root layout. The state/operator/metro hubs (50/363/27 routes) **do** still carry `"facilities"` on a 3600s timer, so they self-heal hourly as well as on a bust. There is no `metro:` tag — metro hubs are covered by `"facilities"` alone.
+  - **Scoped pages**: `/facilities/[slug]` (1,571 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it floors at 86400s inherited from the root layout. The state/operator/metro/county hubs (50/644/27/636 routes, the county hubs behind a `/counties` index) **do** still carry `"facilities"` on a 3600s timer, so they self-heal hourly as well as on a bust. There is no `metro:` or `county:` tag — metro and county hubs are covered by `"facilities"` alone.
   - **Search index** (global ⌘K palette via `loadFacilitiesForSearch` in root layout) is **24h untagged timer only** — no tag bust affects it; `db:sync --apply` cannot refresh it.
   
   All pages inherit the longest timer from any reader in their render tree (typically 24h from the root layout). The tag vocabulary (`facility:<id>`, `state:<XX>`, `operator:<slug>`, `power-generation`, `facilities`) is centralized in `lib/cache-tags.ts` and shared by `lib/facility-write.ts` and `POST /api/revalidate` so producer and validator can't drift apart. `db:sync --apply` and the approve-on-prod path bust affected tags for you. Only a **raw** Neon write (`db:seed --force`, an ad-hoc upsert) leaves them un-busted — then hit the admin-bearer `POST /api/revalidate` yourself with the affected tags (e.g. `{"tags":["facilities","state:CA"]}`); brand-new facility ids need no bust (cache-miss populates them).
@@ -251,7 +252,7 @@ tool, not part of the deployed app.
   entity, which `react/no-unescaped-entities` forbids for `'`. Guarded by
   `e2e/prose-spacing.spec.ts`, which scans raw SSR HTML (never a hydrated DOM —
   hydration removes the `<!-- -->` markers and the check would silently always
-  pass) across 9 routes including one per dynamic template.
+  pass) across 14 routes including one per dynamic template.
 - **Static-asset edge cache:** `/data/:path*` and `/basemap/:path*` carry `Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800` (edge cache up to 1 day plus 7 days stale reuse); `/fonts/:path*` are immutable. After `npm run build:mapdata`, regenerated geojson rides the edge cache for up to 24 hours — if a correction must go live immediately, purge Cloudflare by prefix.
 
 <!-- BEGIN:nextjs-agent-rules -->
