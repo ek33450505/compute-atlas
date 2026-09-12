@@ -77,9 +77,11 @@ these sites.
 **The API** — public, CORS-open, no authentication.
 
 ```console
-$ curl -s 'https://www.compute-atlas.com/api/stats'   # real response, 2026-09-01
-{"count":1331,"states":50,"operationalMw":27350.639999999996,
- "plannedMw":338247.5,"underConstructionMw":111329.2}
+$ curl -s 'https://www.compute-atlas.com/api/stats'   # real response, 2026-09-12
+{"count":1571,"states":50,"operationalMw":30152.7,
+ "plannedMw":387599,"underConstructionMw":119019.2,
+ "edition":{"version":"1.32.0","asOf":"2026-09-11T18:15:54.927Z",
+            "schemaVersion":1}}
 ```
 
 The figures above are a point-in-time snapshot; the live endpoint is the authority.
