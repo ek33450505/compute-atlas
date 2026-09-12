@@ -19,14 +19,22 @@ import { notifyStateSubscribersMonthly } from "@/lib/notify";
  * Merging this code is not making it. Do not flip either switch as a side effect of other work.
  *
  * To enable (maintainer, deliberately, all four steps IN ORDER):
- *   1. ⚠️ CLOSE THE IDEMPOTENCY GAP FIRST — this is a prerequisite, not a follow-up.
- *      Nothing here is idempotent: the window is derived from the clock, so N calls within
- *      the same month send the same digest N times to the same people, and there is no send
- *      ledger that would reveal it happened. Vercel Cron can retry, and the admin recovery
- *      path can be re-run by hand. The right control is a PERSISTED (since, until) run
- *      record that makes a repeat a no-op — NOT a rate limit, which only narrows the window
- *      in which a duplicate send is possible. Flipping step 3 before this is done means the
- *      first duplicate send is the notification that it was missing.
+ *   1. ✅ THE IDEMPOTENCY GAP IS CLOSED (D3). Every call now claims its `(since, until)`
+ *      window in `state_digest_runs` (`lib/state-digest-ledger.ts`) BEFORE building or
+ *      sending anything, so a repeat call for the same window is refused as a no-op —
+ *      `notifyStateSubscribersMonthly` returns `alreadyRun`, and this route surfaces it as
+ *      `alreadyRun: true` with a `message`, still a 200. Two things to know before relying on
+ *      this:
+ *        - `completedAt IS NULL` on a `state_digest_runs` row means a PRIOR run claimed that
+ *          window and never finished — crashed or timed out partway through sending. Do not
+ *          assume a month's mail went out just because its window shows as claimed; check
+ *          `completedAt` first (this route's response does, via `priorRunCompleted`).
+ *        - There is intentionally NO `?force=` parameter to bypass the guard. A deliberate
+ *          resend requires manually deleting the `state_digest_runs` row for that window in
+ *          Neon — the same raw-delete-only convention this repo already uses for retiring a
+ *          facility (see docs/maintainers.md). A one-parameter bypass of an idempotency guard
+ *          gets used reflexively eventually; requiring a slower, deliberate manual step is the
+ *          point, not an oversight.
  *   2. Add to `vercel.json`:
  *        "crons": [{ "path": "/api/cron/state-digest", "schedule": "0 9 1 * *" }]
  *   3. Set `CRON_SECRET` and `STATE_DIGEST_ENABLED=true` in the Vercel project env.
@@ -199,8 +207,42 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   // 4. Run it. `notifyStateSubscribersMonthly` never throws; `ok: false` means it caught one,
-  //    which is deliberately distinguishable from a quiet month (`ok: true, changes: 0`).
+  //    which is deliberately distinguishable from a quiet month (`ok: true, changes: 0`) and
+  //    from an already-run window (`ok: true, alreadyRun: {...}`, handled below).
   const result = await notifyStateSubscribersMonthly(since, until);
+
+  if (result.alreadyRun) {
+    // This window was already claimed by a prior call — see claimDigestWindow /
+    // stateDigestRunsTable's doc comment (lib/db/schema.ts). `completedAt` tells apart the
+    // two cases a repeat call can find, and they demand different human responses: a
+    // completed prior run means this window was already sent in full, nothing to do; a null
+    // `completedAt` means a prior call claimed this window and never finished — it may have
+    // crashed or timed out partway through sending, some recipients may be mailed and some
+    // not, and this call will NOT retry (see the ledger's doc comment for why that
+    // silent-under-delivery direction is deliberate). Collapsing the two into one message
+    // would hide exactly the case that needs a human to look.
+    const priorRunCompleted = result.alreadyRun.completedAt !== null;
+    const message = priorRunCompleted
+      ? "This window was already sent — no-op."
+      : "A prior run claimed this window but never completed (crashed or timed out). Some " +
+        "recipients may be unmailed, and this call will not retry. A deliberate resend " +
+        "requires manually deleting the state_digest_runs row for this window — there is no " +
+        "?force= override.";
+    return jsonResponse(
+      {
+        ok: true,
+        since: since.toISOString(),
+        until: until.toISOString(),
+        changes: 0,
+        groups: 0,
+        recipients: 0,
+        alreadyRun: true,
+        priorRunCompleted,
+        message,
+      },
+      { status: 200 }
+    );
+  }
 
   // COUNTS ONLY — never an email address, per lib/notify.ts's "never log addresses or tokens"
   // convention. This body is readable by anyone holding either bearer.

@@ -20,7 +20,7 @@ vi.mock("resend", () => ({
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
+import { facilityHistoryTable, stateDigestRunsTable, subscriptionsTable } from "@/lib/db/schema";
 import { generateToken, sendChangeNotification } from "@/lib/email";
 import { stateNameFromCode } from "@/lib/us-states";
 import facilitiesRaw from "@/data/facilities.json";
@@ -37,6 +37,7 @@ import {
   type RecipientFacilityChange,
   type RecipientChangeGroup,
 } from "@/lib/notify";
+import { claimDigestWindow } from "@/lib/state-digest-ledger";
 
 const facilitiesTyped = facilitiesRaw as unknown as Facility[];
 const facilityA = facilitiesTyped[0];
@@ -579,6 +580,7 @@ describe("double opt-in enforcement (status='confirmed' only)", () => {
 // ---------------------------------------------------------------------------
 describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
   const since = new Date("2026-01-01T00:00:00Z");
+  const until = new Date("2026-02-01T00:00:00Z");
   const withinPeriod = new Date("2026-01-15T00:00:00Z");
   const beforePeriod = new Date("2025-12-01T00:00:00Z");
 
@@ -606,7 +608,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
       status: "confirmed",
     });
 
-    await notifyStateSubscribersMonthly(since);
+    await notifyStateSubscribersMonthly(since, until);
 
     // Exactly one change for the one eligible recipient, but a state digest
     // NEVER uses the facility-watch single-record template — see the
@@ -633,7 +635,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
       status: "confirmed",
     });
 
-    await notifyStateSubscribersMonthly(since);
+    await notifyStateSubscribersMonthly(since, until);
 
     expect(sendChangeNotification).not.toHaveBeenCalled();
     expect(resendSendMock).toHaveBeenCalledTimes(1);
@@ -673,7 +675,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
       status: "confirmed",
     });
 
-    await notifyStateSubscribersMonthly(since);
+    await notifyStateSubscribersMonthly(since, until);
 
     expect(sendChangeNotification).not.toHaveBeenCalled();
     // NOT one merged email — two, one per subscription.
@@ -713,7 +715,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
       status: "confirmed",
     });
 
-    await notifyStateSubscribersMonthly(since);
+    await notifyStateSubscribersMonthly(since, until);
 
     expect(sendChangeNotification).not.toHaveBeenCalled();
     expect(resendSendMock).not.toHaveBeenCalled();
@@ -735,7 +737,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
     // Still never throws — and the swallowed failure is now VISIBLE: one change
     // was built, zero recipients were actually sent. Before the return value
     // existed, this was indistinguishable from a quiet month.
-    await expect(notifyStateSubscribersMonthly(since)).resolves.toEqual({
+    await expect(notifyStateSubscribersMonthly(since, until)).resolves.toEqual({
       ok: true,
       changes: 1,
       groups: 1,
@@ -747,7 +749,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
     await seedFacility(tdb.db, facilityTnA);
     await insertHistoryRow(facilityTnA.id, "update", withinPeriod);
 
-    await expect(notifyStateSubscribersMonthly(since)).resolves.toEqual({
+    await expect(notifyStateSubscribersMonthly(since, until)).resolves.toEqual({
       ok: true,
       changes: 0,
       groups: 0,
@@ -768,6 +770,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
 // ---------------------------------------------------------------------------
 describe("notifyStateSubscribersMonthly — state-digest copy correctness", () => {
   const since = new Date("2026-01-01T00:00:00Z");
+  const until = new Date("2026-02-01T00:00:00Z");
   const withinPeriod = new Date("2026-01-15T00:00:00Z");
 
   it("a single-change state digest does NOT use the facility-watch template or claim 'the record you're watching'", async () => {
@@ -779,7 +782,7 @@ describe("notifyStateSubscribersMonthly — state-digest copy correctness", () =
       status: "confirmed",
     });
 
-    await notifyStateSubscribersMonthly(since);
+    await notifyStateSubscribersMonthly(since, until);
 
     // Never the per-facility single-record template.
     expect(sendChangeNotification).not.toHaveBeenCalled();
@@ -808,7 +811,7 @@ describe("notifyStateSubscribersMonthly — state-digest copy correctness", () =
       status: "confirmed",
     });
 
-    await notifyStateSubscribersMonthly(since);
+    await notifyStateSubscribersMonthly(since, until);
 
     const args = resendSendMock.mock.calls[0][0];
     expect(args.html).toContain(tnStateName);
@@ -841,6 +844,145 @@ describe("notifyStateSubscribersMonthly — state-digest copy correctness", () =
     const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=/g) ?? []).length;
     expect(htmlUnsubCount).toBe(2); // one per facility, unlike the state digest's one-total
     expect(args.html).toContain("Unsubscribe from this one");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// notifyStateSubscribersMonthly — idempotency (D3, the send ledger). Every
+// call now claims its (since, until) window in state_digest_runs BEFORE
+// building or sending anything (lib/state-digest-ledger.ts) — see that
+// table's doc comment in lib/db/schema.ts for the full contract. The
+// claim/complete primitives themselves are covered directly in
+// lib/state-digest-ledger.test.ts; this block covers the WIRING — that
+// notifyStateSubscribersMonthly actually consults the ledger at the right
+// points and reports the right thing when it does.
+// ---------------------------------------------------------------------------
+describe("notifyStateSubscribersMonthly — idempotency (D3)", () => {
+  const since = new Date("2026-01-01T00:00:00Z");
+  const until = new Date("2026-02-01T00:00:00Z");
+  const withinPeriod = new Date("2026-01-15T00:00:00Z");
+
+  async function seedOneChangeOneSubscriber(): Promise<void> {
+    await seedFacility(tdb.db, facilityTnA);
+    await insertHistoryRow(facilityTnA.id, "update", withinPeriod);
+    await insertSubscription({
+      targetType: "state",
+      targetId: facilityTnA.location.state,
+      status: "confirmed",
+    });
+  }
+
+  it("sends once on the first call and refuses the second call for the SAME window without sending again", async () => {
+    await seedOneChangeOneSubscriber();
+
+    const first = await notifyStateSubscribersMonthly(since, until);
+    expect(first).toEqual({ ok: true, changes: 1, groups: 1, recipients: 1 });
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+
+    const second = await notifyStateSubscribersMonthly(since, until);
+
+    // The mock's call COUNT is the load-bearing assertion here — a
+    // return-value-only check could pass even if the second call sent a
+    // duplicate and merely mis-reported it.
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    expect(second.ok).toBe(true);
+    expect(second.changes).toBe(0);
+    expect(second.groups).toBe(0);
+    expect(second.recipients).toBe(0);
+    expect(second.alreadyRun).toBeDefined();
+    expect(second.alreadyRun?.completedAt).not.toBeNull();
+  });
+
+  it("sends for two DIFFERENT windows independently", async () => {
+    await seedOneChangeOneSubscriber();
+    const otherSince = new Date("2026-02-01T00:00:00Z");
+    const otherUntil = new Date("2026-03-01T00:00:00Z");
+    await insertHistoryRow(facilityTnA.id, "update", new Date("2026-02-15T00:00:00Z"));
+
+    const first = await notifyStateSubscribersMonthly(since, until);
+    const secondWindow = await notifyStateSubscribersMonthly(otherSince, otherUntil);
+
+    expect(first.recipients).toBe(1);
+    expect(secondWindow.recipients).toBe(1);
+    expect(secondWindow.alreadyRun).toBeUndefined();
+    expect(resendSendMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("a CRASHED prior run (claimed, never completed) is still refused, and the result distinguishes it from a completed prior run", async () => {
+    await claimDigestWindow(since, until); // simulates a run that claimed and then crashed
+    await seedOneChangeOneSubscriber();
+
+    const result = await notifyStateSubscribersMonthly(since, until);
+
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      ok: true,
+      changes: 0,
+      groups: 0,
+      recipients: 0,
+      alreadyRun: { startedAt: expect.any(Date), completedAt: null, recipients: null },
+    });
+  });
+
+  it("records completion counts on the ledger row after a real run", async () => {
+    await seedFacility(tdb.db, facilityTnA);
+    await seedFacility(tdb.db, facilityTnB);
+    await insertHistoryRow(facilityTnA.id, "update", withinPeriod);
+    await insertHistoryRow(facilityTnB.id, "create", withinPeriod);
+    await insertSubscription({
+      targetType: "state",
+      targetId: facilityTnA.location.state,
+      status: "confirmed",
+    });
+
+    const result = await notifyStateSubscribersMonthly(since, until);
+
+    const rows = await tdb.db.select().from(stateDigestRunsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].completedAt).not.toBeNull();
+    expect(rows[0].changes).toBe(result.changes);
+    expect(rows[0].groups).toBe(result.groups);
+    expect(rows[0].recipients).toBe(result.recipients);
+  });
+
+  it("leaves the window claimed with completedAt still null when the completion write throws after a successful claim and send", async () => {
+    await seedOneChangeOneSubscriber();
+    // getDb() is called 3 times on the success path — claimDigestWindow,
+    // buildStateDigestChanges, completeDigestWindow, in that order (sending
+    // itself never touches the DB — it goes through the mocked Resend
+    // client). Let the first two through to the real PGlite instance and
+    // make only the THIRD (the completion write) throw, so the claim and the
+    // send both genuinely happen and only the completion record is what
+    // fails.
+    vi.mocked(dbClient.getDb)
+      .mockReturnValueOnce(tdb.db as never)
+      .mockReturnValueOnce(tdb.db as never)
+      .mockImplementationOnce(() => {
+        throw new Error("ledger completion write failed");
+      });
+
+    const result = await notifyStateSubscribersMonthly(since, until);
+
+    expect(result).toEqual({ ok: false, changes: 0, groups: 0, recipients: 0 });
+    expect(resendSendMock).toHaveBeenCalledTimes(1); // the send DID happen before the throw
+
+    const rows = await tdb.db.select().from(stateDigestRunsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].completedAt).toBeNull(); // claimed, never marked complete
+  });
+
+  it("propagates a non-unique-violation claim error rather than treating it as a successful claim", async () => {
+    await seedOneChangeOneSubscriber();
+    vi.mocked(dbClient.getDb).mockImplementationOnce(() => {
+      throw new Error("connection refused");
+    });
+
+    const result = await notifyStateSubscribersMonthly(since, until);
+
+    expect(result).toEqual({ ok: false, changes: 0, groups: 0, recipients: 0 });
+    expect(resendSendMock).not.toHaveBeenCalled();
+    const rows = await tdb.db.select().from(stateDigestRunsTable);
+    expect(rows).toHaveLength(0); // never claimed — nothing to leak
   });
 });
 

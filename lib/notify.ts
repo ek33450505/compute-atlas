@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
 import { escapeHtml, sendChangeNotification } from "@/lib/email";
 import { siteConfig } from "@/lib/site";
+import { claimDigestWindow, completeDigestWindow } from "@/lib/state-digest-ledger";
 import { STATUS_META } from "@/lib/status";
 import { stateNameFromCode } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
@@ -412,8 +413,10 @@ export async function notifySubscribersOfChange(
 
     await sendGroupedChangeNotifications(groupChangesByRecipient(recipientChanges));
   } catch (err) {
-    // Never log email addresses or tokens here — only the error.
-    console.error("notifySubscribersOfChange failed", err);
+    // Log the error's NAME only — never the raw error object (a Drizzle/Neon
+    // query error embeds its bound params in .message) and never email
+    // addresses or tokens.
+    console.error("notifySubscribersOfChange failed:", err instanceof Error ? err.name : "unknown");
   }
 }
 
@@ -478,7 +481,10 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
 
     await sendGroupedChangeNotifications(groupChangesByRecipient(recipientChanges));
   } catch (err) {
-    console.error("notifySubscribersOfChanges failed", err);
+    // Log the error's NAME only — never the raw error object (a Drizzle/Neon
+    // query error embeds its bound params in .message) and never email
+    // addresses or tokens.
+    console.error("notifySubscribersOfChanges failed:", err instanceof Error ? err.name : "unknown");
   }
 }
 
@@ -645,13 +651,40 @@ export interface StateDigestResult {
    * changes: 3`.
    */
   recipients: number;
+  /**
+   * Present ONLY when this call refused to run because `(since, until)` was
+   * already claimed by a prior call — see `claimDigestWindow` in
+   * `lib/state-digest-ledger.ts` and the `stateDigestRunsTable` doc comment
+   * in `lib/db/schema.ts`. When present, `changes`/`groups`/`recipients` are
+   * always `0` and `ok` is always `true`: a correctly-refused duplicate is a
+   * SUCCESS, not an error — nothing was built or sent, which is the entire
+   * point of the ledger.
+   *
+   * `completedAt: null` distinguishes a CRASHED prior run (claimed, never
+   * finished — some recipients may or may not have been mailed, and this
+   * call will not find out or retry) from a cleanly completed one. The cron
+   * route surfaces this distinction in its response rather than collapsing
+   * both into one message, because they demand different human responses.
+   */
+  alreadyRun?: { startedAt: Date; completedAt: Date | null; recipients: number | null };
 }
 
 export async function notifyStateSubscribersMonthly(
   since: Date,
-  until?: Date
+  until: Date
 ): Promise<StateDigestResult> {
   try {
+    // Claim the window FIRST, before building or sending anything — see the
+    // stateDigestRunsTable doc comment (lib/db/schema.ts) for why the claim
+    // must precede the send. A refused claim returns immediately: no changes
+    // are built and no mail is sent, so a repeat call for a window that was
+    // already sent (or is currently claimed by another invocation) can never
+    // duplicate-mail anyone.
+    const claim = await claimDigestWindow(since, until);
+    if (!claim.claimed) {
+      return { ok: true, changes: 0, groups: 0, recipients: 0, alreadyRun: claim.priorRun };
+    }
+
     const changes = await buildStateDigestChanges(since, until);
     // Grouped by (email, state), NOT email alone — a recipient can hold
     // subscriptions to multiple states, and each must get its own,
@@ -664,6 +697,11 @@ export async function notifyStateSubscribersMonthly(
       (c) => `${c.email}::${c.origin === "state-digest" ? c.stateName : ""}`
     );
     const recipients = await sendGroupedChangeNotifications(groups);
+    await completeDigestWindow(since, until, {
+      changes: changes.length,
+      groups: groups.length,
+      recipients,
+    });
     return { ok: true, changes: changes.length, groups: groups.length, recipients };
   } catch (err) {
     // Log the error's NAME only — never addresses, tokens, or the error object
@@ -672,6 +710,13 @@ export async function notifyStateSubscribersMonthly(
     // matches `sendStateDigestEmail` above, and matters more here than it used
     // to: wiring app/api/cron/state-digest makes this catch reachable in
     // production for the first time.
+    //
+    // NOTE: a throw AFTER claimDigestWindow already succeeded — from the send
+    // path, or from completeDigestWindow itself — leaves this window claimed
+    // and marked incomplete by design. See the stateDigestRunsTable doc
+    // comment (lib/db/schema.ts) for why that silent-under-delivery direction
+    // is the accepted failure mode here, and why a deliberate resend requires
+    // deleting the row rather than a bypass flag.
     console.error(
       "notifyStateSubscribersMonthly failed:",
       err instanceof Error ? err.name : "unknown"

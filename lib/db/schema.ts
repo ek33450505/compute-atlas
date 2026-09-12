@@ -318,6 +318,64 @@ export const submissionNotifySendsTable = pgTable(
 export type SubmissionNotifySendRow = typeof submissionNotifySendsTable.$inferSelect;
 
 /**
+ * The send ledger that makes the monthly state digest idempotent (Theme D,
+ * D3). One row per `(since, until)` window `notifyStateSubscribersMonthly`
+ * has been asked to run — see `lib/state-digest-ledger.ts`'s
+ * `claimDigestWindow`/`completeDigestWindow`, the only functions that write
+ * this table.
+ *
+ * WHAT IT IS: A CLAIM, NOT A LOG. The row is inserted BEFORE any change is
+ * built or any mail is sent — `claimDigestWindow` INSERTs first, and it is
+ * the unique index below, not any application-level check, that makes a
+ * repeat call for the same window a no-op. A row written AFTER a successful
+ * send (a log) would not help at all: the exact failure this must survive is
+ * a run that dies mid-loop, which writes no completion record under a
+ * log-after design either — and whose retry would then re-mail everyone the
+ * dead run already reached.
+ *
+ * `completedAt IS NULL` on a row therefore means CLAIMED BUT NEVER FINISHED —
+ * a crashed or timed-out run, not a clean send. A human should look at a row
+ * in that state before assuming its month went out; `notifyStateSubscribersMonthly`
+ * and the cron route both surface this distinction rather than collapsing it
+ * into an ordinary "already sent."
+ *
+ * THE CHOSEN FAILURE DIRECTION, stated plainly: a crashed run's window stays
+ * claimed, so whichever recipients it had not yet reached when it died are
+ * never mailed by a later retry. That is deliberate — silent under-delivery
+ * to a handful of people is preferred over duplicate-mailing real people,
+ * which is the failure this table exists to prevent. Per-recipient delivery
+ * tracking is the real fix for the partial-failure case and is explicitly
+ * NOT what this table does.
+ *
+ * ⛔ NEVER add this table to `scripts/retention-prune.ts`. Pruning a row
+ * silently re-arms duplicate sends for whatever window ages out — the exact
+ * failure this table exists to prevent, reintroduced by its own cleanup. The
+ * rows carry no PII (two timestamps and three counts) and accrue about
+ * twelve a year, so there is nothing to reclaim by pruning them. This is the
+ * single most likely "helpful" future edit to get wrong.
+ *
+ * No `state` column, deliberately: the window is global, not per-state. One
+ * claimed run covers every state in a single pass; `sendGroupedChangeNotifications`
+ * fans out per (email, state) inside it, same as before this table existed.
+ */
+export const stateDigestRunsTable = pgTable(
+  "state_digest_runs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    since: timestamp("since", { withTimezone: true }).notNull(),
+    until: timestamp("until", { withTimezone: true }).notNull(),
+    startedAt: timestamp("started_at", { withTimezone: true }).defaultNow().notNull(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    changes: integer("changes"),
+    groups: integer("groups"),
+    recipients: integer("recipients"),
+  },
+  (table) => [uniqueIndex("state_digest_runs_window_idx").on(table.since, table.until)]
+);
+
+export type StateDigestRunRow = typeof stateDigestRunsTable.$inferSelect;
+
+/**
  * Unstructured research inbox for bare tips — a URL and an optional one-line
  * note, submitted anonymously by the public. A lead is NOT a facility and NOT
  * a submission: it carries no facility payload, and nothing in
