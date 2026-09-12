@@ -88,12 +88,15 @@ See `.env.example`.
 ⚠️ **The monthly state digest ships DISABLED, on purpose.** `app/api/cron/state-digest`
 is held off by two independent switches: there is no `crons` entry in `vercel.json`, and
 `STATE_DIGEST_ENABLED` is unset. The `state` subscription rows predate the feature and have
-never received mail from Compute Atlas, so enabling it resumes mail to a long-silent list.
-Before flipping either switch, read the enable checklist in that route file's header — its
-first step is a prerequisite, not a follow-up: **nothing in the send path is idempotent
-yet.** The window comes from the clock and there is no send ledger, so two calls in the same
-month send the same digest twice to the same people. The fix is a persisted `(since, until)`
-run record that makes a repeat a no-op; a rate limit is the wrong control.
+never received mail from Compute Atlas, so enabling it resumes mail to a long-silent list —
+that reactivation decision is Ed's and has not been made.
+
+The idempotency prerequisite is now closed (D3). Every call claims its `(since, until)`
+window in `state_digest_runs` before building or sending anything, so a repeat call for the
+same window is a no-op rather than a duplicate send. Read the enable checklist in the route
+file's header before flipping either switch — it explains `completedAt IS NULL` (a prior run
+that claimed a window and crashed before finishing) and why a deliberate resend requires
+deleting that window's row rather than a `?force=` parameter.
 
 ⚠️ **"Email me when reviewed" ships DISABLED, on purpose.** With
 `SUBMISSION_NOTIFY_ENABLED` unset, `POST /api/contribute` ignores a `notifyEmail` entirely —

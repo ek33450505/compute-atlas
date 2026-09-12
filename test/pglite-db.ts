@@ -45,7 +45,7 @@ export async function makeTestDb(): Promise<TestDbHandle> {
 
   const reset = async (): Promise<void> => {
     await client.exec(
-      `TRUNCATE TABLE "facilities", "submissions", "facility_history", "subscriptions", "subscribe_attempts", "submission_notify_requests", "submission_notify_sends", "leads", "contact_messages", "api_access_grants", "api_daily_usage", "discovery_heartbeat" RESTART IDENTITY CASCADE`
+      `TRUNCATE TABLE "facilities", "submissions", "facility_history", "subscriptions", "subscribe_attempts", "submission_notify_requests", "submission_notify_sends", "state_digest_runs", "leads", "contact_messages", "api_access_grants", "api_daily_usage", "discovery_heartbeat" RESTART IDENTITY CASCADE`
     );
   };
 

@@ -27,6 +27,7 @@ const ALL_TABLES = [
   "facilities",
   "facility_history",
   "leads",
+  "state_digest_runs",
   "submission_notify_requests",
   "submission_notify_sends",
   "submissions",

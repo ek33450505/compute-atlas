@@ -128,7 +128,7 @@ export default async function OperatorsIndexPage() {
                   </span>
                 </span>
                 <span className="font-mono tabular-nums text-sm text-muted-foreground shrink-0">
-                  {summary.count}
+                  {summary.count} {summary.count === 1 ? "site" : "sites"}
                 </span>
               </Link>
             </li>
@@ -163,7 +163,7 @@ export default async function OperatorsIndexPage() {
                     </span>
                   </span>
                   <span className="font-mono tabular-nums text-sm text-muted-foreground shrink-0">
-                    {summary.count}
+                    {summary.count} {summary.count === 1 ? "site" : "sites"}
                   </span>
                 </Link>
               </li>

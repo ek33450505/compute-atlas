@@ -131,4 +131,29 @@ describe("OperatorsIndexPage", () => {
     }
     expect(tileFor("3").parentElement?.children).toHaveLength(tiles.length);
   });
+
+  it("gives each disclosed-capacity link an accessible name with a pluralized unit, not a bare number", async () => {
+    const page = await OperatorsIndexPage();
+    render(page);
+
+    // A bare count (no "site(s)" suffix) would make the link's accessible
+    // name read as a naked integer to a screen reader — assert the unit is
+    // part of the *name*, not just present somewhere in the page text.
+    expect(screen.getByRole("link", { name: /Acme Corp.*8 sites/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Beta LLC.*4 sites/i })).toBeInTheDocument();
+  });
+
+  it("uses the singular unit for a single-site operator in the undisclosed-capacity list", async () => {
+    const page = await OperatorsIndexPage();
+    render(page);
+
+    // Silent Co has count: 1 and zero disclosed capacity, so it renders inside
+    // the collapsed <details> list — exercises the other call site and the
+    // count === 1 branch of the ternary. (?!s) rather than a leading \b: JSX
+    // drops the whitespace-only text node between sibling spans on separate
+    // source lines, so the computed name runs on as "...capacity1 site" with
+    // no boundary before the digit.
+    expect(screen.getByRole("link", { name: /Silent Co.*1 site(?!s)/i })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Silent Co.*1 sites/i })).not.toBeInTheDocument();
+  });
 });

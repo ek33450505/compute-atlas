@@ -433,3 +433,78 @@ describe("GET /api/cron/state-digest — failure reporting", () => {
     expect(resendSendMock).not.toHaveBeenCalled();
   });
 });
+
+describe("GET /api/cron/state-digest — idempotency (D3)", () => {
+  beforeEach(() => {
+    vi.stubEnv("STATE_DIGEST_ENABLED", "true");
+  });
+
+  it("returns 200 with a distinguishable body on a repeat call for the SAME default window, without sending again", async () => {
+    await seedConfirmedSubscriberWithInWindowChange();
+
+    const first = await GET(req(cronAuth));
+    expect(first.status).toBe(200);
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+
+    const second = await GET(req(cronAuth));
+    const secondBody = await second.json();
+
+    expect(second.status).toBe(200);
+    expect(resendSendMock).toHaveBeenCalledTimes(1); // no second send
+    expect(secondBody).toMatchObject({
+      ok: true,
+      changes: 0,
+      groups: 0,
+      recipients: 0,
+      alreadyRun: true,
+      priorRunCompleted: true,
+    });
+    expect(typeof secondBody.message).toBe("string");
+    expect(JSON.stringify(secondBody)).not.toContain("reader@example.com");
+  });
+
+  it("honours the SAME idempotency guard on the explicit ?since=&until= recovery path", async () => {
+    await seedConfirmedSubscriberWithInWindowChange();
+    const query = "?since=2026-08-01&until=2026-09-01";
+
+    const first = await GET(req(adminAuth, query));
+    expect(first.status).toBe(200);
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+
+    const second = await GET(req(adminAuth, query));
+    const secondBody = await second.json();
+
+    expect(second.status).toBe(200);
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    expect(secondBody).toMatchObject({ ok: true, alreadyRun: true, priorRunCompleted: true });
+  });
+
+  it("distinguishes a CRASHED prior run (claimed, never completed) from a completed one, in the response body", async () => {
+    // Make the completion write (the 3rd of 3 getDb() calls on the success
+    // path: claim, build, complete) throw, so the first call's send genuinely
+    // happens but the ledger row is left claimed with completedAt still
+    // null — the crashed-run shape a real timeout/kill would leave behind.
+    await seedConfirmedSubscriberWithInWindowChange();
+    vi.mocked(dbClient.getDb)
+      .mockReturnValueOnce(tdb.db as never) // claim
+      .mockReturnValueOnce(tdb.db as never) // build
+      .mockImplementationOnce(() => {
+        throw new Error("completion write failed");
+      }); // complete
+
+    const crashed = await GET(req(cronAuth));
+    expect(crashed.status).toBe(500); // the run itself reports ok:false
+    expect(resendSendMock).toHaveBeenCalledTimes(1); // the send DID happen before the throw
+
+    const second = await GET(req(cronAuth));
+    const secondBody = await second.json();
+
+    expect(second.status).toBe(200);
+    expect(resendSendMock).toHaveBeenCalledTimes(1); // never a second send
+    expect(secondBody).toMatchObject({ ok: true, alreadyRun: true, priorRunCompleted: false });
+    // The crashed-run message must not read like the completed-run message from the test
+    // above ("already sent") — it must say a prior run crashed and won't be retried.
+    expect(secondBody.message).toMatch(/never completed|crashed|timed out/i);
+    expect(secondBody.message).not.toMatch(/already sent/i);
+  });
+});
