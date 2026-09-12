@@ -30,7 +30,19 @@ describe("fieldKind", () => {
     expect(fieldKind("energyUtility")).toBe(KIND.TEXT);
   });
 
+  it("classifies aiClassification as enum, against a literal (not the default)", () => {
+    // The literal is deliberate, NOT a convention slip. `KIND.ENUM` is
+    // imported from the module under test, so asserting against it would
+    // compare the code with itself and could not disagree with it. The
+    // literal can. The companion assertion below pins KIND.ENUM's own value
+    // so the two cannot drift apart silently.
+    expect(fieldKind("aiClassification")).toBe("enum");
+    expect(KIND.ENUM).toBe("enum");
+  });
+
   it("defaults an undeclared field to numeric (preserves pre-existing behaviour)", () => {
+    // Distinguishes "declared as enum" (above) from "fell through the
+    // KIND.NUMERIC default" -- an undeclared field must still land here.
     expect(fieldKind("someUnknownField")).toBe(KIND.NUMERIC);
   });
 });
@@ -44,6 +56,12 @@ describe("enum vocabularies (must match lib/schema.ts)", () => {
     expect(FIELD_ENUM_VALUES.energySource).toEqual([
       "grid", "on_site_gas", "nuclear", "solar", "wind", "hydro", "mixed", "other",
     ]);
+  });
+
+  it("aiClassification matches aiClassificationEnum", () => {
+    // Literal, not derived from the import -- so this test can disagree with
+    // the code if the vocabulary drifts.
+    expect(FIELD_ENUM_VALUES.aiClassification).toEqual(["confirmed", "likely", "mixed_use"]);
   });
 });
 
@@ -67,6 +85,12 @@ describe("normalizeEnum", () => {
     // be scored as a miss instead of WRONG).
     expect(normalizeEnum("immersion")).toBe("immersion");
     expect(isInVocabulary(normalizeEnum("immersion"), FIELD_ENUM_VALUES.coolingType)).toBe(false);
+  });
+
+  it("normalises 'Mixed Use', 'mixed-use', and 'MIXED_USE' to the same token", () => {
+    expect(normalizeEnum("Mixed Use")).toBe("mixed_use");
+    expect(normalizeEnum("mixed-use")).toBe("mixed_use");
+    expect(normalizeEnum("MIXED_USE")).toBe("mixed_use");
   });
 });
 
@@ -98,6 +122,23 @@ describe("isInVocabulary", () => {
   it("a valid vocabulary member is recognised", () => {
     expect(isInVocabulary(normalizeEnum("closed_loop"), FIELD_ENUM_VALUES.coolingType)).toBe(true);
     expect(isInVocabulary(normalizeEnum("Closed-Loop"), FIELD_ENUM_VALUES.coolingType)).toBe(true);
+  });
+
+  it("accepts all three aiClassification members", () => {
+    expect(isInVocabulary(normalizeEnum("confirmed"), FIELD_ENUM_VALUES.aiClassification)).toBe(true);
+    expect(isInVocabulary(normalizeEnum("likely"), FIELD_ENUM_VALUES.aiClassification)).toBe(true);
+    expect(isInVocabulary(normalizeEnum("mixed_use"), FIELD_ENUM_VALUES.aiClassification)).toBe(true);
+  });
+
+  it("rejects values that look like an abstention token but are not aiClassification members", () => {
+    // The vocabulary has no "unknown"/"none"/"not AI" member -- see the
+    // comment above FIELD_ENUM_VALUES.aiClassification in fields.mjs. A
+    // reader used to coolingType's "unknown" member might expect one here;
+    // this test asserts there isn't one.
+    expect(isInVocabulary(normalizeEnum("unknown"), FIELD_ENUM_VALUES.aiClassification)).toBe(false);
+    expect(isInVocabulary(normalizeEnum("none"), FIELD_ENUM_VALUES.aiClassification)).toBe(false);
+    expect(isInVocabulary(normalizeEnum("not_ai"), FIELD_ENUM_VALUES.aiClassification)).toBe(false);
+    expect(isInVocabulary(normalizeEnum(""), FIELD_ENUM_VALUES.aiClassification)).toBe(false);
   });
 });
 

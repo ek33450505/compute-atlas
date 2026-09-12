@@ -178,7 +178,12 @@ are bench-measured: `capacityMw.operational` (P=100%/R=100%) and `water.coolingT
 measured 2026-09-01). `energy.source` and `energy.utility` remain extractable but are not pinned
 (unmeasured). ⚠️ `water.coolingType`'s 95% belongs to the PROMPT, not the field — it is 53%
 without the decision rule, which `extract-fields.ts` carries verbatim from `docs/methodology.md#cooling-type`
-under a drift test. The scheduled invocation bakes that list in, and bounds each tool with
+under a drift test. ⛔ `aiClassification` was benched the same way on 2026-09-12 and **failed** —
+P=61%/R=83% with its full decision rule, against P=56%/R=43% with a bare vocabulary — so it is
+deliberately NOT an `ExtractableField` and the lane cannot emit it. The rule bought recall, not
+accuracy (hallucinations rose 5→8), because the `likely` tier asks whether an indicator is
+substantive rather than what the page states; 13 `likely` answers were right 4 times. Read
+`scripts/discovery/bench/README.md` before re-proposing it. The scheduled invocation bakes that list in, and bounds each tool with
 `ENRICHMENT_LIMIT` (60) / `VERIFY_LIMIT` (40) — a full sweep is ~10 hours (rescaled from the
 measured 12h/2,525-gap figure now that the pinned list totals 2,190 gaps, measured 2026-09-01), and an unparseable
 limit would otherwise disable the bound entirely, so `run.sh` validates both before use.
