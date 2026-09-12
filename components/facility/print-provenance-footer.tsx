@@ -41,6 +41,15 @@ function localIsoDate(d: Date): string {
  * left open overnight still prints today's date) means the value is either
  * correct or absent. With JS off the date simply does not render while the
  * URL, the record date and the licence still do: it degrades honestly.
+ *
+ * The print visibility is not a `print:block` utility on this element: it is
+ * the `display` in `[data-print-brief] [data-print-provenance]`
+ * (app/globals.css), alongside the rule that already gave this block its
+ * border and type. Scoping matters more here than for any other print-only
+ * block on the page — every line of it is an assertion about ONE record (its
+ * name, its canonical URL, its curation date), so printed anywhere else it
+ * would not merely be redundant or out of place, it would be false, on the
+ * part of the document a reader is meant to cite.
  */
 export function PrintProvenanceFooter({ name, url, lastUpdated }: PrintProvenanceFooterProps) {
   const [printedOn, setPrintedOn] = useState<string | null>(null);
@@ -53,7 +62,7 @@ export function PrintProvenanceFooter({ name, url, lastUpdated }: PrintProvenanc
   }, []);
 
   return (
-    <aside data-print-provenance className="hidden print:block">
+    <aside data-print-provenance className="hidden">
       <p>
         Compute Atlas — {name}
       </p>

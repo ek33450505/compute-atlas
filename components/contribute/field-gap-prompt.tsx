@@ -12,9 +12,18 @@ import { QUIET_ACTION_CLASS } from "@/lib/utils";
  *
  * `hidden` is `display: none`, so the marker is absent from the screen
  * accessibility tree without an `aria-hidden` that would also silence it in
- * print. The print variant restores it for paper only. Kept quiet on the
- * page — it is a nil marker, not data. (`text-muted-foreground` is 6.70:1 on
- * parchment; see the contrast note on SECTION_LINK_CLASS below.)
+ * print. Kept quiet on the page — it is a nil marker, not data.
+ * (`text-muted-foreground` is 6.70:1 on parchment; see the contrast note on
+ * SECTION_LINK_CLASS below.)
+ *
+ * ⛔ The print visibility is NOT a `print:inline` utility on this element. It
+ * lives in app/globals.css, scoped under `[data-print-brief]`, because the
+ * marker is the bare words "Not recorded" and only means something where a
+ * `<dt>` prints beside it — i.e. the facility brief. This component also
+ * renders on /gaps, a page whose every row already IS a gap and which has no
+ * `<dt>` anywhere: unscoped, it printed 36 bare markers across 7 pages there
+ * (measured from a real PDF, 2026-09-11). Every other print rule in this
+ * codebase is scoped that way; this was the one exception.
  *
  * FIELD-level only, deliberately. It prints inline inside the `<dd>` of a
  * dt/dd pair, where the `<dt>` already carries the label, so the marker is
@@ -25,7 +34,9 @@ import { QUIET_ACTION_CLASS } from "@/lib/utils";
  */
 function NotRecorded() {
   return (
-    <span className="hidden text-muted-foreground print:inline">Not recorded</span>
+    <span data-print-nil className="hidden text-muted-foreground">
+      Not recorded
+    </span>
   );
 }
 

@@ -247,7 +247,7 @@ describe("print-only 'Not recorded' marker", () => {
     ["correctable field", <FieldGapPrompt key="c" field="jobs" facilityId="f" facilityName="Test DC" label="permanent jobs" />],
     ["non-correctable field", <FieldGapPrompt key="n" field="stakeholders" facilityId="f" facilityName="Test DC" label="the stakeholders" />],
   ])(
-    "carries `hidden` + print:inline and no aria-hidden — %s (class contract only)",
+    "carries `hidden` + the data-print-nil hook and no aria-hidden — %s (DOM contract only)",
     (_case, element) => {
       render(element);
 
@@ -256,8 +256,17 @@ describe("print-only 'Not recorded' marker", () => {
       // SCREEN accessibility tree. `aria-hidden` would have worked on screen
       // too but would also have silenced it in print, where it is the only
       // thing standing in for the value — so its absence is the contract.
-      expect(marker).toHaveClass("hidden", "print:inline");
+      expect(marker).toHaveClass("hidden");
       expect(marker).not.toHaveAttribute("aria-hidden");
+
+      // Print visibility is deliberately NOT a utility on this element: it is
+      // `[data-print-brief] [data-print-nil]` in app/globals.css, so the
+      // marker shows only on the facility brief, where a <dt> labels it. A
+      // `print:*` variant here would also show it on /gaps, which is how that
+      // page printed 36 unlabelled markers. This pins the hook and the
+      // ABSENCE of the variant; that the scoping works is e2e-only.
+      expect(marker).toHaveAttribute("data-print-nil");
+      expect(marker.className).not.toContain("print:");
     }
   );
 
@@ -273,7 +282,7 @@ describe("print-only 'Not recorded' marker", () => {
       />
     );
 
-    expect(screen.getByText("Not recorded")).toHaveClass("print:inline");
+    expect(screen.getByText("Not recorded")).toHaveAttribute("data-print-nil");
     expect(screen.queryByText(/Not recorded: /)).not.toBeInTheDocument();
   });
 

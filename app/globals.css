@@ -621,6 +621,26 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
     color: #000;
   }
 
+  /* Print-only FIELD-level nil marker (components/contribute/field-gap-prompt).
+     The element ships as a plain `hidden` span; this rule is the only thing
+     that ever shows it, and it is scoped on purpose.
+
+     The marker prints the bare words "Not recorded", which mean something
+     only where a `<dt>` prints beside it naming the field — that is the
+     facility brief and nowhere else. FieldGapPrompt also renders on /gaps, a
+     page that is nothing BUT gaps and carries no `<dt>` at all; while the
+     print variant sat on the element as a `print:inline` utility, /gaps
+     printed 36 unlabelled markers across 7 pages (measured from a real PDF,
+     2026-09-11). Scoping it here — where every other print rule in this file
+     already lives — is what makes the brief the only page that shows it.
+
+     No `!important` needed: this block is unlayered, so it beats Tailwind's
+     `hidden` (display:none) from the `utilities` layer on cascade origin,
+     regardless of specificity. */
+  [data-print-brief] [data-print-nil] {
+    display: inline;
+  }
+
   /* Print-only consolidated nil line (components/facility/print-gap-summary).
      Reads at the provenance footer's quiet scale — it is a note about the
      record, not part of the record — and sits flush on the footer's own
@@ -634,6 +654,14 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
      also (0,2,0) and also !important — a bare `[data-print-gap-summary]`
      loses to it on specificity and silently changes nothing. */
   [data-print-brief] > [data-print-gap-summary] {
+    /* The line ships as a plain `hidden` paragraph; this is what shows it, so
+       the same scoping argument as the nil marker above applies — with a
+       different reason. This line names its own subjects, so it would read
+       perfectly well on another page; it would simply be describing sections
+       of a facility record that page does not have. Scoped for blast radius,
+       not legibility. (Unlayered beats Tailwind's `hidden`, so no
+       !important — see the nil-marker note above.) */
+    display: block;
     break-inside: avoid;
     margin-block-end: 0 !important;
     font-size: 7.5pt;
@@ -641,8 +669,23 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
   }
 
   /* Print-only provenance footer (components/facility/print-provenance-footer).
-     Last thing on the page, so it must not be orphaned onto a page of its own. */
-  [data-print-provenance] {
+     Last thing on the page, so it must not be orphaned onto a page of its own.
+
+     Scoped to the brief, and this is the one where scoping is a correctness
+     requirement rather than a tidiness one: every line of this block asserts
+     something about ONE record — its name, its canonical /facilities/<slug>
+     URL, the date that record was curated. Printed at the foot of any other
+     page it would be a citation pointing at the wrong subject, on the exact
+     part of the document a reader is meant to trust. The `display` below is
+     what shows it (the element ships as a plain `hidden` aside); no
+     !important, for the cascade reason given on the nil marker above.
+
+     Descendant combinator, not `>`: unlike the summary line there is no
+     specificity fight to win here — the `[data-print-brief] > :not(:last-child)`
+     margin rule never matches this block, which is deliberately the container's
+     LAST child (see app/facilities/[slug]/page.tsx). */
+  [data-print-brief] [data-print-provenance] {
+    display: block;
     break-inside: avoid;
     border-top: 1px solid #000;
     padding-top: 0.35rem;
