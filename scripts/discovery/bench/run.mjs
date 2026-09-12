@@ -71,6 +71,34 @@ const FIELDS = {
     "calls the design 'air-cooled' -- operators market closed-loop designs that way, so the phrase does not decide it; " +
     "'air' requires the absence of a cooling water circuit. " +
     `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.coolingType.join(", ")} -- or null if not stated for this facility.`,
+  // This text is transcribed from docs/methodology.md#ai-classification and
+  // must not drift from it. The vocabulary (see FIELD_ENUM_VALUES.aiClassification
+  // in fields.mjs) has no "not AI" member, so `null` here means "the page does
+  // not tie this facility to AI" -- it is NOT the same claim as "this facility
+  // is not AI". That distinction is unrepresentable in the enum itself; see the
+  // methodology section.
+  // `likely` is the value actually under test. SYS_BASE (below) instructs the
+  // model to "Never estimate, never infer" -- but likely's own definition draws
+  // an inference boundary in the RULE (an indicator STATED for this facility,
+  // not an inference from one) rather than leaving that line to the model.
+  // Whether the model holds that line, rather than either inferring past it or
+  // abstaining out of caution, is what this field's bench number measures.
+  aiClassification:
+    "how strongly this page ties THIS SPECIFIC FACILITY to AI compute. " +
+    "'confirmed' = the page explicitly describes THIS facility as an AI or GPU facility (an AI data center, " +
+    "AI campus, AI factory, GPU cluster, or AI training/inference site), or names AI accelerator hardware deployed there; " +
+    "'likely' = the page states an AI-specific indicator FOR THIS FACILITY without describing it as an AI site " +
+    "(a named AI tenant or offtaker, GPU procurement for the site, an AI-specific power or lease agreement, or " +
+    "rack-density/liquid-cooling figures the page itself attributes to AI workloads); " +
+    "'mixed_use' = the page describes the facility as multi-purpose with AI among its workloads (cloud and AI, " +
+    "colocation with an AI tenant alongside others, an enterprise campus where AI is one named use among several). " +
+    "TIE-BREAKER 1: capability marketing is NOT a classification -- 'AI-ready', 'built for the AI era', " +
+    "'supports AI workloads' describe what an operator sells, not what runs at a site, and establish no tier on their own. " +
+    "TIE-BREAKER 2: the indicator must be stated FOR THIS FACILITY -- an operator's AI positioning, a sibling site's " +
+    "GPU deployment, or general industry context is not evidence about this facility; answer null. " +
+    "TIE-BREAKER 3: answer 'confirmed' over 'mixed_use' when the page presents AI as the facility's defining purpose, " +
+    "even if other workloads are also mentioned; 'mixed_use' is for pages presenting AI as one of several co-equal uses. " +
+    `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.aiClassification.join(", ")} -- or null if the page does not tie this facility to AI.`,
   energySource:
     "the facility's primary power source category. " +
     `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.energySource.join(", ")} -- or null if not stated for this facility.`,

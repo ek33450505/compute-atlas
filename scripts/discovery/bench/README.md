@@ -102,3 +102,77 @@ hallucination for being right. `atlas-power-williston-nd`'s "closed-loop cooling
 sentence belongs to a *different operator's* project in baxtel's nearby-facilities
 sidebar; the model abstained and was scored a miss for being right. Read every
 disagreement as a possible label bug before recording it as a model error.
+
+## aiClassification, and a rule that bought willingness instead of accuracy
+
+`result-gpt-oss_20b-aiClassification.json` and `result-gpt-oss_20b-aiClassification-norule.json`
+are the same 69 pages, the same model and the same labels, run against two versions of the
+`aiClassification` prompt — the full decision rule from
+`docs/methodology.md#ai-classification`, and a bare vocabulary list with no definitions and no
+tie-breakers. Measured 2026-09-12.
+
+| | vocabulary only | + the decision rule |
+|---|---|---|
+| PRECISION | 56% | **61%** |
+| RECALL | 43% | **83%** |
+| ABSTENTION-ACC | **89%** | 82% |
+| correct / correct-abstain | 10 / 39 | 19 / 36 |
+| miss | 10 | **0** |
+| WRONG / HALLUC | 3 / 5 | 4 / **8** |
+| score | **33** | 31 |
+
+**This is NOT the coolingType result, and the difference is the finding.** There, the rule took
+the model from P=53%/R=42% to P=95%/R=95% and removed its last hallucination — a real gain in
+discrimination, because the model had simply never been given a rule it could apply. Here the
+rule roughly doubles recall (43% → 83%, misses 10 → 0) while precision stays essentially flat
+(56% → 61%) and hallucinations go **up** (5 → 8). Correct abstentions fall from 39 to 36. The
+asymmetric score, which charges -2 for a fabrication, actually gets *worse*: 33 → 31.
+
+⇒ **The rule made the model more willing to commit, not better at telling the cases apart.** It
+converted abstentions into answers; some were right, and some were fabrications.
+
+**`likely` is where the error lives.** Split by the value the model chose:
+
+| model answered | times | correct |
+|---|---|---|
+| `confirmed` | 14 | 13 (93%) |
+| `mixed_use` | 4 | 2 |
+| `likely` | 13 | **4 (31%)** |
+
+Seven of the eight with-rule hallucinations answered `likely` on a page that ties the facility
+to nothing — and every one of those pages is capability marketing or industry context, which
+TIE-BREAKER 1 and TIE-BREAKER 2 exclude by name. On `cologix-johnstown-oh` the model quoted
+`"new, AI-ready data center campus"` and answered `likely`; "AI-ready" is the literal example
+TIE-BREAKER 1 uses to say that marketing establishes no tier. On
+`air-products-cetronia-road-upper-macungie-pa` it quoted `"tech companies across the country are
+looking to build..."`, which is TIE-BREAKER 2's industry-context case verbatim. The rule was in
+the prompt both times.
+
+The reason is structural. `confirmed` and `mixed_use` ask what a page *states*. `likely` asks
+whether a stated indicator is *substantive enough* to imply AI use — a judgement the page does
+not contain. A decision rule can teach a model to apply a distinction the text supports; it
+cannot supply a fact the text never carries.
+
+⚠️ **Do not conclude "drop `likely` and ship `confirmed` at 93%".** That 93% is measured on a run
+where `likely` was available to absorb the marketing pages, and the no-rule run shows what
+happens when it is less accessible: on `edgecore-mesa-az` and `cologix-johnstown-oh` the model
+fabricated under BOTH prompts, answering `confirmed` without the rule and `likely` with it. The
+rule changed which value it invented, not whether it invented one. A restricted-vocabulary score
+cannot be inferred from a full-vocabulary run, because the model reallocates its errors onto
+whatever values remain — it must be measured with its own run.
+
+**Status: NOT pinned, and deliberately not wired into `scripts/discovery/extract-fields.ts`.**
+`aiClassification` is not an `ExtractableField`, so the nightly lane cannot produce it. At P=61%
+it is far below the two pinned fields (`capacityMw.operational` 100/100,
+`water.coolingType` 95/95). This is the bench doing its job: issue #214's classification half was
+blocked on exactly this measurement, and the answer is that the local model cannot source this
+field at publishable quality.
+
+⚠️ Two limits on the labels themselves. They are **single-pass** — no page was double-labelled,
+so inter-annotator agreement is unmeasured. And the corpus carries only **4** positive `likely`
+labels and **4** `mixed_use` (against 15 `confirmed` and 44 `null`), so neither supports a
+per-value precision figure; the 31% and 93% above are descriptive of this run, not pinned rates.
+The one boundary that produced genuine disagreement between labellers is the same one the model
+fails on: whether a GPU-specific cooling-capability spec on a facility's own page is an
+indicator or marketing. That ambiguity is in the dataset's rule, not just the bench, so it will
+reach human curators classifying the remaining unclassified records too.

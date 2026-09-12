@@ -297,6 +297,54 @@ Like `stakeholders`, this field is excluded from the automated discovery pipelin
 and from public corrections. It is added through maintainer research against the
 permit document itself.
 
+## AI classification
+
+An optional `aiClassification` field records how strongly a facility's public
+record ties it to AI compute. It drives the AI badge on a facility page and the
+denominators on `/ai`. The field exists on data-center and crypto-mining
+records only — a power-generation facility has no `aiClassification` field, by
+the same reasoning that excludes `mining` and `environmental` from that schema.
+The three values existed before this rule was written down; curators applied
+them from the tier descriptions rendered on `/about` without a documented
+standard for the cases those descriptions leave open.
+
+- **`confirmed`** — a source explicitly describes **this** facility as an AI or
+  GPU facility: an AI data center, AI campus, AI factory, GPU cluster, or an AI
+  training or inference site, or it names AI accelerator hardware deployed
+  there.
+- **`likely`** — a source states AI-specific indicators **for this facility**
+  without describing the facility itself as an AI site: a named AI tenant or
+  offtaker, GPU procurement for the site, an AI-specific power or lease
+  agreement, or rack-density and liquid-cooling figures the source itself
+  attributes to AI workloads.
+- **`mixed_use`** — a source describes the facility as multi-purpose with AI
+  among its workloads: cloud and AI, colocation with an AI tenant alongside
+  others, or an enterprise campus where AI is one named use among several.
+
+**Tie-breaker 1 — capability marketing is not a classification.** "AI-ready",
+"built for the AI era", "supports AI workloads" and similar phrases describe
+what an operator sells, not what runs at a site. They do not by themselves
+establish any tier. `confirmed` requires a source to describe this facility as
+an AI or GPU facility; `likely` requires a stated, facility-specific indicator.
+
+**Tie-breaker 2 — the indicator must be stated for this facility.** An
+operator's AI positioning, a sibling site's GPU deployment, or general industry
+context is not evidence about this facility. Where a source discusses a
+company-wide program without tying it to this site, the field is omitted.
+
+**Tie-breaker 3 — `confirmed` over `mixed_use` when AI is the defining use.** A
+source that presents AI as the facility's purpose reads `confirmed` even if it
+also mentions other workloads. `mixed_use` is for sources that present AI as
+one of several co-equal uses.
+
+**The absent value means NOT ASSESSED.** The enum has no member for "assessed,
+and not AI-related" — every member asserts some degree of AI use — and the
+field is optional, so a facility nobody has evaluated and a facility evaluated
+and found unrelated to AI are the same state on disk. A missing badge is
+therefore not a finding, and `/ai` states its denominator rather than implying
+the unclassified records are non-AI. Closing that gap needs a fourth enum
+member, which has been considered and declined.
+
 ## Cooling type
 
 An optional `water.coolingType` field classifies a data center's heat-rejection
