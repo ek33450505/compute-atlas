@@ -1,4 +1,4 @@
-import { and, eq, gte, inArray } from "drizzle-orm";
+import { and, eq, gte, inArray, lt } from "drizzle-orm";
 import { Resend } from "resend";
 
 import { getDb } from "@/lib/db/client";
@@ -143,8 +143,29 @@ export function groupChangesByRecipient(
  * (`approveSubmission` or `db:sync`'s apply path), so a large confirmed-
  * subscriber set slows the caller's response. Fine at current volumes; move
  * to a queue / background send if subscriber counts grow.
+ *
+ * Returns the number of groups whose send helper reported success, so a
+ * caller that must report what actually happened can (see
+ * `notifyStateSubscribersMonthly`). Deliberately counts SENDS, not groups:
+ * a group skipped by the mixed-state guard below, or one whose send failed
+ * (a Resend error, or no `RESEND_API_KEY`), must not be counted as mail that
+ * went out. The two facility-watch callers ignore the value; their contract
+ * is unchanged.
+ *
+ * EXPORTED FOR TESTS ONLY — no production caller outside this file, and none
+ * should be added. Exported for the same reason `buildStakeholderIndex` in
+ * lib/data.ts is: the mixed-state guard below is unreachable through every
+ * current caller (the (email, state) grouping key makes a mixed group
+ * impossible to construct), so the only way to prove the guard actually
+ * fires — and keep a later refactor from deleting it as dead code — is to
+ * call this directly with a synthetic mixed group. What that guard prevents
+ * is not cosmetic: a mislabelled digest whose per-item "unsubscribe from this
+ * one" link would silently unsubscribe the reader from a whole state.
  */
-async function sendGroupedChangeNotifications(groups: RecipientChangeGroup[]): Promise<void> {
+export async function sendGroupedChangeNotifications(
+  groups: RecipientChangeGroup[]
+): Promise<number> {
+  let sentCount = 0;
   for (const group of groups) {
     const first = group.changes[0];
     // `groupChangesByRecipient` never emits an empty group, but read the
@@ -171,9 +192,10 @@ async function sendGroupedChangeNotifications(groups: RecipientChangeGroup[]): P
         );
         continue;
       }
-      await sendStateDigestEmail(group.email, stateName, group.changes);
+      const { sent } = await sendStateDigestEmail(group.email, stateName, group.changes);
+      if (sent) sentCount++;
     } else if (group.changes.length === 1) {
-      await sendChangeNotification({
+      const { sent } = await sendChangeNotification({
         email: group.email,
         facilityName: first.facilityName,
         facilitySlug: first.facilitySlug,
@@ -181,10 +203,13 @@ async function sendGroupedChangeNotifications(groups: RecipientChangeGroup[]): P
         status: first.status,
         unsubscribeToken: first.unsubscribeToken,
       });
+      if (sent) sentCount++;
     } else {
-      await sendChangeDigestEmail(group.email, group.changes);
+      const { sent } = await sendChangeDigestEmail(group.email, group.changes);
+      if (sent) sentCount++;
     }
   }
+  return sentCount;
 }
 
 /**
@@ -473,8 +498,16 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
  * name/state can't be recovered without a facilities row either. A facility
  * that changed more than once in the period is deduped to its single most
  * recent change, so a recipient sees one line per facility, not one per edit.
+ *
+ * The period is HALF-OPEN: `since` inclusive (`>=`), `until` exclusive (`<`).
+ * `until` is optional and, when omitted, the query is unbounded above exactly
+ * as before — so no existing caller shifts. Passing it is what makes
+ * consecutive monthly runs tile the calendar without overlapping: a run on
+ * the 1st at 09:00 UTC with only a `since` also sweeps in today's first nine
+ * hours, and next month's run sweeps those same hours again, putting the same
+ * facility in two consecutive digests.
  */
-async function buildStateDigestChanges(since: Date): Promise<RecipientFacilityChange[]> {
+async function buildStateDigestChanges(since: Date, until?: Date): Promise<RecipientFacilityChange[]> {
   const db = getDb();
 
   const subs = await db
@@ -505,6 +538,9 @@ async function buildStateDigestChanges(since: Date): Promise<RecipientFacilityCh
     .where(
       and(
         gte(facilityHistoryTable.changedAt, since),
+        // Only when bounded — `and()` ignores undefined, so an omitted
+        // `until` leaves the original unbounded-above behaviour intact.
+        until ? lt(facilityHistoryTable.changedAt, until) : undefined,
         inArray(facilityHistoryTable.changeType, ["create", "update"]),
         inArray(facilitiesTable.state, states)
       )
@@ -561,9 +597,11 @@ async function buildStateDigestChanges(since: Date): Promise<RecipientFacilityCh
  * feeds it through the IDENTICAL `groupChangesByRecipient` +
  * `sendGroupedChangeNotifications` path — no second grouping or send
  * implementation, per this file's `RecipientFacilityChange` header comment,
- * which names this exact function in advance. `since` is the digest period's
- * start (inclusive, via `>=`) — the caller decides what that means (e.g. "30
- * days ago" or "since the last digest run").
+ * which names this exact function in advance. The period is HALF-OPEN:
+ * `since` inclusive (`>=`), optional `until` exclusive (`<`). The caller
+ * decides what they mean; `app/api/cron/state-digest/route.ts` passes an
+ * exact UTC calendar month so consecutive runs tile without overlap or gap.
+ * Omitting `until` keeps the original unbounded-above behaviour.
  *
  * Only `status='confirmed' AND targetType='state'` rows are ever read —
  * pending and unsubscribed rows are excluded identically to
@@ -571,33 +609,73 @@ async function buildStateDigestChanges(since: Date): Promise<RecipientFacilityCh
  * their OWN raw `unsubscribeToken` via the shared send path, so every digest
  * carries a working unsubscribe link.
  *
- * ⚠️ NOT CALLED FROM ANY SCHEDULED TRIGGER (D3b is deliberately out of scope
- * for this unit — see the plan). One confirmed state-target subscriber
- * predates this feature and has never received mail from Compute Atlas;
- * their state's `facility_history` since `since` will match if this function
- * is ever invoked. Whoever wires a scheduled caller to this function is
- * choosing to resume mail to that subscriber after a long silence — that is
- * a call for Ed to make at trigger time, not one this function makes.
+ * ⚠️ ITS ONE CALLER IS WIRED BUT DISABLED. `app/api/cron/state-digest/route.ts`
+ * calls this function, and is held off by two independent switches: there is
+ * NO `crons` entry in `vercel.json` (so nothing invokes the route), and
+ * `STATE_DIGEST_ENABLED` is unset (so an authenticated call returns 503 and
+ * sends nothing). The `state` subscription rows predate this feature and have
+ * never received mail from Compute Atlas; their states' `facility_history`
+ * within the period will match the moment either switch is flipped. That
+ * reactivation decision is Ed's and has NOT been made — merging this code is
+ * not making it. Do not flip either switch as a side effect of other work.
  *
  * Best-effort and never throws — same contract as `notifySubscribersOfChange`.
+ * Returns counts rather than `void` so a caller can tell a FAILED run from a
+ * quiet month: the two were previously indistinguishable, because the catch
+ * below logged and returned the same `undefined` a successful empty run did.
+ * Never logs an email address, and never logs the caught error object itself
+ * (see the catch).
  */
-export async function notifyStateSubscribersMonthly(since: Date): Promise<void> {
+export interface StateDigestResult {
+  /** False ONLY when the run threw and was caught below. A quiet month is `ok: true`. */
+  ok: boolean;
+  /** `RecipientFacilityChange` rows built — (subscriber × facility) pairs, not emails. */
+  changes: number;
+  /**
+   * Emails that WOULD be sent: one per (email, state) group. The denominator
+   * for `recipients`.
+   */
+  groups: number;
+  /**
+   * Emails the send helper reported as actually sent. `recipients < groups` is
+   * the send-failure signal — a Resend error or a missing `RESEND_API_KEY` is
+   * swallowed by the send helpers by contract, so this difference is the only
+   * place it surfaces. Do NOT compare `recipients` against `changes`: one
+   * recipient with three changed facilities is a healthy `recipients: 1,
+   * changes: 3`.
+   */
+  recipients: number;
+}
+
+export async function notifyStateSubscribersMonthly(
+  since: Date,
+  until?: Date
+): Promise<StateDigestResult> {
   try {
-    const changes = await buildStateDigestChanges(since);
+    const changes = await buildStateDigestChanges(since, until);
     // Grouped by (email, state), NOT email alone — a recipient can hold
     // subscriptions to multiple states, and each must get its own,
     // self-consistent email (see groupChangesByRecipient's doc comment).
     // `buildStateDigestChanges` only ever emits `origin: "state-digest"`
     // changes, but the key function is typed against the full union, so
     // `stateName` is only readable once narrowed by `origin`.
-    await sendGroupedChangeNotifications(
-      groupChangesByRecipient(
-        changes,
-        (c) => `${c.email}::${c.origin === "state-digest" ? c.stateName : ""}`
-      )
+    const groups = groupChangesByRecipient(
+      changes,
+      (c) => `${c.email}::${c.origin === "state-digest" ? c.stateName : ""}`
     );
+    const recipients = await sendGroupedChangeNotifications(groups);
+    return { ok: true, changes: changes.length, groups: groups.length, recipients };
   } catch (err) {
-    // Never log email addresses or tokens here — only the error.
-    console.error("notifyStateSubscribersMonthly failed", err);
+    // Log the error's NAME only — never addresses, tokens, or the error object
+    // itself. A Drizzle/Neon error can carry the failing SQL, and a connection
+    // failure can carry a driver-constructed URL with credentials in it. This
+    // matches `sendStateDigestEmail` above, and matters more here than it used
+    // to: wiring app/api/cron/state-digest makes this catch reachable in
+    // production for the first time.
+    console.error(
+      "notifyStateSubscribersMonthly failed:",
+      err instanceof Error ? err.name : "unknown"
+    );
+    return { ok: false, changes: 0, groups: 0, recipients: 0 };
   }
 }

@@ -33,7 +33,9 @@ import {
   notifySubscribersOfChanges,
   notifyStateSubscribersMonthly,
   groupChangesByRecipient,
+  sendGroupedChangeNotifications,
   type RecipientFacilityChange,
+  type RecipientChangeGroup,
 } from "@/lib/notify";
 
 const facilitiesTyped = facilitiesRaw as unknown as Facility[];
@@ -567,10 +569,13 @@ describe("double opt-in enforcement (status='confirmed' only)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// notifyStateSubscribersMonthly — Theme D, D3a. Inert: nothing calls this
-// function yet (D3b, the scheduled trigger, is out of scope). Covers the
-// digest query itself (confirmed-state-only, since-bound, scoped to the
-// subscriber's own state) and reuse of the existing grouping/send path.
+// notifyStateSubscribersMonthly — Theme D. Its one caller
+// (app/api/cron/state-digest) is wired but DISABLED: no `crons` entry in
+// vercel.json and `STATE_DIGEST_ENABLED` unset. Covers the digest query itself
+// (confirmed-state-only, since-bound, scoped to the subscriber's own state)
+// and reuse of the existing grouping/send path. The half-open `until` bound
+// and the route's auth/kill-switch live in
+// app/api/cron/state-digest/route.integration.test.ts.
 // ---------------------------------------------------------------------------
 describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
   const since = new Date("2026-01-01T00:00:00Z");
@@ -727,14 +732,27 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
     // copy" describe block below.
     resendSendMock.mockRejectedValueOnce(new Error("send failed"));
 
-    await expect(notifyStateSubscribersMonthly(since)).resolves.toBeUndefined();
+    // Still never throws — and the swallowed failure is now VISIBLE: one change
+    // was built, zero recipients were actually sent. Before the return value
+    // existed, this was indistinguishable from a quiet month.
+    await expect(notifyStateSubscribersMonthly(since)).resolves.toEqual({
+      ok: true,
+      changes: 1,
+      groups: 1,
+      recipients: 0,
+    });
   });
 
   it("is a no-op when there are no confirmed state subscribers at all", async () => {
     await seedFacility(tdb.db, facilityTnA);
     await insertHistoryRow(facilityTnA.id, "update", withinPeriod);
 
-    await expect(notifyStateSubscribersMonthly(since)).resolves.toBeUndefined();
+    await expect(notifyStateSubscribersMonthly(since)).resolves.toEqual({
+      ok: true,
+      changes: 0,
+      groups: 0,
+      recipients: 0,
+    });
     expect(sendChangeNotification).not.toHaveBeenCalled();
     expect(resendSendMock).not.toHaveBeenCalled();
   });
@@ -823,5 +841,71 @@ describe("notifyStateSubscribersMonthly — state-digest copy correctness", () =
     const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=/g) ?? []).length;
     expect(htmlUnsubCount).toBe(2); // one per facility, unlike the state digest's one-total
     expect(args.html).toContain("Unsubscribe from this one");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The mixed-state guard, tested DIRECTLY. It is unreachable through every
+// current caller — notifyStateSubscribersMonthly keys groups by (email, state),
+// which makes a two-state group impossible to construct — and unreachable code
+// with no test is exactly what a later refactor deletes as dead. What it
+// prevents is not cosmetic: a merged digest labelled with one arbitrary state,
+// carrying ONE unsubscribe token, whose per-item links would silently
+// unsubscribe the reader from a whole state they did not choose to leave.
+// sendGroupedChangeNotifications is exported for this test and no other reason.
+// ---------------------------------------------------------------------------
+describe("sendGroupedChangeNotifications — mixed-state guard", () => {
+  function stateDigestChange(
+    stateName: string,
+    facility: Facility
+  ): RecipientChangeGroup["changes"][number] {
+    return {
+      origin: "state-digest",
+      stateName,
+      unsubscribeToken: "unsub-token-sentinel",
+      facilityName: facility.name,
+      facilitySlug: facility.id,
+      changeLabel: "record updated",
+      status: "Operational",
+    };
+  }
+
+  it("refuses to send a group spanning two states, and logs neither address nor token", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [
+        stateDigestChange(tnStateName, facilityTnA),
+        stateDigestChange("Texas", facilityOtherState),
+      ],
+    };
+
+    const sent = await sendGroupedChangeNotifications([group]);
+
+    expect(sent).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(sendChangeNotification).not.toHaveBeenCalled();
+    expect(consoleError).toHaveBeenCalledTimes(1);
+    const logged = JSON.stringify(consoleError.mock.calls);
+    expect(logged).not.toContain("reader@example.com");
+    expect(logged).not.toContain("unsub-token-sentinel");
+    consoleError.mockRestore();
+  });
+
+  it("positive control: the identical group with ONE state DOES send", async () => {
+    // Without this, "zero sends" above could be an artifact of the fixture
+    // rather than proof the guard fired.
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [
+        stateDigestChange(tnStateName, facilityTnA),
+        stateDigestChange(tnStateName, facilityTnB),
+      ],
+    };
+
+    const sent = await sendGroupedChangeNotifications([group]);
+
+    expect(sent).toBe(1);
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
   });
 });

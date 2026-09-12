@@ -81,6 +81,18 @@ See `.env.example`.
 |---|---|
 | `DATABASE_URL` | Neon Postgres pooled connection string |
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
+| `CRON_SECRET` | Bearer secret for `/api/cron/*`. **Leave unset** — see below. Must differ from `API_ADMIN_TOKEN` |
+| `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Leave unset** — `"true"` is the only enabling value |
+
+⚠️ **The monthly state digest ships DISABLED, on purpose.** `app/api/cron/state-digest`
+is held off by two independent switches: there is no `crons` entry in `vercel.json`, and
+`STATE_DIGEST_ENABLED` is unset. The `state` subscription rows predate the feature and have
+never received mail from Compute Atlas, so enabling it resumes mail to a long-silent list.
+Before flipping either switch, read the enable checklist in that route file's header — its
+first step is a prerequisite, not a follow-up: **nothing in the send path is idempotent
+yet.** The window comes from the clock and there is no send ledger, so two calls in the same
+month send the same digest twice to the same people. The fix is a persisted `(since, until)`
+run record that makes a repeat a no-op; a rate limit is the wrong control.
 
 ⚠️ **`.env.local` quoting.** `vercel env add` keeps surrounding quotes, and a quoted
 `DATABASE_URL` is invalid and fails *silently* — there is no fallback. Strip the quotes.
