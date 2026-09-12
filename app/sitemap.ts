@@ -6,6 +6,8 @@ import {
   operatorSlug,
   getStakeholders,
   getFacilitiesByMetro,
+  getCounties,
+  getFacilitiesByCounty,
 } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
@@ -378,6 +380,80 @@ export async function buildMetroRoutes(): Promise<MetadataRoute.Sitemap> {
 }
 
 /**
+ * Minimum facility count for a county hub to be SUBMITTED in the sitemap.
+ * Deliberately the same rule, for the same measured reason, as
+ * MIN_FACILITIES_FOR_OPERATOR_SITEMAP above: of 636 tracked counties, 354
+ * (56%) hold exactly ONE facility, and a single-facility hub renders only a
+ * masthead, two generated sentences, a stat row, and one card linking to the
+ * facility page it restates. Submitting all 636 would add a long tail of
+ * near-duplicate URLs to the sitemap and ration crawl budget away from the
+ * high-intent hubs — precisely the pattern GSC measured on operator hubs
+ * (1.24% of impressions from 19% of the sitemap).
+ *
+ * This is a sitemap-SUBMISSION decision only. All 636 county routes stay
+ * generated (app/counties/[county]/page.tsx generates static params for every
+ * county), live, crawlable, and internally linked from /counties and from
+ * each facility page's Location fact row. They are deliberately NOT `noindex`
+ * — the operator precedent explicitly rejected that, so a single-facility
+ * hub that does earn impressions keeps them.
+ */
+export const MIN_FACILITIES_FOR_COUNTY_SITEMAP = 2;
+
+/**
+ * Builds the /counties index + per-county route entries for the sitemap.
+ * Structurally mirrors buildMetroRoutes above: the index entry's
+ * `lastModified` uses the whole dataset's max `lastUpdated` (it genuinely
+ * reflects the whole set), while each per-county entry uses that county's OWN
+ * facilities' max `lastUpdated` — a county hub only changes when one of ITS
+ * facilities changes. Membership comes from `getFacilitiesByCounty`
+ * (lib/data.ts), the SAME helper app/counties/[county]/page.tsx uses to
+ * render the hub, so the sitemap and the page can never disagree about which
+ * facilities belong to a county.
+ *
+ * Counties below MIN_FACILITIES_FOR_COUNTY_SITEMAP are omitted from
+ * submission — see that constant's doc comment for why, and for why their
+ * routes nonetheless stay live and indexable.
+ *
+ * The per-county loader calls are ONE data load, not hundreds: `getCounties`
+ * and `getFacilitiesByCounty` both read the shared `loadFacilities()` cache
+ * and resolve against a per-array-identity memoized county index (lib/data.ts,
+ * `buildCountyIndex`), so each call is an O(1) map lookup.
+ *
+ * That holds in production but NOT under vitest: lib/data.ts sets
+ * `loadFacilities = loadFacilitiesUncached` when `process.env.VITEST` is set,
+ * and that returns `[...list].sort(...)` — a fresh array identity per call —
+ * so the WeakMap misses and the index rebuilds on every call in the suite.
+ * Harmless at this size (~3s across the county tests), but the claim above is
+ * about the deployed path only; do not cite it to explain a test timing.
+ */
+export async function buildCountyRoutes(): Promise<MetadataRoute.Sitemap> {
+  const [facilities, counties] = await Promise.all([
+    getAllFacilities(),
+    getCounties(),
+  ]);
+  const submitted = counties.filter(
+    (c) => c.count >= MIN_FACILITIES_FOR_COUNTY_SITEMAP
+  );
+  const countyFacilities = await Promise.all(
+    submitted.map((c) => getFacilitiesByCounty(c.slug))
+  );
+  return [
+    {
+      url: `${siteConfig.url}/counties`,
+      lastModified: maxLastUpdated(facilities),
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...submitted.map((c, i) => ({
+      url: `${siteConfig.url}/counties/${c.slug}`,
+      lastModified: maxLastUpdated(countyFacilities[i]),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
+  ];
+}
+
+/**
  * Builds the /learn index + 5 per-topic route entries for the sitemap.
  * `GLOSSARY_TOPICS` (lib/glossary.ts) is a static content registry, but the
  * rendered pages are NOT static: each one interpolates live dataset figures
@@ -418,6 +494,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     facilityRoutes,
     statusRoutes,
     metroRoutes,
+    countyRoutes,
   ] = await Promise.all([
     buildStaticRoutes(),
     buildLearnRoutes(),
@@ -427,6 +504,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     buildFacilityRoutes(),
     buildStatusRoutes(),
     buildMetroRoutes(),
+    buildCountyRoutes(),
   ]);
   return [
     ...staticRoutes,
@@ -437,5 +515,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...facilityRoutes,
     ...statusRoutes,
     ...metroRoutes,
+    ...countyRoutes,
   ];
 }

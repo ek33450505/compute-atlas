@@ -32,6 +32,11 @@ import {
   getOperatorBySlug,
   getFacilitiesByOperator,
   getOperatorSummary,
+  countySlug,
+  buildCountyIndex,
+  getCounties,
+  getCountyBySlug,
+  getFacilitiesByCounty,
   personSlug,
   buildStakeholderIndex,
   getStakeholders,
@@ -73,6 +78,7 @@ import { FACILITY_TYPE_ORDER } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER } from "@/lib/community";
 import { STATUS_ORDER } from "@/lib/status";
 import { getFacilityMaxMw } from "@/lib/format";
+import { metroCountyKey } from "@/lib/metros";
 import { getGenerationFuelClass } from "@/lib/generation";
 
 describe("getAllFacilities", () => {
@@ -1136,6 +1142,282 @@ describe("getOperatorSummary", () => {
       (await getFacilitiesByOperator("Google")).map((f) => f.location.state)
     ).size;
     expect(summary.stateCount).toBe(expected);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Per-county lens. Asserted against the live bundled dataset (as the operator
+// and metro helpers are), but derived rather than hardcoded: every expectation
+// below is computed from getAllFacilities() so a data wave moves both sides
+// together. The pure slug/label rules are unit-tested in lib/counties.test.ts.
+// ---------------------------------------------------------------------------
+
+describe("buildCountyIndex", () => {
+  // Exercised against synthetic fixtures because the degenerate spellings the
+  // guards exist for have zero records in the live dataset — the async readers
+  // cannot be driven to them at all.
+  function inCounty(id: string, state: string, county?: string): DataCenterFacility {
+    const base = { lat: 38, lon: -77, state, precision: "exact" as const };
+    return makeFacility({
+      id,
+      location: county === undefined ? base : { ...base, county },
+    });
+  }
+
+  it("excludes a county that normalizes to an empty string", () => {
+    // normalizeCounty(" County") === "" — non-blank going in, empty coming
+    // out. Left ungated this mints a nameless county on a bare "-va" slug.
+    const index = buildCountyIndex([
+      inCounty("bare-county", "VA", " County"),
+      inCounty("bare-parish", "LA", " Parish"),
+      inCounty("bare-borough", "AK", " Borough"),
+      inCounty("loudoun", "VA", "Loudoun"),
+    ]);
+
+    expect([...index.bySlug.keys()]).toEqual(["loudoun-va"]);
+    expect(index.ordered).toHaveLength(1);
+    expect(index.ordered[0].name).toBe("Loudoun");
+  });
+
+  it("excludes null and whitespace-only counties", () => {
+    const index = buildCountyIndex([
+      inCounty("no-county", "VA"),
+      inCounty("blank-county", "VA", "   "),
+      inCounty("loudoun", "VA", "Loudoun"),
+    ]);
+
+    expect([...index.bySlug.keys()]).toEqual(["loudoun-va"]);
+    expect(index.facilitiesBySlug.get("loudoun-va")!.map((f) => f.id)).toEqual(["loudoun"]);
+  });
+
+  it("merges spellings into one bucket and labels it deterministically", () => {
+    const facilities = [
+      inCounty("a", "MO", "St. Louis City"),
+      inCounty("b", "MO", "St. Louis city"),
+      inCounty("c", "VA", "Loudoun County"),
+      inCounty("d", "VA", "Loudoun"),
+    ];
+    const index = buildCountyIndex(facilities);
+    const reversed = buildCountyIndex([...facilities].reverse());
+
+    expect(index.bySlug.get("st-louis-city-mo")).toEqual({
+      slug: "st-louis-city-mo",
+      name: "St. Louis city",
+      state: "MO",
+      count: 2,
+    });
+    expect(index.bySlug.get("loudoun-va")!.name).toBe("Loudoun");
+    // Same labels whichever order the records arrive in.
+    expect(reversed.bySlug.get("st-louis-city-mo")!.name).toBe("St. Louis city");
+  });
+});
+
+describe("getCounties", () => {
+  it("counts sum to exactly the facilities that have a county on record", async () => {
+    const counties = await getCounties();
+    const facilities = await getAllFacilities();
+    const withCounty = facilities.filter(
+      (f) => f.location.county != null && f.location.county.trim() !== ""
+    ).length;
+
+    expect(counties.length).toBeGreaterThan(0);
+    expect(counties.reduce((sum, c) => sum + c.count, 0)).toBe(withCounty);
+    // Facilities without a county (10 today) belong to no county at all, so
+    // the sum must fall short of the full dataset rather than matching it.
+    expect(withCounty).toBeLessThan(facilities.length);
+  });
+
+  it("never produces an empty-named or empty-slugged bucket for countyless facilities", async () => {
+    const counties = await getCounties();
+    expect(counties.length).toBeGreaterThan(0);
+    for (const county of counties) {
+      expect(county.name).not.toBe("");
+      expect(county.state).toMatch(/^[A-Z]{2}$/);
+      expect(county.slug).toBe(countySlug(county.name, county.state));
+      expect(county.count).toBeGreaterThan(0);
+    }
+  });
+
+  it("sorts by count desc, then state A→Z, then name A→Z", async () => {
+    const counties = await getCounties();
+    expect(counties.length).toBeGreaterThan(0);
+    for (let i = 1; i < counties.length; i++) {
+      const prev = counties[i - 1];
+      const curr = counties[i];
+      const ordered =
+        prev.count > curr.count ||
+        (prev.count === curr.count && prev.state < curr.state) ||
+        (prev.count === curr.count &&
+          prev.state === curr.state &&
+          prev.name.localeCompare(curr.name) <= 0);
+      expect(ordered).toBe(true);
+    }
+  });
+
+  it("gives each slug exactly one entry", async () => {
+    const counties = await getCounties();
+    expect(counties.length).toBeGreaterThan(0);
+    expect(new Set(counties.map((c) => c.slug)).size).toBe(counties.length);
+  });
+
+  it("returns a copy — sorting or mutating the result cannot poison the memoized index", async () => {
+    const first = await getCounties();
+    const topSlug = first[0].slug;
+    const topCount = first[0].count;
+    // Both levels: the array itself, and the summary objects inside it.
+    first[0].count = 0;
+    first.sort((a, b) => a.count - b.count);
+
+    const second = await getCounties();
+    expect(second[0].slug).toBe(topSlug);
+    expect(second[0].count).toBe(topCount);
+  });
+});
+
+describe("getCountyBySlug", () => {
+  it("resolves a county with 2+ facilities and reports a count derived from the raw data", async () => {
+    const counties = await getCounties();
+    expect(counties.length).toBeGreaterThan(0);
+    const multi = counties.find((c) => c.count >= 2);
+    expect(multi).toBeDefined();
+
+    // Re-derived from getAllFacilities() through `metroCountyKey` — an
+    // independent normalization that uses neither slugify nor the apostrophe
+    // strip — so this expectation is not the index restating itself. If the
+    // two normalizations ever disagree on a real county, that SHOULD fail
+    // here rather than be silently absorbed.
+    const key = metroCountyKey(multi!.state, multi!.name);
+    const expected = (await getAllFacilities()).filter(
+      (f) =>
+        f.location.county != null &&
+        metroCountyKey(f.location.state, f.location.county) === key
+    );
+    expect(expected.length).toBeGreaterThanOrEqual(2);
+
+    const county = await getCountyBySlug(multi!.slug);
+    expect(county).toBeDefined();
+    expect(county!.count).toBe(expected.length);
+    expect(county!.name).toBe(multi!.name);
+    expect(county!.state).toBe(multi!.state);
+    expect(await getFacilitiesByCounty(multi!.slug)).toHaveLength(expected.length);
+  });
+
+  it("is case-insensitive on the slug", async () => {
+    const { slug } = (await getCounties())[0];
+    expect(await getCountyBySlug(slug.toUpperCase())).toEqual(await getCountyBySlug(slug));
+  });
+
+  it("returns a fresh object — mutating one lookup cannot poison the next", async () => {
+    const { slug } = (await getCounties())[0];
+    const first = (await getCountyBySlug(slug))!;
+    const originalCount = first.count;
+    first.count = 0;
+    expect((await getCountyBySlug(slug))!.count).toBe(originalCount);
+  });
+
+  it("returns undefined for an unknown slug", async () => {
+    expect(await getCountyBySlug("not-a-real-county-zz")).toBeUndefined();
+  });
+
+  it("round-trips through countySlug for every tracked county", async () => {
+    const counties = await getCounties();
+    expect(counties.length).toBeGreaterThan(0);
+    for (const county of counties) {
+      expect((await getCountyBySlug(countySlug(county.name, county.state)))?.slug).toBe(
+        county.slug
+      );
+    }
+  });
+
+  it("merges two spellings of one county into one bucket with a deterministic name", async () => {
+    // Live case: MO carries both "St. Louis city" and "St. Louis City".
+    const facilities = await getAllFacilities();
+    const slug = countySlug("St. Louis city", "MO");
+    const expected = facilities.filter(
+      (f) =>
+        f.location.county != null &&
+        f.location.county.trim() !== "" &&
+        countySlug(f.location.county, f.location.state) === slug
+    );
+    const spellings = new Set(expected.map((f) => f.location.county));
+
+    expect(expected.length).toBeGreaterThanOrEqual(2);
+    expect(spellings.size).toBeGreaterThan(1);
+
+    const county = (await getCountyBySlug(slug))!;
+    expect(county.count).toBe(expected.length);
+    expect(county.state).toBe("MO");
+    // One label, chosen by canonicalCountyName — not whichever record sorted first.
+    expect(county.name).toBe("St. Louis city");
+  });
+});
+
+describe("getFacilitiesByCounty", () => {
+  it("returns exactly the facilities whose (county, state) slugs to that county", async () => {
+    const multi = (await getCounties()).find((c) => c.count >= 2)!;
+    const facilities = await getAllFacilities();
+    const expected = facilities.filter(
+      (f) =>
+        f.location.county != null &&
+        f.location.county.trim() !== "" &&
+        countySlug(f.location.county, f.location.state) === multi.slug
+    );
+
+    const results = await getFacilitiesByCounty(multi.slug);
+    expect(results.map((f) => f.id).sort()).toEqual(expected.map((f) => f.id).sort());
+  });
+
+  it("sorts by max capacity desc, then name A→Z", async () => {
+    const multi = (await getCounties()).find((c) => c.count >= 5)!;
+    const results = await getFacilitiesByCounty(multi.slug);
+    for (let i = 1; i < results.length; i++) {
+      const prev = getFacilityMaxMw(results[i - 1]) ?? -1;
+      const curr = getFacilityMaxMw(results[i]) ?? -1;
+      expect(prev).toBeGreaterThanOrEqual(curr);
+      if (prev === curr) {
+        expect(results[i - 1].name.localeCompare(results[i].name)).toBeLessThanOrEqual(0);
+      }
+    }
+  });
+
+  it("excludes every facility with no county on record", async () => {
+    const facilities = await getAllFacilities();
+    const countyless = new Set(
+      facilities
+        .filter((f) => f.location.county == null || f.location.county.trim() === "")
+        .map((f) => f.id)
+    );
+    expect(countyless.size).toBeGreaterThan(0);
+
+    const placed = new Set<string>();
+    for (const county of await getCounties()) {
+      for (const f of await getFacilitiesByCounty(county.slug)) {
+        placed.add(f.id);
+      }
+    }
+    for (const id of countyless) {
+      expect(placed.has(id)).toBe(false);
+    }
+    expect(placed.size).toBe(facilities.length - countyless.size);
+  });
+
+  it("is case-insensitive on the slug", async () => {
+    const { slug } = (await getCounties())[0];
+    expect((await getFacilitiesByCounty(slug.toUpperCase())).map((f) => f.id)).toEqual(
+      (await getFacilitiesByCounty(slug)).map((f) => f.id)
+    );
+  });
+
+  it("returns [] for an unknown slug", async () => {
+    expect(await getFacilitiesByCounty("not-a-real-county-zz")).toEqual([]);
+  });
+
+  it("returns a copy — mutating the result cannot poison the memoized index", async () => {
+    const { slug } = (await getCounties())[0];
+    const first = await getFacilitiesByCounty(slug);
+    const originalLength = first.length;
+    first.pop();
+    expect(await getFacilitiesByCounty(slug)).toHaveLength(originalLength);
   });
 });
 

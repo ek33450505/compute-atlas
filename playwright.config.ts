@@ -63,6 +63,23 @@ export default defineConfig({
     // nobody asked for. The cost is a rebuild per local run; that is the
     // right trade for a check that is only worth anything if it is trusted.
     reuseExistingServer: false,
-    timeout: 240_000,
+    // Sized for a COLD CI runner, not this laptop. The build prerenders
+    // 3,039 routes (facilities 1,571 · operators 645 · counties 637 ·
+    // states 51 · embed 50 · metros 28) — the by-county lens added 637 of
+    // them, +26.5% over the previous 2,402. Measured locally 2026-09-11 on
+    // an M-series Mac: 114.3s cold (after clearing .next/cache), 53.1s warm.
+    // ci.yml's e2e job caches no .next, so CI is ALWAYS the cold path, on
+    // slower shared hardware — and a 240s budget put a passing build inside
+    // ~2x of the ceiling. That is not enough margin for a check that blocks
+    // every merge to main: a webServer timeout there is indistinguishable
+    // from a real failure and gets retried rather than diagnosed (it was
+    // observed once locally on 2026-09-11 and did not reproduce).
+    //
+    // The trade, stated honestly: a genuinely hung build now burns 10
+    // minutes before failing instead of 4. That is the right price — a slow
+    // true failure costs one job, a false timeout blocks the branch. Raise
+    // the ROUTE COUNT's cost (fewer prerendered pages) before raising this
+    // again; per ci.yml, this value is the remedy, not "fixing" the tests.
+    timeout: 600_000,
   },
 });

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { getStates, getOperators } from "@/lib/data";
+import { getStates, getOperators, getCounties } from "@/lib/data";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
@@ -32,6 +32,12 @@ const LENSES = [
     href: "/metros",
     description:
       "Curated metro areas driving the buildout — county clusters, each with a live, source-cited facility count.",
+  },
+  {
+    label: "Counties",
+    href: "/counties",
+    description:
+      "Every county with a tracked site, grouped by state — the level permits are filed and hearings are held at.",
   },
   {
     label: "Power",
@@ -108,10 +114,12 @@ const LENSES = [
 export default async function ExplorePage() {
   const stateCount = (await getStates()).length;
   const operatorCount = (await getOperators()).length;
+  const countyCount = (await getCounties()).length;
 
   const stats: Partial<Record<(typeof LENSES)[number]["label"], string>> = {
     States: `${stateCount} states`,
     Operators: `${operatorCount} operators`,
+    Counties: `${countyCount} counties`,
   };
 
   return (

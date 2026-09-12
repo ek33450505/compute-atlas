@@ -15,7 +15,8 @@ import { STATUS_ORDER, type Status } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, type CommunityReception } from "@/lib/community";
 import { getFacilityMaxMw } from "@/lib/format";
-import { getMetroBySlug, metroCountyKey } from "@/lib/metros";
+import { getMetroBySlug, metroCountyKey, normalizeCounty } from "@/lib/metros";
+import { canonicalCountyName, countySlug } from "@/lib/counties";
 import facilitiesRaw from "@/data/facilities.json";
 import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { getDb, hasDatabaseUrl, readsUseDatabase } from "@/lib/db/client";
@@ -1862,6 +1863,168 @@ export async function getOperatorSummary(name: string): Promise<OperatorSummary 
     stateCount: states.size,
     capacityReporting,
   };
+}
+
+// ============================================================
+// Per-county helpers (used by /counties pages)
+// ============================================================
+
+// `countySlug` lives in the dependency-free `lib/counties.ts` leaf module so
+// the sitemap, bare `tsx` CLIs and unit tests can build a county URL without
+// pulling in this module's caching/DB machinery. Re-exported here for the
+// same reason `operatorSlug`/`personSlug` are (see the comment above): route
+// files import it from this one module rather than reaching into the leaf.
+export { countySlug };
+
+/** Aggregate summary of one tracked county. */
+export interface CountySummary {
+  slug: string;
+  /** Canonical bare county name, no civil-division word, e.g. "Loudoun", "St. Louis city". */
+  name: string;
+  /** Uppercase 2-letter state code. */
+  state: string;
+  count: number;
+}
+
+interface CountyIndex {
+  /** countySlug(...) -> that county's summary, for case-insensitive reverse slug lookup. */
+  bySlug: Map<string, CountySummary>;
+  /** countySlug(...) -> that county's facilities, pre-sorted by max MW desc, then name A→Z. */
+  facilitiesBySlug: Map<string, Facility[]>;
+  /** Every summary, pre-sorted count desc, then state A→Z, then name A→Z. */
+  ordered: CountySummary[];
+}
+
+/**
+ * County index memoized per `loadFacilities()` result (keyed by array identity
+ * in a WeakMap) so the per-county helpers do O(1) map lookups instead of
+ * re-scanning the whole list. Same pattern, and same reason, as
+ * `buildOperatorIndex` above: 636 county hubs each re-filtering 1,571
+ * facilities is an O(counties × facilities) blowup on the counties index page,
+ * in the sitemap, and in the exhaustive county tests. When the same array
+ * reference is reused (e.g. within one request via the loadFacilities cache)
+ * the index is built once; otherwise it rebuilds cheaply in a single
+ * O(facilities) grouping pass.
+ *
+ * Grouping key is `countySlug(county, state)`, so the live data's mixed
+ * `"X County"` / bare `"X"` spellings — and the two spellings of MO's
+ * "St. Louis city" — collapse into one bucket with one URL. The display name
+ * is then picked deterministically by `canonicalCountyName`, never by array
+ * order. Facilities with no county on record (10 today) join no bucket: they
+ * are skipped rather than grouped under an empty name.
+ *
+ * Exported (like `buildStakeholderIndex` below) so it can be unit-tested
+ * directly against synthetic fixtures — the degenerate county spellings its
+ * guard exists for have zero records in the live dataset, so there is no way
+ * to drive them through the async readers.
+ */
+const countyIndexCache = new WeakMap<Facility[], CountyIndex>();
+
+export function buildCountyIndex(facilities: Facility[]): CountyIndex {
+  const cached = countyIndexCache.get(facilities);
+  if (cached) return cached;
+
+  const facilitiesBySlug = new Map<string, Facility[]>();
+  // Every bare spelling seen per slug, in encounter order — fed to
+  // `canonicalCountyName` so the rendered label is permutation-independent.
+  const spellingsBySlug = new Map<string, string[]>();
+  const stateBySlug = new Map<string, string>();
+
+  for (const f of facilities) {
+    const raw = f.location.county;
+    if (raw == null) continue;
+    // Guard on the NORMALIZED value, not the raw one: `normalizeCounty`
+    // strips a trailing civil-division word, so a county of " County" (or
+    // " Parish"/" Borough") is non-blank on the way in and empty on the way
+    // out. That slips a raw-value check and would mint a nameless county with
+    // a bare "-va" slug. Zero live records today — this is the guard for the
+    // data wave that introduces one.
+    const bare = normalizeCounty(raw);
+    if (bare === "") continue;
+    const state = f.location.state.toUpperCase();
+    const slug = countySlug(bare, state);
+
+    const bucket = facilitiesBySlug.get(slug);
+    if (bucket) bucket.push(f);
+    else facilitiesBySlug.set(slug, [f]);
+
+    const spellings = spellingsBySlug.get(slug);
+    if (spellings) spellings.push(bare);
+    else spellingsBySlug.set(slug, [bare]);
+
+    stateBySlug.set(slug, state);
+  }
+
+  const bySlug = new Map<string, CountySummary>();
+  for (const [slug, bucket] of facilitiesBySlug) {
+    bucket.sort(
+      (a, b) =>
+        (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
+        a.name.localeCompare(b.name)
+    );
+    bySlug.set(slug, {
+      slug,
+      name: canonicalCountyName(spellingsBySlug.get(slug) ?? []),
+      state: stateBySlug.get(slug) ?? "",
+      count: bucket.length,
+    });
+  }
+
+  const ordered = [...bySlug.values()].sort(
+    (a, b) =>
+      b.count - a.count || a.state.localeCompare(b.state) || a.name.localeCompare(b.name)
+  );
+
+  const index: CountyIndex = { bySlug, facilitiesBySlug, ordered };
+  countyIndexCache.set(facilities, index);
+  return index;
+}
+
+/** Loads the facility list and returns its memoized county index. */
+async function getCountyIndex(): Promise<CountyIndex> {
+  return buildCountyIndex(await loadFacilities());
+}
+
+/**
+ * All tracked counties, sorted by facility count desc, then state A→Z, then
+ * name A→Z (deterministic tie-break). Reads the shared `loadFacilities()`
+ * cache — no new uncached per-request DB read (see that function's doc comment
+ * on the ISR-write-blowout lesson). Counties with no facility on record do not
+ * exist here: the list is derived from the data, not from a fixed roster.
+ *
+ * Returns fresh summary objects, not the memoized ones — a caller writing
+ * `county.count = 0` would otherwise poison every later read for the lifetime
+ * of the `loadFacilities()` cache. Same contract as `getOperatorSummary` and
+ * `getStakeholders`, which build their summaries per call.
+ */
+export async function getCounties(): Promise<CountySummary[]> {
+  const { ordered } = await getCountyIndex();
+  return ordered.map((county) => ({ ...county }));
+}
+
+/**
+ * The county for a URL slug (case-insensitive), or undefined if unknown.
+ * Backed by the memoized county index — an O(1) map lookup, never a rebuild.
+ * Slugs are resolved through this reverse index rather than parsed apart, the
+ * way operator slugs are (see `lib/counties.ts`). Returns a fresh object for
+ * the same reason `getCounties` does: the cached summary is shared by every
+ * caller and must not be mutable through any of them.
+ */
+export async function getCountyBySlug(slug: string): Promise<CountySummary | undefined> {
+  const { bySlug } = await getCountyIndex();
+  const county = bySlug.get(slug.toLowerCase());
+  return county ? { ...county } : undefined;
+}
+
+/**
+ * One county's facilities, sorted by max capacity (operational or planned)
+ * desc, then name A→Z — the same order every other hub uses. Unknown slug
+ * returns `[]`. Returns a copy so a caller sorting in place cannot poison the
+ * memoized index.
+ */
+export async function getFacilitiesByCounty(slug: string): Promise<Facility[]> {
+  const { facilitiesBySlug } = await getCountyIndex();
+  return [...(facilitiesBySlug.get(slug.toLowerCase()) ?? [])];
 }
 
 // ============================================================
