@@ -6,6 +6,7 @@ import {
   extractTrustedClientIp,
   normaliseIpForBucketing,
   hashIp,
+  hashNotifyEmail,
 } from "@/lib/rate-limit";
 
 describe("rateLimitDecision", () => {
@@ -210,5 +211,80 @@ describe("hashIp", () => {
     const saltedHash = hashIp("203.0.113.9");
     expect(saltedHash).not.toBe(fallbackHash);
     expect(saltedHash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  // Literal-output regression pin, added alongside the `resolveContributeSalt`
+  // refactor (factored out of hashIp so hashNotifyEmail below can share it).
+  // Every `submitter_ip_hash` value already stored in production was computed
+  // by hashIp's exact expression — this must keep failing if that expression
+  // ever changes for a fixed (ip, salt) pair, so a future edit to the shared
+  // salt-resolution helper can't silently change hashIp's output and orphan
+  // every stored row.
+  it("pins its output for a fixed (ip, salt) pair — a literal, not a re-derivation", () => {
+    process.env.CONTRIBUTE_IP_SALT = "pin-test-salt-v1";
+    expect(hashIp("203.0.113.9")).toBe(
+      "dee1be05fe0c832147d60a1fd4a08aaafc54f3ab59700b23533b1913e0bc742b"
+    );
+  });
+});
+
+describe("hashNotifyEmail", () => {
+  const ORIGINAL_SALT = process.env.CONTRIBUTE_IP_SALT;
+  const ORIGINAL_VERCEL_ENV = process.env.VERCEL_ENV;
+
+  beforeEach(() => {
+    delete process.env.CONTRIBUTE_IP_SALT;
+    delete process.env.VERCEL_ENV;
+  });
+
+  afterEach(() => {
+    if (ORIGINAL_SALT === undefined) {
+      delete process.env.CONTRIBUTE_IP_SALT;
+    } else {
+      process.env.CONTRIBUTE_IP_SALT = ORIGINAL_SALT;
+    }
+    if (ORIGINAL_VERCEL_ENV === undefined) {
+      delete process.env.VERCEL_ENV;
+    } else {
+      process.env.VERCEL_ENV = ORIGINAL_VERCEL_ENV;
+    }
+  });
+
+  it("throws in production when CONTRIBUTE_IP_SALT is unset — shares hashIp's production guard", () => {
+    process.env.VERCEL_ENV = "production";
+    expect(() => hashNotifyEmail("someone@example.com")).toThrow(
+      /CONTRIBUTE_IP_SALT must be set in production/
+    );
+  });
+
+  it("falls back to the built-in salt and returns a sha256 hex digest when unset outside production", () => {
+    const hash = hashNotifyEmail("someone@example.com");
+    expect(hash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it("is deterministic for the same address and changes once a real salt is set", () => {
+    const fallbackHash = hashNotifyEmail("someone@example.com");
+    expect(hashNotifyEmail("someone@example.com")).toBe(fallbackHash); // deterministic
+    process.env.CONTRIBUTE_IP_SALT = "a-real-random-salt";
+    const saltedHash = hashNotifyEmail("someone@example.com");
+    expect(saltedHash).not.toBe(fallbackHash);
+    expect(saltedHash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  // The whole point of the "notify-email:" domain separator: without it, an
+  // email address and an IP that happen to be the same literal string would
+  // hash identically, letting a `submission_notify_sends.email_hash` value
+  // collide with a `submitter_ip_hash` value computed from the same input.
+  it("differs from hashIp for the exact same input string and salt", () => {
+    process.env.CONTRIBUTE_IP_SALT = "shared-salt-for-this-test";
+    const sameLiteralInput = "collision-candidate@example.com";
+    expect(hashNotifyEmail(sameLiteralInput)).not.toBe(hashIp(sameLiteralInput));
+  });
+
+  it("pins its output for a fixed (email, salt) pair — a literal, not a re-derivation", () => {
+    process.env.CONTRIBUTE_IP_SALT = "pin-test-salt-v1";
+    expect(hashNotifyEmail("pin-test@example.com")).toBe(
+      "f0ca8dc9a0d9d09e999aedbeea5aa17f06be1edb8a395cac927f7bed844be61f"
+    );
   });
 });

@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { randomUUID } from "node:crypto";
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -14,6 +15,8 @@ import {
   contactMessagesTable,
   leadsTable,
   submissionsTable,
+  submissionNotifyRequestsTable,
+  submissionNotifySendsTable,
   subscribeAttemptsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
@@ -185,6 +188,18 @@ async function seedAllTables() {
     .values({ submitterIpHash: "attempt-hash-fresh", createdAt: daysBefore(1) })
     .returning({ id: subscribeAttemptsTable.id });
 
+  // submission_notify_requests: retention window 90 days, by createdAt — a
+  // surviving row this old means its submission was never reviewed (a
+  // reviewed one is deleted immediately, well inside the window).
+  const [notifyOld] = await tdb.db
+    .insert(submissionNotifyRequestsTable)
+    .values({ submissionId: randomUUID(), email: "notify-old@example.com", createdAt: daysBefore(100) })
+    .returning({ id: submissionNotifyRequestsTable.id });
+  const [notifyFresh] = await tdb.db
+    .insert(submissionNotifyRequestsTable)
+    .values({ submissionId: randomUUID(), email: "notify-fresh@example.com", createdAt: daysBefore(80) })
+    .returning({ id: submissionNotifyRequestsTable.id });
+
   // api_access_grants: retention window 90 days, (revoked AND revokedAt old) OR (expiresAt old).
   const [grantOldRevoked] = await tdb.db
     .insert(apiAccessGrantsTable)
@@ -235,6 +250,8 @@ async function seedAllTables() {
     subscriptionOldConfirmed: subscriptionOldConfirmed.id,
     attemptOld: attemptOld.id,
     attemptFresh: attemptFresh.id,
+    notifyOld: notifyOld.id,
+    notifyFresh: notifyFresh.id,
     grantOldRevoked: grantOldRevoked.id,
     grantFreshRevoked: grantFreshRevoked.id,
     grantOldExpired: grantOldExpired.id,
@@ -260,6 +277,7 @@ describe("runRetentionPrune — dry run", () => {
     expect(byTable.submissions.candidates).toBe(1);
     expect(byTable.subscriptions.candidates).toBe(1);
     expect(byTable.subscribe_attempts.candidates).toBe(1);
+    expect(byTable.submission_notify_requests.candidates).toBe(1);
     expect(byTable.api_access_grants.candidates).toBe(2); // old-revoked + old-expired
     expect(byTable.api_daily_usage.candidates).toBe(1);
     for (const t of summary.tables) {
@@ -269,6 +287,7 @@ describe("runRetentionPrune — dry run", () => {
     // Nothing written: no backup dir/files, no rows removed, no provenance stripped.
     expect(() => readdirSync(backupDir)).toThrow();
     expect(await tdb.db.select().from(subscribeAttemptsTable)).toHaveLength(2);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(2);
     expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(2);
     expect(await tdb.db.select().from(leadsTable)).toHaveLength(4);
     const submissions = await tdb.db.select().from(submissionsTable);
@@ -295,6 +314,7 @@ describe("runRetentionPrune — apply", () => {
     expect(byTable.submissions).toMatchObject({ candidates: 1, applied: 1, action: "strip-ip-hash" });
     expect(byTable.subscriptions).toMatchObject({ candidates: 1, applied: 1 });
     expect(byTable.subscribe_attempts).toMatchObject({ candidates: 1, applied: 1 });
+    expect(byTable.submission_notify_requests).toMatchObject({ candidates: 1, applied: 1 });
     expect(byTable.api_access_grants).toMatchObject({ candidates: 2, applied: 2 });
     expect(byTable.api_daily_usage).toMatchObject({ candidates: 1, applied: 1 });
 
@@ -330,6 +350,10 @@ describe("runRetentionPrune — apply", () => {
     const remainingAttempts = await tdb.db.select().from(subscribeAttemptsTable);
     expect(remainingAttempts.map((r) => r.id)).toEqual([ids.attemptFresh]);
 
+    // submission_notify_requests: only the never-reviewed (100-day-old) row is gone.
+    const remainingNotify = await tdb.db.select().from(submissionNotifyRequestsTable);
+    expect(remainingNotify.map((r) => r.id)).toEqual([ids.notifyFresh]);
+
     // api_access_grants: both the old-revoked and old-expired rows are gone.
     const remainingGrants = await tdb.db.select().from(apiAccessGrantsTable);
     expect(new Set(remainingGrants.map((r) => r.id))).toEqual(
@@ -342,7 +366,7 @@ describe("runRetentionPrune — apply", () => {
 
     // Backup file: exactly one JSONL line per applied mutation, correctly tagged.
     const lines = readBackupLines();
-    expect(lines).toHaveLength(9); // 1+2+1+1+1+2+1 == sum of `applied` above
+    expect(lines).toHaveLength(10); // 1+2+1+1+1+1+2+1 == sum of `applied` above
     const byId = Object.fromEntries(lines.map((l) => [l.row.id, l]));
     expect(byId[ids.contactOld]).toMatchObject({ table: "contact_messages", action: "delete" });
     expect(byId[ids.leadOldPromoted]).toMatchObject({ table: "leads", action: "delete" });
@@ -350,11 +374,12 @@ describe("runRetentionPrune — apply", () => {
     expect(byId[ids.subOldReviewed]).toMatchObject({ table: "submissions", action: "strip-ip-hash" });
     expect(byId[ids.subscriptionOldUnsub]).toMatchObject({ table: "subscriptions", action: "delete" });
     expect(byId[ids.attemptOld]).toMatchObject({ table: "subscribe_attempts", action: "delete" });
+    expect(byId[ids.notifyOld]).toMatchObject({ table: "submission_notify_requests", action: "delete" });
     expect(byId[ids.grantOldRevoked]).toMatchObject({ table: "api_access_grants", action: "delete" });
     expect(byId[ids.grantOldExpired]).toMatchObject({ table: "api_access_grants", action: "delete" });
     expect(byId[ids.usageOld]).toMatchObject({ table: "api_daily_usage", action: "delete" });
     // Rows that must NOT appear in the backup at all (never touched).
-    for (const untouchedId of [ids.contactFresh, ids.leadFreshPromoted, ids.leadOldNew, ids.subFreshReviewed, ids.subOldPending, ids.attemptFresh]) {
+    for (const untouchedId of [ids.contactFresh, ids.leadFreshPromoted, ids.leadOldNew, ids.subFreshReviewed, ids.subOldPending, ids.attemptFresh, ids.notifyFresh]) {
       expect(byId[untouchedId]).toBeUndefined();
     }
   });
@@ -394,6 +419,36 @@ describe("runRetentionPrune — window boundary", () => {
     expect(remaining.map((r) => r.id)).toEqual([insideId.id]);
     const lines = readBackupLines();
     expect(lines.map((l) => l.row.id)).toEqual([outsideId.id]);
+  });
+});
+
+// Isolated (not folded into seedAllTables/the dry-run/apply tests above) so a
+// new table here never has to touch that fixture's many hardcoded per-table
+// candidate/applied counts and the aggregate backup-line count — same
+// self-contained shape as "window boundary" above.
+describe("runRetentionPrune — submission_notify_sends (persistent send-attempt counter)", () => {
+  it("a 70-day-old row is a candidate; a 50-day-old row is not", async () => {
+    const [oldId] = await tdb.db
+      .insert(submissionNotifySendsTable)
+      .values({ emailHash: "hash-old", createdAt: daysBefore(70) })
+      .returning({ id: submissionNotifySendsTable.id });
+    const [freshId] = await tdb.db
+      .insert(submissionNotifySendsTable)
+      .values({ emailHash: "hash-fresh", createdAt: daysBefore(50) })
+      .returning({ id: submissionNotifySendsTable.id });
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    const outcome = summary.tables.find((t) => t.table === "submission_notify_sends")!;
+    expect(outcome).toMatchObject({ candidates: 1, applied: 1, action: "delete" });
+
+    const remaining = await tdb.db.select().from(submissionNotifySendsTable);
+    expect(remaining.map((r) => r.id)).toEqual([freshId.id]);
+
+    const lines = readBackupLines();
+    expect(lines.map((l) => l.row.id)).toEqual([oldId.id]);
+    expect(lines[0]).toMatchObject({ table: "submission_notify_sends", action: "delete" });
   });
 });
 

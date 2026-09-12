@@ -108,6 +108,19 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
 
 - **Public intake** (`POST /api/contribute`) is anonymous + moderated: it hard-pins
   `status=pending`, validates with Zod, and ignores privileged fields. Never relax it.
+  It also accepts one field that never reaches a facility: an optional `notifyEmail`
+  ("email me when this is reviewed"), gated entirely on `SUBMISSION_NOTIFY_ENABLED` and
+  ships **disabled**. It is deliberately NOT part of `contributeInputSchema` — a Zod object
+  strips unknown keys silently, so with the flag off the field is never read or validated and
+  responses stay byte-identical; putting it in the schema would make a malformed value 400
+  while the feature is off, an oracle revealing it exists. It is stored in
+  `submission_notify_requests` (never in `submissions.payload`, which matters because the
+  admin detail view renders every unrecognised payload key), used for exactly one
+  transactional send on approve/reject, then deleted — on review even if the send failed.
+  Volume is bounded by `checkSubmissionNotifySendCap`, a persistent salted-hash counter;
+  the sibling `checkSubmissionNotifyCap` bounds only outstanding requests, because those rows
+  are deleted at review time. Do not conflate the two, and do not route it through
+  `subscriptions`: this reader never subscribed, so an unsubscribe link would be a lie.
 - **Admin/pipeline writes** (`POST /api/submissions`, approve/reject) require the
   `API_ADMIN_TOKEN` bearer. The admin pages use a lightweight single-secret cookie
   gate — there is intentionally **no user-account system** (durable product decision).

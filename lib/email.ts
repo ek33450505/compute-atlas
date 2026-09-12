@@ -169,3 +169,60 @@ export async function sendChangeNotification(input: {
     },
   );
 }
+
+/**
+ * "Email me when this is reviewed" — the one-shot send for the
+ * `submission_notify_requests` flow (see lib/submission-notify.ts and the
+ * review-time hook in lib/submissions.ts). Deliberately NOT a copy-paste of
+ * `sendChangeNotification` above, even though both are "a facility changed"
+ * emails: this recipient never subscribed to anything, so every one of that
+ * template's phrases — "the record you're watching", "you asked to be
+ * notified", an unsubscribe link, a List-Unsubscribe header — would be false
+ * here. (This repo shipped exactly that mistake once already: a state digest
+ * inherited a facility-watch template's copy and an unsubscribe link that
+ * lied to its recipients.) Instead this says plainly what happened and that
+ * the address is now deleted — there is nothing to unsubscribe FROM.
+ *
+ * Deliberately no `note`/`reason` parameter, and none should be added:
+ * `rejectSubmission`'s `reason` is maintainer-authored commentary for the
+ * internal review queue (rendered in the admin UI), never contributor-facing
+ * copy — mailing it to an anonymous third party would forward internal notes
+ * ("obvious spam", "IP looks like a bot farm") to whoever the submitter
+ * named as their contact.
+ */
+export async function sendSubmissionReviewedEmail(input: {
+  email: string;
+  decision: "approved" | "rejected";
+  facilityName: string;
+  facilitySlug?: string; // present on approval — links to the live /facilities/<slug> page
+}): Promise<{ sent: boolean }> {
+  if (input.decision === "approved") {
+    const facilityUrl = `${linkBase()}/facilities/${input.facilitySlug}`;
+    const subject = `${input.facilityName} is now live on Compute Atlas`;
+    const text = `Compute Atlas has reviewed and published ${input.facilityName}: ${facilityUrl}\n\nThis is the only email you will receive about this submission — your address has now been deleted from our records.`;
+    const html = `<p>Compute Atlas has reviewed and published <strong>${escapeHtml(input.facilityName)}</strong>.</p><p><a href="${escapeHtml(facilityUrl)}">View it</a></p><p style="color:#666;font-size:0.85em;">This is the only email you will receive about this submission — your address has now been deleted from our records.</p>`;
+
+    return sendViaResend(
+      "sendSubmissionReviewedEmail",
+      "RESEND_API_KEY not set — skipping submission-reviewed email send",
+      { from: fromAddress(), to: input.email, subject, text, html },
+    );
+  }
+
+  // Rejected: non-accusatory by design. Most rejections are "couldn't verify
+  // from the cited source," not "you did something wrong" — the copy speaks
+  // in those general terms about the CLASS of rejection rather than
+  // asserting a specific cause for this one (there is no `reason` param to
+  // draw from — see the doc comment above), never implies wrongdoing, and
+  // never promises a human reply.
+  const contributeUrl = `${linkBase()}/contribute`;
+  const subject = "Update on your Compute Atlas submission";
+  const text = `Compute Atlas has finished reviewing ${input.facilityName}, and it was not published. The verification bar for this source-cited dataset is strict — most submissions that don't go through simply couldn't be confirmed from the source provided, not a reflection on you. If you have a stronger or more specific source, you're welcome to submit again: ${contributeUrl}\n\nThis is the only email you will receive about this submission — your address has now been deleted from our records.`;
+  const html = `<p>Compute Atlas has finished reviewing <strong>${escapeHtml(input.facilityName)}</strong>, and it was not published.</p><p>The verification bar for this source-cited dataset is strict — most submissions that don't go through simply couldn't be confirmed from the source provided, not a reflection on you. If you have a stronger or more specific source, you're welcome to submit again: <a href="${escapeHtml(contributeUrl)}">${escapeHtml(contributeUrl)}</a></p><p style="color:#666;font-size:0.85em;">This is the only email you will receive about this submission — your address has now been deleted from our records.</p>`;
+
+  return sendViaResend(
+    "sendSubmissionReviewedEmail",
+    "RESEND_API_KEY not set — skipping submission-reviewed email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}

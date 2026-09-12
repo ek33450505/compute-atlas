@@ -47,6 +47,10 @@ interface ContributeFormState {
   sourceUrl: string;
   sourceLabel: string;
   attribution: string;
+  /** "Email me when this is reviewed" — optional, only rendered/submitted
+   * when the `notifyEnabled` prop is true. See buildContributePayload for
+   * the omit-when-disabled-or-blank contract. */
+  notifyEmail: string;
   note: string;
   /** Honeypot — real submitters never see or fill this. */
   website: string;
@@ -66,6 +70,7 @@ const EMPTY_STATE: ContributeFormState = {
   sourceUrl: "",
   sourceLabel: "",
   attribution: "",
+  notifyEmail: "",
   note: "",
   website: "",
 };
@@ -95,7 +100,10 @@ const STATE_ITEMS = STATE_OPTIONS.map((s) => ({ value: s.code, label: s.name }))
 // than sent as "".
 // ---------------------------------------------------------------------------
 
-export function buildContributePayload(state: ContributeFormState): Record<string, unknown> {
+export function buildContributePayload(
+  state: ContributeFormState,
+  notifyEnabled = false
+): Record<string, unknown> {
   const payload: Record<string, unknown> = {
     kind: "create",
     website: state.website,
@@ -116,6 +124,11 @@ export function buildContributePayload(state: ContributeFormState): Record<strin
   if (capacityPlannedMw !== undefined) payload.capacityPlannedMw = capacityPlannedMw;
   if (state.sourceLabel.trim()) payload.sourceLabel = state.sourceLabel.trim();
   if (state.attribution.trim()) payload.attribution = state.attribution.trim();
+  // Gated here, not just at the render site, so a stray value in
+  // `state.notifyEmail` can never leak into the request when the flag is
+  // off — `notifyEnabled` defaults to false so every pre-C1b caller/test
+  // keeps producing a byte-identical payload without passing it.
+  if (notifyEnabled && state.notifyEmail.trim()) payload.notifyEmail = state.notifyEmail.trim();
   if (state.note.trim()) payload.note = state.note.trim();
 
   return payload;
@@ -148,6 +161,7 @@ export function TextField({
   maxLength,
   placeholder,
   inputMode,
+  autoComplete,
 }: {
   id: string;
   label: string;
@@ -162,6 +176,7 @@ export function TextField({
   maxLength?: number;
   placeholder?: string;
   inputMode?: ComponentProps<"input">["inputMode"];
+  autoComplete?: ComponentProps<"input">["autoComplete"];
 }) {
   const errorId = `${id}-error`;
   const hintId = `${id}-hint`;
@@ -184,6 +199,7 @@ export function TextField({
         onChange={(e) => onChange(e.target.value)}
         required={required}
         inputMode={inputMode}
+        autoComplete={autoComplete}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
       />
@@ -640,10 +656,12 @@ function SourceSection({
   state,
   setState,
   errors,
+  notifyEnabled,
 }: {
   state: ContributeFormState;
   setState: Dispatch<SetStateAction<ContributeFormState>>;
   errors: FieldIssues;
+  notifyEnabled: boolean;
 }) {
   return (
     <Card>
@@ -677,6 +695,19 @@ function SourceSection({
           maxLength={40}
           hint="Credited on the public activity feed. Leave blank to stay anonymous — no email addresses."
         />
+        {notifyEnabled ? (
+          <TextField
+            id="notifyEmail"
+            label="Your email (optional)"
+            type="email"
+            autoComplete="email"
+            value={state.notifyEmail}
+            onChange={(v) => setState((prev) => ({ ...prev, notifyEmail: v }))}
+            error={errors["notifyEmail"]}
+            maxLength={254}
+            hint="Used once, to tell you whether this submission was published, then deleted. You won't hear from us for any other reason."
+          />
+        ) : null}
       </CardContent>
     </Card>
   );
@@ -759,7 +790,15 @@ export function HoneypotField({
 
 type SubmitOutcome = "idle" | "success";
 
-export function ContributeFacilityForm() {
+export function ContributeFacilityForm({
+  notifyEnabled = false,
+}: {
+  /** Server-read flag (SUBMISSION_NOTIFY_ENABLED) passed down from
+   * app/contribute/page.tsx — this client component never reads
+   * process.env itself. Off by default so every render/test predating
+   * C1b stays byte-identical. */
+  notifyEnabled?: boolean;
+} = {}) {
   const [state, setState] = useState<ContributeFormState>(EMPTY_STATE);
   const [errors, setErrors] = useState<FieldIssues>({});
   const [formError, setFormError] = useState<string | undefined>(undefined);
@@ -790,7 +829,7 @@ export function ContributeFacilityForm() {
       const res = await fetch("/api/contribute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildContributePayload(state)),
+        body: JSON.stringify(buildContributePayload(state, notifyEnabled)),
       });
 
       if (res.status === 201) {
@@ -867,7 +906,7 @@ export function ContributeFacilityForm() {
       <FacilitySection state={state} setState={setState} errors={errors} />
       <LocationSection state={state} setState={setState} errors={errors} />
       <CapacitySection state={state} setState={setState} errors={errors} />
-      <SourceSection state={state} setState={setState} errors={errors} />
+      <SourceSection state={state} setState={setState} errors={errors} notifyEnabled={notifyEnabled} />
       <NotesSection state={state} setState={setState} errors={errors} />
 
       {formError ? (

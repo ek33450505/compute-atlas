@@ -15,7 +15,11 @@ import {
   SchemaDriftError,
 } from "./check-schema-drift";
 
-const ALL_TEN_TABLES = [
+// Hand-maintained on purpose: this is the independent check proving
+// getExpectedTableNames() really derives its list from the pgTable
+// exports in lib/db/schema.ts. Deriving this list from that function
+// instead would make the test unable to fail.
+const ALL_TABLES = [
   "api_access_grants",
   "api_daily_usage",
   "contact_messages",
@@ -23,6 +27,8 @@ const ALL_TEN_TABLES = [
   "facilities",
   "facility_history",
   "leads",
+  "submission_notify_requests",
+  "submission_notify_sends",
   "submissions",
   "subscribe_attempts",
   "subscriptions",
@@ -34,7 +40,7 @@ const ALL_TEN_TABLES = [
 
 describe("getExpectedTableNames", () => {
   it("derives every pgTable export from lib/db/schema.ts, not a hardcoded list", () => {
-    expect(getExpectedTableNames()).toEqual(ALL_TEN_TABLES);
+    expect(getExpectedTableNames()).toEqual(ALL_TABLES);
   });
 });
 
@@ -62,7 +68,7 @@ describe("runSchemaDriftCheck", () => {
     const report = await runSchemaDriftCheck();
 
     expect(report.missingTables).toEqual([]);
-    expect(report.presentTables).toEqual(ALL_TEN_TABLES);
+    expect(report.presentTables).toEqual(ALL_TABLES);
   });
 
   it("reports a zero-row WARNING signal (not a failure) when api_daily_usage has no rows for the given day", async () => {
@@ -103,7 +109,7 @@ describe("runSchemaDriftCheck", () => {
     const err = await runSchemaDriftCheck(expectedWithFake).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(SchemaDriftError);
     expect((err as SchemaDriftError).report.missingTables).toEqual(["totally_fake_table_xyz"]);
-    expect((err as SchemaDriftError).report.presentTables).toEqual(ALL_TEN_TABLES);
+    expect((err as SchemaDriftError).report.presentTables).toEqual(ALL_TABLES);
   });
 
   it("throws SchemaDriftError when a table the code expects is dropped from the live database — reproduces the PR #222 incident directly", async () => {

@@ -4,6 +4,8 @@ import { and, eq, gt, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import {
   submissionsTable,
+  submissionNotifyRequestsTable,
+  submissionNotifySendsTable,
   subscriptionsTable,
   subscribeAttemptsTable,
   leadsTable,
@@ -144,20 +146,54 @@ const FALLBACK_CONTRIBUTE_IP_SALT = "compute-atlas-contribute-v1";
 /**
  * `CONTRIBUTE_IP_SALT` is optional locally but REQUIRED in production. The
  * fallback salt above is public (this repo is open source), so hashes made
- * with it are brute-forceable over the full IPv4 address space — production
- * must fail loudly rather than silently pseudonymize submitter IPs with a
- * known salt. Preview deployments do not inherit Production-scoped env vars,
- * so previews (like local dev and tests) intentionally keep the fallback.
+ * with it are brute-forceable over the full input space — production must
+ * fail loudly rather than silently pseudonymize submitter IPs (or, below,
+ * notify-request email addresses) with a known salt. Preview deployments do
+ * not inherit Production-scoped env vars, so previews (like local dev and
+ * tests) intentionally keep the fallback.
+ *
+ * Shared by every salted hash in this file (`hashIp`, `hashNotifyEmail`)
+ * rather than each resolving+guarding its own copy, so there is exactly one
+ * place this guard can drift. Deliberately does NOT introduce a second env
+ * var for the email-hash path — every additional variable is one more thing
+ * that must be configured correctly before its feature can be enabled.
  */
-export function hashIp(ip: string): string {
+function resolveContributeSalt(): string {
   const salt = process.env.CONTRIBUTE_IP_SALT;
   if (!salt && process.env.VERCEL_ENV === "production") {
     throw new Error(
-      "CONTRIBUTE_IP_SALT must be set in production — refusing to hash IPs with the repo-public default salt."
+      "CONTRIBUTE_IP_SALT must be set in production — refusing to hash with the repo-public default salt."
     );
   }
+  return salt ?? FALLBACK_CONTRIBUTE_IP_SALT;
+}
+
+/**
+ * NOTE ON STABILITY: this must keep producing the exact same digest for the
+ * exact same (ip, salt) pair as before the `resolveContributeSalt` refactor —
+ * every `submitter_ip_hash` value already stored in production was computed
+ * by this expression, and a changed output would silently orphan every
+ * stored row. Pinned by a literal-output regression test in
+ * `lib/rate-limit.test.ts`; do not change this function's hashed input
+ * without updating stored data.
+ */
+export function hashIp(ip: string): string {
+  return createHash("sha256").update(ip + resolveContributeSalt()).digest("hex");
+}
+
+/**
+ * Hashes a notify-request email address for `submission_notify_sends`
+ * (see that table's doc comment in lib/db/schema.ts for why this exists).
+ * Reuses `hashIp`'s salt and production guard via `resolveContributeSalt` —
+ * deliberately, so this feature needs no env var of its own — but prefixes a
+ * domain separator (`"notify-email:"`) so an email hash can never collide
+ * with an IP hash of the same literal input string. `email` is expected
+ * pre-normalized (lowercased/trimmed) by the caller, same convention as
+ * every other per-address cap in this file.
+ */
+export function hashNotifyEmail(email: string): string {
   return createHash("sha256")
-    .update(ip + (salt ?? FALLBACK_CONTRIBUTE_IP_SALT))
+    .update("notify-email:" + email + resolveContributeSalt())
     .digest("hex");
 }
 
@@ -294,6 +330,94 @@ export async function checkEmailSendCap(email: string): Promise<{ ok: boolean }>
     .from(subscriptionsTable)
     .where(and(gt(subscriptionsTable.createdAt, windowStart), eq(subscriptionsTable.email, email)));
   return { ok: Number(rows[0]?.c ?? 0) < EMAIL_SEND_CAP_MAX };
+}
+
+/**
+ * Per-recipient cap on OUTSTANDING "email me when reviewed" requests —
+ * bounds notify-queue depth per address, NOT mail volume. Independent of the
+ * per-IP `checkRateLimit` (5/hour), which already bounds submission
+ * creation. `email` is expected pre-normalized (lowercased/trimmed) by the
+ * caller.
+ *
+ * CORRECTED LIMITATION (was documented here as "still bounds mail volume" —
+ * that was wrong; see the security-review finding this comment now
+ * reflects): `submission_notify_requests` rows are deleted the moment their
+ * submission is reviewed (see that table's doc comment in lib/db/schema.ts),
+ * approve OR reject either way, so this counts *outstanding* notify requests
+ * per address within the window, not lifetime attempts — unlike
+ * `checkEmailSendCap` above, whose `subscriptions` rows persist. It does
+ * NOT bound mail volume: an attacker can fill this cap, wait for the
+ * maintainer's ordinary review of the queue to delete the rows (which sends
+ * the mail), and refill immediately — volume is unbounded over time with the
+ * maintainer's own spam-cleanup as the delivery mechanism. See
+ * `checkSubmissionNotifySendCap` below for the persistent counter that
+ * actually bounds mail volume; this function is kept only to bound how many
+ * requests can sit outstanding for one address at a time. Submission
+ * creation itself is bounded independently by the per-IP `checkRateLimit`.
+ */
+export async function checkSubmissionNotifyCap(email: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(submissionNotifyRequestsTable)
+    .where(
+      and(
+        gt(submissionNotifyRequestsTable.createdAt, windowStart),
+        eq(submissionNotifyRequestsTable.email, email)
+      )
+    );
+  return { ok: Number(rows[0]?.c ?? 0) < EMAIL_SEND_CAP_MAX };
+}
+
+export const SUBMISSION_NOTIFY_SEND_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+export const SUBMISSION_NOTIFY_SEND_CAP_MAX = 5;
+
+/**
+ * Records one notify-email SEND ATTEMPT against `submission_notify_sends`,
+ * hashed via `hashNotifyEmail`.
+ *
+ * MUST be called BEFORE the send is attempted, not after it succeeds — same
+ * "attempts, not outcomes" reasoning as `recordSubscribeAttempt` above (PR
+ * #288): a counter that only increments on success is free to anyone whose
+ * send never succeeds, so a failing send must still spend the target
+ * address's budget or the cap is trivially bypassed by an address that
+ * simply never accepts mail. See `notifySubmitterOfReview` in
+ * lib/submissions.ts for the call site and ordering.
+ */
+export async function recordSubmissionNotifySend(email: string): Promise<void> {
+  await getDb()
+    .insert(submissionNotifySendsTable)
+    .values({ emailHash: hashNotifyEmail(email) });
+}
+
+/**
+ * Per-recipient cap on notify-email SEND ATTEMPTS over a 30-day window — the
+ * cap that actually bounds mail volume (see `checkSubmissionNotifyCap`
+ * above, which does not). Counts `submission_notify_sends` rows, which
+ * persist independently of the `submission_notify_requests` row's deletion
+ * at review time, so the counter survives the exact event that used to reset
+ * it to zero.
+ *
+ * TRADE-OFF, STATED HONESTLY: 5 sends per address per 30 days. A prolific
+ * honest contributor who submits more than five facilities in a month
+ * silently stops receiving the courtesy "reviewed" email once they cross the
+ * cap. This fails safe: the submission itself is still processed completely
+ * normally either way; only the notification email is skipped. `email` is
+ * expected pre-normalized (lowercased/trimmed) by the caller.
+ */
+export async function checkSubmissionNotifySendCap(email: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - SUBMISSION_NOTIFY_SEND_WINDOW_MS);
+  const emailHash = hashNotifyEmail(email);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(submissionNotifySendsTable)
+    .where(
+      and(
+        gt(submissionNotifySendsTable.createdAt, windowStart),
+        eq(submissionNotifySendsTable.emailHash, emailHash)
+      )
+    );
+  return { ok: Number(rows[0]?.c ?? 0) < SUBMISSION_NOTIFY_SEND_CAP_MAX };
 }
 
 /**

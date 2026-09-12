@@ -83,6 +83,7 @@ See `.env.example`.
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
 | `CRON_SECRET` | Bearer secret for `/api/cron/*`. **Leave unset** — see below. Must differ from `API_ADMIN_TOKEN` |
 | `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Leave unset** — `"true"` is the only enabling value |
+| `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Leave unset** — `"true"` is the only enabling value |
 
 ⚠️ **The monthly state digest ships DISABLED, on purpose.** `app/api/cron/state-digest`
 is held off by two independent switches: there is no `crons` entry in `vercel.json`, and
@@ -93,6 +94,32 @@ first step is a prerequisite, not a follow-up: **nothing in the send path is ide
 yet.** The window comes from the clock and there is no send ledger, so two calls in the same
 month send the same digest twice to the same people. The fix is a persisted `(since, until)`
 run record that makes a repeat a no-op; a rate limit is the wrong control.
+
+⚠️ **"Email me when reviewed" ships DISABLED, on purpose.** With
+`SUBMISSION_NOTIFY_ENABLED` unset, `POST /api/contribute` ignores a `notifyEmail` entirely —
+it is not read, not validated, and not stored, so the endpoint's responses are byte-identical
+to before the feature existed — the form does not render the field, and the review path sends
+nothing. Merging it is a genuine no-op.
+
+Two things are true before you set it to `"true"`:
+
+1. **The migrations must be applied.** `drizzle/0011_*` and `drizzle/0012_*` create
+   `submission_notify_requests` and `submission_notify_sends`. Nothing in CI runs
+   `db:migrate`, and `scripts/check-schema-drift.ts` derives its expected-table list from the
+   `pgTable` exports — so `drift-alert.yml` (22:00 UTC daily) goes red until Neon has both.
+   That red is correct, not a false alarm.
+2. **Understand what the two caps do, because they are not the same control.**
+   `checkSubmissionNotifyCap` bounds how many notify requests may be *outstanding* per address
+   (5/hour). It does NOT bound mail volume: the request row is deleted at review time, so
+   every review pass clears the count. `checkSubmissionNotifySendCap` is the one that bounds
+   volume — a persistent, salted-hash counter (`submission_notify_sends`, 5 per address per 30
+   days) written *before* each send, so a failed send still spends budget. Without it, a single
+   actor inside the existing per-IP budget could aim unbounded mail at one address, using the
+   maintainer's own review pass as the delivery mechanism.
+
+Note the address is stored in plaintext while a request is outstanding — it has to be, to mail
+it — and is deleted the moment its one email is sent, on review even if that send failed, and
+by `scripts/retention-prune.ts` after 90 days for submissions nobody ever reviewed.
 
 ⚠️ **`.env.local` quoting.** `vercel env add` keeps surrounding quotes, and a quoted
 `DATABASE_URL` is invalid and fails *silently* — there is no fallback. Strip the quotes.

@@ -9,6 +9,8 @@ import {
   type CorrectableKey,
 } from "@/lib/contribute-fields";
 import { httpUrlSchema, sanitizeAttribution } from "@/lib/intake-fields";
+import { checkSubmissionNotifyCap } from "@/lib/rate-limit";
+import { recordSubmissionNotifyRequest, submissionNotifyEnabled } from "@/lib/submission-notify";
 
 export { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
 // Re-exported so existing callers (this module's own tests, lib/leads.ts
@@ -261,6 +263,54 @@ export function buildCorrectionPatch(
   return { payload: patch };
 }
 
+// Validates a `notifyEmail` value ONLY when the feature is enabled (see
+// below) — never part of `contributeInputSchema`. See that decision's
+// rationale at the read site in `submitContribution`. Unlike
+// lib/subscribe.ts's/lib/access-grants.ts's `email` field (which validates
+// the raw value, then normalizes separately), this one trims + lowercases
+// BEFORE the `.email()`/`.max()` checks — a raw value with incidental
+// whitespace should still be treated as the address it obviously is, not
+// rejected as malformed.
+const notifyEmailSchema = z.string().trim().toLowerCase().email().max(254);
+
+// Wrapped in a one-key object rather than parsed as a bare string so a
+// validation failure's `issue.path` is `["notifyEmail"]`, not `[]` — a
+// path-less issue can't be attached to a field by the form's client-side
+// issuesToFieldMap (components/contribute/field-primitives.tsx), which keys
+// errors by `issue.path[0]`. (Flagged by the frontend unit, which had worked
+// around the empty path client-side; fixing the shape here removes the need
+// for that workaround.)
+const notifyEmailFieldSchema = z.object({ notifyEmail: notifyEmailSchema });
+
+/**
+ * Best-effort "email me when reviewed" side effect, run AFTER a submission
+ * has already been created successfully. Mirrors `approveSubmission`'s wrap
+ * around `notifySubscribersOfChange` (lib/submissions.ts): a failure here —
+ * whether from the cap check or the insert — must never turn a successful
+ * submission into an error response, so it is swallowed and logged.
+ *
+ * Logs only a safe error code, never the caught error object:
+ * `recordSubmissionNotifyRequest`'s insert binds `email`, and
+ * `DrizzleQueryError.message` embeds bound query params, so logging the raw
+ * error here would leak the contributor's address to server logs — the same
+ * incident class that previously happened with an IP hash.
+ */
+async function recordNotifyRequestBestEffort(submissionId: string, email: string): Promise<void> {
+  try {
+    const cap = await checkSubmissionNotifyCap(email);
+    if (!cap.ok) {
+      return; // over the per-address cap — no row; same generic success either way
+    }
+    await recordSubmissionNotifyRequest(submissionId, email);
+  } catch (err) {
+    const code =
+      (err as { code?: string } | undefined)?.code ??
+      (err as { cause?: { code?: string } } | undefined)?.cause?.code ??
+      "unknown";
+    console.error("submission notify request failed", code);
+  }
+}
+
 export async function submitContribution(
   rawInput: unknown,
   ipHash: string,
@@ -278,6 +328,35 @@ export async function submitContribution(
 
   if (isHoneypotTripped(data)) {
     return { ok: true };
+  }
+
+  // "Email me when reviewed" — deliberately NOT a field on
+  // `contributeInputSchema` (see the `submissionNotifyRequestsTable` doc
+  // comment in lib/db/schema.ts). A Zod object silently strips unknown keys,
+  // so today a request carrying `notifyEmail` already succeeds with the
+  // field discarded. Adding it to the always-on schema with `.email()`/
+  // `.max()` validation would make a malformed value 400 EVEN WITH THE FLAG
+  // OFF — an oracle revealing the feature exists before it's live. So: read
+  // and validate this key ONLY when the flag is on; with it off, behavior
+  // and response are byte-identical to before this feature existed.
+  let notifyEmail: string | undefined;
+  if (submissionNotifyEnabled()) {
+    const rawNotifyEmail =
+      rawInput && typeof rawInput === "object" && "notifyEmail" in rawInput
+        ? (rawInput as { notifyEmail?: unknown }).notifyEmail
+        : undefined;
+    if (rawNotifyEmail !== undefined) {
+      const parsedEmail = notifyEmailFieldSchema.safeParse({ notifyEmail: rawNotifyEmail });
+      if (!parsedEmail.success) {
+        return {
+          ok: false,
+          status: 400,
+          error: "Invalid notify email",
+          issues: parsedEmail.error.issues,
+        };
+      }
+      notifyEmail = parsedEmail.data.notifyEmail; // already trimmed + lowercased by the schema above
+    }
   }
 
   if (data.kind === "create") {
@@ -299,6 +378,9 @@ export async function submitContribution(
       },
     });
     if (!result.ok) return result;
+    if (notifyEmail) {
+      await recordNotifyRequestBestEffort(result.id, notifyEmail);
+    }
     return { ok: true };
   }
 
@@ -328,5 +410,8 @@ export async function submitContribution(
     },
   });
   if (!result.ok) return result;
+  if (notifyEmail) {
+    await recordNotifyRequestBestEffort(result.id, notifyEmail);
+  }
   return { ok: true };
 }
