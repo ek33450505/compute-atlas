@@ -3,7 +3,6 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "n
 import os from "node:os";
 import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { eq } from "drizzle-orm";
 
 vi.mock("../lib/db/client");
 

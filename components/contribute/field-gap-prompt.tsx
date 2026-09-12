@@ -36,6 +36,21 @@ interface FieldGapPromptProps {
   facilityName: string;
   /** Human copy, e.g. "permanent jobs", "the air permit". */
   label: string;
+  /**
+   * Set when this prompt stands in for a WHOLE group rather than one field —
+   * it replaces the group's heading and list, so there is no `<dt>` beside it
+   * and the print nil renders as a bare "Not recorded" naming nothing.
+   *
+   * The gap is NOT going unreported: the consolidated line at the foot of the
+   * brief (components/facility/print-gap-summary.tsx) already names the group,
+   * so the marker here is a duplicate as well as an orphan. Suppressing it
+   * removes a repetition, never a fact.
+   *
+   * ⛔ Do not "restore" the marker for completeness — an unlabelled nil is the
+   * defect this flag exists to prevent, and it is invisible in review because
+   * it only shows in rendered output (found in a printed PDF, 2026-09-11).
+   */
+  coveredByPrintSummary?: boolean;
 }
 
 /**
@@ -50,8 +65,12 @@ export function FieldGapPrompt({
   facilityId,
   facilityName,
   label,
+  coveredByPrintSummary = false,
 }: FieldGapPromptProps) {
   const correctable = (CORRECTABLE_KEYS as readonly string[]).includes(field);
+  // Both branches below carry the same marker, so the decision is made once
+  // here — adding it to only one branch is how half a stat sheet gets printed.
+  const printNil = coveredByPrintSummary ? null : <NotRecorded />;
 
   if (correctable) {
     return (
@@ -64,7 +83,7 @@ export function FieldGapPrompt({
           triggerLabel={`Know ${label}?`}
           triggerClassName={`${QUIET_ACTION_CLASS} print:hidden`}
         />
-        <NotRecorded />
+        {printNil}
       </>
     );
   }
@@ -76,7 +95,7 @@ export function FieldGapPrompt({
       <Link href="/contribute" className={`${QUIET_ACTION_CLASS} print:hidden`}>
         Know a source for {label} on {facilityName}? Send us a link.
       </Link>
-      <NotRecorded />
+      {printNil}
     </>
   );
 }

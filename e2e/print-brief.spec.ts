@@ -19,27 +19,52 @@ const RECORDS = [
   {
     slug: "microsoft-becker-mn",
     name: "Microsoft Becker Data Center",
-    // Thinnest record. Print-media container height was 1994px over 2 printed
-    // pages before the stat sheet existed, 877px over 1 page with it, then
-    // 1025px over 2 once empty sections each printed their own nil line;
-    // consolidating those into one line brings it to 941px, still 2 pages.
-    // One page needs ~920px — the flip was measured between 906.7px (1 page)
-    // and 922.2px (2), well below the 942.6px the @page margins arithmetically
-    // leave — so the remaining ~20px is a print-stylesheet question, not a
-    // nil-marker one. The ceiling sits well above the achieved height so
-    // ordinary data growth doesn't turn this red, while any regression that
-    // restores the screen rhythm (measured at 1943px with the compaction
-    // disabled) fails it.
+    // Thinnest record, and the one the compaction is tuned against: 2 printed
+    // pages before, 1 now, with ~48px of slack before it flips back (measured
+    // by appending a spacer until the page count changed).
+    printedPages: { exactly: 1 },
+    // Secondary signal only — see the note on `countPdfPages` for why this
+    // number is NOT the printed height. Deliberately left well above the
+    // ~896px achieved so ordinary data growth doesn't turn it red, while a
+    // regression that restores the screen rhythm (1943px with the compaction
+    // disabled) still trips it.
     maxHeight: 1200,
   },
   {
     slug: "fermi-matador-amarillo-tx",
     name: "Project Matador",
     // Richest record in the dataset: was 4273px over 5 printed pages, now
-    // 2158px over 3. Disabling the compaction measures 4007px.
+    // 2099px over 3. Disabling the compaction measures 4007px. Bounded rather
+    // than exact — this record accretes sources, and a 4th page is a design
+    // question, not a broken stylesheet.
+    printedPages: { atMost: 3 },
     maxHeight: 2600,
   },
 ] as const;
+
+/**
+ * Pages the record actually prints on, from Chromium's own print pipeline.
+ *
+ * This replaces a height ceiling, which was a proxy — and a biased one. The
+ * container height read under `emulateMedia({ media: "print" })` is laid out
+ * at the VIEWPORT width (816px), but Chrome paginates at the @page CONTENT
+ * width (816px less the horizontal margins). The narrower column wraps more
+ * lines, so the printed document is taller than the measured number: on
+ * microsoft-becker-mn the gap was 941.9px measured vs 977.6px printed. A
+ * ceiling tuned on the measured figure can therefore pass a document that
+ * prints on two pages, which is the only thing anyone cares about here.
+ *
+ * `page.pdf()` is Chromium-only. This spec runs exclusively under the
+ * "chromium" project — playwright.config.ts scopes "Mobile Chrome" to
+ * `map-mobile.spec.ts` via `testMatch` — so no per-test browser guard is
+ * needed. It also requires headless; a `--headed` run will fail loudly rather
+ * than skip, which is the right trade for a check that exists to be trusted.
+ */
+async function countPdfPages(page: Page): Promise<number> {
+  const pdf = await page.pdf({ format: "Letter", printBackground: false });
+  // Count /Type /Page objects, excluding /Pages (the tree node) via [^s].
+  return (pdf.toString("latin1").match(/\/Type\s*\/Page[^s]/g) || []).length;
+}
 
 /**
  * The print-only provenance block, located by the text it exists to print
@@ -114,6 +139,24 @@ for (const record of RECORDS) {
       await expect(footer).toBeHidden();
     });
 
+    test("prints on the expected number of pages", async ({ page }) => {
+      await page.goto(`/facilities/${record.slug}`);
+
+      const pages = await countPdfPages(page);
+
+      if ("exactly" in record.printedPages) {
+        // Exact, not a ceiling: on the thinnest record in the dataset, "at
+        // most 1" and "exactly 1" are the same assertion, but stating it as
+        // equality is what makes the intent survive the next edit.
+        expect(pages).toBe(record.printedPages.exactly);
+      } else {
+        // A bound still has to have a floor. `<= 3` alone would pass for a
+        // zero-page count, which is what a broken PDF pipeline returns.
+        expect(pages).toBeGreaterThan(0);
+        expect(pages).toBeLessThanOrEqual(record.printedPages.atMost);
+      }
+    });
+
     test("typesets materially shorter than the screen layout", async ({ page }) => {
       await page.goto(`/facilities/${record.slug}`);
       await page.emulateMedia({ media: "print" });
@@ -148,6 +191,50 @@ for (const record of RECORDS) {
         .first()
         .evaluate((el) => getComputedStyle(el, "::after").content);
       expect(expanded).toContain("http");
+    });
+
+    // The invariant, not a count: a bare "Not recorded" says nothing on its
+    // own, so every one of them must have a labelling <dt> beside it. An
+    // unlabelled marker is exactly the defect — SubsidiesGroup rendered its
+    // group-level gap prompt outside any dt/dd pair, and it printed as an
+    // orphan sentence under Civic impact saying nothing, on every record in
+    // the dataset. Counting markers would have passed; so would reading the
+    // JSX. Only the rendered output showed it.
+    //
+    // A count ceiling was rejected for the usual reason: it is a proxy. It
+    // goes red when the data changes and stays green when the labelling
+    // breaks, which is backwards.
+    test("prints no nil marker without a label beside it", async ({ page }) => {
+      await page.goto(`/facilities/${record.slug}`);
+      await page.emulateMedia({ media: "print" });
+
+      const markers = await page.evaluate(() => {
+        const found: { label: string; html: string }[] = [];
+        for (const el of document.querySelectorAll("*")) {
+          // Leaf elements whose whole text is the bare marker. Exact match on
+          // purpose: the consolidated summary line reads "Not recorded: power
+          // supply, ..." and is self-naming, so it is legitimately label-free
+          // and must not be swept in here.
+          if (el.children.length > 0) continue;
+          if ((el.textContent || "").trim() !== "Not recorded") continue;
+          if (getComputedStyle(el).display === "none") continue;
+
+          const dd = el.closest("dd");
+          const dt = dd?.parentElement?.querySelector("dt");
+          found.push({
+            label: dt ? (dt.textContent || "").trim() : "",
+            html: el.outerHTML.slice(0, 120),
+          });
+        }
+        return found;
+      });
+
+      // Non-vacuity. Both records carry several genuine field-level gaps, so
+      // an empty result means the query stopped matching, not that the page
+      // got cleaner — and an assertion that cannot fail is worth nothing.
+      expect(markers.length).toBeGreaterThan(0);
+
+      expect(markers.filter((m) => m.label === "")).toEqual([]);
     });
   });
 }
