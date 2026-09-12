@@ -304,6 +304,65 @@ try {
   }
 fi
 
+# --- failure classification -------------------------------------------------
+# classify_candidates_failure <file>: WHY did this run produce no parseable
+# candidate array? Every such failure used to be reported as "no parseable
+# candidate array", which reads as "the model emitted bad JSON" — and a census
+# of discovery-logs/ showed it almost never is. Pure bash (no npx/node) so the
+# diagnosis stays cheap and still works when the toolchain is itself the thing
+# that broke. Prints exactly one class:
+#
+#   blocked   — hard environmental: the session could not run to completion
+#               (machine slept mid-response, or the subscription session limit
+#               was hit). A retry CANNOT help — on 2026-09-11 the NC "retry"
+#               ran for 3 seconds against a limit that reset hours later.
+#   api_error — transient API/network fault ("API Error: ..."), e.g. the
+#               2026-07-25 TX and 2026-08-11 VA runs. A retry is reasonable.
+#   no_array  — genuine unparseable model output: prose instead of JSON, as on
+#               2026-07-15 when the AZ run ended with a session summary and a
+#               journal write. Includes an empty file. This is the case the
+#               bounded retry below was built for, and retry stays right for it.
+#
+# ⚠️ ORDER IS LOAD-BEARING. "API Error: Your computer went to sleep
+# mid-response." contains BOTH markers, so the `blocked` patterns MUST be
+# tested BEFORE `API Error`. Reordering these so the generic `API Error` comes
+# first reads tidier and is wrong: every sleep failure would be misclassified
+# as transient and earn a pointless retry into a machine that is asleep.
+classify_candidates_failure() {
+  local _head=""
+  # Only the first 4 KB: every observed environmental failure is under 100
+  # bytes, and a healthy candidates file is up to 80 KB of JSON there is no
+  # reason to scan.
+  _head="$(head -c 4096 "$1" 2>/dev/null || true)"
+  case "$_head" in
+    # blocked FIRST — see the ordering note above. Do not "tidy" this.
+    *"went to sleep"* | *"session limit"*) echo "blocked" ;;
+    *"API Error"*) echo "api_error" ;;
+    *) echo "no_array" ;;
+  esac
+}
+
+# classify_candidates_reason <class>: the human-readable phrase for a class,
+# used in the WARN log, the FAILURES entry and therefore the desktop
+# notification. Kept next to the classifier so the two never drift.
+classify_candidates_reason() {
+  case "$1" in
+    blocked) echo "run blocked by the environment (computer slept or session limit)" ;;
+    api_error) echo "transient API error before any candidate array" ;;
+    *) echo "no parseable candidate array" ;;
+  esac
+}
+
+# candidates_file_bytes <file>: size of the candidates file, or 0 if missing.
+# Logged on every failure because size is the single best tell and was
+# previously invisible: 66–91 bytes is an environmental error string, 3 bytes
+# is a legitimate empty `[]`, and a healthy run writes 3.6 KB–80 KB.
+candidates_file_bytes() {
+  local _n
+  _n="$(wc -c < "$1" 2>/dev/null || echo 0)"
+  echo "${_n//[^0-9]/}"
+}
+
 # --- self-reverting review cap ----------------------------------------------
 # Burst: 25 candidates/day for the first BURST_DAYS days after BURST_START_DATE
 # (a deliberate ~2-week catch-up while the daily review queue is fresh), then
@@ -410,6 +469,9 @@ for STATE in "${BATCH_STATES[@]}"; do
   # Initialised here (not only in the live branch) so `set -u` cannot trip on
   # it in the dry-run path, which skips invoke_claude entirely.
   STATE_ELAPSED=0
+  # Failure diagnosis for this state, overwritten the moment a failure is seen.
+  CLAUDE_FAIL_CLASS="no_array"
+  CLAUDE_FAIL_BYTES=0
 
   if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
     log "DISCOVERY_DRY_RUN=true — skipping claude call, using empty candidate set"
@@ -464,7 +526,18 @@ d
     # submit step below skips (rather than crashes) on a still-empty/unparseable
     # OUTFILE, tracked via CLAUDE_ARRAY_OK.
     if [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
-      log "WARN: claude output for $RUN_ID had no parseable JSON array — retrying once"
+      CLAUDE_FAIL_CLASS="$(classify_candidates_failure "$OUTFILE")"
+      CLAUDE_FAIL_BYTES="$(candidates_file_bytes "$OUTFILE")"
+    fi
+    # A `blocked` class is a hard environmental stop (machine asleep, session
+    # limit): the retry below cannot clear it and would only burn a second
+    # invocation against the same wall, so it is suppressed and the run carries
+    # the real cause forward instead. `api_error` and `no_array` both still
+    # retry — that is the pre-existing behaviour and it is right for them.
+    if [[ "$CLAUDE_ARRAY_OK" != "true" && "$CLAUDE_FAIL_CLASS" == "blocked" ]]; then
+      log "WARN: claude output for $RUN_ID was cut short by a hard environmental block (computer slept mid-response, or the subscription session limit was hit) — ${CLAUDE_FAIL_BYTES} bytes written; NOT retrying, a retry cannot clear it (2026-09-11: the NC retry ran 3s against a limit that reset hours later)"
+    elif [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
+      log "WARN: claude output for $RUN_ID had no parseable JSON array (cause=${CLAUDE_FAIL_CLASS}, ${CLAUDE_FAIL_BYTES} bytes) — retrying once"
       RETRY_STATUS=0
       invoke_claude || RETRY_STATUS=$?
       # Both attempts count toward this state's wall-clock: an overrun on
@@ -480,7 +553,9 @@ d
       note_overrun "retry claude invocation for $RUN_ID" "$LAST_INVOKE_ELAPSED" || true
       CLAUDE_ARRAY_OK=$(candidates_file_has_array "$OUTFILE" && echo true || echo false)
       if [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
-        log "WARN: retry for $RUN_ID still had no parseable JSON array — skipping submit"
+        CLAUDE_FAIL_CLASS="$(classify_candidates_failure "$OUTFILE")"
+        CLAUDE_FAIL_BYTES="$(candidates_file_bytes "$OUTFILE")"
+        log "WARN: retry for $RUN_ID still produced no parseable candidate array (cause=${CLAUDE_FAIL_CLASS}, ${CLAUDE_FAIL_BYTES} bytes) — skipping submit"
       fi
     fi
   fi
@@ -499,15 +574,20 @@ d
       FAILURES+=("$STATE: submit failed")
     fi
   else
-    log "WARN: no parseable candidate array for $RUN_ID — skipping submit (nothing to stage)"
+    CLAUDE_FAIL_REASON="$(classify_candidates_reason "$CLAUDE_FAIL_CLASS")"
+    log "WARN: ${CLAUDE_FAIL_REASON} for $RUN_ID (cause=${CLAUDE_FAIL_CLASS}, ${CLAUDE_FAIL_BYTES} bytes) — skipping submit (nothing to stage)"
     # Dry-run never reaches here (it forces CLAUDE_ARRAY_OK=true), so this is
-    # always a real no-array failure — exactly the state that went unnoticed
-    # for six days.
-    FAILURES+=("$STATE: no parseable candidate array")
+    # always a real failure — exactly the state that went unnoticed for six
+    # days. The class names the cause so the alert is actionable: a `blocked`
+    # run needs the machine awake or the session limit reset, not a code fix.
+    FAILURES+=("$STATE: $CLAUDE_FAIL_REASON")
   fi
 
   if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
-    HEARTBEAT_STATUS="no_array"
+    # Carries the real class (blocked | api_error | no_array), not a blanket
+    # "no_array". Safe for the watchdog: check-heartbeat.ts reads only the
+    # top-level `status` field, never `claudeStatus`.
+    HEARTBEAT_STATUS="$CLAUDE_FAIL_CLASS"
     [[ "$CLAUDE_ARRAY_OK" == "true" ]] && HEARTBEAT_STATUS="ok"
     HB_RUN_IDS+=("$RUN_ID")
     HB_STATES+=("$STATE")

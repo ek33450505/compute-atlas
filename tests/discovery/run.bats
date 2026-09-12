@@ -271,7 +271,7 @@ EOF
 
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 2 ]
-	[[ "$output" == *"WARN: claude output for"*"had no parseable JSON array — retrying once"* ]]
+	[[ "$output" == *"WARN: claude output for"*"had no parseable JSON array (cause=no_array,"*"retrying once"* ]]
 
 	outfile="$(find "$LOG_DIR" -name 'candidates-*.json' -print -quit)"
 	[ -n "$outfile" ]
@@ -309,6 +309,168 @@ EOF
 	# dry-run must never invoke the real claude binary at all, retry or not
 	[ ! -s "$CLAUDE_CALL_LOG" ]
 	[[ "$output" != *"retrying once"* ]]
+}
+
+# --- failure classification (2026-09-11) ------------------------------------
+# Every candidate-parse failure used to be reported as `no_array` — "the model
+# emitted bad JSON". A census of discovery-logs/ found that of eight such
+# failures only ONE (2026-07-15 AZ, a prose session summary) actually was:
+# three were transient "API Error", three were hard environmental blocks
+# (computer asleep, session limit), one was empty. The bounded retry is right
+# for the first two and useless for the third — the 2026-09-11 NC "retry" ran
+# for 3 seconds against a limit that reset hours later.
+#
+# These tests pin the three classes, the retry suppression, and the ordering
+# trap. They do NOT touch the safety gate: CLAUDE_ARRAY_OK remains the only
+# thing that lets candidates reach submit, in every class.
+
+@test "a session-limit failure classifies as blocked and does NOT retry" {
+	export DISCOVERY_ENABLED=true
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	# ONE call, not two — the retry is suppressed because it cannot help.
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 1 ]
+	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" == *"NOT retrying"* ]]
+	grep -q '"claudeStatus": "blocked"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "a slept-computer failure classifies as blocked, not api_error" {
+	export DISCOVERY_ENABLED=true
+	# THE ORDERING TRAP. "API Error: Your computer went to sleep mid-response."
+	# contains BOTH markers. If run.sh tests `API Error` before the blocked
+	# patterns, this lands in api_error and earns a pointless retry into a
+	# machine that is asleep. Mutation-tested by swapping the two cases.
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "API Error: Your computer went to sleep mid-response."
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 1 ]
+	[[ "$output" != *"retrying once"* ]]
+	grep -q '"claudeStatus": "blocked"' "$LOG_DIR/heartbeat.json"
+	[[ "$output" != *"cause=api_error"* ]]
+}
+
+@test "a transient API error classifies as api_error and DOES retry" {
+	export DISCOVERY_ENABLED=true
+	# The 2026-07-25 TX / 2026-08-11 VA shape. Retry is the right response, so
+	# the pre-existing behaviour is preserved: two calls, then give up.
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "API Error: Connection closed mid-response."
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 2 ]
+	[[ "$output" == *"cause=api_error"* ]]
+	[[ "$output" == *"retrying once"* ]]
+	grep -q '"claudeStatus": "api_error"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "prose instead of JSON still classifies as no_array and retries" {
+	export DISCOVERY_ENABLED=true
+	# The 2026-07-15 AZ failure: the run inherited the maintainer's persona and
+	# ended with a session summary + journal write. This is the ONE class the
+	# blanket `no_array` label was ever right about, and retry stays right too.
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "Journal written.  Session summary: I completed the bounded discovery pass."
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 2 ]
+	[[ "$output" == *"cause=no_array"* ]]
+	grep -q '"claudeStatus": "no_array"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "a failure logs the candidates file byte count" {
+	export DISCOVERY_ENABLED=true
+	# Size is the single best tell and was invisible before: 66-91 bytes is an
+	# environmental error string, 3 bytes is a legitimate empty [], a healthy
+	# run writes 3.6 KB-80 KB. The literal below is the stub's exact output
+	# ("You've hit your session limit" = 29 chars + newline), so this asserts a
+	# REAL measurement rather than the word "bytes" appearing somewhere.
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"30 bytes"* ]]
+}
+
+@test "a legitimately empty [] is never classified as a failure" {
+	export DISCOVERY_ENABLED=true
+	# candidates-20260713T161505-TX.json is 3 bytes of "[]" and recorded `ok`.
+	# A zero-yield night is a real, valid result — classification must not
+	# turn it into an alert.
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"retrying once"* ]]
+	# The empty array must reach submit, not be skipped as a parse failure.
+	# (A bare `"skipping submit"` check would false-positive here: the
+	# enrichment lane logs that phrase of its own accord under the npx stub.)
+	grep -q -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+	[ ! -s "$NOTIFY_CALL_LOG" ]
 }
 
 # --- session-limit hardening (2026-07-29 AZ crash) --------------------------
@@ -380,7 +542,7 @@ EOF
 	grep -q '"lastRunAt"' "$LOG_DIR/heartbeat.json"
 }
 
-@test "session-limit run writes heartbeat with claudeStatus no_array" {
+@test "session-limit run writes heartbeat with claudeStatus blocked" {
 	export DISCOVERY_ENABLED=true
 	cat >"$BIN_DIR/claude" <<'EOF'
 #!/usr/bin/env bash
@@ -394,7 +556,10 @@ EOF
 	[ "$status" -eq 1 ]
 
 	[ -f "$LOG_DIR/heartbeat.json" ]
-	grep -q '"claudeStatus": "no_array"' "$LOG_DIR/heartbeat.json"
+	# NOT "no_array": a session limit is a hard environmental block, and
+	# reporting it as bad model output sent six days of diagnosis down the
+	# wrong path. The top-level verdict below is deliberately unchanged.
+	grep -q '"claudeStatus": "blocked"' "$LOG_DIR/heartbeat.json"
 	# the heartbeat must ALSO carry a top-level verdict, so a reader does not
 	# have to scan per-state entries to know the run was bad
 	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
@@ -596,10 +761,10 @@ EOF
 	export STATES_PER_RUN=2
 	echo "TX" >"$LOG_DIR/cursor.txt"
 
-	# Batch is [TX VA]. TX's primary AND retry attempt (calls 1-2) fail with a
-	# session-limit-style nonzero exit and no array; VA's primary attempt
-	# (call 3) succeeds with a valid array — proving TX's total failure does
-	# not stop VA from running to completion. A dedicated counter file (not
+	# Batch is [TX VA]. TX's only attempt (call 1) fails with a session-limit
+	# nonzero exit and no array — classified `blocked`, so there is NO retry;
+	# VA's primary attempt (call 2) succeeds with a valid array, proving TX's
+	# total failure does not stop VA from running to completion. A counter (not
 	# wc -l on CLAUDE_CALL_LOG) tracks the call number, since the prompt text
 	# logged per call spans many lines on its own.
 	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
@@ -610,7 +775,7 @@ echo "claude \$*" >> "$CLAUDE_CALL_LOG"
 n="\$(cat "$CLAUDE_COUNTER_FILE")"
 n=\$((n + 1))
 echo "\$n" >"$CLAUDE_COUNTER_FILE"
-if [ "\$n" -le 2 ]; then
+if [ "\$n" -le 1 ]; then
 	echo "You've hit your session limit"
 	exit 1
 else
@@ -625,9 +790,9 @@ EOF
 	# completion, which is what this test actually guards.
 	[ "$status" -eq 1 ]
 
-	# three claude calls total: TX primary, TX retry, VA primary
+	# two claude calls total: TX primary (blocked — no retry), VA primary
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
-	[ "$call_count" -eq 3 ]
+	[ "$call_count" -eq 2 ]
 
 	# both states reached completion despite TX's total claude failure
 	[[ "$output" == *"discovery batch complete"* ]]
@@ -646,8 +811,10 @@ EOF
 	export STATES_PER_RUN=2
 	echo "TX" >"$LOG_DIR/cursor.txt"
 
-	# Same TX-fails-twice / VA-succeeds shape as the isolation test above, so
-	# the batch produces one no_array entry and one ok entry.
+	# Same TX-fails / VA-succeeds shape as the isolation test above, so the
+	# batch produces one `blocked` entry and one `ok` entry. TX's fixture is a
+	# session limit, so its class is `blocked` — not the blanket `no_array`
+	# this test used to assert.
 	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
 	echo 0 >"$CLAUDE_COUNTER_FILE"
 	cat >"$BIN_DIR/claude" <<EOF
@@ -656,7 +823,7 @@ echo "claude \$*" >> "$CLAUDE_CALL_LOG"
 n="\$(cat "$CLAUDE_COUNTER_FILE")"
 n=\$((n + 1))
 echo "\$n" >"$CLAUDE_COUNTER_FILE"
-if [ "\$n" -le 2 ]; then
+if [ "\$n" -le 1 ]; then
 	echo "You've hit your session limit"
 	exit 1
 else
@@ -673,7 +840,7 @@ EOF
 	grep -q '"lastRunAt"' "$LOG_DIR/heartbeat.json"
 	grep -q '"state": "TX"' "$LOG_DIR/heartbeat.json"
 	grep -q '"state": "VA"' "$LOG_DIR/heartbeat.json"
-	grep -q '"claudeStatus": "no_array"' "$LOG_DIR/heartbeat.json"
+	grep -q '"claudeStatus": "blocked"' "$LOG_DIR/heartbeat.json"
 	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
 
 	# must stay valid JSON
@@ -727,7 +894,9 @@ EOF
 	[ -s "$NOTIFY_CALL_LOG" ]
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
 	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
-	[[ "$output" == *"no parseable candidate array"* ]]
+	# The alerting behaviour is unchanged for a `blocked` run — only the
+	# message names the real cause now instead of blaming the model's JSON.
+	[[ "$output" == *"run blocked by the environment"* ]]
 }
 
 @test "a clean run fires NO notification and exits 0" {
