@@ -21,6 +21,18 @@ const ROUTES = [
   // branch; already used as a known-populated state in
   // e2e/prose-spacing.spec.ts.
   "/embed/states/texas",
+
+  // The by-county lens, both shapes. The index renders a link per tracked
+  // county (636 today) across ~50 nested <section>s, each with its own <h3>
+  // under an sr-only <h2> — a heading outline and a link density nothing
+  // else on the site has, and the largest new UI surface in this change.
+  "/counties",
+  // A per-county hub, pinned to a slug the way e2e/facility.spec.ts pins
+  // meta-prineville-or. Deliberately the LARGEST county (45 facilities, more
+  // than any other) so the scan sees a fully populated card grid: a
+  // single-facility hub — 354 of the 636 qualify — would scan a near-empty
+  // page and prove almost nothing about the template.
+  "/counties/loudoun-va",
 ] as const;
 
 // Tags covering WCAG 2.x AA + 2.2 AA
@@ -48,8 +60,24 @@ const AXE_TAGS = [
  * user-facing weight problem. If this list needs a fourth entry, or `/table`
  * starts brushing 90s, paginate or virtualise the table instead of raising
  * this again.
+ *
+ * `/counties` joins it for the same shape of risk from a different cause: it
+ * renders one link per tracked county (636 today, growing with every data
+ * wave) across ~50 nested sections. It is not a table, but axe does not care
+ * what the nodes are — the cost is in the node count and the accessibility
+ * tree depth, and both scale with the dataset here. Added at the same time as
+ * the route itself rather than after a timeout, because that failure mode
+ * presents as a flake and gets retried rather than diagnosed.
+ *
+ * Measured baseline, 2026-09-11 at 1,571 facilities / 636 counties:
+ * `/counties` scans in 2.5s and `/counties/loudoun-va` (45 facilities, the
+ * largest hub) in 1.2s — against `/table`'s 20.6s. So `/counties` is
+ * nowhere near the ceiling today and its membership here is PRECAUTIONARY,
+ * not a response to a measurement. Keeping it costs nothing: a timeout value
+ * is only consulted when it is exceeded. Do not read this entry as evidence
+ * that `/counties` is currently expensive — re-measure before citing it.
  */
-const DATASET_SIZED_ROUTES = new Set<string>(["/table"]);
+const DATASET_SIZED_ROUTES = new Set<string>(["/table", "/counties"]);
 
 for (const route of ROUTES) {
   test(`a11y: ${route} — zero serious/critical violations`, async ({

@@ -7,7 +7,9 @@ import {
   buildStatusRoutes,
   buildMetroRoutes,
   buildLearnRoutes,
+  buildCountyRoutes,
   MIN_FACILITIES_FOR_OPERATOR_SITEMAP,
+  MIN_FACILITIES_FOR_COUNTY_SITEMAP,
 } from "@/app/sitemap";
 import {
   getAllFacilities,
@@ -15,6 +17,8 @@ import {
   getOperators,
   operatorSlug,
   getFacilitiesByMetro,
+  getCounties,
+  getFacilitiesByCounty,
 } from "@/lib/data";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
@@ -179,6 +183,112 @@ describe("sitemap", () => {
       ...facilities.map((f) => new Date(f.lastUpdated).getTime())
     );
     const indexEntry = metroRoutes.find((r) => r.url === `${siteConfig.url}/metros`);
+    expect(indexEntry).toBeDefined();
+    expect((indexEntry!.lastModified as Date).getTime()).toBe(expectedMax);
+  });
+
+  it("county routes count equals the number of counties with >= MIN_FACILITIES_FOR_COUNTY_SITEMAP facilities, plus the /counties index entry", async () => {
+    const countyRoutes = await buildCountyRoutes();
+    const counties = await getCounties();
+    const multiFacilityCounties = counties.filter(
+      (c) => c.count >= MIN_FACILITIES_FOR_COUNTY_SITEMAP
+    );
+    expect(countyRoutes).toHaveLength(multiFacilityCounties.length + 1);
+
+    const urls = countyRoutes.map((r) => r.url);
+    expect(urls).toContain(`${siteConfig.url}/counties`);
+    for (const c of multiFacilityCounties) {
+      const expectedUrl = `${siteConfig.url}/counties/${c.slug}`;
+      expect(urls).toContain(expectedUrl);
+      expect(expectedUrl).not.toContain("undefined");
+    }
+  });
+
+  it("a county with >= MIN_FACILITIES_FOR_COUNTY_SITEMAP facilities IS present in buildCountyRoutes() output", async () => {
+    const countyRoutes = await buildCountyRoutes();
+    const counties = await getCounties();
+    const multiFacilityCounty = counties.find(
+      (c) => c.count >= MIN_FACILITIES_FOR_COUNTY_SITEMAP
+    );
+    expect(multiFacilityCounty).toBeDefined();
+    const urls = countyRoutes.map((r) => r.url);
+    expect(urls).toContain(`${siteConfig.url}/counties/${multiFacilityCounty!.slug}`);
+  });
+
+  it("a county with exactly 2 facilities IS present — pins the threshold from above, where the derived tests are blind", async () => {
+    // The two tests above derive their expectation from the constant itself,
+    // so RAISING it (2 -> 3) satisfies them silently while silently dropping
+    // ~144 counties from the sitemap. This pins the boundary from the other
+    // side: a county sitting exactly ON the threshold must be submitted.
+    const countyRoutes = await buildCountyRoutes();
+    const counties = await getCounties();
+    // The literal 2 is deliberate and must NOT be replaced with the
+    // constant: deriving it from MIN_FACILITIES_FOR_COUNTY_SITEMAP makes this
+    // assertion move WITH the threshold, which is precisely the blind spot it
+    // exists to close (verified — the derived version passes with the
+    // constant raised to 3). Pin the policy value too, so a deliberate change
+    // has to come here and think.
+    expect(MIN_FACILITIES_FOR_COUNTY_SITEMAP).toBe(2);
+    const atThreshold = counties.find((c) => c.count === 2);
+    expect(atThreshold).toBeDefined();
+    const urls = countyRoutes.map((r) => r.url);
+    expect(urls).toContain(`${siteConfig.url}/counties/${atThreshold!.slug}`);
+  });
+
+  it("a county with exactly 1 facility is NOT present in buildCountyRoutes() output", async () => {
+    const countyRoutes = await buildCountyRoutes();
+    const counties = await getCounties();
+    const singleFacilityCounty = counties.find((c) => c.count === 1);
+    expect(singleFacilityCounty).toBeDefined();
+    const urls = countyRoutes.map((r) => r.url);
+    expect(urls).not.toContain(`${siteConfig.url}/counties/${singleFacilityCounty!.slug}`);
+  });
+
+  it("county hub lastModified is derived from that county's OWN facilities via getFacilitiesByCounty, not the whole-dataset max", async () => {
+    const testStart = Date.now();
+    const countyRoutes = await buildCountyRoutes();
+    const facilities = await getAllFacilities();
+    const datasetMax = Math.max(
+      ...facilities.map((f) => new Date(f.lastUpdated).getTime())
+    );
+    const counties = (await getCounties()).filter(
+      (c) => c.count >= MIN_FACILITIES_FOR_COUNTY_SITEMAP
+    );
+
+    let sawEntryEarlierThanDatasetMax = false;
+    for (const c of counties) {
+      const entry = countyRoutes.find(
+        (r) => r.url === `${siteConfig.url}/counties/${c.slug}`
+      );
+      expect(entry).toBeDefined();
+
+      // Membership reuses the SAME helper app/counties/[county]/page.tsx
+      // uses to render the hub, so the sitemap and the page can never
+      // disagree about which facilities belong to a county.
+      const countyFacilities = await getFacilitiesByCounty(c.slug);
+      const expectedMax = Math.max(
+        ...countyFacilities.map((f) => new Date(f.lastUpdated).getTime())
+      );
+      expect((entry!.lastModified as Date).getTime()).toBe(expectedMax);
+      // Proves the value is real facility data, not build-time "now".
+      expect((entry!.lastModified as Date).getTime()).toBeLessThan(testStart);
+
+      if (expectedMax < datasetMax) sawEntryEarlierThanDatasetMax = true;
+    }
+
+    // Without this, a dataset where every county happened to contain a
+    // facility updated on the exact dataset-max date would make the "own
+    // facilities, not the whole-dataset max" claim unfalsifiable here.
+    expect(sawEntryEarlierThanDatasetMax).toBe(true);
+  });
+
+  it("/counties index entry carries the whole-dataset max lastModified", async () => {
+    const countyRoutes = await buildCountyRoutes();
+    const facilities = await getAllFacilities();
+    const expectedMax = Math.max(
+      ...facilities.map((f) => new Date(f.lastUpdated).getTime())
+    );
+    const indexEntry = countyRoutes.find((r) => r.url === `${siteConfig.url}/counties`);
     expect(indexEntry).toBeDefined();
     expect((indexEntry!.lastModified as Date).getTime()).toBe(expectedMax);
   });

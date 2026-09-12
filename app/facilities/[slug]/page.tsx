@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Info, Flag } from "lucide-react";
 
-import { getAllFacilityIds, getFacilityByIdCached, operatorSlug } from "@/lib/data";
+import { getAllFacilityIds, getFacilityByIdCached, operatorSlug, countySlug } from "@/lib/data";
 import { getStatusMeta } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import {
@@ -311,9 +311,25 @@ export default async function FacilityPage({
             ) : null}
             {location}
             {facility.location.postalCode ? ` ${facility.location.postalCode}` : ""}
-            {facility.location.county
-              ? ` · ${formatCountyLabel(facility.location.county, facility.location.state)}`
-              : ""}
+            {/* County links to its /counties hub. Deliberately carries no
+                resting color or underline — only hover/focus affordances —
+                so the printed stat sheet renders it as the plain text it
+                replaced (a link is meaningless on paper). Same treatment as
+                the operator link in the masthead above, which already sits
+                inside [data-print-brief]. The masthead's county eyebrow is
+                left as plain text: it is a dense mono metadata line, and one
+                link per fact is enough. */}
+            {facility.location.county ? (
+              <>
+                {" · "}
+                <Link
+                  href={`/counties/${countySlug(facility.location.county, facility.location.state)}`}
+                  className="underline-offset-4 rounded-sm transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  {formatCountyLabel(facility.location.county, facility.location.state)}
+                </Link>
+              </>
+            ) : null}
           </MastheadFactRow>
 
           <MastheadFactRow label="Capacity" valueClassName="mt-1 text-sm font-mono tabular-nums">
