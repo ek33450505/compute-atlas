@@ -169,12 +169,20 @@ jobs:
   # run start` itself. The build needs no DATABASE_URL — server reads fall back to
   # the bundled data/facilities.json snapshot.
   #
-  # ⚠️ UNPROVEN TIMING on first run: that webServer builds ~1,500 static routes
-  # inside a 240s `webServer.timeout` on a cold runner. If this job goes red with
-  # a webServer timeout rather than assertion failures, the fix is raising
-  # `webServer.timeout` in playwright.config.ts — not "fixing" the tests. That
-  # matters more now than it did before this job was required: a webServer
-  # timeout here blocks every merge to main, not just this job's own status.
+  # ⚠️ MEASURED, and the margin is the thing to watch: that webServer builds every
+  # prerendered route inside `webServer.timeout` on a cold runner — this job caches
+  # no `.next`, so CI always pays the cold path. Read from the real CI log on #287:
+  # build 02:49:42 → `Running 87 tests` 02:52:49 = 187s, against what was then a
+  # 240s budget (78% consumed) at 2,402 routes. The county lens pushed the build to
+  # 3,039 routes (+26.5%) and `webServer.timeout` is now 600_000 in
+  # playwright.config.ts. If this job goes red with a webServer timeout rather than
+  # assertion failures, the fix is raising that timeout — not "fixing" the tests.
+  # That matters more than it did before this job was required: a webServer timeout
+  # here blocks every merge to main, not just this job's own status.
+  #
+  # ⇒ Re-measure this margin after any change that adds a batch of prerendered
+  # routes, and read it from a CI log's STEP timestamps — never a local build, and
+  # never the job duration (which includes `npm ci` and the browser install).
   e2e:
     name: Playwright e2e
     runs-on: ubuntu-latest

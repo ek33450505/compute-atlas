@@ -146,7 +146,11 @@ export async function approveSubmission(
   // notifySubmitterOfReview throws (each handles/logs its own errors
   // internally), but this extra try/catch is belt-and-suspenders: a
   // notification failure must never turn a successful approval into an
-  // error response.
+  // error response. Logs a code via errorCode(err), never the caught error
+  // object itself, in case that no-throw contract is ever violated:
+  // notifySubmitterOfReview's statements bind the submitter's email address
+  // (or its salted hash), and DrizzleQueryError.message embeds bound params
+  // (see errorCode's doc comment below).
   try {
     const changeLabel =
       row.kind === "create"
@@ -162,7 +166,7 @@ export async function approveSubmission(
       id: writeResult.facility.id,
     });
   } catch (err) {
-    console.error("subscriber notification failed", err);
+    console.error("subscriber notification failed", errorCode(err));
   }
 
   return {
