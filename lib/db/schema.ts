@@ -174,6 +174,55 @@ export const subscriptionsTable = pgTable(
 export type SubscriptionRow = typeof subscriptionsTable.$inferSelect;
 
 /**
+ * One row per request to `POST /api/subscribe` that reaches a branch decision
+ * — the counter `checkSubscribeRateLimit` reads.
+ *
+ * Precisely: written once, before any content-dependent branch, for every
+ * request the rate-limit gate admits. Four paths write nothing, and none of
+ * them is content-dependent, so none is an oracle: `hashIp` throwing, the gate
+ * SELECT throwing, this INSERT throwing (all three answered 503 as the
+ * infrastructure failures they are), and the already-refused 429 — which is
+ * decided purely by the prior count and is skipped so the rolling window can
+ * actually drain for a shared egress IP. See app/api/subscribe/route.ts.
+ *
+ * WHY IT EXISTS: the subscribe cap used to count `subscriptions` rows, which
+ * only a successful INSERT can raise. Every request that terminated without
+ * inserting (invalid JSON, Zod failure, honeypot, unknown facility, unknown
+ * state, over the per-address send cap, duplicate) was therefore free, and an
+ * attacker who never succeeded was never rate-limited at all.
+ *
+ * WHY A SEPARATE TABLE, NOT A COLUMN: the rows that must be counted are
+ * precisely the ones that create no subscription, so there is no subscription
+ * row to carry the count. A separate table is also the only shape that lets
+ * every branch write *identically* — `subscribeToTarget` deliberately returns
+ * the same generic `{ok:true}` for the honeypot / duplicate / over-cap paths
+ * (a prior security-review fix), and a side effect that fired on some of those
+ * paths but not others would be an observable oracle distinguishing them.
+ *
+ * WHY ONLY A HASH: the IP is pseudonymized with the same salted sha256 as every
+ * other `submitter_ip_hash` in this file (`hashIp`, lib/rate-limit.ts). A raw
+ * IP is never stored. Rows are pruned by `scripts/retention-prune.ts`
+ * (`SUBSCRIBE_ATTEMPTS_RETENTION_DAYS`) — the cap window is one hour, so they
+ * have no useful life beyond it.
+ *
+ * Carries no email, no target, and no outcome, deliberately: an attempt row
+ * must reveal nothing about which branch the request took.
+ */
+export const subscribeAttemptsTable = pgTable(
+  "subscribe_attempts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    submitterIpHash: text("submitter_ip_hash").notNull(),
+  },
+  (table) => [
+    index("subscribe_attempts_ip_created_idx").on(table.submitterIpHash, table.createdAt),
+  ]
+);
+
+export type SubscribeAttemptRow = typeof subscribeAttemptsTable.$inferSelect;
+
+/**
  * Unstructured research inbox for bare tips — a URL and an optional one-line
  * note, submitted anonymously by the public. A lead is NOT a facility and NOT
  * a submission: it carries no facility payload, and nothing in

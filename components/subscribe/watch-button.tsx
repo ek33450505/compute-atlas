@@ -152,7 +152,17 @@ export function WatchButton({
         // no body / non-JSON response — fall through to generic messaging below
       }
 
-      if ((res.status === 400 || res.status === 429) && json && typeof json === "object") {
+      // 400 (validation), 429 (rate limit) and 503 (accounting outage) each ship
+      // a specific, reader-facing `error` from the server. 503 is here because
+      // the handler goes out of its way to make an outage self-announcing rather
+      // than hide it inside a 429 — discarding that for "Something went wrong"
+      // at the client would undo the distinction. Any other status has no
+      // message worth trusting, so it falls through to the generic line below.
+      if (
+        (res.status === 400 || res.status === 429 || res.status === 503) &&
+        json &&
+        typeof json === "object"
+      ) {
         setFormError((json as { error?: string }).error ?? "Something went wrong. Please try again.");
         return;
       }

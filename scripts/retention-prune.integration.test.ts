@@ -14,6 +14,7 @@ import {
   contactMessagesTable,
   leadsTable,
   submissionsTable,
+  subscribeAttemptsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
 import { runRetentionPrune } from "./retention-prune";
@@ -172,6 +173,18 @@ async function seedAllTables() {
     })
     .returning({ id: subscriptionsTable.id });
 
+  // subscribe_attempts: retention window 2 days, by createdAt. These are the
+  // per-IP subscribe rate-limit counters; the cap window is one hour, so they
+  // are the shortest-lived PII-bearing rows in the schema.
+  const [attemptOld] = await tdb.db
+    .insert(subscribeAttemptsTable)
+    .values({ submitterIpHash: "attempt-hash-old", createdAt: daysBefore(3) })
+    .returning({ id: subscribeAttemptsTable.id });
+  const [attemptFresh] = await tdb.db
+    .insert(subscribeAttemptsTable)
+    .values({ submitterIpHash: "attempt-hash-fresh", createdAt: daysBefore(1) })
+    .returning({ id: subscribeAttemptsTable.id });
+
   // api_access_grants: retention window 90 days, (revoked AND revokedAt old) OR (expiresAt old).
   const [grantOldRevoked] = await tdb.db
     .insert(apiAccessGrantsTable)
@@ -220,6 +233,8 @@ async function seedAllTables() {
     subscriptionOldUnsub: subscriptionOldUnsub.id,
     subscriptionFreshUnsub: subscriptionFreshUnsub.id,
     subscriptionOldConfirmed: subscriptionOldConfirmed.id,
+    attemptOld: attemptOld.id,
+    attemptFresh: attemptFresh.id,
     grantOldRevoked: grantOldRevoked.id,
     grantFreshRevoked: grantFreshRevoked.id,
     grantOldExpired: grantOldExpired.id,
@@ -244,6 +259,7 @@ describe("runRetentionPrune — dry run", () => {
     expect(byTable.leads.candidates).toBe(2); // old-promoted + old-dismissed-no-review
     expect(byTable.submissions.candidates).toBe(1);
     expect(byTable.subscriptions.candidates).toBe(1);
+    expect(byTable.subscribe_attempts.candidates).toBe(1);
     expect(byTable.api_access_grants.candidates).toBe(2); // old-revoked + old-expired
     expect(byTable.api_daily_usage.candidates).toBe(1);
     for (const t of summary.tables) {
@@ -252,6 +268,7 @@ describe("runRetentionPrune — dry run", () => {
 
     // Nothing written: no backup dir/files, no rows removed, no provenance stripped.
     expect(() => readdirSync(backupDir)).toThrow();
+    expect(await tdb.db.select().from(subscribeAttemptsTable)).toHaveLength(2);
     expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(2);
     expect(await tdb.db.select().from(leadsTable)).toHaveLength(4);
     const submissions = await tdb.db.select().from(submissionsTable);
@@ -277,6 +294,7 @@ describe("runRetentionPrune — apply", () => {
     expect(byTable.leads).toMatchObject({ candidates: 2, applied: 2 });
     expect(byTable.submissions).toMatchObject({ candidates: 1, applied: 1, action: "strip-ip-hash" });
     expect(byTable.subscriptions).toMatchObject({ candidates: 1, applied: 1 });
+    expect(byTable.subscribe_attempts).toMatchObject({ candidates: 1, applied: 1 });
     expect(byTable.api_access_grants).toMatchObject({ candidates: 2, applied: 2 });
     expect(byTable.api_daily_usage).toMatchObject({ candidates: 1, applied: 1 });
 
@@ -308,6 +326,10 @@ describe("runRetentionPrune — apply", () => {
       new Set([ids.subscriptionFreshUnsub, ids.subscriptionOldConfirmed])
     );
 
+    // subscribe_attempts: only the 3-day-old counter row is gone.
+    const remainingAttempts = await tdb.db.select().from(subscribeAttemptsTable);
+    expect(remainingAttempts.map((r) => r.id)).toEqual([ids.attemptFresh]);
+
     // api_access_grants: both the old-revoked and old-expired rows are gone.
     const remainingGrants = await tdb.db.select().from(apiAccessGrantsTable);
     expect(new Set(remainingGrants.map((r) => r.id))).toEqual(
@@ -320,18 +342,19 @@ describe("runRetentionPrune — apply", () => {
 
     // Backup file: exactly one JSONL line per applied mutation, correctly tagged.
     const lines = readBackupLines();
-    expect(lines).toHaveLength(8); // 1+2+1+1+2+1 == sum of `applied` above
+    expect(lines).toHaveLength(9); // 1+2+1+1+1+2+1 == sum of `applied` above
     const byId = Object.fromEntries(lines.map((l) => [l.row.id, l]));
     expect(byId[ids.contactOld]).toMatchObject({ table: "contact_messages", action: "delete" });
     expect(byId[ids.leadOldPromoted]).toMatchObject({ table: "leads", action: "delete" });
     expect(byId[ids.leadOldDismissedNoReview]).toMatchObject({ table: "leads", action: "delete" });
     expect(byId[ids.subOldReviewed]).toMatchObject({ table: "submissions", action: "strip-ip-hash" });
     expect(byId[ids.subscriptionOldUnsub]).toMatchObject({ table: "subscriptions", action: "delete" });
+    expect(byId[ids.attemptOld]).toMatchObject({ table: "subscribe_attempts", action: "delete" });
     expect(byId[ids.grantOldRevoked]).toMatchObject({ table: "api_access_grants", action: "delete" });
     expect(byId[ids.grantOldExpired]).toMatchObject({ table: "api_access_grants", action: "delete" });
     expect(byId[ids.usageOld]).toMatchObject({ table: "api_daily_usage", action: "delete" });
     // Rows that must NOT appear in the backup at all (never touched).
-    for (const untouchedId of [ids.contactFresh, ids.leadFreshPromoted, ids.leadOldNew, ids.subFreshReviewed, ids.subOldPending]) {
+    for (const untouchedId of [ids.contactFresh, ids.leadFreshPromoted, ids.leadOldNew, ids.subFreshReviewed, ids.subOldPending, ids.attemptFresh]) {
       expect(byId[untouchedId]).toBeUndefined();
     }
   });
