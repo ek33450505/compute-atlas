@@ -17,13 +17,21 @@ import { missingSectionLabels } from "@/lib/facility-gaps";
  *
  * Renders nothing when every section has data — an absent line is correct
  * there, not a silent failure.
+ *
+ * The print visibility is not a `print:block` utility on this element: it is
+ * the `display` in `[data-print-brief] > [data-print-gap-summary]`
+ * (app/globals.css), which already carried this line's print type and
+ * spacing. Unlike the bare "Not recorded" nil marker, this line names its own
+ * subjects and would still READ fine somewhere else — it would just be wrong,
+ * because the sections it names are a facility record's. Scoping it is about
+ * blast radius and keeping one rule per print affordance, not legibility.
  */
 export async function PrintGapSummary({ facility }: { facility: Facility }) {
   const missing = await missingSectionLabels(facility);
   if (missing.length === 0) return null;
 
   return (
-    <p data-print-gap-summary className="hidden print:block text-muted-foreground">
+    <p data-print-gap-summary className="hidden text-muted-foreground">
       Not recorded: {missing.join(", ")}.
     </p>
   );

@@ -360,3 +360,57 @@ test.describe("microsoft-becker-mn empty fields", () => {
     expect(await visibleCount(page, `text=${NIL_MARKER}`)).toBe(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// The nil marker belongs to the facility brief, and nowhere else.
+//
+// FieldGapPrompt is not facility-page-only: /gaps renders one per example
+// card, six dimensions deep. That page is nothing BUT gaps — its premise is
+// that every row is missing something, and it has no dt/dd grid to label a
+// marker against — so while the print variant sat on the element as a
+// `print:inline` utility class it was unscoped, and /gaps printed 36 bare
+// "Not recorded" lines across 7 pages (measured from a real PDF, 2026-09-11).
+// The rule now lives in app/globals.css under `[data-print-brief]`, which
+// /gaps does not carry, so the marker renders in the DOM here and prints
+// nowhere.
+//
+// This can only be pinned here, twice over: jsdom evaluates no `@media
+// print`, and the defect was a stylesheet SCOPE rather than markup, so the
+// component's own DOM looks identical either way.
+// ---------------------------------------------------------------------------
+test.describe("/gaps printed", () => {
+  test("prints no nil marker — every row on the page is already a gap", async ({ page }) => {
+    await page.goto("/gaps");
+
+    // Non-vacuity, in screen media first: the markers must still be RENDERED
+    // here. Without this, "none visible in print" would pass just as happily
+    // for a /gaps that had stopped rendering gap prompts at all, or for a
+    // selector that had quietly stopped matching anything.
+    expect(await page.locator("[data-print-nil]").count()).toBeGreaterThan(0);
+
+    await page.emulateMedia({ media: "print" });
+
+    // Two independent detectors, because they fail differently: the hook
+    // catches the marker being un-scoped again, and the text sweep catches a
+    // marker reintroduced by some other route that never carries the hook.
+    expect(await visibleCount(page, "[data-print-nil]")).toBe(0);
+    expect(await visibleCount(page, `text=${NIL_MARKER}`)).toBe(0);
+  });
+
+  test("still prints the gaps themselves", async ({ page }) => {
+    await page.goto("/gaps");
+
+    // The example cards, located by the facility link each one is built
+    // around rather than by its utility classes.
+    const CARD = "li:has(a[href^='/facilities/'])";
+    const onScreen = await page.locator(CARD).count();
+    expect(onScreen).toBeGreaterThan(0);
+
+    await page.emulateMedia({ media: "print" });
+
+    // The scoping removes a redundant marker, not the page. Its heading and
+    // every example card still print exactly as they did before.
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    expect(await visibleCount(page, CARD)).toBe(onScreen);
+  });
+});
