@@ -10,6 +10,23 @@ vi.mock("next/cache", () => ({
 }));
 vi.mock("@/lib/db/client");
 
+// `after()` throws "called outside a request scope" unless invoked inside a
+// real Next.js request lifecycle, which this suite (calling POST directly)
+// never sets up. Mocked to run the task immediately and capture its promise
+// in `pendingAfter` so tests can deterministically await the deferred
+// notify-write phase. Mirrors app/api/subscribe/route.integration.test.ts's
+// identical mock for its confirm-email deferral.
+let pendingAfter: Promise<unknown> | undefined;
+vi.mock("next/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("next/server")>();
+  return {
+    ...actual,
+    after: (task: () => unknown) => {
+      pendingAfter = Promise.resolve().then(task);
+    },
+  };
+});
+
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
 import { submissionsTable, submissionNotifyRequestsTable } from "@/lib/db/schema";
@@ -32,6 +49,10 @@ function req(body: unknown, headers?: HeadersInit): Request {
   });
 }
 
+async function flushAfter(): Promise<void> {
+  await pendingAfter;
+}
+
 let tdb: TestDbHandle;
 
 beforeAll(async () => {
@@ -52,6 +73,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await tdb.reset();
+  pendingAfter = undefined;
 });
 
 afterEach(() => {
@@ -271,6 +293,14 @@ describe("POST /api/contribute — 'email me when reviewed' (SUBMISSION_NOTIFY_E
     expect(res.status).toBe(201);
     expect((await res.json()).ok).toBe(true);
 
+    // Proves the write is actually DEFERRED, not still inline: zero rows the
+    // instant the response resolves, one once the after() task is flushed.
+    // Without this "before" half, this test would pass whether the write
+    // happened inline or deferred — see the mutation-test note at the bottom
+    // of this file.
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+    await flushAfter();
+
     const rows = await tdb.db.select().from(submissionNotifyRequestsTable);
     expect(rows).toHaveLength(1);
     expect(rows[0].email).toBe("mixed@example.com");
@@ -306,6 +336,7 @@ describe("POST /api/contribute — 'email me when reviewed' (SUBMISSION_NOTIFY_E
       })
     );
     expect(res.status).toBe(201);
+    await flushAfter();
 
     const submissions = await tdb.db.select().from(submissionsTable);
     expect(submissions).toHaveLength(1);
@@ -352,10 +383,80 @@ describe("POST /api/contribute — 'email me when reviewed' (SUBMISSION_NOTIFY_E
     const res = await POST(req({ ...validCreateBody, notifyEmail: email }));
     expect(res.status).toBe(201);
     expect((await res.json()).ok).toBe(true);
+    // The cap check itself now runs inside the deferred after() task (see
+    // recordNotifyRequestBestEffort), so it must be flushed before asserting
+    // on its outcome.
+    await flushAfter();
 
     // The submission itself still succeeds — only the notify row is skipped.
     expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
     const rows = await tdb.db.select().from(submissionNotifyRequestsTable);
     expect(rows).toHaveLength(EMAIL_SEND_CAP_MAX); // unchanged — no new row added
+  });
+
+  it("flag OFF: the response body is byte-identical to flag ON (no notify key ever leaks into the HTTP response)", async () => {
+    // Sequential, deliberately: `pendingAfter` is one shared module-level
+    // variable, so running these concurrently (e.g. via Promise.all) would
+    // race whichever request's after() call lands second against the first.
+    const offRes = await POST(req({ ...validCreateBody, name: "Flag Off Facility" }));
+    expect(offRes.status).toBe(201);
+    const offText = await offRes.text();
+
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+    const onRes = await POST(
+      req({ ...validCreateBody, name: "Flag On Facility", notifyEmail: "leaky-check@example.com" })
+    );
+    expect(onRes.status).toBe(201);
+    const onText = await onRes.text();
+    await flushAfter();
+
+    expect(offText).toBe('{"ok":true}');
+    expect(onText).toBe('{"ok":true}'); // no `notify` key — it's an internal lib<->route signal only
+    expect(onText).toBe(offText); // truly byte-identical, not just structurally equal
+  });
+
+  it("flag OFF: writes zero rows and schedules no deferred task at all", async () => {
+    const res = await POST(req({ ...validCreateBody, notifyEmail: "contributor@example.com" }));
+    expect(res.status).toBe(201);
+
+    // No after() call was ever made for this request — not merely one whose
+    // deferred work turned out to be a no-op.
+    expect(pendingAfter).toBeUndefined();
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag ON: a throw inside the deferred notify write does not fail the request and logs a code, not the error object", async () => {
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+    // Breaks BOTH queries recordNotifyRequestBestEffort can run (the cap-check
+    // SELECT and the insert) with an undefined_table error (42P01) — same
+    // technique as app/api/subscribe/route.integration.test.ts's
+    // `accountingFailures` cases.
+    await tdb.client.exec(
+      `ALTER TABLE "submission_notify_requests" RENAME TO "submission_notify_requests_hidden"`
+    );
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const email = "throws@example.com";
+      const res = await POST(req({ ...validCreateBody, notifyEmail: email }));
+      // The response is already 201 before the deferred task even runs — this
+      // pins that structural guarantee rather than assuming it.
+      expect(res.status).toBe(201);
+      expect((await res.json()).ok).toBe(true);
+
+      await flushAfter();
+
+      const logged = errorSpy.mock.calls.flat().map(String).join(" ");
+      expect(logged).toContain("submission notify request failed");
+      expect(logged).toContain("42P01");
+      expect(logged).not.toContain(email); // a safe code, never the caught error object
+    } finally {
+      // mockRestore() FIRST: it is synchronous and cannot throw, whereas the
+      // DDL restore below can — restoring the spy after it would re-open the
+      // leak this ordering closes (clearMocks does not restore implementations).
+      errorSpy.mockRestore();
+      await tdb.client.exec(
+        `ALTER TABLE "submission_notify_requests_hidden" RENAME TO "submission_notify_requests"`
+      );
+    }
   });
 });

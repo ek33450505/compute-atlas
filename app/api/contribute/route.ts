@@ -1,6 +1,8 @@
+import { after } from "next/server";
+
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
 import { checkRateLimit, extractTrustedClientIp, hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
-import { isHoneypotTripped, submitContribution } from "@/lib/contribute";
+import { isHoneypotTripped, recordNotifyRequestBestEffort, submitContribution } from "@/lib/contribute";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -41,6 +43,18 @@ export async function POST(request: Request) {
 
   if (!result.ok) {
     return jsonResponse({ error: result.error, issues: result.issues }, { status: result.status });
+  }
+
+  // Scheduled to run AFTER the response is sent (security-review fix,
+  // mirrors app/api/subscribe/route.ts's identical deferral of the confirm
+  // email): recording the notify row inline here made response latency leak
+  // whether the caller-supplied address was already at its per-address
+  // notify cap (one query) vs under it (a second INSERT) — see
+  // recordNotifyRequestBestEffort's doc comment in lib/contribute.ts. `notify`
+  // never reaches the response body below, whether or not it's present.
+  const notify = result.notify;
+  if (notify) {
+    after(() => recordNotifyRequestBestEffort(notify.submissionId, notify.email));
   }
 
   return jsonResponse({ ok: true }, { status: 201 });

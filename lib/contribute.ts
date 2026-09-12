@@ -283,11 +283,20 @@ const notifyEmailSchema = z.string().trim().toLowerCase().email().max(254);
 const notifyEmailFieldSchema = z.object({ notifyEmail: notifyEmailSchema });
 
 /**
- * Best-effort "email me when reviewed" side effect, run AFTER a submission
- * has already been created successfully. Mirrors `approveSubmission`'s wrap
- * around `notifySubscribersOfChange` (lib/submissions.ts): a failure here —
- * whether from the cap check or the insert — must never turn a successful
- * submission into an error response, so it is swallowed and logged.
+ * Best-effort "email me when reviewed" side effect. Called by the ROUTE
+ * inside `after()`, never awaited inline in `submitContribution` — see the
+ * timing note on `ContributeResult`'s `notify` field below. (Prior
+ * security-review fix: this used to be awaited inline at both call sites,
+ * which made response latency differ by whether the supplied address was
+ * already at its per-address cap — one query — versus under it — a second
+ * INSERT — leaking that fact to an unauthenticated caller.)
+ *
+ * Mirrors `approveSubmission`'s wrap around `notifySubscribersOfChange`
+ * (lib/submissions.ts): a failure here — whether from the cap check or the
+ * insert — must never turn a successful submission into an error response,
+ * so it is swallowed and logged. Once deferred via `after()` that's true
+ * structurally too (the response has already gone out), but the try/catch
+ * predates the deferral and stays regardless.
  *
  * Logs only a safe error code, never the caught error object:
  * `recordSubmissionNotifyRequest`'s insert binds `email`, and
@@ -295,7 +304,7 @@ const notifyEmailFieldSchema = z.object({ notifyEmail: notifyEmailSchema });
  * error here would leak the contributor's address to server logs — the same
  * incident class that previously happened with an IP hash.
  */
-async function recordNotifyRequestBestEffort(submissionId: string, email: string): Promise<void> {
+export async function recordNotifyRequestBestEffort(submissionId: string, email: string): Promise<void> {
   try {
     const cap = await checkSubmissionNotifyCap(email);
     if (!cap.ok) {
@@ -311,14 +320,24 @@ async function recordNotifyRequestBestEffort(submissionId: string, email: string
   }
 }
 
+/**
+ * `notify`, when present, is NOT sent to the HTTP caller — the route reads
+ * it to schedule `recordNotifyRequestBestEffort` AFTER the response goes out
+ * (via next/server's `after()`), exactly like `SubscribeResult`'s `confirm`
+ * field (lib/subscribe.ts) schedules the confirm-email send. See that type's
+ * doc comment for the full timing rationale; short version: awaiting the
+ * notify write inline made response latency reveal whether the caller's
+ * address was already at its per-address cap.
+ */
+export type ContributeResult =
+  | { ok: true; notify?: { submissionId: string; email: string } }
+  | { ok: false; status: number; error: string; issues?: unknown };
+
 export async function submitContribution(
   rawInput: unknown,
   ipHash: string,
   today: string = new Date().toISOString().slice(0, 10)
-): Promise<
-  | { ok: true }
-  | { ok: false; status: number; error: string; issues?: unknown }
-> {
+): Promise<ContributeResult> {
   const parsed = contributeInputSchema.safeParse(rawInput);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid submission", issues: parsed.error.issues };
@@ -378,10 +397,12 @@ export async function submitContribution(
       },
     });
     if (!result.ok) return result;
-    if (notifyEmail) {
-      await recordNotifyRequestBestEffort(result.id, notifyEmail);
-    }
-    return { ok: true };
+    // The notify row is NOT written here — see ContributeResult's doc
+    // comment above for why this returns a signal instead of awaiting
+    // recordNotifyRequestBestEffort inline.
+    return notifyEmail
+      ? { ok: true, notify: { submissionId: result.id, email: notifyEmail } }
+      : { ok: true };
   }
 
   const existing = await getFacilityById(data.targetFacilityId);
@@ -410,8 +431,8 @@ export async function submitContribution(
     },
   });
   if (!result.ok) return result;
-  if (notifyEmail) {
-    await recordNotifyRequestBestEffort(result.id, notifyEmail);
-  }
-  return { ok: true };
+  // Same timing rationale as the create branch above.
+  return notifyEmail
+    ? { ok: true, notify: { submissionId: result.id, email: notifyEmail } }
+    : { ok: true };
 }
