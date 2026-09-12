@@ -35,6 +35,7 @@ import {
   contactMessagesTable,
   leadsTable,
   submissionsTable,
+  subscribeAttemptsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
 
@@ -45,6 +46,7 @@ export const CONTACT_MESSAGES_RETENTION_DAYS = 180; // contact_messages: delete 
 export const LEADS_RETENTION_DAYS = 365; // leads: delete promoted/dismissed rows whose reviewedAt (falling back to createdAt) is older than this many days
 export const SUBMISSIONS_IP_HASH_RETENTION_DAYS = 90; // submissions: strip provenance.submitterIpHash from reviewed (non-pending) rows older than this many days (by reviewedAt) — the submission row itself is never deleted
 export const SUBSCRIPTIONS_UNSUBSCRIBED_RETENTION_DAYS = 30; // subscriptions: delete unsubscribed rows older than this many days (by unsubscribedAt)
+export const SUBSCRIBE_ATTEMPTS_RETENTION_DAYS = 2; // subscribe_attempts: delete rows older than this many days (by createdAt) — the cap window is 1h, so 2 days is already far beyond useful life
 export const API_ACCESS_GRANTS_RETENTION_DAYS = 90; // api_access_grants: delete revoked-or-expired rows older than this many days (by revokedAt/expiresAt)
 export const API_DAILY_USAGE_RETENTION_DAYS = 35; // api_daily_usage: delete daily per-IP counters older than this many days (by the `day` text column)
 
@@ -81,7 +83,7 @@ export interface RetentionRunSummary {
   ok: boolean;
 }
 
-// Non-generic on purpose: buildSteps() below returns six table-specific
+// Non-generic on purpose: buildSteps() below returns seven table-specific
 // steps in a uniform array, and runStep() only ever touches `.id` (the full
 // row still flows through to appendBackup() as `unknown[]` for the JSON
 // backup). Making this generic over each table's Row type forces TypeScript
@@ -181,6 +183,9 @@ function buildSteps(now: Date): RetentionStep[] {
       lt(subscriptionsTable.unsubscribedAt, subscriptionsCutoff)
     );
 
+  const subscribeAttemptsCutoff = daysAgo(now, SUBSCRIBE_ATTEMPTS_RETENTION_DAYS);
+  const subscribeAttemptsPredicate = () => lt(subscribeAttemptsTable.createdAt, subscribeAttemptsCutoff);
+
   const apiAccessGrantsCutoff = daysAgo(now, API_ACCESS_GRANTS_RETENTION_DAYS);
   const apiAccessGrantsPredicate = () =>
     or(
@@ -220,6 +225,15 @@ function buildSteps(now: Date): RetentionStep[] {
       action: "delete",
       selectCandidates: () => getDb().select().from(subscriptionsTable).where(subscriptionsPredicate()),
       mutate: () => getDb().delete(subscriptionsTable).where(subscriptionsPredicate()).returning(),
+    },
+    {
+      // Pseudonymized per-IP rate-limit counters for POST /api/subscribe. They
+      // carry a salted IP hash and nothing else, and the cap window they feed
+      // is one hour, so they age out fast — see SUBSCRIBE_ATTEMPTS_RETENTION_DAYS.
+      table: "subscribe_attempts",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(subscribeAttemptsTable).where(subscribeAttemptsPredicate()),
+      mutate: () => getDb().delete(subscribeAttemptsTable).where(subscribeAttemptsPredicate()).returning(),
     },
     {
       table: "api_access_grants",

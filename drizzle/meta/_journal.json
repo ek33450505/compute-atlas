@@ -71,6 +71,13 @@
       "when": 1788636334912,
       "tag": "0009_colossal_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789181538433,
+      "tag": "0010_lyrical_trish_tilby",
+      "breakpoints": true
     }
   ]
 }

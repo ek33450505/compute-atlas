@@ -211,6 +211,24 @@ describe("WatchButton — submit outcomes", () => {
     expect(await screen.findByText(/too many subscriptions/i)).toBeInTheDocument();
   });
 
+  it("surfaces the outage message on 503", async () => {
+    mockFetchOnce({
+      ok: false,
+      status: 503,
+      json: async () => ({ error: "Subscriptions are temporarily unavailable. Please try again later." }),
+    });
+    const user = userEvent.setup();
+    await openAndFillEmail(user);
+
+    await user.click(screen.getByRole("button", { name: "Watch" }));
+
+    // The server distinguishes an outage from rate limiting on purpose; showing
+    // the generic "Something went wrong" here would throw that away.
+    expect(await screen.findByText(/temporarily unavailable/i)).toBeInTheDocument();
+    expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/^email$/i)).toBeInTheDocument();
+  });
+
   it("surfaces a generic message on network failure", async () => {
     global.fetch = vi.fn().mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
     const user = userEvent.setup();

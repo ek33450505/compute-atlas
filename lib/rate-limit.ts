@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db/client";
 import {
   submissionsTable,
   subscriptionsTable,
+  subscribeAttemptsTable,
   leadsTable,
   contactMessagesTable,
   apiAccessGrantsTable,
@@ -178,15 +179,66 @@ export async function checkRateLimit(ipHash: string): Promise<{ ok: boolean }> {
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
 }
 
+/**
+ * Records one subscribe request against `subscribe_attempts`.
+ *
+ * MUST be called exactly once per request to `POST /api/subscribe` that gets
+ * past the rate-limit gate, BEFORE any content-dependent branch — so invalid
+ * JSON, Zod failure, honeypot, unknown facility, unknown state, over the
+ * per-address send cap, duplicate and success all cost exactly one row.
+ * `subscribeToTarget` deliberately returns an identical generic `{ok:true}` for
+ * the honeypot / duplicate / over-cap paths (a prior security-review fix), so a
+ * rate-limit side effect that fired on some paths and not others would
+ * reintroduce exactly the branch-distinguishing oracle that symmetry closes.
+ *
+ * The already-refused (429) request deliberately does NOT record — see the
+ * route's comment: that branch is decided purely by the prior count, never by
+ * request content, so it carries no information the status code did not already
+ * give away, and recording it would stop the rolling window ever draining for a
+ * shared egress IP.
+ *
+ * Deliberately does NOT swallow errors: if the attempt cannot be recorded the
+ * cap cannot be enforced, so the caller must fail the request rather than let it
+ * proceed uncounted (fail closed). The route answers a throw here — and one from
+ * `checkSubscribeRateLimit`, which fails under the same conditions — with a 503,
+ * not a 429: it is an outage, not a limit.
+ */
+export async function recordSubscribeAttempt(ipHash: string): Promise<void> {
+  await getDb().insert(subscribeAttemptsTable).values({ submitterIpHash: ipHash });
+}
+
+/**
+ * Per-IP rate limit for `POST /api/subscribe`, counting PRIOR *attempts* in the
+ * window — not successful inserts.
+ *
+ * This previously counted `subscriptions` rows, which only a successful INSERT
+ * can raise: every request that terminated without inserting (invalid JSON, Zod
+ * failure, honeypot, unknown target, over the per-address send cap, duplicate)
+ * was free, so an attacker who never succeeded was never rate-limited.
+ *
+ * It counts attempts ONLY — not `attempts + inserts`. Counting both would make
+ * an inserting request cost 2 units of budget and a non-inserting one cost 1,
+ * which is observable: subscribe once for a victim address, then count the
+ * requests remaining before a 429, and the count reveals whether the insert
+ * happened — an existence oracle over the subscriber list, through the very
+ * generic `{ok:true}` that exists to hide it. Every request costing exactly 1
+ * has no such asymmetry, and since an insert can only occur on a request that
+ * already wrote its attempt row, the attempt count is a superset of the insert
+ * count: strictly at least as tight, without the oracle.
+ *
+ * Semantics are unchanged (`count < RATE_LIMIT_MAX`); the route gates on the
+ * prior count and then records this request, so 5 requests per hour still
+ * succeed and the 6th is refused.
+ */
 export async function checkSubscribeRateLimit(ipHash: string): Promise<{ ok: boolean }> {
   const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
   const rows = await getDb()
     .select({ c: sql<number>`count(*)::int` })
-    .from(subscriptionsTable)
+    .from(subscribeAttemptsTable)
     .where(
       and(
-        gt(subscriptionsTable.createdAt, windowStart),
-        eq(subscriptionsTable.submitterIpHash, ipHash)
+        gt(subscribeAttemptsTable.createdAt, windowStart),
+        eq(subscribeAttemptsTable.submitterIpHash, ipHash)
       )
     );
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
