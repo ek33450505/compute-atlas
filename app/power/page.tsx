@@ -10,7 +10,7 @@ import {
   getFacilitiesByWaterUsage,
   getCoolingTypeCounts,
 } from "@/lib/data";
-import { formatLocation, formatMgd, formatPower, sortByMaxMwDesc, countDisclosedCapacity } from "@/lib/format";
+import { formatLocation, formatMgd, formatPower, formatRatio, sortByMaxMwDesc, countDisclosedCapacity } from "@/lib/format";
 import { ENERGY_SOURCE_ENTRIES, COOLING_TYPE_ENTRIES } from "@/lib/energy";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { FacilityListRow } from "@/components/facility-list-row";
@@ -105,12 +105,10 @@ export default async function PowerPage() {
   );
   const offtakerTotal = allProjects.length;
 
-  // Guarded against a zero denominator so a data state with no non-fossil
-  // capacity yet renders an em-dash instead of Infinity/NaN.
-  const buildoutRatioLabel =
-    buildout.nonFossilPlannedMw === 0
-      ? "—"
-      : `${(buildout.fossilPlannedMw / buildout.nonFossilPlannedMw).toFixed(1)} : 1`;
+  // Shared with the homepage/about-page ratio math via formatRatio — guards
+  // a zero denominator so a data state with no non-fossil capacity yet
+  // renders an em-dash instead of Infinity/NaN.
+  const buildoutRatioLabel = formatRatio(buildout.fossilPlannedMw, buildout.nonFossilPlannedMw);
   const nonFossilBarPct =
     buildout.fossilPlannedMw > 0
       ? (buildout.nonFossilPlannedMw / buildout.fossilPlannedMw) * 100
@@ -220,14 +218,18 @@ export default async function PowerPage() {
             {formatPower(buildout.fossilPlannedMw)} against{" "}
             {formatPower(buildout.nonFossilPlannedMw)} for every non-fossil
             technology combined — nuclear, small modular reactors, solar,
-            wind, geothermal and fusion.
+            wind, geothermal and fusion. Measured on planned capacity, the
+            dedicated-generation pipeline is predominantly fossil-fired — a{" "}
+            {buildoutRatioLabel} ratio of gas to non-fossil technology.
           </p>
           <p className="text-base leading-relaxed text-muted-foreground">
             Only {buildout.gas.operational} of the {buildout.gas.total}{" "}
             tracked gas plants are operational. {buildout.gas.proposed} are
             proposed and {buildout.gas.permitted} are permitted but not yet
             under way; {buildout.gas.underConstruction} are under
-            construction. Most of this fleet is not yet built.
+            construction. Most of this fleet is not yet built: permits still
+            to be granted, plants still to be sited — the fuel mix is a
+            decision still being made, not a settled outcome.
           </p>
           <p className="text-base leading-relaxed text-muted-foreground">
             These figures compare planned capacity only, and planned capacity

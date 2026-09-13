@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { GLOSSARY_TOPICS, getGlossaryTopicBySlug } from "@/lib/glossary";
+import {
+  GLOSSARY_TOPICS,
+  getGlossaryTopicBySlug,
+  FRICTION_CAUSES_FINDING,
+  FRICTION_ELECTRICITY_CONTRAST,
+} from "@/lib/glossary";
 
 describe("GLOSSARY_TOPICS", () => {
   it("has exactly 6 curated topics", () => {
@@ -152,5 +157,21 @@ describe("GlossaryExplainer content", () => {
         });
       }
     }
+  });
+});
+
+describe("friction-finding exported constants", () => {
+  const lede = getGlossaryTopicBySlug("why-do-communities-oppose-data-centers")?.explainer?.lede;
+
+  it("the why-do-communities-oppose-data-centers explainer has a lede", () => {
+    expect(lede).toBeDefined();
+  });
+
+  it("FRICTION_CAUSES_FINDING is contained verbatim in the lede", () => {
+    expect(lede).toContain(FRICTION_CAUSES_FINDING);
+  });
+
+  it("FRICTION_ELECTRICITY_CONTRAST is contained verbatim in the lede", () => {
+    expect(lede).toContain(FRICTION_ELECTRICITY_CONTRAST);
   });
 });

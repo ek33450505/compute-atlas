@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
-import { getStats } from "@/lib/data";
+import {
+  getStats,
+  getGenerationBuildoutStats,
+  getWaterStressExposure,
+  getCommunityReceptionCounts,
+  getFrictionTotal,
+} from "@/lib/data";
+import { formatPower } from "@/lib/format";
 import { getDatasetEdition } from "@/lib/dataset-edition";
 import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { STATUS_META, STATUS_ORDER } from "@/lib/status";
@@ -30,6 +37,12 @@ export const revalidate = 3600;
 export default async function AboutPage() {
   const stats = await getStats();
   const edition = getDatasetEdition();
+  // § The stance's "receipts" paragraph — same helpers /power and the
+  // homepage already read, so the figures can never disagree across pages.
+  const buildout = await getGenerationBuildoutStats();
+  const waterStress = await getWaterStressExposure();
+  const community = await getCommunityReceptionCounts();
+  const frictionTotal = getFrictionTotal(community);
 
   return (
     <div data-content-width="3xl" className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 space-y-12">
@@ -114,13 +127,76 @@ export default async function AboutPage() {
             § The stance
           </p>
           <h3 className="font-display text-2xl text-foreground">
-            Non-partisan, and not affiliated with anyone.
+            Non-partisan, not neutral.
           </h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Compute Atlas takes no editorial position on whether any facility
-            should be built. It is not affiliated with any company, advocacy
-            group, or government agency. The aim is a factual, honest starting
-            point — what to make of it is up to the reader.{" "}
+            Compute Atlas takes no editorial position on whether any
+            particular facility should be built, and it is not affiliated
+            with any company, advocacy group, or government agency.
+          </p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            That is not the same as having nothing to say. A buildout this
+            size is being paid for somewhere, and the somewhere is local. The
+            bill arrives as a gas plant permitted within sight of houses, as
+            water drawn from a basin that was already short of it, as a
+            rezoning settled before the neighbors knew there was a decision
+            to make. Those costs are consistently harder to look up than the
+            announcement that created them, and closing that gap is most of
+            what this record is for.
+          </p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            The record is not ambiguous about the shape of it. Of{" "}
+            <Link
+              href="/power"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              the generation being built specifically to serve compute
+            </Link>
+            , {formatPower(buildout.fossilPlannedMw)} of planned capacity is
+            natural gas, against {formatPower(buildout.nonFossilPlannedMw)}{" "}
+            for every non-fossil technology combined — nuclear and
+            renewables included. Most of it is not built yet: the most
+            carbon-intensive option on the table is still the one being
+            chosen, in proceedings that are still open.
+            {waterStress.rated > 0 && (
+              <>
+                {" "}
+                {waterStress.highOrExtreme.toLocaleString("en-US")} of the{" "}
+                {waterStress.rated.toLocaleString("en-US")} sites with basin
+                data on file sit where the WRI already rates{" "}
+                <Link
+                  href="/learn/data-center-water-use"
+                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                >
+                  baseline water stress high or extremely high
+                </Link>
+                ; that describes the basin, not the facility&rsquo;s own
+                measured use.
+              </>
+            )}
+            {frictionTotal > 0 && (
+              <>
+                {" "}
+                {frictionTotal.toLocaleString("en-US")} sites have drawn{" "}
+                <Link
+                  href="/opposition"
+                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                >
+                  documented local opposition
+                </Link>
+                , {community.litigation.toLocaleString("en-US")} of them
+                into court.
+              </>
+            )}{" "}
+            Each figure is a count of sourced records, not an estimate.
+          </p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            None of that is an argument against AI, or against computing at
+            scale. It is an argument that the costs should be as easy to
+            find as the announcements, and that nobody should have to
+            reverse-engineer a water filing to learn what is being built
+            next to them. What to make of the figures is still the
+            reader&rsquo;s.{" "}
             <a
               href={siteConfig.repoUrl}
               target="_blank"

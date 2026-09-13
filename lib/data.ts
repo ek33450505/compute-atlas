@@ -26,6 +26,7 @@ import type { DiffEntry } from "@/lib/doc-diff";
 import { operatorSlug, personSlug } from "@/lib/operator-slug";
 import { getGenerationFuelClass } from "@/lib/generation";
 import { containsDc } from "@/lib/us-states";
+import { getSitingContext, type SitingContext } from "@/lib/siting-context";
 
 /**
  * Validated view of the bundled JSON fallback, memoized for the process
@@ -696,6 +697,17 @@ export async function getCommunityReceptionCounts(): Promise<Record<CommunityRec
   return counts;
 }
 
+/**
+ * Sums the three "friction" tiers — contested, opposed, litigation — out of
+ * a `getCommunityReceptionCounts()` result. Extracted so /'s and /about's
+ * identical hand-computed sums (previously kept in sync only by a code
+ * comment) can't drift apart. Guards each tier with `?? 0` so a caller
+ * passing a partial/mocked counts object doesn't throw.
+ */
+export function getFrictionTotal(counts: Record<CommunityReception, number>): number {
+  return (counts.contested ?? 0) + (counts.opposed ?? 0) + (counts.litigation ?? 0);
+}
+
 /** Returns the top-N facilities sorted by highest capacity (operational or planned). */
 export async function getNotableFacilities(n = 6): Promise<Facility[]> {
   const facilities = await loadFacilities();
@@ -935,6 +947,78 @@ export async function getFacilitiesByWaterUsage(n = 10): Promise<Facility[]> {
     .filter(hasReportedWater)
     .sort((a, b) => b.water!.reportedMgd! - a.water!.reportedMgd! || a.name.localeCompare(b.name))
     .slice(0, n);
+}
+
+/**
+ * `waterStress.cat` band boundaries, per WRI Aqueduct 4.0. `-1` ("Arid and
+ * Low Water Use") and `0`-`2` are real, low-stress classifications — not
+ * missing data — so they simply fall below `HIGH`. Confirmed against the
+ * live artifact:
+ * `node -e 'const s=require("./data/siting-context.json");const m={};for(const v of Object.values(s)){if(v.waterStress)m[v.waterStress.cat]=v.waterStress.label}console.log(m)'`
+ * → `{ '-1': 'Arid and Low Water Use', '0': 'Low (<10%)', '1': 'Low - Medium (10-20%)',
+ *      '2': 'Medium - High (20-40%)', '3': 'High (40-80%)', '4': 'Extremely High (>80%)' }`
+ */
+const WATER_STRESS_CAT_HIGH = 3;
+const WATER_STRESS_CAT_EXTREME = 4;
+
+export interface WaterStressExposure {
+  /** Non-cancelled facilities that have a basin water-stress rating on file. */
+  rated: number;
+  /** Of those, the count in basins rated "High (40-80%)" or "Extremely High (>80%)". */
+  highOrExtreme: number;
+  /** Of those, the count in "Extremely High (>80%)" alone. */
+  extreme: number;
+}
+
+/**
+ * Pure reducer over facility + siting-context lookups — no data fetch, no
+ * I/O. Split out from `getWaterStressExposure`, mirroring
+ * `computeGenerationBuildoutStats`'s reasoning: every real facility already
+ * has a `data/siting-context.json` entry (enforced by
+ * `lib/siting-context.test.ts`), so a test against the real dataset alone
+ * could never exercise the "no entry at all" exclusion — it would pass
+ * whether or not that exclusion existed at all (a false proxy).
+ * `lookupSitingContext` is injected so tests can supply a fixture instead of
+ * the real artifact.
+ *
+ * A facility with no siting-context entry, or an entry with no
+ * `waterStress`, is excluded from `rated` — unknown, not zero-stress (this
+ * repo's honest-zero convention; see `getWaterUsage`/`getCoolingTypeCounts`).
+ * Classifies on the numeric `waterStress.cat`, never the `label` string —
+ * labels are human-readable text, and matching on them would be exactly the
+ * kind of brittle proxy this repo has been burned by before.
+ */
+export function computeWaterStressExposure(
+  facilities: Facility[],
+  lookupSitingContext: (id: string) => SitingContext | undefined
+): WaterStressExposure {
+  let rated = 0;
+  let highOrExtreme = 0;
+  let extreme = 0;
+  for (const f of facilities) {
+    if (f.status === "cancelled") continue;
+    const waterStress = lookupSitingContext(f.id)?.waterStress;
+    if (!waterStress) continue;
+    rated++;
+    if (waterStress.cat >= WATER_STRESS_CAT_HIGH) {
+      highOrExtreme++;
+      if (waterStress.cat === WATER_STRESS_CAT_EXTREME) extreme++;
+    }
+  }
+  return { rated, highOrExtreme, extreme };
+}
+
+/**
+ * Returns how many tracked, non-cancelled facilities sit in hydrological
+ * basins WRI Aqueduct 4.0 already rates High or Extremely High for baseline
+ * water stress. This describes the surrounding basin, not any facility's own
+ * measured water use — the same caveat
+ * `components/facility/siting-context.tsx` states on every facility page.
+ * Thin async wrapper: fetches the live data and delegates to
+ * {@link computeWaterStressExposure}.
+ */
+export async function getWaterStressExposure(): Promise<WaterStressExposure> {
+  return computeWaterStressExposure(await loadFacilities(), getSitingContext);
 }
 
 // ============================================================

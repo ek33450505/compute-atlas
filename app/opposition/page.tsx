@@ -9,6 +9,10 @@ import {
 } from "@/lib/data";
 import { COMMUNITY_RECEPTION_META, type CommunityReception } from "@/lib/community";
 import { formatLocation } from "@/lib/format";
+import {
+  FRICTION_CAUSES_FINDING,
+  FRICTION_ELECTRICITY_CONTRAST,
+} from "@/lib/glossary";
 import { containsDc, statesStat, statesPhrase } from "@/lib/us-states";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -122,6 +126,20 @@ export default async function OppositionPage() {
               status traces to a cited local source — a court filing, a news report, a
               public meeting record — rather than an editorial read of how a community
               feels.
+            </p>
+            <p>
+              These disputes are rarely about data centers in the abstract.
+              In the records Compute Atlas tracks, they turn on a specific
+              local consequence — a well, a noise complaint, a hearing
+              residents heard about only after it was underway.{" "}
+              {FRICTION_CAUSES_FINDING} {FRICTION_ELECTRICITY_CONTRAST} See{" "}
+              <Link
+                href="/learn/why-do-communities-oppose-data-centers"
+                className="text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              >
+                why communities oppose data centers
+              </Link>{" "}
+              for the sourced case-by-case breakdown.
             </p>
             <p>
               Those sites span {statesPhrase(statesWithFriction, frictionIncludesDc)}{" "}

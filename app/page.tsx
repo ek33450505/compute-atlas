@@ -14,6 +14,9 @@ import {
   getAiClassificationCounts,
   getFacilityTypeCounts,
   getNotableOppositionCases,
+  getGenerationBuildoutStats,
+  getWaterStressExposure,
+  getFrictionTotal,
 } from "@/lib/data";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
@@ -21,6 +24,7 @@ import { HeroSearch } from "@/components/home/hero-search";
 import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
+import { CostLedger } from "@/components/home/cost-ledger";
 import { OpenRecord } from "@/components/home/open-record";
 
 export const revalidate = 3600;
@@ -62,20 +66,23 @@ export default async function HomePage() {
     0
   );
 
-  // Lens-gateway counts — cheap derivations off the same cached facility set
-  // (no new DB reads; getCommunityReceptionCounts/getAiClassificationCounts/
-  // getFacilityTypeCounts all read the shared loadFacilities() cache).
+  // Lens-gateway + cost-ledger counts — cheap derivations off the same
+  // cached facility set (no new DB reads; getCommunityReceptionCounts/
+  // getAiClassificationCounts/getFacilityTypeCounts/
+  // getGenerationBuildoutStats/getWaterStressExposure all read the shared
+  // loadFacilities() cache).
   const communityCounts = await getCommunityReceptionCounts();
-  const frictionCount =
-    (communityCounts.contested ?? 0) +
-    (communityCounts.opposed ?? 0) +
-    (communityCounts.litigation ?? 0);
+  const frictionCount = getFrictionTotal(communityCounts);
   const aiCounts = await getAiClassificationCounts();
   const aiClassified =
     (aiCounts.confirmed ?? 0) + (aiCounts.likely ?? 0) + (aiCounts.mixed_use ?? 0);
   const typeCounts = await getFacilityTypeCounts();
   const cryptoCount = typeCounts.crypto_mining ?? 0;
   const utilityLinked = allFacilities.filter((f) => f.energy?.utility).length;
+  const buildout = await getGenerationBuildoutStats();
+  const waterStressExposure = await getWaterStressExposure();
+  const gasNotYetBuilt =
+    buildout.gas.proposed + buildout.gas.permitted + buildout.gas.underConstruction;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
@@ -154,7 +161,7 @@ export default async function HomePage() {
           {/* Subhead — text-foreground/85 (not text-muted-foreground): needs
               to stay legible against the map showing through the scrim. */}
           <p className="text-base text-foreground/85 leading-relaxed max-w-2xl">
-            Public data on data centers is everywhere and nowhere — split across hundreds of local permits, tax abatements, water filings, and interconnection queues. Compute Atlas unifies it into a single open, source-cited map. Open data, open corrections, and a public source behind every record.
+            Public data on data centers is everywhere and nowhere — split across hundreds of local permits, tax abatements, water filings, and interconnection queues. Compute Atlas unifies it into a single open, source-cited map: what is being built, what it will burn and draw to run, and where communities have objected. Open data, open corrections, and a public source behind every record.
           </p>
 
           {/* Gazetteer search — the first next step for a first-time
@@ -208,6 +215,18 @@ export default async function HomePage() {
           operationalMw={operationalMw}
           underConstructionMw={underConstructionMw}
           plannedMw={plannedMw}
+          className="mb-10 border-b border-border pb-10"
+        />
+
+        {/* Cost ledger — the counterweight: what the buildout takes, paired
+            visually with the survey ledger directly above it */}
+        <CostLedger
+          fossilPlannedMw={buildout.fossilPlannedMw}
+          nonFossilPlannedMw={buildout.nonFossilPlannedMw}
+          gasNotYetBuilt={gasNotYetBuilt}
+          gasTotal={buildout.gas.total}
+          waterStressRated={waterStressExposure.rated}
+          waterStressHighOrExtreme={waterStressExposure.highOrExtreme}
           className="mb-10 border-b border-border pb-10"
         />
 

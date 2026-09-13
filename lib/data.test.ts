@@ -23,6 +23,7 @@ import {
   getCoolingTypeCounts,
   getFacilityTypeCounts,
   getCommunityReceptionCounts,
+  getFrictionTotal,
   getEnergySourceCounts,
   getFacilitiesByState,
   getFacilitiesByStateCached,
@@ -779,6 +780,41 @@ describe("getCommunityReceptionCounts", () => {
     const sum = Object.values(counts).reduce((a, b) => a + b, 0);
     const withStatus = (await getAllFacilities()).filter((f) => !!f.community?.status).length;
     expect(sum).toBe(withStatus);
+  });
+});
+
+describe("getFrictionTotal", () => {
+  it("sums contested + opposed + litigation", () => {
+    expect(
+      getFrictionTotal({
+        supported: 0,
+        mixed: 0,
+        contested: 185,
+        opposed: 119,
+        litigation: 53,
+        unknown: 0,
+      })
+    ).toBe(357);
+  });
+
+  it("returns 0 for an all-zero input", () => {
+    expect(
+      getFrictionTotal({
+        supported: 0,
+        mixed: 0,
+        contested: 0,
+        opposed: 0,
+        litigation: 0,
+        unknown: 0,
+      })
+    ).toBe(0);
+  });
+
+  it("matches the live getCommunityReceptionCounts sum", async () => {
+    const counts = await getCommunityReceptionCounts();
+    expect(getFrictionTotal(counts)).toBe(
+      (counts.contested ?? 0) + (counts.opposed ?? 0) + (counts.litigation ?? 0)
+    );
   });
 });
 

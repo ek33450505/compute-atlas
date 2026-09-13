@@ -8,6 +8,7 @@ import {
   formatStatusLabel,
   formatUsdCompact,
   formatPower,
+  formatRatio,
   formatMgd,
   formatTonsPerYear,
   formatEditionDate,
@@ -186,6 +187,27 @@ describe("formatPower", () => {
 
   it("rounds a fractional MW value below the threshold", () => {
     expect(formatPower(12.4)).toBe("12 MW");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatRatio
+// ---------------------------------------------------------------------------
+describe("formatRatio", () => {
+  it("formats a normal ratio to one decimal", () => {
+    expect(formatRatio(69203, 19372)).toBe("3.6 : 1");
+  });
+
+  it("formats an exact whole-number ratio with a trailing .0", () => {
+    expect(formatRatio(10, 5)).toBe("2.0 : 1");
+  });
+
+  it("returns an em dash when the denominator is zero", () => {
+    expect(formatRatio(100, 0)).toBe("—");
+  });
+
+  it("returns an em dash for a zero numerator and zero denominator", () => {
+    expect(formatRatio(0, 0)).toBe("—");
   });
 });
 

@@ -109,6 +109,32 @@ describe("ContestedStrip", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders the sourced-friction finding verbatim, including the Electricity contrast, and its explainer link", () => {
+    const { container } = render(
+      <ContestedStrip cases={CASES} frictionCount={FRICTION_COUNT} breakdown={BREAKDOWN} />
+    );
+    const text = container.textContent ?? "";
+
+    // Pinned to literal substrings of the two glossary constants, not to the
+    // constants themselves — asserting getByText(FRICTION_CAUSES_FINDING)
+    // against the same imported constant the component renders can never
+    // fail, even if the component's own text drifts from the source finding.
+    expect(text).toContain(
+      "found water raised most often, ahead of noise, complaints about the approval process itself, and air quality and emissions."
+    );
+    expect(text).toContain(
+      "Electricity — the concern the national debate centers on — appears less often in local records than any of those."
+    );
+
+    const explainerLink = screen.getByRole("link", {
+      name: "why communities oppose data centers",
+    });
+    expect(explainerLink).toHaveAttribute(
+      "href",
+      "/learn/why-do-communities-oppose-data-centers"
+    );
+  });
+
   it("renders the trailing link to /opposition", () => {
     render(
       <ContestedStrip cases={CASES} frictionCount={FRICTION_COUNT} breakdown={BREAKDOWN} />
