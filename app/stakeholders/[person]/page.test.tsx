@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import type { DataCenterFacility } from "@/lib/schema";
 import type { StakeholderSummary } from "@/lib/data";
@@ -96,7 +96,7 @@ describe("StakeholderPage", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Jane Doe" })).toBeInTheDocument();
   });
 
-  it("labels the states stat 'States + DC' when the person's facilities span DC", async () => {
+  it("labels the states stat 'State + DC' and shows the state count (1), not the raw jurisdiction total (2), when the person's facilities span DC", async () => {
     mockGetStakeholderBySlug.mockResolvedValue("Jane Doe");
     mockGetFacilitiesByStakeholder.mockResolvedValue([
       makeFacility({ id: "a" }),
@@ -109,9 +109,18 @@ describe("StakeholderPage", () => {
     const page = await StakeholderPage({ params: Promise.resolve({ person: "jane-doe" }) });
     render(page);
 
-    // Mutation coverage: reverting to the bare "States" label (dropping
-    // containsDc/statesStatLabel) still shows "2" but fails this label check.
-    expect(screen.getByText("States + DC")).toBeInTheDocument();
+    // The bug this guards: the tile's rendered VALUE must be the state count
+    // (1: just VA), not the raw jurisdiction total (2: VA + DC) — "2 /
+    // States + DC" reads as "two states, plus DC." The "Facilities" tile
+    // legitimately also renders "2" here (2 facilities), so the negative
+    // check below is scoped to the states tile rather than a page-wide
+    // queryByText("2"). Reverting the call site to pass the raw total back
+    // to `value` fails the scoped "2" negative; dropping
+    // containsDc/statesStat entirely fails the label positive.
+    const statesTile = screen.getByText("State + DC").closest("div");
+    expect(statesTile).not.toBeNull();
+    expect(within(statesTile!).getByText("1")).toBeInTheDocument();
+    expect(within(statesTile!).queryByText("2")).not.toBeInTheDocument();
     expect(screen.queryByText("States")).not.toBeInTheDocument();
   });
 

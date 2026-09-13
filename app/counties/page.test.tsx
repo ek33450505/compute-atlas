@@ -81,12 +81,12 @@ describe("CountiesIndexPage", () => {
 
     // 2 distinct states (VA, AZ) — mutation coverage: reverting the label
     // to a hardcoded "States" also passes this half, so the DC case below
-    // is what actually proves containsDc/statesStatLabel are wired in.
+    // is what actually proves containsDc/statesStat are wired in.
     expect(within(tileFor("2")).getByText("States")).toBeInTheDocument();
     expect(within(tileFor("2")).queryByText("States + DC")).not.toBeInTheDocument();
   });
 
-  it("labels the states tile 'States + DC' when a tracked county is in DC", async () => {
+  it("labels the states tile 'State + DC' and shows the state count (1), not the raw jurisdiction total (2), when a tracked county is in DC", async () => {
     // Mirrors the live record: coresite-dc1-washington-d-c-dc carries
     // location.county "District of Columbia" / location.state "DC".
     mockGetCounties.mockResolvedValue(countiesFixture("DC", "District of Columbia"));
@@ -94,11 +94,15 @@ describe("CountiesIndexPage", () => {
     const page = await CountiesIndexPage();
     render(page);
 
-    // Mutation coverage: reverting the call site to a hardcoded "States"
-    // label (dropping containsDc/statesStatLabel) renders "States" here
-    // instead and fails this assertion.
-    expect(within(tileFor("2")).getByText("States + DC")).toBeInTheDocument();
-    expect(within(tileFor("2")).queryByText("States")).not.toBeInTheDocument();
+    // The bug this guards: the tile's rendered VALUE must be the state count
+    // (1: just VA), not the raw jurisdiction total (2: VA + DC) — "2 /
+    // States + DC" reads as "two states, plus DC." Reverting the call site
+    // to pass the raw total back to `value` fails this positive and the "2"
+    // negative below (dropping containsDc/statesStat entirely would also
+    // fail the label half).
+    expect(within(tileFor("1")).getByText("State + DC")).toBeInTheDocument();
+    expect(within(tileFor("1")).queryByText("States")).not.toBeInTheDocument();
+    expect(screen.queryByText("2")).not.toBeInTheDocument();
   });
 
   it("renders a 3-tile stat row with Counties / States(+DC) / In a county", async () => {

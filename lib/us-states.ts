@@ -100,25 +100,41 @@ export function containsDc(codes: Iterable<string>): boolean {
 }
 
 /**
- * Label for a stat tile whose VALUE is a count of distinct `location.state`
- * codes. The value stays honest only if the label admits DC is inside it —
- * "51 / States" was live on prod until 2026-09-13.
+ * Value+label pair for a stat tile whose underlying count is a number of
+ * distinct `location.state` codes. Returned TOGETHER, deliberately: an
+ * earlier change made the label DC-aware ("States + DC") but left the VALUE
+ * as the raw jurisdiction total, so tiles rendered "51 / States + DC" — read
+ * as "fifty-one states, plus DC," live on prod until 2026-09-13. Coupling
+ * value and label in one function makes that drift structurally impossible:
+ * there is no longer a label-only helper a call site can pair with the raw
+ * total by mistake. (There used to be a separate `statesStatLabel` — this
+ * replaced it outright, since every one of its call sites was the exact
+ * buggy pattern above; keeping both would let them disagree again.)
  *
- * When `total === 1 && withDc`, DC is the only jurisdiction present and there
- * are zero states to name, so the label must not say "States + DC" (that
- * would name an empty category) — it returns "DC" alone, matching
- * `statesPhrase`. Not reachable from site-wide counts today (the dataset has
- * 51 distinct codes), but is reachable via `getOperatorSummary` for an
- * operator whose facilities are all in DC; no such operator exists in
- * `data/facilities.json` as of 2026-09-13 (the two DC records belong to
- * "365 Data Centers", which also has MA, and "CoreSite", which has 10
- * jurisdictions), so this is latent, not live.
+ * `total` is the raw count of distinct codes, DC included — exactly what
+ * every call site already computes (`containsDc(codes)` + `codes.length` /
+ * `.size`). When DC is present, the returned `value` is `total - 1`, the
+ * actual number of states, never `total`.
+ *
+ * When `total === 1 && withDc`, DC is the only jurisdiction present and
+ * there are zero states to name, so the label must not say "States + DC"
+ * (that would name an empty category) — it returns `{ value: 1, label: "DC" }`
+ * instead, matching `statesPhrase`. Not reachable from site-wide counts
+ * today (the dataset has 51 distinct codes), but is reachable via
+ * `getOperatorSummary` for an operator whose facilities are all in DC; no
+ * such operator exists in `data/facilities.json` as of 2026-09-13 (the two
+ * DC records belong to "365 Data Centers", which also has MA, and
+ * "CoreSite", which has 10 jurisdictions), so this is latent, not live.
  */
-export function statesStatLabel(total: number, withDc: boolean): string {
-  if (withDc) {
-    return total === 1 ? "DC" : "States + DC";
+export function statesStat(total: number, withDc: boolean): { value: number; label: string } {
+  if (!withDc) {
+    return { value: total, label: total === 1 ? "State" : "States" };
   }
-  return total === 1 ? "State" : "States";
+  if (total === 1) {
+    return { value: 1, label: "DC" };
+  }
+  const stateCount = total - 1;
+  return { value: stateCount, label: stateCount === 1 ? "State + DC" : "States + DC" };
 }
 
 /**

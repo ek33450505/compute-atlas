@@ -11,7 +11,7 @@ import {
   stateSlugFromCode,
   containsDc,
   statesPhrase,
-  statesStatLabel,
+  statesStat,
 } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
@@ -75,6 +75,7 @@ export default async function AiPage() {
     total: counts.confirmed + counts.likely + counts.mixed_use,
   }));
   const stateRowsIncludeDc = containsDc(stateRows.map((s) => s.code));
+  const statesTile = statesStat(stateRows.length, stateRowsIncludeDc);
 
   return (
     <div
@@ -149,7 +150,7 @@ export default async function AiPage() {
               { value: totalAiClassified, label: "AI-classified" },
               { value: aiCounts.confirmed, label: "Confirmed" },
               { value: aiCounts.likely, label: "Likely" },
-              { value: stateRows.length, label: statesStatLabel(stateRows.length, stateRowsIncludeDc) },
+              { value: statesTile.value, label: statesTile.label },
             ]}
           />
 

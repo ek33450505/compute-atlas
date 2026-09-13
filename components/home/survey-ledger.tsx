@@ -8,7 +8,7 @@ import {
   type RefObject,
 } from "react";
 
-import { statesStatLabel, statesPhrase } from "@/lib/us-states";
+import { statesStat, statesPhrase } from "@/lib/us-states";
 
 // useLayoutEffect warns when it runs during SSR; swapping to useEffect on the
 // server keeps the pre-paint reset a purely client-side hydration behavior.
@@ -231,8 +231,14 @@ export function SurveyLedger({
   const inView = useInView(sectionRef);
   const start = inView || reducedMotion;
 
+  // The tile's animated number must land on the same figure its label
+  // names — statesStat couples them so a state that drops out of DC (or a
+  // state gaining DC) can't leave the count-up target stale against the
+  // label the way "51 / States + DC" did before this helper existed.
+  const statesTile = statesStat(states, includesDc);
+
   const displayCount = useCountUp(count, start, reducedMotion, 0);
-  const displayStates = useCountUp(states, start, reducedMotion, 0);
+  const displayStates = useCountUp(statesTile.value, start, reducedMotion, 0);
   const displayOperators = useCountUp(operators, start, reducedMotion, 0);
   const displaySources = useCountUp(sources, start, reducedMotion, 0);
 
@@ -288,7 +294,7 @@ export function SurveyLedger({
         />
         <LedgerTile
           value={displayStates}
-          label={statesStatLabel(states, includesDc) + " covered"}
+          label={statesTile.label + " covered"}
           ariaLabel={`${statesPhrase(states, includesDc)} covered`}
         />
         <LedgerTile

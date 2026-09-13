@@ -122,7 +122,7 @@ describe("StatesIndexPage", () => {
     expect(tileFor("2").parentElement?.children).toHaveLength(tiles.length);
   });
 
-  it("labels the states tile 'States + DC' when a tracked code is DC", async () => {
+  it("labels the states tile 'State + DC' and shows the state count (1), not the raw jurisdiction total (2), when a tracked code is DC", async () => {
     mockGetStates.mockResolvedValue(["VA", "DC"]);
     mockGetStateSummary.mockImplementation((code: string) =>
       Promise.resolve(
@@ -133,9 +133,15 @@ describe("StatesIndexPage", () => {
     const page = await StatesIndexPage();
     render(page);
 
-    // Mutation coverage: reverting to a hardcoded "States" label (dropping
-    // containsDc/statesStatLabel) fails this and passes the negative below.
-    expect(within(tileFor("2")).getByText("States + DC")).toBeInTheDocument();
-    expect(within(tileFor("2")).queryByText("States")).not.toBeInTheDocument();
+    // The bug this guards: the tile's rendered VALUE must be the state count
+    // (1), not the raw jurisdiction total (2) — "2 / States + DC" reads as
+    // "two states, plus DC." Per-state row badges also render "1" (each
+    // state's facility count), so this is scoped to the tile via its label
+    // rather than tileFor("1").
+    const statesTile = screen.getByText("State + DC").closest("div");
+    expect(statesTile).not.toBeNull();
+    expect(within(statesTile!).getByText("1")).toBeInTheDocument();
+    expect(within(statesTile!).queryByText("2")).not.toBeInTheDocument();
+    expect(within(statesTile!).queryByText("States")).not.toBeInTheDocument();
   });
 });

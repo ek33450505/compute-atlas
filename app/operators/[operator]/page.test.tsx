@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import type { Facility } from "@/lib/schema";
 import type { OperatorSummary } from "@/lib/data";
@@ -182,7 +182,7 @@ describe("OperatorPage generateMetadata", () => {
 });
 
 describe("OperatorPage — DC-aware states stat and overview sentence", () => {
-  it("labels the states tile 'States + DC' and phrases the overview sentence with DC when includesDc is true", async () => {
+  it("labels the states tile 'State + DC', shows the state count (1) not the raw jurisdiction total (2), and phrases the overview sentence with DC when includesDc is true", async () => {
     mockGetOperatorSummary.mockResolvedValue(
       makeSummary({ stateCount: 2, includesDc: true })
     );
@@ -195,7 +195,17 @@ describe("OperatorPage — DC-aware states stat and overview sentence", () => {
     expect(
       screen.getByText(/across 1 state and DC\. Operational capacity/)
     ).toBeInTheDocument();
-    expect(screen.getByText("States + DC")).toBeInTheDocument();
+    // The bug this guards: the tile's rendered VALUE must be the state count
+    // (1), not the raw jurisdiction total (2) — "2 / States + DC" reads as
+    // "two states, plus DC." The "Sites" tile legitimately also shows "2"
+    // here (summary.count === 2), so the negative check is scoped to the
+    // states tile rather than a page-wide queryByText("2"). Reverting the
+    // call site to pass the raw total back to `value` fails that scoped
+    // check; dropping containsDc/statesStat entirely fails the label half.
+    const statesTile = screen.getByText("State + DC").closest("div");
+    expect(statesTile).not.toBeNull();
+    expect(within(statesTile!).getByText("1")).toBeInTheDocument();
+    expect(within(statesTile!).queryByText("2")).not.toBeInTheDocument();
     expect(screen.queryByText("2 states")).not.toBeInTheDocument();
   });
 
