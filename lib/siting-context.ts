@@ -110,7 +110,9 @@ export function splitRiskLabel(label: string): {
  * `data/siting-context.json` is a static, pre-computed artifact keyed by
  * facility id — mirrors how `lib/data.ts` imports `data/facilities.json`.
  * No DB, no async, no cache: it's immutable for the process lifetime.
- * 725 of 727 facilities have an entry; 2 have none.
+ * Every facility in `data/facilities.json` has an entry here (a facility
+ * matching no siting dataset still gets an empty `{}` entry) — enforced by
+ * the coverage test in `lib/siting-context.test.ts`, not a frozen count.
  */
 const sitingContextById = sitingContextRaw as Record<string, SitingContext>;
 

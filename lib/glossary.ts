@@ -535,6 +535,21 @@ const BEHIND_THE_METER_EXPLAINER: GlossaryExplainer = {
  * figures, or otherwise "improve" this prose — each sentence is scoped to
  * exactly what its cited source supports.
  */
+/**
+ * The two sourced-finding sentences from `WHY_COMMUNITIES_OPPOSE_EXPLAINER`'s
+ * lede below, exported verbatim so other pages (the homepage contested
+ * strip, /opposition) can import and quote the finding instead of
+ * paraphrasing it independently — two independent paraphrases had already
+ * drifted from each other and from the lede itself. Copied byte-for-byte,
+ * including the literal em dashes; do not reword either constant, and do
+ * not let them drift from the lede text below (see the drift test in
+ * lib/glossary.test.ts).
+ */
+export const FRICTION_CAUSES_FINDING =
+  "A review of the sourced friction notes on record in August 2026 found water raised most often, ahead of noise, complaints about the approval process itself, and air quality and emissions.";
+export const FRICTION_ELECTRICITY_CONTRAST =
+  "Electricity — the concern the national debate centers on — appears less often in local records than any of those.";
+
 const WHY_COMMUNITIES_OPPOSE_EXPLAINER: GlossaryExplainer = {
   lede:
     "Opposition to a data center is rarely about data centers in the abstract. In the records Compute Atlas tracks, it is about a specific local consequence — a well, a noise floor, a rezoning hearing that neighbors heard about late. A review of the sourced friction notes on record in August 2026 found water raised most often, ahead of noise, complaints about the approval process itself, and air quality and emissions. Electricity — the concern the national debate centers on — appears less often in local records than any of those.",

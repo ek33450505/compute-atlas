@@ -199,6 +199,17 @@ export function formatUsdCompact(n: number): string {
   }).format(n);
 }
 
+/**
+ * Formats a ratio as "X.X : 1", guarding the zero-denominator case with an
+ * em dash instead of dividing by zero (which would otherwise render
+ * "Infinity : 1" or "NaN : 1"). Shared by /power's fossil-vs-non-fossil
+ * buildout ratio and the homepage cost ledger's mirror of the same figure.
+ */
+export function formatRatio(numerator: number, denominator: number): string {
+  if (denominator === 0) return "—";
+  return `${(numerator / denominator).toFixed(1)} : 1`;
+}
+
 /** Formats megawatts as MW, or GW at 1,000 MW and above. */
 export function formatPower(mw: number): string {
   if (mw >= 1000) {

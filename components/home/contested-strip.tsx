@@ -1,6 +1,10 @@
 import Link from "next/link";
 
 import { formatLocation } from "@/lib/format";
+import {
+  FRICTION_CAUSES_FINDING,
+  FRICTION_ELECTRICITY_CONTRAST,
+} from "@/lib/glossary";
 import type { Facility } from "@/lib/schema";
 
 interface ContestedStripProps {
@@ -31,6 +35,19 @@ export function ContestedStrip({
         {frictionCount} tracked sites carry a documented friction status —{" "}
         {breakdown.litigation} in litigation, {breakdown.opposed} opposed,{" "}
         {breakdown.contested} contested — each with a public source.
+      </p>
+      <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+        {FRICTION_CAUSES_FINDING}{" "}
+        {FRICTION_ELECTRICITY_CONTRAST} These are specific local
+        consequences at a named well or property line, rather than an
+        argument about data centers in general. More on{" "}
+        <Link
+          href="/learn/why-do-communities-oppose-data-centers"
+          className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+        >
+          why communities oppose data centers
+        </Link>
+        .
       </p>
       {cases.length > 0 && (
         <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
