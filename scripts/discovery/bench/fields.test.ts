@@ -40,6 +40,14 @@ describe("fieldKind", () => {
     expect(KIND.ENUM).toBe("enum");
   });
 
+  it("classifies aiClassificationStated as enum, against a literal (not the default)", () => {
+    // Same reasoning as the assertion above: the literal is deliberate.
+    // `KIND.ENUM` comes from the module under test, so asserting against it
+    // would compare the code with itself; the literal can disagree with it.
+    expect(fieldKind("aiClassificationStated")).toBe("enum");
+    expect(KIND.ENUM).toBe("enum");
+  });
+
   it("defaults an undeclared field to numeric (preserves pre-existing behaviour)", () => {
     // Distinguishes "declared as enum" (above) from "fell through the
     // KIND.NUMERIC default" -- an undeclared field must still land here.
@@ -62,6 +70,23 @@ describe("enum vocabularies (must match lib/schema.ts)", () => {
     // Literal, not derived from the import -- so this test can disagree with
     // the code if the vocabulary drifts.
     expect(FIELD_ENUM_VALUES.aiClassification).toEqual(["confirmed", "likely", "mixed_use"]);
+  });
+
+  it("aiClassificationStated is the two-value bench vocabulary", () => {
+    // Literal, not derived from FIELD_ENUM_VALUES.aiClassification -- deriving
+    // it (e.g. by filtering out "likely") would make this test agree with any
+    // change to the 3-value vocabulary instead of pinning this one.
+    expect(FIELD_ENUM_VALUES.aiClassificationStated).toEqual(["confirmed", "mixed_use"]);
+  });
+
+  it("the two aiClassification vocabularies differ exactly by the `likely` tier", () => {
+    // This is the test that catches someone "deduplicating" the two
+    // vocabularies into one. They measure the SAME task with DIFFERENT
+    // vocabularies, so collapsing them destroys the comparison the bench run
+    // exists to make. Both expectations are written explicitly: a merge in
+    // either direction fails one of them.
+    expect(FIELD_ENUM_VALUES.aiClassification).toContain("likely");
+    expect(FIELD_ENUM_VALUES.aiClassificationStated).not.toContain("likely");
   });
 });
 

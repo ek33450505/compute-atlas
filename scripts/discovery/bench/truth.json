@@ -83,7 +83,22 @@
     "rather than by instruction). They are single-pass and have not been double-labelled, so",
     "inter-annotator agreement is unmeasured. Every model/label disagreement was re-read before",
     "being recorded as a model error — that adjudication pass is the only second opinion these",
-    "labels have had. Read a disagreement as a possible label bug first."
+    "labels have had. Read a disagreement as a possible label bug first.",
+    "",
+    "AI CLASSIFICATION, TWO-VALUE VARIANT (added 2026-09-12, s152). `aiClassificationStated`",
+    "is the SAME task as `aiClassification` with the `likely` tier removed: vocabulary is",
+    "confirmed | mixed_use only. Its labels are DERIVED MECHANICALLY from the aiClassification",
+    "labels above (confirmed->confirmed, mixed_use->mixed_use, null->null, AMBIG->AMBIG) and",
+    "introduce no new judgement.",
+    "⚠️ The four pages whose aiClassification label is `likely` carry NO aiClassificationStated",
+    "key AT ALL. This is deliberate. Their correct answer is not expressible in a two-value",
+    "vocabulary, so mapping them to null would score a model CORRECT for abstaining on a page",
+    "that genuinely does tie the facility to AI — inventing a label to fill a hole. Omitting the",
+    "key makes run.mjs skip the cell and rescore.mjs report it under 'UNLABELED (not scored, NOT",
+    "measured)' by name. 63 cells are scorable; 4 omitted, 2 AMBIG-excluded.",
+    "This variant exists because the three-value run put 7 of its 8 hallucinations on `likely`.",
+    "It tests whether deleting that tier removes those errors or merely relocates them onto",
+    "`confirmed`."
   ],
   "flexential-hillsboro-5-or": {
     "capacityAny": 36,
@@ -105,7 +120,9 @@
     "coolingType": null,
     "coolingTypeNote": "Only links to a generic QTS article 'Do Data Centers Use a Lot of Water?'; nothing about this facility's cooling.",
     "aiClassification": null,
-    "aiClassificationNote": "Generic QTS campus page covering power, footprint, design, and unrelated blog posts (interns, water use, electricity costs). No mention of AI, artificial intelligence, GPUs, or machine learning anywhere in the text."
+    "aiClassificationNote": "Generic QTS campus page covering power, footprint, design, and unrelated blog posts (interns, water use, electricity costs). No mention of AI, artificial intelligence, GPUs, or machine learning anywhere in the text.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Generic QTS campus page covering power, footprint, design, and unrelated blog posts (interns, water use, electricity costs). No mention of AI, artificial intelligence, GPUs, or machine learning anywhere in the text."
   },
   "crane-pdx02-forest-grove-or": {
     "capacityAny": 48,
@@ -116,7 +133,9 @@
     "coolingType": "air",
     "coolingTypeNote": "\"air-based cooling\" -- CORRECTED 2026-09-01: first labeled null. The phrase sits mid-run in the \"Innovative & sustainable design\" list (\"PUE of 1.3 or lower, air-based cooling, rainwater harvesting\"), which my sentence-splitting label aid truncated before reaching. The MODEL found it and was scored a hallucination for being right -- the exact failure this file's header warns about. Sibling page crane-pdx01 states the same design in full.",
     "aiClassification": null,
-    "aiClassificationNote": "Operator's own data-center spec page for this site. No mention of AI, GPU, or AI-specific workloads anywhere in the text — only general high-density cooling, power, connectivity, and compliance specs."
+    "aiClassificationNote": "Operator's own data-center spec page for this site. No mention of AI, GPU, or AI-specific workloads anywhere in the text — only general high-density cooling, power, connectivity, and compliance specs.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Operator's own data-center spec page for this site. No mention of AI, GPU, or AI-specific workloads anywhere in the text — only general high-density cooling, power, connectivity, and compliance specs."
   },
   "tract-altoona-ia": {
     "capacityAny": 1000,
@@ -127,7 +146,9 @@
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Press release about Tract's land acquisition in Altoona, IA for a technology park. No mention of AI anywhere in the page; describes 'hyperscale companies and other data center operators' generically."
+    "aiClassificationNote": "Press release about Tract's land acquisition in Altoona, IA for a technology park. No mention of AI anywhere in the page; describes 'hyperscale companies and other data center operators' generically.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Press release about Tract's land acquisition in Altoona, IA for a technology park. No mention of AI anywhere in the page; describes 'hyperscale companies and other data center operators' generically."
   },
   "1623-farnam-omaha-ne": {
     "capacityAny": 8,
@@ -138,7 +159,9 @@
     "coolingType": null,
     "coolingTypeNote": "Only DCD site navigation ('Data Center Cooling' topic links) - no statement about this facility.",
     "aiClassification": null,
-    "aiClassificationNote": "CEO quote: \"We're seeing significant demand from AI workloads, edge deployments, content platforms, and broadband networks...\" This is general market-demand/capability-marketing language (TIE-BREAKER 1, cf. \"supports AI workloads\") about who the facility hopes to attract, not a stated AI-specific indicator (no named AI tenant, GPU deal, or AI-attributed power/cooling figure) for this facility."
+    "aiClassificationNote": "CEO quote: \"We're seeing significant demand from AI workloads, edge deployments, content platforms, and broadband networks...\" This is general market-demand/capability-marketing language (TIE-BREAKER 1, cf. \"supports AI workloads\") about who the facility hopes to attract, not a stated AI-specific indicator (no named AI tenant, GPU deal, or AI-attributed power/cooling figure) for this facility.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "CEO quote: \"We're seeing significant demand from AI workloads, edge deployments, content platforms, and broadband networks...\" This is general market-demand/capability-marketing language (TIE-BREAKER 1, cf. \"supports AI workloads\") about who the facility hopes to attract, not a stated AI-specific indicator (no named AI tenant, GPU deal, or AI-attributed power/cooling figure) for this facility."
   },
   "aligned-west-jordan-ut": {
     "capacityAny": null,
@@ -160,7 +183,9 @@
     "coolingType": null,
     "coolingTypeNote": "'low water and sewer usage' is a consumption claim; no method stated.",
     "aiClassification": null,
-    "aiClassificationNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. KSL news article about resident concerns over water/gas usage and city revenue/jobs from the Summit Ridge Data Center; never mentions AI."
+    "aiClassificationNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. KSL news article about resident concerns over water/gas usage and city revenue/jobs from the Summit Ridge Data Center; never mentions AI.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. KSL news article about resident concerns over water/gas usage and city revenue/jobs from the Summit Ridge Data Center; never mentions AI."
   },
   "applied-digital-polaris-forge-1-ellendale-nd": {
     "capacityAny": 400,
@@ -171,7 +196,9 @@
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "'host CoreWeave's artificial intelligence (AI) and high-performance computing (HPC) infrastructure at its Ellendale, North Dakota data center campus' — Page names CoreWeave (\"the AI Hyperscaler\") as the tenant leasing 250MW at this specific Ellendale campus to host its AI/HPC infrastructure; repeatedly calls Ellendale a hub for \"AI infrastructure\" and an \"AI data center ecosystem.\" Named AI tenant + explicit AI-facility framing for this site. (confirmed)"
+    "aiClassificationNote": "'host CoreWeave's artificial intelligence (AI) and high-performance computing (HPC) infrastructure at its Ellendale, North Dakota data center campus' — Page names CoreWeave (\"the AI Hyperscaler\") as the tenant leasing 250MW at this specific Ellendale campus to host its AI/HPC infrastructure; repeatedly calls Ellendale a hub for \"AI infrastructure\" and an \"AI data center ecosystem.\" Named AI tenant + explicit AI-facility framing for this site. (confirmed)",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "'host CoreWeave's artificial intelligence (AI) and high-performance computing (HPC) infrastructure at its Ellendale, North Dakota data center campus' — Page names CoreWeave (\"the AI Hyperscaler\") as the tenant leasing 250MW at this specific Ellendale campus to host its AI/HPC infrastructure; repeatedly calls Ellendale a hub for \"AI infrastructure\" and an \"AI data center ecosystem.\" Named AI tenant + explicit AI-facility framing for this site. (confirmed)"
   },
   "aws-cumulus-salem-township-pa": {
     "capacityAny": null,
@@ -182,7 +209,9 @@
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": "mixed_use",
-    "aiClassificationNote": "Talen states it will supply power 'for operations that support AI and other cloud technologies at Amazon’s data center campus adjacent to Susquehanna' — the AWS Cumulus campus at Salem Township, PA (adjacent to the Susquehanna plant). AI is named as one of two co-equal workloads (AI + other cloud technologies) for this specific site, not presented as the defining use, so TIE-BREAKER 3 does not push this to confirmed."
+    "aiClassificationNote": "Talen states it will supply power 'for operations that support AI and other cloud technologies at Amazon’s data center campus adjacent to Susquehanna' — the AWS Cumulus campus at Salem Township, PA (adjacent to the Susquehanna plant). AI is named as one of two co-equal workloads (AI + other cloud technologies) for this specific site, not presented as the defining use, so TIE-BREAKER 3 does not push this to confirmed.",
+    "aiClassificationStated": "mixed_use",
+    "aiClassificationStatedNote": "Talen states it will supply power 'for operations that support AI and other cloud technologies at Amazon’s data center campus adjacent to Susquehanna' — the AWS Cumulus campus at Salem Township, PA (adjacent to the Susquehanna plant). AI is named as one of two co-equal workloads (AI + other cloud technologies) for this specific site, not presented as the defining use, so TIE-BREAKER 3 does not push this to confirmed."
   },
   "bitfarms-panther-creek-nesquehoning-pa": {
     "capacityAny": 350,
@@ -197,7 +226,9 @@
     "coolingType": null,
     "coolingTypeNote": "10-K says 'all of our sites are located in cooler climates that support extended free-cooling periods' - company-wide, and free cooling is not one of the four values.",
     "aiClassification": "AMBIG",
-    "aiClassificationNote": "Panther Creek is explicitly named as a primary 'HPC data center development' site (e.g. '$300 million for HPC data center development at Panther Creek, secured by Panther Creek assets') and appears by name in the HPC portfolio pipeline table, and the filing states the company is 'designing substantially all of our HPC data centers to support NVIDIA's next-generation Vera Rubin GPUs' — a portfolio-wide claim that would cover Panther Creek. However, the filing's only explicit 'purpose-built AI compute facility' / specific-GPU-architecture statement (NVIDIA GB300 NVL72 reference architecture) is attributed by name only to a different site in the same document, Moses Lake — the exact entity-binding trap the contract warns about. Two labels are each defensible: 'likely' (the portfolio-wide GPU-design statement explicitly includes Panther Creek in its pipeline table) or 'null' (the concrete, site-specific AI/GPU claim belongs to Moses Lake, not Panther Creek)."
+    "aiClassificationNote": "Panther Creek is explicitly named as a primary 'HPC data center development' site (e.g. '$300 million for HPC data center development at Panther Creek, secured by Panther Creek assets') and appears by name in the HPC portfolio pipeline table, and the filing states the company is 'designing substantially all of our HPC data centers to support NVIDIA's next-generation Vera Rubin GPUs' — a portfolio-wide claim that would cover Panther Creek. However, the filing's only explicit 'purpose-built AI compute facility' / specific-GPU-architecture statement (NVIDIA GB300 NVL72 reference architecture) is attributed by name only to a different site in the same document, Moses Lake — the exact entity-binding trap the contract warns about. Two labels are each defensible: 'likely' (the portfolio-wide GPU-design statement explicitly includes Panther Creek in its pipeline table) or 'null' (the concrete, site-specific AI/GPU claim belongs to Moses Lake, not Panther Creek).",
+    "aiClassificationStated": "AMBIG",
+    "aiClassificationStatedNote": "Panther Creek is explicitly named as a primary 'HPC data center development' site (e.g. '$300 million for HPC data center development at Panther Creek, secured by Panther Creek assets') and appears by name in the HPC portfolio pipeline table, and the filing states the company is 'designing substantially all of our HPC data centers to support NVIDIA's next-generation Vera Rubin GPUs' — a portfolio-wide claim that would cover Panther Creek. However, the filing's only explicit 'purpose-built AI compute facility' / specific-GPU-architecture statement (NVIDIA GB300 NVL72 reference architecture) is attributed by name only to a different site in the same document, Moses Lake — the exact entity-binding trap the contract warns about. Two labels are each defensible: 'likely' (the portfolio-wide GPU-design statement explicitly includes Panther Creek in its pipeline table) or 'null' (the concrete, site-specific AI/GPU claim belongs to Moses Lake, not Panther Creek)."
   },
   "big-watt-digital-onida-sd": {
     "capacityAny": "AMBIG",
@@ -208,7 +239,9 @@
     "coolingType": null,
     "coolingTypeNote": "'Twenty-four liquid-cooled, containerized processors' is MINING RIG cooling (miningSchema.coolingType), not the facility water system.",
     "aiClassification": null,
-    "aiClassificationNote": "Article is entirely about a containerized Bitcoin mining facility (PUD approval, 12.5MW, liquid-cooled Bitcoin processors). No mention of AI anywhere in the page."
+    "aiClassificationNote": "Article is entirely about a containerized Bitcoin mining facility (PUD approval, 12.5MW, liquid-cooled Bitcoin processors). No mention of AI anywhere in the page.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Article is entirely about a containerized Bitcoin mining facility (PUD approval, 12.5MW, liquid-cooled Bitcoin processors). No mention of AI anywhere in the page."
   },
   "atlas-power-williston-nd": {
     "capacityAny": 700,
@@ -219,7 +252,9 @@
     "coolingType": null,
     "coolingTypeNote": "CORRECTED 2026-09-01: first labeled closed_loop off \"These facilities will utilize a closed-loop cooling system with direct-to-chip liquid cooling\". That sentence is in baxtel's NEARBY-FACILITIES sidebar and belongs to Critical Data House's Project Fighting Pike, a DIFFERENT operator in the same city -- the cross-operator trap this record's capacity note already warned about. The model abstained and was scored a miss for being right.",
     "aiClassification": null,
-    "aiClassificationNote": "This facility's own description is purely crypto mining ($1.9B, 700MW planned, 240MW consumed). The page's AI/GPU mentions (NDSU's Bison supercomputer at its CCAST data center, Applied Digital's GPU facility, Critical Data House's Project Fighting Pike liquid cooling) all belong to different operators/sites listed as nearby facilities or unrelated news items, not Atlas Power. TIE-BREAKER 2 (wrong entity)."
+    "aiClassificationNote": "This facility's own description is purely crypto mining ($1.9B, 700MW planned, 240MW consumed). The page's AI/GPU mentions (NDSU's Bison supercomputer at its CCAST data center, Applied Digital's GPU facility, Critical Data House's Project Fighting Pike liquid cooling) all belong to different operators/sites listed as nearby facilities or unrelated news items, not Atlas Power. TIE-BREAKER 2 (wrong entity).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "This facility's own description is purely crypto mining ($1.9B, 700MW planned, 240MW consumed). The page's AI/GPU mentions (NDSU's Bison supercomputer at its CCAST data center, Applied Digital's GPU facility, Critical Data House's Project Fighting Pike liquid cooling) all belong to different operators/sites listed as nearby facilities or unrelated news items, not Atlas Power. TIE-BREAKER 2 (wrong entity)."
   },
   "aligned-iad-01-va": {
     "capacityAny": null,
@@ -230,7 +265,9 @@
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"Closed-loop chilled water system design\" -- Same Aligned spec block as the other Aligned location pages.",
     "aiClassification": null,
-    "aiClassificationNote": "Page markets the Northern Virginia campus group (IAD-01/02/03 together) as 'AI-Ready' and able to 'accommodate all your AI/HPC, cloud, and real-time application demands,' plus generic liquid-cooling-for-GPU infrastructure specs shared across the whole campus platform. No named AI tenant, deployment, or facility-specific AI use is stated. TIE-BREAKER 1 (capability marketing, not classification)."
+    "aiClassificationNote": "Page markets the Northern Virginia campus group (IAD-01/02/03 together) as 'AI-Ready' and able to 'accommodate all your AI/HPC, cloud, and real-time application demands,' plus generic liquid-cooling-for-GPU infrastructure specs shared across the whole campus platform. No named AI tenant, deployment, or facility-specific AI use is stated. TIE-BREAKER 1 (capability marketing, not classification).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Page markets the Northern Virginia campus group (IAD-01/02/03 together) as 'AI-Ready' and able to 'accommodate all your AI/HPC, cloud, and real-time application demands,' plus generic liquid-cooling-for-GPU infrastructure specs shared across the whole campus platform. No named AI tenant, deployment, or facility-specific AI use is stated. TIE-BREAKER 1 (capability marketing, not classification)."
   },
   "aaim-data-centers-blue-earth-mn": {
     "capacityAny": 15,
@@ -241,7 +278,9 @@
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Page describes this Blue Earth, MN facility only as colocation for 'high-performance computing, enterprise data, and crypto mining needs.' Executive bios mention HPC/GPU industry backgrounds (GPU.One, Bitfarms) but those are career histories of individuals, not statements about what runs at this site. Nothing ties AI to this facility."
+    "aiClassificationNote": "Page describes this Blue Earth, MN facility only as colocation for 'high-performance computing, enterprise data, and crypto mining needs.' Executive bios mention HPC/GPU industry backgrounds (GPU.One, Bitfarms) but those are career histories of individuals, not statements about what runs at this site. Nothing ties AI to this facility.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Page describes this Blue Earth, MN facility only as colocation for 'high-performance computing, enterprise data, and crypto mining needs.' Executive bios mention HPC/GPU industry backgrounds (GPU.One, Bitfarms) but those are career histories of individuals, not statements about what runs at this site. Nothing ties AI to this facility."
   },
   "ark-data-centers-akron-i-summit-county-oh": {
     "capacityAny": 1,
@@ -252,7 +291,9 @@
     "coolingType": "AMBIG",
     "coolingTypeNote": "A waterside economizer normally implies cooling towers (evaporative), but the page states only a chilled-water plant (closed_loop). Two defensible values.",
     "aiClassification": null,
-    "aiClassificationNote": "Only AI mention is a customer testimonial (Ontrak CTO) about that customer's general use of AI in digital healthcare while working with Involta broadly — not tied to the Akron I facility specifically, and the page also covers a separate Akron II facility. TIE-BREAKER 2 (wrong entity/company-wide)."
+    "aiClassificationNote": "Only AI mention is a customer testimonial (Ontrak CTO) about that customer's general use of AI in digital healthcare while working with Involta broadly — not tied to the Akron I facility specifically, and the page also covers a separate Akron II facility. TIE-BREAKER 2 (wrong entity/company-wide).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Only AI mention is a customer testimonial (Ontrak CTO) about that customer's general use of AI in digital healthcare while working with Involta broadly — not tied to the Akron I facility specifically, and the page also covers a separate Akron II facility. TIE-BREAKER 2 (wrong entity/company-wide)."
   },
   "applied-digital-jamestown-nd": {
     "capacityAny": null,
@@ -274,7 +315,9 @@
     "coolingType": null,
     "coolingTypeNote": "States 300,000 gallons/day of water use - a volume, not a method.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "The page states directly: 'The facility will house an AI supercomputer (or supercluster) that can be used to train artificial intelligence models.' This is a facility-specific description of the site as an AI training facility, not generic marketing. (confirmed)"
+    "aiClassificationNote": "The page states directly: 'The facility will house an AI supercomputer (or supercluster) that can be used to train artificial intelligence models.' This is a facility-specific description of the site as an AI training facility, not generic marketing. (confirmed)",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "The page states directly: 'The facility will house an AI supercomputer (or supercluster) that can be used to train artificial intelligence models.' This is a facility-specific description of the site as an AI training facility, not generic marketing. (confirmed)"
   },
   "aligned-project-caprock-hale-county-tx": {
     "capacityAny": 540,
@@ -285,7 +328,9 @@
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"advanced air-cooled heat rejection system paired with a closed-loop design\" -- 'the system recirculates the same water' - the tie-breaker case: air-cooled heat rejection over a recirculating circuit is closed_loop, not air.",
     "aiClassification": null,
-    "aiClassificationNote": "AI language is almost entirely company-wide operator positioning (\"a leading developer and operator of...data centers for hyperscale, cloud, and AI workloads\"; \"Aligned is Where AI Lives\"; \"designed to power AI innovation at scale\") describing Aligned generally, not Caprock specifically (TIE-BREAKER 2). The one facility-tied line, CEO Schaap's \"meeting community demands for the responsible construction of AI infrastructure,\" is capability/PR framing (TIE-BREAKER 1) rather than a concrete indicator (no named AI tenant, GPU procurement, AI-specific power/lease deal, or cooling/rack figures attributed to AI for Caprock)."
+    "aiClassificationNote": "AI language is almost entirely company-wide operator positioning (\"a leading developer and operator of...data centers for hyperscale, cloud, and AI workloads\"; \"Aligned is Where AI Lives\"; \"designed to power AI innovation at scale\") describing Aligned generally, not Caprock specifically (TIE-BREAKER 2). The one facility-tied line, CEO Schaap's \"meeting community demands for the responsible construction of AI infrastructure,\" is capability/PR framing (TIE-BREAKER 1) rather than a concrete indicator (no named AI tenant, GPU procurement, AI-specific power/lease deal, or cooling/rack figures attributed to AI for Caprock).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "AI language is almost entirely company-wide operator positioning (\"a leading developer and operator of...data centers for hyperscale, cloud, and AI workloads\"; \"Aligned is Where AI Lives\"; \"designed to power AI innovation at scale\") describing Aligned generally, not Caprock specifically (TIE-BREAKER 2). The one facility-tied line, CEO Schaap's \"meeting community demands for the responsible construction of AI infrastructure,\" is capability/PR framing (TIE-BREAKER 1) rather than a concrete indicator (no named AI tenant, GPU procurement, AI-specific power/lease deal, or cooling/rack figures attributed to AI for Caprock)."
   },
   "alterra-development-marshall-mi": {
     "capacityAny": null,
@@ -296,7 +341,9 @@
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"closed-loop liquid cooling system to minimize water use\" -- Stated by the developer at the LDFA meeting.",
     "aiClassification": null,
-    "aiClassificationNote": "Article never mentions AI anywhere; describes a proposed data center + gas generation plant with closed-loop liquid cooling to reduce water use. Nothing about AI use at all."
+    "aiClassificationNote": "Article never mentions AI anywhere; describes a proposed data center + gas generation plant with closed-loop liquid cooling to reduce water use. Nothing about AI use at all.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Article never mentions AI anywhere; describes a proposed data center + gas generation plant with closed-loop liquid cooling to reduce water use. Nothing about AI use at all."
   },
   "aligned-neo-01-oh": {
     "capacityAny": null,
@@ -318,7 +365,9 @@
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"closed-loop cooling system, recycling water\" -- 'Aligned will use its closed-loop cooling system, recycling water to significantly reduce water consumption.'",
     "aiClassification": null,
-    "aiClassificationNote": "Page is specifically about PHX-13. It says the DeltaFlow liquid cooling system 'delivers excellent performance for AI workloads and supports virtually any density and GPU cloud requirement' — this is generic capability marketing for Aligned's cooling product line, not a stated facility-specific figure or deployment (no named AI tenant, no numeric rack-density figure tied to AI). TIE-BREAKER 1: 'supports AI workloads' is exactly the kind of marketing phrase the contract lists as establishing no tier."
+    "aiClassificationNote": "Page is specifically about PHX-13. It says the DeltaFlow liquid cooling system 'delivers excellent performance for AI workloads and supports virtually any density and GPU cloud requirement' — this is generic capability marketing for Aligned's cooling product line, not a stated facility-specific figure or deployment (no named AI tenant, no numeric rack-density figure tied to AI). TIE-BREAKER 1: 'supports AI workloads' is exactly the kind of marketing phrase the contract lists as establishing no tier.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Page is specifically about PHX-13. It says the DeltaFlow liquid cooling system 'delivers excellent performance for AI workloads and supports virtually any density and GPU cloud requirement' — this is generic capability marketing for Aligned's cooling product line, not a stated facility-specific figure or deployment (no named AI tenant, no numeric rack-density figure tied to AI). TIE-BREAKER 1: 'supports AI workloads' is exactly the kind of marketing phrase the contract lists as establishing no tier."
   },
   "google-nebraska-ai-campus-proposed": {
     "capacityAny": 1000,
@@ -337,7 +386,9 @@
     "coolingType": null,
     "coolingTypeNote": "Cooling water appears only in reader comments and general context; no method for this campus.",
     "aiClassification": "AMBIG",
-    "aiClassificationNote": "'At first he kind of slipped and said for AI, they need their own generating stations for AI. But then they kind of backpedaled it' — HARD CASE. The article's central description of this Google data center proposal (power draw, natural gas plant, carbon capture) never itself calls it an AI facility. The only AI-specific tie is a landowner's secondhand account of a Tenaska rep (Tenaska is named earlier as the company that 'would be responsible for powering the new data center') saying land was being optioned for 'generating stations for AI' -- but the same account says the rep then 'backpedaled' to describing it as a 'business park.' Defensible as 'likely' (a stated AI-specific power indicator tied to this project's power supply) or as 'null' (the AI framing was reportedly retracted, and the specific land parcel's tie to this exact Google project vs. another Tenaska customer is not certain). Two labels each defensible; cannot cleanly resolve."
+    "aiClassificationNote": "'At first he kind of slipped and said for AI, they need their own generating stations for AI. But then they kind of backpedaled it' — HARD CASE. The article's central description of this Google data center proposal (power draw, natural gas plant, carbon capture) never itself calls it an AI facility. The only AI-specific tie is a landowner's secondhand account of a Tenaska rep (Tenaska is named earlier as the company that 'would be responsible for powering the new data center') saying land was being optioned for 'generating stations for AI' -- but the same account says the rep then 'backpedaled' to describing it as a 'business park.' Defensible as 'likely' (a stated AI-specific power indicator tied to this project's power supply) or as 'null' (the AI framing was reportedly retracted, and the specific land parcel's tie to this exact Google project vs. another Tenaska customer is not certain). Two labels each defensible; cannot cleanly resolve.",
+    "aiClassificationStated": "AMBIG",
+    "aiClassificationStatedNote": "'At first he kind of slipped and said for AI, they need their own generating stations for AI. But then they kind of backpedaled it' — HARD CASE. The article's central description of this Google data center proposal (power draw, natural gas plant, carbon capture) never itself calls it an AI facility. The only AI-specific tie is a landowner's secondhand account of a Tenaska rep (Tenaska is named earlier as the company that 'would be responsible for powering the new data center') saying land was being optioned for 'generating stations for AI' -- but the same account says the rep then 'backpedaled' to describing it as a 'business park.' Defensible as 'likely' (a stated AI-specific power indicator tied to this project's power supply) or as 'null' (the AI framing was reportedly retracted, and the specific land parcel's tie to this exact Google project vs. another Tenaska customer is not certain). Two labels each defensible; cannot cleanly resolve."
   },
   "fleet-data-centers-storey-county-nv": {
     "capacityAny": 400,
@@ -348,7 +399,9 @@
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Page never uses the word AI, GPU, or names any AI workload. The South Valley tenant is identified only indirectly by market cap ('$3 trillion, which currently means Nvidia, Alphabet (Google), Apple or Microsoft') without confirming which company or what the tenant will run there. Labeling this as AI would require outside knowledge/inference about what those companies do, which the contract prohibits. HARD CASE -- strongly implies a hyperscaler tenant but states no AI-specific use."
+    "aiClassificationNote": "Page never uses the word AI, GPU, or names any AI workload. The South Valley tenant is identified only indirectly by market cap ('$3 trillion, which currently means Nvidia, Alphabet (Google), Apple or Microsoft') without confirming which company or what the tenant will run there. Labeling this as AI would require outside knowledge/inference about what those companies do, which the contract prohibits. HARD CASE -- strongly implies a hyperscaler tenant but states no AI-specific use.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Page never uses the word AI, GPU, or names any AI workload. The South Valley tenant is identified only indirectly by market cap ('$3 trillion, which currently means Nvidia, Alphabet (Google), Apple or Microsoft') without confirming which company or what the tenant will run there. Labeling this as AI would require outside knowledge/inference about what those companies do, which the contract prohibits. HARD CASE -- strongly implies a hyperscaler tenant but states no AI-specific use."
   },
   "aligned-phx-01-02-03-az": {
     "capacityAny": null,
@@ -359,7 +412,9 @@
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"Closed-loop chilled water system design\" -- Same Aligned spec block as the other Aligned location pages.",
     "aiClassification": null,
-    "aiClassificationNote": "The 'AI & Cloud-Ready Campuses in Phoenix' framing and the GPU-capable liquid-cooling spec ('highest-density GPU requirements') are stated once for the whole Phoenix location / 'Aligned's data centers in Arizona' shared infrastructure section, covering PHX-01/02/03 alongside sibling facilities PHX-04 through PHX-07 on the same page. Nothing in the PHX-01/02/03-specific campus overview (acreage, Tier III, uptime SLA) mentions AI. TIE-BREAKER 1 (capability marketing, 'AI & Cloud-Ready') and TIE-BREAKER 2 (not stated for this facility specifically vs. its siblings)."
+    "aiClassificationNote": "The 'AI & Cloud-Ready Campuses in Phoenix' framing and the GPU-capable liquid-cooling spec ('highest-density GPU requirements') are stated once for the whole Phoenix location / 'Aligned's data centers in Arizona' shared infrastructure section, covering PHX-01/02/03 alongside sibling facilities PHX-04 through PHX-07 on the same page. Nothing in the PHX-01/02/03-specific campus overview (acreage, Tier III, uptime SLA) mentions AI. TIE-BREAKER 1 (capability marketing, 'AI & Cloud-Ready') and TIE-BREAKER 2 (not stated for this facility specifically vs. its siblings).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "The 'AI & Cloud-Ready Campuses in Phoenix' framing and the GPU-capable liquid-cooling spec ('highest-density GPU requirements') are stated once for the whole Phoenix location / 'Aligned's data centers in Arizona' shared infrastructure section, covering PHX-01/02/03 alongside sibling facilities PHX-04 through PHX-07 on the same page. Nothing in the PHX-01/02/03-specific campus overview (acreage, Tier III, uptime SLA) mentions AI. TIE-BREAKER 1 (capability marketing, 'AI & Cloud-Ready') and TIE-BREAKER 2 (not stated for this facility specifically vs. its siblings)."
   },
   "apple-maiden-nc": {
     "capacityAny": null,
@@ -370,7 +425,9 @@
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Company-wide Apple press release. 'Apple Intelligence infrastructure and data centers' is discussed at the level of the whole $500B U.S. investment, and North Carolina is only named as one of five states (NC, IA, OR, AZ, NV) where Apple 'plans to continue expanding data center capacity' generally. The Maiden facility is never named specifically, and no AI-specific detail is tied to it individually. TIE-BREAKER 2 (company-wide program, not facility-specific)."
+    "aiClassificationNote": "Company-wide Apple press release. 'Apple Intelligence infrastructure and data centers' is discussed at the level of the whole $500B U.S. investment, and North Carolina is only named as one of five states (NC, IA, OR, AZ, NV) where Apple 'plans to continue expanding data center capacity' generally. The Maiden facility is never named specifically, and no AI-specific detail is tied to it individually. TIE-BREAKER 2 (company-wide program, not facility-specific).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Company-wide Apple press release. 'Apple Intelligence infrastructure and data centers' is discussed at the level of the whole $500B U.S. investment, and North Carolina is only named as one of five states (NC, IA, OR, AZ, NV) where Apple 'plans to continue expanding data center capacity' generally. The Maiden facility is never named specifically, and no AI-specific detail is tied to it individually. TIE-BREAKER 2 (company-wide program, not facility-specific)."
   },
   "creekstone-delta-ut": {
     "capacityAny": 10000,
@@ -381,7 +438,9 @@
     "coolingType": "AMBIG",
     "coolingTypeNote": "Identifies what the design is NOT; air and closed_loop both remain open.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "'will be a large-scale, next-generation power and AI data center' — The Creekstone Gigasite itself is explicitly called 'a large-scale, next-generation power and AI data center' and elsewhere 'the world’s largest AI-optimized data center.' Unambiguous, facility-specific."
+    "aiClassificationNote": "'will be a large-scale, next-generation power and AI data center' — The Creekstone Gigasite itself is explicitly called 'a large-scale, next-generation power and AI data center' and elsewhere 'the world’s largest AI-optimized data center.' Unambiguous, facility-specific.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "'will be a large-scale, next-generation power and AI data center' — The Creekstone Gigasite itself is explicitly called 'a large-scale, next-generation power and AI data center' and elsewhere 'the world’s largest AI-optimized data center.' Unambiguous, facility-specific."
   },
   "a1-data-center-millville-nj": {
     "capacityAny": 1400,
@@ -392,7 +451,9 @@
     "coolingType": null,
     "coolingTypeNote": "'used billions of gallons of water each year for cooling' is a volume claim; no mechanism stated.",
     "aiClassification": null,
-    "aiClassificationNote": "Article is about local opposition blocking this proposed data center. The only AI mention is opponents' generic political framing ('to power AI tools that most people never use or asked for') applied to data centers broadly across NJ, not a technical description of what this specific facility would run. No named AI tenant, GPU, or AI-specific agreement for this site. TIE-BREAKER 2 (industry/opposition-rhetoric context, not a facility-specific indicator)."
+    "aiClassificationNote": "Article is about local opposition blocking this proposed data center. The only AI mention is opponents' generic political framing ('to power AI tools that most people never use or asked for') applied to data centers broadly across NJ, not a technical description of what this specific facility would run. No named AI tenant, GPU, or AI-specific agreement for this site. TIE-BREAKER 2 (industry/opposition-rhetoric context, not a facility-specific indicator).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Article is about local opposition blocking this proposed data center. The only AI mention is opponents' generic political framing ('to power AI tools that most people never use or asked for') applied to data centers broadly across NJ, not a technical description of what this specific facility would run. No named AI tenant, GPU, or AI-specific agreement for this site. TIE-BREAKER 2 (industry/opposition-rhetoric context, not a facility-specific indicator)."
   },
   "air-products-cetronia-road-upper-macungie-pa": {
     "capacityAny": null,
@@ -403,7 +464,9 @@
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Only AI mention is industry-wide context: \"tech companies across the country are looking to build more facilities capable of supporting cryptocurrency mining, artificial intelligence and other power-hungry endeavors.\" Not tied to this specific proposed site (TIE-BREAKER 2)."
+    "aiClassificationNote": "Only AI mention is industry-wide context: \"tech companies across the country are looking to build more facilities capable of supporting cryptocurrency mining, artificial intelligence and other power-hungry endeavors.\" Not tied to this specific proposed site (TIE-BREAKER 2).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Only AI mention is industry-wide context: \"tech companies across the country are looking to build more facilities capable of supporting cryptocurrency mining, artificial intelligence and other power-hungry endeavors.\" Not tied to this specific proposed site (TIE-BREAKER 2)."
   },
   "adp-ladysmith-data-hub-caroline-va": {
     "capacityAny": null,
@@ -414,7 +477,9 @@
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "This is a Caroline County VA zoning/rezoning case list. The ADP Ladysmith Data Hub entry only describes a rezoning request for 'a data center campus' — no mention of AI anywhere on the page (checked all cases including the other data centers listed, e.g. Thornberry, Bull Church). Nothing about AI."
+    "aiClassificationNote": "This is a Caroline County VA zoning/rezoning case list. The ADP Ladysmith Data Hub entry only describes a rezoning request for 'a data center campus' — no mention of AI anywhere on the page (checked all cases including the other data centers listed, e.g. Thornberry, Bull Church). Nothing about AI.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "This is a Caroline County VA zoning/rezoning case list. The ADP Ladysmith Data Hub entry only describes a rezoning request for 'a data center campus' — no mention of AI anywhere on the page (checked all cases including the other data centers listed, e.g. Thornberry, Bull Church). Nothing about AI."
   },
   "aligned-conesville-oh": {
     "capacityAny": null,
@@ -425,7 +490,9 @@
     "coolingType": null,
     "coolingTypeNote": "Aligned press release; 'Cooling Innovation' appears only in site navigation. TRAP: other Aligned pages in this corpus DO state closed_loop, so a model that pattern-matches the operator rather than the page will hallucinate here.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "Press release headline and repeated H1 for this specific Conesville, OH campus: 'Aligned Data Centers Expands in Ohio with New Mega-Scale AI Campus.' The article is entirely about this one development and the release is itself tagged 'AI/HPC'. The facility is named an AI campus, not just marketed as AI-ready."
+    "aiClassificationNote": "Press release headline and repeated H1 for this specific Conesville, OH campus: 'Aligned Data Centers Expands in Ohio with New Mega-Scale AI Campus.' The article is entirely about this one development and the release is itself tagged 'AI/HPC'. The facility is named an AI campus, not just marketed as AI-ready.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "Press release headline and repeated H1 for this specific Conesville, OH campus: 'Aligned Data Centers Expands in Ohio with New Mega-Scale AI Campus.' The article is entirely about this one development and the release is itself tagged 'AI/HPC'. The facility is named an AI campus, not just marketed as AI-ready."
   },
   "32-avenue-of-the-americas-ny": {
     "capacityAny": null,
@@ -436,234 +503,312 @@
     "coolingType": null,
     "coolingTypeNote": "'Cooling redundancy : N+1' is a redundancy spec, not a method.",
     "aiClassification": null,
-    "aiClassificationNote": "Digital Realty JFK13 facility page. The only AI mention is 'AI Data Cloud Network' as a company-wide use-case nav category; nothing ties AI to this specific facility. TIE-BREAKER 2."
+    "aiClassificationNote": "Digital Realty JFK13 facility page. The only AI mention is 'AI Data Cloud Network' as a company-wide use-case nav category; nothing ties AI to this specific facility. TIE-BREAKER 2.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Digital Realty JFK13 facility page. The only AI mention is 'AI Data Cloud Network' as a company-wide use-case nav category; nothing ties AI to this specific facility. TIE-BREAKER 2."
   },
   "aws-galaxy-sidney-oh": {
     "coolingType": null,
     "coolingTypeNote": "Water-capacity dispute plus 'Cooling-tower hum' in an unrelated resident-guide nav list; nothing about this facility's method.",
     "aiClassification": null,
-    "aiClassificationNote": "Page is entirely about Amazon's Project Galaxy tax-abatement fight in Sidney, OH — power, water, jobs, opposition. The only AI language on the page is the tracker site's own tagline ('An independent, non-commercial tracker of proposed hyperscale and AI data center projects across Ohio's 88 counties'), which describes the site's overall coverage scope, not this specific Amazon facility. TIE-BREAKER 2."
+    "aiClassificationNote": "Page is entirely about Amazon's Project Galaxy tax-abatement fight in Sidney, OH — power, water, jobs, opposition. The only AI language on the page is the tracker site's own tagline ('An independent, non-commercial tracker of proposed hyperscale and AI data center projects across Ohio's 88 counties'), which describes the site's overall coverage scope, not this specific Amazon facility. TIE-BREAKER 2.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Page is entirely about Amazon's Project Galaxy tax-abatement fight in Sidney, OH — power, water, jobs, opposition. The only AI language on the page is the tracker site's own tagline ('An independent, non-commercial tracker of proposed hyperscale and AI data center projects across Ohio's 88 counties'), which describes the site's overall coverage scope, not this specific Amazon facility. TIE-BREAKER 2."
   },
   "coresite-de3-denver-co": {
     "coolingType": null,
     "coolingTypeNote": "Only the 'Power & Cooling' nav item.",
     "aiClassification": null,
-    "aiClassificationNote": "\"Artificial Intelligence\" appears only as one of CoreSite's site-wide \"Industry Solutions\" nav links, not in the DE3-specific overview/features/specifications sections, which describe DE3 purely as enterprise/cloud colocation and interconnection. Site-wide nav, not facility-specific (TIE-BREAKER 2)."
+    "aiClassificationNote": "\"Artificial Intelligence\" appears only as one of CoreSite's site-wide \"Industry Solutions\" nav links, not in the DE3-specific overview/features/specifications sections, which describe DE3 purely as enterprise/cloud colocation and interconnection. Site-wide nav, not facility-specific (TIE-BREAKER 2).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "\"Artificial Intelligence\" appears only as one of CoreSite's site-wide \"Industry Solutions\" nav links, not in the DE3-specific overview/features/specifications sections, which describe DE3 purely as enterprise/cloud colocation and interconnection. Site-wide nav, not facility-specific (TIE-BREAKER 2)."
   },
   "google-bosc-lima-oh": {
     "coolingType": null,
     "coolingTypeNote": "Mentions regional wastewater/water-supply upgrades; no cooling method.",
     "aiClassification": null,
-    "aiClassificationNote": "Announcement covers capital investment, jobs, tax abatement, and infrastructure partnership. No mention of AI, artificial intelligence, GPUs, or machine learning anywhere in the text."
+    "aiClassificationNote": "Announcement covers capital investment, jobs, tax abatement, and infrastructure partnership. No mention of AI, artificial intelligence, GPUs, or machine learning anywhere in the text.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Announcement covers capital investment, jobs, tax abatement, and infrastructure partnership. No mention of AI, artificial intelligence, GPUs, or machine learning anywhere in the text."
   },
   "google-cedar-rapids-ia": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Utility (Alliant Energy) press release about Google's data center project announcement and investment figures only."
+    "aiClassificationNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Utility (Alliant Energy) press release about Google's data center project announcement and investment figures only.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Utility (Alliant Energy) press release about Google's data center project announcement and investment figures only."
   },
   "ivcm-imperial-county-ca": {
     "coolingType": null,
     "coolingTypeNote": "6 MGD of reclaimed water proposed and 750,000 gal/day use - volumes, not a mechanism.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "inewsource investigative article about Rucci's Imperial County project repeatedly and specifically identifies this exact site as an AI data center: two photo captions say he 'proposed building an AI data center' on this property, the article calls it 'California's largest AI development,' and the city's own legal complaint refers to it as the 'Hyperscale AI Data Center Project.' All facility-specific, not industry-general."
+    "aiClassificationNote": "inewsource investigative article about Rucci's Imperial County project repeatedly and specifically identifies this exact site as an AI data center: two photo captions say he 'proposed building an AI data center' on this property, the article calls it 'California's largest AI development,' and the city's own legal complaint refers to it as the 'Hyperscale AI Data Center Project.' All facility-specific, not industry-general.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "inewsource investigative article about Rucci's Imperial County project repeatedly and specifically identifies this exact site as an AI data center: two photo captions say he 'proposed building an AI data center' on this property, the article calls it 'California's largest AI development,' and the city's own legal complaint refers to it as the 'Hyperscale AI Data Center Project.' All facility-specific, not industry-general."
   },
   "lunavi-cheyenne-wy": {
     "coolingType": "evaporative",
     "coolingTypeNote": "\"custom indirect evaporative units from Vertiv\" -- Indirect evaporative cooling consumes water continuously.",
     "aiClassification": null,
-    "aiClassificationNote": "Facility-specific line calls the Cheyenne campus an 'AI-ready facility' and 'Perfect to get your next AI project off the ground' — this is capability marketing, the exact TIE-BREAKER 1 example phrase, and establishes no tier on its own. All other AI mentions ('Data & AI Solutions', 'Machine Learning Data Platform', blog posts) are company-wide service-catalog/nav content, not specific to the Cheyenne site (TIE-BREAKER 2). No named AI tenant, GPU procurement, or AI-attributed density/cooling figures for this facility."
+    "aiClassificationNote": "Facility-specific line calls the Cheyenne campus an 'AI-ready facility' and 'Perfect to get your next AI project off the ground' — this is capability marketing, the exact TIE-BREAKER 1 example phrase, and establishes no tier on its own. All other AI mentions ('Data & AI Solutions', 'Machine Learning Data Platform', blog posts) are company-wide service-catalog/nav content, not specific to the Cheyenne site (TIE-BREAKER 2). No named AI tenant, GPU procurement, or AI-attributed density/cooling figures for this facility.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Facility-specific line calls the Cheyenne campus an 'AI-ready facility' and 'Perfect to get your next AI project off the ground' — this is capability marketing, the exact TIE-BREAKER 1 example phrase, and establishes no tier on its own. All other AI mentions ('Data & AI Solutions', 'Machine Learning Data Platform', blog posts) are company-wide service-catalog/nav content, not specific to the Cheyenne site (TIE-BREAKER 2). No named AI tenant, GPU procurement, or AI-attributed density/cooling figures for this facility."
   },
   "markley-lowell-ma": {
     "coolingType": "evaporative",
     "coolingTypeNote": "\"16 cooling towers\" -- Also 'cooling tower mist settling on properties'.",
     "aiClassification": null,
-    "aiClassificationNote": "Article is about a lawsuit over this Lowell facility's diesel generators/air permits; AI is mentioned only as industry-wide context ('growing scrutiny of data centers nationwide, as demand rises with the expansion of artificial intelligence infrastructure' and 'similar facilities rapidly expand nationwide alongside growing artificial intelligence infrastructure'), never tied to this specific facility's own workload or tenant. TIE-BREAKER 2 (industry context, wrong entity level)."
+    "aiClassificationNote": "Article is about a lawsuit over this Lowell facility's diesel generators/air permits; AI is mentioned only as industry-wide context ('growing scrutiny of data centers nationwide, as demand rises with the expansion of artificial intelligence infrastructure' and 'similar facilities rapidly expand nationwide alongside growing artificial intelligence infrastructure'), never tied to this specific facility's own workload or tenant. TIE-BREAKER 2 (industry context, wrong entity level).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Article is about a lawsuit over this Lowell facility's diesel generators/air permits; AI is mentioned only as industry-wide context ('growing scrutiny of data centers nationwide, as demand rises with the expansion of artificial intelligence infrastructure' and 'similar facilities rapidly expand nationwide alongside growing artificial intelligence infrastructure'), never tied to this specific facility's own workload or tenant. TIE-BREAKER 2 (industry context, wrong entity level)."
   },
   "meta-altoona-ia": {
     "coolingType": null,
     "coolingTypeNote": "Only Data Center Frontier site navigation and sponsored links.",
     "aiClassification": null,
-    "aiClassificationNote": "Article body describes the Altoona campus purely in terms of cloud computing capacity for Facebook/Instagram/Messenger and Meta's metaverse ambitions — no AI tie stated for this facility. The page's numerous 'AI' mentions ('AI Factory/Cloud' nav category, 'ERCOT Puts Texas AI Megawatts to the Test,' 'NVIDIA's Reported $50B Lease and the Nuclear-Powered AI Factory,' sponsored AI-cooling content) are all site navigation, trending links, or sponsored content about other topics/sites, not the Altoona article itself. TIE-BREAKER 2 / entity binding."
+    "aiClassificationNote": "Article body describes the Altoona campus purely in terms of cloud computing capacity for Facebook/Instagram/Messenger and Meta's metaverse ambitions — no AI tie stated for this facility. The page's numerous 'AI' mentions ('AI Factory/Cloud' nav category, 'ERCOT Puts Texas AI Megawatts to the Test,' 'NVIDIA's Reported $50B Lease and the Nuclear-Powered AI Factory,' sponsored AI-cooling content) are all site navigation, trending links, or sponsored content about other topics/sites, not the Altoona article itself. TIE-BREAKER 2 / entity binding.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Article body describes the Altoona campus purely in terms of cloud computing capacity for Facebook/Instagram/Messenger and Meta's metaverse ambitions — no AI tie stated for this facility. The page's numerous 'AI' mentions ('AI Factory/Cloud' nav category, 'ERCOT Puts Texas AI Megawatts to the Test,' 'NVIDIA's Reported $50B Lease and the Nuclear-Powered AI Factory,' sponsored AI-cooling content) are all site navigation, trending links, or sponsored content about other topics/sites, not the Altoona article itself. TIE-BREAKER 2 / entity binding."
   },
   "cloudhq-manassas-mcc-va": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Page is a campus stats/overview page (SF, MW, buildings) with no AI language at all."
+    "aiClassificationNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Page is a campus stats/overview page (SF, MW, buildings) with no AI language at all.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Page is a campus stats/overview page (SF, MW, buildings) with no AI language at all."
   },
   "corscale-gainesville-crossing-va": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Article is about the unrelated 'PW Digital Gateway' project by QTS/Compass near Gainesville, not this facility (Corscale's Gainesville Crossing/GCDC), and never mentions AI at all regardless."
+    "aiClassificationNote": "Article is about the unrelated 'PW Digital Gateway' project by QTS/Compass near Gainesville, not this facility (Corscale's Gainesville Crossing/GCDC), and never mentions AI at all regardless.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Article is about the unrelated 'PW Digital Gateway' project by QTS/Compass near Gainesville, not this facility (Corscale's Gainesville Crossing/GCDC), and never mentions AI at all regardless."
   },
   "crane-pdx01-forest-grove-or": {
     "coolingType": "air",
     "coolingTypeNote": "\"it will rely on air-based cooling, limiting water consumption to typical plumbing needs\" -- 'the company has not applied to use water cooling for its first building' - no cooling water circuit at all, which is exactly what 'air' is reserved for.",
     "aiClassification": null,
-    "aiClassificationNote": "Article describes the facility only as storing, processing and distributing data for private companies (air-cooled, 8-100MW). No mention of AI anywhere in the page."
+    "aiClassificationNote": "Article describes the facility only as storing, processing and distributing data for private companies (air-cooled, 8-100MW). No mention of AI anywhere in the page.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Article describes the facility only as storing, processing and distributing data for private companies (air-cooled, 8-100MW). No mention of AI anywhere in the page."
   },
   "cyrusone-project-peach-palmetto-ga": {
     "coolingType": "air",
     "coolingTypeNote": "\"the buildings would be air-cooled, not water-cooled\" -- Also 'use air for cooling'.",
     "aiClassification": null,
-    "aiClassificationNote": "Only AI mention: \"Demand for data centers has ballooned in recent years due to the rapid growth of cloud computing and artificial intelligence...\" This is general industry-wide context, not a statement about Project Peach itself (TIE-BREAKER 2)."
+    "aiClassificationNote": "Only AI mention: \"Demand for data centers has ballooned in recent years due to the rapid growth of cloud computing and artificial intelligence...\" This is general industry-wide context, not a statement about Project Peach itself (TIE-BREAKER 2).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Only AI mention: \"Demand for data centers has ballooned in recent years due to the rapid growth of cloud computing and artificial intelligence...\" This is general industry-wide context, not a statement about Project Peach itself (TIE-BREAKER 2)."
   },
   "dc-blox-atlanta-west-ga": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": "mixed_use",
-    "aiClassificationNote": "Press release about the $1.15B green loan financing this specific Douglas County/Lithia Springs campus (matches facility city) states construction is 'designed to meet the demands of cloud and AI workloads' -- AI named as one of two co-equal workloads for this facility, matching the mixed_use 'cloud and AI' paradigm."
+    "aiClassificationNote": "Press release about the $1.15B green loan financing this specific Douglas County/Lithia Springs campus (matches facility city) states construction is 'designed to meet the demands of cloud and AI workloads' -- AI named as one of two co-equal workloads for this facility, matching the mixed_use 'cloud and AI' paradigm.",
+    "aiClassificationStated": "mixed_use",
+    "aiClassificationStatedNote": "Press release about the $1.15B green loan financing this specific Douglas County/Lithia Springs campus (matches facility city) states construction is 'designed to meet the demands of cloud and AI workloads' -- AI named as one of two co-equal workloads for this facility, matching the mixed_use 'cloud and AI' paradigm."
   },
   "dcblox-atlanta-east-conyers-ga": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "CEO quote says DC BLOX broadly is 'well-positioned to meet the rigorous requirements of hyperscalers and AI/ML platform and application providers' — company-wide capability marketing, not a claim about this specific Conyers campus's tenants. The other AI mention describes market-wide growth trends ('rapid growth of AI/ML applications') driving Atlanta-area demand generally. The named 'hyperscale client anchoring the first phase' is not identified as an AI workload. TIE-BREAKER 1 and 2."
+    "aiClassificationNote": "CEO quote says DC BLOX broadly is 'well-positioned to meet the rigorous requirements of hyperscalers and AI/ML platform and application providers' — company-wide capability marketing, not a claim about this specific Conyers campus's tenants. The other AI mention describes market-wide growth trends ('rapid growth of AI/ML applications') driving Atlanta-area demand generally. The named 'hyperscale client anchoring the first phase' is not identified as an AI workload. TIE-BREAKER 1 and 2.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "CEO quote says DC BLOX broadly is 'well-positioned to meet the rigorous requirements of hyperscalers and AI/ML platform and application providers' — company-wide capability marketing, not a claim about this specific Conyers campus's tenants. The other AI mention describes market-wide growth trends ('rapid growth of AI/ML applications') driving Atlanta-area demand generally. The named 'hyperscale client anchoring the first phase' is not identified as an AI workload. TIE-BREAKER 1 and 2."
   },
   "edgecore-mesa-az": {
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"air-cooled design in its Mesa data centers, including an ultra-efficient closed-loop chilled water system\" -- TIE-BREAKER CASE (this is the record cited in PR #205 as inconsistently curated 'air'): a recirculating chilled-water circuit is closed_loop even though the operator markets it as an air-cooled design.",
     "aiClassification": null,
-    "aiClassificationNote": "Text says the Mesa campus's 'high-density design makes EdgeCore’s Mesa, Arizona data centers a near-term solution for hyperscale AI and cloud applications' and cites 'urgent need for AI and cloud-ready capacity' — capability/positioning language about what the design can serve, not a stated current AI tenant, workload, or GPU deployment. Matches TIE-BREAKER 1's own example, 'designed for high-density AI.'"
+    "aiClassificationNote": "Text says the Mesa campus's 'high-density design makes EdgeCore’s Mesa, Arizona data centers a near-term solution for hyperscale AI and cloud applications' and cites 'urgent need for AI and cloud-ready capacity' — capability/positioning language about what the design can serve, not a stated current AI tenant, workload, or GPU deployment. Matches TIE-BREAKER 1's own example, 'designed for high-density AI.'",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Text says the Mesa campus's 'high-density design makes EdgeCore’s Mesa, Arizona data centers a near-term solution for hyperscale AI and cloud applications' and cites 'urgent need for AI and cloud-ready capacity' — capability/positioning language about what the design can serve, not a stated current AI tenant, workload, or GPU deployment. Matches TIE-BREAKER 1's own example, 'designed for high-density AI.'"
   },
   "edged-atlanta-tilford-yard-ga": {
     "coolingType": "air",
     "coolingTypeNote": "\"waterless cooling system which uses no water for cooling\" -- 'zero water usage for cooling'; ThermalWorks waterless system.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "Press release explicitly states 'Known as Edged Atlanta, the campus is designed for high-density Artificial Intelligence (AI) workloads' and separately that the facility features cooling 'designed to support the intense demands of generative AI and advanced computing.' Facility-specific and explicit (TIE-BREAKER 3: AI is presented as the defining use even though the campus also markets general high-density/efficiency features)."
+    "aiClassificationNote": "Press release explicitly states 'Known as Edged Atlanta, the campus is designed for high-density Artificial Intelligence (AI) workloads' and separately that the facility features cooling 'designed to support the intense demands of generative AI and advanced computing.' Facility-specific and explicit (TIE-BREAKER 3: AI is presented as the defining use even though the campus also markets general high-density/efficiency features).",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "Press release explicitly states 'Known as Edged Atlanta, the campus is designed for high-density Artificial Intelligence (AI) workloads' and separately that the facility features cooling 'designed to support the intense demands of generative AI and advanced computing.' Facility-specific and explicit (TIE-BREAKER 3: AI is presented as the defining use even though the campus also markets general high-density/efficiency features)."
   },
   "avaio-taurus-brandon-ms": {
     "coolingType": null,
     "coolingTypeNote": "'water-efficient cooling, rainwater recapture, and cooling system economization' names attributes, not a heat-rejection mechanism.",
     "aiClassification": "mixed_use",
-    "aiClassificationNote": "'will host the computer server, networking, and data storage technologies that underpin cloud computing and artificial intelligence applications' — Press release names this exact facility ('AVAIO Digital Taurus') and states it will host server/networking/storage technology 'that underpin cloud computing and artificial intelligence applications' — cloud and AI presented as co-equal purposes for this site, matching the mixed_use definition (not framed as an AI-first/AI-defining site)."
+    "aiClassificationNote": "'will host the computer server, networking, and data storage technologies that underpin cloud computing and artificial intelligence applications' — Press release names this exact facility ('AVAIO Digital Taurus') and states it will host server/networking/storage technology 'that underpin cloud computing and artificial intelligence applications' — cloud and AI presented as co-equal purposes for this site, matching the mixed_use definition (not framed as an AI-first/AI-defining site).",
+    "aiClassificationStated": "mixed_use",
+    "aiClassificationStatedNote": "'will host the computer server, networking, and data storage technologies that underpin cloud computing and artificial intelligence applications' — Press release names this exact facility ('AVAIO Digital Taurus') and states it will host server/networking/storage technology 'that underpin cloud computing and artificial intelligence applications' — cloud and AI presented as co-equal purposes for this site, matching the mixed_use definition (not framed as an AI-first/AI-defining site)."
   },
   "dartpoints-greenville-sc": {
     "coolingType": null,
     "coolingTypeNote": "'a mix of air and liquid cooling options' is company-wide and describes IT-side heat capture, not heat rejection. TRAP: invites a wrong 'hybrid', which in this schema means evaporative/dry switching.",
     "aiClassification": "mixed_use",
-    "aiClassificationNote": "SC Commerce release on this specific $125M Greenville County expansion: new capacity is '88,000 square feet of high-density space engineered for artificial intelligence (AI), enterprise and edge applications,' and the CEO quote lists 'AI, research and data analytics' as co-equal workload types for this site. AI is one of several named co-equal uses, not the sole defining purpose, so mixed_use per TIE-BREAKER 3."
+    "aiClassificationNote": "SC Commerce release on this specific $125M Greenville County expansion: new capacity is '88,000 square feet of high-density space engineered for artificial intelligence (AI), enterprise and edge applications,' and the CEO quote lists 'AI, research and data analytics' as co-equal workload types for this site. AI is one of several named co-equal uses, not the sole defining purpose, so mixed_use per TIE-BREAKER 3.",
+    "aiClassificationStated": "mixed_use",
+    "aiClassificationStatedNote": "SC Commerce release on this specific $125M Greenville County expansion: new capacity is '88,000 square feet of high-density space engineered for artificial intelligence (AI), enterprise and edge applications,' and the CEO quote lists 'AI, research and data analytics' as co-equal workload types for this site. AI is one of several named co-equal uses, not the sole defining purpose, so mixed_use per TIE-BREAKER 3."
   },
   "equinix-ashburn-va": {
     "coolingType": null,
     "coolingTypeNote": "Wikipedia article source markup; no cooling method for the campus.",
     "aiClassification": null,
-    "aiClassificationNote": "No mention of AI, artificial intelligence, GPUs, or machine learning tied to the Equinix Ashburn campus anywhere in the article text. (The unrelated \"BigBear.ai Performance Center\" hit is a different facility entirely -- an NFL team's training facility, not a data center or AI compute use -- and is not evidence about Equinix Ashburn.)"
+    "aiClassificationNote": "No mention of AI, artificial intelligence, GPUs, or machine learning tied to the Equinix Ashburn campus anywhere in the article text. (The unrelated \"BigBear.ai Performance Center\" hit is a different facility entirely -- an NFL team's training facility, not a data center or AI compute use -- and is not evidence about Equinix Ashburn.)",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "No mention of AI, artificial intelligence, GPUs, or machine learning tied to the Equinix Ashburn campus anywhere in the article text. (The unrelated \"BigBear.ai Performance Center\" hit is a different facility entirely -- an NFL team's training facility, not a data center or AI compute use -- and is not evidence about Equinix Ashburn.)"
   },
   "h5-buffalo-i-lockport-ny": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Local news story about the real-estate sale-leaseback of the Yahoo Lockport data center to H5. No mention of AI, GPU, or AI workloads anywhere tied to the facility; the only 'AI' string on the page is the media outlet's own unrelated 'AI Policy' footer link."
+    "aiClassificationNote": "Local news story about the real-estate sale-leaseback of the Yahoo Lockport data center to H5. No mention of AI, GPU, or AI workloads anywhere tied to the facility; the only 'AI' string on the page is the media outlet's own unrelated 'AI Policy' footer link.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Local news story about the real-estate sale-leaseback of the Yahoo Lockport data center to H5. No mention of AI, GPU, or AI workloads anywhere tied to the facility; the only 'AI' string on the page is the media outlet's own unrelated 'AI Policy' footer link."
   },
   "h5-la-vista-ne": {
     "coolingType": "evaporative",
     "coolingTypeNote": "\"N+1 cooling towers\" -- Spec block: 'Cooling N+1 chillers N+1 cooling towers'. DB curates this record 'hybrid'; the page states towers and no dry mode - re-curation candidate.",
     "aiClassification": null,
-    "aiClassificationNote": "'Artificial Intelligence' appears only as one item in H5's company-wide 'Solutions' navigation menu (alongside Backup and Recovery, Edge Data Centers, etc.) — a portfolio-level product listing, never tied to the Omaha/La Vista campus specifically. The facility description itself (234,500 SF, Tier III, 17.3 MW, hybrid IT to public clouds) contains no AI-specific claim. TIE-BREAKER 2."
+    "aiClassificationNote": "'Artificial Intelligence' appears only as one item in H5's company-wide 'Solutions' navigation menu (alongside Backup and Recovery, Edge Data Centers, etc.) — a portfolio-level product listing, never tied to the Omaha/La Vista campus specifically. The facility description itself (234,500 SF, Tier III, 17.3 MW, hybrid IT to public clouds) contains no AI-specific claim. TIE-BREAKER 2.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "'Artificial Intelligence' appears only as one item in H5's company-wide 'Solutions' navigation menu (alongside Backup and Recovery, Edge Data Centers, etc.) — a portfolio-level product listing, never tied to the Omaha/La Vista campus specifically. The facility description itself (234,500 SF, Tier III, 17.3 MW, hybrid IT to public clouds) contains no AI-specific claim. TIE-BREAKER 2."
   },
   "lambda-chicago-edgeconnex-il": {
     "coolingType": "AMBIG",
     "coolingTypeNote": "The same page also describes 'hybrid cooling technologies that combine liquid-to-the-chip direct cooling and air cooling' - a recirculating chip loop would make it closed_loop under the tie-breaker. Two defensible values.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "'specifically engineered to meet the demands of High-Performance Computing (HPC), AI training, and AI inferencing workloads' — Headline and body explicitly name this Chicago facility (the 23MW single-tenant site being built by EdgeConneX for Lambda) an \"AI Factory,\" engineered specifically for \"High-Performance Computing (HPC), AI training, and AI inferencing workloads.\" Direct, facility-specific AI-site description. (confirmed)"
+    "aiClassificationNote": "'specifically engineered to meet the demands of High-Performance Computing (HPC), AI training, and AI inferencing workloads' — Headline and body explicitly name this Chicago facility (the 23MW single-tenant site being built by EdgeConneX for Lambda) an \"AI Factory,\" engineered specifically for \"High-Performance Computing (HPC), AI training, and AI inferencing workloads.\" Direct, facility-specific AI-site description. (confirmed)",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "'specifically engineered to meet the demands of High-Performance Computing (HPC), AI training, and AI inferencing workloads' — Headline and body explicitly name this Chicago facility (the 23MW single-tenant site being built by EdgeConneX for Lambda) an \"AI Factory,\" engineered specifically for \"High-Performance Computing (HPC), AI training, and AI inferencing workloads.\" Direct, facility-specific AI-site description. (confirmed)"
   },
   "microsoft-el-mirage-az": {
     "coolingType": null,
     "coolingTypeNote": "'cooling ponds' appears only in a conditional Luke AFB bird-strike note, not as a design statement; no method claimed for the building.",
     "aiClassification": null,
-    "aiClassificationNote": "Local zoning/planning coverage of Microsoft's PHX-83 data center (site plan amendment, five data halls, cooling ponds, bird-strike mitigation). The word AI does not appear anywhere on this page."
+    "aiClassificationNote": "Local zoning/planning coverage of Microsoft's PHX-83 data center (site plan amendment, five data halls, cooling ponds, bird-strike mitigation). The word AI does not appear anywhere on this page.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Local zoning/planning coverage of Microsoft's PHX-83 data center (site plan amendment, five data halls, cooling ponds, bird-strike mitigation). The word AI does not appear anywhere on this page."
   },
   "microsoft-ginger-west-ia": {
     "coolingType": null,
     "coolingTypeNote": "Only Microsoft Local site navigation ('Water use at Microsoft datacenters').",
     "aiClassification": null,
-    "aiClassificationNote": "Microsoft's own construction-update blog page for the Ginger West datacenter. Describes datacenters entirely generically ('Whenever you open an app on your phone, join a virtual classroom or meeting, snap and save photos, or play a game...'). The only 'AI' tokens on the page are unrelated global site-navigation links (Microsoft AI, Copilot, AI for education, AI marketplace apps) that are not about this facility. TIE-BREAKER 2."
+    "aiClassificationNote": "Microsoft's own construction-update blog page for the Ginger West datacenter. Describes datacenters entirely generically ('Whenever you open an app on your phone, join a virtual classroom or meeting, snap and save photos, or play a game...'). The only 'AI' tokens on the page are unrelated global site-navigation links (Microsoft AI, Copilot, AI for education, AI marketplace apps) that are not about this facility. TIE-BREAKER 2.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Microsoft's own construction-update blog page for the Ginger West datacenter. Describes datacenters entirely generically ('Whenever you open an app on your phone, join a virtual classroom or meeting, snap and save photos, or play a game...'). The only 'AI' tokens on the page are unrelated global site-navigation links (Microsoft AI, Copilot, AI for education, AI marketplace apps) that are not about this facility. TIE-BREAKER 2."
   },
   "applied-digital-delta-forge-1-la": {
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"closed-loop cooling technology\" -- Facility-specific sentence wins over the company boilerplate's 'proprietary waterless cooling'.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "'the facility is purpose-built for large-scale AI training and inference workloads' — The page names Delta Forge 1 itself as an AI factory campus 'purpose-built for large-scale AI training and inference workloads,' with closed-loop cooling 'to support high-density computing environments for AI.' Facility-specific and unambiguous."
+    "aiClassificationNote": "'the facility is purpose-built for large-scale AI training and inference workloads' — The page names Delta Forge 1 itself as an AI factory campus 'purpose-built for large-scale AI training and inference workloads,' with closed-loop cooling 'to support high-density computing environments for AI.' Facility-specific and unambiguous.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "'the facility is purpose-built for large-scale AI training and inference workloads' — The page names Delta Forge 1 itself as an AI factory campus 'purpose-built for large-scale AI training and inference workloads,' with closed-loop cooling 'to support high-density computing environments for AI.' Facility-specific and unambiguous."
   },
   "beale-project-blue-pima-county-az": {
     "coolingType": "AMBIG",
     "coolingTypeNote": "'low-water' implies a circuit; 'air-cooling' is exactly the marketing phrase the methodology says must not decide the value. air vs closed_loop both defensible.",
     "aiClassification": null,
-    "aiClassificationNote": "Article is about an NDA concealing Amazon's role and community pushback on water/energy use and secrecy. No mention of AI, GPUs, or machine learning anywhere in the text."
+    "aiClassificationNote": "Article is about an NDA concealing Amazon's role and community pushback on water/energy use and secrecy. No mention of AI, GPUs, or machine learning anywhere in the text.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Article is about an NDA concealing Amazon's role and community pushback on water/energy use and secrecy. No mention of AI, GPUs, or machine learning anywhere in the text."
   },
   "cerebras-oklahoma-city-ok": {
     "coolingType": "AMBIG",
     "coolingTypeNote": "Water-cooled, but the page never states how heat is rejected: evaporative and closed_loop both defensible.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "Facility-specific: 'more than 300 Cerebras CS-3 systems come online in Scale Data Center in Oklahoma City,' part of Cerebras's dedicated AI inference network, with the AI accelerator hardware named as owned/operated by Cerebras at this site."
+    "aiClassificationNote": "Facility-specific: 'more than 300 Cerebras CS-3 systems come online in Scale Data Center in Oklahoma City,' part of Cerebras's dedicated AI inference network, with the AI accelerator hardware named as owned/operated by Cerebras at this site.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "Facility-specific: 'more than 300 Cerebras CS-3 systems come online in Scale Data Center in Oklahoma City,' part of Cerebras's dedicated AI inference network, with the AI accelerator hardware named as owned/operated by Cerebras at this site."
   },
   "cleanarc-ruther-glen-va": {
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"closed-loop systems that minimize water use\" -- Also: 'prohibition of the use of potable water for industrial cooling'.",
     "aiClassification": null,
-    "aiClassificationNote": "VEDP press release on CleanArc's $3B Caroline County campus. Describes 'scalable, sustainability-focused, and hyperscale-ready digital infrastructure' for 'hyperscalers' — no mention of AI anywhere in the page."
+    "aiClassificationNote": "VEDP press release on CleanArc's $3B Caroline County campus. Describes 'scalable, sustainability-focused, and hyperscale-ready digital infrastructure' for 'hyperscalers' — no mention of AI anywhere in the page.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "VEDP press release on CleanArc's $3B Caroline County campus. Describes 'scalable, sustainability-focused, and hyperscale-ready digital infrastructure' for 'hyperscalers' — no mention of AI anywhere in the page."
   },
   "cloudburst-san-marcos-tx": {
     "coolingType": null,
     "coolingTypeNote": "'advanced cooling technologies', a 'roadmap for ... liquid and hybrid cooling' testbeds and 'water-efficient cooling options' - all forward-looking, none decides a value. TRAP for 'hybrid'.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "'a next-generation, AI-focused data center campus located in the San Marcos / New Braunfels corridor of Central Texas' — Page explicitly and repeatedly describes San Marcos Data Center I itself as \"a next-generation, AI-focused data center campus\" master-planned for AI/HPC capacity, with a section headed \"Designed for AI, and High-Density Compute.\" AI is the stated defining use even though HPC/enterprise are also named (TIE-BREAKER 3). (confirmed)"
+    "aiClassificationNote": "'a next-generation, AI-focused data center campus located in the San Marcos / New Braunfels corridor of Central Texas' — Page explicitly and repeatedly describes San Marcos Data Center I itself as \"a next-generation, AI-focused data center campus\" master-planned for AI/HPC capacity, with a section headed \"Designed for AI, and High-Density Compute.\" AI is the stated defining use even though HPC/enterprise are also named (TIE-BREAKER 3). (confirmed)",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "'a next-generation, AI-focused data center campus located in the San Marcos / New Braunfels corridor of Central Texas' — Page explicitly and repeatedly describes San Marcos Data Center I itself as \"a next-generation, AI-focused data center campus\" master-planned for AI/HPC capacity, with a section headed \"Designed for AI, and High-Density Compute.\" AI is the stated defining use even though HPC/enterprise are also named (TIE-BREAKER 3). (confirmed)"
   },
   "cloverleaf-project-open-sky-piedmont-ok": {
     "coolingType": null,
     "coolingTypeNote": "Only 'Own the water cooler conversation' newsletter blurb.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "Cloverleaf Infrastructure's own chief development officer is quoted describing this Piedmont, OK project directly: 'one of the companies seeking to build a large-scale data center for artificial intelligence in Piedmont.' This explicitly names the facility as an AI data center. (confirmed)"
+    "aiClassificationNote": "Cloverleaf Infrastructure's own chief development officer is quoted describing this Piedmont, OK project directly: 'one of the companies seeking to build a large-scale data center for artificial intelligence in Piedmont.' This explicitly names the facility as an AI data center. (confirmed)",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "Cloverleaf Infrastructure's own chief development officer is quoted describing this Piedmont, OK project directly: 'one of the companies seeking to build a large-scale data center for artificial intelligence in Piedmont.' This explicitly names the facility as an AI data center. (confirmed)"
   },
   "cologix-johnstown-oh": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": null,
-    "aiClassificationNote": "Press release repeatedly calls the new Johnstown campus 'AI-ready' and the facility's own name includes 'AI-Ready Campus,' but this is capability-marketing language (TIE-BREAKER 1) with no named AI tenant, GPU procurement, or AI-specific agreement for this still-undeveloped site. The one already-completed 'first colocation AI-ready data center in the region' the article mentions is a separate, existing Columbus facility, not this one (entity binding)."
+    "aiClassificationNote": "Press release repeatedly calls the new Johnstown campus 'AI-ready' and the facility's own name includes 'AI-Ready Campus,' but this is capability-marketing language (TIE-BREAKER 1) with no named AI tenant, GPU procurement, or AI-specific agreement for this still-undeveloped site. The one already-completed 'first colocation AI-ready data center in the region' the article mentions is a separate, existing Columbus facility, not this one (entity binding).",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Press release repeatedly calls the new Johnstown campus 'AI-ready' and the facility's own name includes 'AI-Ready Campus,' but this is capability-marketing language (TIE-BREAKER 1) with no named AI tenant, GPU procurement, or AI-specific agreement for this still-undeveloped site. The one already-completed 'first colocation AI-ready data center in the region' the article mentions is a separate, existing Columbus facility, not this one (entity binding)."
   },
   "colovore-reno-1-storey-county-nv": {
     "coolingType": null,
     "coolingTypeNote": "Tax-abatement article; cooling never discussed.",
     "aiClassification": null,
-    "aiClassificationNote": "Page is a Nevada tax-abatement roundup; the only mention of this facility is 'Colovore Reno 1 LLC received abatements of $4.08M as part of its planned data center in Storey County.' No AI language anywhere on the page, for this facility or otherwise."
+    "aiClassificationNote": "Page is a Nevada tax-abatement roundup; the only mention of this facility is 'Colovore Reno 1 LLC received abatements of $4.08M as part of its planned data center in Storey County.' No AI language anywhere on the page, for this facility or otherwise.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Page is a Nevada tax-abatement roundup; the only mention of this facility is 'Colovore Reno 1 LLC received abatements of $4.08M as part of its planned data center in Storey County.' No AI language anywhere on the page, for this facility or otherwise."
   },
   "beltline-luther-horizon-technology-park-ok": {
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"Air-cooled Chillers (Closed Loop)\" -- 'requiring only minimal makeup water for the closed chilled water loop' + direct-to-chip water 'circulates in a sealed' system rather than open evaporative towers. DB curates this record 'unknown' - re-curation candidate.",
     "aiClassification": null,
-    "aiClassificationNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Page discusses jobs, taxes, water/power agreements, and community benefits only; never mentions AI."
+    "aiClassificationNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Page discusses jobs, taxes, water/power agreements, and community benefits only; never mentions AI.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Full page text searched for AI/artificial intelligence/GPU/machine learning — no matches. Page discusses jobs, taxes, water/power agreements, and community benefits only; never mentions AI."
   },
   "compass-lauderdale-meridian-ms": {
     "coolingType": null,
     "coolingTypeNote": "Water/sewer investment mentioned as site infrastructure; no cooling method.",
     "aiClassification": null,
-    "aiClassificationNote": "Mississippi Development Authority press release on Compass Datacenters' Lauderdale County hyperscale campus. Explicitly describes generic uses only ('business applications, online shopping, entertainment streaming, email services, digital file storage and more'); no AI mention anywhere on the page."
+    "aiClassificationNote": "Mississippi Development Authority press release on Compass Datacenters' Lauderdale County hyperscale campus. Explicitly describes generic uses only ('business applications, online shopping, entertainment streaming, email services, digital file storage and more'); no AI mention anywhere on the page.",
+    "aiClassificationStated": null,
+    "aiClassificationStatedNote": "Mississippi Development Authority press release on Compass Datacenters' Lauderdale County hyperscale campus. Explicitly describes generic uses only ('business applications, online shopping, entertainment streaming, email services, digital file storage and more'); no AI mention anywhere on the page."
   },
   "cyrusone-nas-lemoore-ca": {
     "coolingType": null,
     "coolingTypeNote": "Only Ameresco site navigation ('HVAC & Air Quality', 'Water Management').",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "'develop a 100 MW AI-optimized data center and critical energy infrastructure at Naval Air Station (NAS) Lemoore' — Press release headline and body explicitly describe this exact facility as an AI data center: Ameresco and the Navy 'develop a 100 MW AI-optimized data center' at NAS Lemoore, with CyrusOne as delivery partner. Facility-specific and unambiguous."
+    "aiClassificationNote": "'develop a 100 MW AI-optimized data center and critical energy infrastructure at Naval Air Station (NAS) Lemoore' — Press release headline and body explicitly describe this exact facility as an AI data center: Ameresco and the Navy 'develop a 100 MW AI-optimized data center' at NAS Lemoore, with CyrusOne as delivery partner. Facility-specific and unambiguous.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "'develop a 100 MW AI-optimized data center and critical energy infrastructure at Naval Air Station (NAS) Lemoore' — Press release headline and body explicitly describe this exact facility as an AI data center: Ameresco and the Navy 'develop a 100 MW AI-optimized data center' at NAS Lemoore, with CyrusOne as delivery partner. Facility-specific and unambiguous."
   },
   "fermi-matador-amarillo-tx": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "'The behind-the-meter Project Matador campus is expected to integrate the nation's biggest combined-cycle natural gas project, one of the largest clean, new nuclear power complexes in America, utility grid power, solar power, and battery energy storage, to support hyperscale AI and advanced computing.' — PR Newswire release about this specific campus states directly: 'The behind-the-meter Project Matador campus is expected to integrate...to support hyperscale AI and advanced computing,' and CEO quote calls it 'private grid power for AI at scale...here in Amarillo, Texas.' AI is the dominant, repeated framing for this specific campus (also company boilerplate: 'America's energy and AI dominance'); one sentence broadens to other sectors (semiconductor fabs, manufacturing, defense) but AI is presented as the defining/primary use per TIE-BREAKER 3."
+    "aiClassificationNote": "'The behind-the-meter Project Matador campus is expected to integrate the nation's biggest combined-cycle natural gas project, one of the largest clean, new nuclear power complexes in America, utility grid power, solar power, and battery energy storage, to support hyperscale AI and advanced computing.' — PR Newswire release about this specific campus states directly: 'The behind-the-meter Project Matador campus is expected to integrate...to support hyperscale AI and advanced computing,' and CEO quote calls it 'private grid power for AI at scale...here in Amarillo, Texas.' AI is the dominant, repeated framing for this specific campus (also company boilerplate: 'America's energy and AI dominance'); one sentence broadens to other sectors (semiconductor fabs, manufacturing, defense) but AI is presented as the defining/primary use per TIE-BREAKER 3.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "'The behind-the-meter Project Matador campus is expected to integrate the nation's biggest combined-cycle natural gas project, one of the largest clean, new nuclear power complexes in America, utility grid power, solar power, and battery energy storage, to support hyperscale AI and advanced computing.' — PR Newswire release about this specific campus states directly: 'The behind-the-meter Project Matador campus is expected to integrate...to support hyperscale AI and advanced computing,' and CEO quote calls it 'private grid power for AI at scale...here in Amarillo, Texas.' AI is the dominant, repeated framing for this specific campus (also company boilerplate: 'America's energy and AI dominance'); one sentence broadens to other sectors (semiconductor fabs, manufacturing, defense) but AI is presented as the defining/primary use per TIE-BREAKER 3."
   },
   "galaxy-helios-dickens-county-tx": {
     "coolingType": null,
     "coolingTypeNote": "Page never mentions cooling or water.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "'transformation of Helios into a next-generation AI and HPC datacenter campus' — Helios is described throughout as an AI datacenter campus: financing 'fast-tracking delivery of AI and high-performance computing (HPC) infrastructure for CoreWeave,' the site becoming 'one of the largest AI datacenter campuses globally,' and CoreWeave leasing capacity 'to deploy its GPU clusters at scale' there. Facility-specific and explicit."
+    "aiClassificationNote": "'transformation of Helios into a next-generation AI and HPC datacenter campus' — Helios is described throughout as an AI datacenter campus: financing 'fast-tracking delivery of AI and high-performance computing (HPC) infrastructure for CoreWeave,' the site becoming 'one of the largest AI datacenter campuses globally,' and CoreWeave leasing capacity 'to deploy its GPU clusters at scale' there. Facility-specific and explicit.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "'transformation of Helios into a next-generation AI and HPC datacenter campus' — Helios is described throughout as an AI datacenter campus: financing 'fast-tracking delivery of AI and high-performance computing (HPC) infrastructure for CoreWeave,' the site becoming 'one of the largest AI datacenter campuses globally,' and CoreWeave leasing capacity 'to deploy its GPU clusters at scale' there. Facility-specific and explicit."
   },
   "global-ai-windsor-co": {
     "coolingType": "closed_loop",
     "coolingTypeNote": "\"closed loop\" -- Town of Windsor project page: 'Understanding the company's \"closed loop\" approach to cooling while limiting water consumption.' DB curates this record 'unknown' - re-curation candidate.",
     "aiClassification": "confirmed",
-    "aiClassificationNote": "Town of Windsor government page on the proposed 'Global AI Data Center.' States the project 'would reuse an existing industrial site to house computer servers and related cooling and electrical systems that support artificial intelligence and cloud computing' — a direct, facility-specific description of this site as an AI facility."
+    "aiClassificationNote": "Town of Windsor government page on the proposed 'Global AI Data Center.' States the project 'would reuse an existing industrial site to house computer servers and related cooling and electrical systems that support artificial intelligence and cloud computing' — a direct, facility-specific description of this site as an AI facility.",
+    "aiClassificationStated": "confirmed",
+    "aiClassificationStatedNote": "Town of Windsor government page on the proposed 'Global AI Data Center.' States the project 'would reuse an existing industrial site to house computer servers and related cooling and electrical systems that support artificial intelligence and cloud computing' — a direct, facility-specific description of this site as an AI facility."
   }
 }

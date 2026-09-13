@@ -24,6 +24,7 @@ export const FIELD_KINDS = {
   energySource: KIND.ENUM,
   energyUtility: KIND.TEXT,
   aiClassification: KIND.ENUM,
+  aiClassificationStated: KIND.ENUM,
 };
 
 /** kind for a field, defaulting to NUMERIC for anything undeclared -- keeps
@@ -47,10 +48,21 @@ export function fieldKind(field) {
 // AI" -- every member asserts SOME tie to AI compute. A page that does not
 // tie the facility to AI is represented by `null` (not asserting a value),
 // never by a vocabulary member.
+//
+// aiClassificationStated is the SAME task as aiClassification with the
+// `likely` tier removed -- a deliberate variant run, NOT a duplicate to be
+// deduplicated away. Both must coexist so the two vocabularies can be
+// measured against each other on the same pages.
+// It is NOT a schema change and NOT "a subset of lib/schema.ts's enum" in
+// any sense that should propagate: aiClassificationEnum still has three
+// members (`confirmed`, `likely`, `mixed_use`) and is unchanged. This
+// two-value vocabulary is a BENCH INSTRUMENT only -- it exists to measure a
+// prompt, and nothing may write it to a facility.
 export const FIELD_ENUM_VALUES = {
   coolingType: ["evaporative", "air", "closed_loop", "hybrid", "unknown"],
   energySource: ["grid", "on_site_gas", "nuclear", "solar", "wind", "hydro", "mixed", "other"],
   aiClassification: ["confirmed", "likely", "mixed_use"],
+  aiClassificationStated: ["confirmed", "mixed_use"],
 };
 
 export function isInVocabulary(normalizedValue, vocabulary) {
