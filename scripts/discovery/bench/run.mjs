@@ -99,6 +99,36 @@ const FIELDS = {
     "TIE-BREAKER 3: answer 'confirmed' over 'mixed_use' when the page presents AI as the facility's defining purpose, " +
     "even if other workloads are also mentioned; 'mixed_use' is for pages presenting AI as one of several co-equal uses. " +
     `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.aiClassification.join(", ")} -- or null if the page does not tie this facility to AI.`,
+  // The `likely`-removed variant of the field above: the SAME task, measured
+  // over a two-value vocabulary (`confirmed` | `mixed_use`).
+  // Why it exists: the 3-value run measured P=61% / R=83% and failed. 13
+  // `likely` answers were right only 4 times, and 7 of 8 hallucinations
+  // answered `likely`. This run tests whether removing the tier yields a
+  // shippable subset -- or whether the model simply RELOCATES those
+  // fabrications onto `confirmed`. Only the second outcome is a real result
+  // about the prompt; a clean run here is a result about the vocabulary.
+  // The four pages whose true label IS `likely` carry NO label for this field
+  // in truth.json, deliberately: their correct answer is not expressible in
+  // this vocabulary. The harness must EXCLUDE and NAME them, not score them
+  // as abstentions -- scoring an inexpressible answer as a correct null would
+  // credit the prompt for a question it was never asked.
+  aiClassificationStated:
+    "how strongly this page ties THIS SPECIFIC FACILITY to AI compute. " +
+    "'confirmed' = the page explicitly describes THIS facility as an AI or GPU facility (an AI data center, " +
+    "AI campus, AI factory, GPU cluster, or AI training/inference site), or names AI accelerator hardware deployed there; " +
+    "'mixed_use' = the page describes the facility as multi-purpose with AI among its workloads (cloud and AI, " +
+    "colocation with an AI tenant alongside others, an enterprise campus where AI is one named use among several). " +
+    "There is NO value for a facility that merely shows AI-related indicators. If the page states an indicator " +
+    "(a named AI tenant, GPU procurement, an AI-specific power or lease agreement, rack-density or liquid-cooling " +
+    "figures attributed to AI) but does NOT describe the facility itself as an AI site or as multi-purpose-with-AI, " +
+    "answer null. " +
+    "TIE-BREAKER 1: capability marketing is NOT a classification -- 'AI-ready', 'built for the AI era', " +
+    "'supports AI workloads' describe what an operator sells, not what runs at a site, and establish no value on their own; answer null. " +
+    "TIE-BREAKER 2: the statement must be about THIS FACILITY -- an operator's AI positioning, a sibling site's " +
+    "GPU deployment, or general industry context is not evidence about this facility; answer null. " +
+    "TIE-BREAKER 3: answer 'confirmed' over 'mixed_use' when the page presents AI as the facility's defining purpose, " +
+    "even if other workloads are also mentioned; 'mixed_use' is for pages presenting AI as one of several co-equal uses. " +
+    `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.aiClassificationStated.join(", ")} -- or null if the page does not state that this facility is an AI or multi-purpose-with-AI site.`,
   energySource:
     "the facility's primary power source category. " +
     `Answer with EXACTLY ONE of these values: ${FIELD_ENUM_VALUES.energySource.join(", ")} -- or null if not stated for this facility.`,

@@ -176,3 +176,65 @@ The one boundary that produced genuine disagreement between labellers is the sam
 fails on: whether a GPU-specific cooling-capability spec on a facility's own page is an
 indicator or marketing. That ambiguity is in the dataset's rule, not just the bench, so it will
 reach human curators classifying the remaining unclassified records too.
+
+## aiClassificationStated — removing the soft tier, and what moved instead
+
+`result-gpt-oss_20b-aiClassificationStated.json` is the same 69 cached pages and the same model
+run against a TWO-value vocabulary — `confirmed` | `mixed_use`, with `likely` deleted — to test
+the obvious follow-up to the section above. Measured 2026-09-12. The four pages whose true label
+is `likely` carry no label for this field and are excluded and named, so 63 cells are scored.
+
+| | 3-value, no rule | 3-value + rule | **2-value + rule** |
+|---|---|---|---|
+| PRECISION | 56% | 61% | **85%** |
+| RECALL | 43% | 83% | **89%** |
+| ABSTENTION-ACC | 89% | 82% | **95%** |
+| correct / correct-abstain | 10 / 39 | 19 / 36 | 17 / **42** |
+| miss | 10 | 0 | 1 |
+| WRONG / HALLUC | 3 / 5 | 4 / 8 | **1 / 2** |
+| score | 33 | 31 | **53** |
+
+**A prediction was registered before this run, and it was wrong.** The expectation — written up in
+the section above — was that deleting `likely` would push its fabrications onto `confirmed`,
+because the no-rule run had already shown the model answering `confirmed` on two of those same
+marketing pages. Of the seven pages that drew a `likely` hallucination in the three-value run,
+**six abstained correctly here and none returned `confirmed`.** Only `edgecore-mesa-az` still
+fabricated, and it chose `mixed_use`.
+
+So the reallocation effect is real but far weaker than predicted, and it lands somewhere else.
+Hallucinations fell 8 → 2 and the asymmetric score rose 31 → 53.
+
+**The residual failure is entirely `mixed_use`.** Split by the value the model chose:
+
+| model answered | times | correct |
+|---|---|---|
+| `confirmed` | 14 | **14 (100%)** |
+| `mixed_use` | 6 | 3 (50%) |
+
+Every error in this run — both hallucinations and the one wrong value — involves `mixed_use`.
+`confirmed` was answered 14 times and was right every time, with recall 14/15.
+
+The cause is visible in the prompt itself. `mixed_use` is defined as "cloud and AI", and the
+pages it fires on falsely are marketing copy reading "AI & Cloud-Ready Campuses" — the definition
+hands the model a template that the marketing phrase matches almost verbatim. `aligned-phx-01-02-03-az`
+is the clearest case: correctly `null` in the three-value run, `mixed_use` here, quoting
+"AI & Cloud-Ready Campuses in Phoenix". TIE-BREAKER 1 says that establishes no tier, but the
+tier's own wording argues the other way.
+
+⚠️ **Do NOT read the 100% as "ship a `confirmed`-only extractor at 100%".** That is the same
+inference this bench already disproved once. The 100% was measured with `mixed_use` present to
+absorb the marketing pages; delete it and those three fabrications must land somewhere, and
+`confirmed` is what remains. The rule has now been demonstrated twice in one corpus: **a model
+reallocates its errors onto whatever values remain, so a restricted-vocabulary score cannot be
+inferred from a wider-vocabulary run.** A `confirmed`-only variant is the next experiment and needs
+its own run — and this time the prediction should be written down first again.
+
+**Status: still NOT wired into `scripts/discovery/extract-fields.ts`.** Neither `aiClassification`
+nor `aiClassificationStated` is an `ExtractableField`. At P=85% the two-value field remains below
+the pinned bar (`capacityMw.operational` 100/100, `water.coolingType` 95/95) — but it is close
+enough, and its residual failure specific enough, that the path is no longer closed. That is a
+material change from the three-value conclusion.
+
+⚠️ Sample sizes bound all of this: 15 `confirmed`, 4 `mixed_use` and 44 `null` labels. The 100% is
+14 of 14 — a wide interval, not a pinned rate. Labels remain single-pass, so inter-annotator
+agreement is unmeasured.
