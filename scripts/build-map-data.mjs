@@ -948,7 +948,19 @@ async function main() {
   if (skipNHD) {
     const existing = JSON.parse(readFileSync(SITING_CONTEXT_OUT, 'utf8'));
     sitingContext = {};
-    for (const id of new Set([...Object.keys(existing), ...Object.keys(envContext)])) {
+    // Seed the id set with EVERY facility, not just the ones a dataset matched:
+    // a facility that matched nothing is recorded as `{}` on purpose. NHD,
+    // HIFLD, Aqueduct and the USGS principal aquifers are all CONUS-only, so a
+    // non-CONUS point (Hawaii, Alaska) can legitimately match none of them.
+    // Omitting it would break the every-facility invariant asserted by
+    // lib/siting-context.test.ts, and `{}` renders identically to a missing
+    // entry (components/facility/siting-context.tsx bails when no field is set).
+    const ids = new Set([
+      ...facilities.map((facility) => facility.id),
+      ...Object.keys(existing),
+      ...Object.keys(envContext),
+    ]);
+    for (const id of ids) {
       sitingContext[id] = { ...(existing[id] ?? {}), ...(envContext[id] ?? {}) };
     }
     manifestBase = JSON.parse(readFileSync(MANIFEST_OUT, 'utf8'));
@@ -959,7 +971,19 @@ async function main() {
 
     const nhdContext = await computeSitingContext(facilities, powerResult.powerCandidates);
     sitingContext = {};
-    for (const id of new Set([...Object.keys(nhdContext), ...Object.keys(envContext)])) {
+    // Seed the id set with EVERY facility, not just the ones a dataset matched:
+    // a facility that matched nothing is recorded as `{}` on purpose. NHD,
+    // HIFLD, Aqueduct and the USGS principal aquifers are all CONUS-only, so a
+    // non-CONUS point (Hawaii, Alaska) can legitimately match none of them.
+    // Omitting it would break the every-facility invariant asserted by
+    // lib/siting-context.test.ts, and `{}` renders identically to a missing
+    // entry (components/facility/siting-context.tsx bails when no field is set).
+    const ids = new Set([
+      ...facilities.map((facility) => facility.id),
+      ...Object.keys(nhdContext),
+      ...Object.keys(envContext),
+    ]);
+    for (const id of ids) {
       sitingContext[id] = { ...(nhdContext[id] ?? {}), ...(envContext[id] ?? {}) };
     }
     manifestBase = {

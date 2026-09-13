@@ -53,7 +53,11 @@ describe("data-integrity: siting-context coverage", () => {
           `from data/siting-context.json: ${shown.join(", ")}${suffix}. ` +
           "This happens when a data wave runs db:export but skips `npm run build:mapdata` " +
           "before committing. Run `npm run build:mapdata` and commit the regenerated " +
-          "data/siting-context.json.",
+          "data/siting-context.json. " +
+          "It can also happen after build:mapdata HAS run: a facility may match no siting " +
+          "dataset at all (NHD, HIFLD, Aqueduct and the USGS principal aquifers are " +
+          "CONUS-only, so a non-CONUS point can miss every one). That is not an excuse to " +
+          "omit it — scripts/build-map-data.mjs must still record `{}` for such a facility.",
       );
     }
 

@@ -210,6 +210,59 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "165-halsey-street-newark-nj",
+    "name": "165 Halsey Street",
+    "operator": "Tishman Real Estate",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.7369,
+      "lon": -74.1739,
+      "city": "Newark",
+      "county": "Essex",
+      "street": "165 Halsey Street",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 80
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.165halsey.com/about-us/",
+        "label": "About Us",
+        "publisher": "165 Halsey Street",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.165halsey.com/",
+        "label": "165 Halsey Street — official site",
+        "publisher": "165 Halsey Street",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/165-halsey-street",
+        "label": "165 Halsey Street Data Center and Carrier Hotel",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/165_Halsey_Street",
+        "label": "165 Halsey Street",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Major carrier-neutral carrier hotel and colocation building in downtown Newark: 1.2M sq ft, 14-story former Bamberger's department store (built 1912-1929) converted to telecom use starting 1996 (retrofit initiated by Samuel Jemal). Over 360,000 sq ft of active colocation space plus roughly 110,000 sq ft available; six meet-me rooms totaling 240,000+ sq ft; 60+ networks with no MRC cross-connect fees; a landing point for the Apollo transatlantic submarine cable system. 80 MW power capacity confirmed independently by both Baxtel and the operator's own site.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "32-avenue-of-the-americas-ny",
     "name": "32 Avenue of the Americas",
     "operator": "Multi-tenant carrier hotel (Digital Realty, CoreSite, and other carrier/telecom tenants)",
@@ -273,6 +326,80 @@
     "community": {
       "status": "unknown"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "365-data-centers-washington-dc",
+    "name": "365 Data Centers – Washington, D.C.",
+    "operator": "365 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.902580481701,
+      "lon": -77.029210511723,
+      "city": "Washington",
+      "street": "1275 K Street NW",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://365datacenters.com/facilities-network/",
+        "label": "Facilities & Network - 365 Data Centers",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.coresite.com/data-center/dc1-washington-d-c",
+        "label": "CoreSite DC1 - Washington, D.C.",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Address confirmed directly from the operator's own facilities-network page, which lists 1275 K Street NW, Washington, DC among its current locations; no square footage, power capacity, tier, or floor/suite detail was published on that page. 'Operational' status is inferred from inclusion in the operator's current facilities listing rather than an explicit statement. Coordinates geocoded via the US Census geocoder for the exact numbered street address (match: '1275 K ST NW, WASHINGTON, DC, 20005'). IMPORTANT: this is the SAME building address as the existing live record coresite-dc1-washington-d-c-dc — re-fetched CoreSite's own page (sourceIndex 1) and confirmed it independently states the identical address, '1275 K St. NW, Washington, D.C. 20005'. 1275 K Street NW is a multi-tenant carrier-hotel building; CoreSite and 365 Data Centers appear to be two distinct operators leasing space in the same building, not the same facility double-counted. Precision set to 'approximate' accordingly (building-level, floor/suite unconfirmed for either tenant). Flagging explicitly for reviewer attention given the near-zero pin distance from a live record.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "365datacenters-marlborough-ma",
+    "name": "365 Data Centers Marlborough (MA1)",
+    "operator": "365 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.3527,
+      "lon": -71.58411,
+      "city": "Marlborough",
+      "county": "Middlesex",
+      "street": "250 Locke Drive",
+      "state": "MA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2.8
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://365datacenters.com/marlborough-data-center/",
+        "label": "Marlborough Data Center - 365 Data Centers",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://365datacenters.com/greater-boston/",
+        "label": "Greater Boston - 365 Data Centers",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "64,000 sq ft facility described by the operator as its \"premiere business continuity center in the northeast quadrant,\" serving Boston, Providence and Springfield enterprise customers. Certified PCI-DSS, HIPAA, SOC 1, SOC 2, SSAE 18, ISAE 3402. No AI/HPC capacity named at this site, so aiClassification is left unset.",
     "facilityType": "data_center"
   },
   {
@@ -668,6 +795,61 @@
     "lastUpdated": "2026-08-08",
     "notes": "On Highway 169 in Blue Earth, MN (county seat of FARIBAULT County — note this is NOT 'Blue Earth County', which is a separate county to the east whose seat is Mankato; classic MN city/county name trap, verified via Wikipedia/Data Commons before writing this). AAIM's own site lists this as 'Minnesota 1', 15MW, in-service June 2025, described elsewhere (DCD, 2024) as an 'HPC/cryptomine' facility; AAIM's own copy says it serves 'high-performance computing, enterprise data, and crypto mining needs' — classified facilityType=data_center/aiClassification=mixed_use rather than crypto_mining because AAIM operates it as multi-tenant colocation (landlord model) rather than mining for itself, unlike Revolve Labs. 10,000 sq ft facility. AAIM's CEO (Levesque) is also CTO of crypto-mining-hardware firm Hash House Tech — noted for context, not fact-changing.",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "aalo-atomics-inl-id",
+    "name": "Aalo-X / Aalo Pod (Idaho National Laboratory site)",
+    "operator": "Aalo Atomics",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.53333,
+      "lon": -112.94472,
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-08",
+        "note": "Aalo Atomics broke ground on the Aalo-X demonstration reactor at INL shortly after closing a $100 million Series B round led by Valor Equity Partners.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-07",
+        "note": "Aalo-X reactor achieved nuclear criticality on 2026-07-04.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterfrontier.com/energy/article/55314289/aalo-atomics-breaks-ground-on-xmr-reactor-eyes-ai-data-center-integration-at-inl",
+        "label": "Aalo Atomics Nabs 1st U.S. Advanced Nuclear Fuel Deal, Advances XMR Reactor and AI Data Center Plans at INL",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Idaho_National_Laboratory",
+        "label": "Idaho National Laboratory",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Coordinates are Wikipedia's cited centroid for the entire ~890 sq mi Idaho National Laboratory reservation (43°32'00\"N 112°56'41\"W), not a confirmed location for this specific reactor within that reservation -- treat as approximate at the multi-county-site level, not facility-parcel level. The INL site spans multiple eastern Idaho counties (bordered by Arco, Idaho Falls, Blackfoot, and Atomic City per Wikipedia); no single county could be confidently assigned from sources fetched, so county is omitted. This is a separate location from INL's Idaho Falls Research and Education Campus, where the existing INL C3 data center record in this batch sits. Total disclosed Aalo Atomics investment noted in one source as $136 million.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear_smr",
+      "offtaker": "Crusoe",
+      "unitCount": 5,
+      "notes": "Aalo-X is Aalo Atomics' first demonstration reactor, built on Department of Energy land at the Idaho National Laboratory site under the DOE's Nuclear Reactor Pilot Program; it achieved nuclear criticality on 2026-07-04 (reported as the fourth reactor to do so under that program), separate from and preceding the commercial 'Aalo Pod' design. An Aalo Pod integrates five sodium-cooled, graphite-moderated Aalo-1 microreactors around a single turbine for a combined 50 MWe, requiring no external water for cooling. Crusoe has partnered with Aalo to deploy a 'Crusoe Spark' modular AI data center at the site by 2027, powered directly by an Aalo Pod -- reported as the first pairing of a nuclear reactor with an AI data center in the US. No separate facility record is created for the planned Crusoe data center since it is not yet sited as a distinct built facility in any source fetched."
+    }
   },
   {
     "id": "aboutbit-merom-sullivan-county-in",
@@ -1425,6 +1607,33 @@
       "notes": "Substantial local opposition; proposal went before the Upper Macungie Township zoning hearing board.",
       "sourceIndex": 2
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "alaska-communications-anchorage-ak",
+    "name": "Alaska Communications Data Center",
+    "operator": "Alaska Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 61.188009403546,
+      "lon": -149.87239078076,
+      "city": "Anchorage",
+      "street": "600 East 36th Ave, Suite 100",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/datacenters/alaska-communications-systems-anchorage-data-center/",
+        "label": "Alaska Communications Systems - Anchorage Data Center - Cloud and Colocation",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Colocation facility offering 1/3-14U and full-42U locking cabinets, raised floor, 24x7x365 onsite staff and Halon fire suppression, per the only source fetched. That listing cites \"SAS 70 Type II\" certification — a standard superseded by SOC reporting around 2011 — which suggests the page's content may predate that transition and was not independently refreshed for this wave; confidence is set to reported rather than confirmed on that basis, and current operating status was not re-verified against a newer source this session. Coordinates are a Census geocode of the street address (TIGER-line interpolated), not a confirmed parcel.",
     "facilityType": "data_center"
   },
   {
@@ -6765,6 +6974,59 @@
     }
   },
   {
+    "id": "atlantic-power-nest-cogen-kenilworth-nj",
+    "name": "NEST Campus Cogeneration Plant",
+    "operator": "Atlantic Power",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.67905,
+      "lon": -74.27169,
+      "city": "Kenilworth",
+      "county": "Union",
+      "street": "2000 Galloping Hill Road",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 25
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://heatmap.news/technology/coreweave-natural-gas",
+        "label": "Would You Like a Gas-Fired Power Plant With That Data Center?",
+        "publisher": "Heatmap News",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nestcenter.com",
+        "label": "NEST — Northeast Science & Technology Center",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.onyxequities.com/portfolio/northeast-science-and-technology-center-nest/",
+        "label": "Northeast Science and Technology Center (NEST)",
+        "publisher": "Onyx Equities",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Sits on the same 100+ acre former-Merck campus (now branded NEST, the 'Northeast Science & Technology Center,' 2000 Galloping Hill Road) as the existing coreweave-kenilworth-nj data center record — this is the power-generation half of that same site, hence the poweredFacilityIds link. The real estate is owned by a joint venture of Onyx Equities, Machine Investment Group and Pivot Real Estate Partners (purchased from Merck in February 2023); the generation asset itself is owned/operated separately by Atlantic Power. Coordinates are the Kenilworth borough centroid (Wikipedia) — a rough proxy for the plant's actual position on this large campus, not a parcel-level geocode — precision marked approximate accordingly.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "CoreWeave",
+      "poweredFacilityIds": [
+        "coreweave-kenilworth-nj"
+      ],
+      "notes": "25 MW gas-fired cogeneration plant, originally built to supply power and steam directly to Merck & Co.'s former Kenilworth, NJ headquarters, later selling surplus power to the PJM grid. In September 2024 owner Atlantic Power notified PJM Interconnection that the plant was deactivating from grid service, converting to 'behind the meter' operation serving only the CoreWeave data center built on the same campus (per Heatmap News). The campus's own site (NestCenter.com) independently lists a '25 MW Cogeneration Power Plant' among its on-site infrastructure, alongside a separate 50 MW utility substation and dual 26kV PSE&G feeds — that substation/utility feed is grid interconnection, not generation, and is not counted here."
+    }
+  },
+  {
     "id": "atlas-agro-richland-data-center-campus-wa",
     "name": "Atlas Agro Richland Data Center Campus",
     "operator": "Atlas Agro North America",
@@ -7272,6 +7534,37 @@
       "notes": "Sustained opposition from Montgomery County community and environmental groups. The County Executive issued a six-month permit pause on June 12, 2026, the County Council enacted an 18-month moratorium on July 28, 2026, and the developer challenged the moratorium in court.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "att-redwood-city-ca",
+    "name": "AT&T Redwood City Data Center",
+    "operator": "AT&T",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.4806769,
+      "lon": -122.2007195,
+      "city": "Redwood City",
+      "county": "San Mateo",
+      "street": "3175 Spring Street",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 4
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/datacenters/att-redwood-city-data-center/",
+        "label": "AT&T - Redwood City Data Center - Cloud and Colocation",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "62,516 sq ft facility with 33,152 sq ft of raised-floor colocation space and access to 4.0 MW of power, per a colocation broker's facility page. Carrier-neutral, SSAE16 Type II / ISO 27001 / PCI DSS / HIPAA-aligned infrastructure with N+1 power and HVAC redundancy.",
     "facilityType": "data_center"
   },
   {
@@ -9111,6 +9404,45 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "aws-grafton-ma",
+    "name": "Amazon Data Services Grafton",
+    "operator": "Amazon Data Services",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.25013,
+      "lon": -71.68772,
+      "city": "Grafton",
+      "county": "Worcester",
+      "street": "Centennial Drive",
+      "state": "MA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2022-11",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/amazon-buys-two-data-centers-in-massachusetts-for-26-7m",
+        "label": "Amazon Buys Two Data Centers in Massachusetts For $26.7m",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/massachusetts/3713/aws-grafton-data-center",
+        "label": "AWS Grafton Data Center",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Amazon Data Services Inc. purchased a 155,000 sq ft building on a 1.8-acre lot on Centennial Drive in Grafton (within CenTech Park, a technology park spanning Grafton and Shrewsbury) for $15.1M, per a November 24, 2022 report. Cleanview's tracker still lists status as \"Planned\" as of this check (2026-09-12); no independent confirmation of construction start or energization was found, so status is recorded as proposed. The exact street number was reported by secondary press coverage but could not be confirmed on a source this run actually fetched (the primary WBJ article 403'd), so only the street name is recorded. investmentUsd reflects the disclosed real-estate acquisition price, not a separately-disclosed build-out cost. Coordinates set 2026-09-12 to the OSM way centroid for Centennial Drive, North Grafton (the source names the street but no house number, so the US Census address geocoder returns no match); pin is street-level, not parcel-level.",
+    "investmentUsd": 15100000,
+    "landAcres": 1.8,
+    "facilityType": "data_center"
   },
   {
     "id": "aws-green-new-florence-mo",
@@ -10974,6 +11306,45 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "aws-westborough-ma",
+    "name": "Amazon Data Services Westborough",
+    "operator": "Amazon Data Services",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.28296,
+      "lon": -71.58339,
+      "city": "Westborough",
+      "county": "Worcester",
+      "street": "600 & 800 Friberg Parkway",
+      "state": "MA",
+      "precision": "representative_multi_site"
+    },
+    "announcedDate": "2022-11",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/amazon-buys-two-data-centers-in-massachusetts-for-26-7m",
+        "label": "Amazon Buys Two Data Centers in Massachusetts For $26.7m",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/massachusetts/3714/aws-westborough-data-center",
+        "label": "AWS Westborough Data Center",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Amazon Data Services Inc. purchased 600 Friberg Parkway (an existing ~99,150 sq ft former State Street Corp data center) and the adjacent 800 Friberg Parkway (greenfield land at the time of sale) for $11.6M combined, per a November 24, 2022 report — the two parcels total 19 acres, treated here as one representative multi-site record. Cleanview's tracker still lists status as \"Planned\" as of this check (2026-09-12); no independent confirmation of construction start or energization was found, so status is recorded as proposed rather than under_construction. investmentUsd reflects the disclosed real-estate acquisition price, not a separately-disclosed build-out cost.",
+    "investmentUsd": 11600000,
+    "landAcres": 19,
+    "facilityType": "data_center"
   },
   {
     "id": "aws-wheatfield-in",
@@ -15830,6 +16201,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "centra-portland-me",
+    "name": "CENTRA Digital Interconnect -- 340 Cumberland (PMW01)",
+    "operator": "CENTRA Digital Interconnect",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.6578388,
+      "lon": -70.2613785,
+      "city": "Portland",
+      "county": "Cumberland",
+      "street": "340 Cumberland Ave",
+      "state": "ME",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/maine",
+        "label": "Maine Data Centers & Colocation",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/centra-340-cumberland-pmw01",
+        "label": "CENTRA: 340 Cumberland (PMW01)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/gwi-portland-maine",
+        "label": "GWI Portland Maine Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Described by the operator's aggregator listing as \"the most interconnected building in the State of Maine,\" a neutral, purpose-built interconnection facility in downtown Portland; rebranded from 'Deep Edge Realty' in 2024. Baxtel's Maine directory page states 52,272 sq ft. GWI (Great Works Internet, headquartered in Biddeford, ME) independently lists a facility at this SAME address (340 Cumberland Ave) -- treated here as a tenant/point-of-presence inside this same interconnection building rather than a separate facility, per this wave's one-pin-per-parcel rule, since a second record would otherwise carry an identical pin. No MW capacity figure was available from either source fetched. OSM confirms the address as a mapped point at 340 Cumberland Avenue, Parkside/West End, Portland (node/7171975407); no distinctly-named building polygon was available so precision is approximate.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cerebras-oklahoma-city-ok",
     "name": "Cerebras Oklahoma City Data Center",
     "operator": "Cerebras Systems",
@@ -19576,6 +19990,54 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cognovum-trumbull-ct",
+    "name": "CogNovum Data Center (80 Merritt Boulevard)",
+    "operator": "CogNovum",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.2407281,
+      "lon": -73.1474121,
+      "city": "Trumbull",
+      "street": "80 Merritt Blvd",
+      "state": "CT",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://finance.yahoo.com/sectors/technology/articles/trumbull-data-center-eyed-ai-100000924.html",
+        "label": "Trumbull data center eyed for AI-driven upgrades in nationwide expansion",
+        "publisher": "Hartford Business Journal (via Yahoo Finance)",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/05/06/3288919/0/en/365-data-centers-and-aphorio-carter-launch-200-mw-ai-ready-data-center-pipeline.html",
+        "label": "365 Data Centers and Aphorio Carter Launch ~200 MW AI-Ready Data Center Pipeline",
+        "publisher": "GlobeNewswire",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=80%20Merritt%20Blvd%2C%20Trumbull%2C%20CT&benchmark=Public_AR_Current&format=json",
+        "label": "US Census Geocoder match: 80 MERRITT BLVD, TRUMBULL, CT, 06611",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/122665255",
+        "label": "OpenStreetMap building at 80 Merritt Blvd, Trumbull, CT",
+        "retrievedAt": "2026-09-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Existing 228,000 sq ft building at 80 Merritt Blvd, Trumbull, CT, built in 1960 (originally for Nasdaq per the operator's account); currently operated by CogNovum. Aphorio Carter acquired the property in 2024. On 2026-05-06, 365 Data Centers and Aphorio Carter announced a ~200MW AI-ready data-center pipeline across six US markets; Trumbull is named as a site 'under evaluation' for AI-focused upgrades to this existing building, with letters of intent not yet signed for it (only Aurora, CO and Simpsonville, KY had signed LOIs as of the release). The operator's CEO described the plan as upgrading an existing facility on existing power infrastructure, not new construction: \"We are simply updating an existing, historic facility to ensure we can continue serving our customers effectively, while supporting the town with local jobs and substantial tax revenue.\" No MW, investment, or job-count figures were published for the current facility. Coordinates cross-checked: US Census geocoder (41.240871, -73.146313) and the OSM building footprint (41.2407281, -73.1474121) agree within ~100m; the OSM point is used per the mapped-building preference. Flagging for awareness, not asserted as fact: OSM's building tag for this address (as retrieved 2026-09-12) reads \"Digital Realty New York HVN10,\" which is not corroborated by any 2026 source found in this search and may reflect a prior/stale ownership label rather than current fact.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "coinmint-massena-ny",
     "name": "Coinmint (Massena East / former Alcoa Smelter)",
     "operator": "Coinmint",
@@ -19699,6 +20161,34 @@
     "lastUpdated": "2026-09-10",
     "notes": "Coinmint's SECOND New York site, distinct from the already-recorded Massena/former-Alcoa complex in St. Lawrence County: this one is a 10 MW operation \"located within the Skyway Plaza, a shopping center in southern Plattsburgh, on the western shores of Lake Champlain\" in Clinton County. Coordinates are as stated by the source (44.680538, -73.451475) but are marked approximate because they resolve to a shopping plaza, not a confirmed equipment footprint. STATUS CAVEAT: Global Energy Monitor lists the facility as operating as of its last update in July 2022; no more recent operating confirmation was found in this run, which is why confidence is 'reported' rather than 'confirmed'. Confirmed absences (2026-09-09): the fetched source states no start date, no utility or energy source, no water/cooling detail, no investment, no job count, and no subsidy agreement. Context not recorded as fields: the City of Plattsburgh's cheap municipal hydro allocation is what drew miners here, and the city imposed (and later let expire) a crypto-mining moratorium - neither is stated in the fetched source, so neither is recorded. HISTORICAL (2018), NOT applied as a structured jobs field because the source gives a range, not a single figure: per a Jan. 30, 2018 NYPA memorandum, Coinmint's North Country Data Center subsidiary expected to grow Plattsburgh staff from 6 to 10-15 permanent employees. Reporting for hand review only -- too old and too imprecise to safely commit to jobs.permanent.",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "colocation-america-sfdc1-san-francisco-ca",
+    "name": "Colocation America SFDC1 (200 Paul Avenue)",
+    "operator": "Colocation America",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.7234595,
+      "lon": -122.3979578,
+      "city": "San Francisco",
+      "county": "San Francisco",
+      "street": "200 Paul Avenue",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/datacenters/colocation-america-san-francisco-data-center-1/",
+        "label": "Colocation America - San Francisco Data Center 1 - Cloud and Colocation",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Over 32,000 sq ft of data center space inside the 200 Paul Avenue carrier-hotel building (Seismic Zone 4 construction, N+1 UPS and diesel generators, 150+ W/sq ft density); SSAE16 SOC II, HIPAA, and PCI DSS. This is the SAME building as Digital Realty's SFO10, already in this dataset — Colocation America is a separate tenant/operator (acquired its space here in December 2008 per its own marketing materials, unconfirmed this session) leasing distinct floor space in the same carrier hotel, not a duplicate of the existing record.",
+    "facilityType": "data_center"
   },
   {
     "id": "colocsx-jacksonville-fl",
@@ -19845,6 +20335,34 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "Edge colocation facility at 1205 Technology Parkway, Cedar Falls; acquired from Connect Des Moines June 2024 alongside DSM1. Owned/operated by Cologix (not a tenancy). Confirmed via Cologix's own DSM2 facility page: 24,000 sq ft facility with 6,000 sq ft colocation currently built out, 1MW site capacity via (3) 750kW generator+UPS, with room to add another 10,000 sq ft / 1MW later (not counted here — reporting live capacity only).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cologix-cedar-knolls-campus-nj",
+    "name": "Cologix Cedar Knolls Campus",
+    "operator": "Cologix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.81995,
+      "lon": -74.427986,
+      "city": "Cedar Knolls",
+      "county": "Morris",
+      "state": "NJ",
+      "precision": "representative_multi_site"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cologix.com/data-centers/new-jersey/",
+        "label": "New Jersey Data Centers & Disaster Recovery Facilities",
+        "publisher": "Cologix",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Two Cologix-branded buildings in the Cedar Knolls section of Hanover Township, Morris County, per the operator's own site: NNJ2 at 9 Wing Drive ('purpose-built, freestanding data center') and NNJ4 at 16 Wing Drive ('New Jersey Disaster Recovery Facility'). Combined with a third New Jersey site (NNJ3, recorded separately at Parsippany) into 'more than 200K sq ft of usable floor space' across Cologix's New Jersey footprint per the same page, which does not break out power capacity or square footage per individual building. Represented as one record (precision representative_multi_site) because no source gave a distinguishable street-level geocode for 9 Wing Drive vs. 16 Wing Drive; location used is the Hanover Township centroid.",
     "facilityType": "data_center"
   },
   {
@@ -20254,6 +20772,35 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cologix-nnj3-parsippany-nj",
+    "name": "Cologix NNJ3",
+    "operator": "Cologix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.859636,
+      "lon": -74.423348,
+      "city": "Parsippany",
+      "county": "Morris",
+      "street": "200 Webro Road",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cologix.com/data-centers/new-jersey/",
+        "label": "New Jersey Data Centers & Disaster Recovery Facilities",
+        "publisher": "Cologix",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Described by the operator as a 'next-generation standalone data center' in Parsippany, NJ — one of Cologix's four current New Jersey sites (with NNJ2 and NNJ4 nearby in Cedar Knolls, recorded as a separate combined record). Coordinates are the Parsippany-Troy Hills township centroid (Wikipedia), not a confirmed parcel geocode for 200 Webro Road — marked approximate. Power capacity and square footage are not stated on the operator's current page; a since-superseded third-party listing cited 15 MW / 120,000 sq ft, but that figure could not be independently confirmed via a source fetched in this run, so it is omitted rather than reported.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cologix-sv1-ca",
     "name": "Cologix SV1",
     "operator": "Cologix",
@@ -20300,6 +20847,42 @@
     "energy": {
       "utility": "Silicon Valley Power"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "colospace-bedford-nh",
+    "name": "ColoSpace Bedford Data Center",
+    "operator": "ColoSpace, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.9281915,
+      "lon": -71.4638354,
+      "city": "Bedford",
+      "county": "Hillsborough",
+      "street": "8 Commerce Drive",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacentercatalog.com/usa/colospace-data-center-bedford",
+        "label": "Colospace Data Center Bedford, New Hampshire",
+        "publisher": "Data Center Catalog",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/new-hampshire",
+        "label": "New Hampshire Data Centers & Colocation",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "OSM matches a building at this address named 'Commerce Park West' (way/265358816), used in preference to the nearby US Census interpolation (~400m offset on this business-park road). FirstLight Fiber's own directory (via Baxtel) also lists a 'FirstLight Bedford' facility at this SAME address, 8 Commerce Drive. Rather than ship a second record carrying an identical pin (this wave's one-pin-per-parcel rule), that is recorded here as a note instead: it is most likely the same building or business park -- possibly a shared carrier-neutral building housing both ColoSpace's product and a FirstLight point of presence -- and is not independently confirmed as a physically distinct site. colospace.com's own site could not be fetched in this run (expired TLS certificate), so this record rests on two independently fetched third-party directory listings (DataCenterCatalog, Baxtel) plus the address-to-building geocode match, hence 'reported' rather than 'confirmed' confidence.",
     "facilityType": "data_center"
   },
   {
@@ -21039,6 +21622,42 @@
       "notes": "Eagan City Council voted 4-0 on a one-year moratorium (applies to data centers >20MW or within 500 ft of residential property) after this project broke ground; neighbors near this Oppidan facility off Argenta Trail raised traffic and noise concerns per KSTP (retrieved 2026-09-10). Coverage frames the moratorium as forward-looking study rather than opposition aimed at this already-underway project.",
       "sourceIndex": 2
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "consolidated-communications-manchester-nh",
+    "name": "Consolidated Communications Manchester Data Center",
+    "operator": "Consolidated Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.9890144,
+      "lon": -71.4636547,
+      "city": "Manchester",
+      "county": "Hillsborough",
+      "street": "770 Elm St",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/consolidated-manchester",
+        "label": "Consolidated: Manchester Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterjournal.com/data-centers/new-hampshire/manchester/consolidated-770-elm-st/",
+        "label": "Consolidated - 770 Elm St. Data Center",
+        "publisher": "Data Center Journal",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Address confirmed by two independently fetched directory listings (Baxtel, Data Center Journal) and by an OpenStreetMap building match explicitly named 'Consolidated Communications' at this address (way/1019398284, used in preference to the very close US Census interpolation). Trade coverage describes it as a Tier-III-equivalent carrier interconnection facility originally built out by FairPoint Communications before FairPoint's New England operations came under Consolidated Communications; that corporate history is not independently re-confirmed here. Data Center Journal lists colocation floor space as only 506 sq ft -- notably smaller than the 'interconnection hub' framing used in other coverage, so both figures are flagged rather than one being picked. No MW capacity figure could be confirmed from a source actually fetched in this run, so capacityMw is omitted.",
     "facilityType": "data_center"
   },
   {
@@ -26819,6 +27438,70 @@
     "facilityType": "data_center"
   },
   {
+    "id": "databank-sna1-irvine-ca",
+    "name": "DataBank SNA1",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.69137,
+      "lon": -117.84036,
+      "city": "Irvine",
+      "county": "Orange",
+      "street": "17222 Von Karman Avenue",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2.64
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/irvine/",
+        "label": "DataBank Irvine Data Centers",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "DataBank operates two Irvine, CA facilities on Von Karman Avenue (SNA1 and SNA2), recorded here as separate entries. SNA1 is 36,720 IT square feet with 2.64MW critical IT load per the operator's own site. Square footage omitted (no landAcres/other field for IT sq ft in this schema). aiClassification omitted: no source names AI/GPU capacity at this specific site.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-sna2-irvine-ca",
+    "name": "DataBank SNA2",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.68882,
+      "lon": -117.84289,
+      "city": "Irvine",
+      "county": "Orange",
+      "street": "17400 Von Karman Avenue",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 8
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/irvine/",
+        "label": "DataBank Irvine Data Centers",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "DataBank operates two Irvine, CA facilities on Von Karman Avenue (SNA1 and SNA2), recorded here as separate entries. SNA2 is 53,150 IT square feet with 8MW critical IT load per the operator's own site. aiClassification omitted: no source names AI/GPU capacity at this specific site.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "databank-vernon-la-ca",
     "name": "Vernon LA Campus (with Goodman Group)",
     "operator": "DataBank",
@@ -28769,6 +29452,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "digital-realty-clifton-campus-nj",
+    "name": "Digital Realty Clifton Campus",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.862137,
+      "lon": -74.160393,
+      "city": "Clifton",
+      "county": "Passaic",
+      "state": "NJ",
+      "precision": "representative_multi_site"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/new-york/ewr20",
+        "label": "Digital Realty New Jersey EWR20",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/new-york/ewr21",
+        "label": "Digital Realty New Jersey EWR21",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/new-york",
+        "label": "Digital Realty — New York metro data centers",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Two Digital Realty buildings in Clifton, NJ, both confirmed via the operator's own site pages: EWR20 at 100 Delawanna Avenue (183,000 sq ft, 7 stories, N+1 power/cooling, operator states it is 100% renewable-energy powered) and EWR21 at 2 Peekay Drive (215,000 sq ft, 3 stories, N+1 UPS, onsite substation with 2N utility redundancy, LEED Platinum, ~37 miles from Manhattan). Represented as a single record (precision representative_multi_site) because neither operator page gave a distinguishable parcel-level geocode for the two buildings and no independent source was fetched to separate them; location used is Clifton's town center. Both buildings carry SOC2/SOC3/PCI-DSS/ISO 9001/ISO 14001/ISO 27001 certification per the operator.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "digital-realty-iad38-va",
     "name": "Digital Realty IAD38",
     "operator": "Digital Realty",
@@ -30520,6 +31245,99 @@
     "facilityType": "data_center"
   },
   {
+    "id": "digitalrealty-bos14-needham-ma",
+    "name": "Digital Realty BOS14",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.30177,
+      "lon": -71.22184,
+      "city": "Needham",
+      "county": "Norfolk",
+      "street": "128 First Avenue",
+      "state": "MA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/boston",
+        "label": "Boston Data Center & Colocation | Digital Realty",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/boston/bos14",
+        "label": "BOS14 Data Center | 128 First Avenue | Digital Realty",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Three-story, 281,000 sq ft building (280,000 sq ft leasable), described by the operator as N+1 and \"hyperconnected to FinTech and Tech enterprises.\" On-site cloud on-ramps are listed for AWS, Google Cloud, Azure, IBM Cloud, Oracle, HPE GreenLake and NVIDIA — these are marketed as network/cloud connectivity partners, not a confirmed on-site AI/GPU compute deployment, so aiClassification is left unset per the contract's guidance for colo sites. No MW figure was stated on either fetched page, so capacityMw is omitted.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "diode-ventures-gemstone-kuna-id",
+    "name": "Gemstone Technology Park",
+    "operator": "Diode Ventures",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.44545,
+      "lon": -116.37335,
+      "city": "Kuna",
+      "county": "Ada",
+      "street": "3250 S Locust Grove Rd",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-04",
+        "note": "Kuna City Council approved rezoning the 620-acre site from agricultural to M-1 light industrial in a 3-2 vote.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.idahopress.com/news/local/another-data-center-in-kuna-city-council-approves-new-facility/article_f419d684-3934-446a-a910-c06ec0753473.html",
+        "label": "Another data center in Kuna? City council approves new facility",
+        "publisher": "Idaho Press",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.diodeventures.com/projects/kuna-idaho-usa",
+        "label": "Kuna, Idaho, USA – Gemstone Technology Park",
+        "publisher": "Diode Ventures",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/761896168",
+        "label": "OpenStreetMap way/761896168 — 3250, South Locust Grove Road, Kuna",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Diode Ventures (a Black & Veatch subsidiary) states on its own project page that the project 'will require more than $1 billion in private investment'; recorded here as the stated investment floor, not a confirmed total. No MW capacity was disclosed in either source fetched. Diode Ventures describes the project as 'early development' with up to five buildings planned. Distinct from the existing Meta Kuna Data Center (14375 S Cole Rd) already in this dataset. Coordinates set 2026-09-12 from the OpenStreetMap building POI at 3250 S Locust Grove Road. The US Census geocoder returns a point 1.6 km north for the same address; both agree on street and ZIP, and a mapped building beats an address-range interpolation, but for a 620-acre campus treat the pin as site-level regardless.",
+    "investmentUsd": 1000000000,
+    "landAcres": 620,
+    "community": {
+      "status": "contested",
+      "notes": "Kuna City Council approved rezoning the site from agricultural to M-1 light industrial in a 3-2 vote on 2025-04-01, with Mayor Joe Stear breaking the tie. Design review approval is still required before construction. Diode Ventures agreed to community payments including $500,000 to the Kuna School District and $10 million over 20 years to the Kuna Police Department, with a Kuna Rural Fire District agreement reported in progress.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "diversified-longhorn-pad-a-horton-township-elk-pa",
     "name": "Longhorn Pad A Wellhead Bitcoin Mine",
     "operator": "Diversified Production LLC",
@@ -30899,6 +31717,41 @@
     "investmentUsd": 200000000,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "drfortress-koapaka-honolulu-hi",
+    "name": "DRFortress Data Center",
+    "operator": "DRFortress",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.3344171,
+      "lon": -157.9171752,
+      "city": "Honolulu",
+      "street": "3375 Koapaka Street",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.drfortress.com/in-the-news/",
+        "label": "In The News - Data Center Colocation & Digital Hub",
+        "publisher": "DRFortress",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.drfortress.com/",
+        "label": "DRFortress — Data Center Colocation & Digital Hub",
+        "publisher": "DRFortress",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Hawaii's largest carrier-neutral data center per the operator's own site, described as a single ~65,000 sq ft location that has been expanded multiple times. Coordinates geocoded from the street address via OSM Nominatim (matched a specific building at this house number on Koapaka Street, Salt Lake/Airport Industrial Park area); not confirmed against a surveyed parcel, so precision is approximate. No MW, cabinet-count, or investment figures were stated on the pages fetched, so those fields are omitted rather than estimated.",
+    "facilityType": "data_center"
   },
   {
     "id": "drox-group-rural-hall-forsyth-county-nc",
@@ -31426,6 +32279,64 @@
     "notes": "Proposed ~1,940-acre, up to 43M sq ft data center/industrial campus along Sanders Lane in the Gainesville District, near the Loudoun County border -- a geographically and procedurally distinct site from the also-cancelled Prince William Digital Gateway (Pageland Lane/Thoroughfare area, tracked separately as prince-william-digital-gateway-va). Prince William County Board of Supervisors voted 8-0 on 2026-07-07 to deny the comprehensive plan amendment needed to advance the project, citing infrastructure capacity, environmental impact, traffic, and land-use compatibility concerns. No named developer/operator was identified in the available source.",
     "landAcres": 1940,
     "facilityType": "data_center"
+  },
+  {
+    "id": "dynamic-internet-salem-nh",
+    "name": "Dynamic Internet Salem Data Center",
+    "operator": "Dynamic Internet",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.7648858,
+      "lon": -71.2420671,
+      "city": "Salem",
+      "county": "Rockingham",
+      "street": "12 Delaware Dr",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/dynamic-internet-salem",
+        "label": "Dynamic Internet Salem Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Single-source finding (Baxtel directory): address and 'fully operational' status stated; no square footage, capacity, or tenant detail available. A modest-scale, regionally-focused ISP colocation site rather than a hyperscale or wholesale facility. OSM matches a house/building at this exact address (way/18863019) with no business name attached, consistent with but not independently confirming the listing.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "eagle-mountain-data-oc1-anaheim-ca",
+    "name": "Eagle Mountain Data OC1 (Anaheim Data Center)",
+    "operator": "Eagle Mountain Data Inc",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.8366,
+      "lon": -117.9143,
+      "city": "Anaheim",
+      "county": "Orange",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://eaglemountain.ai/post/eagle-mountain-data-now-offering-high-density-ai-gpu-capacity-at-fully-energized-anaheim-data-center",
+        "label": "Eagle Mountain Data Now Offering High Density AI GPU Capacity at Fully Energized Anaheim Data Center",
+        "publisher": "Eagle Mountain Data",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Operator describes OC1 as \"fully energized\" and pre-leasing high-density AI GPU capacity: pre-deployed NVIDIA GB300 clusters, up to 135kW/rack (engineered for 200kW+), direct-to-chip liquid cooling, <1.15 PUE target, zero-water cooling, 100% green utility power, with direct AWS Direct Connect / Azure ExpressRoute connectivity. The operator states OC1 is the first phase of a planned 45MW multi-facility Southern California development — that 45MW figure covers the whole planned program, NOT this single site, so capacityMw is omitted rather than misapplied. No exact street address appears in any source actually fetched in this run: a datacenters.com listing for this facility exists but returned HTTP 429 on fetch and is not used as a source. Location is city-level (Anaheim) only.",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "eagle-rock-meridian-technology-park-taylorville-il",
@@ -34793,6 +35704,35 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "equinix-bo1-waltham-ma",
+    "name": "Equinix BO1",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.39635,
+      "lon": -71.26906,
+      "city": "Waltham",
+      "county": "Middlesex",
+      "street": "74 West Street",
+      "state": "MA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/equinix-boston-bo1",
+        "label": "Equinix Boston BO1 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Multi-tenant colocation facility inside a leased building at 74 West Street; page confirms it as a fully operational Equinix site. Coordinates are an approximate geocode of the street address, not a confirmed parcel footprint. No MW or square-footage figures were disclosed on the publicly accessible source page (gated behind a paid dataset request), so capacityMw is omitted rather than guessed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "equinix-ch1-il",
     "name": "Equinix CH1",
     "operator": "Equinix",
@@ -35239,6 +36179,121 @@
     ],
     "lastUpdated": "2026-08-02",
     "notes": "Formerly Terremark's \"NAP of the Americas\"; acquired by Equinix from Verizon in a 29-facility, $3.6B portfolio deal that closed May 1, 2017. Equinix's own technical spec sheet reports 296,775 sq ft of colocation space (255,512 sq ft in MI1-1&2, 41,263 sq ft in MI1-3) -- distinct from the widely-repeated but unsourced 750,000 sq ft gross-building figure. No single headline MW capacity is disclosed by the operator (spec sheet lists standby/UPS power per floor rather than a total IT-load figure); aggregators report conflicting, unconfirmed estimates in the 17-28 MW range. No AI/HPC-specific marketing found for this facility.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-ny11-carteret-nj",
+    "name": "Equinix NY11",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.58433,
+      "lon": -74.243607,
+      "city": "Carteret",
+      "county": "Middlesex",
+      "street": "1400 Federal Boulevard",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/1400-federal-boulevard-carteret/equinix/datacenter/ny11",
+        "label": "Equinix NY11 — 1400 Federal Boulevard, Carteret",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/network/article/33008176/equinix-ny5-ny11-data-centers-generate-digital-economic-magnetism-in-ny-nj",
+        "label": "Equinix NY5, NY11 Data Centers Generate Digital, Economic Magnetism in NY-NJ",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Equinix-owned facility that hosts Nasdaq's primary data center and matching-engine infrastructure — Data Center Frontier describes Nasdaq as NY11's 'primary customer.' Roughly 91,413 sq ft of usable colocation space per Inflect. Equinix is expanding the site to add an AWS Local Zone, bringing cloud infrastructure directly into the Nasdaq facility (per Data Center Frontier). Coordinates are a street-address geocode from Inflect's own listing, not a confirmed parcel boundary.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-ny3-secaucus-nj",
+    "name": "Equinix NY3",
+    "operator": "Equinix",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.774179,
+      "lon": -74.065868,
+      "city": "Secaucus",
+      "county": "Hudson",
+      "street": "600 Jefferson Avenue",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.datacenterfrontier.com/network/article/33008176/equinix-ny5-ny11-data-centers-generate-digital-economic-magnetism-in-ny-nj",
+        "label": "Equinix NY5, NY11 Data Centers Generate Digital, Economic Magnetism in NY-NJ",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://inflect.com/building/600-jefferson-avenue-secaucus-nj-united-states/equinix/datacenter/ny3",
+        "label": "Equinix NY3 — 600 Jefferson Avenue, Secaucus",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Data Center Frontier (retrieved 2026-09-12): 'NY3, a new 300,000 sq ft facility, is under construction on the Secaucus campus,' first phase supporting roughly 1,200 colocation cabinets at 9-10 kW average density — described there as Equinix's largest planned NY-metro site. Status recorded here as under_construction on that basis; however Inflect's current listing for the same address already shows marketed/usable leasing space figures, so this facility may have since opened or begun partial delivery. Flagged for re-verification on a future pass rather than asserted as still under construction today.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-ny4-secaucus-nj",
+    "name": "Equinix NY4",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.778534,
+      "lon": -74.072237,
+      "city": "Secaucus",
+      "county": "Hudson",
+      "street": "755 Secaucus Road",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/equinix/755-secaucus-road/ny4",
+        "label": "Equinix NY4 — 755 Secaucus Road",
+        "publisher": "DataCenterHawk",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/investing/the-nj-trading-hub-powering-the-financial-markets",
+        "label": "The NJ Trading Hub Powering the Financial Markets",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/36",
+        "label": "Equinix NY2/NY4/NY5/NY6 — Secaucus",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "338,967 sq ft, built 2001; converted for colocation use by Equinix around 2006 (formerly an eyeglass-lens factory, per Data Center Knowledge). N+2 cooling, dual-feed N+1 power with backup via 18 x 2.5 MW diesel generators (45 MW total backup generation capacity, per Data Center Knowledge — this is backup/redundant power, not a stated IT load figure, so it is not recorded as capacityMw). Hosts matching engines for multiple stock exchanges; Data Center Knowledge reported over $100M in annual revenue from this single site. One of five Equinix IBX buildings on the Secaucus campus (per Data Center Frontier). Coordinates are the shared PeeringDB pin for the whole Equinix Secaucus campus (NY2/NY4/NY5/NY6), not an NY4-specific rooftop geocode — marked approximate accordingly.",
     "facilityType": "data_center"
   },
   {
@@ -36069,6 +37124,83 @@
     }
   },
   {
+    "id": "fairpoint-laconia-nh",
+    "name": "FairPoint Laconia Data Center",
+    "operator": "FairPoint Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.5317638,
+      "lon": -71.4728722,
+      "city": "Laconia",
+      "county": "Belknap",
+      "street": "762 N Main St",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/fairpoint-laconia",
+        "label": "FairPoint Laconia Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Single-source finding (Baxtel directory): address and 'fully operational' status stated, but no square footage, capacity, or services detail available. Listed under the legacy 'FairPoint Communications' brand; FairPoint's New England operations are widely reported to now operate under Consolidated Communications (see the separate confirmed consolidated-communications-manchester-nh record in this same wave), so the current operating name for this specific Laconia site was not independently re-confirmed here. OSM matches a house/building at this exact address (way/768007156) with no business name attached, consistent with but not independently confirming the listing.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "fbi-greywolf-pocatello-id",
+    "name": "FBI Grey Wolf Data Center",
+    "operator": "Federal Bureau of Investigation (U.S. Department of Justice)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.90482,
+      "lon": -112.46388,
+      "city": "Pocatello",
+      "county": "Bannock",
+      "street": "Duckett Byrnes Street",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.eastidahonews.com/2019/11/new-100-million-fbi-grey-wolf-data-center-opens-in-eastern-idaho/",
+        "label": "New $100 million FBI 'Grey Wolf' data center opens in eastern Idaho",
+        "publisher": "East Idaho News",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.idahostatejournal.com/news/local/fbi-cuts-ribbon-on-pocatello-addition/article_0ba8e3c8-5d0e-50a6-b2da-8b75cbf79530.html",
+        "label": "FBI cuts ribbon on Pocatello addition",
+        "publisher": "Idaho State Journal",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/584965860",
+        "label": "OpenStreetMap way/584965860 — Federal Bureau of Investigation, Duckett Byrnes Street, Pocatello",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "A ~$100 million expansion (dubbed 'Grey Wolf') consolidating IT operations for the FBI, U.S. Marshals Service, a U.S. Attorney's Office, the Bureau of Prisons, and the Treasury Department, as part of a nationwide DOJ consolidation from roughly 110 data centers down to three (Pocatello, ID; Clarksburg, WV; Sterling, VA) -- reported to have generated over $135 million in savings. 140,000 sq ft total: 100,000 sq ft of secure data-center space plus 40,000 sq ft of office space. Broke ground October 2017; ribbon-cutting held 2019-11-18, with 300 staff at opening and stated room to grow by roughly 250 more over two to five years. Coordinates corrected 2026-09-12 from a Pocatello city-centroid placeholder to the OpenStreetMap POI for the FBI facility on Duckett Byrnes Street (cited below); the pin is building-level, not parcel-surveyed, hence precision remains approximate. Neither press source fetched stated a street address or MW capacity. aiClassification omitted: this is general-purpose government IT/records infrastructure, not an AI-oriented facility.",
+    "investmentUsd": 100000000,
+    "jobs": {
+      "permanent": 300,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "fermi-matador-amarillo-tx",
     "name": "Project Matador",
     "operator": "Fermi America",
@@ -36526,6 +37658,78 @@
     "facilityType": "data_center"
   },
   {
+    "id": "firstlight-brunswick-me",
+    "name": "FirstLight Brunswick Data Center",
+    "operator": "FirstLight Fiber",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.8951809,
+      "lon": -69.922964,
+      "city": "Brunswick",
+      "county": "Cumberland",
+      "street": "14 Resilient Circle",
+      "state": "ME",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/maine",
+        "label": "Maine Data Centers & Colocation",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/firstlight-brunswick",
+        "label": "FirstLight Brunswick Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "OSM directly names the building 'Oxford Networks' at this exact address (way/667796922) -- Oxford Networks is a legacy regional-ISP brand confirmed (via its own website's 301 redirect during this run) to now route to firstlight.net, i.e. the same FirstLight Fiber corporate family reported in Baxtel's listing. US Census had no match for this street (likely too new for the TIGER address-range dataset -- 'Resilient Circle' is a newly-named street at the redeveloped former Brunswick Naval Air Station business park), so the OSM building match is the only geocode available here. Baxtel lists the facility as 'fully operational' with power/space figures redacted; no numeric MW capacity confirmed.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "firstlight-manchester-nh",
+    "name": "FirstLight Manchester Data Center",
+    "operator": "FirstLight Fiber",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.9720295,
+      "lon": -71.4705697,
+      "city": "Manchester",
+      "county": "Hillsborough",
+      "street": "77 Sundial Ave",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/new-hampshire",
+        "label": "New Hampshire Data Centers & Colocation",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/firstlight-manchester",
+        "label": "FirstLight Manchester Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Distinct from the existing FirstLight Portsmouth, NH record and from Consolidated Communications' separate Manchester site (770 Elm St, ~2 miles away) -- this facility is at 77 Sundial Ave. OSM matches a building named 'Sundial Center' spanning street numbers 1/3/25/77 Sundial Avenue (way/183679768), used in preference to the nearby US Census interpolation. Baxtel's New Hampshire directory page lists this site at roughly 14,000 sq ft; the facility-specific page describes it as a 'Tier II facility,' 'fully operational,' with power/space figures redacted pending direct contact with the operator. No numeric MW capacity confirmed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "firstlight-portsmouth-nh-data-center-nh",
     "name": "FirstLight Portsmouth, NH Data Center",
     "operator": "FirstLight",
@@ -36559,6 +37763,35 @@
     ],
     "lastUpdated": "2026-07-23",
     "notes": "Confirmed at 359 Corporate Drive, Portsmouth, NH, on FirstLight's own domain (firstlight.net/resources/data-center-portsmouth-nh-specifications/), corroborated by Baxtel (https://baxtel.com/data-center/firstlight-portsmouth). Carrier-neutral operational colocation facility.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "firstlight-williston-vt",
+    "name": "FirstLight Data Center (Williston, VT)",
+    "operator": "FirstLight Fiber",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.4502206,
+      "lon": -73.1275724,
+      "city": "Williston",
+      "county": "Chittenden",
+      "street": "45 Krupp Drive",
+      "state": "VT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/firstlight-burlington",
+        "label": "FirstLight Burlington Data Center (address resolves to Williston, VT -- see notes)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "IMPORTANT CORRECTION TO SOURCE DATA: Baxtel's directory lists this facility as 'FirstLight Burlington,' but the street address (45 Krupp Dr) does not exist in Burlington -- both the US Census geocoder and OSM Nominatim resolve it unambiguously to Williston, VT (OSM building match way/620853160, 'Krupp Drive... Williston, Chittenden County'; Census independently confirms '45 KRUPP DR, WILLISTON, VT, 05495'). Recorded here under its true municipality (Williston) per this wave's geocoding-verification requirement rather than the aggregator's market-name label. Only a single third-party directory source was found for this facility's existence at all (no operator-page confirmation succeeded), and given the source's demonstrated city error, confidence is 'reported' rather than 'confirmed.' No square footage or capacity figures available; Baxtel lists it as 'Fully operational.'",
     "facilityType": "data_center"
   },
   {
@@ -40129,6 +41362,40 @@
     }
   },
   {
+    "id": "gci-anchorage-ak",
+    "name": "GCI Anchorage Data Center",
+    "operator": "GCI",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 61.2163129,
+      "lon": -149.894852,
+      "city": "Anchorage",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.gci.com/business/products/managed-services/data-center-colocation",
+        "label": "Data Center & Colocation | GCI Business",
+        "publisher": "GCI",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://business.anchoragechamber.org/list/member/gci-1497",
+        "label": "GCI | Communications - Anchorage Chamber",
+        "publisher": "Anchorage Chamber of Commerce",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "GCI's own site describes this, without naming a street address, as Alaska's largest and most advanced data center, built on self-contained pods with isolated power and cooling and a 99.9999% uptime design. Multiple third-party directories consistently cite 6831 Arctic Blvd, Anchorage for this specific facility, but three separate attempts to fetch a page confirming that address (two on datacentermap.com, one on mapcarta.com) returned HTTP 429/403 this session. The Anchorage Chamber listing (fetched successfully) instead gives 2550 Denali St Suite 1000 — likely GCI's corporate headquarters rather than this data center's site, illustrating exactly why the two shouldn't be conflated. Pin is therefore an Anchorage city-level approximation (Nominatim), not either street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "gemini-data-center-sioux-falls-sd",
     "name": "Sioux Falls Technology Park (Gemini Data Center)",
     "operator": "Gemini Data Center SD LLC",
@@ -40577,6 +41844,40 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "global-stack-vallejo-fairgrounds-ca",
+    "name": "Solano County Fairgrounds Data Center (Global Stack proposal)",
+    "operator": "Global Stack LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.135514,
+      "lon": -122.2262112,
+      "city": "Vallejo",
+      "county": "Solano",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.pressdemocrat.com/2026/07/13/solano-county-fair-association-will-discuss-proposed-data-center/",
+        "label": "Data center proposed in Vallejo fairgrounds",
+        "publisher": "The Press Democrat",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Global Stack LLC (Santa Ana-based) proposed an approximately 5-acre data center described as an 'emergency preparedness hub,' reported at 8 to 10 MW, on the Solano County Fairgrounds. Part of a stated company plan to add small-scale data centers to 70+ California fairgrounds by 2030. capacityMw omitted here because the source gives a range (8-10 MW), not a single figure.",
+    "landAcres": 5,
+    "community": {
+      "status": "contested",
+      "notes": "Proposal was on the Solano County Fair Association Board of Directors' meeting agenda for 2026-07-16. Named residents voiced opposition ahead of the meeting: Laurie Shaft (a former data-center-industry worker) warned about water/electricity draw and a possible 2-4 degree local temperature increase; Glencove resident Joe Estrada said he was 'not pro data center' and worried about impacts on Mare Island ratepayers. Organized social-media opposition preceded the meeting. This session found no report of the meeting's outcome.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "goldendale-energy-storage-klickitat-wa",
@@ -46252,6 +47553,102 @@
     "facilityType": "data_center"
   },
   {
+    "id": "hawaiiantel-endeavor-honolulu-hi",
+    "name": "Endeavor Data Center",
+    "operator": "Hawaiian Telcom",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.304547,
+      "lon": -157.855676,
+      "city": "Honolulu",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.hawaiiantel.com/business/Business/Products-Services/Network-Security/Data-Center-Colocation-Services",
+        "label": "Data Center Colocation Services | Hawaiian Telcom Business",
+        "publisher": "Hawaiian Telcom",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Hawaiian Telcom names this as its newest, most advanced Oahu colocation facility: elevated second-floor hosting outside flood zones, N+2 HVAC to a Class 7 clean-room standard, N+1 UPS and generator plant, 24/7 guards and biometric access, per the operator's own site. That page does not publish a street address. Third-party directories consistently cite 2339 Kamehameha Highway, Honolulu, but repeated attempts to fetch a page confirming that address directly (datacentermap.com) returned HTTP 429 this session, so it is not used here. Pin is a Honolulu city-level approximation (Nominatim), not the specific parcel — do not read the absence of a street field as meaning one wasn't sought.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "hawaiiantel-kawaihae-hi",
+    "name": "Kawaihae Data Center",
+    "operator": "Hawaiian Telcom",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 20.0397244,
+      "lon": -155.829133,
+      "city": "Kawaihae",
+      "county": "Hawaii",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.hawaiiantel.com/business/Business/Products-Services/Network-Security/Data-Center-Colocation-Services",
+        "label": "Data Center Colocation Services | Hawaiian Telcom Business",
+        "publisher": "Hawaiian Telcom",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Hawaiian Telcom's Hawaii Island colocation site, offered as geographic redundancy from Oahu; the operator's site states it sits \"beyond flood, volcanic, and evacuation zones\" and offers quarter/half/full cabinets with UPS plus a 5-day diesel generator fuel reserve. No street address is published on the page fetched, and a linked product-sheet PDF returned HTTP 404 this session. Pin is a Kawaihae town-level approximation (Nominatim), not a specific parcel.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "hawaiki-cable-kapolei-hi",
+    "name": "Kapolei Cable Landing Station",
+    "operator": "Hawaiki Submarine Cable USA LLC (BW Digital)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.349388772017,
+      "lon": -158.128697947756,
+      "city": "Kapolei",
+      "street": "92-384 Farrington Highway",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.submarinenetworks.com/en/stations/north-america/usa-hawaii/kapolei",
+        "label": "Kapolei Cable Landing Station - Submarine Networks",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.1547realty.com/data-center/kapolei-hi-haii1/",
+        "label": "Kapolei HI | HAII1 | 1547 Critical Systems Realty",
+        "publisher": "1547 Critical Systems Realty",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.bowersandkubota.com/projects/hawaiki-submarine-cable-landing-station",
+        "label": "Hawaiki Submarine Cable Landing Station",
+        "publisher": "Bowers + Kubota",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Landing station for the Hawaiki trans-Pacific submarine cable (completed 2018), providing 43 terabits of carrier-neutral capacity via six fiber pairs to the US west coast, Australia, New Zealand and American Samoa. DRFortress has operated landing and colocation activities here under a long-term partnership with Hawaiki dating to 2016; 1547 Critical Systems Realty (which acquired DRFortress in 2025) lists a Kapolei facility (\"HAII1\", branded AlohaNAP-adjacent, ~10,200 sq ft expandable to 60,200 sq ft) that this record treats as the same site rather than a separate parcel, since both describe DRFortress/1547 colocation activity at the one cable landing station Hawaiki owns in Kapolei — flag for a human split if that assumption is wrong. In early 2026 the Honolulu City Council granted a Special Management Area Major Permit for an expansion project at this site to add landing capacity for Google's Taihei and Tabua cables plus BW Digital's own Hawaiki Nui cable. Coordinates are a Census TIGER-line geocode of the street address, not a confirmed parcel survey.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "heartland-industrial-park-sullivan-county-in",
     "name": "Heartland Industrial Park (Fluidstack Sullivan County Campus)",
     "operator": "Fluidstack",
@@ -48355,6 +49752,41 @@
     "facilityType": "data_center"
   },
   {
+    "id": "inl-c3-idahofalls-id",
+    "name": "Idaho National Laboratory Collaborative Computing Center (C3)",
+    "operator": "Idaho National Laboratory (U.S. Department of Energy)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.4666,
+      "lon": -112.0341,
+      "city": "Idaho Falls",
+      "county": "Bonneville",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://jedunn.com/projects/idaho-national-laboratory-c3-data-centers/",
+        "label": "Idaho National Laboratory C3 Data Centers",
+        "publisher": "JE Dunn Construction",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://aeieng.com/markets/project/idaho-national-laboratory-the-collaborative-computing-center-c3",
+        "label": "Idaho National Laboratory - The Collaborative Computing Center (C3)",
+        "publisher": "AEI Engineering",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "High-performance computing data center on INL's Research and Education Campus (REC) in Idaho Falls -- distinct from INL's much larger remote desert 'Site' reservation (see the separate Aalo Atomics record in this batch). Houses DOE/INL supercomputers including Sawtooth, Hoodoo, and Bitterroot, supporting nuclear-energy modeling/simulation, materials science, and data science research; remote access is provided to Idaho university researchers via the Idaho Regional Optical Network. Built alongside the adjacent Cybercore Integration Center (80,979 sq ft) as part of a combined ~148,000 sq ft project; C3 itself is variously reported as 66,520 sq ft (general contractor JE Dunn) and 73,000 sq ft (engineering subconsultant AEI), and its power capacity is similarly inconsistent between fetched sources -- JE Dunn describes an '8MW High Performance Computing (HPC) Data Center with 2MW of redundancy' and a 'Day 1 installation of 4MW capacity,' while AEI's page states '1.5 MW total power'; these were not reconciled and no capacityMw field is recorded here pending a source that resolves the discrepancy. Completed circa 2022 per JE Dunn's project metadata. No exact street address was given in either source fetched.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "intermountain-power-delta-ut",
     "name": "Intermountain Power Project (IPP Renewed)",
     "operator": "Intermountain Power Agency",
@@ -49267,6 +50699,58 @@
     "facilityType": "data_center"
   },
   {
+    "id": "iron-mountain-nje1-edison-nj",
+    "name": "Iron Mountain Data Centers NJE-1",
+    "operator": "Iron Mountain",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.5210834,
+      "lon": -74.3473835,
+      "city": "Edison",
+      "county": "Middlesex",
+      "street": "3003 Woodbridge Avenue",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 30
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.ironmountain.com/data-centers/locations/new-jersey-data-center",
+        "label": "New Jersey Data Center | New Jersey Colocation",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/iron-mountain-data-centers/3003-woodbridge-avenue/nje-1",
+        "label": "Iron Mountain Data Centers NJE-1 — 3003 Woodbridge Avenue",
+        "publisher": "DataCenterHawk",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/204316962",
+        "label": "OpenStreetMap way/204316962 — IO Datacenter, 3003, Woodbridge Avenue",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "TIA-942-certified, 830,000 sq ft on a 43-acre campus, 30 MW with 2N redundancy, N+1 cooling/UPS, ISO 50001/14001 certified, PUE as low as 1.2. Acquired by Iron Mountain in January 2018 as part of a $1.34B acquisition of IO Data Centers' US portfolio (which also included sites in Phoenix, Scottsdale, and Columbus, OH), per the operator's own site. Hosts 180+ customers including 20+ carriers and two IXPs. Coordinate provenance (resolved 2026-09-12): Iron Mountain's own location page embeds a Google Maps link containing TWO coordinate pairs from two different Place IDs. This record uses 40.5210834,-74.3473835 — the pair the link anchors directly to the literal address string \"3003 Woodbridge Ave, Edison, NJ 08837, USA\" — which sits ~29 m from the independently-mapped OpenStreetMap building tagged \"IO Datacenter\" at the same address. The other page-stated pair (40.5216986,-74.3461546) carries no address string and lands ~145 m away; a naive extraction returns it, since the page labels neither. Both page-stated pairs are ~1.8-1.9 km from the US Census geocoder's point for this address, which interpolates along the street centre line and is wrong here.",
+    "energy": {
+      "source": "mixed",
+      "onSiteGenerationMw": 7.2,
+      "notes": "Operator states 100% renewable energy matching plus on-site solar via '18,000+ rooftop solar panels' (7.2 MW on-site solar generation capacity) — described as the largest such installation of any North American data center, per Iron Mountain's own site."
+    },
+    "landAcres": 43,
+    "facilityType": "data_center"
+  },
+  {
     "id": "iron-mountain-va-2-va",
     "name": "Iron Mountain VA-2",
     "operator": "Iron Mountain",
@@ -49530,6 +51014,48 @@
       "notes": "Cooled using a 35-acre underground lake / geothermal cooling system in the former limestone mine; Iron Mountain cites this as the basis of the site's efficiency. No withdrawal or consumption figure is published."
     },
     "landAcres": 200,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ironmountain-bos1-northborough-ma",
+    "name": "Iron Mountain Boston Data Center (BOS-1)",
+    "operator": "Iron Mountain",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.34088,
+      "lon": -71.63706,
+      "city": "Northborough",
+      "county": "Worcester",
+      "street": "171 Bearfoot Road",
+      "state": "MA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 3.6,
+      "operational": 1.2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.ironmountain.com/data-centers/locations/boston-data-center",
+        "label": "Boston Data Center | Boston Colocation | Iron Mountain United States",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "22,000 sq ft building on a 58.3-acre campus; LEED Gold certified and rated to withstand Category 4 hurricane winds; operator states a dedicated dark-fiber link to Boston's 1 Summer Street carrier hotel. \"Currently provides 1.2 MW operationally, with 3.6 MW of total potential critical power capacity\" — recorded as operational 1.2 / planned 3.6.",
+    "energy": {
+      "source": "grid",
+      "notes": "Facility power is \"matched by 100% renewable energy\" per the operator (renewable energy matching/certificates against grid draw, not confirmed on-site generation)."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Operator states a \"waterless cooling design\" — no cooling-water circuit at all, so classified air per the contract's cooling-type tie-breaker."
+    },
+    "landAcres": 58.3,
     "facilityType": "data_center"
   },
   {
@@ -51140,6 +52666,61 @@
       "unitCount": 8,
       "notes": "GE Vernova says the expansion builds on the first three aeroderivative units already installed at the plant and is intended to meet \"rapidly growing electricity demand driven by population growth and expanding residential and commercial needs.\""
     }
+  },
+  {
+    "id": "lex-developments-pocatello-id",
+    "name": "Lex Developments AI Data Center (former Hoku polysilicon site)",
+    "operator": "Lex Developments",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.8713,
+      "lon": -112.4455,
+      "city": "Pocatello",
+      "county": "Bannock",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "Lex Developments sought a conditional use permit for a ~$2.26 billion AI data center at the former Hoku Materials polysilicon plant site (River Park Complex).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-07",
+        "note": "Pocatello City Council voted 4-1 to uphold the Hearing Examiner's denial of the conditional use permit, ending the local approval path as of retrieval.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.idahostatejournal.com/news/local/pocatello-hearing-examiner-denies-hoku-site-data-center-permit-but-lex-developments-vows-return/article_c80a0e12-3fe8-4ed0-b755-89321377a95d.html",
+        "label": "Pocatello hearing examiner denies Hoku site data center permit but Lex Developments vows return",
+        "publisher": "Idaho State Journal",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://localnews8.com/news/2026/07/16/pocatello-city-council-upholds-hearing-examiners-decision-says-no-to-proposed-ai-data-center/",
+        "label": "Pocatello City Council Upholds Hearing Examiner's Decision, says \"no\" to Proposed AI Data Center",
+        "publisher": "KIFI Local News 8",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Projected investment of $2.26 billion and 150-300 permanent local jobs were part of the developer's denied application (Idaho State Journal), not a built or committed project. No MW capacity, secured tenant, or site acreage was stated in either source fetched. This pin is a Pocatello city-centroid placeholder (precision: approximate): neither source fetched gave a parcel-level address for the former Hoku polysilicon site, and OpenStreetMap has no feature for it. It is NOT a claim about where on the Hoku parcel the proposal sat, and it is not co-located with the FBI Grey Wolf record in this batch, whose pin was corrected to its own OSM building POI 4.0 km north.",
+    "investmentUsd": 2260000000,
+    "community": {
+      "status": "contested",
+      "notes": "Hearing Examiner Kathleen Lewis denied the conditional use permit after a 2026-05-14 hearing, finding the application did not meet Pocatello Municipal Code 17.02.130(D)'s criteria that the use adequately serve public facilities and not be detrimental to public health, safety, or welfare; critics said the applicant could not answer specifics of the conditions and no tenant was confirmed pending an Idaho Power capacity study. Lex Developments (represented by Gus Shultz) appealed; the Pocatello City Council voted 4-1 on 2026-07-16 to uphold the denial. Dissenting Council Member Bates warned the path led to 'exhausting appeals, taking the city to court'; Mayor Dahlquist cited 'the speculative nature' of the proposal, noting 'we don't have an exact company that is committed.' No court filing was confirmed in either source fetched.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "lightedge-ames-ia",
@@ -52802,6 +54383,42 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumen-weehawken-1-nj",
+    "name": "Lumen Weehawken 1 Data Center",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.7714,
+      "lon": -74.0194,
+      "city": "Weehawken",
+      "county": "Hudson",
+      "street": "300 Boulevard East",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-weehawken-1",
+        "label": "Lumen Weehawken 1 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/investing/savvis-opens-new-nj2x-financial-trading-hub",
+        "label": "Savvis Opens New NJ2X Financial Trading Hub",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Financial-services colocation site on the Hudson River waterfront; per Baxtel, Lumen Technologies operates but does not own the building. Originally built out by Savvis as its 'NJ2' financial-trading complex, with a 22,000 sq ft 'NJ2X' expansion (about $23M invested) opened June 2010 offering sub-64-microsecond proximity hosting to exchange clients and hedge funds (per Data Center Knowledge); the site later passed through CenturyLink to Lumen. Coordinates are the Weehawken township centroid (Wikipedia), not a confirmed parcel geocode for 300 Boulevard East specifically — marked approximate. Coordinate provenance (checked 2026-09-12): unresolved between two weak candidates ~1.2 km apart, both inside Weehawken — the US Census geocoder returns no match for 300 Boulevard East, and the only OpenStreetMap feature with that address is a parking amenity in Lincoln Harbor rather than a building. Pin left as supplied; treat as neighbourhood-level.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumon-solutions-marshfield-mo",
     "name": "Marshfield Data Center (Lumon Solutions)",
     "operator": "Lumon Solutions Marshfield, LLC",
@@ -52915,6 +54532,55 @@
       "pueConfidence": "reported",
       "waterStress": "unknown"
     }
+  },
+  {
+    "id": "maguire-hayden-harrington-de",
+    "name": "Harrington Data Center Proposal (Maguire Hayden)",
+    "operator": "Maguire Hayden",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.9237244,
+      "lon": -75.5777033,
+      "city": "Harrington",
+      "county": "Kent",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 24
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08",
+        "note": "Maguire Hayden proposed a 24 MW data center at the site of a former cold-storage warehouse in Harrington, DE, with a community-benefits package described as 'contributions totaling $1 million.'",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-08",
+        "note": "Harrington City Council voted unanimously to reject the zoning change needed for the project; per Spotlight Delaware the vote 'prompted cheers and a standing ovation' from residents opposed to the project.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://spotlightdelaware.org/2026/08/19/harrington-denies-data-center-proposal-despite-a-1-million-offer/",
+        "label": "Harrington denies data center proposal despite a $1 million offer",
+        "publisher": "Spotlight Delaware",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "No street address given beyond 'the site of a former cold storage warehouse' in Harrington, DE; location pin is Harrington's OSM place centroid (approximate). Article was published 2026-08-19 and refers to a council vote 'Monday' with no explicit calendar date, so statusHistory entries are dated to month-precision (2026-08) only. A separate, still-unidentified 100 MW project appears in Delmarva Power's internal 'Kent County' project list per a 2026-09 Technical.ly FOIA report; that report states press coverage could not confirm whether it is the same project as this one. Treated here as a distinct, unconfirmed lead and NOT merged into this record given the capacity mismatch (24 MW here vs. 100 MW in Delmarva's list) — flagged in the wave summary rather than fabricated into its own record for lack of any name or location.",
+    "community": {
+      "status": "opposed",
+      "notes": "Council vote was unanimous against the project despite a proposed $1M community-benefits package; press described the rejection as met with 'cheers and a standing ovation' from residents in attendance.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "manse-technology-campus-pahrump-nv",
@@ -53796,6 +55462,64 @@
       "notes": "The Sept. 9, 2026 Planning & Zoning Commission meeting drew a standing-room-only crowd. Opposition speakers, including a former mayor, argued the county's focus should be job retention and expanding existing businesses rather than attracting a data center.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "mdc-sdg1-san-diego-ca",
+    "name": "MDC SDG1",
+    "operator": "MDC Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.59374,
+      "lon": -117.08525,
+      "city": "San Diego",
+      "county": "San Diego",
+      "street": "7014 Manya Circle",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.mdcdatacenters.com/data-centers/our-locations/san-diego/",
+        "label": "MDC Data Centers — San Diego Locations",
+        "publisher": "MDC Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Located near the Otay Mesa port of entry; operator markets this as a carrier-neutral border-crossing facility with redundant fiber routes to Baja California via San Ysidro and Otay Mesa. Capacity/square footage not disclosed on the operator's page — omitted rather than guessed.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "mdc-sdg2-san-diego-ca",
+    "name": "MDC SDG2",
+    "operator": "MDC Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.75,
+      "lon": -117.123,
+      "city": "San Diego",
+      "county": "San Diego",
+      "street": "3180 University Avenue",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.mdcdatacenters.com/data-centers/our-locations/san-diego/",
+        "label": "MDC Data Centers — San Diego Locations",
+        "publisher": "MDC Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Second San Diego facility, on University Avenue in the North Park / University Heights area. Capacity/square footage not disclosed on the operator's page — omitted rather than guessed.",
     "facilityType": "data_center"
   },
   {
@@ -61879,6 +63603,70 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "nautilus-millinocket-me",
+    "name": "Nautilus Data Technologies Data Center (Former Great Northern Paper Mill / One North)",
+    "operator": "Nautilus Data Technologies",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.6501257,
+      "lon": -68.7073294,
+      "city": "Millinocket",
+      "county": "Penobscot",
+      "street": "1 Katahdin Ave",
+      "state": "ME",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 60
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2021-06",
+        "note": "Announced by Nautilus Data Technologies: $300M investment, 60MW planned capacity, on a 13-acre parcel within the 1,400-acre former Great Northern Paper Co. site. Initial named tenants: Maine State Chamber of Commerce and Jackson Laboratory.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-04",
+        "note": "Reported dead by One Katahdin's mill-site redevelopment director; Nautilus could not secure the AI customer it wanted because the site could not deliver enough power.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.bangordailynews.com/2025/04/09/mainefocus/mainefocus-business/300m-data-center-former-millinocket-paper-mill-canceled/",
+        "label": "$300M data center at former Millinocket paper mill is canceled",
+        "publisher": "Bangor Daily News",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/colocation/nautilus-will-build-its-next-data-center-on-dry-land-in-maine",
+        "label": "Nautilus Will Build Its Next Data Center on Dry Land, in Maine",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.epa.gov/newsreleases/investing-millinocket-epa-maine-officials-highlight-former-paper-mill-site",
+        "label": "Investing in Millinocket: EPA, Maine officials highlight former paper mill site revitalization",
+        "publisher": "US EPA",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Site address (1 Katahdin Ave) and 1,400-acre complex size independently confirmed by EPA (sourceIndex 2, a Brownfields cleanup release, not about this project). No source found specifies exactly which 13 acres of the complex were slated for the data center, so precision is approximate rather than exact. The mill site has since been rebranded 'One North' by nonprofit redeveloper Our Katahdin and is pursuing smaller-footprint tenants (biofuels, aquaculture) instead. Coordinates: OpenStreetMap Nominatim building match 'Great Northern Paper Administration Building' at this address (way/355222391), cross-checked against the US Census geocoder (onelineaddress) which landed ~230m away on the same site; OSM building match used per contract preference.",
+    "energy": {
+      "source": "hydro",
+      "notes": "\"The data center will be powered by an adjacent hydroelectric plant, which used to power the paper mill\" (Data Center Knowledge)."
+    },
+    "investmentUsd": 300000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "ncar-wyoming-supercomputing-center-cheyenne-wy",
     "name": "NCAR-Wyoming Supercomputing Center",
     "operator": "University Corporation for Atmospheric Research (UCAR)",
@@ -63566,6 +65354,38 @@
     "facilityType": "data_center"
   },
   {
+    "id": "northpoint-fairfield-data-center-solano-ca",
+    "name": "NorthPoint Fairfield Data Center (Vanden Road Industrial Campus)",
+    "operator": "NorthPoint Development",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.2898329,
+      "lon": -121.9607882,
+      "city": "Fairfield",
+      "county": "Solano",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.vallejosun.com/developers-planning-data-center-for-fairfield-industrial-park/",
+        "label": "Developers planning data center for Fairfield industrial park",
+        "publisher": "Vallejo Sun",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "300-acre industrial campus between Vanden Road and North Gate Road in northeast Fairfield, near the Vacaville border. The Fairfield Planning Commission approved a master development permit for a 4.6-million-sq-ft industrial park here in 2023; the 150 MW data-center figure comes from developer/broker (Jones Lang LaSalle and NorthPoint) presentation materials for that broader park, and no data-center-specific application had been filed as of this reporting. Canon Partners (itself controlled by Andrews Lando & Associates and Stroud Properties) is also named as a co-developer. PG&E began an infrastructure/engineering cost study around Q3 2025 and issued an engineering agreement in December 2025. A public hearing would still be required before any data-center-specific approval. Coordinates are geocoded to Vanden Road in Fairfield only (no confirmed parcel or street address), so treat the pin as a rough area marker.",
+    "landAcres": 300,
+    "facilityType": "data_center"
+  },
+  {
     "id": "nova-energy-cryptomine-frenchcreek-venango-county-pa",
     "name": "Nova Energy Natural Gas-Powered Cryptomine (Frenchcreek Township)",
     "operator": "Nova Energy LLC",
@@ -65184,6 +67004,49 @@
     }
   },
   {
+    "id": "nyse-mahwah-data-center-nj",
+    "name": "NYSE Data Center (Mahwah)",
+    "operator": "New York Stock Exchange",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.078373,
+      "lon": -74.15293,
+      "city": "Mahwah",
+      "county": "Bergen",
+      "street": "1700 MacArthur Boulevard",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/1700-macarthur-boulevard-mahwah/new-york-stock-exchange/datacenter/euronextnj1",
+        "label": "New York Stock Exchange EuronextNJ1 — marketplace listing",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/colocation/nyse-opens-mahwah-data-center",
+        "label": "NYSE Opens Mahwah Data Center",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.computerworld.com/article/1433811/in-fortified-data-center-nyse-runs-gated-trading-cloud.html",
+        "label": "In fortified data center, NYSE runs 'gated' trading cloud",
+        "publisher": "Computerworld",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "NYSE's own matching-engine data center, opened for trading August 9, 2010 (per Computerworld and Data Center Knowledge). 400,000 sq ft total, roughly 100,000 sq ft of raised-floor colocation space planned across four pods. Heavily fortified: a river/moat around the perimeter, bomb-sniffing dogs, and an interior 'building within a building.' Inflect's listing names the facility 'EuronextNJ1.' Coordinates are a geocode of the street address embedded in Inflect's own page, not a confirmed parcel boundary, hence approximate.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "oakland-university-computing-auburn-hills-mi",
     "name": "Oakland University Campus Computing Facility",
     "operator": "Fairmount Properties (with Oakland University)",
@@ -65544,6 +67407,34 @@
       ],
       "notes": "Oklo owns/operates; Meta prepays for power + funds development (not equity). Powers Meta's New Albany 'Prometheus' supercluster (meta-prometheus-new-albany-oh). Site is the former Portsmouth Gaseous Diffusion Plant, 206 acres bought from DOE for ~$5.15M in Dec 2025."
     }
+  },
+  {
+    "id": "one-data-center-america-ontario-ca",
+    "name": "One Data Center America (Ontario Campus)",
+    "operator": "One Data Center America, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.0633,
+      "lon": -117.6509,
+      "city": "Ontario",
+      "county": "San Bernardino",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://onedatacenteramerica.com",
+        "label": "One Data Center America — homepage",
+        "publisher": "One Data Center America, LLC",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Operator's own site confirms two Ontario, CA facilities under this brand (an original site and a newer \"Second Data Center / ONT-2\"), in the Inland Empire near the I-10/I-15 interchange, carrier-neutral with an on-site 110ft telecom tower and dark-fiber transport to Downtown LA per a 2019 local-press item corroborating the company's existence at that time. No exact street address was confirmed from a source actually fetched in this run: two business-directory listings (Yelp) named 350 S Milliken Ave and 3833 Ebony St, Ontario as possible addresses for the two sites, but both returned HTTP 403 when fetched directly, so neither is used as a source and neither address is recorded. Recorded as a single city-level entry rather than two records to avoid guessing which address belongs to which site or inventing a second coordinate. Capacity/square footage not disclosed in sources fetched.",
+    "facilityType": "data_center"
   },
   {
     "id": "one-nuclear-project-cayman-ascension-parish-la",
@@ -66366,6 +68257,35 @@
     "facilityType": "data_center"
   },
   {
+    "id": "orbitcom-coeurdalene-id",
+    "name": "OrbitCom Coeur d'Alene Data Center",
+    "operator": "OrbitCom",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.70069,
+      "lon": -116.79227,
+      "city": "Coeur d'Alene",
+      "county": "Kootenai",
+      "street": "442 W. Appleway Ave",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/datacenters/orbitcom-coeur-dalene-data-center/",
+        "label": "OrbitCom - Coeur D'Alene Data Center - Cloud and Colocation",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "General-purpose carrier-neutral colocation facility: rack space from single units up to a full 7' relay rack, remote-hands support, connectivity, hosting, battery backup and a natural gas backup generator. No MW capacity or square footage disclosed in the source fetched (a third-party colocation directory, not the operator's own site -- OrbitCom's own site returned an error on fetch). aiClassification omitted: no AI/GPU/HPC use stated for this site, consistent with it being general enterprise colocation.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "oregon-industrial-park-data-center-lucas-oh",
     "name": "Oregon Industrial Park Data Center Campus",
     "operator": "Capacity LLC (Vantage Data Centers named as prospective developer)",
@@ -66718,6 +68638,63 @@
     "landAcres": 103.95,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "parkway-gravel-st-georges-de",
+    "name": "St. Georges Business Park & Lighthouse Farms",
+    "operator": "Parkway Gravel Inc.",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 39.5593065,
+      "lon": -75.6542782,
+      "city": "St. Georges",
+      "county": "New Castle",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11",
+        "note": "Revised site plan filed for St. Georges Business Park & Lighthouse Farms at 3.2 million sq ft (up from an original 2.5 million sq ft / three distribution buildings + 150 homes). The developer's engineering firm, Verdantas, told the county the zoning allows 'distribution centers, fulfillment centers, truck terminals, warehouses, and data centers' on the parcel.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://spotlightdelaware.org/2025/12/16/two-new-castle-county-industrial-projects-may-become-data-centers/",
+        "label": "Two New Castle County industrial projects may become data centers",
+        "publisher": "Spotlight Delaware",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://spotlightdelaware.org/2026/03/11/after-months-of-debate-the-new-castle-county-council-agrees-to-regulate-the-data-center-industry/",
+        "label": "After months of debate, New Castle County Council agrees to regulate the data center industry",
+        "publisher": "Spotlight Delaware",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://technical.ly/civics/delaware-data-center-foia-reveals-hidden-energy-demands/",
+        "label": "Newly public records reveal four pending Delaware data center projects",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Confidence is 'rumored' rather than 'reported' because sources disagree on whether the ultimate use will be a data center: county filings and press describe a mixed-use industrial park (distribution/fulfillment/warehouse) for which Delaware zoning also happens to permit data centers, and coverage attributes to the developer's engineering firm only that 'the developer may be planning to build a data center' — not a confirmed data-center project. A Delmarva Power internal project list obtained via FOIA (Technical.ly, sourceIndex 2) separately lists a 300 MW 'St. Georges/Frightland Area' project 'pending cluster study analysis'; this record treats it as the same site given the shared name/geography, though the FOIA-based list does not itself name Parkway Gravel Inc., so treat the capacityMw.planned=300 figure with that caveat. Square footage progression (2.5M sq ft → 3.2M sq ft) is not recorded in a dedicated field since it describes the broader mixed-use park, not a confirmed data-center footprint. Location precision is approximate: geocoded to the unincorporated place of St. Georges, DE (OSM); some press coverage instead characterizes the site as 'in Middletown' given proximity. The specific parcel south of the C&D Canal off US Route 13 did not resolve via geocoding.",
+    "community": {
+      "status": "contested",
+      "notes": "The site includes land hosting Frightland, a well-known Delaware Halloween attraction, which would be demolished. The proposal has drawn resident backlash over energy-cost and environmental impact, which Spotlight Delaware cites as a driver of New Castle County's new data-center zoning ordinance (buffer/setback, noise, and cooling-water rules).",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "pathone-hull-ia",
@@ -74091,6 +76068,34 @@
     "facilityType": "data_center"
   },
   {
+    "id": "quest-roseville-habc-ca",
+    "name": "Quest Roseville HABC",
+    "operator": "Quest Technology Management",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.78829,
+      "lon": -121.313874,
+      "city": "Roseville",
+      "county": "Placer",
+      "street": "9000 Foothills Boulevard",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://datacentercatalog.com/usa/quest-roseville-habc",
+        "label": "Quest Roseville HABC Data Center located in California, USA - Data Center Catalog",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Quest's 'High Availability Business Center' — the operator describes it as one of two Quest network-operations-center/colocation sites in California (the other named as McClellan BRC in Sacramento County, not yet in this dataset and not independently verified this session). Offers colocation, disaster-recovery, and business-resumption space; HIPAA, PCI DSS, SOC 1/2/3, SSAE 18 certified. A third-party aggregator lists 8 MW for this site but this session could not confirm the figure from a source it directly fetched, so capacityMw is omitted rather than guessed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "quiet-data-centers-enfield-halifax-county-nc",
     "name": "Project Q — Quiet Data Centers Enfield (Halifax County)",
     "operator": "Quiet Data Centers Halifax Inc.",
@@ -79315,6 +81320,75 @@
     "facilityType": "data_center"
   },
   {
+    "id": "shelbourne-white-clay-newark-de",
+    "name": "White Clay Corporate Center Data Center Redevelopment",
+    "operator": "Shelbourne",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.6828358,
+      "lon": -75.7515682,
+      "city": "Newark",
+      "county": "New Castle",
+      "street": "White Clay Center Drive",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12",
+        "note": "Exploratory plans filed with New Castle County in early December 2025 to redevelop White Clay Center Drive industrial buildings (including former JPMorganChase offices) into a 676,000 sq ft complex; a later filing described an 847,000 sq ft data center complex on the 44-acre site, demolishing seven existing buildings for three light-industrial buildings plus a guard shack.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-06",
+        "note": "Non-binding pause negotiated by New Castle County Councilman Tim Sheldon with developer's attorney Shawn Tucker (email dated 2026-06-10), contingent on the county approving an exploratory-plan application that would grandfather the site under pre-2026 zoning and exempt it from the county's new data-center ordinance. Developer retains the legal right to build a data center on the property.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://spotlightdelaware.org/2025/12/16/two-new-castle-county-industrial-projects-may-become-data-centers/",
+        "label": "Two New Castle County industrial projects may become data centers",
+        "publisher": "Spotlight Delaware",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newarkpostonline.com/news/data-center-complex-proposed-near-newark/article_25f31b5b-71d7-4975-9ace-213c3dbf35ff.html",
+        "label": "Data center complex proposed near Newark",
+        "publisher": "Newark Post",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "http://www.newarkpostonline.com/spotlight_delaware/county-councilman-says-newark-data-center-plan-paused-after-deal/article_55cac45c-ba8c-4349-9944-d1dbbdedfbfb.html",
+        "label": "County councilman says Newark data center plan paused after deal",
+        "publisher": "Newark Post / Spotlight Delaware",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://technical.ly/civics/delaware-data-center-foia-reveals-hidden-energy-demands/",
+        "label": "Newly public records reveal four pending Delaware data center projects",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Reported square footage differs across filings/coverage as plans evolved: 676,000 sq ft (Spotlight Delaware, plans filed early Dec 2025) vs. 847,000 sq ft (Newark Post, later filing) — both recorded here rather than resolved to one figure. Capacity in MW is explicitly 'undetermined' per Delmarva Power's internal project list obtained via FOIA and reported by Technical.ly (sourceIndex 3), so capacityMw is left unset. Location precision is approximate: this pin is Newark, DE's city centroid (OSM); the specific parcel on White Clay Center Drive (near the Ogletown Road/Del. 273 and CarMax intersection) did not resolve via US Census or OSM Nominatim geocoding — tried the bare street name, a structured street+city+state query, and the 'CarMax Newark DE' landmark; all returned no match.",
+    "landAcres": 44,
+    "community": {
+      "status": "contested",
+      "notes": "A county councilman publicly brokered a pause after community/political pressure, but the arrangement is a non-binding handshake conditioned on a zoning workaround; the councilman acknowledged its fragility ('If I'm not there, there's no promises'). The developer (Shelbourne) and its attorney did not respond to press requests for comment.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "shenandoah-project-kestrel-kc-northland-mo",
     "name": "Project Kestrel",
     "operator": "Shenandoah Computing LLC",
@@ -80654,6 +82728,52 @@
       ],
       "notes": "Announced as initially natural-gas-fired, with NNSA/Amentum stating a plan to transition to advanced/nuclear generation over time (SRS is a legacy DOE nuclear reservation). No specific technology mix, unit count, or in-service date has been publicly disclosed — treat the 2 GW figure as an early planning-stage estimate, not an engineered design capacity."
     }
+  },
+  {
+    "id": "st-albans-data-center-vt",
+    "name": "Proposed St. Albans, VT Data Center (Unbuilt)",
+    "operator": "Unnamed developer",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.8107911,
+      "lon": -73.0833607,
+      "city": "St. Albans",
+      "county": "Franklin",
+      "state": "VT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "First known attempt to bring a large-scale data center to Vermont. Two capacity scenarios were discussed: 8-12MW or 50MW; the larger option was projected at approximately 1,000 temporary construction jobs and 20 permanent jobs.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-02",
+        "note": "\"It was going to cost just too much money to build a substation that would have allowed the project to move forward\" -- Sean Adkins, then St. Albans town manager, on why the developer withdrew: connecting to the grid would have required a new substation costing roughly $30 million.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://vtdigger.org/2026/02/24/vermont-plugs-into-the-data-center-conversation/",
+        "label": "Vermont plugs into the data center conversation",
+        "publisher": "VTDigger",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "No developer name, specific parcel, or exact site address was named in any source found -- location is therefore a St. Albans city-boundary centroid (OSM relation 199108, 'Saint Albans City, Franklin County, Vermont'), not a parcel-level pin; disclosed here per this wave's contract since no street address exists to pair it with. capacityMw and jobs are deliberately left as unstructured fields (in statusHistory notes only) rather than forced into the schema's single-value capacityMw/jobs objects, because the two capacity scenarios (8-12MW vs 50MW) were alternatives under discussion, not a single settled plan, and the job estimates applied only to the larger, never-selected option. Sean Adkins subsequently became executive director of the Rutland Development Authority and has expressed continued interest in attracting a similar project to Rutland -- a possible future lead, not yet independently verified as an active proposal.",
+    "community": {
+      "status": "unknown",
+      "notes": "No opposition or support documented in coverage found -- the project failed on grid-interconnection economics before reaching a public siting fight. Then-town-manager Sean Adkins actively worked with the developer to try to land the project.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "stack-berry-hill-va",
@@ -85545,6 +87665,35 @@
     "facilityType": "data_center"
   },
   {
+    "id": "t5-nampa-id",
+    "name": "T5 Nampa",
+    "operator": "T5 Data Centers",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.5407,
+      "lon": -116.5635,
+      "city": "Nampa",
+      "county": "Canyon",
+      "street": "8300 Birch Lane",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/t5-nampa-idaho",
+        "label": "T5: Nampa, Idaho Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Converting an existing single-story 80,000 sq ft industrial building within the Park 84 industrial site (~20 miles west of Boise) for a single, unnamed client, in five phases, targeted around 2027. The Nampa Planning and Zoning Commission has granted a conditional use permit. No MW capacity or investment amount was disclosed in the source fetched. Coordinate provenance (checked 2026-09-12): the pin is the Nampa city centroid, NOT the stated 8300 Birch Lane address — the US Census geocoder returns no match for that address and the only OpenStreetMap feature named Birch Lane near Nampa carries ZIP 83867 (Silverton, Shoshone County), so it is a different road. The street is recorded because the source states it; the pin is city-level and should not be read as parcel-level.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "t5-silicon-valley-newark-ca",
     "name": "T5@Silicon Valley",
     "operator": "T5 Data Centers",
@@ -85628,6 +87777,40 @@
     "notes": "Operator corrected to T5 Data Centers, not Serverfarm: Serverfarm's own current locations page does not list a Newark/Silicon Valley property, and Serverfarm has acquired only one T5 property to date (El Segundo/LAX1, already tracked separately as serverfarm-lax1-el-segundo-ca) - not a company-wide rebrand. T5 Data Centers remains an active, independent company. The existing 128,000 SF/17MW building (built 2002 per county assessor record) was sold by Apple to T5 in an Aug 2020 ($30M) deed transfer, announced by T5 Oct 6 2020 alongside a disclosed plan to add 32.1MW/180,000 SF (49.1MW total target); no source confirms whether that expansion has completed. The $30M figure is a real-estate acquisition price for the existing building only, not development capex, so it is not recorded as investmentUsd. Apple as tenant is corroborated by secondary sources (an aggregator listing and a contractor's own portfolio page naming Apple independently) but not by a primary T5/Apple source, which refers only to 'a Fortune 100 enterprise' - flagged reported, not primary-confirmed. No AI/HPC/GPU-specific marketing found, so aiClassification is omitted. T5 markets this campus as 'Silicon Valley,' but Newark is geographically East Bay/Alameda County, not South Bay/Santa Clara County. Coordinates are a best-effort approximate estimate for the disclosed street address, not an independently geocoded parcel point - recommend a follow-up pass with a mapping source to confirm precisely.",
     "landAcres": 13.45,
     "facilityType": "data_center"
+  },
+  {
+    "id": "ta-infrastructure-endicott-ak",
+    "name": "Endicott Bitcoin Mining Pilot",
+    "operator": "TA Infrastructure",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 70.326677,
+      "lon": -148.9432527,
+      "county": "North Slope",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1.4
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://alaskapublic.org/2024/11/20/arctic-bitcoin-hilcorp-tech-firm-aim-to-test-north-slope-data-center/",
+        "label": "Arctic Bitcoin? Hilcorp, tech firm aim to test North Slope data center",
+        "publisher": "Alaska Public Media",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Texas-based TA Infrastructure filed a permit application to place Bitcoin-mining computers, collectively drawing 1.4 MW, inside a shipping container on a gravel pad at oil producer Hilcorp's Endicott field on Alaska's North Slope, powered by natural gas from Hilcorp's existing generators. Per the application quoted in the source: \"The goal of this pilot project is to demonstrate the ability to operate computers and associated data center infrastructure in the unique environment of the North Slope as well as identify any logistical and operational challenges that a larger project might present.\" The application named a four-year run with a permit start date of November 2024. No later source confirming the permit was granted or the container deployed was found this session, so status is kept at proposed rather than advanced to permitted/operational. This is a genuinely separate project from this dataset's existing stak-energy-north-slope-ak record: different named operator, different declared scale (a 1.4 MW pilot container versus a proposal described elsewhere as a \"massive AI data center\"), and reported about 18 months earlier — not a duplicate. Endicott field's own coordinates could not be resolved: OSM Nominatim's only match for \"Endicott\" in Alaska was Endicott Arm, a fjord near Juneau over 1,500 km from the North Slope, which was checked and rejected as clearly wrong rather than used. The pin used instead is Prudhoe Bay, the nearest well-mapped North Slope hub, as an explicit regional approximation — it is not the specific causeway/gravel-pad location, which this session could not geocode.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Powered by natural gas via Hilcorp's existing on-site generators at the Endicott field."
+    },
+    "facilityType": "crypto_mining"
   },
   {
     "id": "ta-realty-east-tanners-church-ellenwood-ga",
@@ -86586,6 +88769,49 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "tech-vault-south-burlington-vt",
+    "name": "Tech Vault Data Center",
+    "operator": "Tech Vault, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.4541938,
+      "lon": -73.1417505,
+      "city": "South Burlington",
+      "county": "Chittenden",
+      "street": "21 Gregory Drive, Suite 165",
+      "state": "VT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.techvault.net/vermont-data-center-facility/",
+        "label": "Vermont Data Center Facility - Tech Vault",
+        "publisher": "Tech Vault, Inc.",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://web.vermont.org/Communications/Tech-Vault,-Inc-4522",
+        "label": "Tech Vault, Inc. - Lake Champlain Chamber",
+        "publisher": "Lake Champlain Chamber",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://vermontbiz.com/news/2013/april/12/state-awards-tech-vault-long-term-data-center-agreement",
+        "label": "State awards Tech Vault long-term data center agreement",
+        "publisher": "Vermont Business Magazine",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Vermont's first commercial, LEED-certified (Silver, for both the building and data center operations), carrier-neutral colocation facility, per the operator's own site (sourceIndex 0), independently corroborated on address by the Lake Champlain Chamber's member profile (sourceIndex 1). 39,000 sq ft of data center space; a 500KW APC Symetra UPS system and an 800KW diesel generator for backup power. Compliance: SOC 2 Type 2, HIPAA, PCI DSS, NIST 800-53, CMMC. Serves state/federal government, military, legal, financial, medical, educational, manufacturing and logistics clients. In 2013 the State of Vermont awarded Tech Vault a long-term data center services agreement (sourceIndex 2, publisher's own headline; the article itself could not be fetched -- 403 Forbidden -- so contract length and scope are not independently confirmed beyond that headline). No numeric MW capacity was stated. Precision is approximate because the address includes a specific suite number (#165) within a larger building (OSM building match: way/620853192).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "tenaska-lindsay-hill-billingsley-al",
     "name": "Lindsay Hill Generating Station",
     "operator": "Alabama Power",
@@ -87368,6 +89594,54 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "terra-data-center-alviso-san-jose-ca",
+    "name": "Terra Data Center",
+    "operator": "Terra Ventures",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.3807591,
+      "lon": -121.9236758,
+      "city": "San Jose",
+      "county": "Santa Clara",
+      "street": "4701 North First Street",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cleanview.co/data-centers/california/1566/terra-data-center",
+        "label": "Terra Data Center — Santa Clara, California",
+        "publisher": "CleanView",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://sfyimby.com/2025/04/energy-plant-data-center-proposed-at-4701-north-first-street-san-jose.html",
+        "label": "Energy Plant + Data Center Proposed at 4701 North First Street, San Jose",
+        "publisher": "SF YIMBY",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.technostatecraft.com/p/powering-silicon-valleys-ai-dreams",
+        "label": "Powering Silicon Valley's AI Dreams",
+        "publisher": "Technostatecraft (Substack)",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Filed with San Jose's planning department as a revised proposal (reported April 2025) on a site previously approved in 2018 for an entertainment/hotel complex that was never built. Two buildings proposed: a three-story, 295,100 sq ft data center and a 167,400 sq ft energy-supply hub (~462,500 sq ft total), designed by CallisonRTKL. A second phase is reported to include a greenhouse heated by data-center waste heat, supplying a community retail store. Widely reported elsewhere as the largest data center proposed in California to date (a 417 MW figure appears in aggregator listings), but this session could not confirm the MW figure via a source it directly fetched, so capacityMw is omitted. Terra Ventures reportedly sought approval for a related data-center-plus-power-plant project on the same site in 2023.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Design pairs Bloom Energy natural-gas fuel cells with absorption chillers that use the fuel cells' waste heat to make chilled water, reported as intended to remove the need for traditional backup generators."
+    },
+    "landAcres": 9,
+    "facilityType": "data_center"
+  },
+  {
     "id": "terra-hosting-vermillion-rise-newport-in",
     "name": "Terra Hosting Vermillion Rise Facility",
     "operator": "Terra Hosting",
@@ -87712,6 +89986,72 @@
       "unitCount": 5,
       "notes": "Powered-land agreement with CyrusOne totalling 400 MW — 190 MW announced July 2025 and a further 210 MW in November 2025 — serving the adjacent DFW10 data center campus. Calpine states the power will be redirected to support ERCOT system reliability during periods of grid scarcity."
     }
+  },
+  {
+    "id": "the-data-centers-star-campus-newark-de",
+    "name": "STAR Campus Data Center & Cogeneration Plant (The Data Centers, LLC)",
+    "operator": "The Data Centers, LLC",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.6655592,
+      "lon": -75.7541725,
+      "city": "Newark",
+      "county": "New Castle",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2014-07",
+        "note": "University of Delaware terminated its lease agreement with The Data Centers, LLC (TDC) on 2014-07-10.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www1.udel.edu/udaily/2015/jul/decision071014.html",
+        "label": "UD terminates Data Centers project for STAR Campus",
+        "publisher": "University of Delaware (UDaily)",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/regulations/university-of-delaware-puts-nail-in-coffin-of-data-center-and-power-plant-project",
+        "label": "University of Delaware Puts Nail in Coffin of Data Center and Power Plant Project",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://technical.ly/civic-news/university-delaware-star-campus-data-centers/",
+        "label": "UD's STAR Campus passed on $1.8B data center project: what to know",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/669439186",
+        "label": "STAR Campus (OpenStreetMap way)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Proposed circa 2013 by The Data Centers, LLC (TDC): up to 900,000 sq ft of data center space plus the 279 MW cogeneration plant noted above, on the University of Delaware's 271-acre STAR Campus (former Chrysler Newark Assembly Plant site). Sources disagree on the headline investment figure — Data Center Knowledge reported 'approximately $1 billion' while Technical.ly reported 'more than $1.8 billion' for the combined data-center-and-power-plant project; both are recorded here rather than resolving to one number, so investmentUsd is left unset. Coordinates are the 'STAR Campus' OSM way centroid (approximate) — the specific parcel within the 271-acre campus where this project would have sited was not stated in any source reviewed, and the project was never built.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 279,
+      "notes": "Proposed 279 MW natural-gas cogeneration (CHP) plant to power the data center on-site. UD's review found this would have been at least twice the size of any other known on-site generation facility at a US data center. Never built."
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "A UD faculty/administrator review group and Newark-area residents raised sustained concerns on environmental-impact and campus-mission grounds; UD's review concluded the 279 MW plant was unprecedented in scale for a US data center, could not be environmentally assessed absent a comparable precedent, and that TDC had shifted emphasis toward wholesale power sales rather than the university's science/tech mission. UD terminated the lease as a result.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "thor-equities-augusta-township-mi",
@@ -88445,6 +90785,39 @@
     "facilityType": "data_center"
   },
   {
+    "id": "tierpoint-marlborough-ma",
+    "name": "TierPoint Boston Data Center (Marlborough)",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.31391,
+      "lon": -71.58139,
+      "city": "Marlborough",
+      "county": "Middlesex",
+      "street": "34 St. Martin Drive",
+      "state": "MA",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/massachusetts/",
+        "label": "Massachusetts Data Centers - TierPoint",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Distinct facility from the existing tierpoint-boston-andover-ma record (15 Shattuck Road, Andover) — confirmed as a separate address on TierPoint's own Massachusetts locations page. That page states the two Massachusetts facilities together total just over 207,000 sq ft with no per-site breakdown, so no landAcres/sqft is recorded here. Tier III standard infrastructure, marketed within the \"495 Technology Corridor.\" \"High-performance computing capabilities\" is a general marketing description, not a named AI/GPU tenant, so aiClassification is left unset.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator describes its Massachusetts sites collectively (this facility and the separate Andover facility) as featuring \"high-performance computing capabilities and liquid cooling systems\" — a recirculating liquid-cooling loop, classified closed_loop per the contract's tie-breaker rule."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "tierpoint-milwaukee-wi",
     "name": "TierPoint Milwaukee",
     "operator": "TierPoint",
@@ -88929,6 +91302,47 @@
     "energy": {
       "utility": "PECO"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tierpoint-waterbury-ct",
+    "name": "TierPoint Waterbury",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.554366,
+      "lon": -73.0410751,
+      "city": "Waterbury",
+      "street": "108 Bank Street",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/connecticut/waterbury/",
+        "label": "Waterbury, CT Data Center — TierPoint",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=108%20Bank%20Street%2C%20Waterbury%2C%20CT%2006702&benchmark=Public_AR_Current&format=json",
+        "label": "US Census Geocoder match: 108 BANK ST, WATERBURY, CT, 06702",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/657403397",
+        "label": "OpenStreetMap building at 108 Bank Street, Waterbury, CT",
+        "retrievedAt": "2026-09-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Carrier-neutral colocation suite on the 5th floor of a multi-tenant building at 108 Bank Street, Waterbury CT 06702 (≈25 miles southwest of Hartford, per the operator). precision is \"approximate\" because this is a leased floor inside a larger building, not a dedicated single-tenant parcel; OSM tags the building's general use as residential, which likely reflects the building's broader mixed-use character rather than this specific suite. TierPoint states 3,000+ total sq ft with 1,600+ sq ft of raised floor, onsite backup generation (one 125kW and one 400kW unit, 48+ hour runtime), a 100% uptime SLA, and multiple diverse fiber carriers. Audited annually under SOC 1 Type II, SOC 2 Type II, SOC 2 + HITRUST, GLBA, HIPAA, and PCI-DSS; ITAR and Data Privacy Framework registered. No MW, investment, or facility-founding-date figures were published. Coordinates cross-checked: US Census geocoder (41.554386, -73.041037) and OSM building footprint (41.554366, -73.0410751) agree within a few meters.",
     "facilityType": "data_center"
   },
   {
@@ -90634,6 +93048,48 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "uh-mhpcc-kihei-hi",
+    "name": "Maui High Performance Computing Center",
+    "operator": "University of Hawaiʻi (for Air Force Research Laboratory)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 20.74929227073,
+      "lon": -156.439610266824,
+      "city": "Kihei",
+      "street": "550 Lipoa Pkwy",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://afresearchlab.com/news/afrls-maui-site-lowers-barriers-to-high-performance-computing/",
+        "label": "AFRL's Maui site lowers barriers to high performance computing",
+        "publisher": "Air Force Research Laboratory",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://manoa.hawaii.edu/news/article.php?aId=1522",
+        "label": "System: Maui High Performance Computing Center donates supercomputer to UH Hilo",
+        "publisher": "University of Hawaii News",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://mauinow.com/2026/01/22/11-9m-dow-air-force-contract-awarded-to-uh-to-support-the-maui-high-performance-computing-center/",
+        "label": "$11.9M DOW Air Force contract awarded to UH to support the Maui High Performance Computing Center",
+        "publisher": "Maui Now",
+        "retrievedAt": "2026-09-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "A real, currently-operating federal HPC installation on Maui: one of five DoD Supercomputing Resource Centers, run as an Air Force Research Laboratory Center managed by the University of Hawaiʻi since 1993. A new $11,980,000 Department of War contract awarded to UH in January 2026 (work through May 2031, for satellite-resiliency research/modeling) confirms it is still active as of this wave, not a legacy listing. None of the three fetched sources publish a street address. Business directories (Yelp, Yellow Pages) independently and consistently name 550 Lipoa Pkwy, Kihei as the address, and the US Census geocoder resolves that exact string to a valid address at this zip (96753); however, both directory pages themselves returned HTTP 403 when fetched directly this session, so the address is corroborated but not confirmed via a source this record can cite in sources[]. Precision is approximate accordingly. No AI-specific capability was named in what was fetched (the recent contract is satellite-resiliency modeling), so aiClassification is omitted rather than guessed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "umich-lanl-research-computing-ypsilanti-township-mi",
     "name": "U-M / Los Alamos Research Computing Center",
     "operator": "University of Michigan (with Los Alamos National Laboratory)",
@@ -92031,6 +94487,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "vantage-santa-clara-i-ca1-ca",
+    "name": "Vantage Santa Clara I (CA1)",
+    "operator": "Vantage Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3725693,
+      "lon": -121.9736589,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "2820 Northwestern Parkway",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 77
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://vantage-dc.com/data-center-locations/north-america/santa-clara-i-california/",
+        "label": "Santa Clara I, California Data Center Campus - Vantage Data Centers",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Campus of six buildings (CA11-CA16) totaling 335,000 sq ft; marketed as the largest LEED Platinum-certified data center campus in North America. Figures here are campus-wide aggregates, matching how Vantage Santa Clara II (CA2) is already recorded in this dataset as a single campus entry rather than per-building.",
+    "energy": {
+      "source": "grid",
+      "utility": "Silicon Valley Power",
+      "notes": "Operator states three 50MW dedicated on-site substations; SVP markets renewable energy credits for this account."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator describes a 'highly efficient chilled water loop system' with gray-water utilization for cooling and chilled-water doors at the rack, plus outside-air economization in some modules. A recirculating water circuit places this as closed_loop per the contract's tie-breaker even though economization is also used."
+    },
+    "landAcres": 21,
+    "facilityType": "data_center"
+  },
+  {
     "id": "vantage-santa-clara-ii-ca2-ca",
     "name": "Vantage Santa Clara II (CA2)",
     "operator": "Vantage Data Centers",
@@ -92085,6 +94583,55 @@
     "energy": {
       "utility": "Silicon Valley Power"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "vantage-santa-clara-iii-ca3-ca",
+    "name": "Vantage Santa Clara III (CA3)",
+    "operator": "Vantage Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3712362,
+      "lon": -121.9740103,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "2590 Walsh Avenue",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 64
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://vantage-dc.com/data-center/santa-clara-iii-california/",
+        "label": "Santa Clara III, California Data Center - Vantage Data Centers",
+        "publisher": "Vantage Data Centers",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/vantage-data-centers/2590-walsh-avenue/ca3",
+        "label": "Vantage Data Centers CA3 | 2590 Walsh Avenue, Northern California",
+        "publisher": "datacenterHawk",
+        "retrievedAt": "2026-09-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-12",
+    "notes": "Vantage's third Santa Clara campus (with CA1 and CA2, both already in this dataset); the three campuses total 216MW of Silicon Valley IT capacity per the operator. One four-story building, 486,000 sq ft. Opened to customers in October 2024 and independently confirmed as commissioned/operational by a third-party facility tracker as of this session, though the operator's own marketing page still describes it in future tense.",
+    "energy": {
+      "source": "grid",
+      "utility": "Silicon Valley Power",
+      "notes": "Operator states the facility runs on 100% renewable energy supplied by SVP."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator's own page describes a 'closed-loop chilled water system with air-cooled chillers and integrated economizer capability,' with water utilization efficiency described as near zero — consistent with the contract's closed_loop tie-breaker for a recirculating circuit."
+    },
+    "landAcres": 8,
     "facilityType": "data_center"
   },
   {
