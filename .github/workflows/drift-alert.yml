@@ -35,6 +35,41 @@
 # carrying `--env-file=.env.local` (absent on a runner → node exit 9, before
 # any DB connection), and it collapsed "the detector could not run" into
 # "drift is present". Read the step comments before editing either.
+#
+# HISTORY OF FIXES:
+#
+# FIX 1 (2026-09-08): Removed npm script invocation. Scripts now invoked as
+# `npx tsx <script>` directly so `--env-file=.env.local` — which aborts node
+# before detector logic — is never read. See steps "Check deployed schema
+# matches code" and "Check JSON <-> Neon drift" for reasoning.
+#
+# FIX 2 (2026-09-08): Split "the detector could not run" from "drift is
+# present", which the original single grep collapsed into one outcome. The
+# classification rules moved to scripts/classify-drift-output.sh so they
+# could be tested; see the "Check JSON <-> Neon drift" step.
+#
+# FIX 3 (2026-09-13): Added convergence classifier. On 2026-09-12, neon-sync
+# opened PR #295 at 23:41:09Z and drift-alert ran at 23:44:38Z — 3 minutes
+# later, and the PR merged at 23:47:46Z, 3 minutes after that. The workflow
+# saw drift, had no notion of "a sync is converging right now", and filed
+# issue #297 for a 6.5-minute race rather than a broken chain. Note this is
+# not only a manual-dispatch problem: scheduled neon-sync runs have been
+# observed starting 4.5-6h after their nominal 08:00 UTC cron (12:36Z-13:57Z
+# over the week to 2026-09-13), so the window moves. The two-step solution is:
+# (1) scripts/classify-sync-convergence.sh, a fail-closed classifier that reads
+# the state of neon-sync (in-flight runs, open PRs) and outputs converging|stuck|absent;
+# (2) conditional reporting: converging -> notice (no alert), stuck -> error
+# (unmerged PR), absent -> error (no sync visible). The classifier is tested
+# (34 BATS cases in tests/workflows/run.bats) and every validation failure
+# exits non-zero with a ::error:: message — "converging" is the ONLY outcome
+# that suppresses the alert, so it is also the only one a bug must never
+# reach by accident. Its first review found exactly that: a non-empty --runs
+# array of garbage ([{}], [123], ["queued"]) classified as converging, which
+# would have silenced this watchdog without anyone learning why. Element
+# shapes are now type-checked on both inputs. The three reporting steps below
+# each match ONE exact state, so the classify step also rejects any
+# unrecognised word rather than letting it match none of them and pass green.
+#
 name: Neon Drift Alert
 
 on:
@@ -45,6 +80,7 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  actions: read
 
 jobs:
   drift-check:
@@ -136,22 +172,118 @@ jobs:
           echo "classified state: $STATE"
           echo "state=$STATE" >> "$GITHUB_OUTPUT"
 
-      # Only for REAL drift. A broken detector has no sync PR to blame, and
-      # naming one would point the reader at the wrong thing entirely.
-      - name: Report a stuck sync PR, if one exists
+      # When drift is detected, use scripts/classify-sync-convergence.sh to
+      # determine if the sync is CONVERGING (in-flight), STUCK (open PR too old),
+      # or ABSENT (no open PR). Only stuck and absent warrant an alert; converging
+      # means neon-sync.yml is mid-flight and will merge the drift PR shortly.
+      #
+      # The classifier reads two JSON arrays from gh:
+      #   - PRs from: gh pr list --head automated/neon-sync --state open
+      #   - runs from: gh run list --workflow=neon-sync.yml --status in_progress|queued
+      # and applies three rules: any in-flight run -> converging; else a fresh PR
+      # (younger than --grace) -> converging; else an old PR -> stuck; else absent.
+      #
+      # Classifier failure (validation error, missing file, etc.) exits non-zero
+      # with a ::error:: message on stderr and is treated like detector-broken —
+      # the workflow learned nothing and must fail loudly rather than silence the
+      # condition. The script is tested (24 BATS cases in tests/workflows/run.bats).
+      #
+      # --grace is 900 seconds (15 minutes): long enough for a human to merge a
+      # converging PR in reasonable time (PR #295 merged in 6.5 min on 2026-09-12),
+      # but short enough that a stuck PR is caught and reported before the next
+      # night's alert run (24 hours later). This prevents silent failure while
+      # avoiding false alerts during normal human response times.
+      #
+      # rc is captured the instant the command returns and echoed as a plain
+      # command — never through a pipe, which would report the pipe's status.
+      - name: Classify sync convergence state
         if: env.DATABASE_URL != '' && steps.drift.outputs.state == 'drifted'
+        id: convergence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          gh pr list --head automated/neon-sync --state open \
+            --json number,createdAt,url > /tmp/prs.json
+          pr_rc=$?
+          gh run list --workflow=neon-sync.yml \
+            --status in_progress --status queued \
+            --json databaseId,status > /tmp/runs.json
+          runs_rc=$?
+          set -e
+
+          if [[ "$pr_rc" -ne 0 || "$runs_rc" -ne 0 ]]; then
+            echo "::error::gh queries failed (pr=$pr_rc, runs=$runs_rc), so sync convergence state could not be determined. This is not a report that drift exists — it is the absence of a conclusive signal."
+            exit 1
+          fi
+
+          set +e
+          STATE="$(scripts/classify-sync-convergence.sh \
+            --now "$(date +%s)" --grace 900 \
+            --prs /tmp/prs.json --runs /tmp/runs.json)"
+          classifier_rc=$?
+          set -e
+
+          if [[ "$classifier_rc" -ne 0 ]]; then
+            echo "::error::classify-sync-convergence.sh failed with exit code $classifier_rc, so sync convergence state could not be determined."
+            exit 1
+          fi
+
+          # The three reporting steps below each fire on ONE exact value of
+          # this output. An unrecognised value therefore matches none of them
+          # and the job finishes GREEN having reported nothing — the same
+          # silent-pass shape as the empty-DATABASE_URL hole closed above, and
+          # the third time this workflow would have failed open. The classifier
+          # is only supposed to emit these three words; that it is *supposed*
+          # to is exactly the assumption worth checking here rather than
+          # trusting across a process boundary.
+          case "$STATE" in
+            converging|stuck|absent) ;;
+            *)
+              echo "::error::classify-sync-convergence.sh exited 0 but emitted an unrecognised state '$STATE' (expected converging, stuck or absent), so NOTHING below can act on it. Failing closed rather than passing green on an unreported condition."
+              exit 1
+              ;;
+          esac
+
+          echo "Sync convergence state: $STATE"
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+
+      # Only for CONVERGING sync. The sync is in-flight, and drift will be
+      # resolved on the next merge. Do not fail.
+      # Reads back the two files the classify step already wrote rather than
+      # re-querying gh. Two reasons: a third API call could fail and turn a
+      # SUPPRESSED alert into a failure for no reason, and re-querying would
+      # describe a state a few seconds newer than the one actually classified.
+      # It also lets the notice name the real cause: rule 1 fires on an
+      # in-flight RUN, where no PR exists yet and "a sync PR" would be a lie.
+      - name: Sync is converging (alert suppressed)
+        if: env.DATABASE_URL != '' && steps.convergence.outputs.state == 'converging'
+        run: |
+          cause="$(jq -r 'if length > 0 then "neon-sync run \(.[0].databaseId) is \(.[0].status)" else empty end' /tmp/runs.json)"
+          if [[ -z "$cause" ]]; then
+            cause="$(jq -r 'if length > 0 then "PR #\(.[0].number), opened \(.[0].createdAt): \(.[0].url)" else "an unnamed in-flight sync" end' /tmp/prs.json)"
+          fi
+          echo "::notice::Drift is present but the sync is CONVERGING — $cause. The alert is suppressed, not passed: if this has not converged by tomorrow's run the PR will be past the grace period and reported as stuck."
+
+      # Only for STUCK sync. A PR was opened but has not merged within the grace
+      # period (900 seconds = 15 minutes). This indicates the sync stalled and
+      # requires investigation.
+      - name: Report stuck sync PR
+        if: env.DATABASE_URL != '' && steps.convergence.outputs.state == 'stuck'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh pr list --head automated/neon-sync --state open \
             --json number,createdAt,url \
-            --jq '.[] | "::error::Open unmerged sync PR #\(.number), opened \(.createdAt): \(.url)"' \
-            || true
+            --jq '.[] | "::error::Sync is STUCK: PR #\(.number) opened \(.createdAt): \(.url)"'
+          exit 1
 
-      - name: Fail if not converged
-        if: env.DATABASE_URL != '' && steps.drift.outputs.state == 'drifted'
+      # Only for ABSENT sync. No sync is running and no open sync PR exists,
+      # yet drift is still present past the expected convergence window.
+      - name: Fail if sync absent and drift still present
+        if: env.DATABASE_URL != '' && steps.convergence.outputs.state == 'absent'
         run: |
-          echo "::error::JSON<->Neon drift is still present past the daily sync's expected convergence window. See the drift output above and docs/architecture (or npm run check:drift locally) to diagnose."
+          echo "::error::JSON<->Neon drift is still present past the daily sync's expected convergence window and no sync is in progress. See the drift output above and docs/architecture (or npm run check:drift locally) to diagnose."
           exit 1
 
       # A SEPARATE failure from real drift, deliberately worded so the two can
