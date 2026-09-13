@@ -319,6 +319,13 @@ describe("getStats", () => {
     expect(states).toBe(expectedStates);
   });
 
+  it("includesDc is true — the live dataset has DC facilities", async () => {
+    const { includesDc } = await getStats();
+    const hasDc = (await getAllFacilities()).some((f) => f.location.state === "DC");
+    expect(hasDc).toBe(true); // sanity: the fixture this test relies on
+    expect(includesDc).toBe(true);
+  });
+
   it("operationalMw excludes cancelled facilities and is rounded to 1 decimal", async () => {
     const { operationalMw } = await getStats();
     const manual = (await getAllFacilities())
@@ -1143,6 +1150,24 @@ describe("getOperatorSummary", () => {
     ).size;
     expect(summary.stateCount).toBe(expected);
   });
+
+  it("includesDc is true for an operator with a DC facility (CoreSite)", async () => {
+    const summary = (await getOperatorSummary("CoreSite"))!;
+    const hasDc = (await getFacilitiesByOperator("CoreSite")).some(
+      (f) => f.location.state === "DC"
+    );
+    expect(hasDc).toBe(true); // sanity: the fixture this test relies on
+    expect(summary.includesDc).toBe(true);
+  });
+
+  it("includesDc is false for an operator with no DC facility (Google)", async () => {
+    const summary = (await getOperatorSummary("Google"))!;
+    const hasDc = (await getFacilitiesByOperator("Google")).some(
+      (f) => f.location.state === "DC"
+    );
+    expect(hasDc).toBe(false); // sanity: the fixture this test relies on
+    expect(summary.includesDc).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -1753,6 +1778,14 @@ describe("getCryptoMiningStats", () => {
       (await getCryptoMiningFacilities()).map((f) => f.location.state)
     );
     expect((await getCryptoMiningStats()).stateCount).toBe(distinct.size);
+  });
+
+  it("includesDc is false — no crypto_mining facility is sited in DC", async () => {
+    const hasDc = (await getCryptoMiningFacilities()).some(
+      (f) => f.location.state === "DC"
+    );
+    expect(hasDc).toBe(false); // sanity: the fixture this test relies on
+    expect((await getCryptoMiningStats()).includesDc).toBe(false);
   });
 });
 

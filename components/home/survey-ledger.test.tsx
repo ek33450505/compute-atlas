@@ -58,6 +58,7 @@ afterEach(() => {
 const PROPS: SurveyLedgerProps = {
   count: 727,
   states: 45,
+  includesDc: false,
   operators: 210,
   sources: 2570,
   operationalMw: 4000, // 4.0 GW
@@ -122,6 +123,23 @@ describe("SurveyLedger", () => {
     expect(
       screen.getByLabelText("40 GW planned pipeline")
     ).toBeInTheDocument();
+  });
+
+  it("phrases the states tile as '50 states and DC covered' when the dataset includes DC, keeping the animated number at the raw count", () => {
+    setReducedMotion(true);
+    render(<SurveyLedger {...PROPS} states={51} includesDc={true} />);
+
+    // The big animated number stays the raw distinct-code count (51) — only
+    // the label/aria text becomes DC-aware.
+    expect(screen.getByText("51")).toBeInTheDocument();
+    // Mutation coverage: reverting the label back to a hardcoded "States
+    // covered", or the aria text back to `${states} states covered`, fails
+    // one of these two assertions.
+    expect(screen.getByText("States + DC covered")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("50 states and DC covered")
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText("51 states covered")).not.toBeInTheDocument();
   });
 
   it("grows each pipeline bar to its exact share of the planned-capacity axis, immediately under reduced motion", () => {

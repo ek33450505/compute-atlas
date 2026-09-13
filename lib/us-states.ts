@@ -85,3 +85,54 @@ export function stateSlugFromCode(code: string): string | undefined {
 export function stateCodeFromSlug(slug: string): string | undefined {
   return SLUG_TO_CODE[slug.toLowerCase()];
 }
+
+/** The District of Columbia's `location.state` code. It is a jurisdiction, not a state. */
+export const DC_CODE = "DC";
+
+/** True when a set of `location.state` codes contains DC. */
+export function containsDc(codes: Iterable<string>): boolean {
+  for (const code of codes) {
+    if (code === DC_CODE) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Label for a stat tile whose VALUE is a count of distinct `location.state`
+ * codes. The value stays honest only if the label admits DC is inside it —
+ * "51 / States" was live on prod until 2026-09-13.
+ *
+ * When `total === 1 && withDc`, DC is the only jurisdiction present and there
+ * are zero states to name, so the label must not say "States + DC" (that
+ * would name an empty category) — it returns "DC" alone, matching
+ * `statesPhrase`. Not reachable from site-wide counts today (the dataset has
+ * 51 distinct codes), but is reachable via `getOperatorSummary` for an
+ * operator whose facilities are all in DC; no such operator exists in
+ * `data/facilities.json` as of 2026-09-13 (the two DC records belong to
+ * "365 Data Centers", which also has MA, and "CoreSite", which has 10
+ * jurisdictions), so this is latent, not live.
+ */
+export function statesStatLabel(total: number, withDc: boolean): string {
+  if (withDc) {
+    return total === 1 ? "DC" : "States + DC";
+  }
+  return total === 1 ? "State" : "States";
+}
+
+/**
+ * Prose form of the same count. `total` is the count of distinct codes, DC
+ * included, so callers pass the number they already have.
+ */
+export function statesPhrase(total: number, withDc: boolean): string {
+  if (!withDc) {
+    return total === 1 ? "1 state" : `${total} states`;
+  }
+  if (total === 1) {
+    // DC is the only jurisdiction present — there are no states to name.
+    return "DC";
+  }
+  const stateCount = total - 1;
+  return `${stateCount === 1 ? "1 state" : `${stateCount} states`} and DC`;
+}

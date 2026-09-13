@@ -87,6 +87,33 @@ describe("ExplorePage", () => {
     expect(countiesLink).toHaveTextContent("3 counties");
   });
 
+  it("phrases the States card stat as '1 state and DC' when the tracked codes include DC", async () => {
+    mockGetStates.mockResolvedValue(["VA", "DC"]);
+    mockGetOperators.mockResolvedValue(["Operator A"]);
+    mockGetCounties.mockResolvedValue([]);
+
+    const page = await ExplorePage();
+    render(page);
+
+    const statesLink = screen.getByRole("link", { name: /^States/ });
+    // Mutation coverage: reverting to the bare `${stateCount} states`
+    // template (dropping containsDc/statesPhrase) renders "2 states" instead.
+    expect(statesLink).toHaveTextContent("1 state and DC");
+    expect(statesLink).not.toHaveTextContent("2 states");
+  });
+
+  it("phrases the States card stat as a bare count when no tracked code is DC", async () => {
+    mockGetStates.mockResolvedValue(["CA", "TX"]);
+    mockGetOperators.mockResolvedValue(["Operator A"]);
+    mockGetCounties.mockResolvedValue([]);
+
+    const page = await ExplorePage();
+    render(page);
+
+    const statesLink = screen.getByRole("link", { name: /^States/ });
+    expect(statesLink).toHaveTextContent("2 states");
+  });
+
   it("places the Counties card directly after By metro", async () => {
     mockGetStates.mockResolvedValue(["CA", "TX"]);
     mockGetOperators.mockResolvedValue(["Operator A"]);

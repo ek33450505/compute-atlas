@@ -95,6 +95,7 @@ beforeEach(() => {
   mockGetStats.mockReset().mockResolvedValue({
     count: 0,
     states: 0,
+    includesDc: false,
     operationalMw: 0,
     plannedMw: 0,
     underConstructionMw: 0,
@@ -154,6 +155,58 @@ describe("LearnTopicPage", () => {
     expect(screen.getByText("Facilities reporting")).toBeInTheDocument();
     expect(screen.getByText("12.5 MGD")).toBeInTheDocument();
     expect(screen.getByText("Total reported")).toBeInTheDocument();
+  });
+
+  it("phrases the data-center-power-draw explainer as '50 states and DC' when the dataset includes DC", async () => {
+    mockGetStats.mockResolvedValue({
+      count: 900,
+      states: 51,
+      includesDc: true,
+      operationalMw: 1000,
+      plannedMw: 2000,
+      underConstructionMw: 500,
+    });
+    mockGetFacilityTypeCounts.mockResolvedValue({
+      data_center: 800,
+      crypto_mining: 50,
+      power_generation: 50,
+    });
+
+    const page = await LearnTopicPage({
+      params: Promise.resolve({ topic: "data-center-power-draw" }),
+    });
+    render(page);
+
+    // Mutation coverage: reverting statesPhrase(...) back to a bare
+    // `${stats.states} states` template, or dropping includesDc, renders
+    // "51 states" instead — this assertion only passes against the phrase.
+    expect(
+      screen.getByText(/across 50 states and DC, alongside/)
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/across 51 states,/)).not.toBeInTheDocument();
+  });
+
+  it("phrases the data-center-power-draw explainer as a bare state count when the dataset has no DC facility", async () => {
+    mockGetStats.mockResolvedValue({
+      count: 900,
+      states: 49,
+      includesDc: false,
+      operationalMw: 1000,
+      plannedMw: 2000,
+      underConstructionMw: 500,
+    });
+    mockGetFacilityTypeCounts.mockResolvedValue({
+      data_center: 800,
+      crypto_mining: 50,
+      power_generation: 50,
+    });
+
+    const page = await LearnTopicPage({
+      params: Promise.resolve({ topic: "data-center-power-draw" }),
+    });
+    render(page);
+
+    expect(screen.getByText(/across 49 states, alongside/)).toBeInTheDocument();
   });
 
   it("derives the what-is-an-ai-data-center stat labels from AI_CLASSIFICATION_ENTRIES, not a hand-written copy", async () => {

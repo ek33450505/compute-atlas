@@ -13,7 +13,46 @@ vi.mock("@/lib/data", () => ({
   getFacilitiesByMetro: mockGetFacilitiesByMetro,
 }));
 
-import { generateMetadata } from "./page";
+// Northern Virginia (the only currently-defined multi-state-adjacent DC-area
+// metro) doesn't actually list DC in its `states` array today — inject a
+// synthetic DC-spanning metro alongside the real ones so the DC-aware
+// "spanning" phrasing has a fixture to exercise, without touching lib/metros.ts.
+vi.mock("@/lib/metros", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/metros")>();
+  const DC_METRO = {
+    slug: "dc-metro-test",
+    name: "DC Metro Test",
+    states: ["DC", "VA"],
+    counties: [["DC", "Washington"], ["VA", "Arlington"]] as [string, string][],
+  };
+  return {
+    ...actual,
+    METROS: [...actual.METROS, DC_METRO],
+    getMetroBySlug: (slug: string) =>
+      slug === DC_METRO.slug ? DC_METRO : actual.getMetroBySlug(slug),
+  };
+});
+
+// next/link renders to <a> — mock to avoid Next.js router-context dependency
+// in jsdom (CollectionPage's facility cards render Link internally).
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+}));
+
+import { render, screen } from "@testing-library/react";
+import MetroPage, { generateMetadata } from "./page";
 
 beforeEach(() => {
   mockGetFacilitiesByMetro.mockReset();
@@ -69,5 +108,31 @@ describe("generateMetadata (metro)", () => {
 
     expect(metadata).toEqual({ title: "Metro not found" });
     expect(mockGetFacilitiesByMetro).not.toHaveBeenCalled();
+  });
+});
+
+describe("MetroPage — DC-aware 'spanning' phrasing", () => {
+  it("phrases a DC-spanning metro as '1 state and DC'", async () => {
+    mockGetFacilitiesByMetro.mockResolvedValue([
+      makeFacility({ id: "a" }),
+      makeFacility({ id: "b" }),
+    ]);
+
+    const page = await MetroPage({ params: Promise.resolve({ metro: "dc-metro-test" }) });
+    render(page);
+
+    // Mutation coverage: reverting to the bare `${metro.states.length} states`
+    // template (dropping containsDc/statesPhrase) renders "2 states" instead.
+    expect(screen.getByText(/spanning 1 state and DC/)).toBeInTheDocument();
+    expect(screen.queryByText(/spanning 2 states/)).not.toBeInTheDocument();
+  });
+
+  it("omits DC wording for a single-state metro (no 'spanning' clause at all)", async () => {
+    mockGetFacilitiesByMetro.mockResolvedValue([makeFacility()]);
+
+    const page = await MetroPage({ params: Promise.resolve({ metro: "bay-area" }) });
+    render(page);
+
+    expect(screen.queryByText(/spanning/)).not.toBeInTheDocument();
   });
 });

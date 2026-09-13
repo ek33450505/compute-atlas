@@ -6,7 +6,7 @@ import {
   getAiClassificationCounts,
   getFacilityTypeCounts,
 } from "@/lib/data";
-import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
+import { stateNameFromCode, stateSlugFromCode, containsDc, statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -68,6 +68,7 @@ export default async function AiPage() {
     counts,
     total: counts.confirmed + counts.likely + counts.mixed_use,
   }));
+  const stateRowsIncludeDc = containsDc(stateRows.map((s) => s.code));
 
   return (
     <div
@@ -116,8 +117,8 @@ export default async function AiPage() {
               machine-learning angle, distinguishing them from traditional
               enterprise and general-purpose facilities. {totalAiClassified}{" "}
               data {totalAiClassified === 1 ? "center carries" : "centers carry"}{" "}
-              an AI classification today, across {stateRows.length}{" "}
-              {stateRows.length === 1 ? "state" : "states"}.
+              an AI classification today, across{" "}
+              {statesPhrase(stateRows.length, stateRowsIncludeDc)}.
             </p>
             <dl className="space-y-3 text-sm">
               {AI_CLASSIFICATION_ENTRIES.map((entry) => (

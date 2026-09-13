@@ -6,6 +6,7 @@ const PROPS: LensGatewayProps = {
   counts: {
     sites: 1095,
     states: 45,
+    includesDc: false,
     utilityLinked: 307,
     frictionCount: 153,
     aiClassified: 347,
@@ -47,6 +48,21 @@ describe("LensGateway", () => {
     expect(screen.getByText("210 operators")).toBeInTheDocument();
     expect(screen.getByText("40 GW ranked")).toBeInTheDocument();
     expect(screen.getByText("62 sites")).toBeInTheDocument();
+  });
+
+  it("phrases the By-state stat as '50 states and DC' when the dataset includes DC", () => {
+    render(
+      <LensGateway
+        {...PROPS}
+        counts={{ ...PROPS.counts, states: 51, includesDc: true }}
+      />
+    );
+
+    // Mutation coverage: reverting the stat back to a bare
+    // `${c.states} states` template renders "51 states" instead — this
+    // assertion only passes against statesPhrase's DC-aware wording.
+    expect(screen.getByText("50 states and DC")).toBeInTheDocument();
+    expect(screen.queryByText("51 states")).not.toBeInTheDocument();
   });
 
   it("renders the two trailing links to /explore and /stats", () => {

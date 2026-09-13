@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getFacilitiesByMetro } from "@/lib/data";
 import { formatPower } from "@/lib/format";
 import { getMetroBySlug, METROS, type Metro } from "@/lib/metros";
+import { containsDc, statesPhrase } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
 
@@ -103,6 +104,10 @@ export default async function MetroPage({
   const plannedMw = sumPlannedMw(facilities);
   const topOperators = topOperatorsFor(facilities);
   const isMultiState = metro.states.length > 1;
+  // No metro in lib/metros.ts currently lists "DC" in `states` (Northern
+  // Virginia is VA-only), so this is defensive rather than live today — kept
+  // DC-aware because `states` is hand-curated data that can change.
+  const metroIncludesDc = containsDc(metro.states);
 
   // Second paragraph: an operational-vs-planned capacity read, phrased
   // conditionally so an empty or all-zero-capacity metro never claims figures
@@ -136,7 +141,9 @@ export default async function MetroPage({
             Compute Atlas tracks {facilities.length} data center
             {facilities.length === 1 ? "" : "s"} across {metro.name} —{" "}
             {countyList}
-            {isMultiState ? `, spanning ${metro.states.length} states` : ""}{" "}
+            {isMultiState
+              ? `, spanning ${statesPhrase(metro.states.length, metroIncludesDc)}`
+              : ""}{" "}
             — each traced to a public source.
           </p>
           {capacityLine && <p>{capacityLine}</p>}

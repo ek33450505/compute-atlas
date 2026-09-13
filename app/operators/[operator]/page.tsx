@@ -11,6 +11,7 @@ import {
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatLocation, formatPower } from "@/lib/format";
+import { statesStatLabel, statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
 import { FacilityListRow } from "@/components/facility-list-row";
@@ -41,7 +42,7 @@ export async function generateMetadata({
 
   return {
     title: `${operatorName} data centers`,
-    description: `${summary.count} data centers and compute facilities operated by ${operatorName} across ${summary.stateCount} state(s) — capacity, build status, and locations, each with a public source.`,
+    description: `${summary.count} data centers and compute facilities operated by ${operatorName} across ${statesPhrase(summary.stateCount, summary.includesDc)} — capacity, build status, and locations, each with a public source.`,
     alternates: { canonical: `/operators/${slug}` },
   };
 }
@@ -86,7 +87,7 @@ export default async function OperatorPage({
   } else {
     capacitySentence = "None have reported operational capacity or an active build phase yet.";
   }
-  const overviewSentence = `Compute Atlas tracks ${summary.count} facilit${summary.count === 1 ? "y" : "ies"} operated by ${operatorName} across ${summary.stateCount} state${summary.stateCount === 1 ? "" : "s"}. ${capacitySentence}`;
+  const overviewSentence = `Compute Atlas tracks ${summary.count} facilit${summary.count === 1 ? "y" : "ies"} operated by ${operatorName} across ${statesPhrase(summary.stateCount, summary.includesDc)}. ${capacitySentence}`;
 
   const topFacilityNames = facilities.slice(0, 3).map((f) => f.name);
   const facilitySentence =
@@ -135,7 +136,7 @@ export default async function OperatorPage({
           { value: summary.count, label: "Sites" },
           { value: formatPower(summary.operationalMw), label: "Operational" },
           { value: formatPower(summary.plannedMw), label: "Pipeline" },
-          { value: summary.stateCount, label: "States" },
+          { value: summary.stateCount, label: statesStatLabel(summary.stateCount, summary.includesDc) },
         ]}
       />
 

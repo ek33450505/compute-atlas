@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { siteConfig } from "@/lib/site";
 import { getStats } from "@/lib/data";
 import { AtlasMark, INK, MUTED_INK, OgFrame, loadFrauncesFont } from "@/lib/og-theme";
+import { statesPhrase } from "@/lib/us-states";
 
 export const revalidate = 3600;
 
@@ -21,8 +22,8 @@ export const contentType = "image/png";
 
 export default async function OGImage() {
   const fraunces = loadFrauncesFont();
-  const { count, states, operationalMw } = await getStats();
-  const statLine = `${count} SITES · ${states} STATES · ${(operationalMw / 1000).toFixed(1)} GW OPERATIONAL`;
+  const { count, states, includesDc, operationalMw } = await getStats();
+  const statLine = `${count} SITES · ${statesPhrase(states, includesDc).toUpperCase()} · ${(operationalMw / 1000).toFixed(1)} GW OPERATIONAL`;
 
   return new ImageResponse(
     (

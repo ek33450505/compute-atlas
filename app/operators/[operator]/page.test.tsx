@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 import type { Facility } from "@/lib/schema";
 import type { OperatorSummary } from "@/lib/data";
@@ -84,6 +84,7 @@ function makeSummary(overrides: Partial<OperatorSummary> = {}): OperatorSummary 
       cancelled: 0,
     },
     stateCount: 1,
+    includesDc: false,
     capacityReporting: 2,
     ...overrides,
   } as OperatorSummary;
@@ -164,5 +165,51 @@ describe("OperatorPage generateMetadata", () => {
       params: Promise.resolve({ operator: "acme-corp" }),
     });
     expect(metadata.alternates).toEqual({ canonical: "/operators/acme-corp" });
+  });
+
+  it("phrases the description as '1 state and DC' when the operator's summary includesDc", async () => {
+    mockGetOperatorSummary.mockResolvedValue(
+      makeSummary({ stateCount: 2, includesDc: true })
+    );
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ operator: "acme-corp" }),
+    });
+
+    expect(metadata.description).toContain("across 1 state and DC —");
+    expect(metadata.description).not.toContain("2 state(s)");
+  });
+});
+
+describe("OperatorPage — DC-aware states stat and overview sentence", () => {
+  it("labels the states tile 'States + DC' and phrases the overview sentence with DC when includesDc is true", async () => {
+    mockGetOperatorSummary.mockResolvedValue(
+      makeSummary({ stateCount: 2, includesDc: true })
+    );
+
+    const page = await OperatorPage({ params: Promise.resolve({ operator: "acme-corp" }) });
+    render(page);
+
+    // Mutation coverage: reverting either call site back to a bare
+    // `${summary.stateCount} state${...}` template renders "2 states" instead.
+    expect(
+      screen.getByText(/across 1 state and DC\. Operational capacity/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("States + DC")).toBeInTheDocument();
+    expect(screen.queryByText("2 states")).not.toBeInTheDocument();
+  });
+
+  it("labels the states tile plain 'States' when includesDc is false", async () => {
+    mockGetOperatorSummary.mockResolvedValue(
+      makeSummary({ stateCount: 2, includesDc: false })
+    );
+
+    const page = await OperatorPage({ params: Promise.resolve({ operator: "acme-corp" }) });
+    render(page);
+
+    expect(
+      screen.getByText(/across 2 states\. Operational capacity/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("States")).toBeInTheDocument();
   });
 });

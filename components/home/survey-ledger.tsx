@@ -8,6 +8,8 @@ import {
   type RefObject,
 } from "react";
 
+import { statesStatLabel, statesPhrase } from "@/lib/us-states";
+
 // useLayoutEffect warns when it runs during SSR; swapping to useEffect on the
 // server keeps the pre-paint reset a purely client-side hydration behavior.
 const useIsoLayoutEffect =
@@ -16,6 +18,7 @@ const useIsoLayoutEffect =
 export interface SurveyLedgerProps {
   count: number;
   states: number;
+  includesDc: boolean;
   operators: number;
   sources: number;
   operationalMw: number;
@@ -215,6 +218,7 @@ function PipelineBar({ label, figure, ariaLabel, pct, color }: PipelineBarProps)
 export function SurveyLedger({
   count,
   states,
+  includesDc,
   operators,
   sources,
   operationalMw,
@@ -284,8 +288,8 @@ export function SurveyLedger({
         />
         <LedgerTile
           value={displayStates}
-          label="States covered"
-          ariaLabel={`${states} states covered`}
+          label={statesStatLabel(states, includesDc) + " covered"}
+          ariaLabel={`${statesPhrase(states, includesDc)} covered`}
         />
         <LedgerTile
           value={displayOperators}

@@ -95,6 +95,39 @@ describe("StakeholderPage", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Jane Doe" })).toBeInTheDocument();
   });
+
+  it("labels the states stat 'States + DC' when the person's facilities span DC", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Jane Doe");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([
+      makeFacility({ id: "a" }),
+      makeFacility({ id: "b" }),
+    ]);
+    mockGetStakeholders.mockResolvedValue([
+      makeSummary({ states: ["DC", "VA"] }),
+    ]);
+
+    const page = await StakeholderPage({ params: Promise.resolve({ person: "jane-doe" }) });
+    render(page);
+
+    // Mutation coverage: reverting to the bare "States" label (dropping
+    // containsDc/statesStatLabel) still shows "2" but fails this label check.
+    expect(screen.getByText("States + DC")).toBeInTheDocument();
+    expect(screen.queryByText("States")).not.toBeInTheDocument();
+  });
+
+  it("labels the states stat plain 'States' when no DC facility is present", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Jane Doe");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([
+      makeFacility({ id: "a" }),
+      makeFacility({ id: "b" }),
+    ]);
+    mockGetStakeholders.mockResolvedValue([makeSummary({ states: ["IL", "TX"] })]);
+
+    const page = await StakeholderPage({ params: Promise.resolve({ person: "jane-doe" }) });
+    render(page);
+
+    expect(screen.getByText("States")).toBeInTheDocument();
+  });
 });
 
 describe("generateMetadata (stakeholder)", () => {

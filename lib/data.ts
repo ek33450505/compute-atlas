@@ -25,6 +25,7 @@ import { rowToFacility } from "@/lib/db/serialize";
 import type { DiffEntry } from "@/lib/doc-diff";
 import { operatorSlug, personSlug } from "@/lib/operator-slug";
 import { getGenerationFuelClass } from "@/lib/generation";
+import { containsDc } from "@/lib/us-states";
 
 /**
  * Validated view of the bundled JSON fallback, memoized for the process
@@ -474,13 +475,17 @@ function roundMw(sum: number): number {
 export async function getStats(): Promise<{
   count: number;
   states: number;
+  /** True when `states` includes DC — the count is not "states" alone. */
+  includesDc: boolean;
   operationalMw: number;
   plannedMw: number;
   underConstructionMw: number;
 }> {
   const facilities = await loadFacilities();
   const count = facilities.length;
-  const states = new Set(facilities.map((f) => f.location.state)).size;
+  const stateSet = new Set(facilities.map((f) => f.location.state));
+  const states = stateSet.size;
+  const includesDc = containsDc(stateSet);
   const active = facilities.filter((f) => f.status !== "cancelled");
   const operationalMw = roundMw(
     active.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0)
@@ -493,7 +498,7 @@ export async function getStats(): Promise<{
       .filter((f) => f.status === "under_construction")
       .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
   );
-  return { count, states, operationalMw, plannedMw, underConstructionMw };
+  return { count, states, includesDc, operationalMw, plannedMw, underConstructionMw };
 }
 
 // ============================================================
@@ -1552,6 +1557,8 @@ export interface CryptoMiningStats {
   plannedMw: number;
   /** Distinct states among all crypto_mining facilities. */
   stateCount: number;
+  /** True when `stateCount` includes DC — the count is not "states" alone. */
+  includesDc: boolean;
 }
 
 /**
@@ -1575,6 +1582,7 @@ export async function getCryptoMiningStats(): Promise<CryptoMiningStats> {
     operationalMw,
     plannedMw,
     stateCount: states.size,
+    includesDc: containsDc(states),
   };
 }
 
@@ -1802,6 +1810,8 @@ export interface OperatorSummary {
   byStatus: Record<Status, number>;
   /** Distinct location.state values across the operator's facilities. */
   stateCount: number;
+  /** True when `stateCount` includes DC — the count is not "states" alone. */
+  includesDc: boolean;
   /**
    * Count of non-cancelled facilities with a disclosed operational or
    * planned capacityMw figure. Restricted to non-cancelled so this matches
@@ -1861,6 +1871,7 @@ export async function getOperatorSummary(name: string): Promise<OperatorSummary 
     byType,
     byStatus,
     stateCount: states.size,
+    includesDc: containsDc(states),
     capacityReporting,
   };
 }

@@ -22,6 +22,7 @@ import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import type { Facility } from "@/lib/schema";
 import { aiClassificationEnum } from "@/lib/schema";
+import { statesStatLabel, statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -164,7 +165,10 @@ export default async function StatsPage() {
       <SurveyStatRow
         stats={[
           { value: total.toLocaleString("en-US"), label: "Sites tracked" },
-          { value: stats.states, label: "States covered" },
+          {
+            value: stats.states,
+            label: `${statesStatLabel(stats.states, stats.includesDc)} covered`,
+          },
           {
             value: `${(stats.operationalMw / 1000).toFixed(1)} GW`,
             label: "Operational",
@@ -515,7 +519,7 @@ export default async function StatsPage() {
         >
           <SectionHeading kicker="Geography" id="geography-heading" title="Top states" />
           <p className="text-sm text-muted-foreground">
-            {stats.states} state{stats.states !== 1 ? "s" : ""}{" "}
+            {statesPhrase(stats.states, stats.includesDc)}{" "}
             covered &middot; top 10 by
             facility count
           </p>
