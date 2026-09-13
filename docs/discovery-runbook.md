@@ -46,7 +46,7 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.compute-atlas.discov
 launchctl print gui/$(id -u)/com.compute-atlas.discovery   # verify: state, runs, path
 ```
 
-The job runs daily at 13:00 local, processing `STATES_PER_RUN` states per invocation (default 2) from a rotation cursor. It stays a no-op until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default).
+The job runs daily at 13:00 local, processing `STATES_PER_RUN` states per invocation (default 2, unchanged — the rotation was expanded to all 50 states + DC on 2026-09-13 and the review cap raised 25 → 30, but `STATES_PER_RUN` itself was deliberately left alone; see `docs/discovery-pipeline.md`) from a rotation cursor. It stays a no-op until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default).
 
 Midday (rather than overnight) is deliberate: macOS `launchd` defers a missed `StartCalendarInterval` to the next wake, so an early-morning slot is simply skipped whenever the Mac is asleep. 13:00 assumes the machine is normally awake and lid-open then — if your usage differs, pick an hour when the Mac is reliably on, or move the job off the laptop entirely (e.g. a cron/CI runner with an API key instead of the subscription). Once a run *has* started, `run.sh` wraps the `claude -p` call in `caffeinate -i` (macOS only; a no-op elsewhere) so idle sleep can't suspend a long research call mid-run.
 

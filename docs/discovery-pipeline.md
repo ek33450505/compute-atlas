@@ -216,21 +216,31 @@ rejection is not proof that a citation is bad.
   `DISCOVERY_ENABLED=true` is set in the environment, or if
   `discovery-logs/DISABLED` exists. The launchd plist deliberately does NOT
   set `DISCOVERY_ENABLED` — enabling it is a separate, deliberate step.
-- **Bounded per run:** `STATES_PER_RUN` states per run (default 2) from the
-  rotation cursor, each capped at `--max` candidates (new + updated combined).
-  The cap **self-reverts**: burst for the first 20 days from the burst-start
-  date baked into `run.sh`, then the steady value — no manual step to revert.
-  Both values are currently **25**, and the burst window expired 2026-08-19, so
-  the mechanism still runs but no longer changes the number; it is retained
-  deliberately so the next time-boxed catch-up gets its auto-revert for free by
-  re-dating the burst start with a higher burst cap.
+- **Bounded per run:** `STATES_PER_RUN` states per run (default **2**,
+  unchanged — see below) from the rotation cursor, each capped at `--max`
+  candidates (new + updated combined). The cap **self-reverts**: burst for the
+  first 20 days from the burst-start date baked into `run.sh`, then the steady
+  value — no manual step to revert. `STEADY_CAP` was raised **25 → 30**
+  (2026-09-13, +20%: 2×25=50/day → 2×30=60/day) alongside the rotation
+  expansion below; `BURST_CAP` stayed at 25. The burst window expired
+  2026-08-19 and is confirmed still inactive as of 2026-09-13 (45 days past
+  `BURST_START_DATE`, past `BURST_DAYS=20`), so `compute_cap()` returns
+  `STEADY_CAP` unconditionally today and this change has no burst-side effect
+  right now. It would if `BURST_START_DATE` is ever re-dated to reactivate a
+  burst window without also raising `BURST_CAP` to at least `STEADY_CAP` —
+  that would make the "burst" briefly LOWER the cap than steady instead of
+  exceeding it, so whoever re-dates it next must raise `BURST_CAP` too.
+  `STATES_PER_RUN` was deliberately **not** raised in this same change (see
+  "Cadence" below for why); the cap increase, not a batch-size increase, is
+  this round's throughput lever.
   The cap applies **per submit call**: one per state inside the rotation loop,
   **plus** a separate enrichment submit that runs once per batch outside it. So
-  the real nightly ceiling is `(STATES_PER_RUN × cap) + cap` — 75 at the current
-  defaults. It is a ceiling, not a target: measured from Neon on 2026-09-09, the
-  prior 14 days ran ~14–34 approved submissions/day across all states, against a
-  pending queue of 0. `MAX_CANDIDATES` in the environment overrides the computed
-  cap (escape hatch / tests).
+  the real nightly ceiling is `(STATES_PER_RUN × cap) + cap` — **90** at the
+  current defaults (2 × 30 + 30), up from 75 (2 × 25 + 25). It is a ceiling,
+  not a target: measured from Neon on 2026-09-09, the prior 14 days ran
+  ~14–34 approved submissions/day across all states, against a pending queue
+  of 0. `MAX_CANDIDATES` in the environment overrides the computed cap
+  (escape hatch / tests).
 - **Fail-loud source verification:** every candidate's source URLs are fetched
   and mechanically checked against the claim before staging (see the gate
   above). If the local Ollama model is unreachable or not pulled, the check
@@ -302,17 +312,42 @@ There is no fan-out, no multi-agent workflow, and no `/data-wave` invocation
 from this pipeline.
 
 **Cadence:** The combined-pass model runs daily via launchd, processing
-`STATES_PER_RUN` states per invocation (default 2) from a rotation cursor.
+`STATES_PER_RUN` states per invocation (default **2**, unchanged) from a
+rotation cursor. `STATES_PER_RUN` was deliberately NOT raised alongside the
+2026-09-13 rotation expansion below — see "Bounded per run" above for the
+three reasons (wall-clock cap known not to reliably enforce; the 2026-09-09
+cap bump is only four days old as of this change; stacking a second unmeasured
+throughput change on the simultaneous 2.3x rotation-size change would make any
+regression unattributable to either). This round's throughput lever is
+`STEADY_CAP` instead (25 → 30). Re-evaluation trigger: revisit after ~1 week
+of nights at 51 states / cap 30, looking at wall-clock overrun WARNs, `blocked`
+classifications, and whether full submit cycles complete in time — measure
+those, then decide, not "raise it again on a timer."
 
-**Rotation (rebalanced 2026-08-14).** The rotation was 15 states holding 555 of
-941 live facilities — meaning **386 facilities lived in states the pipeline
-never visited**, and so were never re-checked, never enriched, never deepened.
-IA, NE, WA, OR, MN, MO and UT are major hyperscaler markets that were sitting at
-8–26 records with zero pipeline attention, so they now lead the rotation.
-Nothing was removed: dropping the saturated states (TX at 106, VA at 110) would
-have silently stopped re-checking their facilities for status changes. 22 states
-at 2 per run cycles in about 11 days, up from 7.5 — the deliberate cost of not
-losing re-check coverage.
+**Rotation (rebalanced 2026-08-14, expanded 2026-09-13).** The rotation was 15
+states holding 555 of 941 live facilities — meaning **386 facilities lived in
+states the pipeline never visited**, and so were never re-checked, never
+enriched, never deepened. IA, NE, WA, OR, MN, MO and UT are major hyperscaler
+markets that were sitting at 8–26 records with zero pipeline attention, so they
+led the rotation from that point. Nothing was removed: dropping the saturated
+states (TX at 106, VA at 110) would have silently stopped re-checking their
+facilities for status changes.
+
+2026-09-13 expanded the rotation again, from 22 states to **all 50 states plus
+DC (51 tokens)**, derived from `lib/us-states.ts`'s `US_STATE_NAMES` — the
+repo's single source of truth for state codes. The prior 22 stay first in the
+list (same reasoning as above: the cursor file holds a state code, not an
+index, so preserving the existing order keeps a live cursor valid across the
+change); the 29 states newly added were not in the rotation at all before this
+change — not even pre-2026-08-14 — so a flat `lastUpdated` in one of them means
+nobody has ever looked, a stronger signal than a flat `lastUpdated` in one of
+the original 22 (which only means the pipeline looked and found nothing).
+With `STATES_PER_RUN` unchanged at 2, 22 states cycled in about 11 days (up
+from 7.5 before the first rebalance); 51 states now cycle in about **26
+days** — the real cost of covering every state without losing re-check
+coverage on the rest, stated plainly so nobody discovers it by surprise. 51
+does not divide evenly by 2, so pairings still vary cycle to cycle, same as
+the old 22/2 and 15/2 rotations — fine and intended, not a bug.
 
 `DISCOVERY_STATES` overrides the rotation entirely (space-separated). That is
 the supported way to drive a targeted run without editing the script, and it is
