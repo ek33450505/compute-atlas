@@ -96,10 +96,11 @@ describe("subscribeToTarget", () => {
   it("creates one pending subscription for a valid facility target", async () => {
     await seedFacility(tdb.db, seedDoc);
 
-    const result = await subscribeToTarget(
-      { email: "Reader@Example.com", targetType: "facility", targetId: seedDoc.id },
-      "iphash-1"
-    );
+    const result = await subscribeToTarget({
+      email: "Reader@Example.com",
+      targetType: "facility",
+      targetId: seedDoc.id,
+    });
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -126,10 +127,11 @@ describe("subscribeToTarget", () => {
   });
 
   it("creates one pending subscription for a valid state target, uppercasing a lowercase code", async () => {
-    const result = await subscribeToTarget(
-      { email: "reader@example.com", targetType: "state", targetId: "tx" },
-      "iphash-2"
-    );
+    const result = await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "state",
+      targetId: "tx",
+    });
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -148,10 +150,11 @@ describe("subscribeToTarget", () => {
   });
 
   it("rejects an unknown state code with a 400 and inserts nothing", async () => {
-    const result = await subscribeToTarget(
-      { email: "reader@example.com", targetType: "state", targetId: "zz" },
-      "iphash-2b"
-    );
+    const result = await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "state",
+      targetId: "zz",
+    });
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -162,10 +165,7 @@ describe("subscribeToTarget", () => {
   });
 
   it("rejects the 'all' target with a 400 (targetType is facility-only now)", async () => {
-    const result = await subscribeToTarget(
-      { email: "reader@example.com", targetType: "all" },
-      "iphash-3"
-    );
+    const result = await subscribeToTarget({ email: "reader@example.com", targetType: "all" });
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -176,15 +176,12 @@ describe("subscribeToTarget", () => {
   });
 
   it("honeypot: returns generic ok but inserts zero rows and no confirm signal", async () => {
-    const result = await subscribeToTarget(
-      {
-        email: "spammer@example.com",
-        targetType: "facility",
-        targetId: "irrelevant-honeypot-tripped-first",
-        website: "http://spam.example",
-      },
-      "iphash-4"
-    );
+    const result = await subscribeToTarget({
+      email: "spammer@example.com",
+      targetType: "facility",
+      targetId: "irrelevant-honeypot-tripped-first",
+      website: "http://spam.example",
+    });
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -195,10 +192,11 @@ describe("subscribeToTarget", () => {
   });
 
   it("rejects an invalid email with a 400", async () => {
-    const result = await subscribeToTarget(
-      { email: "not-an-email", targetType: "facility", targetId: "some-facility" },
-      "iphash-5"
-    );
+    const result = await subscribeToTarget({
+      email: "not-an-email",
+      targetType: "facility",
+      targetId: "some-facility",
+    });
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -208,10 +206,11 @@ describe("subscribeToTarget", () => {
   });
 
   it("rejects an unknown facility target with a 400 and inserts nothing", async () => {
-    const result = await subscribeToTarget(
-      { email: "reader@example.com", targetType: "facility", targetId: "does-not-exist" },
-      "iphash-6"
-    );
+    const result = await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "facility",
+      targetId: "does-not-exist",
+    });
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -225,13 +224,13 @@ describe("subscribeToTarget", () => {
     await seedFacility(tdb.db, seedDoc);
     const input = { email: "reader@example.com", targetType: "facility" as const, targetId: seedDoc.id };
 
-    const first = await subscribeToTarget(input, "iphash-8");
+    const first = await subscribeToTarget(input);
     expect(first.ok).toBe(true);
     if (first.ok) {
       expect(first.confirm).toBeDefined();
     }
 
-    const second = await subscribeToTarget(input, "iphash-8");
+    const second = await subscribeToTarget(input);
     expect(second.ok).toBe(true);
     if (second.ok) {
       expect(second.confirm).toBeUndefined(); // dedup (23505) path — no second confirm email
@@ -253,20 +252,18 @@ describe("subscribeToTarget", () => {
     }
 
     for (let i = 0; i < EMAIL_SEND_CAP_MAX; i++) {
-      const result = await subscribeToTarget(
-        { email, targetType: "facility", targetId: targets[i].id },
-        `iphash-cap-${i}`
-      );
+      const result = await subscribeToTarget({ email, targetType: "facility", targetId: targets[i].id });
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.confirm).toBeDefined(); // under the cap — real send scheduled
       }
     }
 
-    const overCap = await subscribeToTarget(
-      { email, targetType: "facility", targetId: targets[EMAIL_SEND_CAP_MAX].id },
-      "iphash-cap-over"
-    );
+    const overCap = await subscribeToTarget({
+      email,
+      targetType: "facility",
+      targetId: targets[EMAIL_SEND_CAP_MAX].id,
+    });
     expect(overCap.ok).toBe(true);
     if (overCap.ok) {
       expect(overCap.confirm).toBeUndefined(); // over the per-address cap — generic success, no send
@@ -280,10 +277,11 @@ describe("subscribeToTarget", () => {
 describe("confirmSubscription", () => {
   it("flips a pending row to confirmed", async () => {
     await seedFacility(tdb.db, seedDoc);
-    const subscribeResult = await subscribeToTarget(
-      { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
-      "iphash-9"
-    );
+    const subscribeResult = await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "facility",
+      targetId: seedDoc.id,
+    });
     const rawToken = subscribeResult.ok && subscribeResult.confirm ? subscribeResult.confirm.confirmToken : "";
     const [row] = await tdb.db.select().from(subscriptionsTable);
 
@@ -300,10 +298,11 @@ describe("confirmSubscription", () => {
 
   it("returns 'already' on a second confirm of the same token", async () => {
     await seedFacility(tdb.db, seedDoc);
-    const subscribeResult = await subscribeToTarget(
-      { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
-      "iphash-10"
-    );
+    const subscribeResult = await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "facility",
+      targetId: seedDoc.id,
+    });
     const rawToken = subscribeResult.ok && subscribeResult.confirm ? subscribeResult.confirm.confirmToken : "";
 
     await confirmSubscription(rawToken);
@@ -354,10 +353,11 @@ describe("confirmSubscription — legacy raw-token dual-read", () => {
 describe("confirmSubscription — stolen-hash rejection", () => {
   it("rejects the stored hash itself as a presented token (closes the stolen-hash-as-bearer bypass)", async () => {
     await seedFacility(tdb.db, seedDoc);
-    const subscribeResult = await subscribeToTarget(
-      { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
-      "iphash-stolen-hash"
-    );
+    const subscribeResult = await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "facility",
+      targetId: seedDoc.id,
+    });
     const rawToken = subscribeResult.ok && subscribeResult.confirm ? subscribeResult.confirm.confirmToken : "";
     const [row] = await tdb.db
       .select()
@@ -388,10 +388,11 @@ describe("confirmSubscription — stolen-hash rejection", () => {
 describe("unsubscribeByToken", () => {
   it("flips a subscription to unsubscribed", async () => {
     await seedFacility(tdb.db, seedDoc);
-    await subscribeToTarget(
-      { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
-      "iphash-11"
-    );
+    await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "facility",
+      targetId: seedDoc.id,
+    });
     const [row] = await tdb.db.select().from(subscriptionsTable);
 
     const result = await unsubscribeByToken(row.unsubscribeToken);
@@ -414,10 +415,11 @@ describe("unsubscribeByToken", () => {
 describe("double opt-in invariant", () => {
   it("a freshly subscribed row is 'pending', not 'confirmed', until confirmSubscription runs", async () => {
     await seedFacility(tdb.db, seedDoc);
-    await subscribeToTarget(
-      { email: "reader@example.com", targetType: "facility", targetId: seedDoc.id },
-      "iphash-12"
-    );
+    await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "facility",
+      targetId: seedDoc.id,
+    });
     const [row] = await tdb.db.select().from(subscriptionsTable);
     expect(row.status).toBe("pending");
     expect(row.confirmedAt).toBeNull();

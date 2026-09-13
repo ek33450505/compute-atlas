@@ -61,11 +61,13 @@ function isUniqueViolation(err: unknown): boolean {
  * send AFTER the response goes out, so response latency can't distinguish
  * the new-subscription path from the generic-success paths (a prior
  * security-review fix).
+ *
+ * Used to also take an `ipHash` param, written to `subscriptions.submitterIpHash`
+ * for rate-limiting. That column was dropped 2026-09-13 as write-only PII —
+ * rate limiting now counts `subscribe_attempts` rows instead (see
+ * lib/rate-limit.ts) — so don't re-add an ipHash param here for that purpose.
  */
-export async function subscribeToTarget(
-  rawInput: unknown,
-  ipHash: string
-): Promise<SubscribeResult> {
+export async function subscribeToTarget(rawInput: unknown): Promise<SubscribeResult> {
   const parsed = subscribeInputSchema.safeParse(rawInput);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid subscription", issues: parsed.error.issues };
@@ -126,7 +128,6 @@ export async function subscribeToTarget(
       status: "pending",
       confirmToken: hashToken(confirmToken), // raw kept only in the local `confirmToken` var below, for the email
       unsubscribeToken: generateToken(),
-      submitterIpHash: ipHash,
     });
 
     // The confirm email is NOT sent here. The route sends it AFTER this

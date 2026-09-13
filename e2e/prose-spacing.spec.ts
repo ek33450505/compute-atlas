@@ -74,6 +74,34 @@ const ROUTES = [
   // that shape appearing later without anyone remembering to add coverage —
   // so it's added on shipping, not deferred until it grows the pattern.
   "/contributors",
+  // Added 2026-09-13: /ai, /opposition, and /operators were untouched by
+  // this list despite carrying prose and being touched by a recent sitewide
+  // change. Plus THREE more dynamic templates beyond the ones already
+  // covered above (facilities/states/operators) — /stakeholders/[person],
+  // /metros/[metro], and /status/[status] all render through the same
+  // CollectionPage primitive (see app/stakeholders/[person]/page.tsx's own
+  // doc comment, which names all three as siblings), so each needs its own
+  // representative slug for the same reason /facilities/meta-prineville-or
+  // does: a regression in CollectionPage's prose would be invisible here
+  // without one.
+  "/ai",
+  "/opposition",
+  "/operators",
+  "/stakeholders",
+  // "anita-verma-lallian" (Anita Verma-Lallian) — confirmed via
+  // lib/operator-slug.ts's personSlug/slugify (lowercase, non-alnum runs ->
+  // "-") against a real stakeholders[].name in data/facilities.json
+  // (arizona-land-consulting-hassayampa-ranch-tonopah-az). Rendered and
+  // scanned; see the code-reviewer/test-run notes for confirmation it 200s.
+  "/stakeholders/anita-verma-lallian",
+  // "northern-virginia" — the first entry in lib/metros.ts's METROS array,
+  // the flagship metro (Loudoun/Prince William/Fauquier/Fairfax, VA), so it
+  // is guaranteed to have matching facilities and render non-empty.
+  "/metros/northern-virginia",
+  // "operational" — a member of STATUS_ORDER (lib/status.ts) and a key of
+  // app/status/[status]/page.tsx's own STATUS_PAGE_META, so it resolves to
+  // real per-status editorial copy rather than a placeholder.
+  "/status/operational",
 ] as const;
 
 // A word/digit character, then React's SSR text-node separator, then the
