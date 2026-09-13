@@ -56,6 +56,7 @@ function makeOperatorSummary(overrides: Partial<OperatorSummary> = {}): Operator
       cancelled: 0,
     },
     stateCount: 0,
+    includesDc: false,
     capacityReporting: 0,
     ...overrides,
   };

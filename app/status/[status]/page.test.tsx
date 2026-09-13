@@ -13,7 +13,26 @@ vi.mock("@/lib/data", () => ({
   getFacilitiesByStatus: mockGetFacilitiesByStatus,
 }));
 
-import { generateMetadata } from "./page";
+// next/link renders to <a> — mock to avoid Next.js router-context dependency
+// in jsdom (CollectionPage's facility cards render Link internally).
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+}));
+
+import { render, screen } from "@testing-library/react";
+import StatusPage, { generateMetadata } from "./page";
 
 beforeEach(() => {
   mockGetFacilitiesByStatus.mockReset();
@@ -100,5 +119,34 @@ describe("generateMetadata (status)", () => {
 
     expect(metadata).toEqual({ title: "Status not found" });
     expect(mockGetFacilitiesByStatus).not.toHaveBeenCalled();
+  });
+});
+
+describe("StatusPage — DC-aware fact line", () => {
+  it("phrases the fact line as '1 state and DC' when the status's facilities span only VA and DC", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue([
+      makeFacility({ id: "a", location: { lat: 38, lon: -77, state: "VA", precision: "exact" } }),
+      makeFacility({ id: "b", location: { lat: 38.9, lon: -77, state: "DC", precision: "exact" } }),
+    ]);
+
+    const page = await StatusPage({ params: Promise.resolve({ status: "proposed" }) });
+    render(page);
+
+    // Mutation coverage: reverting to the bare `${stateCount} state(s)`
+    // template (dropping containsDc/statesPhrase) renders "2 states" instead.
+    expect(screen.getByText(/spanning 1 state and DC\./)).toBeInTheDocument();
+    expect(screen.queryByText(/spanning 2 states\./)).not.toBeInTheDocument();
+  });
+
+  it("phrases the fact line as a bare state count when no facility is in DC", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue([
+      makeFacility({ id: "a", location: { lat: 38, lon: -77, state: "VA", precision: "exact" } }),
+      makeFacility({ id: "b", location: { lat: 40, lon: -90, state: "IL", precision: "exact" } }),
+    ]);
+
+    const page = await StatusPage({ params: Promise.resolve({ status: "proposed" }) });
+    render(page);
+
+    expect(screen.getByText(/spanning 2 states\./)).toBeInTheDocument();
   });
 });

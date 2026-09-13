@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { getCryptoMiningFacilities, getCryptoMiningStats } from "@/lib/data";
 import { formatLocation, formatPower, sortByMaxMwDesc, countDisclosedCapacity } from "@/lib/format";
+import { statesStatLabel, statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
 import { FacilityListRow } from "@/components/facility-list-row";
@@ -67,8 +68,8 @@ export default async function CryptoPage() {
               distinct from the AI/cloud data centers tracked elsewhere on
               this site. {formatPower(stats.operationalMw)} of that capacity
               is already operational, with {formatPower(stats.plannedMw)}{" "}
-              more in the pipeline, across {stats.stateCount}{" "}
-              {stats.stateCount === 1 ? "state" : "states"}.
+              more in the pipeline, across{" "}
+              {statesPhrase(stats.stateCount, stats.includesDc)}.
             </p>
             <p className="text-base leading-relaxed text-muted-foreground">
               The facilities below are the crypto-mining sites in Compute
@@ -82,7 +83,7 @@ export default async function CryptoPage() {
               { value: stats.count, label: "Facilities" },
               { value: formatPower(stats.operationalMw), label: "Operational" },
               { value: formatPower(stats.plannedMw), label: "Pipeline" },
-              { value: stats.stateCount, label: "States" },
+              { value: stats.stateCount, label: statesStatLabel(stats.stateCount, stats.includesDc) },
             ]}
           />
 

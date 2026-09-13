@@ -88,6 +88,7 @@ beforeEach(() => {
   mockGetStats.mockReset().mockResolvedValue({
     count: 5,
     states: 3,
+    includesDc: false,
     operationalMw: 5000,
     plannedMw: 3000,
     underConstructionMw: 1200,
@@ -192,6 +193,7 @@ describe("StatsPage — disclosedCapacityCount excludes cancelled facilities", (
     mockGetStats.mockReset().mockResolvedValue({
       count: 3,
       states: 1,
+      includesDc: false,
       operationalMw: 120,
       plannedMw: 40,
       underConstructionMw: 0,
@@ -217,6 +219,7 @@ describe("StatsPage — disclosedCapacityCount excludes cancelled facilities", (
     mockGetStats.mockReset().mockResolvedValue({
       count: 3,
       states: 1,
+      includesDc: false,
       operationalMw: 120,
       plannedMw: 40,
       underConstructionMw: 0,
@@ -230,6 +233,50 @@ describe("StatsPage — disclosedCapacityCount excludes cancelled facilities", (
     // without disclosed capacity.
     expect(
       screen.getByText(/Capacity is disclosed for 2 of the 3 tracked sites/)
+    ).toBeInTheDocument();
+  });
+});
+
+describe("StatsPage — DC-aware states wording", () => {
+  it("labels the states stat 'States + DC covered' and the top-states caption '1 state and DC covered' when the dataset includes DC", async () => {
+    mockGetStats.mockReset().mockResolvedValue({
+      count: 5,
+      states: 2,
+      includesDc: true,
+      operationalMw: 5000,
+      plannedMw: 3000,
+      underConstructionMw: 1200,
+    });
+
+    const page = await StatsPage();
+    render(page);
+
+    // Mutation coverage: reverting the stat-row label back to a hardcoded
+    // "States covered", or the caption back to the bare
+    // `${stats.states} state${...}` template, fails one of these two.
+    expect(screen.getByText("States + DC covered")).toBeInTheDocument();
+    expect(screen.queryByText("States covered")).not.toBeInTheDocument();
+    expect(
+      screen.getByText("1 state and DC covered · top 10 by facility count")
+    ).toBeInTheDocument();
+  });
+
+  it("labels the states stat plain 'States covered' and a bare state count in the caption when no facility is in DC", async () => {
+    mockGetStats.mockReset().mockResolvedValue({
+      count: 5,
+      states: 3,
+      includesDc: false,
+      operationalMw: 5000,
+      plannedMw: 3000,
+      underConstructionMw: 1200,
+    });
+
+    const page = await StatsPage();
+    render(page);
+
+    expect(screen.getByText("States covered")).toBeInTheDocument();
+    expect(
+      screen.getByText("3 states covered · top 10 by facility count")
     ).toBeInTheDocument();
   });
 });

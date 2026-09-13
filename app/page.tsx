@@ -39,7 +39,7 @@ export const metadata: Metadata = {
  */
 export default async function HomePage() {
   const edition = getDatasetEdition();
-  const { count, states, operationalMw, plannedMw, underConstructionMw } =
+  const { count, states, includesDc, operationalMw, plannedMw, underConstructionMw } =
     await getStats();
   const notable = await getNotableFacilities(6);
   const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
@@ -202,6 +202,7 @@ export default async function HomePage() {
         <SurveyLedger
           count={count}
           states={states}
+          includesDc={includesDc}
           operators={operatorCount}
           sources={sourcesCited}
           operationalMw={operationalMw}
@@ -216,6 +217,7 @@ export default async function HomePage() {
           counts={{
             sites: count,
             states,
+            includesDc,
             utilityLinked,
             frictionCount,
             aiClassified,

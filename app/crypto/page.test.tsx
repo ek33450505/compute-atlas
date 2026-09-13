@@ -84,6 +84,7 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
       operationalMw: 50,
       plannedMw: 10,
       stateCount: 1,
+      includesDc: false,
     });
 
     const page = await CryptoPage();
@@ -118,6 +119,7 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
       operationalMw: 50,
       plannedMw: 10,
       stateCount: 1,
+      includesDc: false,
     });
 
     const page = await CryptoPage();
@@ -148,6 +150,7 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
       operationalMw: 50,
       plannedMw: 20,
       stateCount: 1,
+      includesDc: false,
     });
 
     const page = await CryptoPage();
@@ -156,5 +159,48 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
     expect(
       screen.getByText(/Capacity is disclosed for 2 of the 2 tracked crypto-mining sites/)
     ).toBeInTheDocument();
+  });
+});
+
+describe("CryptoPage — DC-aware states wording", () => {
+  it("phrases the stat tile and prose as 'States + DC' / '1 state and DC' when the tracked codes include DC", async () => {
+    mockGetCryptoMiningFacilities.mockReset().mockResolvedValue([
+      makeFacility({ id: "a", location: { state: "DC" } }),
+    ]);
+    mockGetCryptoMiningStats.mockReset().mockResolvedValue({
+      count: 1,
+      operationalMw: 5,
+      plannedMw: 0,
+      stateCount: 2,
+      includesDc: true,
+    });
+
+    const page = await CryptoPage();
+    render(page);
+
+    // Mutation coverage: reverting either call site back to a bare
+    // `${stats.stateCount} states` template renders "2 states" instead.
+    expect(screen.getByText(/across 1 state and DC\./)).toBeInTheDocument();
+    expect(screen.getByText("States + DC")).toBeInTheDocument();
+    expect(screen.queryByText("2 states")).not.toBeInTheDocument();
+  });
+
+  it("phrases the stat tile and prose as a bare count when no tracked code is DC", async () => {
+    mockGetCryptoMiningFacilities.mockReset().mockResolvedValue([
+      makeFacility({ id: "a", location: { state: "TX" } }),
+    ]);
+    mockGetCryptoMiningStats.mockReset().mockResolvedValue({
+      count: 1,
+      operationalMw: 5,
+      plannedMw: 0,
+      stateCount: 1,
+      includesDc: false,
+    });
+
+    const page = await CryptoPage();
+    render(page);
+
+    expect(screen.getByText(/across 1 state\./)).toBeInTheDocument();
+    expect(screen.getByText("State")).toBeInTheDocument();
   });
 });

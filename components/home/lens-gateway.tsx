@@ -11,10 +11,13 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { statesPhrase } from "@/lib/us-states";
+
 export interface LensGatewayProps {
   counts: {
     sites: number;
     states: number;
+    includesDc: boolean;
     utilityLinked: number;
     frictionCount: number;
     aiClassified: number;
@@ -47,7 +50,7 @@ const LENSES: Lens[] = [
     label: "By state",
     href: "/states",
     icon: MapPin,
-    stat: (c) => `${c.states} states`,
+    stat: (c) => statesPhrase(c.states, c.includesDc),
     blurb: "Every state, ranked by capacity, build status, and friction.",
   },
   {

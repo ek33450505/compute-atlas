@@ -8,6 +8,7 @@ import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
+import { statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { SupportCta } from "@/components/support-cta";
@@ -370,9 +371,9 @@ export default async function AboutPage() {
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
           The dataset now covers {stats.count.toLocaleString("en-US")}{" "}
-          facilities across {stats.states} states, compiled from publicly
-          available sources. Every record links to the specific sources used to
-          create or update it. Source types include:
+          facilities across {statesPhrase(stats.states, stats.includesDc)},
+          compiled from publicly available sources. Every record links to the
+          specific sources used to create or update it. Source types include:
         </p>
         <p className="text-sm leading-relaxed text-muted-foreground">
           For the full sourcing standard &mdash; how facilities are found,

@@ -121,4 +121,21 @@ describe("StatesIndexPage", () => {
     // to prove StatesIndexPage actually passes exactly these 4 stats.
     expect(tileFor("2").parentElement?.children).toHaveLength(tiles.length);
   });
+
+  it("labels the states tile 'States + DC' when a tracked code is DC", async () => {
+    mockGetStates.mockResolvedValue(["VA", "DC"]);
+    mockGetStateSummary.mockImplementation((code: string) =>
+      Promise.resolve(
+        makeStateSummary({ code, count: 1, operationalMw: 10, plannedMw: 0 })
+      )
+    );
+
+    const page = await StatesIndexPage();
+    render(page);
+
+    // Mutation coverage: reverting to a hardcoded "States" label (dropping
+    // containsDc/statesStatLabel) fails this and passes the negative below.
+    expect(within(tileFor("2")).getByText("States + DC")).toBeInTheDocument();
+    expect(within(tileFor("2")).queryByText("States")).not.toBeInTheDocument();
+  });
 });

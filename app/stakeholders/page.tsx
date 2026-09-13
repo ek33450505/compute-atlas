@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getStakeholders } from "@/lib/data";
+import { containsDc, statesStatLabel } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -29,7 +30,9 @@ export const metadata: Metadata = {
  */
 export default async function StakeholdersIndexPage() {
   const people = await getStakeholders();
-  const stateCount = new Set(people.flatMap((p) => p.states)).size;
+  const stakeholderStateCodes = new Set(people.flatMap((p) => p.states));
+  const stateCount = stakeholderStateCodes.size;
+  const stakeholderStatesIncludeDc = containsDc(stakeholderStateCodes);
   const totalFacilityLinks = people.reduce((sum, p) => sum + p.facilityCount, 0);
 
   return (
@@ -71,7 +74,10 @@ export default async function StakeholdersIndexPage() {
         stats={[
           { value: people.length.toLocaleString(), label: "People" },
           { value: totalFacilityLinks.toLocaleString(), label: "Facility links" },
-          { value: stateCount.toLocaleString(), label: "States" },
+          {
+            value: stateCount.toLocaleString(),
+            label: statesStatLabel(stateCount, stakeholderStatesIncludeDc),
+          },
         ]}
       />
 

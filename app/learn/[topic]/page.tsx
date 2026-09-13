@@ -15,6 +15,7 @@ import {
   getFacilitiesByIds,
 } from "@/lib/data";
 import { formatMgd, formatPower } from "@/lib/format";
+import { statesPhrase } from "@/lib/us-states";
 import { ENERGY_SOURCE_ENTRIES, COOLING_TYPE_ENTRIES } from "@/lib/energy";
 import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
@@ -91,7 +92,7 @@ async function getTopicContent(slug: string): Promise<TopicContent | undefined> 
       const energyRows = ENERGY_SOURCE_ENTRIES.filter(({ key }) => energyCounts[key] > 0);
       const energyReporting = energyRows.reduce((sum, { key }) => sum + energyCounts[key], 0);
       return {
-        explainer: `Compute Atlas tracks ${typeCounts.data_center} data centers across ${stats.states} states, alongside ${typeCounts.crypto_mining} crypto-mining sites and ${typeCounts.power_generation} dedicated generation projects, with ${formatPower(stats.operationalMw)} of operational capacity today and ${formatPower(stats.plannedMw)} planned or under construction.`,
+        explainer: `Compute Atlas tracks ${typeCounts.data_center} data centers across ${statesPhrase(stats.states, stats.includesDc)}, alongside ${typeCounts.crypto_mining} crypto-mining sites and ${typeCounts.power_generation} dedicated generation projects, with ${formatPower(stats.operationalMw)} of operational capacity today and ${formatPower(stats.plannedMw)} planned or under construction.`,
         stats: [
           { value: formatPower(stats.operationalMw), label: "Operational" },
           { value: formatPower(stats.plannedMw), label: "Planned pipeline" },

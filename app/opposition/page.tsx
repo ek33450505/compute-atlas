@@ -9,6 +9,7 @@ import {
 } from "@/lib/data";
 import { COMMUNITY_RECEPTION_META, type CommunityReception } from "@/lib/community";
 import { formatLocation } from "@/lib/format";
+import { containsDc, statesStatLabel, statesPhrase } from "@/lib/us-states";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
@@ -51,9 +52,11 @@ export default async function OppositionPage() {
     }))
   );
   const total = FRICTION_ORDER.reduce((sum, status) => sum + counts[status], 0);
-  const statesWithFriction = new Set(
+  const frictionStateCodes = new Set(
     groups.flatMap((g) => g.facilities.map((f) => f.location.state))
-  ).size;
+  );
+  const statesWithFriction = frictionStateCodes.size;
+  const frictionIncludesDc = containsDc(frictionStateCodes);
   const jsonLdFacilities = [
     ...groups.flatMap((g) => g.facilities),
     ...defeatedProjects,
@@ -61,7 +64,7 @@ export default async function OppositionPage() {
   const surveyStats: SurveyStat[] = [
     { value: total, label: "Friction sites" },
     { value: counts.litigation, label: "In litigation" },
-    { value: statesWithFriction, label: "States" },
+    { value: statesWithFriction, label: statesStatLabel(statesWithFriction, frictionIncludesDc) },
   ];
   if (defeatedProjects.length > 0) {
     surveyStats.push({
@@ -120,8 +123,8 @@ export default async function OppositionPage() {
               feels.
             </p>
             <p>
-              Those sites span {statesWithFriction}{" "}
-              {statesWithFriction === 1 ? "state" : "states"} across the country. A
+              Those sites span {statesPhrase(statesWithFriction, frictionIncludesDc)}{" "}
+              across the country. A
               facility with no friction status on file has not necessarily been
               welcomed locally — it may simply be a project nobody has yet documented
               a public objection to.

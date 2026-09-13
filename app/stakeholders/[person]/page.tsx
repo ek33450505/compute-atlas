@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { getStakeholders, getStakeholderBySlug, getFacilitiesByStakeholder } from "@/lib/data";
+import { containsDc, statesStatLabel } from "@/lib/us-states";
 import { CollectionPage } from "@/components/collection/collection-page";
 import { formatStakeholderRole } from "../format-role";
 
@@ -59,6 +60,7 @@ export default async function StakeholderPage({
   const summary = people.find((p) => p.slug === slug);
   const roles = summary?.roles ?? [];
   const states = summary?.states ?? [];
+  const statesIncludeDc = containsDc(states);
   const roleList = roles.map(formatStakeholderRole).join(", ");
 
   return (
@@ -85,7 +87,10 @@ export default async function StakeholderPage({
       ]}
       statRow={[
         { label: "Facilities", value: String(facilities.length) },
-        { label: "States", value: String(states.length) },
+        {
+          label: statesStatLabel(states.length, statesIncludeDc),
+          value: String(states.length),
+        },
       ]}
       facilities={facilities}
       emptyMessage={`No facilities are on file yet for ${name}.`}
