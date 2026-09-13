@@ -425,6 +425,94 @@ describe("POST /api/contribute — 'email me when reviewed' (SUBMISSION_NOTIFY_E
     expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
   });
 
+  it("flag OFF: an over-long notifyEmail value is silently ignored — 201, zero notify rows, zero submissions rows", async () => {
+    const longEmail = "a".repeat(1000) + "@example.com"; // way past any sane email length
+    const res = await POST(req({ ...validCreateBody, notifyEmail: longEmail }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag OFF: notifyEmail as a number is silently ignored — 201, zero notify rows", async () => {
+    const res = await POST(req({ ...validCreateBody, notifyEmail: 123 }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag OFF: notifyEmail as an array is silently ignored — 201, zero notify rows", async () => {
+    const res = await POST(req({ ...validCreateBody, notifyEmail: ["test@example.com"] }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag OFF: notifyEmail as an object is silently ignored — 201, zero notify rows", async () => {
+    const res = await POST(req({ ...validCreateBody, notifyEmail: { email: "test@example.com" } }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag OFF: notifyEmail as null is silently ignored — 201, zero notify rows", async () => {
+    const res = await POST(req({ ...validCreateBody, notifyEmail: null }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag OFF: notifyEmail as a boolean is silently ignored — 201, zero notify rows", async () => {
+    const res = await POST(req({ ...validCreateBody, notifyEmail: true }));
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag OFF: notifyEmail alongside honeypot is silently ignored — 201, zero rows in both tables", async () => {
+    const res = await POST(
+      req({ ...validCreateBody, website: "spam", notifyEmail: "contributor@example.com" })
+    );
+    expect(res.status).toBe(201);
+    expect((await res.json()).ok).toBe(true);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it("flag OFF: response body is byte-identical to the no-notifyEmail baseline for all invalid types", async () => {
+    // Capture the baseline: no notifyEmail at all
+    const baselineRes = await POST(req(validCreateBody));
+    const baselineBody = await baselineRes.text();
+
+    // Test multiple invalid-type cases with the exact same response expectation
+    const testCases = [
+      { notifyEmail: 123 },
+      { notifyEmail: ["test@example.com"] },
+      { notifyEmail: null },
+      { notifyEmail: true },
+    ];
+
+    for (const testCase of testCases) {
+      pendingAfter = undefined; // Reset for each iteration
+      const res = await POST(req({ ...validCreateBody, ...testCase }));
+      const body = await res.text();
+      expect(body).toBe(baselineBody);
+      expect(body).toBe('{"ok":true}');
+    }
+  });
+
   it("flag ON: a throw inside the deferred notify write does not fail the request and logs a code, not the error object", async () => {
     vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
     // Breaks BOTH queries recordNotifyRequestBestEffort can run (the cap-check

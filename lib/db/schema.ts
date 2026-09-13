@@ -153,7 +153,6 @@ export const subscriptionsTable = pgTable(
     status: text("status").notNull().default("pending"), // pending | confirmed | unsubscribed
     confirmToken: text("confirm_token").notNull(), // sha256 hash (64 hex) of the raw 256-bit base64url single-use (double-opt-in) token; raw is shown once to its owner in the confirm email, so a DB leak yields no usable credential — see lib/token-hash.ts
     unsubscribeToken: text("unsubscribe_token").notNull(), // deliberately RAW, not hashed — 256-bit base64url; lib/notify.ts must embed this, readable, in every future alert email, and its leak blast radius is unsubscribe-only, not data access
-    submitterIpHash: text("submitter_ip_hash"), // for subscribe rate-limiting
     confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
     unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
   },
@@ -162,7 +161,6 @@ export const subscriptionsTable = pgTable(
     index("subscriptions_target_idx").on(table.targetType, table.targetId),
     uniqueIndex("subscriptions_confirm_token_idx").on(table.confirmToken),
     uniqueIndex("subscriptions_unsub_token_idx").on(table.unsubscribeToken),
-    index("subscriptions_ip_idx").on(table.submitterIpHash),
     // Plus a hand-managed PARTIAL UNIQUE index `subscriptions_active_target_idx`
     // in drizzle/0004 (one active sub per email+target; excludes unsubscribed) —
     // not modeled here because Drizzle can't cleanly express the COALESCE/partial

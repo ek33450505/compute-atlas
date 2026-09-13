@@ -48,6 +48,27 @@
 # stay distinguishable.
 #
 # Requires: DATABASE_URL as a repo secret (already configured for neon-sync).
+#
+# DIGEST CRASH CHECK (added 2026-09-13):
+# The state digest feature (currently DISABLED via STATE_DIGEST_ENABLED=false)
+# records a `state_digest_runs` row and CLAIMS it BEFORE sending — sets
+# `started_at` and creates the row. If a run crashes mid-send, `completedAt`
+# remains NULL. This watchdog detects that case and reports it.
+#
+# The check gracefully handles:
+#   - Feature disabled (no alert needed) — table doesn't exist yet, is empty, or
+#     the feature has never run; all read as "healthy".
+#   - Feature deployed but healthy — all runs completed, exit 0.
+#   - Crashed run detected — at least one row with completedAt IS NULL, exit 1.
+#   - Check failed — DATABASE_URL unset or Neon unreachable, exit 1 (distinct
+#     from "crashed run").
+#
+# The check NEVER edits, deletes, or "fixes" anything. Recovery is manual —
+# deleting the row in Neon by hand. Reporting is the only action.
+#
+# Deliberately separates the two checks so a heartbeat failure doesn't mask
+# a digest crash, or vice versa — both fire in one run if either detects a
+# problem.
 
 name: Discovery Watchdog
 
@@ -61,7 +82,7 @@ permissions:
 
 jobs:
   watchdog:
-    name: Verify discovery actually ran
+    name: Verify discovery and digest status
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -78,4 +99,87 @@ jobs:
       # `--env-file=.env.local`, which does not exist on a runner; here
       # DATABASE_URL arrives from the job env above.
       - name: Check discovery heartbeat freshness
+        id: heartbeat
+        continue-on-error: true
         run: npx tsx scripts/discovery/check-heartbeat.ts
+
+      # Check for incomplete digest runs (completedAt IS NULL). The state
+      # digest (currently DISABLED) claims a run BEFORE sending, so a NULL
+      # completion_at means a crash mid-send.
+      #
+      # The check gracefully handles the feature being absent or disabled:
+      # - Table doesn't exist (migration 0013 not applied): exits 0, reports
+      #   "feature not yet deployed".
+      # - Table exists but empty (feature deployed, never run): exits 0,
+      #   reports "no crashed runs".
+      # - All runs completed: exits 0, reports healthy.
+      # - One or more runs incomplete: exits 1, reports crash.
+      # - Check itself fails (DATABASE_URL unset, Neon unreachable): exits 1,
+      #   reports detector error (distinct from a digest crash).
+      #
+      # rc is captured the instant the command returns and echoed as a plain
+      # command — never through a pipe, which would report the pipe's status
+      # instead (see the drift-alert postmortem and CLAUDE.md's note on `tee`).
+      - name: Check digest run status
+        id: digest
+        continue-on-error: true
+        run: |
+          set +e
+          OUTPUT="$(npx tsx scripts/discovery/check-digest-status.ts 2>&1)"
+          rc=$?
+          set -e
+          echo "$OUTPUT"
+          echo "digest check exit code: $rc"
+          STATE="$(printf '%s\n' "$OUTPUT" | scripts/classify-digest-output.sh "$rc")"
+          echo "classified state: $STATE"
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+
+      # Always runs, so a heartbeat failure doesn't mask a digest crash or vice
+      # versa. The job fails if either check reports a real problem; both outputs
+      # are visible. Heartbeat problems are the primary concern (missed discovery
+      # runs), so report them first; digest problems are secondary (a crash that
+      # happened in a feature currently disabled).
+      - name: Report heartbeat failure
+        if: always() && steps.heartbeat.outcome == 'failure'
+        run: |
+          echo "::error::discovery_heartbeat freshness check failed — read its output above for the reason."
+          exit 1
+
+      # Report only if the digest detector itself failed (DATABASE_URL unset,
+      # Neon unreachable, etc.) — distinguish from an actual crash.
+      - name: Report digest detector failure
+        if: always() && steps.digest.outputs.state == 'detector-broken'
+        run: |
+          echo "::error::The digest status check did not run to completion, so nothing can be reported about digest runs. Read the detector output above for the cause."
+          exit 1
+
+      # Report only if a digest crash was detected (completedAt IS NULL).
+      - name: Report incomplete digest run
+        if: always() && steps.digest.outputs.state == 'crashed'
+        run: |
+          echo "::error::One or more state digest runs are incomplete (completedAt IS NULL), indicating a crash mid-send. Read the detector output above for details. Recovery requires manual deletion of the row in Neon — see CLAUDE.md."
+          exit 1
+
+      # FAIL-CLOSED CATCH-ALL. The three reporting steps above each match ONE
+      # exact state, so an unrecognised — or EMPTY — value matches none of them
+      # and the job finishes GREEN having reported nothing. Empty is reachable:
+      # the digest step carries `continue-on-error: true`, so if it aborts
+      # before writing $GITHUB_OUTPUT (a missing `npx`, a non-executable
+      # classifier, anything under the restored `set -e`) its failure is
+      # swallowed and `state` is never set. `healthy` is the only value that is
+      # legitimately silent, so every other value must be enumerated or fail.
+      #
+      # This is the exact shape drift-alert.yml shipped fail-open TWICE before
+      # it was closed the same way on 2026-09-13. Do not remove this step
+      # because "the classifier only ever prints three words" — that the
+      # classifier is *supposed* to is precisely the assumption worth checking
+      # across a process boundary.
+      - name: Fail if the digest state was never classified
+        if: >-
+          always()
+          && steps.digest.outputs.state != 'healthy'
+          && steps.digest.outputs.state != 'crashed'
+          && steps.digest.outputs.state != 'detector-broken'
+        run: |
+          echo "::error::The digest check produced no recognised classification (state='${{ steps.digest.outputs.state }}', step outcome='${{ steps.digest.outcome }}'), so THIS WORKFLOW LEARNED NOTHING about digest runs. This is not a report that all runs completed — it is the absence of a report. Failing closed."
+          exit 1

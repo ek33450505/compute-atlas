@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 
-import { normalizeCountiesIn, tallyByState } from "./normalize-county-suffixes";
+import {
+  normalizeCountiesIn,
+  normalizeCountyCase,
+  tallyByState,
+} from "./normalize-county-suffixes";
 import type { DataCenterFacility } from "../lib/schema";
 
 /**
@@ -43,7 +47,9 @@ describe("normalizeCountiesIn", () => {
     ]);
 
     expect(facilities[0].location.county).toBe("Tulsa");
-    expect(changes).toEqual([{ id: "tulsa", state: "OK", from: "Tulsa County", to: "Tulsa" }]);
+    expect(changes).toEqual([
+      { id: "tulsa", state: "OK", from: "Tulsa County", to: "Tulsa", kind: "suffix" },
+    ]);
   });
 
   it("strips a ' Parish' suffix", () => {
@@ -65,21 +71,83 @@ describe("normalizeCountiesIn", () => {
     expect(changes).toEqual([]);
   });
 
-  it("leaves an independent city's lowercase ' city' untouched", () => {
-    // "Baltimore city" is the place's actual name, not a suffixed county —
-    // stripping it would merge it with a same-named county elsewhere.
+  it("leaves an already-canonical independent city's ' city' untouched, and does not strip it as a suffix", () => {
+    // "Baltimore city" and "St. Louis city" are the places' actual names, not
+    // suffixed counties — the suffix rule must never treat "city" as a
+    // civil-division suffix to strip, the way it treats "County"/"Parish"/
+    // "Borough". This is rule 1's job, not rule 2's; see the next test for
+    // rule 2's mis-cased "St. Louis City".
     const { facilities, changes } = normalizeCountiesIn([
       makeFacility("baltimore", "MD", "Baltimore city"),
       makeFacility("stl-lower", "MO", "St. Louis city"),
+    ]);
+
+    expect(facilities.map((f) => f.location.county)).toEqual(["Baltimore city", "St. Louis city"]);
+    expect(changes).toEqual([]);
+  });
+
+  it("case rule: corrects a mis-cased independent-city name to its canonical lowercase 'city'", () => {
+    const { facilities, changes } = normalizeCountiesIn([
       makeFacility("stl-upper", "MO", "St. Louis City"),
     ]);
 
-    expect(facilities.map((f) => f.location.county)).toEqual([
-      "Baltimore city",
-      "St. Louis city",
-      "St. Louis City",
+    expect(facilities[0].location.county).toBe("St. Louis city");
+    expect(changes).toEqual([
+      { id: "stl-upper", state: "MO", from: "St. Louis City", to: "St. Louis city", kind: "case" },
     ]);
-    expect(changes).toEqual([]);
+  });
+
+  it("case rule: does not touch an unrelated county whose real name happens to end in 'City'", () => {
+    // Adversarial fixture, not a vacuous one: Virginia's real James City
+    // County, once the suffix rule strips " County", becomes "James City" —
+    // capitalized correctly, because that IS the county's proper name, not a
+    // case bug. A blanket "lowercase any trailing city word" rule would
+    // silently corrupt this; the allowlist must not.
+    const { facilities, changes } = normalizeCountiesIn([
+      makeFacility("james-city", "VA", "James City County"),
+    ]);
+
+    expect(facilities[0].location.county).toBe("James City");
+    expect(changes).toEqual([
+      {
+        id: "james-city",
+        state: "VA",
+        from: "James City County",
+        to: "James City",
+        kind: "suffix",
+      },
+    ]);
+  });
+
+  it("case rule: is scoped per-state — a same-named 'city' string in an unlisted state is untouched", () => {
+    expect(normalizeCountyCase("St. Louis City", "IL")).toBe("St. Louis City");
+  });
+
+  it("composes without double-transforming a record that matches both rules", () => {
+    // Synthetic/hypothetical — no real record has a spurious " County" tacked
+    // onto an independent-city name — but it is the shape both rules must
+    // handle correctly in sequence: strip the suffix first, THEN fix the
+    // resulting name's case, recording one change per rule rather than
+    // conflating them or looping.
+    const { facilities, changes } = normalizeCountiesIn([
+      makeFacility("stl-both", "MO", "St. Louis City County"),
+    ]);
+
+    expect(facilities[0].location.county).toBe("St. Louis city");
+    expect(changes).toEqual([
+      {
+        id: "stl-both",
+        state: "MO",
+        from: "St. Louis City County",
+        to: "St. Louis City",
+        kind: "suffix",
+      },
+      { id: "stl-both", state: "MO", from: "St. Louis City", to: "St. Louis city", kind: "case" },
+    ]);
+
+    // Re-running against the corrected output is a no-op — idempotent.
+    const second = normalizeCountiesIn(facilities);
+    expect(second.changes).toEqual([]);
   });
 
   it("leaves a record with no county untouched", () => {
@@ -131,12 +199,12 @@ describe("normalizeCountiesIn", () => {
 describe("tallyByState", () => {
   it("counts per state, sorted count desc then state A→Z", () => {
     const tally = tallyByState([
-      { id: "a", state: "WI", from: "Dane County", to: "Dane" },
-      { id: "b", state: "OK", from: "Tulsa County", to: "Tulsa" },
-      { id: "c", state: "OK", from: "Mayes County", to: "Mayes" },
-      { id: "d", state: "WI", from: "Rock County", to: "Rock" },
-      { id: "e", state: "OK", from: "Kay County", to: "Kay" },
-      { id: "f", state: "LA", from: "Rapides Parish", to: "Rapides" },
+      { id: "a", state: "WI", from: "Dane County", to: "Dane", kind: "suffix" },
+      { id: "b", state: "OK", from: "Tulsa County", to: "Tulsa", kind: "suffix" },
+      { id: "c", state: "OK", from: "Mayes County", to: "Mayes", kind: "suffix" },
+      { id: "d", state: "WI", from: "Rock County", to: "Rock", kind: "suffix" },
+      { id: "e", state: "OK", from: "Kay County", to: "Kay", kind: "suffix" },
+      { id: "f", state: "LA", from: "Rapides Parish", to: "Rapides", kind: "suffix" },
     ]);
 
     expect(tally).toEqual([
@@ -148,8 +216,8 @@ describe("tallyByState", () => {
 
   it("breaks a count tie alphabetically", () => {
     const tally = tallyByState([
-      { id: "a", state: "WI", from: "Dane County", to: "Dane" },
-      { id: "b", state: "LA", from: "Rapides Parish", to: "Rapides" },
+      { id: "a", state: "WI", from: "Dane County", to: "Dane", kind: "suffix" },
+      { id: "b", state: "LA", from: "Rapides Parish", to: "Rapides", kind: "suffix" },
     ]);
 
     expect(tally).toEqual([

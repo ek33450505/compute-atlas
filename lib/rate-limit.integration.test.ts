@@ -110,7 +110,6 @@ describe("checkSubscribeRateLimit", () => {
         status: "pending",
         confirmToken: `tok-${i}`,
         unsubscribeToken: `unsub-${i}`,
-        submitterIpHash: IP_HASH,
       });
     }
     expect((await checkSubscribeRateLimit(IP_HASH)).ok).toBe(true);

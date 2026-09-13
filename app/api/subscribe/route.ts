@@ -122,7 +122,7 @@ export async function POST(request: Request) {
     return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const result = await subscribeToTarget(body, ipHash);
+  const result = await subscribeToTarget(body);
 
   if (!result.ok) {
     return jsonResponse({ error: result.error, issues: result.issues }, { status: result.status });
