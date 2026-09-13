@@ -243,3 +243,99 @@ material change from the three-value conclusion.
 ⚠️ Sample sizes bound all of this: 15 `confirmed`, 4 `mixed_use` and 44 `null` labels. The 100% is
 14 of 14 — a wide interval, not a pinned rate. Labels remain single-pass, so inter-annotator
 agreement is unmeasured.
+
+## mixed_use rewording — a prediction registered before the run
+
+Registered 2026-09-13, BEFORE the run, per the discipline the previous section established after a
+prediction was falsified. The change under test is ONE clause: `mixed_use`'s definition in
+`run.mjs`'s `aiClassificationStated` prompt. `confirmed`'s wording, all three tie-breakers, the
+vocabulary, the labels and the 69-page corpus are untouched. The pre-revision result is frozen at
+`result-gpt-oss_20b-aiClassificationStated-mixedusev1.json`.
+
+What I predict:
+
+1. Both hallucinations disappear and become correct abstentions. `aligned-phx-01-02-03-az`, which
+quoted "AI & Cloud-Ready Campuses", returns null.
+2. `confirmed` stays 14 answered / 14 correct. Nothing in its definition changed.
+3. PRECISION 85% -> >=93%. ABSTENTION-ACC 95% -> >=97%. Score 53 -> >=60.
+4. RECALL does NOT fall below 85% — at most ONE additional miss. This is the risk side: only four
+positive `mixed_use` labels exist, and a tighter definition can suppress a true one.
+
+The counter-hypothesis I am betting against: the reallocation rule ("a model reallocates its errors
+onto whatever values remain") has now held twice in this corpus. I predict it does NOT bite here,
+because this intervention differs in kind from deleting `likely` — `mixed_use` still exists as a
+landing site, it is only harder to trigger. If errors DO land on `confirmed` instead, the rule is
+stronger than I think and generalises from removing a value to narrowing a definition.
+
+What falsifies each clause: (1) fails if either page returns a non-null value; (2) fails if
+`confirmed` is answered a different number of times or is wrong once; (3) fails on any metric below
+its floor; (4) fails if recall < 85%, i.e. two or more additional misses. A partial result is still
+a result — record which clauses held, not an overall verdict.
+
+### The result: the prediction was wrong on every clause but one
+
+Measured 2026-09-13, same 69 pages, same model, `temperature: 0`. **The rewording is worse and was
+reverted.** Its output is frozen at `result-gpt-oss_20b-aiClassificationStated-mixedusev2.json`;
+`run.mjs` carries the original wording again.
+
+| | v1 (original) | v2 (reworded) |
+|---|---|---|
+| PRECISION | **85%** | 72% |
+| RECALL | **89%** | 68% |
+| ABSTENTION-ACC | 95% | **98%** |
+| correct / correct-abstain | 17 / 42 | 13 / 43 |
+| miss | **1** | 2 |
+| WRONG / HALLUC | **1 / 2** | 4 / 1 |
+| score | **53** | 46 |
+
+Scored against the pre-registration: clause 1 half-held — `aligned-phx-01-02-03-az` did return null,
+but `edgecore-mesa-az` still fabricated. Clause 2 failed outright. Clause 3 failed: precision fell
+13 points instead of rising 8. Clause 4 failed: recall fell 21 points, not the one-miss ceiling.
+
+**Exactly six of 65 cells changed, and the shape of the change is the finding.**
+
+| facility | truth | v1 | v2 |
+|---|---|---|---|
+| `aligned-phx-01-02-03-az` | null | mixed_use ✗ | **null ✓** |
+| `applied-digital-polaris-forge-1-ellendale-nd` | confirmed | confirmed ✓ | mixed_use ✗ |
+| `dc-blox-atlanta-west-ga` | mixed_use | mixed_use ✓ | null ✗ |
+| `avaio-taurus-brandon-ms` | mixed_use | mixed_use ✓ | confirmed ✗ |
+| `global-ai-windsor-co` | confirmed | confirmed ✓ | mixed_use ✗ |
+| `edgecore-mesa-az` | null | mixed_use ✗ | confirmed ✗ |
+
+The rewording hit its target precisely — the "AI & Cloud-Ready Campuses" page it was written for now
+abstains correctly — and broke four answers that were already right, three of them by moving a page
+across the `confirmed`/`mixed_use` line.
+
+**Why: a tier's definition is not private to that tier.** The new wording asked whether the site
+ACTUALLY RUNS more than one workload. But "actually runs" is a criterion `confirmed` was already
+using; an AI data center actually runs AI. So instead of sharpening the axis that separates the two
+values — one workload versus several — the rewrite made them compete on an axis they share, and the
+boundary moved. Editing one enum member's definition silently re-specifies its neighbours.
+
+**Third confirmation of the reallocation rule, in a stronger form than stated.** The README above
+says a model reallocates its errors onto whatever values REMAIN when a value is deleted. The
+pre-registration bet that narrowing a definition was different in kind. It is not.
+`edgecore-mesa-az` has now fabricated under four prompt variants in a row, answering `confirmed`,
+then `likely`, then `mixed_use`, then `confirmed` again — every member of the three-value
+vocabulary, one after another, on a page whose correct answer is null throughout. It invents
+something regardless; the prompt only picks which value it invents. That is a property of the page
+and the model, not of the vocabulary.
+
+⚠️ **The label is not the bug — I checked, because this corpus's only two label corrections both
+came from the model disagreeing with the labeller.** `edgecore-mesa-az`'s page says "hyperscale
+customers' urgent need for AI and cloud-ready capacity", "designed for density", and "support and
+scale AI and cloud technology". All three are capability and positioning language about what the
+design can serve, with no stated tenant, workload or hardware. `null` is correct, and it matches
+TIE-BREAKER 1's own example verbatim. Four disagreements in a row is a page the model cannot read
+correctly, not a label to soften.
+
+⚠️ Sample size still bounds everything here: 15 `confirmed` labels, 4 `mixed_use`, 44 `null`. A
+four-cell regression is a large share of a small denominator, and this is a single deterministic run
+per prompt, not a repeated measurement.
+
+**Where this leaves #214's classification half.** The best measured prompt remains the v1 two-value
+field at P=85% / R=89%, still below the pinned bar (`capacityMw.operational` 100/100,
+`water.coolingType` 95/95), and still NOT an `ExtractableField`. The next experiment named in the
+previous section — a `confirmed`-only run — is unaffected by this result and remains the open lead.
+What this run rules out is the cheaper hypothesis that `mixed_use`'s wording alone was the gap.
