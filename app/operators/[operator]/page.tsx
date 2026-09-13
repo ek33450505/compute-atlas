@@ -11,7 +11,7 @@ import {
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatLocation, formatPower } from "@/lib/format";
-import { statesStatLabel, statesPhrase } from "@/lib/us-states";
+import { statesStat, statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
 import { FacilityListRow } from "@/components/facility-list-row";
@@ -88,6 +88,7 @@ export default async function OperatorPage({
     capacitySentence = "None have reported operational capacity or an active build phase yet.";
   }
   const overviewSentence = `Compute Atlas tracks ${summary.count} facilit${summary.count === 1 ? "y" : "ies"} operated by ${operatorName} across ${statesPhrase(summary.stateCount, summary.includesDc)}. ${capacitySentence}`;
+  const statesTile = statesStat(summary.stateCount, summary.includesDc);
 
   const topFacilityNames = facilities.slice(0, 3).map((f) => f.name);
   const facilitySentence =
@@ -136,7 +137,7 @@ export default async function OperatorPage({
           { value: summary.count, label: "Sites" },
           { value: formatPower(summary.operationalMw), label: "Operational" },
           { value: formatPower(summary.plannedMw), label: "Pipeline" },
-          { value: summary.stateCount, label: statesStatLabel(summary.stateCount, summary.includesDc) },
+          { value: statesTile.value, label: statesTile.label },
         ]}
       />
 

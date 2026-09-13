@@ -7,7 +7,7 @@ import {
   stateNameFromCode,
   stateSlugFromCode,
   containsDc,
-  statesStatLabel,
+  statesStat,
 } from "@/lib/us-states";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -81,6 +81,7 @@ export default async function CountiesIndexPage() {
   // county-bearing DC record (coresite-dc1-washington-d-c-dc) already puts
   // DC in `groups` today.
   const groupsIncludeDc = containsDc(groups.map((g) => g.code));
+  const statesTile = statesStat(groups.length, groupsIncludeDc);
 
   const facilitiesInCounties = counties.reduce((sum, c) => sum + c.count, 0);
   // Derived, never hardcoded: a record with no `location.county` on file
@@ -115,7 +116,7 @@ export default async function CountiesIndexPage() {
       <SurveyStatRow
         stats={[
           { value: counties.length.toLocaleString(), label: "Counties" },
-          { value: groups.length.toLocaleString(), label: statesStatLabel(groups.length, groupsIncludeDc) },
+          { value: statesTile.value.toLocaleString(), label: statesTile.label },
           { value: facilitiesInCounties.toLocaleString(), label: "In a county" },
         ]}
       />

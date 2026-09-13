@@ -5,7 +5,7 @@ import {
   stateSlugFromCode,
   stateCodeFromSlug,
   containsDc,
-  statesStatLabel,
+  statesStat,
   statesPhrase,
 } from "@/lib/us-states";
 import { getStates } from "@/lib/data";
@@ -61,22 +61,29 @@ describe("containsDc", () => {
   });
 });
 
-describe("statesStatLabel", () => {
-  it('is "States + DC" when withDc is true and total is more than 1', () => {
-    expect(statesStatLabel(51, true)).toBe("States + DC");
+describe("statesStat", () => {
+  // The value assertions are the ones that actually bite: a call site that
+  // reverts to passing the raw total as `value` (the exact "51 / States +
+  // DC" bug) still gets the label right and only the value goes stale.
+  it('derives {value: 50, label: "States + DC"} from a 51-jurisdiction total that includes DC', () => {
+    expect(statesStat(51, true)).toEqual({ value: 50, label: "States + DC" });
   });
 
-  it('is "DC" alone when withDc is true and DC is the only jurisdiction (total === 1)', () => {
-    expect(statesStatLabel(1, true)).toBe("DC");
+  it('singularizes the label to "State + DC" when exactly one state plus DC', () => {
+    expect(statesStat(2, true)).toEqual({ value: 1, label: "State + DC" });
   });
 
-  it('is "States" (plural) when withDc is false and total is not 1', () => {
-    expect(statesStatLabel(50, false)).toBe("States");
-    expect(statesStatLabel(0, false)).toBe("States");
+  it('is {value: 1, label: "DC"} when DC is the only jurisdiction (total === 1)', () => {
+    expect(statesStat(1, true)).toEqual({ value: 1, label: "DC" });
   });
 
-  it('is "State" (singular) when withDc is false and total is exactly 1', () => {
-    expect(statesStatLabel(1, false)).toBe("State");
+  it("passes the total through unchanged when withDc is false", () => {
+    expect(statesStat(49, false)).toEqual({ value: 49, label: "States" });
+    expect(statesStat(0, false)).toEqual({ value: 0, label: "States" });
+  });
+
+  it('singularizes to "State" when withDc is false and total is exactly 1', () => {
+    expect(statesStat(1, false)).toEqual({ value: 1, label: "State" });
   });
 });
 

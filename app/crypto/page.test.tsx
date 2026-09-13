@@ -1,5 +1,5 @@
 import { vi, describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 // vi.mock calls are hoisted above imports by Vitest. Route the shared mocks
 // through vi.hoisted() so their initialization is hoisted alongside the
@@ -163,7 +163,7 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
 });
 
 describe("CryptoPage — DC-aware states wording", () => {
-  it("phrases the stat tile and prose as 'States + DC' / '1 state and DC' when the tracked codes include DC", async () => {
+  it("phrases the stat tile and prose as 'State + DC' / '1 state and DC', showing the state count (1) not the raw jurisdiction total (2), when the tracked codes include DC", async () => {
     mockGetCryptoMiningFacilities.mockReset().mockResolvedValue([
       makeFacility({ id: "a", location: { state: "DC" } }),
     ]);
@@ -181,7 +181,15 @@ describe("CryptoPage — DC-aware states wording", () => {
     // Mutation coverage: reverting either call site back to a bare
     // `${stats.stateCount} states` template renders "2 states" instead.
     expect(screen.getByText(/across 1 state and DC\./)).toBeInTheDocument();
-    expect(screen.getByText("States + DC")).toBeInTheDocument();
+    // The bug this guards: the tile's rendered VALUE must be the state count
+    // (1), not the raw jurisdiction total (2) — "2 / States + DC" reads as
+    // "two states, plus DC." The "Facilities" tile legitimately also shows
+    // "1" here (stats.count === 1), so the value check is scoped to the
+    // states tile via its label rather than a bare screen.getByText("1").
+    const statesTile = screen.getByText("State + DC").closest("div");
+    expect(statesTile).not.toBeNull();
+    expect(within(statesTile!).getByText("1")).toBeInTheDocument();
+    expect(screen.queryByText("States + DC")).not.toBeInTheDocument();
     expect(screen.queryByText("2 states")).not.toBeInTheDocument();
   });
 

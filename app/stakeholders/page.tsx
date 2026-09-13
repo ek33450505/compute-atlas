@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getStakeholders } from "@/lib/data";
-import { containsDc, statesStatLabel } from "@/lib/us-states";
+import { containsDc, statesStat } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -34,6 +34,7 @@ export default async function StakeholdersIndexPage() {
   const stateCount = stakeholderStateCodes.size;
   const stakeholderStatesIncludeDc = containsDc(stakeholderStateCodes);
   const totalFacilityLinks = people.reduce((sum, p) => sum + p.facilityCount, 0);
+  const statesTile = statesStat(stateCount, stakeholderStatesIncludeDc);
 
   return (
     <div
@@ -75,8 +76,8 @@ export default async function StakeholdersIndexPage() {
           { value: people.length.toLocaleString(), label: "People" },
           { value: totalFacilityLinks.toLocaleString(), label: "Facility links" },
           {
-            value: stateCount.toLocaleString(),
-            label: statesStatLabel(stateCount, stakeholderStatesIncludeDc),
+            value: statesTile.value.toLocaleString(),
+            label: statesTile.label,
           },
         ]}
       />

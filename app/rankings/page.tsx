@@ -11,7 +11,7 @@ import {
   type StateCapacityRanking,
 } from "@/lib/data";
 import { formatLocation, formatPower } from "@/lib/format";
-import { stateNameFromCode, stateSlugFromCode, statesStatLabel } from "@/lib/us-states";
+import { stateNameFromCode, stateSlugFromCode, statesStat } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
 import { FacilityListRow } from "@/components/facility-list-row";
@@ -61,6 +61,8 @@ export default async function RankingsPage() {
     slug: stateSlugFromCode(s.state),
   }));
 
+  const statesTile = statesStat(stats.states, stats.includesDc);
+
   return (
     <div
       data-content-width="4xl"
@@ -107,7 +109,7 @@ export default async function RankingsPage() {
           <SurveyStatRow
             stats={[
               { value: stats.count, label: "Facilities" },
-              { value: stats.states, label: statesStatLabel(stats.states, stats.includesDc) },
+              { value: statesTile.value, label: statesTile.label },
               { value: formatPower(stats.operationalMw), label: "Operational" },
               { value: formatPower(stats.plannedMw), label: "Pipeline" },
             ]}

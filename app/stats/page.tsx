@@ -22,7 +22,7 @@ import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { COMMUNITY_RECEPTION_ORDER, COMMUNITY_RECEPTION_META } from "@/lib/community";
 import type { Facility } from "@/lib/schema";
 import { aiClassificationEnum } from "@/lib/schema";
-import { statesStatLabel, statesPhrase } from "@/lib/us-states";
+import { statesStat, statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -117,6 +117,7 @@ export default async function StatsPage() {
   const disclosedCapacityCount = countDisclosedCapacity(allFacilities);
   const unclassifiedCount =
     dataCenterCount - (aiCounts.confirmed + aiCounts.likely + aiCounts.mixed_use);
+  const statesTile = statesStat(stats.states, stats.includesDc);
 
   return (
     <div
@@ -166,8 +167,8 @@ export default async function StatsPage() {
         stats={[
           { value: total.toLocaleString("en-US"), label: "Sites tracked" },
           {
-            value: stats.states,
-            label: `${statesStatLabel(stats.states, stats.includesDc)} covered`,
+            value: statesTile.value,
+            label: `${statesTile.label} covered`,
           },
           {
             value: `${(stats.operationalMw / 1000).toFixed(1)} GW`,

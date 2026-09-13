@@ -125,13 +125,17 @@ describe("SurveyLedger", () => {
     ).toBeInTheDocument();
   });
 
-  it("phrases the states tile as '50 states and DC covered' when the dataset includes DC, keeping the animated number at the raw count", () => {
+  it("phrases the states tile as '50 states and DC covered', animating the number to the actual state count (50) not the raw jurisdiction total (51), when the dataset includes DC", () => {
     setReducedMotion(true);
     render(<SurveyLedger {...PROPS} states={51} includesDc={true} />);
 
-    // The big animated number stays the raw distinct-code count (51) — only
-    // the label/aria text becomes DC-aware.
-    expect(screen.getByText("51")).toBeInTheDocument();
+    // The bug this guards: the tile's animated number must land on the
+    // actual state count (50), not the raw distinct-code total (51) — "51 /
+    // States + DC" reads as "fifty-one states, plus DC." Reverting the
+    // count-up target back to the raw `states` prop fails this and the "51"
+    // negative below.
+    expect(screen.getByText("50")).toBeInTheDocument();
+    expect(screen.queryByText("51")).not.toBeInTheDocument();
     // Mutation coverage: reverting the label back to a hardcoded "States
     // covered", or the aria text back to `${states} states covered`, fails
     // one of these two assertions.

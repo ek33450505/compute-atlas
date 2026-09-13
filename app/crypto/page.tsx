@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { getCryptoMiningFacilities, getCryptoMiningStats } from "@/lib/data";
 import { formatLocation, formatPower, sortByMaxMwDesc, countDisclosedCapacity } from "@/lib/format";
-import { statesStatLabel, statesPhrase } from "@/lib/us-states";
+import { statesStat, statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
 import { FacilityListRow } from "@/components/facility-list-row";
@@ -37,6 +37,7 @@ export default async function CryptoPage() {
   ]);
   const allFacilities = [...facilities].sort(sortByMaxMwDesc);
   const disclosedCapacityCount = countDisclosedCapacity(allFacilities);
+  const statesTile = statesStat(stats.stateCount, stats.includesDc);
 
   return (
     <div
@@ -83,7 +84,7 @@ export default async function CryptoPage() {
               { value: stats.count, label: "Facilities" },
               { value: formatPower(stats.operationalMw), label: "Operational" },
               { value: formatPower(stats.plannedMw), label: "Pipeline" },
-              { value: stats.stateCount, label: statesStatLabel(stats.stateCount, stats.includesDc) },
+              { value: statesTile.value, label: statesTile.label },
             ]}
           />
 

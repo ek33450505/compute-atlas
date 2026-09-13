@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { getStates, getStateSummary, getAllFacilities } from "@/lib/data";
 import { formatPower } from "@/lib/format";
-import { stateNameFromCode, stateSlugFromCode, statesStatLabel, containsDc } from "@/lib/us-states";
+import { stateNameFromCode, stateSlugFromCode, statesStat, containsDc } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -28,6 +28,7 @@ export const metadata: Metadata = {
 export default async function StatesIndexPage() {
   const codes = await getStates();
   const includesDc = containsDc(codes);
+  const statesTile = statesStat(codes.length, includesDc);
   const rows = (
     await Promise.all(
       codes.map(async (code) => ({
@@ -78,7 +79,7 @@ export default async function StatesIndexPage() {
 
       <SurveyStatRow
         stats={[
-          { value: rows.length.toLocaleString(), label: statesStatLabel(rows.length, includesDc) },
+          { value: statesTile.value.toLocaleString(), label: statesTile.label },
           { value: totalFacilities.toLocaleString(), label: "Facilities" },
           { value: formatPower(totalOperationalMw), label: "Operational" },
           { value: formatPower(totalPlannedMw), label: "Pipeline" },

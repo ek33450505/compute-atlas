@@ -9,7 +9,7 @@ import {
 } from "@/lib/data";
 import { COMMUNITY_RECEPTION_META, type CommunityReception } from "@/lib/community";
 import { formatLocation } from "@/lib/format";
-import { containsDc, statesStatLabel, statesPhrase } from "@/lib/us-states";
+import { containsDc, statesStat, statesPhrase } from "@/lib/us-states";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
@@ -57,6 +57,7 @@ export default async function OppositionPage() {
   );
   const statesWithFriction = frictionStateCodes.size;
   const frictionIncludesDc = containsDc(frictionStateCodes);
+  const statesTile = statesStat(statesWithFriction, frictionIncludesDc);
   const jsonLdFacilities = [
     ...groups.flatMap((g) => g.facilities),
     ...defeatedProjects,
@@ -64,7 +65,7 @@ export default async function OppositionPage() {
   const surveyStats: SurveyStat[] = [
     { value: total, label: "Friction sites" },
     { value: counts.litigation, label: "In litigation" },
-    { value: statesWithFriction, label: statesStatLabel(statesWithFriction, frictionIncludesDc) },
+    { value: statesTile.value, label: statesTile.label },
   ];
   if (defeatedProjects.length > 0) {
     surveyStats.push({
