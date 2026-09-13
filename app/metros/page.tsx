@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { getFacilitiesByMetro } from "@/lib/data";
 import { METROS, metroCountyKey } from "@/lib/metros";
+import { containsDc, statesStatLabel } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -51,6 +52,11 @@ export default async function MetrosIndexPage() {
       stateCodes.add(state);
     }
   }
+  // No metro in lib/metros.ts currently lists "DC" in `states` (Northern
+  // Virginia is VA-only), so this is defensive rather than live today — kept
+  // DC-aware because `states` is hand-curated data that can change. Matches
+  // the same comment in app/metros/[metro]/page.tsx.
+  const stateCodesIncludeDc = containsDc(stateCodes);
   // Facilities inside a tracked metro only — a subset of the full dataset
   // (this lens is deliberately partial, see the overview prose below), so
   // this must NOT be labeled "Facilities" the way /states and /operators
@@ -75,7 +81,10 @@ export default async function MetrosIndexPage() {
         stats={[
           { value: METROS.length.toLocaleString(), label: "Metros" },
           { value: countyKeys.size.toLocaleString(), label: "Counties" },
-          { value: stateCodes.size.toLocaleString(), label: "States" },
+          {
+            value: stateCodes.size.toLocaleString(),
+            label: statesStatLabel(stateCodes.size, stateCodesIncludeDc),
+          },
           { value: facilitiesInMetros.toLocaleString(), label: "In a metro" },
         ]}
       />

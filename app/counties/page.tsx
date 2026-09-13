@@ -3,7 +3,12 @@ import type { Metadata } from "next";
 
 import { getAllFacilities, getCounties, type CountySummary } from "@/lib/data";
 import { formatCountyLabel } from "@/lib/metros";
-import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
+import {
+  stateNameFromCode,
+  stateSlugFromCode,
+  containsDc,
+  statesStatLabel,
+} from "@/lib/us-states";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { Breadcrumb } from "@/components/breadcrumb";
@@ -72,6 +77,10 @@ function groupByState(counties: CountySummary[]): StateGroup[] {
 export default async function CountiesIndexPage() {
   const [counties, facilities] = await Promise.all([getCounties(), getAllFacilities()]);
   const groups = groupByState(counties);
+  // Derived from the same group keys the tile counts, not getStats() — a
+  // county-bearing DC record (coresite-dc1-washington-d-c-dc) already puts
+  // DC in `groups` today.
+  const groupsIncludeDc = containsDc(groups.map((g) => g.code));
 
   const facilitiesInCounties = counties.reduce((sum, c) => sum + c.count, 0);
   // Derived, never hardcoded: a record with no `location.county` on file
@@ -106,7 +115,7 @@ export default async function CountiesIndexPage() {
       <SurveyStatRow
         stats={[
           { value: counties.length.toLocaleString(), label: "Counties" },
-          { value: groups.length.toLocaleString(), label: "States" },
+          { value: groups.length.toLocaleString(), label: statesStatLabel(groups.length, groupsIncludeDc) },
           { value: facilitiesInCounties.toLocaleString(), label: "In a county" },
         ]}
       />

@@ -6,7 +6,13 @@ import {
   getAiClassificationCounts,
   getFacilityTypeCounts,
 } from "@/lib/data";
-import { stateNameFromCode, stateSlugFromCode, containsDc, statesPhrase } from "@/lib/us-states";
+import {
+  stateNameFromCode,
+  stateSlugFromCode,
+  containsDc,
+  statesPhrase,
+  statesStatLabel,
+} from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -143,7 +149,7 @@ export default async function AiPage() {
               { value: totalAiClassified, label: "AI-classified" },
               { value: aiCounts.confirmed, label: "Confirmed" },
               { value: aiCounts.likely, label: "Likely" },
-              { value: stateRows.length, label: "States" },
+              { value: stateRows.length, label: statesStatLabel(stateRows.length, stateRowsIncludeDc) },
             ]}
           />
 
