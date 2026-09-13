@@ -1,18 +1,36 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
-import { METROS, metroCountyKey } from "@/lib/metros";
+import type { Metro } from "@/lib/metros";
 
-// vi.mock calls are hoisted above imports by Vitest. Route the shared mock
-// through vi.hoisted() so its initialization is hoisted alongside the
-// vi.mock call itself, rather than relying on a plain top-level const.
-const { mockGetFacilitiesByMetro } = vi.hoisted(() => ({
+// vi.mock calls are hoisted above imports by Vitest. Route the shared mocks
+// through vi.hoisted() so their initialization is hoisted alongside the
+// vi.mock call itself, rather than relying on plain top-level consts.
+//
+// `metrosBox` backs a live getter on the mocked `METROS` export so tests can
+// swap in a DC-including fixture without touching the real data file —
+// `metrosBox.real` is captured from the actual module inside the factory
+// below and restored in beforeEach.
+const { mockGetFacilitiesByMetro, metrosBox } = vi.hoisted(() => ({
   mockGetFacilitiesByMetro: vi.fn(),
+  metrosBox: { current: [] as Metro[], real: [] as Metro[] },
 }));
 
 vi.mock("@/lib/data", () => ({
   getFacilitiesByMetro: mockGetFacilitiesByMetro,
 }));
+
+vi.mock("@/lib/metros", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/metros")>();
+  metrosBox.real = actual.METROS;
+  metrosBox.current = actual.METROS;
+  return {
+    ...actual,
+    get METROS() {
+      return metrosBox.current;
+    },
+  };
+});
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency in jsdom
 vi.mock("next/link", () => ({
@@ -31,6 +49,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+import { METROS, metroCountyKey } from "@/lib/metros";
 import MetrosIndexPage from "./page";
 
 // Every metro resolves to the same facility count — count-per-metro (40)
@@ -50,6 +69,9 @@ beforeEach(() => {
   mockGetFacilitiesByMetro.mockResolvedValue(
     Array.from({ length: FACILITIES_PER_METRO })
   );
+  // Reset to the real METROS fixture before every test; individual tests may
+  // override metrosBox.current to inject a synthetic DC-including entry.
+  metrosBox.current = metrosBox.real;
 });
 
 describe("MetrosIndexPage", () => {
@@ -94,5 +116,59 @@ describe("MetrosIndexPage", () => {
     expect(
       tileFor(METROS.length.toLocaleString()).parentElement?.children
     ).toHaveLength(tiles.length);
+  });
+
+  it("labels the states tile 'States' — no metro in the real fixture lists DC", async () => {
+    // Regression guard for the real fixture, not a synthetic one: as of this
+    // writing no entry in lib/metros.ts includes "DC" in `states`, so the
+    // live page must render the bare label.
+    const page = await MetrosIndexPage();
+    render(page);
+
+    const stateCodes = new Set<string>();
+    for (const m of METROS) {
+      for (const state of m.states) stateCodes.add(state);
+    }
+
+    expect(
+      within(tileFor(stateCodes.size.toLocaleString())).getByText("States")
+    ).toBeInTheDocument();
+    expect(
+      within(tileFor(stateCodes.size.toLocaleString())).queryByText("States + DC")
+    ).not.toBeInTheDocument();
+  });
+
+  it("labels the states tile 'States + DC' when a metro's states include DC", async () => {
+    // Synthetic fixture: append a DC-including metro to the real set via
+    // metrosBox — proves containsDc/statesStatLabel are actually wired into
+    // this call site, rather than the label happening to read "States"
+    // because no real metro exercises the DC branch.
+    metrosBox.current = [
+      ...metrosBox.real,
+      {
+        slug: "test-dc-metro",
+        name: "Test DC Metro",
+        states: ["DC"],
+        counties: [["DC", "District of Columbia"]],
+      },
+    ];
+
+    const page = await MetrosIndexPage();
+    render(page);
+
+    const stateCodes = new Set<string>();
+    for (const m of metrosBox.current) {
+      for (const state of m.states) stateCodes.add(state);
+    }
+
+    // Mutation coverage: reverting the call site to a hardcoded "States"
+    // label (dropping containsDc/statesStatLabel) renders "States" here
+    // instead and fails this assertion.
+    expect(
+      within(tileFor(stateCodes.size.toLocaleString())).getByText("States + DC")
+    ).toBeInTheDocument();
+    expect(
+      within(tileFor(stateCodes.size.toLocaleString())).queryByText("States")
+    ).not.toBeInTheDocument();
   });
 });
