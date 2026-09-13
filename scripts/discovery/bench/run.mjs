@@ -112,6 +112,19 @@ const FIELDS = {
   // this vocabulary. The harness must EXCLUDE and NAME them, not score them
   // as abstentions -- scoring an inexpressible answer as a correct null would
   // credit the prompt for a question it was never asked.
+  // `mixed_use`'s wording was REVISED then REVERTED, both 2026-09-13. The revision
+  // narrowed `mixed_use` toward workloads the page says the facility ACTUALLY RUNS,
+  // targeting the 2026-09-12 run's two hallucinations (both "AI & Cloud-Ready
+  // Campuses" marketing copy). Rescored: it fixed that exact page but broke four
+  // answers that were already right -- P/R went 85/89 -> 72/68, score 53 -> 46.
+  // Root cause: "actually runs" was already `confirmed`'s criterion, so instead of
+  // sharpening the confirmed/mixed_use boundary the rewrite made the two values
+  // compete on an axis they share, and the boundary moved. Editing one enum
+  // member's definition silently re-specifies its neighbours. The reworded
+  // variant's output is frozen at
+  // result-gpt-oss_20b-aiClassificationStated-mixedusev2.json. ⛔ Do not
+  // re-propose narrowing `mixed_use` toward "what the site actually runs" without
+  // reading the README section on this result first.
   aiClassificationStated:
     "how strongly this page ties THIS SPECIFIC FACILITY to AI compute. " +
     "'confirmed' = the page explicitly describes THIS facility as an AI or GPU facility (an AI data center, " +
