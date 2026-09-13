@@ -1072,11 +1072,18 @@ EOF
 	[ "$status" -eq 0 ]
 }
 
-# --- rotation rebalance (2026-08-14) ----------------------------------------
+# --- rotation rebalance (2026-08-14, expanded 2026-09-13) -------------------
 # The prior 15-state rotation held 555 of 941 live facilities; the other 386
 # lived in states the pipeline NEVER visited. Note every test above pins
 # DISCOVERY_STATES to the OLD list (see setup()) because they test cursor
 # MECHANICS; these two are the ones that assert list CONTENT.
+#
+# 2026-09-13: expanded from 22 states to all 50 states + DC (51 tokens,
+# derived from lib/us-states.ts's US_STATE_NAMES). The 22 from the prior
+# rebalance stay first (asserted "not dropped" below); the 29 states that had
+# NEVER been in the rotation at all — not even pre-2026-08-14 — are asserted
+# "present" as their own group so a future edit can't silently drop the newly
+# added half.
 
 @test "the default rotation adds the unvisited hyperscaler states without dropping any" {
 	export DISCOVERY_ENABLED=true
@@ -1088,7 +1095,8 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
-	# newly added: the major hyperscaler markets that had zero attention
+	# newly added in the 2026-08-14 rebalance: the major hyperscaler markets
+	# that had zero attention
 	for s in IA NE WA OR MN MO UT; do
 		[[ "$output" == *"for state=$s"* ]] || {
 			echo "missing newly-added state: $s"
@@ -1103,6 +1111,75 @@ EOF
 			false
 		}
 	done
+}
+
+@test "the 2026-09-13 expansion adds all 29 never-swept states plus DC" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	unset DISCOVERY_STATES
+	rm -f "$LOG_DIR/cursor.txt"
+	export STATES_PER_RUN=99   # clamped to the rotation length — visits all
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# every state that had NEVER been in the rotation before this expansion —
+	# not the 2026-08-14 rebalance's additions, which the test above already
+	# covers — plus DC, a valid facility jurisdiction (lib/us-states.ts).
+	for s in AL AK AR CA CO CT DC DE FL HI ID KS KY ME MD MA MI MS MT NH NJ NY ND RI SC SD TN VT WV; do
+		[[ "$output" == *"for state=$s"* ]] || {
+			echo "2026-09-13 expansion missing state: $s"
+			false
+		}
+	done
+}
+
+@test "DEFAULT_STATES keeps the original 22 in their exact order at the front, with the 29 added states appended, no duplicates" {
+	# ORDER, not just membership — the test above only proves every state is
+	# PRESENT, and cannot fail if the list is re-sorted or a new state is
+	# spliced into the middle of the original 22. That distinction matters
+	# here specifically: the cursor file ($LOG_DIR/cursor.txt) holds a state
+	# CODE, not an index, so the whole safety argument for this rotation
+	# expansion (see run.sh's DEFAULT_STATES comment) is that the original 22
+	# keep their PRIOR order at the front and the 29 new states are appended
+	# after — only that shape keeps a live cursor valid across the change. A
+	# re-sort (e.g. someone alphabetizing the list later) or an insertion
+	# into the middle of the front 22 would keep every state present — still
+	# passing the test above — while silently relocating the cursor mid-cycle.
+	# Do not "simplify" this back to a membership check.
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	unset DISCOVERY_STATES
+	rm -f "$LOG_DIR/cursor.txt"
+	export STATES_PER_RUN=99   # clamped to 51 — the whole rotation in ONE batch,
+	                           # so BATCH_STATES[*] is the full ordered list.
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# Pull the exact ordered list run.sh actually iterated from its own
+	# "starting discovery batch for states=..." log line (run.sh:207) — this
+	# is the runtime BEHAVIOR (BATCH_STATES built from the live STATES array),
+	# not a re-parse of run.sh's source text, so a genuine reordering in
+	# DEFAULT_STATES cannot hide from it.
+	states_actual="$(grep -o 'starting discovery batch for states=[^(]*' <<<"$output" \
+		| sed -e 's/starting discovery batch for states=//' -e 's/[[:space:]]*$//')"
+	[ -n "$states_actual" ]
+
+	read -r -a actual_arr <<<"$states_actual"
+	[ "${#actual_arr[@]}" -eq 51 ]
+
+	unique_count="$(printf '%s\n' "${actual_arr[@]}" | sort -u | wc -l | tr -d ' ')"
+	[ "$unique_count" -eq 51 ]
+
+	# the first 22 tokens, in sequence, against a literal — this is the
+	# original 2026-08-14 rotation, unchanged.
+	first22="${actual_arr[*]:0:22}"
+	[ "$first22" = "IA NE WA OR MN MO UT TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA" ]
+
+	# the full 51-token sequence, in order, against a literal.
+	expected="IA NE WA OR MN MO UT TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA AL AK AR CA CO CT DC DE FL HI ID KS KY ME MD MA MI MS MT NH NJ NY ND RI SC SD TN VT WV"
+	[ "$states_actual" = "$expected" ]
 }
 
 @test "DISCOVERY_STATES drives a targeted manual run without editing the script" {

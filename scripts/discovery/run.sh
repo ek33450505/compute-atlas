@@ -122,10 +122,21 @@ fi
 # stopped re-checking their 216 facilities. 22 states at 2/run cycles in 11
 # days (was 7.5) — the cost of not losing re-check coverage.
 #
+# Expanded 2026-09-13 to all 50 states + DC (51 tokens, derived from
+# lib/us-states.ts's US_STATE_NAMES — the repo's single source of truth for
+# state codes). The prior 22 stay in their existing order at the FRONT and the
+# 29 never-swept states are appended after: the cursor file ($LOG_DIR/cursor.txt)
+# holds a state CODE, not an index, so preserving the existing prefix means the
+# live cursor stays valid and the rotation doesn't restart or skip anything —
+# re-sorting the whole list would relocate the cursor mid-cycle. The 29
+# appended states are the higher-yield half of this change: a flat
+# `lastUpdated` in one of the original 22 means the pipeline looked and found
+# nothing, but in one of these 29 it means nobody has ever looked.
+#
 # DISCOVERY_STATES overrides the list entirely (space-separated). That is the
 # supported way to drive a targeted manual run without editing this file:
 #   DISCOVERY_STATES="IA NE" STATES_PER_RUN=2 bash scripts/discovery/run.sh
-DEFAULT_STATES="IA NE WA OR MN MO UT TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA"
+DEFAULT_STATES="IA NE WA OR MN MO UT TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA AL AK AR CA CO CT DC DE FL HI ID KS KY ME MD MA MI MS MT NH NJ NY ND RI SC SD TN VT WV"
 read -r -a STATES <<< "${DISCOVERY_STATES:-$DEFAULT_STATES}"
 if (( ${#STATES[@]} == 0 )); then
   log "WARN: DISCOVERY_STATES was set but empty — falling back to the default rotation"
@@ -137,9 +148,27 @@ CURSOR_FILE="$LOG_DIR/cursor.txt"
 # claude call/submit. Default 2 (2026-08-14, ~3x daily-output push — the other
 # ~1.5x comes from the raised review cap below). Env-overridable for tests/
 # tuning. Clamped to [1, ${#STATES[@]}] so a bad value (0, negative, or bigger
-# than the rotation) can't loop forever or index out of STATES' bounds. With
-# 15 states, a step of 2 doesn't divide evenly — pairings vary cycle to cycle,
-# which is fine and intended, not a bug.
+# than the rotation) can't loop forever or index out of STATES' bounds.
+#
+# Deliberately NOT raised alongside the 2026-09-13 rotation expansion to 51
+# states (see DEFAULT_STATES above) — that would stack an unmeasured
+# throughput change on top of an unmeasured 2.3x scope change in the same
+# commit, making any regression unattributable to either. This round's
+# throughput lever is STEADY_CAP (raised 25 -> 30 below) instead: states run
+# sequentially within one invocation and the wall-clock cap is known NOT to
+# reliably enforce (see the OVERRUN_LIMIT_SECS note below — overruns of
+# 6399s/4232s/5456s against a 3000s cap, 2026-08-15), so a third state would
+# add another effectively-unbounded window, and a mid-batch death (machine
+# sleep or subscription session limit, both observed) costs every remaining
+# state in the batch. Raising the per-state cap does more work inside an
+# invocation that is already being paid for, without that risk.
+#
+# Rotation arithmetic: with STATES_PER_RUN unchanged at 2, 51 states / 2 per
+# day = ~26-day full cycle (was 22 states / 2 per day = 11-day cycle before
+# the 2026-09-13 expansion). That is the real cost of covering every state —
+# say it plainly so nobody discovers a 26-day cycle by surprise. 51 does NOT
+# divide evenly by 2, so pairings still vary cycle to cycle, same as the old
+# 22/2 and 15/2 rotations — fine and intended, not a bug.
 STATES_PER_RUN="${STATES_PER_RUN:-2}"
 (( STATES_PER_RUN < 1 )) && STATES_PER_RUN=1
 (( STATES_PER_RUN > ${#STATES[@]} )) && STATES_PER_RUN=${#STATES[@]}
@@ -364,10 +393,11 @@ candidates_file_bytes() {
 }
 
 # --- self-reverting review cap ----------------------------------------------
-# Burst: 25 candidates/day for the first BURST_DAYS days after BURST_START_DATE
-# (a deliberate ~2-week catch-up while the daily review queue is fresh), then
-# auto-revert to STEADY_CAP/day. No manual step to revert — the date does it.
-# MAX_CANDIDATES in the environment always overrides (escape hatch / tests).
+# Burst: BURST_CAP candidates/day for the first BURST_DAYS days after
+# BURST_START_DATE (a deliberate ~2-week catch-up while the daily review queue
+# is fresh), then auto-revert to STEADY_CAP/day. No manual step to revert —
+# the date does it. MAX_CANDIDATES in the environment always overrides
+# (escape hatch / tests).
 # Caps raised 2026-08-14 (10/5 -> 25/15, ~3x) once the timeout/permission fixes
 # above restored real daily yield. Steady raised again 2026-09-09 (15 -> 25):
 # measured from Neon that day, the prior 14 days ran ~14-34 approved
@@ -375,24 +405,53 @@ candidates_file_bytes() {
 # daily), with several days at 29-34 — consistent with the ceiling binding on
 # some lanes.
 # NOTE: the burst window expired 2026-08-19 (BURST_START_DATE + BURST_DAYS), so
-# compute_cap already returns STEADY_CAP every run; with steady now also 25,
-# burst and steady are the same number and the self-reverting mechanism is a
-# no-op in practice. It still works — it just no longer changes anything. Kept
-# deliberately: re-dating BURST_START_DATE with a higher BURST_CAP is how the
-# next time-boxed catch-up push gets its auto-revert for free.
+# compute_cap already returns STEADY_CAP every run, confirmed still true as of
+# this change (2026-09-13 is 45 days past BURST_START_DATE, past BURST_DAYS=20).
+#
+# STEADY_CAP raised 25 -> 30 (2026-09-13, +20%: 2 x 25 = 50/day -> 2 x 30 =
+# 60/day), deliberately WITHOUT raising STATES_PER_RUN or BURST_CAP — see
+# STATES_PER_RUN's comment above for why STATES_PER_RUN specifically was left
+# alone. Three reasons for choosing this lever, and for the size:
+#   1. The wall-clock cap is known NOT to reliably enforce (three overruns of
+#      6399s/4232s/5456s against a 3000s cap, 2026-08-15, cause still
+#      unknown — see the OVERRUN_LIMIT_SECS WARN below). Raising the per-state
+#      cap adds no new unbounded window; raising STATES_PER_RUN would.
+#   2. The previous bump (bab032f, steady 15 -> 25) is four days old as of
+#      2026-09-13. Whether 25/day is sustainable isn't known yet; stacking a
+#      second unmeasured throughput change on top of it would make either
+#      regression unattributable.
+#   3. The rotation itself just grew 22 -> 51 states (2.3x) in this same
+#      change — see DEFAULT_STATES above. A large scope change and a large
+#      throughput change landing together is exactly what (2) warns against.
+# Re-evaluation trigger: revisit this cap after ~1 week of nights running the
+# 51-state rotation at cap=30. Look at (a) wall-clock overrun WARNs, (b)
+# `blocked` classifications from classify_candidates_failure, and (c) whether
+# full submit cycles are completing within the invocation's time budget. This
+# is "measure those three, then decide" — not "raise it again on a timer".
+#
+# Side effect of steady != burst: today (2026-09-13) BURST_CAP (25) is LOWER
+# than STEADY_CAP (30), which the old code never had to consider because both
+# were 25. compute_cap() returns STEADY_CAP unconditionally right now (burst
+# window expired 2026-08-19, confirmed above), so this has NO effect today —
+# but if BURST_START_DATE is ever re-dated to reactivate a burst window
+# without also raising BURST_CAP, compute_cap() would return a cap BELOW the
+# steady value for that window's duration: a dip, not a catch-up. Whoever
+# re-dates BURST_START_DATE next must also raise BURST_CAP to at least
+# STEADY_CAP, or the burst window will silently throttle below the current
+# baseline instead of exceeding it.
 # Applied PER SUBMIT CALL below (a ceiling per call, not a per-batch total).
 # There are STATES_PER_RUN of those calls inside the per-state loop, plus ONE
 # more for the enrichment lane, which runs once per batch outside the loop — so
-# the real nightly ceiling is (STATES_PER_RUN x cap) + cap = 75 at the current
-# defaults (2 x 25 + 25), not 50.
+# the real nightly ceiling is (STATES_PER_RUN x cap) + cap = 90 at the current
+# defaults (2 x 30 + 30), up from 75 (2 x 25 + 25).
 # It is a ceiling, not a target: whole-run yield measured ~14-34 approved/day
-# across all states, i.e. the busiest days sit around 45% of that ceiling.
+# across all states, i.e. the busiest days sit around 45% of the old ceiling.
 # Headroom is real but not vast — raising STATES_PER_RUN or the cap raises what
 # the maintainer may have to review in a day.
 BURST_START_DATE="2026-07-30"   # date the self-reverting cap shipped
 BURST_DAYS=20
 BURST_CAP=25
-STEADY_CAP=25
+STEADY_CAP=30
 
 compute_cap() {
   # BSD (macOS) and GNU (Linux/CI) date differ; try BSD -j -f first, then GNU -d.
