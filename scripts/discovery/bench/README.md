@@ -182,7 +182,12 @@ reach human curators classifying the remaining unclassified records too.
 `result-gpt-oss_20b-aiClassificationStated.json` is the same 69 cached pages and the same model
 run against a TWO-value vocabulary — `confirmed` | `mixed_use`, with `likely` deleted — to test
 the obvious follow-up to the section above. Measured 2026-09-12. The four pages whose true label
-is `likely` carry no label for this field and are excluded and named, so 63 cells are scored.
+is `likely` carry no label for this field, so 63 cells are scored.
+
+⚠️ Those four are skipped by `run.mjs` at GENERATION time, not by `rescore.mjs` at scoring time —
+they are named in the result file's own `skipped` array and never become rows. So `rescore.mjs`'s
+"UNLABELED (not scored, NOT measured)" line correctly reads 0 for this file, which is not a
+contradiction: there was nothing left for it to exclude.
 
 | | 3-value, no rule | 3-value + rule | **2-value + rule** |
 |---|---|---|---|
