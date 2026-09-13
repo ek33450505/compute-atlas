@@ -276,7 +276,16 @@ tool, not part of the deployed app.
   `e2e/prose-spacing.spec.ts`, which scans raw SSR HTML (never a hydrated DOM —
   hydration removes the `<!-- -->` markers and the check would silently always
   pass) across 14 routes including one per dynamic template.
-- **Static-asset edge cache:** `/data/:path*` and `/basemap/:path*` carry `Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800` (edge cache up to 1 day plus 7 days stale reuse); `/fonts/:path*` are immutable. After `npm run build:mapdata`, regenerated geojson rides the edge cache for up to 24 hours — if a correction must go live immediately, purge Cloudflare by prefix.
+- **Static-asset edge cache:** `/data/:path*` and `/basemap/:path*` carry `Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800` (edge cache up to 1 day plus 7 days stale reuse); `/fonts/:path*` are immutable. After `npm run build:mapdata`, regenerated geojson rides the edge cache for up to 24 hours — if a correction must go live immediately, purge Cloudflare.
+  ⛔ **Prefix purge is Enterprise-only and purge-by-URL silently does nothing here** — measured
+  2026-09-12: posting the exact URLs to `/zones/<id>/purge_cache` returned `success: true` while the
+  entry kept serving with a climbing `age`. Only `{ purge_everything: true }` evicts. A 200 from
+  purge_cache is NOT evidence of eviction; verify with `age: 0` / `cf-cache-status: MISS` and the
+  actual body. Also note the public read API is cached by Cloudflare for **4h**
+  (`cache-control: public, max-age=14400`), NOT the 1h `READ_CACHE.list` asks for, so after a publish
+  `/api/facilities` can serve a stale count for hours while home and `/data` are already correct —
+  purge it as part of the wave. ⚠️ Probe with a real **GET**: a `curl -I` HEAD reported
+  `cf-cache-status: DYNAMIC` on the very response a GET showed as a `HIT`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
