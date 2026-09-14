@@ -615,15 +615,22 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
  * their OWN raw `unsubscribeToken` via the shared send path, so every digest
  * carries a working unsubscribe link.
  *
- * ⚠️ ITS ONE CALLER IS WIRED BUT DISABLED. `app/api/cron/state-digest/route.ts`
- * calls this function, and is held off by two independent switches: there is
- * NO `crons` entry in `vercel.json` (so nothing invokes the route), and
- * `STATE_DIGEST_ENABLED` is unset (so an authenticated call returns 503 and
- * sends nothing). The `state` subscription rows predate this feature and have
- * never received mail from Compute Atlas; their states' `facility_history`
- * within the period will match the moment either switch is flipped. That
- * reactivation decision is Ed's and has NOT been made — merging this code is
- * not making it. Do not flip either switch as a side effect of other work.
+ * ✅ ITS ONE CALLER IS NOW LIVE (2026-09-14, Ed's decision).
+ * `app/api/cron/state-digest/route.ts` calls this function and both switches
+ * that used to hold it off are flipped: `vercel.json` carries a `crons` entry
+ * on `0 9 1 * *`, and `STATE_DIGEST_ENABLED=true` is set in the Vercel
+ * project env. This function therefore SENDS REAL MAIL on a schedule now —
+ * treat any edit to it, to `buildStateDigestChanges`, or to the shared
+ * `groupChangesByRecipient`/`sendGroupedChangeNotifications` path below as
+ * outward-facing rather than internal.
+ *
+ * The audience at flip time, recorded because it is what the decision was
+ * made about: exactly TWO confirmed `state` subscribers, OR and VA, one each.
+ * The three PENDING rows (MO, SD, TX) are never read — the query is
+ * `status='confirmed'` only, so they are not a silent list waiting to be
+ * woken. ⚠️ Do not widen that audience as a side effect of other work; a
+ * backfill of pending rows, a new `targetType`, or a catch-up over months
+ * that were never sent is a NEW reactivation decision, not this one.
  *
  * Best-effort and never throws — same contract as `notifySubscribersOfChange`.
  * Returns counts rather than `void` so a caller can tell a FAILED run from a

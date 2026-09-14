@@ -109,11 +109,15 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
 - **Public intake** (`POST /api/contribute`) is anonymous + moderated: it hard-pins
   `status=pending`, validates with Zod, and ignores privileged fields. Never relax it.
   It also accepts one field that never reaches a facility: an optional `notifyEmail`
-  ("email me when this is reviewed"), gated entirely on `SUBMISSION_NOTIFY_ENABLED` and
-  ships **disabled**. It is deliberately NOT part of `contributeInputSchema` — a Zod object
-  strips unknown keys silently, so with the flag off the field is never read or validated and
-  responses stay byte-identical; putting it in the schema would make a malformed value 400
-  while the feature is off, an oracle revealing it exists. It is stored in
+  ("email me when this is reviewed"), gated entirely on `SUBMISSION_NOTIFY_ENABLED`, which is
+  **`true` in production since 2026-09-14** (Ed's decision; it shipped disabled and stayed
+  that way for weeks). Unsetting the var is still the kill switch and needs no deploy. It is
+  deliberately NOT part of `contributeInputSchema` — a Zod object strips unknown keys
+  silently, so with the flag off the field is never read or validated and responses stay
+  byte-identical; putting it in the schema would make a malformed value 400 while the feature
+  is off, an oracle revealing it exists. ⚠️ That reasoning is about the DISABLED state and
+  still governs any future re-disable — do not "tidy" `notifyEmail` into the schema now that
+  the flag is on. It is stored in
   `submission_notify_requests` (never in `submissions.payload`, which matters because the
   admin detail view renders every unrecognised payload key), used for exactly one
   transactional send on approve/reject, then deleted — on review even if the send failed.

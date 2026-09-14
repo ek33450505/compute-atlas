@@ -7,18 +7,28 @@ import { notifyStateSubscribersMonthly } from "@/lib/notify";
 /**
  * Monthly state-digest trigger — the one caller of `notifyStateSubscribersMonthly`.
  *
- * ⛔ DISABLED ON MERGE, BY TWO INDEPENDENT SWITCHES.
+ * ✅ LIVE SINCE 2026-09-14. Both switches are flipped, deliberately, by Ed.
  *
- *   1. There is NO `crons` entry in `vercel.json`, so nothing ever invokes this route.
- *   2. `STATE_DIGEST_ENABLED` is unset, so even a correctly authenticated call returns 503
- *      and sends nothing.
+ *   1. `vercel.json` carries `crons: [{ path: "/api/cron/state-digest", schedule: "0 9 1 * *" }]`
+ *      — 09:00 UTC on the 1st of each month. Valid because the project sits on a Pro TEAM
+ *      plan; the personal Hobby account this repo is also visible under would have been
+ *      restricted to daily granularity.
+ *   2. `STATE_DIGEST_ENABLED=true` and `CRON_SECRET` are set in the Vercel project env.
  *
- * Why both: the `state` subscription rows predate the digest feature and have never received
- * any mail from Compute Atlas. Turning this on resumes mail to a list that has been silent
- * since it was collected — a reactivation decision that is Ed's to make and has NOT been made.
- * Merging this code is not making it. Do not flip either switch as a side effect of other work.
+ * What that decision actually turned on, recorded because the surrounding text spent months
+ * warning about it: the `state` subscription rows predate this feature and had never received
+ * mail from Compute Atlas. At flip time there were exactly TWO confirmed `state` subscribers
+ * (OR and VA, one each) and three PENDING rows (MO, SD, TX) which are never read — the query
+ * is `status='confirmed'` only, so a pending row is not a silent reader waiting to be woken.
+ * The first scheduled run, 2026-10-01, covers September 2026 and will mail those two.
  *
- * To enable (maintainer, deliberately, all four steps IN ORDER):
+ * ⚠️ The historical warning below is kept, not deleted, because it still governs the NEXT
+ * reactivation decision: do not widen the audience — a new `targetType`, a backfill of pending
+ * rows, a catch-up over missed months — as a side effect of other work. Ed's decision was
+ * about these rows and this schedule.
+ *
+ * How it was enabled (maintainer, deliberately, all four steps IN ORDER) — kept as the
+ * runbook for re-enabling after a rotation or a project migration:
  *   1. ✅ THE IDEMPOTENCY GAP IS CLOSED (D3). Every call now claims its `(since, until)`
  *      window in `state_digest_runs` (`lib/state-digest-ledger.ts`) BEFORE building or
  *      sending anything, so a repeat call for the same window is refused as a no-op —
@@ -35,17 +45,26 @@ import { notifyStateSubscribersMonthly } from "@/lib/notify";
  *          facility (see docs/maintainers.md). A one-parameter bypass of an idempotency guard
  *          gets used reflexively eventually; requiring a slower, deliberate manual step is the
  *          point, not an oversight.
- *   2. Add to `vercel.json`:
+ *   2. ✅ DONE. Added to `vercel.json`:
  *        "crons": [{ "path": "/api/cron/state-digest", "schedule": "0 9 1 * *" }]
- *   3. Set `CRON_SECRET` and `STATE_DIGEST_ENABLED=true` in the Vercel project env.
+ *   3. ✅ DONE. Set `CRON_SECRET` and `STATE_DIGEST_ENABLED=true` in the Vercel project env.
+ *      `CRON_SECRET` was generated independently (32 random bytes, base64url) and verified
+ *      against `API_ADMIN_TOKEN` in the PULLED production env, not merely at generation time.
  *      ⚠️ `CRON_SECRET` MUST NOT equal `API_ADMIN_TOKEN`. `hasValidCronSecret` is checked
  *      first and short-circuits, so if they are equal the admin bearer is always consumed as
  *      the cron identity, `isAdminCaller` never becomes true, and the `?since=&until=`
  *      recovery path is permanently unreachable with the maintainer's own token. The failure
  *      direction is safe (a 400, never an unauthorized send), but it is a trap worth one
  *      line here: generate `CRON_SECRET` independently.
- *   4. Redeploy — a new env var is invisible to already-built deployments, so a deploy that
- *      predates the variable keeps reading `undefined` and keeps returning 503.
+ *   4. ✅ DONE. Redeploy — a new env var is invisible to already-built deployments, so a
+ *      deploy that predates the variable keeps reading `undefined` and keeps returning 503.
+ *      Here the `vercel.json` change in step 2 is itself a code change, so merging it
+ *      produced the redeploy; if you ever flip only the env var, you must redeploy by hand.
+ *      ⚠️ Verify against PROD, not the local build. The verification used here was an admin
+ *      call over a deliberately empty one-minute window — see the note on `?since=&until=`
+ *      below: it exercises auth, the flag, the ledger and the send path end to end while
+ *      mailing nobody, because the unique index is on the exact `(since, until)` pair and a
+ *      one-minute window can never collide with a calendar month.
  *
  * Why Vercel Cron and not local launchd: launchd does not catch up a missed
  * `StartCalendarInterval` run. Observed here 2026-09-05 — the Mac booted 32 minutes after a
