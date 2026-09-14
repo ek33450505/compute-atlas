@@ -2871,10 +2871,10 @@
     ],
     "sources": [
       {
-        "url": "https://news.constructconnect.com/aligned-data-centers-breaks-ground-on-glendale-expanding-arizona-infrastructure",
-        "label": "Aligned Data Centers breaks ground on Glendale, expanding Arizona infrastructure",
+        "url": "https://news.constructconnect.com/aligned-data-centers-breaks-ground-in-glendale-expanding-arizona-infrastructure",
+        "label": "Aligned Data Centers breaks ground in Glendale, expanding Arizona infrastructure",
         "publisher": "ConstructConnect",
-        "retrievedAt": "2026-07-07",
+        "retrievedAt": "2026-09-14",
         "kind": "press"
       },
       {
@@ -2913,7 +2913,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-14",
     "notes": "PHX-13, a 72 MW campus in Glendale, Maricopa County. Coordinates are the Glendale area centroid. Land acquired for $86.5M (100 acres at 8785 N Reems Rd, Dec 2024, from LXP Industrial Trust) - land cost, not campus capex -> investmentUsd omitted. No job counts disclosed -> jobs honest-zero. The campus likely uses Arizona's statutory data-center TPT exemption (A.R.S. 41-1519), but no ACA certification or GPLET agreement for this campus is public -> subsidy honest-zero.",
     "energy": {
       "source": "grid",
@@ -11372,14 +11372,14 @@
         "kind": "press"
       },
       {
-        "url": "https://www.wwcowa.gov/government/community_development/amazon_data_center_faqs.php",
-        "label": "Amazon Data Center FAQs — application milestones (SDP26-01 / SEPA26-05)",
-        "publisher": "Walla Walla County Community Development Department",
-        "retrievedAt": "2026-09-05",
+        "url": "https://www.wwcowa.gov/government/community_development/amazon_data_center.php",
+        "label": "Walla Walla County Community Development — Amazon data center project page",
+        "publisher": "Walla Walla County, Washington",
+        "retrievedAt": "2026-09-14",
         "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-05",
+    "lastUpdated": "2026-09-14",
     "notes": "~$4.8B, ~300 MW campus near Wallula, Walla Walla County; operator reported (not officially confirmed) to be AWS → confidence reported. Coordinates are the Wallula area centroid. Operator confirmed as Amazon Data Services when the Port of Walla Walla amended the buyer from Advance Phase LLC to Amazon Data Services (Feb 12, 2026 commission vote; >550 acres for >$36M land) — confidence upgraded to confirmed. The reported ~$4.8B (DCD) / ~$5B (local) campus figure is an estimate across ~4 phases, not a firm pledge -> investmentUsd omitted. Port projects ~720 direct+indirect jobs at full build-out (projection) -> jobs honest-zero. Eligible for Washington's rural-county server-equipment sales/use-tax exemption (RCW 82.08.986) but no DOR certificate is confirmed -> subsidy honest-zero. Water source and cooling type are undisclosed pending SEPA (no water rights were conveyed in the land deal).",
     "energy": {
       "source": "grid",
@@ -27556,10 +27556,10 @@
     ],
     "sources": [
       {
-        "url": "https://www.constructionowners.com/news/databank-lands-2-billion-loan-for-dallas-data-center-expansion",
-        "label": "DataBank lands $2 billion loan for Dallas data center expansion",
-        "publisher": "Construction Owners",
-        "retrievedAt": "2026-07-17",
+        "url": "https://www.databank.com/resources/news/dallas-based-firm-lands-2-billion-construction-loan-for-data-center-campus/",
+        "label": "DataBank — $2 billion construction loan for the Dallas-area data center campus",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-14",
         "kind": "press"
       },
       {
@@ -27588,7 +27588,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-08",
+    "lastUpdated": "2026-09-14",
     "notes": "292-acre, 8-building campus. Distinct operator/site from Compass Datacenters' separate Red Oak, TX campus (same town, different companies).",
     "investmentUsd": 837000000,
     "landAcres": 292,
@@ -36091,17 +36091,10 @@
         "status": "operational",
         "date": "1999",
         "note": "Ashburn is the world's largest internet exchange hub; Equinix operates 15+ buildings at this campus",
-        "sourceIndex": 0
+        "sourceIndex": 5
       }
     ],
     "sources": [
-      {
-        "url": "https://www.equinix.com/data-centers/americas-colocation/united-states-colocation/ashburn-data-centers",
-        "label": "Equinix Ashburn Data Centers — Equinix",
-        "publisher": "Equinix",
-        "retrievedAt": "2026-07-05",
-        "kind": "press"
-      },
       {
         "url": "https://en.wikipedia.org/wiki/Ashburn,_Virginia#Data_centers",
         "label": "Ashburn, Virginia — Data centers (Wikipedia)",
@@ -36145,7 +36138,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-09-14",
     "energy": {
       "source": "grid",
       "utility": "Dominion Energy",
@@ -36158,7 +36151,7 @@
     "community": {
       "status": "mixed",
       "notes": "Data centers generate a large share of Loudoun County's general-fund revenue and the county chair has called Equinix an 'excellent community partner,' but amid rising residential and environmental opposition the Board voted 7–2 in March 2025 to end by-right data-center development, now requiring special-exception public hearings. Equinix is eligible for Virginia's statewide data-center sales-and-use tax exemption, but state law bars disclosure of individual recipients and amounts.",
-      "sourceIndex": 5
+      "sourceIndex": 4
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
@@ -58925,7 +58918,7 @@
         "status": "under_construction",
         "date": "2025",
         "note": "Site preparation and construction underway",
-        "sourceIndex": 1
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -58933,13 +58926,6 @@
         "url": "https://www.reuters.com/technology/meta-build-ai-data-center-louisiana-2025-01-24/",
         "label": "Meta to build AI data center in Louisiana — Reuters",
         "publisher": "Reuters",
-        "retrievedAt": "2026-07-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://about.fb.com/news/2025/01/meta-announces-2-gigawatt-ai-data-center-in-louisiana/",
-        "label": "Meta Announces 2-Gigawatt AI Data Center in Louisiana — Meta Newsroom",
-        "publisher": "Meta",
         "retrievedAt": "2026-07-05",
         "kind": "press"
       },
@@ -59000,7 +58986,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-14",
     "notes": "A second, larger Meta data center development at the same Richland Parish complex is in progress under the internal name 'Project Evest' (Evest LLC, a Meta subsidiary and Laidley affiliate), the subject of a new, not-yet-docketed LPSC certification application (Direct Testimony of Laura K. Beauchamp on behalf of Entergy Louisiana, filed March 2026, public-redacted version). The testimony states Evest 'seeks to develop adjacent to Laidley's data center in Richland Parish, Louisiana, that was the subject of the proceedings in LPSC Docket No. U-37425' (i.e., the already-tracked Hyperion project). To serve Evest, Entergy is seeking certification of seven new 754 MW 1x1 CCCT generators (four near the Richland Parish site, three sited near the existing Big Cajun site in Pointe Coupee Parish) plus battery storage co-located at the Bogalusa West Solar and Cypress Harvest Solar facilities -- on top of the three CCCTs (Franklin Farms 1&2, Waterford 5) already approved for Hyperion itself. Investigative coverage (The Lens, 2026-04-14) puts the combined Hyperion+Evest generation build at 10 new gas plants, 7,000+ MW, and $16B+ in new fossil-fuel infrastructure serving this one customer, and reports the underlying Entergy-Meta commercial agreements are not fully public. This is DISTINCT NEW information not yet reflected in the existing record's notes/community fields (which per the roster are already populated) -- flagging for maintainer review rather than as a field-merge, since 'community' on this record is locked (already has a value) and it is not yet certain whether Evest will ship as a second facility record or as an update to this one once its own docket number and site-specific coordinates are public.",
     "energy": {
       "source": "mixed",
@@ -59017,7 +59003,7 @@
         "program": "Louisiana Act 730 data center equipment sales/use tax exemption (20 years, state and local)",
         "jurisdiction": "Louisiana",
         "year": "2025",
-        "sourceIndex": 4
+        "sourceIndex": 3
       }
     ],
     "investmentUsd": 10000000000,
@@ -59025,12 +59011,12 @@
     "jobs": {
       "construction": 5000,
       "permanent": 500,
-      "sourceIndex": 2
+      "sourceIndex": 1
     },
     "community": {
       "status": "mixed",
       "notes": "Local farmers and elected officials welcome road, hospital, and school investment; Sierra Club, ratepayer advocates, and The Lens raise concerns about the Entergy gas buildout's burden on customers, water use, and whether operational jobs go to locals. No documented litigation in Richland Parish.",
-      "sourceIndex": 6
+      "sourceIndex": 5
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
@@ -63207,10 +63193,10 @@
     ],
     "sources": [
       {
-        "url": "https://blogs.microsoft.com/on-the-issues/2025/01/03/microsoft-will-invest-80-billion-to-build-out-ai-infrastructure/",
-        "label": "Microsoft will invest $80B to build out AI infrastructure — Microsoft On the Issues",
+        "url": "https://news.microsoft.com/source/2024/05/08/microsoft-announces-3-3-billion-investment-in-wisconsin-to-spur-artificial-intelligence-innovation-and-economic-growth/",
+        "label": "Microsoft announces $3.3 billion investment in Wisconsin (Mount Pleasant campus)",
         "publisher": "Microsoft",
-        "retrievedAt": "2026-07-05",
+        "retrievedAt": "2026-09-14",
         "kind": "press"
       },
       {
@@ -63277,7 +63263,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-09-14",
     "energy": {
       "source": "mixed",
       "utility": "We Energies",
@@ -79195,7 +79181,7 @@
         "status": "proposed",
         "date": "2025-12-18",
         "note": "Red Post Energy Group and Wise Innovation Hub Venture executed a Letter of Intent for the phased power plant",
-        "sourceIndex": 2
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -79214,13 +79200,6 @@
         "kind": "press"
       },
       {
-        "url": "https://www.morningstar.com/news/pr-newswire/20251218da50558/red-post-energy-and-wise-innovation-hub-venture-oasis-execute-letter-of-intent-to-advance-power-infrastructure-for-major-data-center-development-in-southwest-virginia",
-        "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) execute LOI to advance power infrastructure",
-        "publisher": "PR Newswire / Morningstar",
-        "retrievedAt": "2026-07-13",
-        "kind": "press"
-      },
-      {
         "url": "https://appvoices.org/2026/03/13/wise-county-maverick-project/",
         "label": "Wise County considers new gas infrastructure for data center project (Maverick Project)",
         "publisher": "Appalachian Voices",
@@ -79235,7 +79214,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-09-14",
     "notes": "Dedicated phased power project (up to 600 MW) anchoring a planned Wise County data-center hub; coordinates approximate to the Lonesome Pine Regional Business & Technology Park.",
     "energy": {
       "source": "other",
@@ -79243,7 +79222,7 @@
     },
     "community": {
       "status": "mixed",
-      "sourceIndex": 3
+      "sourceIndex": 2
     },
     "facilityType": "power_generation",
     "generation": {
@@ -99834,7 +99813,7 @@
         "status": "proposed",
         "date": "2025-12-18",
         "note": "Wise Innovation Hub Venture executed an LOI with Red Post Energy Group for phased power infrastructure",
-        "sourceIndex": 1
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -99843,13 +99822,6 @@
         "label": "Data center complex with gas power plant planned for Wise County",
         "publisher": "Cardinal News",
         "retrievedAt": "2026-08-16",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.morningstar.com/news/pr-newswire/20251218da50558/red-post-energy-and-wise-innovation-hub-venture-oasis-execute-letter-of-intent-to-advance-power-infrastructure-for-major-data-center-development-in-southwest-virginia",
-        "label": "Red Post Energy and Wise Innovation Hub Venture (OASIS) execute LOI",
-        "publisher": "PR Newswire / Morningstar",
-        "retrievedAt": "2026-07-13",
         "kind": "press"
       },
       {
@@ -99881,7 +99853,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-09-14",
     "notes": "Phased technology/data-center hub planned over ~10 years at the Lonesome Pine Regional Business & Technology Park (adjacent to Lonesome Pine Regional Airport) on former mined land in Wise County — a multi-tenant cluster co-located with the existing Mineral Gap data center. Developer Wise Innovation Hub Venture LLC (branded 'OASIS') signed a 2025-12-18 LOI with Red Post Energy for dedicated power; compute capacity and named end-users not yet disclosed, so capacity is omitted.",
     "energy": {
       "source": "other",
@@ -99891,7 +99863,7 @@
     "community": {
       "status": "contested",
       "notes": "Appalachian Voices reports Wise County residents learned of the project in late 2025 through a LinkedIn post rather than official county channels and raised transparency concerns; as of early March 2026 no additional public information was available. Appalachian Voices opposes the gas approach and advocates renewables instead, citing the solar array serving the nearby Mineral Gap data center.",
-      "sourceIndex": 5
+      "sourceIndex": 4
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
