@@ -55,6 +55,7 @@
 import type { CallOllamaOptions, CallOllamaResult } from "./ollama-client";
 import type { FetchPageTextResult } from "./fetch-page-text";
 import { findWaybackSnapshotUrl, WAYBACK_MAX_RESPONSE_BYTES } from "./wayback";
+import { isRestrictedSourceUrl, restrictedSourceReason } from "../../lib/restricted-sources";
 
 export { WAYBACK_MAX_RESPONSE_BYTES };
 
@@ -581,6 +582,22 @@ async function checkPageAgainstClaim(pageText: string, claim: VerifyClaim, deps:
  * never re-asked to correct a rejected verdict.
  */
 export async function verifySource(url: string, claim: VerifyClaim, deps: VerifySourceDeps): Promise<VerificationResult> {
+  // Restriction-licensed domains (lib/restricted-sources.ts) are rejected
+  // before the page is ever fetched — a link is not redistribution, but
+  // ingesting a FACT from a domain whose terms forbid redistribution would
+  // both breach those terms and inject un-relicensable data into a
+  // CC-BY-4.0 dataset. This must run before `fetchPageTextImpl` so a
+  // restricted source is never even requested.
+  if (isRestrictedSourceUrl(url)) {
+    return {
+      verdict: "rejected",
+      reason:
+        restrictedSourceReason(url) ??
+        "source domain is licence-restricted and cannot be cited",
+      sourceUrl: url,
+    };
+  }
+
   const fetchResult = await deps.fetchPageTextImpl(url);
 
   if (fetchResult.ok) {

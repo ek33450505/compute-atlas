@@ -206,6 +206,17 @@ means reading its provenance:
   The `kind` mix is the fastest read on how a record is grounded: a `permit`- or
   `filing`-anchored record rests on a primary document; a `press`-only record
   rests on reporting and is usually held at `reported` confidence.
+
+  **The source-kind convention:** `kind` describes what the document *is*, not
+  what it is *about* — a news article reporting on a permit is `press`, not
+  `permit`. The one exception is when the publisher IS the granting party, so
+  the page is first-party evidence of the grant rather than reportage: a state
+  economic-development agency announcing its own incentive is `subsidy`. The
+  enum values are `press`, `permit`, `osm`, `iso_queue`, `subsidy`, `filing`,
+  and `other`. The `other` value is the schema default, so it cannot be
+  distinguished from a deliberate choice. This convention was established after
+  discovering that nine records cited the same URL twice with different kinds,
+  tagged by different enrichment passes.
 - **`confidence`** — `confirmed`, `reported`, or `rumored`, describing how firmly
   the record's core facts are established.
 - **`statusHistory[]`** — an append-only audit trail of status changes, each dated
@@ -218,6 +229,34 @@ means reading its provenance:
 Put together: follow the `sources`, weigh the `confidence`, and read the
 `statusHistory` — that is what "source-cited" means here, and it is the whole
 point of the project.
+
+## Source citation and licensing
+
+Compute Atlas publishes its dataset under CC-BY-4.0, which permits redistribution
+— so a source whose terms forbid redistribution cannot supply a fact here,
+because the fact would be re-licensed downstream in a way its copyright holder
+forbids.
+
+A few key distinctions:
+
+- **A permissive `robots.txt` is not a license.** The question `robots.txt`
+  answers — "may your crawler fetch this page" — is different from "may you
+  republish what you found." A site's Terms of Use answer the latter. Compute
+  Atlas checks both.
+- **A link is not redistribution.** The concern is ingesting facts as data, not
+  referencing pages as documentation. Citing a URL as a source is acceptable even
+  where redistribution of its full text is not.
+- **The legitimate path for aggregators.** An aggregator like Bright Data or
+  interconnection.fyi may discover a project, but the citation points to the
+  primary origin — the ISO/RTO's own interconnection queue, the SEC's EDGAR
+  database, the county's permit portal — rather than the aggregator's page. This
+  path is enforced in the discovery pipeline and validated by a regression test
+  in `lib/restricted-sources.ts`. Currently one domain is entirely restricted.
+  Commercial aggregators that are not licence-restricted (e.g. Baxtel,
+  datacentermap) are still cited but treated as weak corroboration rather than
+  primary evidence. As of 2026-09-14, no record marked `confidence: confirmed`
+  relies on aggregators alone, and 25 records cite aggregators exclusively at
+  lower confidence.
 
 ## Stakeholders
 
@@ -404,6 +443,10 @@ status. A facility's absence is not evidence it does not exist.
 | `proposed` | 336 | 254 (76%) |
 | `cancelled` | 58 | 41 (71%) |
 
+The dataset has since grown to 1,758 records (measured 2026-09-14). The table
+reflects the 2026-09-03 snapshot; currently 512 records (29.1%) carry a dated
+`statusHistory` entry.
+
 The operational cohort is the outlier. An announcement, a permit or a
 groundbreaking produces a dated public record; a site that has simply been
 running for years often produces none, so its commissioning date is frequently
@@ -421,12 +464,16 @@ the proposed/under-construction cohorts as the better-evidenced half.
 - **Absent is not zero.** Optional fields — capacity, water, jobs, subsidies,
   emissions — are omitted when no citable source published a figure. An empty
   field means "not established," never "none."
-- **19.4% of records cite at least one primary document** (a `permit`, `filing`,
-  `iso_queue`, or `subsidy` source). The rest rest on reporting. Read the `kind`
-  mix alongside `confidence` (542 `confirmed`, 800 `reported`, 9 `rumored`).
-- **Coordinates vary in precision.** 586 records are `exact` footprints; 763 are
-  `approximate` geocodes of a town or parcel centroid. Check
-  `location.precision` before doing distance or spatial work.
+- **19.7% of records cite at least one primary document** (a `permit`, `filing`,
+  `iso_queue`, or `subsidy` source). The rest rest on reporting. Measured
+  2026-09-14 across 1,758 records: 347 cite at least one primary document. Read
+  the `kind` mix alongside `confidence` (764 `confirmed`, 979 `reported`, 15
+  `rumored`).
+- **Coordinates vary in precision.** Measured 2026-09-14: 628 records are `exact`
+  footprints; 1,121 are `approximate` geocodes of a town or parcel centroid; 9
+  are `representative_multi_site`, standing for a multi-building campus or
+  distributed fleet. Check `location.precision` before doing distance or spatial
+  work.
 - **Some records are deliberately aggregates.** A multi-building campus or a
   carrier hotel with many tenants may be one record rather than many, because
   the site is the meaningful unit. Where this applies, `notes` says so.

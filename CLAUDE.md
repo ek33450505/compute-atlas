@@ -23,6 +23,7 @@ npm run db:generate    # generate a migration from schema changes
 npm run db:migrate     # apply migrations
 npm run db:sync        # DRY RUN: diff data/facilities.json against Neon, print the plan
 npm run db:sync -- --apply   # publish adds + updates, write history, bust cache tags
+npm run db:sync -- --apply --skip-notify   # publish without emailing facility subscribers
 npm run db:export      # export live facilities back to data/facilities.json (Neon → JSON)
 npm run check:drift    # report JSON↔Neon drift (read-only, non-blocking)
 npm run db:seed        # BOOTSTRAP ONLY: insert NEW facilities into an empty DB
@@ -162,6 +163,8 @@ afterwards. Syncing first makes drift structurally impossible instead, and
 
 `db:sync` writes `facility_history` for every change (so `/activity` sees it) and busts the cache tags for affected scopes (`facility:<id>`, `state:<XX>`, `operator:<slug>`, ±`power-generation`), plus unconditionally adds the `"facilities"` tag to keep aggregate pages fresh. It cannot reach the untagged search index (86400s timer only). `db:seed --force` does neither — it is bootstrap-only, kept for filling an empty database.
 
+⚠️ **`--skip-notify` for metadata-only publishes.** A wave that touches many records without changing a single asserted fact (source URL dedupe, coordinate precision corrections, etc.) may use `db:sync -- --apply --skip-notify` to suppress notification. It is **deliberately opt-in and never inferred** — "did this change matter to a human" is a judgement you make, not a heuristic. The flag affects only facility subscribers (`targetType='facility'`); state subscribers never receive transactional mail from `db:sync`, only a monthly digest, so the flag has no effect on them either way. Check `docs/maintainers.md` for the decision criteria.
+
 ## Discovery pipeline
 
 A local, scheduled, subscription-powered pipeline (`scripts/discovery/`) that
@@ -249,7 +252,7 @@ tool, not part of the deployed app.
   vercel-ignore`), never by local probes alone.
 - **Prod cache & bulk go-live:** The site has three independent cache tiers:
   - **Aggregate pages** (home/map/table/stats/explore) read `loadFacilities` with **1h ISR timer** (`revalidate: 3600`) and carry the `"facilities"` tag — they self-heal within the hour even if a tag bust is missed.
-  - **Scoped pages**: `/facilities/[slug]` (1,571 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it floors at 86400s inherited from the root layout. The state/operator/metro/county hubs (50/644/27/636 routes, the county hubs behind a `/counties` index) **do** still carry `"facilities"` on a 3600s timer, so they self-heal hourly as well as on a bust. There is no `metro:` or `county:` tag — metro and county hubs are covered by `"facilities"` alone.
+  - **Scoped pages**: `/facilities/[slug]` (1,758 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it floors at 86400s inherited from the root layout. The jurisdiction/operator/metro/county hubs (55/644/27/636 routes, the county hubs behind a `/counties` index) **do** still carry `"facilities"` on a 3600s timer, so they self-heal hourly as well as on a bust. There is no `metro:` or `county:` tag — metro and county hubs are covered by `"facilities"` alone.
   - **Search index** (global ⌘K palette via `loadFacilitiesForSearch` in root layout) is **24h untagged timer only** — no tag bust affects it; `db:sync --apply` cannot refresh it.
   
   All pages inherit the longest timer from any reader in their render tree (typically 24h from the root layout). The tag vocabulary (`facility:<id>`, `state:<XX>`, `operator:<slug>`, `power-generation`, `facilities`) is centralized in `lib/cache-tags.ts` and shared by `lib/facility-write.ts` and `POST /api/revalidate` so producer and validator can't drift apart. `db:sync --apply` and the approve-on-prod path bust affected tags for you. Only a **raw** Neon write (`db:seed --force`, an ad-hoc upsert) leaves them un-busted — then hit the admin-bearer `POST /api/revalidate` yourself with the affected tags (e.g. `{"tags":["facilities","state:CA"]}`); brand-new facility ids need no bust (cache-miss populates them).

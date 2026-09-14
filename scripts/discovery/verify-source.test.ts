@@ -1040,4 +1040,44 @@ describe("verifySource", () => {
       expect(result.transportFailure).toBeUndefined();
     });
   });
+
+  describe("restricted-source guard (lib/restricted-sources.ts)", () => {
+    it("rejects a restricted-domain URL WITHOUT ever fetching it — the point is not fetching at all, not merely the verdict", async () => {
+      const fetchPageTextImpl = vi.fn(async () => pageOk("irrelevant page text"));
+      const callOllamaImpl = vi.fn(async () => notMentioned());
+      const deps = makeDeps({ fetchPageTextImpl, callOllamaImpl });
+
+      const result = await verifySource("https://interconnection.fyi/queue/12345", CLAIM, deps);
+
+      expect(result.verdict).toBe("rejected");
+      expect(result.sourceUrl).toBe("https://interconnection.fyi/queue/12345");
+      // Load-bearing: the guard must run BEFORE any network call, not merely
+      // produce the right verdict after fetching anyway.
+      expect(fetchPageTextImpl).toHaveBeenCalledTimes(0);
+      expect(callOllamaImpl).toHaveBeenCalledTimes(0);
+    });
+
+    it("rejects a subdomain of a restricted domain the same way", async () => {
+      const fetchPageTextImpl = vi.fn(async () => pageOk("irrelevant page text"));
+      const deps = makeDeps({ fetchPageTextImpl });
+
+      const result = await verifySource("https://www.interconnection.fyi/queue/12345", CLAIM, deps);
+
+      expect(result.verdict).toBe("rejected");
+      expect(fetchPageTextImpl).toHaveBeenCalledTimes(0);
+    });
+
+    it("still reaches the fetcher for an unrestricted URL — proves the guard does not block everything", async () => {
+      const fetchPageTextImpl = vi.fn(async () => pageOk("Ridgeline Data Center plans 1200 MW."));
+      const deps = makeDeps({
+        fetchPageTextImpl,
+        callOllamaImpl: vi.fn(async () => supports("Ridgeline Data Center plans 1200 MW.")),
+      });
+
+      const result = await verifySource("https://www.pjm.com/planning/service-requests", CLAIM, deps);
+
+      expect(fetchPageTextImpl).toHaveBeenCalledTimes(1);
+      expect(result.verdict).toBe("verified");
+    });
+  });
 });

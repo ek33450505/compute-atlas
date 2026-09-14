@@ -77,10 +77,12 @@ these sites.
 **The API** — public, CORS-open, no authentication.
 
 ```console
-$ curl -s 'https://www.compute-atlas.com/api/stats'   # real response, 2026-09-12
-{"count":1571,"states":50,"operationalMw":30152.7,
- "plannedMw":387599,"underConstructionMw":119019.2,
- "edition":{"version":"1.32.0","asOf":"2026-09-11T18:15:54.927Z",
+$ curl -s 'https://www.compute-atlas.com/api/stats'   # real response, 2026-09-14
+{"count":1758,"states":55,"includesDc":true,
+ "stateCodes":["AK","AL","AR","AZ",…,"DC","GU","PR","VI",…,"WY"],
+ "operationalMw":32961.7,"plannedMw":409665.9,
+ "underConstructionMw":122347.2,
+ "edition":{"version":"1.33.0","asOf":"2026-09-14T17:30:28.912Z",
             "schemaVersion":1}}
 ```
 
