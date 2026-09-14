@@ -82,14 +82,23 @@ See `.env.example`.
 | `DATABASE_URL` | Neon Postgres pooled connection string |
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
 | `CRON_SECRET` | Bearer secret for `/api/cron/*`. **Leave unset** — see below. Must differ from `API_ADMIN_TOKEN` |
-| `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Leave unset** — `"true"` is the only enabling value |
-| `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Leave unset** — `"true"` is the only enabling value |
+| `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Set to `"true"` in production since 2026-09-14.** Unsetting it (or any value but `"true"`) stops all digest mail immediately, without a deploy |
+| `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Set to `"true"` in production since 2026-09-14.** Same kill semantics |
+| `CRON_SECRET` | Authenticates Vercel Cron to `/api/cron/state-digest`. **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
 
-⚠️ **The monthly state digest ships DISABLED, on purpose.** `app/api/cron/state-digest`
-is held off by two independent switches: there is no `crons` entry in `vercel.json`, and
-`STATE_DIGEST_ENABLED` is unset. The `state` subscription rows predate the feature and have
-never received mail from Compute Atlas, so enabling it resumes mail to a long-silent list —
-that reactivation decision is Ed's and has not been made.
+✅ **The monthly state digest is LIVE as of 2026-09-14** (Ed's decision). Both switches that
+held it off are flipped: `vercel.json` carries
+`"crons": [{ "path": "/api/cron/state-digest", "schedule": "0 9 1 * *" }]` — 09:00 UTC on the
+1st — and `STATE_DIGEST_ENABLED=true` plus `CRON_SECRET` are set in the Vercel project env.
+
+**Audience at flip time: two confirmed `state` subscribers, OR and VA, one each.** The three
+pending rows (MO, SD, TX) are never read — the query is `status='confirmed'` only. The first
+scheduled run (2026-10-01) covers September 2026, a month in which OR saw 21 history rows
+across 20 facilities and VA 31 across 30, so the first digest is a substantial one.
+
+⚠️ **Widening that audience is a NEW decision, not this one.** A backfill of pending rows, a
+new `targetType`, or a catch-up over months that were never sent all resume mail to people
+who have not been counted here. Ed decided about these rows and this schedule.
 
 The idempotency prerequisite is now closed (D3). Every call claims its `(since, until)`
 window in `state_digest_runs` before building or sending anything, so a repeat call for the
@@ -98,13 +107,21 @@ file's header before flipping either switch — it explains `completedAt IS NULL
 that claimed a window and crashed before finishing) and why a deliberate resend requires
 deleting that window's row rather than a `?force=` parameter.
 
-⚠️ **"Email me when reviewed" ships DISABLED, on purpose.** With
-`SUBMISSION_NOTIFY_ENABLED` unset, `POST /api/contribute` ignores a `notifyEmail` entirely —
-it is not read, not validated, and not stored, so the endpoint's responses are byte-identical
-to before the feature existed — the form does not render the field, and the review path sends
-nothing. Merging it is a genuine no-op.
+✅ **"Email me when reviewed" is LIVE as of 2026-09-14** (Ed's decision).
+`SUBMISSION_NOTIFY_ENABLED=true` is set in production.
 
-Two things are true before you set it to `"true"`:
+**Enabling mailed nobody retroactively, verified before the flip:**
+`submission_notify_requests` held **0 rows**, because with the flag off no submission could
+record an address. The 37 submissions pending at the time therefore carry no `notifyEmail`,
+and approving any of them sends nothing. The feature is purely forward-looking — the first
+mail goes to the first person who opts in on a NEW submission and is then reviewed.
+
+The historical note on the disabled state follows, because it still describes what unsetting
+the flag returns you to: with `SUBMISSION_NOTIFY_ENABLED` unset, `POST /api/contribute`
+ignores a `notifyEmail` entirely — not read, not validated, not stored, responses
+byte-identical to before the feature existed.
+
+Two things were true before it was set to `"true"`, and stay true for any future re-enable:
 
 1. **The migrations must be applied.** `drizzle/0011_*` and `drizzle/0012_*` create
    `submission_notify_requests` and `submission_notify_sends`. Nothing in CI runs

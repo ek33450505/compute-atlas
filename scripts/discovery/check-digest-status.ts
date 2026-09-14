@@ -1,7 +1,7 @@
 /**
  * Check for incomplete state digest runs (where completedAt IS NULL).
  *
- * The state digest feature (`STATE_DIGEST_ENABLED`, currently OFF) records a
+ * The state digest feature (`STATE_DIGEST_ENABLED`, LIVE since 2026-09-14) records a
  * row in `state_digest_runs` and CLAIMS it BEFORE sending (sets `started_at`).
  * If the run crashes mid-send, `completedAt` remains NULL. This script detects
  * that case and reports it.
