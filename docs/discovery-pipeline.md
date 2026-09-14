@@ -206,6 +206,32 @@ site — can be rejected even though the citation is genuine. 241 of 937 records
 (26%) **as measured 2026-08-14** carry composite names of that shape. Read gate output with that in mind: a
 rejection is not proof that a citation is bad.
 
+## Restricted-source guard (legal compliance)
+
+Before any fetch, `verifySource()` checks the candidate's URL domain against a
+shared blocklist in `lib/restricted-sources.ts`. Each blocked domain carries a
+reason and the date its terms were read. A restricted URL is rejected
+immediately — the page is never requested. Currently: `interconnection.fyi`.
+
+**Why it exists.** A permissive `robots.txt` answers "you may crawl this page";
+Terms of Use answer "you may not republish what you found." Compute Atlas
+publishes under CC-BY-4.0 — explicit redistribution — so upstream terms bind
+harder precisely because our licence is permissive. A link to a restricted source
+is not redistribution and is not guarded. This gate prevents **data ingestion**,
+not citation.
+
+**Three test layers:** (1) unit tests on the matcher, (2) pipeline tests asserting
+the fetcher is never called for a restricted URL (zero network calls), and (3) a
+dataset regression test over `data/facilities.json` that names offending
+facility ids and URLs.
+
+**Why a guard, not one-off cleanup.** An earlier pass swept these citations by
+hand with no guard, and the pipeline re-introduced them within days. The guard
+prevents silent regression. The legitimate route when discovery identifies a
+promising project: use an aggregator by hand to *find* it, then cite the
+infrastructure operator's own published queue (the ISO's interconnection
+request list, an RTO's generation queue) rather than the aggregator.
+
 ## Safety properties
 
 - **Staging-only:** the pipeline only ever calls `POST /api/submissions`. It

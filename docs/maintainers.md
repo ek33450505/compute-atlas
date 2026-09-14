@@ -19,6 +19,7 @@ invariant rather than a report.
 ```bash
 npm run db:sync              # 1. DRY RUN by default — prints the plan, writes nothing
 npm run db:sync -- --apply   # 2. publish adds + updates, write history, bust cache tags
+npm run db:sync -- --apply --skip-notify   # 2b. publish without emailing facility subscribers
 npm run db:export            # 3. regenerate data/facilities.json from the live DB
 npm run build:mapdata        # 4. rebuild map overlays + per-facility siting context
                              # 5. commit the regenerated files
@@ -44,6 +45,16 @@ was done; the diff-read is the only thing that catches a partial rebuild.
 
 `db:sync` refuses to overwrite a Neon row that has moved ahead of the JSON's basis (the
 `asOf` in `data/facilities.meta.json`), so it cannot clobber a production approval.
+
+**`--skip-notify` flag for metadata-only publishes.** Use it when a wave touches
+many records without changing any asserted fact — the canonical example is a
+source-URL dedupe where only redundant citations disappear. The flag suppresses
+notification to **facility subscribers only** (`targetType='facility'`). State
+subscribers receive only the monthly digest, never transactional updates, so
+`--skip-notify` has zero effect on them. The flag is deliberately opt-in and
+never inferred: decide whether the change matters to a human reader, and pass
+it explicitly. A heuristic that guesses wrong fails silently in the wrong
+direction — not telling someone about a fact they asked to know about.
 
 `db:seed` is **bootstrap-only**, for filling an empty database. Its `--force` variant
 silently drops every correction to an existing row, writes no history, and busts no
