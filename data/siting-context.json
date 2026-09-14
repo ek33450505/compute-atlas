@@ -12056,12 +12056,7 @@
       "rock": "Sandstone"
     }
   },
-  "epicio-st-croix-vi": {
-    "nearestTransmission": {
-      "voltageKv": 230,
-      "distanceMi": 76
-    }
-  },
+  "epicio-st-croix-vi": {},
   "equinix-ashburn-va": {
     "nearestWater": {
       "name": "Beaverdam Run",

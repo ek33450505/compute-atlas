@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { gzipSync, gunzipSync } from "node:zlib";
 import facilitiesRaw from "@/data/facilities.json";
+import { canonicalCountyName } from "@/lib/counties";
 import {
   getAllFacilities,
   getFacilityById,
@@ -1441,25 +1442,54 @@ describe("getCountyBySlug", () => {
     }
   });
 
-  it("merges two spellings of one county into one bucket with a deterministic name", async () => {
-    // Live case: MO carries both "St. Louis city" and "St. Louis City".
-    const facilities = await getAllFacilities();
-    const slug = countySlug("St. Louis city", "MO");
-    const expected = facilities.filter(
-      (f) =>
-        f.location.county != null &&
-        f.location.county.trim() !== "" &&
-        countySlug(f.location.county, f.location.state) === slug
+  it("merges two spellings of one county into one slug", () => {
+    // ⚠️ This used to scan the LIVE dataset for a county carrying two
+    // spellings — MO's "St. Louis city" / "St. Louis City". Normalizing that
+    // pair in the data deleted the test's own subject, and the test failed.
+    // That is the right failure (its guard asserted the premise rather than
+    // assuming it), but the lesson is that a merge test must not depend on
+    // the data staying dirty: the moment the last duplicate is cleaned, a
+    // live-data version either fails like this or, worse, passes vacuously
+    // over a single spelling and proves nothing.
+    //
+    // Synthetic pair instead, so this keeps testing the merge for as long as
+    // the merge exists, whatever the dataset happens to contain.
+    expect(countySlug("St. Louis City", "MO")).toBe(countySlug("St. Louis city", "MO"));
+    expect(countySlug("Tulsa County", "OK")).toBe(countySlug("Tulsa", "OK"));
+    // Different counties must NOT collide — without this the assertion above
+    // is satisfied by a slug function that returns a constant.
+    expect(countySlug("St. Louis city", "MO")).not.toBe(countySlug("St. Louis", "MO"));
+  });
+
+  it("picks one label for a merged county, independent of input order", () => {
+    // canonicalCountyName is the tie-break that stops the rendered label
+    // depending on sort order elsewhere in the pipeline.
+    const spellings = ["St. Louis City", "St. Louis city"];
+    const forward = canonicalCountyName(spellings);
+    const reversed = canonicalCountyName([...spellings].reverse());
+
+    expect(forward).toBe(reversed);
+    // A 1-1 tie breaks by localeCompare ascending, which sorts the LOWERCASE
+    // spelling first — I predicted the opposite and the test caught me, which
+    // is the whole reason this is a typed-out literal rather than a
+    // re-derivation of the implementation.
+    expect(forward).toBe("St. Louis city");
+    // Frequency beats the tie-break: make the CAPITALIZED spelling the
+    // majority and it wins despite losing the alphabetical comparison. Chosen
+    // adversarially — a fixture where frequency and tie-break agree would pass
+    // with the frequency branch deleted.
+    expect(canonicalCountyName(["St. Louis City", "St. Louis City", "St. Louis city"])).toBe(
+      "St. Louis City"
     );
-    const spellings = new Set(expected.map((f) => f.location.county));
+  });
 
-    expect(expected.length).toBeGreaterThanOrEqual(2);
-    expect(spellings.size).toBeGreaterThan(1);
-
-    const county = (await getCountyBySlug(slug))!;
-    expect(county.count).toBe(expected.length);
+  it("still resolves the MO independent city, now that it is spelled one way", async () => {
+    // The live half of the old test, kept: the county the normalization pass
+    // touched must still resolve, under the Census/USGS form for an
+    // independent city — distinct from the surrounding "St. Louis County".
+    const county = (await getCountyBySlug(countySlug("St. Louis city", "MO")))!;
+    expect(county).toBeDefined();
     expect(county.state).toBe("MO");
-    // One label, chosen by canonicalCountyName — not whichever record sorted first.
     expect(county.name).toBe("St. Louis city");
   });
 });

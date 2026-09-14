@@ -389,11 +389,71 @@ function searchBBoxFor(lat, lon, capMiles) {
   return [lon - padLon, lat - padLat, lon + padLon, lat + padLat];
 }
 
-/** Find nearest candidate (by exact pointToLineDistance) among bbox-prefiltered parts. */
-function nearestFromCandidates(pt, candidates, searchBBox, capMiles) {
+/**
+ * Island jurisdictions whose electric grids are ISOLATED — physically incapable
+ * of connecting to a line outside their own bounding region.
+ *
+ * Why this exists. `nearestFromCandidates` is a straight-line computation with
+ * no concept of REACHABILITY. That is correct everywhere in the contiguous US
+ * and wrong the instant a record sits on an island: `epicio-st-croix-vi`
+ * published "nearest >=230 kV transmission: 76 miles", measured across open
+ * ocean to Puerto Rico's grid. St. Croix runs on WAPA's isolated island system
+ * and no such interconnection exists. Geometrically true, semantically false,
+ * and on a facility page it implies a grid relationship that is not there.
+ *
+ * ⛔ A DISTANCE THRESHOLD CANNOT FIX THIS, and the data says so. Measured over
+ * the 1,704 records carrying a transmission distance: median 2.0 mi, p95 14.9,
+ * p99 37.6, max 93.1. The mainland legitimately reaches 93.1 mi (MI), 69.1
+ * (ME), 68.5 (TX), 66.6 (UT) — St. Croix's 76 sits INSIDE that range. Any cut
+ * that suppresses 76 also suppresses four genuinely-reachable mainland
+ * records. The defect is semantic, not numeric, so the fix has to be too.
+ *
+ * Membership is tested by bbox intersection against the candidate's own bbox,
+ * which every candidate already carries. Verified against the real
+ * `power.geojson` (10,483 features): St. Croix's match is a line bounded by
+ * [-66.14, 18.00, -66.00, 18.05] — squarely in Puerto Rico, and disjoint from
+ * VI's box — while the two PR records match a line at
+ * [-66.46, 18.31, -66.14, 18.43], inside PR's box. The guard separates them
+ * cleanly rather than by luck.
+ *
+ * ⚠️ ALASKA IS DELIBERATELY ABSENT. The Railbelt is a real interconnected
+ * grid and the Anchorage records' 2.7 / 4.2 mi values are genuine; adding AK
+ * would mean a bbox spanning a continent-sized state, which would exclude
+ * nothing and only invite the belief that this list means "non-contiguous".
+ * It means "isolated island system" — add a jurisdiction only when that is
+ * true of it.
+ *
+ * ⚠️ The bounds below are grid-system extents, not political ones, and they
+ * are the kind of constant that silently encodes whatever geography its author
+ * happened to look at. A record outside every box is unaffected (the guard
+ * only applies to states named here), so the failure mode of a too-small box
+ * is a suppressed field, never a fabricated one.
+ */
+const ISLAND_GRID_BBOX = {
+  PR: [-67.97, 17.86, -65.20, 18.54],
+  VI: [-65.10, 17.62, -64.55, 18.44],
+  GU: [144.55, 13.17, 145.02, 13.72],
+  MP: [145.03, 14.05, 145.90, 15.35],
+  HI: [-160.30, 18.85, -154.73, 22.30],
+};
+
+/**
+ * Find nearest candidate (by exact pointToLineDistance) among bbox-prefiltered
+ * parts. `regionBBox`, when given, additionally requires the candidate to lie
+ * within that region — see ISLAND_GRID_BBOX for why distance alone is not a
+ * sufficient test for an island record.
+ *
+ * `regionBBox` is annotated explicitly: without it TypeScript infers the
+ * parameter as `null | undefined` from the default alone and every real
+ * caller fails to typecheck.
+ *
+ * @param {number[]|null} [regionBBox]
+ */
+function nearestFromCandidates(pt, candidates, searchBBox, capMiles, regionBBox = null) {
   let best = null;
   for (const c of candidates) {
     if (!bboxesIntersect(c.bbox, searchBBox)) continue;
+    if (regionBBox && !bboxesIntersect(c.bbox, regionBBox)) continue;
     let dist;
     try {
       dist = pointToLineDistance(pt, c.line, { units: 'miles' });
@@ -460,6 +520,8 @@ const GNIS_NAME_OVERRIDES = new Map([
 ]);
 
 /** Case-insensitive property lookup (NHD layers use inconsistent casing across layers). */
+export { ISLAND_GRID_BBOX, nearestFromCandidates };
+
 export function propGNISName(props) {
   const raw = props?.GNIS_NAME ?? props?.gnis_name ?? props?.GnisName ?? null;
   if (typeof raw !== 'string') return null;
@@ -865,7 +927,17 @@ async function computeSitingContext(facilities, powerCandidates) {
       consecutiveNHDFailures = 0;
     }
 
-    const nearestTransmission = nearestFromCandidates(pt, powerCandidates, searchBBox, NEAREST_CAP_MILES);
+    // An isolated island grid cannot reach a line outside its own system, no
+    // matter how close the straight line makes it look. Undefined for every
+    // mainland state, which leaves their behaviour byte-identical.
+    const islandBBox = ISLAND_GRID_BBOX[facility.location?.state] ?? null;
+    const nearestTransmission = nearestFromCandidates(
+      pt,
+      powerCandidates,
+      searchBBox,
+      NEAREST_CAP_MILES,
+      islandBBox
+    );
 
     const entry = {};
     if (waterOutcome.nearest) {

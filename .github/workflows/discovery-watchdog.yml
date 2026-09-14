@@ -50,7 +50,7 @@
 # Requires: DATABASE_URL as a repo secret (already configured for neon-sync).
 #
 # DIGEST CRASH CHECK (added 2026-09-13):
-# The state digest feature (currently DISABLED via STATE_DIGEST_ENABLED=false)
+# The state digest feature (LIVE since 2026-09-14 — Vercel Cron, 0 9 1 * *)
 # records a `state_digest_runs` row and CLAIMS it BEFORE sending — sets
 # `started_at` and creates the row. If a run crashes mid-send, `completedAt`
 # remains NULL. This watchdog detects that case and reports it.
@@ -104,8 +104,9 @@ jobs:
         run: npx tsx scripts/discovery/check-heartbeat.ts
 
       # Check for incomplete digest runs (completedAt IS NULL). The state
-      # digest (currently DISABLED) claims a run BEFORE sending, so a NULL
-      # completion_at means a crash mid-send.
+      # digest claims a run BEFORE sending, so a NULL completion_at means a
+      # crash mid-send. LIVE since 2026-09-14, so this is now a real monthly
+      # job being watched rather than a dormant one.
       #
       # The check gracefully handles the feature being absent or disabled:
       # - Table doesn't exist (migration 0013 not applied): exits 0, reports
@@ -136,9 +137,13 @@ jobs:
 
       # Always runs, so a heartbeat failure doesn't mask a digest crash or vice
       # versa. The job fails if either check reports a real problem; both outputs
-      # are visible. Heartbeat problems are the primary concern (missed discovery
-      # runs), so report them first; digest problems are secondary (a crash that
-      # happened in a feature currently disabled).
+      # are visible. Heartbeat problems are reported FIRST for ordering only —
+      # that is a reading convenience, not a severity ranking, and it stopped
+      # being one on 2026-09-14 when the digest went live. A crashed digest run
+      # now means real mail half-sent to real subscribers, and its recovery is
+      # deliberately manual (no `?force=`; the window's row must be deleted in
+      # Neon by hand), so treat a digest failure as at least as urgent as a
+      # missed discovery run.
       - name: Report heartbeat failure
         if: always() && steps.heartbeat.outcome == 'failure'
         run: |

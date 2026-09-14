@@ -4810,7 +4810,7 @@
       "lat": 35.5896,
       "lon": -97.4934,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "street": "1309 NE 122nd St",
       "state": "OK",
       "precision": "approximate"
@@ -7890,7 +7890,7 @@
       "lat": 37.43,
       "lon": -78.8,
       "city": "Appomattox",
-      "county": "Appomattox County",
+      "county": "Appomattox",
       "street": "1098 Oakville Rd",
       "state": "VA",
       "precision": "approximate"
@@ -15258,13 +15258,6 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-04",
         "kind": "other"
-      },
-      {
-        "url": "https://www.interconnection.fyi/project/spp-gen-2017-105",
-        "label": "SPP interconnection queue GEN-2017-105 — Tekamah–Raun 161 kV Line, Burt County, NE",
-        "publisher": "interconnection.fyi (Southwest Power Pool queue data)",
-        "retrievedAt": "2026-09-04",
-        "kind": "iso_queue"
       }
     ],
     "lastUpdated": "2026-09-04",
@@ -18931,7 +18924,7 @@
     "location": {
       "lat": 31.3905,
       "lon": -92.6693,
-      "county": "Rapides Parish",
+      "county": "Rapides",
       "state": "LA",
       "precision": "approximate"
     },
@@ -19418,7 +19411,7 @@
       "lat": 44.35,
       "lon": -87.58,
       "city": "Carlton",
-      "county": "Kewaunee County",
+      "county": "Kewaunee",
       "state": "WI",
       "precision": "approximate"
     },
@@ -19773,7 +19766,7 @@
       "lat": 44.3269,
       "lon": -88.1631,
       "city": "Wrightstown",
-      "county": "Brown County",
+      "county": "Brown",
       "state": "WI",
       "precision": "approximate"
     },
@@ -20212,7 +20205,7 @@
       "lat": 35.4676,
       "lon": -97.5164,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "state": "OK",
       "precision": "approximate"
     },
@@ -32829,7 +32822,7 @@
       "lat": 38.83,
       "lon": -77.61,
       "city": "Gainesville",
-      "county": "Prince William County",
+      "county": "Prince William",
       "state": "VA",
       "precision": "approximate"
     },
@@ -35542,7 +35535,7 @@
       "lat": 44.3419,
       "lon": -87.5369,
       "city": "Carlton",
-      "county": "Kewaunee County",
+      "county": "Kewaunee",
       "state": "WI",
       "precision": "approximate"
     },
@@ -35592,13 +35585,6 @@
     },
     "statusHistory": [],
     "sources": [
-      {
-        "url": "https://www.interconnection.fyi/eia/plant/69990",
-        "label": "Bogalusa West Solar Station — Washington, LA — planned power plant (EIA-derived record)",
-        "publisher": "interconnection.fyi",
-        "retrievedAt": "2026-08-26",
-        "kind": "iso_queue"
-      },
       {
         "url": "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
         "label": "Direct Testimony of Laura K. Beauchamp, Entergy Louisiana (Project Evest), March 2026 — 200 MW storage co-located at ELL's Bogalusa West Solar Facility 'which is under construction'",
@@ -36216,7 +36202,7 @@
       "lat": 42.98,
       "lon": -89.562,
       "city": "Verona",
-      "county": "Dane County",
+      "county": "Dane",
       "street": "Milky Way",
       "state": "WI",
       "precision": "approximate"
@@ -49760,7 +49746,7 @@
       "lat": 36.2085,
       "lon": -95.9137,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "state": "OK",
       "precision": "approximate"
     },
@@ -51293,13 +51279,6 @@
         "publisher": "Texas Tribune",
         "retrievedAt": "2026-07-07",
         "kind": "other"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/project/iren-sweetwater-1-8d9cdcbd",
-        "label": "IREN Sweetwater 1 — interconnection queue record",
-        "publisher": "Interconnection.fyi",
-        "retrievedAt": "2026-07-07",
-        "kind": "iso_queue"
       }
     ],
     "lastUpdated": "2026-07-25",
@@ -52269,13 +52248,6 @@
         "publisher": "Infrastructure Technology Solutions (ITS)",
         "retrievedAt": "2026-09-04",
         "kind": "other"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/state/IA",
-        "label": "Iowa data center records (ITS, Jones County, operational, under 10 MW)",
-        "publisher": "Interconnection.fyi",
-        "retrievedAt": "2026-09-04",
-        "kind": "other"
       }
     ],
     "lastUpdated": "2026-09-04",
@@ -52372,7 +52344,7 @@
       "lat": 36.1509,
       "lon": -95.9856,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "611 S Elgin Ave",
       "state": "OK",
       "precision": "approximate"
@@ -60706,13 +60678,6 @@
         "kind": "other"
       },
       {
-        "url": "https://www.interconnection.fyi/data-center/project/microsoft-gainesville-data-center-mnz03-9f2b78f4",
-        "label": "Microsoft Gainesville/Bristow Data Center MNZ03 — interconnection.fyi",
-        "publisher": "interconnection.fyi",
-        "retrievedAt": "2026-07-06",
-        "kind": "other"
-      },
-      {
         "url": "https://www.microsoft.com/en-us/microsoft-cloud/blog/2024/07/25/sustainable-by-design-transforming-datacenter-water-efficiency/",
         "label": "Sustainable by design: Transforming datacenter water efficiency — Microsoft",
         "publisher": "Microsoft",
@@ -60741,7 +60706,7 @@
     "community": {
       "status": "mixed",
       "notes": "MNZ03 was built by-right on the former Atlantic Research rocket-testing site (existing heavy-industrial zoning within the county's data-center overlay), so it required no rezoning and faced no site-specific hearing. But it sits at the epicenter of Prince William County's data-center opposition — supervisors denied a nearby data center 4–2 in Sept 2025, residents sued over an adjacent rezoning, and the county is moving to end the overlay district. Microsoft is eligible for Virginia's data-center sales-and-use tax exemption, but state law bars disclosure of recipients and amounts.",
-      "sourceIndex": 4
+      "sourceIndex": 3
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
@@ -63657,7 +63622,7 @@
       "lat": 35.618,
       "lon": -97.567,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "state": "OK",
       "precision": "approximate"
     },
@@ -65693,7 +65658,7 @@
       "lat": 44.5155,
       "lon": -87.995,
       "city": "Green Bay",
-      "county": "Brown County",
+      "county": "Brown",
       "street": "1263 Main St., Suite 223",
       "postalCode": "54302",
       "state": "WI",
@@ -68533,7 +68498,7 @@
       "lat": 36.1535,
       "lon": -95.9905,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "321 S Boston Ave",
       "state": "OK",
       "precision": "approximate"
@@ -68659,7 +68624,7 @@
       "lat": 36.2892,
       "lon": -97.2836,
       "city": "Perry",
-      "county": "Noble County",
+      "county": "Noble",
       "state": "OK",
       "precision": "approximate"
     },
@@ -69325,7 +69290,7 @@
       "lat": 43.4578,
       "lon": -88.8373,
       "city": "Beaver Dam",
-      "county": "Dodge County",
+      "county": "Dodge",
       "state": "WI",
       "precision": "approximate"
     },
@@ -70827,7 +70792,7 @@
       "lat": 36.1516,
       "lon": -95.9903,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "501 S Boston Ave",
       "state": "OK",
       "precision": "approximate"
@@ -71439,7 +71404,7 @@
       "lat": 36.1487,
       "lon": -95.5097,
       "city": "Inola",
-      "county": "Rogers County",
+      "county": "Rogers",
       "state": "OK",
       "precision": "approximate"
     },
@@ -81873,13 +81838,6 @@
         "kind": "press"
       },
       {
-        "url": "https://www.interconnection.fyi/data-center/project/scalematrix-5103cd17",
-        "label": "ScaleMatrix San Diego - interconnection/capacity cross-check",
-        "publisher": "Interconnection.fyi / GridTracker",
-        "retrievedAt": "2026-08-02",
-        "kind": "iso_queue"
-      },
-      {
         "url": "https://opengovwa.com/corporation/604264407",
         "label": "Scalematrix Management, LLC - business entity filing (5775 Kearny Villa Rd address)",
         "publisher": "Washington State Corporations Registry",
@@ -84292,7 +84250,7 @@
       "lat": 45.9305,
       "lon": -90.438,
       "city": "Park Falls",
-      "county": "Price County",
+      "county": "Price",
       "state": "WI",
       "precision": "approximate"
     },
@@ -93292,7 +93250,7 @@
       "lat": 38.6297601,
       "lon": -90.1964208,
       "city": "Saint Louis",
-      "county": "St. Louis City",
+      "county": "St. Louis city",
       "street": "1111 Olive Street",
       "postalCode": "63101",
       "state": "MO",
@@ -94934,7 +94892,7 @@
       "lat": 36.1512,
       "lon": -95.9903,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "509 S Boston Ave",
       "state": "OK",
       "precision": "approximate"
@@ -94970,7 +94928,7 @@
       "lat": 36.1535,
       "lon": -95.9905,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "321 S Boston Ave",
       "postalCode": "74103",
       "state": "OK",
@@ -95014,7 +94972,7 @@
       "lat": 36.1523,
       "lon": -95.9932,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "110 W 7th St",
       "postalCode": "74119",
       "state": "OK",
@@ -95909,7 +95867,7 @@
       "lat": 35.4676,
       "lon": -97.5164,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "state": "OK",
       "precision": "approximate"
     },
@@ -98123,7 +98081,7 @@
       "lat": 42.8858,
       "lon": -87.8347,
       "city": "Oak Creek",
-      "county": "Milwaukee County",
+      "county": "Milwaukee",
       "state": "WI",
       "precision": "approximate"
     },
@@ -98181,7 +98139,7 @@
       "lat": 42.6489,
       "lon": -88.0087,
       "city": "Paris",
-      "county": "Kenosha County",
+      "county": "Kenosha",
       "state": "WI",
       "precision": "approximate"
     },
@@ -99114,7 +99072,7 @@
       "lat": 35.4791,
       "lon": -97.5142,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "street": "825 N Broadway Ave",
       "state": "OK",
       "precision": "approximate"
