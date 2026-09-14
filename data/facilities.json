@@ -31926,6 +31926,67 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "docomo-guam-harmon-gu",
+    "name": "DoCoMo Guam Data Center",
+    "operator": "DOCOMO PACIFIC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 13.5120114,
+      "lon": 144.827566,
+      "city": "Dededo",
+      "street": "467 Harmon Loop Road",
+      "state": "GU",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/docomo-guam",
+        "label": "DoCoMo Guam Data Center",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Baxtel lists this as a 'fully operational' facility at 467 Harmon Loop Road, Guam, operated by DOCOMO PACIFIC (which acquired Guam Cablevision in 2013; itself a subsidiary of NTT DOCOMO / NTT). No square footage or power capacity disclosed in the source fetched. The Harmon area straddles the Dededo/Tamuning municipal boundary -- Nominatim's best match for 'Harmon Loop Road' resolved under Dededo Municipality, used here, but the address could reasonably also be described as Tamuning. Precision 'approximate' (street-level geocode, not a confirmed parcel). Distinct from, and about 1.07 miles from, IT&E Guam per the same source. Confidence set to 'reported' rather than 'confirmed': the site-specific address/existence claim in this record rests on a single third-party data-center directory listing, not an operator-published confirmation of that specific site.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "docomo-saipan-susupe-mp",
+    "name": "DoCoMo Pacific Susupe Data Center",
+    "operator": "DOCOMO PACIFIC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 15.1568682,
+      "lon": 145.7051697,
+      "city": "Susupe",
+      "street": "Nauru Loop",
+      "state": "MP",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/nauru-loop-susupe/docomo-pacific/datacenter/guam-cablevision-llc-mcv-saipan-datacenter",
+        "label": "Docomo Pacific Susupe Data Center",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://business.docomopacific.com/data-center-colocation",
+        "label": "Data Center Colocation | DOCOMO PACIFIC",
+        "publisher": "DOCOMO PACIFIC",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Colocation facility at Nauru Loop, Susupe, Saipan, Northern Mariana Islands 96950, offering 'locking cabinets and private cages'; connects via the GU IX exchange. DOCOMO PACIFIC's own colocation page (fetched) describes the brand's general service offering (99.99% uptime SLA) across its Guam/CNMI sites but does not itself break out Saipan-specific specs; site-level detail (address, services) comes from the Inflect listing. Coordinates geocoded via OSM Nominatim on 'Nauru Loop, Susupe, Saipan' (street-level match) -- precision 'approximate', not a confirmed parcel. Confidence set to 'reported' rather than 'confirmed': the site-specific address/existence claim in this record rests on a single third-party data-center directory listing, not an operator-published confirmation of that specific site.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "doe-oak-ridge-reservation-ai-data-centers-tn",
     "name": "Oak Ridge Reservation AI Data Center Sites (DOE land lease)",
     "operator": "U.S. Department of Energy",
@@ -34741,6 +34802,40 @@
     }
   },
   {
+    "id": "edgeuno-sju1-san-juan-pr",
+    "name": "EdgeUno SJU1",
+    "operator": "EdgeUno, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 18.43004,
+      "lon": -66.05873,
+      "city": "San Juan",
+      "street": "17 Calle Prudencio Rivera Martinez",
+      "state": "PR",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/7158",
+        "label": "EdgeUno Datacenter San Juan Puerto Rico (SJU1) — PeeringDB",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://edgeuno.com/locations/",
+        "label": "EdgeUno — Locations (SJU1)",
+        "publisher": "EdgeUno, Inc.",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Carrier-neutral colocation / interconnection facility hosting the PR-IX (Puerto Rico Internet Exchange), 30 connected networks per its PeeringDB listing at retrieval. General-purpose colocation floor inside a larger building (3rd piso per the address); no AI/GPU-specific capacity claimed by any source fetched, so aiClassification is omitted deliberately. Coordinates are the facility's own PeeringDB listing; an independent Nominatim cross-check returned no result this session (environmental, not a disproof), so precision is left 'approximate'.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "element-critical-austin-one-tx",
     "name": "Element Critical Austin One",
     "operator": "Element Critical",
@@ -36153,6 +36248,40 @@
         "sourceIndex": 0
       }
     ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "epicio-st-croix-vi",
+    "name": "Epic.io St. Croix Data Center",
+    "operator": "Epic.io",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 17.7581924,
+      "lon": -64.8874524,
+      "city": "St. Croix",
+      "street": "Estate Northside",
+      "state": "VI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.epic.io/st-croix/",
+        "label": "Epic.io | St. Croix Data Center",
+        "publisher": "Epic.io",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/archives/2014/08/28/centrilogic-acquires-us-virgin-islands-data-center",
+        "label": "CentriLogic Acquires US Virgin Islands Data Center Provider Adveniat",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Epic.io's own site states address '23 Estate Northside, St Croix, VI 00840' and 'Direct connection to subsea cables facing North and South America'; power described as '75W/sqft or 3kW per rack density' with N+3 backup generators. St. Croix has had a data center at this general site at least since the mid-2000s under prior operators (Adveniat, then CentriLogic per the 2014 acquisition piece, which put the facility at approx. 30,000 sq ft with two redundant groups of four 650 KVA generators) -- this record is NOT asserted to be the identical building to the 2014 CentriLogic/Adveniat site; no source fetched this run confirms that continuity, so only Epic.io's own current listing is used for the facility's specs. Nominatim resolved 'Estate Northside, St Croix' only at the district/village level, not the street number, so precision is 'approximate' and the pin should be read as locating Estate Northside generally, not the parcel.",
     "facilityType": "data_center"
   },
   {
@@ -47494,6 +47623,92 @@
     }
   },
   {
+    "id": "gta-gu1-gu2-piti-gu",
+    "name": "GTA Guam Data Center (GU1/GU2)",
+    "operator": "GTA (Teleguam Holdings LLC)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 13.4672901,
+      "lon": 144.6991934,
+      "city": "Piti",
+      "street": "320 Marine Corps Dr",
+      "state": "GU",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/gta-guam-gu1-gu2",
+        "label": "GTA: Guam (GU1 & GU2) Data Center",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gta.net/data-center",
+        "label": "Data Center | Colocation Solutions | GTA",
+        "publisher": "GTA (Teleguam Holdings LLC)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gta.net/cable-landing-station",
+        "label": "Cable Landing Station on Guam | GTA",
+        "publisher": "GTA (Teleguam Holdings LLC)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Carrier-neutral cable landing station + colocation facility, built 2020, 11,800+ sq ft total (7,000+ sq ft data hall). GTA's own cable-landing-station page names the connected subsea systems as SEA-US West, SEA-US East, JGA North and JGA South. Power capacity not publicly disclosed per baxtel. Coordinates geocoded via OSM Nominatim on 'Marine Corps Drive, Piti, Guam' (street-level match, not a confirmed parcel) -- precision set 'approximate'.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "gta-gu3-alupang-tamuning-gu",
+    "name": "GTA Alupang Data Center (GU3)",
+    "operator": "GTA (Teleguam Holdings LLC)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 13.4961094,
+      "lon": 144.7745311,
+      "city": "Tamuning",
+      "street": "Alupang",
+      "state": "GU",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 4
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2022-10",
+        "note": "Groundbreaking held 2022-10-06 per GTA's own press release.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://news.gta.net/218940-gta-breaks-ground-on-alupang-data-center/",
+        "label": "GTA Breaks Ground on Alupang Data Center",
+        "publisher": "GTA (Teleguam Holdings LLC)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://news.gta.net/269859-gta-brings-guam-to-batic-2026-advancing-global-connectivity/",
+        "label": "GTA Brings Guam to BATIC 2026, Advancing Global Connectivity",
+        "publisher": "GTA (Teleguam Holdings LLC)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "GTA's own groundbreaking release (2022-10-06) describes a Tier III, 31,000 sq ft, 4.0 MW data center and cable landing station in the Alupang area, Tamuning, Guam, with Nova/AMORIENT as design-build team; expected-completion estimates varied by source (Q3 2024 per the groundbreaking release, later Q1/Q3 2025 per aggregator listings). Status set to operational on the strength of GTA's own 2026 newsroom article, which states verbatim: \"GTA operates three data centers, with its newest facility, GU3 in Alupang.\" Coordinates geocoded via OSM Nominatim on 'Alupang, Guam' (resolved to Alupang Street, Tamuning) -- precision 'approximate', not a confirmed parcel.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "guild-ventures-kenwood-commons-albany-ny",
     "name": "Kenwood Commons Technology Campus",
     "operator": "Guild Ventures",
@@ -49575,6 +49790,47 @@
     ],
     "lastUpdated": "2026-09-02",
     "notes": "~430,000 sq ft facility in the Cherokee Industrial Park, north Tulsa. Operator is recorded as the cited sources state it; current ownership was not independently verified this session, so confidence is 'reported'. Distinct from Project Clydesdale, a separate 506-acre greenfield campus near the same industrial park in unincorporated Tulsa County. Coordinates approximate to the Cherokee Industrial Park area.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "hub787-carolina-pr",
+    "name": "HUB787",
+    "operator": "HUB Advanced Networks",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 18.442021,
+      "lon": -66.021669,
+      "city": "Carolina",
+      "street": "8030 Isla Verde Ave",
+      "state": "PR",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.investpr.org/wp-content/uploads/2022/09/InvestPR_Landing-Pads_Hub-787_EN.pdf",
+        "label": "A landing pad primed for tech innovation — Hub787",
+        "publisher": "Invest Puerto Rico",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/6107",
+        "label": "HUB787 Data Center — PeeringDB",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://hub.pr/services/hub-787.html",
+        "label": "HUB 787 — services page",
+        "publisher": "HUB Advanced Networks",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "202,885 SF facility in Isla Verde, Carolina; third-floor Tier III cable landing station + data center per Invest Puerto Rico's fact sheet, which states it 'hosts five submarine cable systems and interconnects to a total of 10 submarine cables serving all major markets,' with a second, smaller HUB787 facility in Hato Rey, San Juan (not separately recorded here — no address given for it). Coordinates are the facility's own PeeringDB listing (18.442021, -66.021669); an independent Nominatim cross-check returned no result this session (environmental — Nominatim gave empty results for this and other PR queries this run, not a disproof), so precision is left 'approximate' rather than 'exact'. aiClassification omitted deliberately: the InvestPR sheet lists AI & Machine Learning tech companies as a target tenant profile (marketing/target-market language), not a statement that AI/HPC workloads are actually deployed at the site today.",
     "facilityType": "data_center"
   },
   {
@@ -51929,6 +52185,60 @@
     "notes": "Single fetched source. Coordinates are a Tulsa centroid approximation; street address is as published.",
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "ite-guam-harmon-gu",
+    "name": "IT&E Guam Data Center",
+    "operator": "IT&E",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 13.5030828,
+      "lon": 144.8117863,
+      "city": "Tamuning",
+      "street": "122 Harmon Industrial Park Rd",
+      "state": "GU",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/it-e-guam",
+        "label": "IT&E Guam Data Center",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Baxtel lists this as a 'fully operational facility' at 122 Harmon Industrial Park Rd, Guam, operated by IT&E, serving the Asia-Pacific market. No square footage or power capacity disclosed in the source fetched. Coordinates geocoded via OSM Nominatim on 'Harmon Industrial Park, Guam' (street-level match, resolved to East Harmon, Tamuning Municipality) -- precision 'approximate', not a confirmed parcel. Distinct from DoCoMo Guam (1.07 mi away) and GTA Alupang GU3 (2.04 mi away) per the same source. Confidence set to 'reported' rather than 'confirmed': the site-specific address/existence claim in this record rests on a single third-party data-center directory listing, not an operator-published confirmation of that specific site.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ite-saipan-susupe-mp",
+    "name": "IT&E Saipan Data Center",
+    "operator": "IT&E",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 15.1587626,
+      "lon": 145.7066756,
+      "city": "Susupe",
+      "street": "Tekken Street",
+      "state": "MP",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/it-e-saipan",
+        "label": "IT&E Saipan Data Center",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Baxtel lists this as a 'fully operational facility' on Tekken Street, Susupe, Saipan Municipality, Northern Mariana Islands 96950, operated by IT&E (Innovative Telephone & Electronics), founded 1988, headquartered in Guam, serving Guam and CNMI. No square footage or power capacity disclosed in the source fetched. Coordinates geocoded via OSM Nominatim on 'Tekken Street, Saipan' (street-level match, resolved to Susupe) -- precision 'approximate', not a confirmed parcel. Located roughly 0.34 miles from DoCoMo Saipan per the same source. Confidence set to 'reported' rather than 'confirmed': the site-specific address/existence claim in this record rests on a single third-party data-center directory listing, not an operator-published confirmation of that specific site.",
+    "facilityType": "data_center"
   },
   {
     "id": "its-monticello-ia",

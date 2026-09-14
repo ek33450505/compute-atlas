@@ -10508,6 +10508,8 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "docomo-guam-harmon-gu": {},
+  "docomo-saipan-susupe-mp": {},
   "doe-oak-ridge-reservation-ai-data-centers-tn": {
     "nearestWater": {
       "name": "Poplar Creek",
@@ -11506,6 +11508,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "edgeuno-sju1-san-juan-pr": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "element-critical-austin-one-tx": {
     "nearestWater": {
       "name": "Little Walnut Creek",
@@ -12042,6 +12054,12 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "epicio-st-croix-vi": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 76
     }
   },
   "equinix-ashburn-va": {
@@ -15739,6 +15757,8 @@
       "rock": "Sandstone"
     }
   },
+  "gta-gu1-gu2-piti-gu": {},
+  "gta-gu3-alupang-tamuning-gu": {},
   "guild-ventures-kenwood-commons-albany-ny": {
     "nearestWater": {
       "name": "Hudson River",
@@ -16406,6 +16426,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "hub787-carolina-pr": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 8.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "hunters-ridge-south-data-center-campus-spotsylvania-va": {
@@ -17234,6 +17264,8 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "ite-guam-harmon-gu": {},
+  "ite-saipan-susupe-mp": {},
   "its-monticello-ia": {
     "nearestWater": {
       "name": "Kitty Creek",

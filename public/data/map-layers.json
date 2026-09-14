@@ -12,13 +12,13 @@
   "waterStress": {
     "attribution": "WRI Aqueduct 4.0 (CC BY 4.0)",
     "license": "CC-BY-4.0",
-    "total": 1701,
+    "total": 1703,
     "distribution": {
       "Extremely High (>80%)": 244,
       "High (40-80%)": 319,
       "Medium - High (20-40%)": 379,
       "Low - Medium (10-20%)": 261,
-      "Low (<10%)": 481,
+      "Low (<10%)": 483,
       "Arid and Low Water Use": 17
     }
   },

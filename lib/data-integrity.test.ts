@@ -97,15 +97,38 @@ describe("data integrity — facilities.json", () => {
     expect(failing, failing.join(", ")).toHaveLength(0);
   });
 
-  it("coordinates are within plausible US bounds (lat 15–72, lon −180 to −65)", () => {
+  it("coordinates are within known US jurisdictions (contiguous, Alaska, Hawaii, territories)", () => {
+    // US jurisdictions occupy multiple non-contiguous regions.
+    // A single bounding box would either exclude real territories (Guam, American Samoa, etc.)
+    // or accept most of the planet, defeating the purpose of this guard.
+    // Guam and Northern Mariana Islands sit at POSITIVE longitude (144–147°E);
+    // American Samoa is in the SOUTHERN hemisphere (−16 to −9°S).
+    // This test catches transposed signs, swapped lat/lon, or geocoder errors in the wrong hemisphere.
+    const regions = [
+      {
+        name: "Contiguous US + Alaska + Hawaii + PR + USVI",
+        lat: [15, 72],
+        lon: [-180, -64],
+      },
+      {
+        name: "Guam + Northern Mariana Islands",
+        lat: [13, 21],
+        lon: [144, 147],
+      },
+      {
+        name: "American Samoa",
+        lat: [-16, -9],
+        lon: [-173, -166],
+      },
+    ];
+
+    const isInAnyRegion = (lat: number, lon: number): boolean =>
+      regions.some(
+        (r) => lat >= r.lat[0] && lat <= r.lat[1] && lon >= r.lon[0] && lon <= r.lon[1]
+      );
+
     const failing = facilities
-      .filter(
-        (f) =>
-          f.location.lat < 15 ||
-          f.location.lat > 72 ||
-          f.location.lon < -180 ||
-          f.location.lon > -65
-      )
+      .filter((f) => !isInAnyRegion(f.location.lat, f.location.lon))
       .map((f) => `${f.id}: lat=${f.location.lat}, lon=${f.location.lon}`);
     expect(failing, failing.join("\n")).toHaveLength(0);
   });
