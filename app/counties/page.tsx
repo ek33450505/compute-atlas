@@ -114,7 +114,7 @@ export default async function CountiesIndexPage() {
       <SurveyStatRow
         stats={[
           { value: counties.length.toLocaleString(), label: "Counties" },
-          { value: statesTile.value.toLocaleString(), label: statesTile.label },
+          { ...statesTile, value: statesTile.value.toLocaleString() },
           { value: facilitiesInCounties.toLocaleString(), label: "In a county" },
         ]}
       />

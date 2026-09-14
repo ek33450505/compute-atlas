@@ -174,6 +174,52 @@ describe("CollectionPage", () => {
     expect(screen.queryByText("Sites")).not.toBeInTheDocument();
   });
 
+  it("renders no footnote marker or line when no stat carries a note", () => {
+    render(
+      <CollectionPage
+        title="Operational data centers in the US"
+        intro="intro"
+        crumbs={CRUMBS}
+        statRow={[{ label: "States", value: "3" }]}
+        facilities={FACILITIES}
+      />
+    );
+
+    expect(screen.queryByText("*")).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Plus /)).not.toBeInTheDocument();
+  });
+
+  it("marks a noted stat's caption and prints its note under the row", () => {
+    render(
+      <CollectionPage
+        title="Operational data centers in the US"
+        intro="intro"
+        crumbs={CRUMBS}
+        statRow={[
+          { label: "Facilities", value: "9" },
+          {
+            label: "States",
+            value: "3",
+            note: "Plus the District of Columbia",
+          },
+        ]}
+        facilities={FACILITIES}
+      />
+    );
+
+    const statesTile = screen.getByText("States").closest("div")!;
+    expect(within(statesTile).getByText("3")).toBeInTheDocument();
+    expect(within(statesTile).getByText("*")).toBeInTheDocument();
+    // The unnoted neighbor must stay clean — a marker over "Facilities" would
+    // point at a footnote that says nothing about facilities.
+    expect(
+      within(screen.getByText("Facilities").closest("div")!).queryByText("*")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Plus the District of Columbia")
+    ).toBeInTheDocument();
+  });
+
   it("injects BreadcrumbList and ItemList JSON-LD script tags", () => {
     const { container } = render(
       <CollectionPage

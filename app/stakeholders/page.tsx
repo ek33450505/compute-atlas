@@ -74,8 +74,8 @@ export default async function StakeholdersIndexPage() {
           { value: people.length.toLocaleString(), label: "People" },
           { value: totalFacilityLinks.toLocaleString(), label: "Facility links" },
           {
+            ...statesTile,
             value: statesTile.value.toLocaleString(),
-            label: statesTile.label,
           },
         ]}
       />

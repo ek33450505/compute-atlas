@@ -86,10 +86,12 @@ describe("AiPage — states tile DC wording", () => {
 
     // 2 distinct states (NY, TX), no DC.
     expect(within(tileByLabel("States")).getByText("2")).toBeInTheDocument();
-    expect(screen.queryByText("States + DC")).not.toBeInTheDocument();
+    // No qualifier means no footnote marker and no footnote line at all.
+    expect(within(tileByLabel("States")).queryByText("*")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Plus the District of Columbia/)).not.toBeInTheDocument();
   });
 
-  it("labels the states tile 'States + DC' and shows the state count (2), not the raw jurisdiction total (3), when an AI-classified data center is in DC", async () => {
+  it("marks the states tile and footnotes DC, showing the state count (2), not the raw jurisdiction total (3), when an AI-classified data center is in DC", async () => {
     mockGetAiClassificationByState.mockResolvedValue([
       { state: "NY", counts: { confirmed: 2, likely: 0, mixed_use: 0 } },
       { state: "TX", counts: { confirmed: 1, likely: 1, mixed_use: 0 } },
@@ -101,12 +103,15 @@ describe("AiPage — states tile DC wording", () => {
     render(page);
 
     // The bug this guards: the tile's VALUE must be the state count (2: NY,
-    // TX), not the raw jurisdiction total (3: NY, TX, DC) — "3 / States + DC"
-    // reads as "three states, plus DC."
-    const tile = tileByLabel("States + DC");
+    // TX), not the raw jurisdiction total (3: NY, TX, DC) — "3 / States"
+    // over a footnote naming DC reads as "three states, plus DC."
+    const tile = tileByLabel("States");
     expect(within(tile).getByText("2")).toBeInTheDocument();
     expect(within(tile).queryByText("3")).not.toBeInTheDocument();
-    expect(screen.queryByText("States")).not.toBeInTheDocument();
+    expect(within(tile).getByText("*")).toBeInTheDocument();
+    // And the caption alone must not be left to carry it: a bare "States"
+    // over 2 would silently drop DC from a page that tracks a DC facility.
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
   });
 });
 

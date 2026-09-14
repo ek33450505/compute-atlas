@@ -78,8 +78,8 @@ export default async function MetrosIndexPage() {
           { value: METROS.length.toLocaleString(), label: "Metros" },
           { value: countyKeys.size.toLocaleString(), label: "Counties" },
           {
+            ...statesTile,
             value: statesTile.value.toLocaleString(),
-            label: statesTile.label,
           },
           { value: facilitiesInMetros.toLocaleString(), label: "In a metro" },
         ]}

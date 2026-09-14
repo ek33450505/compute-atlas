@@ -88,7 +88,7 @@ export default async function StakeholderPage({
       statRow={[
         { label: "Facilities", value: String(facilities.length) },
         {
-          label: statesTile.label,
+          ...statesTile,
           value: String(statesTile.value),
         },
       ]}

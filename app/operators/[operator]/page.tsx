@@ -137,7 +137,7 @@ export default async function OperatorPage({
           { value: summary.count, label: "Sites" },
           { value: formatPower(summary.operationalMw), label: "Operational" },
           { value: formatPower(summary.plannedMw), label: "Pipeline" },
-          { value: statesTile.value, label: statesTile.label },
+          { ...statesTile },
         ]}
       />
 

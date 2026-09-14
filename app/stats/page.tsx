@@ -167,7 +167,7 @@ export default async function StatsPage() {
         stats={[
           { value: total.toLocaleString("en-US"), label: "Sites tracked" },
           {
-            value: statesTile.value,
+            ...statesTile,
             label: `${statesTile.label} covered`,
           },
           {

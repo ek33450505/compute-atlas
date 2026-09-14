@@ -257,6 +257,12 @@ describe("statesStat", () => {
   // gets the label right and only the value goes stale. Every expectation
   // below is a typed-out literal, never the constant under test, so a
   // regression in the implementation can't also regress the assertion.
+  //
+  // The label no longer names DC or territories at all — that moved into
+  // `note`, printed as a footnote under the row (Ed, QA, 2026-09-14). So the
+  // note assertions carry what the label assertions used to: they are the
+  // only thing standing between a bare "50 / States" caption and a reader who
+  // concludes the atlas has never heard of Puerto Rico.
 
   it('is {value: 1, label: "State"} for a single state', () => {
     expect(statesStat(["CA"])).toEqual({ value: 1, label: "State" });
@@ -266,29 +272,89 @@ describe("statesStat", () => {
     expect(statesStat(["CA", "TX", "NY"])).toEqual({ value: 3, label: "States" });
   });
 
-  it('singularizes to "State + DC" for one state plus DC', () => {
-    expect(statesStat(["CA", "DC"])).toEqual({ value: 1, label: "State + DC" });
+  it("leaves the label bare and adds no note when the set is states only", () => {
+    // The note key must be ABSENT, not an empty string: a render primitive
+    // decides whether to print a footnote marker by truthiness of `note`, and
+    // `""` would put a marker over a tile with nothing to explain.
+    expect(statesStat(["CA", "TX"])).not.toHaveProperty("note");
   });
 
-  it('derives {value: 50, label: "States + DC"} from all 50 states plus DC — byte-identical to the shipped wording', () => {
+  it('keeps the label singular and footnotes DC for one state plus DC', () => {
+    expect(statesStat(["CA", "DC"])).toEqual({
+      value: 1,
+      label: "State",
+      note: "Plus the District of Columbia",
+    });
+  });
+
+  it('derives {value: 50, label: "States"} from all 50 states plus DC — the caption never says "+ DC"', () => {
     const allStatesPlusDc = [...Object.keys(US_STATE_NAMES).filter((c) => c !== "DC"), "DC"];
-    expect(statesStat(allStatesPlusDc)).toEqual({ value: 50, label: "States + DC" });
+    expect(statesStat(allStatesPlusDc)).toEqual({
+      value: 50,
+      label: "States",
+      note: "Plus the District of Columbia",
+    });
   });
 
-  it('singularizes to "State + territories" for one state plus one territory', () => {
-    expect(statesStat(["CA", "PR"])).toEqual({ value: 1, label: "State + territories" });
+  it("singularizes the territory count in the note for one state plus one territory", () => {
+    expect(statesStat(["CA", "PR"])).toEqual({
+      value: 1,
+      label: "State",
+      note: "Plus 1 U.S. territory",
+    });
   });
 
-  it('is "States + territories" for multiple states plus territories, no DC', () => {
-    expect(statesStat(["CA", "TX", "PR", "GU"])).toEqual({ value: 2, label: "States + territories" });
+  it("counts the territories in the note for multiple states plus territories, no DC", () => {
+    expect(statesStat(["CA", "TX", "PR", "GU"])).toEqual({
+      value: 2,
+      label: "States",
+      note: "Plus 2 U.S. territories",
+    });
   });
 
-  it('singularizes to "State + DC + territories" for one state, DC, and a territory', () => {
-    expect(statesStat(["CA", "DC", "PR"])).toEqual({ value: 1, label: "State + DC + territories" });
+  it("names DC and counts the territory for one state, DC, and a territory", () => {
+    expect(statesStat(["CA", "DC", "PR"])).toEqual({
+      value: 1,
+      label: "State",
+      note: "Plus the District of Columbia and 1 U.S. territory",
+    });
   });
 
-  it('is "States + DC + territories" for multiple states, DC, and territories', () => {
-    expect(statesStat(["CA", "TX", "DC", "PR"])).toEqual({ value: 2, label: "States + DC + territories" });
+  it("names DC and counts the territories for multiple states, DC, and territories", () => {
+    expect(statesStat(["CA", "TX", "DC", "PR", "GU"])).toEqual({
+      value: 2,
+      label: "States",
+      note: "Plus the District of Columbia and 2 U.S. territories",
+    });
+  });
+
+  it("keeps the label one word as territories accumulate — only the note grows", () => {
+    // The whole point of moving the qualifier into a footnote: the caption is
+    // stacked under a 4xl figure in wide-tracked uppercase mono, so it cannot
+    // absorb another term. Adding every territory the dataset could ever hold
+    // must not lengthen it by a character.
+    const everything = [
+      ...Object.keys(US_STATE_NAMES).filter((c) => c !== "DC"),
+      "DC",
+      "PR",
+      "GU",
+      "VI",
+      "MP",
+      "AS",
+    ];
+    expect(statesStat(everything)).toEqual({
+      value: 50,
+      label: "States",
+      note: "Plus the District of Columbia and 5 U.S. territories",
+    });
+  });
+
+  it("never lists territories by name in the note — that is what /states is for", () => {
+    const { note } = statesStat(["CA", "PR", "GU", "VI"]);
+    expect(note).toBe("Plus 3 U.S. territories");
+    for (const name of ["Puerto Rico", "Guam", "Virgin Islands"]) {
+      expect(note).not.toContain(name);
+    }
   });
 
   it('is {value: 1, label: "DC"} when DC is the only jurisdiction present', () => {
@@ -314,6 +380,14 @@ describe("statesStat", () => {
 
   it("ignores unknown codes rather than counting or crashing on them", () => {
     expect(statesStat(["CA", "ZZ"])).toEqual({ value: 1, label: "State" });
+  });
+
+  it("adds no note to the zero-state labels, whose caption already names the whole set", () => {
+    // "DC" / "Puerto Rico" / "Jurisdictions" describe every code present, so a
+    // footnote there would repeat the caption rather than extend it.
+    for (const codes of [["DC"], ["PR"], ["DC", "PR"], ["PR", "GU"], []]) {
+      expect(statesStat(codes)).not.toHaveProperty("note");
+    }
   });
 });
 

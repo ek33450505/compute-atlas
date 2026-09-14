@@ -67,7 +67,7 @@ export default async function OppositionPage() {
   const surveyStats: SurveyStat[] = [
     { value: total, label: "Friction sites" },
     { value: counts.litigation, label: "In litigation" },
-    { value: statesTile.value, label: statesTile.label },
+    { ...statesTile },
   ];
   if (defeatedProjects.length > 0) {
     surveyStats.push({

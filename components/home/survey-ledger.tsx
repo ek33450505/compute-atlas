@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import { statesStat, statesPhrase } from "@/lib/us-states";
+import { StatFootnotes, StatLabel } from "@/components/stat-footnote";
 
 // useLayoutEffect warns when it runs during SSR; swapping to useEffect on the
 // server keeps the pre-paint reset a purely client-side hydration behavior.
@@ -160,9 +161,16 @@ interface LedgerTileProps {
   label: string;
   ariaLabel: string;
   format?: (value: number) => string;
+  /**
+   * Footnote marker printed after the caption, when this tile's figure is
+   * qualified by the footnote under the row. Purely typographic — `ariaLabel`
+   * already carries the full, unabbreviated reading of the figure, so the
+   * marker is hidden from assistive tech rather than spelled out.
+   */
+  marker?: string;
 }
 
-function LedgerTile({ value, label, ariaLabel, format }: LedgerTileProps) {
+function LedgerTile({ value, label, ariaLabel, format, marker }: LedgerTileProps) {
   const display = format ? format(value) : Math.round(value).toString();
   return (
     <div
@@ -176,7 +184,7 @@ function LedgerTile({ value, label, ariaLabel, format }: LedgerTileProps) {
         {display}
       </span>
       <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-        {label}
+        <StatLabel label={label} marker={marker} />
       </span>
     </div>
   );
@@ -296,6 +304,7 @@ export function SurveyLedger({
           value={displayStates}
           label={statesTile.label + " covered"}
           ariaLabel={`${statesPhrase(stateCodes)} covered`}
+          marker={statesTile.note ? "*" : undefined}
         />
         <LedgerTile
           value={displayOperators}
@@ -307,6 +316,19 @@ export function SurveyLedger({
           label="Sources cited"
           ariaLabel={`${sources.toLocaleString("en-US")} sources cited`}
           format={(v) => Math.round(v).toLocaleString("en-US")}
+        />
+        {/*
+          The caption says "States covered" and the figure counts only the 50;
+          this line is where DC and the territories are accounted for. It sits
+          inside the tile row as a full-width flex item so it wraps onto its
+          own line directly under the tiles it qualifies. Screen readers get
+          the same fact from the tile's own `ariaLabel` (via `statesPhrase`),
+          so this is a second, visual-reader-facing route to it, not the only
+          one.
+        */}
+        <StatFootnotes
+          footnotes={statesTile.note ? [{ marker: "*", note: statesTile.note }] : []}
+          className="-mt-4"
         />
       </div>
 

@@ -172,39 +172,53 @@ export function splitJurisdictions(codes: Iterable<string>): { states: string[];
 }
 
 /**
- * Value+label pair for a stat tile whose underlying count is a set of
- * distinct `location.state` codes. Returned TOGETHER, deliberately: an
- * earlier change made the label DC-aware ("States + DC") but left the VALUE
- * as the raw jurisdiction total, so tiles rendered "51 / States + DC" — read
- * as "fifty-one states, plus DC," live on prod until 2026-09-13. Coupling
- * value and label in one function makes that drift structurally impossible:
- * there is no longer a label-only helper a call site can pair with the raw
- * total by mistake. (There used to be a separate `statesStatLabel` — this
- * replaced it outright, since every one of its call sites was the exact
- * buggy pattern above; keeping both would let them disagree again.)
+ * Value + label (+ optional footnote) for a stat tile whose underlying count
+ * is a set of distinct `location.state` codes. Returned TOGETHER,
+ * deliberately: an earlier change made the label DC-aware ("States + DC") but
+ * left the VALUE as the raw jurisdiction total, so tiles rendered
+ * "51 / States + DC" — read as "fifty-one states, plus DC," live on prod
+ * until 2026-09-13. Coupling value and label in one function makes that drift
+ * structurally impossible: there is no longer a label-only helper a call site
+ * can pair with the raw total by mistake. (There used to be a separate
+ * `statesStatLabel` — this replaced it outright, since every one of its call
+ * sites was the exact buggy pattern above; keeping both would let them
+ * disagree again.)
  *
- * Territories extend the same reasoning one step further: this now takes the
+ * Territories extend the same reasoning one step further: this takes the
  * CODES themselves — `Iterable<string>` — rather than a pre-computed total,
  * which is what makes a territory miscount structurally impossible too. A
  * caller can no longer hand this a total that silently includes DC,
  * territories, or both; `value` is always the number of actual states,
  * derived here via `splitJurisdictions`, never trusted from the caller.
  *
- * `value` is the count of the 50-state codes present. `label` names what
- * else is in the set:
- *   - states only                     -> "State" / "States"
- *   - states + DC only                -> "State + DC" / "States + DC"
- *   - states + territories only       -> "State + territories" / "States + territories"
- *   - states + DC + territories       -> "State + DC + territories" / "States + DC + territories"
- *   - DC only, no states              -> "DC"
- *   - exactly one territory, no states -> that territory's name (e.g. "Puerto Rico")
- *   - several non-state jurisdictions, no states -> "Jurisdictions"
- *   - empty                           -> "States"
- * "territories" stays lowercase and is singular-form-invariant by design —
- * the label can never grow past three terms no matter how many territories
- * are present, so it never turns into a list of codes.
+ * ⚠️ The label is deliberately BARE — "States", never "States + DC +
+ * territories". That three-term form was correct and unreadable: stacked
+ * under a 4xl figure in uppercase mono with wide tracking, it swamped the
+ * number it captioned and unbalanced every row it sat in (Ed, QA,
+ * 2026-09-14). What the extra jurisdictions are now rides in `note`, which
+ * renders as a footnote under the row behind a `*` marker — the count stays
+ * honest, the caption stays one word, and the label can never grow a term no
+ * matter how many territories the dataset picks up.
+ *
+ * `value` is the count of the 50-state codes present. `label` captions it.
+ * `note` is present ONLY when non-state jurisdictions accompany at least one
+ * state — i.e. exactly when the bare label would otherwise under-report:
+ *   - states only                                -> "State" / "States", no note
+ *   - states + DC only                           -> + "Plus the District of Columbia"
+ *   - states + territories only                  -> + "Plus 1 U.S. territory" / "Plus 3 U.S. territories"
+ *   - states + DC + territories                  -> + "Plus the District of Columbia and 4 U.S. territories"
+ *   - DC only, no states                         -> "DC", no note
+ *   - exactly one territory, no states           -> that territory's name (e.g. "Puerto Rico"), no note
+ *   - several non-state jurisdictions, no states -> "Jurisdictions", no note
+ *   - empty                                      -> "States", no note
+ * The zero-state cases carry no note because their label already names the
+ * whole set — a footnote there would repeat the caption, not extend it.
  */
-export function statesStat(codes: Iterable<string>): { value: number; label: string } {
+export function statesStat(codes: Iterable<string>): {
+  value: number;
+  label: string;
+  note?: string;
+} {
   const { states, other } = splitJurisdictions(codes);
   const stateCount = states.length;
 
@@ -225,20 +239,38 @@ export function statesStat(codes: Iterable<string>): { value: number; label: str
     return { value: other.length, label: "Jurisdictions" };
   }
 
+  const label = stateCount === 1 ? "State" : "States";
+  const note = jurisdictionNote(other);
+  return note ? { value: stateCount, label, note } : { value: stateCount, label };
+}
+
+/**
+ * Footnote text for the non-state jurisdictions sitting alongside a state
+ * count — DC, territories, or both. Returns `undefined` when there are none,
+ * so `statesStat` can omit the key entirely rather than emit an empty note a
+ * render primitive would have to special-case.
+ *
+ * Unlike the tile label, this is prose and may carry a count: a footnote has
+ * a whole line to itself, so "4 U.S. territories" costs nothing here while
+ * the same precision in the caption is what made the caption unreadable.
+ * Territories are still never listed by name — that would grow without
+ * bound; the reader who wants the names has /states.
+ *
+ * `other` is `splitJurisdictions().other` — sorted, de-duplicated, and
+ * containing only DC or recognized territory codes.
+ */
+function jurisdictionNote(other: readonly string[]): string | undefined {
   const hasDc = other.includes(DC_CODE);
   const territoryCount = other.length - (hasDc ? 1 : 0);
-  const plural = stateCount === 1 ? "State" : "States";
 
-  if (!hasDc && territoryCount === 0) {
-    return { value: stateCount, label: plural };
-  }
-  if (hasDc && territoryCount === 0) {
-    return { value: stateCount, label: `${plural} + DC` };
-  }
-  if (!hasDc && territoryCount > 0) {
-    return { value: stateCount, label: `${plural} + territories` };
-  }
-  return { value: stateCount, label: `${plural} + DC + territories` };
+  if (!hasDc && territoryCount === 0) return undefined;
+
+  const territoryPhrase =
+    territoryCount === 1 ? "1 U.S. territory" : `${territoryCount} U.S. territories`;
+
+  if (hasDc && territoryCount === 0) return "Plus the District of Columbia";
+  if (!hasDc) return `Plus ${territoryPhrase}`;
+  return `Plus the District of Columbia and ${territoryPhrase}`;
 }
 
 /**
@@ -250,11 +282,14 @@ export function statesStat(codes: Iterable<string>): { value: number; label: str
  * produced e.g. "52 states and DC", the prose form of the exact bug fixed
  * in `statesStat` (PR #304).
  *
- * Unlike `statesStat`'s label, which keeps the bare word "territories" so a
- * TILE LABEL can never grow past three terms, prose can afford a count, so
- * this says "2 territories" rather than just "territories". Do not unify
- * the two functions on one shape: the boundedness constraint that matters
- * for a stat tile does not apply to a sentence.
+ * Closely related to `statesStat`'s `note`, and deliberately not unified
+ * with it. Both are prose and both carry a territory count, but they answer
+ * different questions: `note` extends a caption whose figure is already on
+ * screen ("Plus the District of Columbia and 4 U.S. territories"), while this
+ * is a self-contained clause that must name the state count too ("50 states,
+ * DC and 4 territories"). Merging them would force one of the two to say
+ * something it does not mean. Neither is the TILE LABEL, which stays one word
+ * — see the note on `statesStat` for why.
  *
  *   - 1 state, nothing else                      -> "1 state"
  *   - N states, nothing else                      -> "N states"

@@ -134,11 +134,12 @@ describe("MetrosIndexPage", () => {
       within(tileFor(stateCodes.size.toLocaleString())).getByText("States")
     ).toBeInTheDocument();
     expect(
-      within(tileFor(stateCodes.size.toLocaleString())).queryByText("States + DC")
+      within(tileFor(stateCodes.size.toLocaleString())).queryByText("*")
     ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Plus the District of Columbia/)).not.toBeInTheDocument();
   });
 
-  it("labels the states tile 'States + DC' and shows the state count, not the raw jurisdiction total, when a metro's states include DC", async () => {
+  it("marks the states tile and footnotes DC, showing the state count, not the raw jurisdiction total, when a metro's states include DC", async () => {
     // Synthetic fixture: append a DC-including metro to the real set via
     // metrosBox — proves containsDc/statesStat are actually wired into this
     // call site, rather than the label happening to read "States" because no
@@ -161,19 +162,20 @@ describe("MetrosIndexPage", () => {
       for (const state of m.states) rawStateTotal.add(state);
     }
     // The honest tile value: DC itself isn't a state, so it must not be
-    // counted toward "States + DC" — this is the "51 / States + DC" bug's
-    // regression case (here 21 raw jurisdictions -> 20 actual states).
+    // counted toward the figure the "States" caption sits under — this is the
+    // "51 / States + DC" bug's regression case (here 21 raw jurisdictions ->
+    // 20 actual states).
     const expectedStatesValue = rawStateTotal.size - 1;
 
-    // Mutation coverage: reverting the call site to a hardcoded "States"
-    // label (dropping containsDc/statesStat) renders "States" here instead
-    // and fails this assertion.
+    // Mutation coverage: dropping statesStat for a hardcoded "States" label
+    // leaves the caption unmarked and prints no footnote, failing both.
     expect(
-      within(tileFor(expectedStatesValue.toLocaleString())).getByText("States + DC")
+      within(tileFor(expectedStatesValue.toLocaleString())).getByText("States")
     ).toBeInTheDocument();
     expect(
-      within(tileFor(expectedStatesValue.toLocaleString())).queryByText("States")
-    ).not.toBeInTheDocument();
+      within(tileFor(expectedStatesValue.toLocaleString())).getByText("*")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
     // The bite: a call site that reverts to passing the raw jurisdiction
     // total as `value` still gets the label right and only this fails.
     expect(screen.queryByText(rawStateTotal.size.toLocaleString())).not.toBeInTheDocument();

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { SurveyLedger, type SurveyLedgerProps } from "./survey-ledger";
 
 // ---------------------------------------------------------------------------
@@ -126,25 +126,63 @@ describe("SurveyLedger", () => {
     ).toBeInTheDocument();
   });
 
-  it("phrases the states tile as '50 states and DC covered', animating the number to the actual state count (50) not the raw jurisdiction total (51), when the dataset includes DC", () => {
+  it("captions the states tile 'States covered' with a DC footnote, animating the number to the actual state count (50) not the raw jurisdiction total (51), when the dataset includes DC", () => {
     setReducedMotion(true);
     render(<SurveyLedger {...PROPS} states={51} includesDc={true} stateCodes={["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"]} />);
 
     // The bug this guards: the tile's animated number must land on the
     // actual state count (50), not the raw distinct-code total (51) — "51 /
-    // States + DC" reads as "fifty-one states, plus DC." Reverting the
-    // count-up target back to the raw `states` prop fails this and the "51"
-    // negative below.
+    // States covered" reads as "fifty-one states" whether or not a footnote
+    // follows. Reverting the count-up target back to the raw `states` prop
+    // fails this and the "51" negative below.
     expect(screen.getByText("50")).toBeInTheDocument();
     expect(screen.queryByText("51")).not.toBeInTheDocument();
-    // Mutation coverage: reverting the label back to a hardcoded "States
-    // covered", or the aria text back to `${states} states covered`, fails
-    // one of these two assertions.
-    expect(screen.getByText("States + DC covered")).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("50 states and DC covered")
-    ).toBeInTheDocument();
+    // The caption stays one phrase and DC moves to the footnote under the
+    // row. Mutation coverage: dropping statesStat leaves the caption unmarked
+    // and prints no footnote; reverting the aria text back to
+    // `${states} states covered` fails the label assertions.
+    expect(screen.getByText("States covered")).toBeInTheDocument();
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
+    // Screen readers never see the "*" — the tile's own aria-label already
+    // spells the whole figure out, which is why the marker is aria-hidden.
+    // Scoped to the tile because the footnote line prints its own copy of the
+    // glyph; a bare getByText("*") matches both and proves neither.
+    const tile = screen.getByLabelText("50 states and DC covered");
+    expect(within(tile).getByText("*")).toBeInTheDocument();
     expect(screen.queryByLabelText("51 states covered")).not.toBeInTheDocument();
+  });
+
+  it("prints no footnote and no marker when the dataset is states only", () => {
+    setReducedMotion(true);
+    render(<SurveyLedger {...PROPS} states={2} stateCodes={["CA", "TX"]} />);
+
+    expect(screen.getByText("States covered")).toBeInTheDocument();
+    expect(screen.queryByText("*")).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Plus /)).not.toBeInTheDocument();
+  });
+
+  it("footnotes DC and the territories together when the dataset holds both", () => {
+    setReducedMotion(true);
+    render(
+      <SurveyLedger
+        {...PROPS}
+        states={5}
+        includesDc={true}
+        stateCodes={["CA", "TX", "DC", "PR", "GU"]}
+      />
+    );
+
+    // The caption is the same two words it is for a states-only dataset —
+    // that invariance is the point of the footnote, since the label sits
+    // under a 4xl figure and cannot absorb "+ DC + territories".
+    expect(screen.getByText("States covered")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+    expect(
+      screen.getByText("Plus the District of Columbia and 2 U.S. territories")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("2 states, DC and 2 territories covered")
+    ).toBeInTheDocument();
   });
 
   it("grows each pipeline bar to its exact share of the planned-capacity axis, immediately under reduced motion", () => {
