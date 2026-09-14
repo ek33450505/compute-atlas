@@ -16395,9 +16395,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://www.centradigital.com/data-centers/pwm1",
+        "label": "CENTRA Digital Interconnect — Portland 1 (PWM1), 340 Cumberland Ave",
+        "publisher": "CENTRA Digital Interconnect",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-14",
     "notes": "Described by the operator's aggregator listing as \"the most interconnected building in the State of Maine,\" a neutral, purpose-built interconnection facility in downtown Portland; rebranded from 'Deep Edge Realty' in 2024. Baxtel's Maine directory page states 52,272 sq ft. GWI (Great Works Internet, headquartered in Biddeford, ME) independently lists a facility at this SAME address (340 Cumberland Ave) -- treated here as a tenant/point-of-presence inside this same interconnection building rather than a separate facility, per this wave's one-pin-per-parcel rule, since a second record would otherwise carry an identical pin. No MW capacity figure was available from either source fetched. OSM confirms the address as a mapped point at 340 Cumberland Avenue, Parkside/West End, Portland (node/7171975407); no distinctly-named building polygon was available so precision is approximate.",
     "facilityType": "data_center"
   },
@@ -36179,9 +36186,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/281",
+        "label": "PeeringDB facility registry — Equinix BO1 - Boston, Waltham (org Equinix, Inc.; 74 West Street, Waltham, MA 02451)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-14",
     "notes": "Multi-tenant colocation facility inside a leased building at 74 West Street; page confirms it as a fully operational Equinix site. Coordinates are an approximate geocode of the street address, not a confirmed parcel footprint. No MW or square-footage figures were disclosed on the publicly accessible source page (gated behind a paid dataset request), so capacityMw is omitted rather than guessed.",
     "facilityType": "data_center"
   },
@@ -38148,9 +38162,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://www.firstlight.net/brunswick-maine-data-center-expansion-results-in-additional-power-and-increased-capacity/",
+        "label": "FirstLight — Brunswick, Maine data center expansion",
+        "publisher": "FirstLight Fiber",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-14",
     "notes": "OSM directly names the building 'Oxford Networks' at this exact address (way/667796922) -- Oxford Networks is a legacy regional-ISP brand confirmed (via its own website's 301 redirect during this run) to now route to firstlight.net, i.e. the same FirstLight Fiber corporate family reported in Baxtel's listing. US Census had no match for this street (likely too new for the TIGER address-range dataset -- 'Resilient Circle' is a newly-named street at the redeveloped former Brunswick Naval Air Station business park), so the OSM building match is the only geocode available here. Baxtel lists the facility as 'fully operational' with power/space figures redacted; no numeric MW capacity confirmed.",
     "facilityType": "data_center"
   },
@@ -38184,9 +38205,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://www.firstlight.net/resources/data-center-manchester-nh-specifications/",
+        "label": "FirstLight — Manchester, NH data center specifications",
+        "publisher": "FirstLight Fiber",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-14",
     "notes": "Distinct from the existing FirstLight Portsmouth, NH record and from Consolidated Communications' separate Manchester site (770 Elm St, ~2 miles away) -- this facility is at 77 Sundial Ave. OSM matches a building named 'Sundial Center' spanning street numbers 1/3/25/77 Sundial Avenue (way/183679768), used in preference to the nearby US Census interpolation. Baxtel's New Hampshire directory page lists this site at roughly 14,000 sq ft; the facility-specific page describes it as a 'Tier II facility,' 'fully operational,' with power/space figures redacted pending direct contact with the operator. No numeric MW capacity confirmed.",
     "facilityType": "data_center"
   },
@@ -55369,9 +55397,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-08-05",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/315",
+        "label": "PeeringDB facility registry — Level(3) Cincinnati (org Lumen Technologies Inc; 400 Pike Street)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-09-14",
     "notes": "Legacy carrier/network colocation site (~7,059 sq ft raised floor) in Cincinnati's CBD/Lytle Park area — a legacy Level 3 facility (Level 3→CenturyLink 2017→Lumen 2020). No MW figure is publicly disclosed, so capacity is omitted. Included for Hamilton County coverage (Cincinnati had zero tracked sites).",
     "facilityType": "data_center"
   },
@@ -91347,9 +91382,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-13",
         "kind": "other"
+      },
+      {
+        "url": "https://www.telehouse.com/global-data-centers/america/new-york-datacenters/telehouse-new-york-chelsea/",
+        "label": "Telehouse — New York Chelsea data center (85 10th Avenue)",
+        "publisher": "Telehouse America",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-09-14",
     "notes": "Telehouse leases and operates carrier-neutral colocation space within an 11-story, 635,000 sq ft former Nabisco factory building (owned by Related Companies and Vornado Realty Trust) on the border of West Chelsea and the Meatpacking District; PUE reported as 1.69. Acquired by Telehouse in 2011 (previously a Lehman Brothers data center). Distinct building and operator from the existing 32 Avenue of the Americas, 60 Hudson Street, and 325 Hudson Street carrier-hotel records already in the dataset. No capacity in MW, investment, or AI-use figure found as of 2026-09-13, omitted rather than guessed. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed floor footprint), hence approximate precision. aiClassification omitted -- general-purpose carrier-neutral colocation, no AI/GPU capacity confirmed at this specific site.",
     "facilityType": "data_center"
   },
