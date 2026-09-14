@@ -8033,14 +8033,14 @@
         "url": "https://www.avaiodigital.com/developments/brandon-mississippi",
         "label": "AVAIO Digital Taurus official project page",
         "publisher": "AVAIO Digital",
-        "retrievedAt": "2026-07-07",
+        "retrievedAt": "2026-09-09",
         "kind": "other"
       },
       {
         "url": "https://mississippi.org/news/avaio-digital-to-locate-6-billion-data-center-campus-in-rankin-county/",
         "label": "Mississippi Development Authority project announcement",
         "publisher": "Mississippi Development Authority",
-        "retrievedAt": "2026-07-07",
+        "retrievedAt": "2026-09-09",
         "kind": "subsidy"
       },
       {
@@ -8070,27 +8070,6 @@
         "publisher": "AVAIO Digital Partners (PR Newswire)",
         "retrievedAt": "2026-09-09",
         "kind": "press"
-      },
-      {
-        "url": "https://mississippi.org/news/avaio-digital-to-locate-6-billion-data-center-campus-in-rankin-county/",
-        "label": "AVAIO Digital to locate $6 billion data center campus in Rankin County",
-        "publisher": "Mississippi Development Authority",
-        "retrievedAt": "2026-09-09",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.avaiodigital.com/developments/brandon-mississippi",
-        "label": "Brandon, Mississippi Campus (Project Taurus)",
-        "publisher": "AVAIO Digital",
-        "retrievedAt": "2026-09-09",
-        "kind": "other"
-      },
-      {
-        "url": "https://mississippi.org/news/avaio-digital-to-locate-6-billion-data-center-campus-in-rankin-county/",
-        "label": "AVAIO Digital to locate $6 billion data center campus in Rankin County",
-        "publisher": "Mississippi Development Authority",
-        "retrievedAt": "2026-09-09",
-        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-09-09",
@@ -8115,7 +8094,7 @@
         "program": "Data Center Enterprises tax exemption",
         "jurisdiction": "Mississippi",
         "year": "2025",
-        "sourceIndex": 9
+        "sourceIndex": 2
       }
     ],
     "investmentUsd": 6000000000,
@@ -21416,8 +21395,8 @@
         "url": "https://mississippi.org/news/compass-datacenters-project-generates-10-billion-investment-in-lauderdale-county/",
         "label": "Compass Datacenters Project Generates $10B Investment in Lauderdale County",
         "publisher": "Mississippi Development Authority",
-        "retrievedAt": "2026-07-07",
-        "kind": "press"
+        "retrievedAt": "2026-09-09",
+        "kind": "subsidy"
       },
       {
         "url": "https://governorreeves.ms.gov/compass-datacenters-project-generates-10-billion-investment-in-lauderdale-county/",
@@ -21430,7 +21409,7 @@
         "url": "https://www.compassdatacenters.com/news/compass-10b-investment-lauderdale-county-mississippi/",
         "label": "Compass Project Generates $10B Investment in Lauderdale County",
         "publisher": "Compass Datacenters",
-        "retrievedAt": "2026-07-07",
+        "retrievedAt": "2026-09-09",
         "kind": "press"
       },
       {
@@ -21462,30 +21441,9 @@
         "kind": "other"
       },
       {
-        "url": "https://mississippi.org/news/compass-datacenters-project-generates-10-billion-investment-in-lauderdale-county/",
-        "label": "Compass Datacenters project generates $10 billion investment in Lauderdale County",
-        "publisher": "Mississippi Development Authority",
-        "retrievedAt": "2026-09-09",
-        "kind": "subsidy"
-      },
-      {
-        "url": "https://www.compassdatacenters.com/news/compass-10b-investment-lauderdale-county-mississippi/",
-        "label": "Compass Project Generates $10B Investment in Lauderdale County",
-        "publisher": "Compass Datacenters",
-        "retrievedAt": "2026-09-09",
-        "kind": "press"
-      },
-      {
         "url": "https://www.wtok.com/2026/07/15/lauderdale-county-gives-statement-compass-data-center/",
         "label": "Lauderdale County gives statement on Compass Data Center",
         "publisher": "WTOK-TV",
-        "retrievedAt": "2026-09-09",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.compassdatacenters.com/news/compass-10b-investment-lauderdale-county-mississippi/",
-        "label": "Compass Project Generates $10B Investment in Lauderdale County",
-        "publisher": "Compass Datacenters",
         "retrievedAt": "2026-09-09",
         "kind": "press"
       }
@@ -21522,19 +21480,19 @@
         "program": "10-year state income and franchise tax exemption",
         "jurisdiction": "Mississippi",
         "year": "2025",
-        "sourceIndex": 7
+        "sourceIndex": 0
       },
       {
         "program": "Sales and use tax exemption on construction materials, equipment and software/hardware replacements",
         "jurisdiction": "Mississippi",
         "year": "2025",
-        "sourceIndex": 7
+        "sourceIndex": 0
       }
     ],
     "investmentUsd": 10000000000,
     "jobs": {
       "construction": 1000,
-      "sourceIndex": 7
+      "sourceIndex": 0
     },
     "community": {
       "status": "mixed",
@@ -22500,8 +22458,8 @@
         "url": "https://investors.corescientific.com/news-events/press-releases/detail/135/core-scientific-plans-expansion-to-1-5-gigawatts-of-gross-power-at-muskogee-oklahoma-campus",
         "label": "Core Scientific Plans Expansion to 1.5 Gigawatts of Gross Power at Muskogee, Oklahoma Campus",
         "publisher": "Core Scientific (investor release)",
-        "retrievedAt": "2026-07-09",
-        "kind": "filing"
+        "retrievedAt": "2026-09-10",
+        "kind": "press"
       },
       {
         "url": "https://investors.corescientific.com/news-events/press-releases/detail/99/core-scientific-and-port-muskogee-break-ground-on-100-mw-hpc-data-center",
@@ -22521,12 +22479,6 @@
         "label": "Core Scientific announces 440 MW expansion at Oklahoma site",
         "publisher": "Blockspace",
         "retrievedAt": "2026-08-06",
-        "kind": "press"
-      },
-      {
-        "url": "https://investors.corescientific.com/news-events/press-releases/detail/135/core-scientific-plans-expansion-to-1-5-gigawatts-of-gross-power-at-muskogee-oklahoma-campus",
-        "label": "Core Scientific plans expansion to 1.5 gigawatts of gross power at Muskogee, Oklahoma campus",
-        "retrievedAt": "2026-09-10",
         "kind": "press"
       },
       {
@@ -22553,7 +22505,7 @@
     "community": {
       "status": "supported",
       "notes": "Oklahoma Governor Stitt is quoted (2026-05-06 release) praising the expansion and the state's behind-the-meter legislation as enabling it. No resident opposition, hearings, or independent local-news coverage was checked -- this reflects state-official/company-sourced reaction only, from the operator's own press release.",
-      "sourceIndex": 4
+      "sourceIndex": 0
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
@@ -23315,7 +23267,7 @@
         "url": "https://www.growthspotter.com/2026/06/02/coresite-looks-to-add-second-orlando-data-center-building/",
         "label": "CoreSite looks to add second Orlando data center building",
         "publisher": "GrowthSpotter",
-        "retrievedAt": "2026-07-17",
+        "retrievedAt": "2026-09-10",
         "kind": "press"
       },
       {
@@ -23324,12 +23276,6 @@
         "publisher": "Orange County GIS / Assessor",
         "retrievedAt": "2026-07-18",
         "kind": "other"
-      },
-      {
-        "url": "https://www.growthspotter.com/2026/06/02/coresite-looks-to-add-second-orlando-data-center-building/",
-        "label": "CoreSite seeks approval to add second data center building at Orlando campus",
-        "retrievedAt": "2026-09-10",
-        "kind": "permit"
       }
     ],
     "lastUpdated": "2026-09-10",
@@ -40398,19 +40344,12 @@
         "url": "https://www.salisburypost.com/2026/08/12/salisbury-planning-recommends-henderson-grove-church-data-center-approval/",
         "label": "Salisbury Planning recommends Henderson Grove Church data center approval",
         "publisher": "Salisbury Post",
-        "retrievedAt": "2026-08-15",
-        "kind": "permit"
-      },
-      {
-        "url": "https://www.salisburypost.com/2026/04/15/salisbury-presents-proposed-henderson-grove-church-road-data-center-to-community-members-faces-concerns/",
-        "label": "Salisbury presents proposed Henderson Grove Church Road data center to community members, faces concerns",
-        "publisher": "Salisbury Post",
         "retrievedAt": "2026-08-19",
         "kind": "press"
       },
       {
-        "url": "https://www.salisburypost.com/2026/08/12/salisbury-planning-recommends-henderson-grove-church-data-center-approval/",
-        "label": "Salisbury Planning recommends Henderson Grove Church data center approval",
+        "url": "https://www.salisburypost.com/2026/04/15/salisbury-presents-proposed-henderson-grove-church-road-data-center-to-community-members-faces-concerns/",
+        "label": "Salisbury presents proposed Henderson Grove Church Road data center to community members, faces concerns",
         "publisher": "Salisbury Post",
         "retrievedAt": "2026-08-19",
         "kind": "press"
@@ -54707,7 +54646,7 @@
         "url": "https://tnecd.com/news/litewire-llc-to-open-new-facility-in-warren-county/",
         "label": "Litewire, LLC to Open New Facility in Warren County",
         "publisher": "Tennessee Department of Economic and Community Development",
-        "retrievedAt": "2026-08-14",
+        "retrievedAt": "2026-09-09",
         "kind": "subsidy"
       },
       {
@@ -54715,13 +54654,6 @@
         "label": "How big are Middle Tennessee's data centers? A look at facilities already operating",
         "publisher": "NewsChannel 5 Nashville",
         "retrievedAt": "2026-08-14",
-        "kind": "press"
-      },
-      {
-        "url": "https://tnecd.com/news/litewire-llc-to-open-new-facility-in-warren-county/",
-        "label": "Litewire, LLC to Open New Facility in Warren County",
-        "publisher": "Tennessee Department of Economic and Community Development",
-        "retrievedAt": "2026-09-09",
         "kind": "press"
       }
     ],
@@ -70401,21 +70333,14 @@
         "url": "https://www.midamericanenergy.com/newsroom/2025-generation-projects",
         "label": "MidAmerican releases long-term plan to meet projected Iowa economic and customer demand growth",
         "publisher": "MidAmerican Energy",
-        "retrievedAt": "2026-08-14",
-        "kind": "filing"
+        "retrievedAt": "2026-08-21",
+        "kind": "press"
       },
       {
         "url": "https://westerniowatoday.com/2025/02/19/adair-county-supervisors-receive-project-update-from-midamerican-energy/",
         "label": "Adair County Supervisors Receive Project Update from MidAmerican Energy",
         "publisher": "Western Iowa Today",
         "retrievedAt": "2026-08-14",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.midamericanenergy.com/newsroom/2025-generation-projects",
-        "label": "MidAmerican 2025 generation projects newsroom page",
-        "publisher": "MidAmerican Energy",
-        "retrievedAt": "2026-08-21",
         "kind": "press"
       }
     ],
@@ -71852,20 +71777,14 @@
         "url": "https://sandhills.news/2026/06/08/lee-county-pointone-data-center/",
         "label": "Lee County to review proposal for PointOne Data Center",
         "publisher": "Sandhills News",
-        "retrievedAt": "2026-08-29",
-        "kind": "permit"
+        "retrievedAt": "2026-09-10",
+        "kind": "press"
       },
       {
         "url": "https://rantnc.com/2026/06/08/data-center-proposed-in-northern-lee-county/",
         "label": "Data center proposed in northern Lee County",
         "publisher": "The Rant (Sanford, NC)",
         "retrievedAt": "2026-08-29",
-        "kind": "press"
-      },
-      {
-        "url": "https://sandhills.news/2026/06/08/lee-county-pointone-data-center/",
-        "label": "Lee County PointOne data center coverage - Sandhills News",
-        "retrievedAt": "2026-09-10",
         "kind": "press"
       }
     ],
@@ -71885,7 +71804,7 @@
     "community": {
       "status": "mixed",
       "notes": "Sanford Area Growth Alliance (SAGA), a local economic-development group, publicly endorsed the project (2026-06-08) as 'responsible data center development' and said it worked with 'other community stakeholders' to address concerns in Lee County's development ordinances -- but the same statement acknowledges 'many have expressed concerns about the impact of data centers on local communities' without naming who or detailing the objections. Using 'mixed' per the contract's guidance for friction-with-no-stated-reason. No formal public hearing record found in this source.",
-      "sourceIndex": 2
+      "sourceIndex": 0
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -85429,15 +85348,9 @@
       {
         "url": "https://www.opportunitylouisiana.gov/news/amazon-selects-louisiana-for-12-billion-data-center-campuses-in-major-u-s-expansion",
         "label": "Louisiana Economic Development (LED) — official announcement",
-        "retrievedAt": "2026-07-25",
-        "kind": "subsidy"
-      },
-      {
-        "url": "https://www.opportunitylouisiana.gov/news/amazon-selects-louisiana-for-12-billion-data-center-campuses-in-major-u-s-expansion",
-        "label": "Amazon Selects Louisiana for $12 Billion Data Center Campuses in Major U.S. Expansion",
         "publisher": "Louisiana Economic Development",
         "retrievedAt": "2026-08-26",
-        "kind": "press"
+        "kind": "subsidy"
       }
     ],
     "lastUpdated": "2026-08-26",
