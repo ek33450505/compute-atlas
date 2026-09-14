@@ -9,10 +9,9 @@
  * (403)". Nothing detected it at the time — the sitemap status stayed Valid
  * with 0 errors, `npm run check:drift` stayed green, CI stayed green —
  * because none of those signals ever ask Google what it actually saw when it
- * crawled. Cloudflare has 403'd Googlebot on this property before (see
- * `compute-atlas-cloudflare-crawler-403-s94` in agent memory). This script
- * closes that gap by reading the ground truth directly from the URL
- * Inspection API.
+ * crawled. Cloudflare has 403'd Googlebot on this property before, and every
+ * other signal stayed green throughout. This script closes that gap by reading
+ * the ground truth directly from the URL Inspection API.
  *
  * `Discovered - currently not indexed` and `URL is unknown to Google` are
  * NORMAL crawl-budget states, not failures — a young or low-priority page can

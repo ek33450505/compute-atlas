@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   }
 
   // Scheduled to run AFTER the response is sent (same timing-leak fix as
-  // app/api/subscribe/route.ts, s65 security review): sending inline here
+  // app/api/subscribe/route.ts, from a security review): sending inline here
   // would make response latency leak whether this email was a new request
   // (confirm set, send waits on the network) vs a duplicate/honeypot/
   // over-cap generic success (confirm unset, returns immediately). See

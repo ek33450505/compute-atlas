@@ -162,7 +162,7 @@ export async function promoteLead(
   return { ok: true, lead: updated };
 }
 
-/** Records the submit-time server-side fetch result against a lead. Used by Unit 2. */
+/** Records the submit-time server-side fetch result against a lead. Used by POST /api/leads. */
 export async function setLeadTriage(id: string, triage: LeadTriage): Promise<LeadActionResult> {
   const db = getDb();
   const rows = await db

@@ -120,7 +120,7 @@ export function WatchButton({
 
   // Move focus into the form when it reveals: the trigger button that held
   // focus unmounts, so without this a keyboard/screen-reader user is stranded
-  // on <body>. (frontend-qa, s65.)
+  // on <body>. (Raised in accessibility review.)
   useEffect(() => {
     if (revealed) {
       emailInputRef.current?.focus();

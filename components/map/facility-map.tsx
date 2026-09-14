@@ -202,7 +202,7 @@ function findOffscreenTarget(
  * - prefers-reduced-motion: when enabled, easeTo/fitBounds uses duration 0 (instant);
  *   otherwise animation runs over 600 ms.
  * - Focus management: closing a popup returns focus to the triggering marker button.
- * - Full-bleed layout (Phase 1c): container has no rounded corners or side border so
+ * - Full-bleed layout: container has no rounded corners or side border so
  *   it meets viewport edges. Filter controls live in a sub-header above the map (in
  *   normal document flow); compass, legend, and scale float over the canvas.
  */
@@ -1061,7 +1061,7 @@ export function FacilityMap({
       </p>
 
       {/*
-       * Full-bleed container (Phase 1c): no rounded-lg or side border so the map
+       * Full-bleed container: no rounded-lg or side border so the map
        * meets the viewport edges below the sticky header. A bottom hairline (border-b)
        * separates map from content below the fold.
        */}
