@@ -4810,7 +4810,7 @@
       "lat": 35.5896,
       "lon": -97.4934,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "street": "1309 NE 122nd St",
       "state": "OK",
       "precision": "approximate"
@@ -7890,7 +7890,7 @@
       "lat": 37.43,
       "lon": -78.8,
       "city": "Appomattox",
-      "county": "Appomattox County",
+      "county": "Appomattox",
       "street": "1098 Oakville Rd",
       "state": "VA",
       "precision": "approximate"
@@ -18931,7 +18931,7 @@
     "location": {
       "lat": 31.3905,
       "lon": -92.6693,
-      "county": "Rapides Parish",
+      "county": "Rapides",
       "state": "LA",
       "precision": "approximate"
     },
@@ -19418,7 +19418,7 @@
       "lat": 44.35,
       "lon": -87.58,
       "city": "Carlton",
-      "county": "Kewaunee County",
+      "county": "Kewaunee",
       "state": "WI",
       "precision": "approximate"
     },
@@ -19773,7 +19773,7 @@
       "lat": 44.3269,
       "lon": -88.1631,
       "city": "Wrightstown",
-      "county": "Brown County",
+      "county": "Brown",
       "state": "WI",
       "precision": "approximate"
     },
@@ -20212,7 +20212,7 @@
       "lat": 35.4676,
       "lon": -97.5164,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "state": "OK",
       "precision": "approximate"
     },
@@ -32829,7 +32829,7 @@
       "lat": 38.83,
       "lon": -77.61,
       "city": "Gainesville",
-      "county": "Prince William County",
+      "county": "Prince William",
       "state": "VA",
       "precision": "approximate"
     },
@@ -35542,7 +35542,7 @@
       "lat": 44.3419,
       "lon": -87.5369,
       "city": "Carlton",
-      "county": "Kewaunee County",
+      "county": "Kewaunee",
       "state": "WI",
       "precision": "approximate"
     },
@@ -36216,7 +36216,7 @@
       "lat": 42.98,
       "lon": -89.562,
       "city": "Verona",
-      "county": "Dane County",
+      "county": "Dane",
       "street": "Milky Way",
       "state": "WI",
       "precision": "approximate"
@@ -49760,7 +49760,7 @@
       "lat": 36.2085,
       "lon": -95.9137,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "state": "OK",
       "precision": "approximate"
     },
@@ -52372,7 +52372,7 @@
       "lat": 36.1509,
       "lon": -95.9856,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "611 S Elgin Ave",
       "state": "OK",
       "precision": "approximate"
@@ -63657,7 +63657,7 @@
       "lat": 35.618,
       "lon": -97.567,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "state": "OK",
       "precision": "approximate"
     },
@@ -65693,7 +65693,7 @@
       "lat": 44.5155,
       "lon": -87.995,
       "city": "Green Bay",
-      "county": "Brown County",
+      "county": "Brown",
       "street": "1263 Main St., Suite 223",
       "postalCode": "54302",
       "state": "WI",
@@ -68533,7 +68533,7 @@
       "lat": 36.1535,
       "lon": -95.9905,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "321 S Boston Ave",
       "state": "OK",
       "precision": "approximate"
@@ -68659,7 +68659,7 @@
       "lat": 36.2892,
       "lon": -97.2836,
       "city": "Perry",
-      "county": "Noble County",
+      "county": "Noble",
       "state": "OK",
       "precision": "approximate"
     },
@@ -69325,7 +69325,7 @@
       "lat": 43.4578,
       "lon": -88.8373,
       "city": "Beaver Dam",
-      "county": "Dodge County",
+      "county": "Dodge",
       "state": "WI",
       "precision": "approximate"
     },
@@ -70827,7 +70827,7 @@
       "lat": 36.1516,
       "lon": -95.9903,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "501 S Boston Ave",
       "state": "OK",
       "precision": "approximate"
@@ -71439,7 +71439,7 @@
       "lat": 36.1487,
       "lon": -95.5097,
       "city": "Inola",
-      "county": "Rogers County",
+      "county": "Rogers",
       "state": "OK",
       "precision": "approximate"
     },
@@ -84292,7 +84292,7 @@
       "lat": 45.9305,
       "lon": -90.438,
       "city": "Park Falls",
-      "county": "Price County",
+      "county": "Price",
       "state": "WI",
       "precision": "approximate"
     },
@@ -93292,7 +93292,7 @@
       "lat": 38.6297601,
       "lon": -90.1964208,
       "city": "Saint Louis",
-      "county": "St. Louis City",
+      "county": "St. Louis city",
       "street": "1111 Olive Street",
       "postalCode": "63101",
       "state": "MO",
@@ -94934,7 +94934,7 @@
       "lat": 36.1512,
       "lon": -95.9903,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "509 S Boston Ave",
       "state": "OK",
       "precision": "approximate"
@@ -94970,7 +94970,7 @@
       "lat": 36.1535,
       "lon": -95.9905,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "321 S Boston Ave",
       "postalCode": "74103",
       "state": "OK",
@@ -95014,7 +95014,7 @@
       "lat": 36.1523,
       "lon": -95.9932,
       "city": "Tulsa",
-      "county": "Tulsa County",
+      "county": "Tulsa",
       "street": "110 W 7th St",
       "postalCode": "74119",
       "state": "OK",
@@ -95909,7 +95909,7 @@
       "lat": 35.4676,
       "lon": -97.5164,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "state": "OK",
       "precision": "approximate"
     },
@@ -98123,7 +98123,7 @@
       "lat": 42.8858,
       "lon": -87.8347,
       "city": "Oak Creek",
-      "county": "Milwaukee County",
+      "county": "Milwaukee",
       "state": "WI",
       "precision": "approximate"
     },
@@ -98181,7 +98181,7 @@
       "lat": 42.6489,
       "lon": -88.0087,
       "city": "Paris",
-      "county": "Kenosha County",
+      "county": "Kenosha",
       "state": "WI",
       "precision": "approximate"
     },
@@ -99114,7 +99114,7 @@
       "lat": 35.4791,
       "lon": -97.5142,
       "city": "Oklahoma City",
-      "county": "Oklahoma County",
+      "county": "Oklahoma",
       "street": "825 N Broadway Ave",
       "state": "OK",
       "precision": "approximate"
