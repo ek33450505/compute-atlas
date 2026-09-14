@@ -84,7 +84,7 @@ export default async function CryptoPage() {
               { value: stats.count, label: "Facilities" },
               { value: formatPower(stats.operationalMw), label: "Operational" },
               { value: formatPower(stats.plannedMw), label: "Pipeline" },
-              { value: statesTile.value, label: statesTile.label },
+              { ...statesTile },
             ]}
           />
 

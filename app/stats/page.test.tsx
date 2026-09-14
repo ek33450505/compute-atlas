@@ -241,7 +241,7 @@ describe("StatsPage — disclosedCapacityCount excludes cancelled facilities", (
 });
 
 describe("StatsPage — DC-aware states wording", () => {
-  it("labels the states stat 'State + DC covered', shows the state count (1) not the raw jurisdiction total (2), and phrases the top-states caption '1 state and DC covered' when the dataset includes DC", async () => {
+  it("labels the states stat 'State covered' with a DC footnote, shows the state count (1) not the raw jurisdiction total (2), and phrases the top-states caption '1 state and DC covered' when the dataset includes DC", async () => {
     mockGetStats.mockReset().mockResolvedValue({
       count: 5,
       states: 2,
@@ -257,17 +257,19 @@ describe("StatsPage — DC-aware states wording", () => {
 
     // Mutation coverage: reverting the stat-row label back to a hardcoded
     // "States covered", or the caption back to the bare
-    // `${stats.states} state${...}` template, fails one of these two.
-    expect(screen.getByText("State + DC covered")).toBeInTheDocument();
+    // `${stats.states} state${...}` template, fails one of these.
+    expect(screen.getByText("State covered")).toBeInTheDocument();
     expect(screen.queryByText("States covered")).not.toBeInTheDocument();
-    expect(screen.queryByText("States + DC covered")).not.toBeInTheDocument();
     // The bug this guards: the tile's rendered VALUE must be the state count
-    // (1), not the raw jurisdiction total (2) — "2 / States + DC covered"
-    // reads as "two states, plus DC." Reverting the call site to pass the
-    // raw total back to `value` fails this.
-    const statesTile = screen.getByText("State + DC covered").closest("div");
+    // (1), not the raw jurisdiction total (2) — "2 / States covered" over a
+    // footnote naming DC reads as "two states, plus DC." Reverting the call
+    // site to pass the raw total back to `value` fails this.
+    const statesTile = screen.getByText("State covered").closest("div");
     expect(statesTile).not.toBeNull();
     expect(within(statesTile!).getByText("1")).toBeInTheDocument();
+    // The singular caption is only honest because the footnote carries DC.
+    expect(within(statesTile!).getByText("*")).toBeInTheDocument();
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
     expect(
       screen.getByText("1 state and DC covered · top 10 by facility count")
     ).toBeInTheDocument();

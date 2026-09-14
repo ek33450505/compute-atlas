@@ -91,10 +91,11 @@ describe("RankingsPage — states tile DC wording", () => {
     render(page);
 
     expect(within(tileByLabel("States")).getByText("2")).toBeInTheDocument();
-    expect(screen.queryByText("States + DC")).not.toBeInTheDocument();
+    expect(within(tileByLabel("States")).queryByText("*")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Plus the District of Columbia/)).not.toBeInTheDocument();
   });
 
-  it("labels the states tile 'States + DC' and shows the state count (2), not the raw jurisdiction total (3), when stats.includesDc is true", async () => {
+  it("marks the states tile and footnotes DC, showing the state count (2), not the raw jurisdiction total (3), when stats.includesDc is true", async () => {
     mockGetStats.mockResolvedValue({
       count: 5,
       states: 3,
@@ -111,10 +112,11 @@ describe("RankingsPage — states tile DC wording", () => {
     // The bug this guards: the tile's VALUE must be the state count (2), not
     // the raw jurisdiction total (3) — "3 / States + DC" reads as "three
     // states, plus DC."
-    const tile = tileByLabel("States + DC");
+    const tile = tileByLabel("States");
     expect(within(tile).getByText("2")).toBeInTheDocument();
     expect(within(tile).queryByText("3")).not.toBeInTheDocument();
-    expect(screen.queryByText("States")).not.toBeInTheDocument();
+    expect(within(tile).getByText("*")).toBeInTheDocument();
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
   });
 });
 

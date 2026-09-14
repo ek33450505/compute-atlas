@@ -122,7 +122,7 @@ describe("StatesIndexPage", () => {
     expect(tileFor("2").parentElement?.children).toHaveLength(tiles.length);
   });
 
-  it("labels the states tile 'State + DC' and shows the state count (1), not the raw jurisdiction total (2), when a tracked code is DC", async () => {
+  it("marks the states tile and footnotes DC, showing the state count (1), not the raw jurisdiction total (2), when a tracked code is DC", async () => {
     mockGetStates.mockResolvedValue(["VA", "DC"]);
     mockGetStateSummary.mockImplementation((code: string) =>
       Promise.resolve(
@@ -134,15 +134,39 @@ describe("StatesIndexPage", () => {
     render(page);
 
     // The bug this guards: the tile's rendered VALUE must be the state count
-    // (1), not the raw jurisdiction total (2) — "2 / States + DC" reads as
-    // "two states, plus DC." Per-state row badges also render "1" (each
-    // state's facility count), so this is scoped to the tile via its label
-    // rather than tileFor("1").
-    const statesTile = screen.getByText("State + DC").closest("div");
+    // (1), not the raw jurisdiction total (2) — "2 / States" over a footnote
+    // naming DC reads as "two states, plus DC." Per-state row badges also
+    // render "1" (each state's facility count), so this is scoped to the tile
+    // via its label rather than tileFor("1").
+    const statesTile = screen.getByText("State").closest("div");
     expect(statesTile).not.toBeNull();
     expect(within(statesTile!).getByText("1")).toBeInTheDocument();
     expect(within(statesTile!).queryByText("2")).not.toBeInTheDocument();
-    expect(within(statesTile!).queryByText("States")).not.toBeInTheDocument();
+    expect(within(statesTile!).getByText("*")).toBeInTheDocument();
+    // The footnote is what stops the bare "1 / State" caption from reading as
+    // if the page had never heard of the DC row it renders immediately below.
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
+  });
+
+  it("footnotes DC and the territories together on the real four-jurisdiction shape", async () => {
+    mockGetStates.mockResolvedValue(["VA", "TX", "DC", "PR", "GU"]);
+    mockGetStateSummary.mockImplementation((code: string) =>
+      Promise.resolve(makeStateSummary({ code, count: 1 }))
+    );
+
+    const page = await StatesIndexPage();
+    render(page);
+
+    // Two states, DC and two territories: the caption stays the bare plural
+    // and every non-state jurisdiction is accounted for on one footnote line.
+    // Scoped by VALUE, not by the word "States" — that word is also the page
+    // title and a breadcrumb here, so a label query matches three elements.
+    const statesTile = tileFor("2");
+    expect(within(statesTile).getByText("States")).toBeInTheDocument();
+    expect(within(statesTile).getByText("*")).toBeInTheDocument();
+    expect(
+      screen.getByText("Plus the District of Columbia and 2 U.S. territories")
+    ).toBeInTheDocument();
   });
 
   it("renders a District of Columbia and U.S. territories section, and keeps DC and the territory out of the states list", async () => {

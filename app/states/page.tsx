@@ -136,7 +136,7 @@ export default async function StatesIndexPage() {
 
       <SurveyStatRow
         stats={[
-          { value: statesTile.value.toLocaleString(), label: statesTile.label },
+          { ...statesTile, value: statesTile.value.toLocaleString() },
           { value: totalFacilities.toLocaleString(), label: "Facilities" },
           { value: formatPower(totalOperationalMw), label: "Operational" },
           { value: formatPower(totalPlannedMw), label: "Pipeline" },

@@ -67,6 +67,86 @@ describe("SurveyStatRow", () => {
     expect(within(tile).getByText("99.5%")).toBeInTheDocument();
   });
 
+  describe("footnotes", () => {
+    it("renders no footnote line when no stat carries a note", () => {
+      render(
+        <SurveyStatRow
+          stats={[
+            { value: "10", label: "Sites" },
+            { value: "50", label: "States" },
+          ]}
+        />
+      );
+
+      expect(within(tileFor("50")).queryByText("*")).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Plus /)).not.toBeInTheDocument();
+    });
+
+    it("marks the noted tile's caption and prints its note under the row", () => {
+      render(
+        <SurveyStatRow
+          stats={[
+            { value: "10", label: "Sites" },
+            {
+              value: "50",
+              label: "States",
+              note: "Plus the District of Columbia and 4 U.S. territories",
+            },
+          ]}
+        />
+      );
+
+      expect(within(tileFor("50")).getByText("*")).toBeInTheDocument();
+      expect(within(tileFor("10")).queryByText("*")).not.toBeInTheDocument();
+      expect(
+        screen.getByText("Plus the District of Columbia and 4 U.S. territories")
+      ).toBeInTheDocument();
+    });
+
+    it("keeps the caption findable by its bare label once marked", () => {
+      // Every page test locates the states tile with getByText("States");
+      // appending a marker must not move that text out of reach.
+      render(
+        <SurveyStatRow
+          stats={[{ value: "50", label: "States", note: "Plus DC" }]}
+        />
+      );
+
+      expect(within(tileFor("50")).getByText("States")).toBeInTheDocument();
+    });
+
+    it("keeps the footnote out of the tile it qualifies", () => {
+      // The footnote is a full-width flex ITEM, so it must not end up nested
+      // inside a tile — a tile containing a sentence is exactly the crowded
+      // caption this whole mechanism replaced.
+      render(
+        <SurveyStatRow
+          stats={[{ value: "50", label: "States", note: "Plus DC" }]}
+        />
+      );
+
+      expect(within(tileFor("50")).queryByText("Plus DC")).not.toBeInTheDocument();
+    });
+
+    it("gives two noted tiles distinct markers matching their own notes", () => {
+      const { container } = render(
+        <SurveyStatRow
+          stats={[
+            { value: "50", label: "States", note: "Plus DC" },
+            { value: "12 GW", label: "Operational", note: "Disclosed only" },
+          ]}
+        />
+      );
+
+      expect(within(tileFor("50")).getByText("*")).toBeInTheDocument();
+      expect(within(tileFor("12 GW")).getByText("†")).toBeInTheDocument();
+      // Order on the footnote line follows tile order, so a reader scanning
+      // left to right meets the markers in the order they are explained.
+      expect(container.textContent).toContain("* Plus DC");
+      expect(container.textContent).toContain("† Disclosed only");
+    });
+  });
+
   describe("spacing", () => {
     const stats = [
       { value: "10", label: "Sites" },

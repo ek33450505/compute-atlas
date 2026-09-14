@@ -109,7 +109,7 @@ export default async function RankingsPage() {
           <SurveyStatRow
             stats={[
               { value: stats.count, label: "Facilities" },
-              { value: statesTile.value, label: statesTile.label },
+              { ...statesTile },
               { value: formatPower(stats.operationalMw), label: "Operational" },
               { value: formatPower(stats.plannedMw), label: "Pipeline" },
             ]}

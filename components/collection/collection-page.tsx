@@ -7,10 +7,21 @@ import { StatusBadge } from "@/components/status-badge";
 import { Breadcrumb, type Crumb } from "@/components/breadcrumb";
 import { CollectionJsonLd } from "@/components/collection/collection-json-ld";
 import { ShowMoreList } from "@/components/collection/show-more-list";
+import {
+  StatFootnotes,
+  StatLabel,
+  assignFootnoteMarkers,
+} from "@/components/stat-footnote";
 
 export interface CollectionStat {
   label: string;
   value: string;
+  /**
+   * Optional qualifier the caption cannot carry — rendered as a footnote
+   * under the row behind a `*` marker. Same contract as `SurveyStat.note`;
+   * see that comment for why the caption no longer grows instead.
+   */
+  note?: string;
 }
 
 export interface CollectionPageProps {
@@ -82,6 +93,8 @@ export function CollectionPage({
   facilities,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
 }: CollectionPageProps) {
+  const { markerAt, footnotes } = assignFootnoteMarkers(statRow);
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-8">
       <CollectionJsonLd crumbs={crumbs} facilities={facilities} />
@@ -100,16 +113,17 @@ export function CollectionPage({
 
       {statRow.length > 0 && (
         <div className="flex flex-wrap gap-8 border-b border-border pb-8">
-          {statRow.map((stat) => (
+          {statRow.map((stat, i) => (
             <div key={stat.label} className="flex flex-col items-center gap-1 text-center">
               <span className="font-mono tabular-nums text-4xl font-semibold text-foreground">
                 {stat.value}
               </span>
               <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                {stat.label}
+                <StatLabel label={stat.label} marker={markerAt(i)} />
               </span>
             </div>
           ))}
+          <StatFootnotes footnotes={footnotes} className="-mt-4" />
         </div>
       )}
 

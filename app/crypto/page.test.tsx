@@ -166,7 +166,7 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
 });
 
 describe("CryptoPage — DC-aware states wording", () => {
-  it("phrases the stat tile and prose as 'State + DC' / '1 state and DC', showing the state count (1) not the raw jurisdiction total (2), when the tracked codes include DC", async () => {
+  it("marks the stat tile, footnotes DC, and phrases the prose '1 state and DC', showing the state count (1) not the raw jurisdiction total (2), when the tracked codes include DC", async () => {
     mockGetCryptoMiningFacilities.mockReset().mockResolvedValue([
       makeFacility({ id: "a", location: { state: "DC" } }),
     ]);
@@ -186,14 +186,16 @@ describe("CryptoPage — DC-aware states wording", () => {
     // `${stats.stateCount} states` template renders "2 states" instead.
     expect(screen.getByText(/across 1 state and DC\./)).toBeInTheDocument();
     // The bug this guards: the tile's rendered VALUE must be the state count
-    // (1), not the raw jurisdiction total (2) — "2 / States + DC" reads as
-    // "two states, plus DC." The "Facilities" tile legitimately also shows
-    // "1" here (stats.count === 1), so the value check is scoped to the
-    // states tile via its label rather than a bare screen.getByText("1").
-    const statesTile = screen.getByText("State + DC").closest("div");
+    // (1), not the raw jurisdiction total (2) — "2 / States" over a footnote
+    // naming DC reads as "two states, plus DC." The "Facilities" tile
+    // legitimately also shows "1" here (stats.count === 1), so the value check
+    // is scoped to the states tile via its label rather than a bare
+    // screen.getByText("1").
+    const statesTile = screen.getByText("State").closest("div");
     expect(statesTile).not.toBeNull();
     expect(within(statesTile!).getByText("1")).toBeInTheDocument();
-    expect(screen.queryByText("States + DC")).not.toBeInTheDocument();
+    expect(within(statesTile!).getByText("*")).toBeInTheDocument();
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
     expect(screen.queryByText("2 states")).not.toBeInTheDocument();
   });
 

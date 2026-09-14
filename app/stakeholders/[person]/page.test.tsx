@@ -96,7 +96,7 @@ describe("StakeholderPage", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Jane Doe" })).toBeInTheDocument();
   });
 
-  it("labels the states stat 'State + DC' and shows the state count (1), not the raw jurisdiction total (2), when the person's facilities span DC", async () => {
+  it("marks the states stat and footnotes DC, showing the state count (1), not the raw jurisdiction total (2), when the person's facilities span DC", async () => {
     mockGetStakeholderBySlug.mockResolvedValue("Jane Doe");
     mockGetFacilitiesByStakeholder.mockResolvedValue([
       makeFacility({ id: "a" }),
@@ -110,18 +110,19 @@ describe("StakeholderPage", () => {
     render(page);
 
     // The bug this guards: the tile's rendered VALUE must be the state count
-    // (1: just VA), not the raw jurisdiction total (2: VA + DC) — "2 /
-    // States + DC" reads as "two states, plus DC." The "Facilities" tile
-    // legitimately also renders "2" here (2 facilities), so the negative
-    // check below is scoped to the states tile rather than a page-wide
-    // queryByText("2"). Reverting the call site to pass the raw total back
-    // to `value` fails the scoped "2" negative; dropping
-    // containsDc/statesStat entirely fails the label positive.
-    const statesTile = screen.getByText("State + DC").closest("div");
+    // (1: just VA), not the raw jurisdiction total (2: VA + DC) — "2 / States"
+    // over a footnote naming DC reads as "two states, plus DC." The
+    // "Facilities" tile legitimately also renders "2" here (2 facilities), so
+    // the negative check below is scoped to the states tile rather than a
+    // page-wide queryByText("2"). Reverting the call site to pass the raw
+    // total back to `value` fails the scoped "2" negative; dropping statesStat
+    // entirely leaves the caption unmarked and prints no footnote.
+    const statesTile = screen.getByText("State").closest("div");
     expect(statesTile).not.toBeNull();
     expect(within(statesTile!).getByText("1")).toBeInTheDocument();
     expect(within(statesTile!).queryByText("2")).not.toBeInTheDocument();
-    expect(screen.queryByText("States")).not.toBeInTheDocument();
+    expect(within(statesTile!).getByText("*")).toBeInTheDocument();
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
   });
 
   it("labels the states stat plain 'States' when no DC facility is present", async () => {

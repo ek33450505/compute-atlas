@@ -149,7 +149,7 @@ export default async function AiPage() {
               { value: totalAiClassified, label: "AI-classified" },
               { value: aiCounts.confirmed, label: "Confirmed" },
               { value: aiCounts.likely, label: "Likely" },
-              { value: statesTile.value, label: statesTile.label },
+              { ...statesTile },
             ]}
           />
 

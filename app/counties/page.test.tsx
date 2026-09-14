@@ -83,10 +83,11 @@ describe("CountiesIndexPage", () => {
     // to a hardcoded "States" also passes this half, so the DC case below
     // is what actually proves containsDc/statesStat are wired in.
     expect(within(tileFor("2")).getByText("States")).toBeInTheDocument();
-    expect(within(tileFor("2")).queryByText("States + DC")).not.toBeInTheDocument();
+    expect(within(tileFor("2")).queryByText("*")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Plus the District of Columbia/)).not.toBeInTheDocument();
   });
 
-  it("labels the states tile 'State + DC' and shows the state count (1), not the raw jurisdiction total (2), when a tracked county is in DC", async () => {
+  it("marks the states tile and footnotes DC, showing the state count (1), not the raw jurisdiction total (2), when a tracked county is in DC", async () => {
     // Mirrors the live record: coresite-dc1-washington-d-c-dc carries
     // location.county "District of Columbia" / location.state "DC".
     mockGetCounties.mockResolvedValue(countiesFixture("DC", "District of Columbia"));
@@ -95,13 +96,14 @@ describe("CountiesIndexPage", () => {
     render(page);
 
     // The bug this guards: the tile's rendered VALUE must be the state count
-    // (1: just VA), not the raw jurisdiction total (2: VA + DC) — "2 /
-    // States + DC" reads as "two states, plus DC." Reverting the call site
-    // to pass the raw total back to `value` fails this positive and the "2"
-    // negative below (dropping containsDc/statesStat entirely would also
-    // fail the label half).
-    expect(within(tileFor("1")).getByText("State + DC")).toBeInTheDocument();
-    expect(within(tileFor("1")).queryByText("States")).not.toBeInTheDocument();
+    // (1: just VA), not the raw jurisdiction total (2: VA + DC) — "2 / States"
+    // over a footnote naming DC reads as "two states, plus DC." Reverting the
+    // call site to pass the raw total back to `value` fails this positive and
+    // the "2" negative below; dropping statesStat entirely leaves the caption
+    // unmarked and un-footnoted, which fails the other two.
+    expect(within(tileFor("1")).getByText("State")).toBeInTheDocument();
+    expect(within(tileFor("1")).getByText("*")).toBeInTheDocument();
+    expect(screen.getByText("Plus the District of Columbia")).toBeInTheDocument();
     expect(screen.queryByText("2")).not.toBeInTheDocument();
   });
 
