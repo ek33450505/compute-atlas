@@ -10483,7 +10483,7 @@
     "name": "AWS Portage Data Center (AmeriPlex at the Port)",
     "operator": "Amazon Web Services",
     "status": "operational",
-    "confidence": "reported",
+    "confidence": "rumored",
     "location": {
       "lat": 41.6090532,
       "lon": -87.170469,
@@ -10504,8 +10504,7 @@
       {
         "status": "operational",
         "date": "2026",
-        "note": "Listed as an operational Amazon data center in Porter County on an interconnection/data-center tracker.",
-        "sourceIndex": 1
+        "note": "Reported as operational by commercial data-centre trackers. Compute Atlas does not cite those trackers — their terms forbid redistribution and this dataset is CC-BY-4.0 — and no primary record (county, utility or company) confirming operation has been found, so this status is carried at `rumored` confidence and is deliberately uncited."
       }
     ],
     "sources": [
@@ -10515,16 +10514,9 @@
         "publisher": "Inside INdiana Business",
         "retrievedAt": "2026-09-13",
         "kind": "press"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/state/IN",
-        "label": "Indiana Data Center Records — Interconnection.fyi (Amazon, Porter County, operational)",
-        "publisher": "Interconnection.fyi",
-        "retrievedAt": "2026-09-13",
-        "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-09-14",
     "notes": "$87M total comprises roughly $35M of building and $52M of IT equipment, in the AmeriPlex at the Port business park north of I-94 and south of Ports of Indiana-Burns Harbor. At least 10 jobs at $100,000+ were committed, and Portage reported $7.5M of property taxes over ten years under the abatement agreement — that figure is taxes payable, not an abatement amount, so no subsidy entry is asserted. This is a small AWS edge/availability-zone site, entirely separate from the New Carlisle Project Rainier campus already tracked.",
     "investmentUsd": 87000000,
     "jobs": {
@@ -90478,7 +90470,7 @@
       {
         "status": "proposed",
         "date": "2026",
-        "note": "Listed as a proposed Elkhart County data center on three independent public trackers.",
+        "note": "Listed as a proposed Elkhart County data center on two independent public trackers.",
         "sourceIndex": 0
       }
     ],
@@ -90496,16 +90488,9 @@
         "publisher": "AI Law Tracker",
         "retrievedAt": "2026-09-13",
         "kind": "other"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/state/IN",
-        "label": "Indiana Data Center Records (Takanock - Goshen, Elkhart County, 250+ MW, proposed)",
-        "publisher": "Interconnection.fyi",
-        "retrievedAt": "2026-09-13",
-        "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-09-14",
     "notes": "Takanock assembles and entitles sites and then sells them to operators rather than operating them itself. Recorded as rumored: three public trackers list this consistently as an Elkhart County proposal, but no permit filing, rezoning docket item or local-news confirmation was found this session, and one tracker page conflated it with the separate Bristol Innovation Park petition. Distinct from province-group-bristol-innovation-park-elkhart-county-in (different developer and a different part of the county). Coordinates are the city of Goshen; no parcel is public.",
     "facilityType": "data_center"
   },
