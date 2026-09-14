@@ -69,3 +69,7 @@ docs/media/banner.svg
 
 # Wave scratch artifacts — research working dirs, not part of the app
 wave-*/
+
+# Claude Code agent tooling (installed locally, not part of the project)
+/.claude/skills/
+/skills-lock.json
