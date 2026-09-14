@@ -11,7 +11,7 @@ export const LEAD_STATUSES = ["new", "researching", "promoted", "dismissed"] as 
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
 /**
- * Submit-time server-side fetch result, recorded by the Unit 2 POST /api/leads
+ * Submit-time server-side fetch result, recorded by the POST /api/leads
  * handler after it fetches `url` once. Every field but `fetchedAt`/`ok` is
  * optional/nullable because the fetch itself can fail.
  */

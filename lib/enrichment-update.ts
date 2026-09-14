@@ -128,7 +128,7 @@ export type EnrichmentUpdateIntent = z.infer<typeof enrichmentUpdateIntentSchema
 // ---------------------------------------------------------------------------
 // Missing-family detection — single source of truth for "what can we still
 // enrich on this facility." Reused by the discovery enrichment prompt
-// builder (Unit 6) so eligibility logic lives in exactly one place.
+// builder, so eligibility logic lives in exactly one place.
 // ---------------------------------------------------------------------------
 
 export const ENRICHABLE_FAMILIES = [

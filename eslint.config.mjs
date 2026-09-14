@@ -2,9 +2,24 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
+import noInternalCodenames from "./eslint-rules/no-internal-codenames.mjs";
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    // Internal development codenames in comments were stripped by hand once
+    // (~50 files) and came back within nine days of ordinary feature work,
+    // because the convention lives in a doc nobody re-reads while writing a
+    // comment. The rule's own header carries the full rationale and the
+    // deliberate line between an unresolvable codename and a public PR
+    // reference. Errors, not warnings: a warning in a suite this size is a
+    // line nobody reads.
+    plugins: { local: { rules: { "no-internal-codenames": noInternalCodenames } } },
+    rules: {
+      "local/no-internal-codenames": "error",
+    },
+  },
   {
     // `sendGroupedChangeNotifications` (lib/notify.ts) is exported ONLY so
     // lib/notify.test.ts can drive its mixed-state guard directly with a
@@ -30,6 +45,21 @@ const eslintConfig = defineConfig([
           ],
         },
       ],
+    },
+  },
+  {
+    // The rule's own definition and its RuleTester fixtures are the one place
+    // where a codename IS the subject rather than a leak: the header documents
+    // the convention by example, and the test must feed the rule real
+    // violations to prove it bites. Exempting the pair is narrower than
+    // sprinkling eslint-disable lines through either, and it keeps the two
+    // files that define the convention readable as prose.
+    files: [
+      "eslint-rules/no-internal-codenames.mjs",
+      "eslint-rules/no-internal-codenames.test.mjs",
+    ],
+    rules: {
+      "local/no-internal-codenames": "off",
     },
   },
   {

@@ -46,7 +46,7 @@ describe("Toaster", () => {
   it("gates the loading spinner animation behind motion-reduce", async () => {
     // jsdom can't evaluate the prefers-reduced-motion media query itself, so this
     // asserts the class contract instead: animate-spin must be paired with the
-    // motion-reduce: variant that disables it (s59 Unit 2).
+    // motion-reduce: variant that disables it (reduced-motion gating).
     render(<Toaster />);
     toast.loading("loading...");
     const spinner = await waitFor(() => {

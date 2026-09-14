@@ -466,7 +466,7 @@ describe("CommandPalette — reduced motion", () => {
   it("gates the popup and backdrop transitions behind motion-reduce", async () => {
     // Class-contract proxy only: jsdom can't evaluate the
     // `prefers-reduced-motion` media query itself — the cascade/exit-timing
-    // is browser-verified separately (the s60 lesson: a passing class
+    // is browser-verified separately (the lesson that earned this note: a passing class
     // assertion can coexist with a defeated media query). The backdrop has
     // no data-slot to query by, so it's located via its `fixed inset-0 z-50`
     // utility classes, which are unique to it (the popup lacks `inset-0`).

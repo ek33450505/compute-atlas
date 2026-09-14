@@ -196,7 +196,7 @@ describe("Sheet", () => {
     // Class-contract proxy only: jsdom can't evaluate the
     // `prefers-reduced-motion` media query itself, so this only proves the
     // utility class is present — the actual cascade/exit-timing is
-    // browser-verified separately (the s60 lesson: a passing class
+    // browser-verified separately (the lesson that earned this note: a passing class
     // assertion can coexist with a defeated media query).
     render(
       <Sheet defaultOpen>

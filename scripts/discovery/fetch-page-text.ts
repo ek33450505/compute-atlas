@@ -52,7 +52,7 @@ export type FetchPageTextResult =
       contentType?: string;
       /**
        * The unstripped response body, present only when `contentType` is
-       * `"text/html"`. Additive field for `lib/url-triage.ts` (Unit 2's
+       * `"text/html"`. Additive field for `lib/url-triage.ts` (the
        * lead-triage caller — the first consumer of this module outside
        * scripts/discovery/), which needs the real `<title>` tag rather than
        * the flattened `text` (tags are already stripped there, so a

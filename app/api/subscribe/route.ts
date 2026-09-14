@@ -128,7 +128,7 @@ export async function POST(request: Request) {
     return jsonResponse({ error: result.error, issues: result.issues }, { status: result.status });
   }
 
-  // Scheduled to run AFTER the response is sent (Fix 1, s65 security
+  // Scheduled to run AFTER the response is sent (from a security
   // review): sending inline here made response latency leak whether the
   // (email,target) pair was new (confirm set, send waits on the network) vs
   // a duplicate/honeypot/over-cap generic success (confirm unset, returns
