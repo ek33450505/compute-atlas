@@ -329,6 +329,46 @@
     "facilityType": "data_center"
   },
   {
+    "id": "365-data-centers-dt1-southfield-mi",
+    "name": "365 Data Centers Detroit (DT1)",
+    "operator": "365 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.4691728,
+      "lon": -83.2604844,
+      "city": "Southfield",
+      "county": "Oakland",
+      "street": "24660 Lahser Road",
+      "state": "MI",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://365datacenters.com/detroit-data-center/",
+        "label": "Detroit Data Center - 365 Data Centers",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/365-detroit-dt1",
+        "label": "365 Detroit (DT1) Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Standalone 12,000 sq ft colocation retrofit facility with a 160-ton cooling plant, 12-inch raised floor, and 3x203kW UPS units for AC customer backup (365datacenters.com spec sheet, retrieved 2026-09-13). A total facility power-capacity figure of ~4.5MW appears on third-party aggregator/broker sites (datacenterhawk, inflect) but was not confirmed against a primary source this session, so capacityMw is omitted rather than guessed. Coolant/water system details were not stated on the pages fetched, so `water` is omitted. Originally built in 2000 as a Switch & Data facility, acquired by Equinix in 2010, and sold to 365 Data Centers in November 2012 (per baxtel.com).",
+    "energy": {
+      "onSiteGenerationMw": 0.75,
+      "notes": "The 0.75 MW figure is a 750 kW on-site diesel generator for backup/emergency power only (per the operator's own spec sheet), not primary or supplemental grid generation."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "365-data-centers-washington-dc",
     "name": "365 Data Centers – Washington, D.C.",
     "operator": "365 Data Centers",
@@ -988,6 +1028,52 @@
     }
   },
   {
+    "id": "acehost-marion-tampa-fl",
+    "name": "AceHost Marion Mining Facility",
+    "operator": "AceHost",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 27.946873,
+      "lon": -82.455567,
+      "city": "Tampa",
+      "county": "Hillsborough",
+      "street": "203 N Marion St",
+      "state": "FL",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 3
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.acehost.com/crypto-mining-colocation.php",
+        "label": "Crypto Mining Colocation - AceHost.com",
+        "publisher": "AceHost",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gem.wiki/Acehost_Hillsborough_County_facility_1",
+        "label": "Acehost Hillsborough County facility 1",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=203%20N%20Marion%20St%2C%20Tampa%2C%20FL%2033602&benchmark=Public_AR_Current&format=json",
+        "label": "US Census Geocoder match for 203 N Marion St, Tampa, FL 33602",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Downtown Tampa autonomous ASIC/GPU mining colocation facility, dubbed 'the Marion mining facility' by the operator. AceHost's own marketing page advertises up to '100MW+' of available hosting capacity at the site; capacityMw.operational uses Global Energy Monitor's more conservative sourced figure (3 MW) rather than the marketing maximum, since the two describe different things (available hookup vs. actual draw) and only one is independently tracked.",
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "active-infrastructure-spring-valley-tech-park-loudoun-va",
     "name": "Spring Valley Technology Park",
     "operator": "Active Infrastructure",
@@ -1528,6 +1614,37 @@
       "notes": "Operator states over 80 MW of protected power delivered as 2N dual feeds from two independent substations on separate grids."
     },
     "landAcres": 15,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ainet-one-market-center-baltimore-md",
+    "name": "AiNET One Market Center (Baltimore Carrier Hotel)",
+    "operator": "AiNET",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.291652966378,
+      "lon": -76.619738877727,
+      "city": "Baltimore",
+      "street": "300 West Lexington Street",
+      "state": "MD",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 80
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.ai.net/carrierhotel/",
+        "label": "Carrier Hotel | AiNET",
+        "publisher": "AiNET",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Coordinates confirmed via US Census geocoder (exact match on 300 W Lexington St, Baltimore, MD 21201). AiNET's own page states the One Market Center property totals '80 Megawatts of power, and over 150,000 rentable square feet of telecom, data center, and technical office space' -- this is a multi-tenant carrier hotel building (also home to DataBank's separately-recorded BWI1 facility), so the 80MW figure describes the building's total stated power capacity, not necessarily AiNET's own exclusive allocation; recorded as-stated per the source rather than apportioned. aiClassification omitted: no source names AI/GPU/HPC use at this specific site.",
     "facilityType": "data_center"
   },
   {
@@ -3633,6 +3750,76 @@
       "technology": "battery",
       "notes": "Phase 1 is 75 MW, targeted for completion in late 2026; a 125 MW second phase is in permitting for 2027, which would bring the site to 200 MW. Built on roughly 9 acres just south of an existing Alliant Energy substation at Eagle Avenue and 170th Street, on the Whispering Willow North wind farm site, with an expected 20-year operating life."
     }
+  },
+  {
+    "id": "alpha-technologies-huntington-wv",
+    "name": "Alpha Technologies Huntington Headquarters Data Center",
+    "operator": "Alpha Technologies",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.419045646836,
+      "lon": -82.437058798916,
+      "city": "Huntington",
+      "county": "Cabell",
+      "street": "1225 6th Avenue",
+      "state": "WV",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://wchstv.com/news/local/alpha-technologies-announces-new-data-center-to-be-built-in-huntington",
+        "label": "Alpha Technologies to invest $10M for data center headquarters in Huntington",
+        "publisher": "WCHS",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Conversion of the former Appalachian Power Company office building into a ~60,000 sq ft Tier III-quality data center, announced 2024-10-30 as Alpha Technologies' new headquarters, expanding from the company's existing South Charleston site. The only dated primary source fetched this run (WCHS, published 2024-10-30) reports construction starting mid-November 2024 with phase 1 targeted for completion by March 2025; unverified secondary summaries suggest the conversion may since be complete, but no dated 2025/2026 primary source confirming operational status was fetched this run, so status is left at under_construction rather than asserting operational on an unfetched claim. One outlet (WV MetroNews/DCD, not independently refetched) gives the street number as 1125 6th Avenue while WCHS and the Census geocoder both resolve 1225 6th Avenue, Huntington, WV 25701 as a valid address -- used 1225 as the geocoded value; the 1125 figure may be a transcription variant. $10M was the announced initial investment for this site.",
+    "investmentUsd": 10000000,
+    "jobs": {
+      "permanent": 30,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "alpha-technologies-south-charleston-wv",
+    "name": "Alpha Technologies South Charleston DC01",
+    "operator": "Alpha Technologies",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.3530922,
+      "lon": -81.6962715,
+      "city": "South Charleston",
+      "county": "Kanawha",
+      "street": "2020 Union Carbide Drive, Building 6000",
+      "state": "WV",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://myalphainnovations.com/dc1/",
+        "label": "DC1 - High-Performance Data Center - Alpha Innovations",
+        "publisher": "Alpha Technologies",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://cloudandcolocation.com/datacenters/alpha-technologies-south-charleston-dc01/",
+        "label": "Alpha Technologies - South Charleston DC01",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Existing operational colocation facility at the West Virginia Regional Technology Park, described by the operator and local coverage as the state's largest data center as of 2024-10 reporting, serving federal/state/local government, healthcare, education and business customers. Serves as the anchor site the company is now expanding from (see the separate Huntington headquarters conversion project). No capacity, square footage, or Tier rating figure was found in the sources checked this run; omitted rather than estimated.",
+    "facilityType": "data_center"
   },
   {
     "id": "alterra-development-marshall-mi",
@@ -13906,6 +14093,45 @@
     }
   },
   {
+    "id": "blockware-solutions-belfry-pike-ky",
+    "name": "Blockware Solutions Pike County Facility",
+    "operator": "Blockware Solutions",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.667552,
+      "lon": -82.345043,
+      "city": "Belfry",
+      "county": "Pike",
+      "state": "KY",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 75,
+      "operational": 30
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Blockware_Solutions_Pike_County_facility",
+        "label": "Blockware Solutions Pike County facility",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/blockware-solutions-unveils-flagship-kentucky-mining-location-301512583.html",
+        "label": "Blockware Solutions Unveils Flagship Kentucky Mining Location",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Operational since late March 2022 (customers hosted from January 2022) at the site of a former coal washing and processing plant near Belfry -- described at launch as 'the first of three planned Kentucky sites' for the operator, tapping into underutilized local electricity infrastructure. Initial capacity was reported as 20MW, scaled to 30MW operating per Global Energy Monitor's tracking, with design capacity up to 75MW and a 2022-08 company statement floating a further scale-up to 100MW (that 100MW figure is a stated aspiration, not recorded as a capacity field here). Blockware separately purchased 5 acres at Industrial Park West (Paducah) via an agreement with Greater Paducah Economic Development for further regional expansion -- that is a distinct, less-developed lead not independently confirmed as a built or operating site this run, so no separate record was created for it. Coordinates as tracked by Global Energy Monitor's facility database.",
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "bloomberg-orangeburg-ny",
     "name": "Bloomberg LP Data Center",
     "operator": "Bloomberg LP",
@@ -19945,6 +20171,35 @@
       "notes": "Cooling is entirely direct-expansion: two 200-ton DX air handling units with condensing units, eight 30-ton DX computer room units plus one more, and small DX and rooftop air handlers. No cooling towers or chilled-water circuit are listed."
     },
     "landAcres": 1.6,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cogent-elkridge-howard-md",
+    "name": "Cogent Data Center – Elkridge",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.204016181007,
+      "lon": -76.711386050454,
+      "city": "Elkridge",
+      "county": "Howard",
+      "street": "6050 Race Road",
+      "state": "MD",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/files/docs/network/colocation/Elkridge_Data_Center_Brochure.pdf",
+        "label": "Cogent Elkridge, MD Data Center Brochure",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Coordinates confirmed via US Census geocoder (exact match on 6050 Race Road, Elkridge, MD 21075). Brochure states 61,734 sq ft (10,131 sq ft non-raised, 29,182 sq ft raised floor), two 250kVA UPS units, and diesel generators rated 750kW and 1500kW, but does not state a total facility power rating in MW or an acreage figure, so capacityMw and landAcres are omitted rather than estimated from third-party aggregator listings that were not independently fetched and verified this run.",
     "facilityType": "data_center"
   },
   {
@@ -26676,6 +26931,56 @@
     }
   },
   {
+    "id": "data-suites-murfreesboro-tn",
+    "name": "Data Suites Murfreesboro",
+    "operator": "Data Suites",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.85555,
+      "lon": -86.4048269,
+      "city": "Murfreesboro",
+      "county": "Rutherford",
+      "street": "1020 W. College Street",
+      "state": "TN",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://mydatasuites.com/",
+        "label": "Nashville / Murfreesboro Data Center | AI Colocation | Data Suites",
+        "publisher": "Data Suites",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://mydatasuites.com/about/",
+        "label": "About Data Suites -- A Locally Owned, Eco-Friendly Data Center in Murfreesboro, TN",
+        "publisher": "Data Suites",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://mydatasuites.com/powered-shell-data-center-nashville/",
+        "label": "Powered Shell Data Center for Lease Near Nashville TN | Data Suites",
+        "publisher": "Data Suites",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Locally owned, independent colocation facility founded 2015 ('We were founded in 2015 with a community-first mission: bring more fiber into Rutherford County'); never previously in the dataset -- Tennessee has not yet been reached by the automated rotation. Powered-shell page states '2 MW available' at 415V with up to 50kW/rack, Tier-3-ready. SUBSIDIES CONFIRMED ABSENT by the operator's own statement: 'Not one tax dollar and not one tax incentive has gone into Data Suites. We are privately built and debt-free' (mydatasuites.com/about/, retrieved 2026-09-13) -- an audited-style negative from the party with the least incentive to overstate self-funding. A third-party aggregator (baxtel.com, not cited as a source here) lists a differently-specified Murfreesboro 37129 facility ('Colo Reseller', built 2016, air-cooled, Middle Tennessee Electric) that could not be reconciled with this operator's own description and may be a distinct, separately-discoverable site; not included pending its own address confirmation.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator's own site describes the facility as 'built with food-grade closed-loop cooling, heat reuse, zero tax breaks' -- a recirculating water circuit, classified closed_loop per the contract's marketing-language tie-breaker regardless of the 'eco-friendly' framing."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "databank-brooklyn-park-mn",
     "name": "DataBank Brooklyn Park Campus",
     "operator": "DataBank",
@@ -26721,6 +27026,37 @@
         "sourceIndex": 1
       }
     ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-bwi1-baltimore-md",
+    "name": "DataBank BWI1 (Downtown Baltimore Data Center)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.291652966378,
+      "lon": -76.619738877727,
+      "city": "Baltimore",
+      "street": "300 West Lexington Street",
+      "state": "MD",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 1.5
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/wp-content/uploads/2020/10/DB_DCTR_BWI1_Q32020_v2.pdf",
+        "label": "Downtown Baltimore Data Center - BWI1 Facility Datasheet",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Coordinates confirmed via US Census geocoder (exact match on 300 W Lexington St, Baltimore, MD 21201) -- same carrier hotel building as the separately-recorded AiNET One Market Center facility; the two are distinct commercial colocation operations sharing one address, so the shared pin is disclosed rather than a duplicate. DataBank's own datasheet states 1.5MW site power total (600kW critical power, N+1 design), 10,000 sq ft raised floor, Tier III design, multi-tenant. No source fetched this run states an operational date; status inferred operational from the datasheet's present-tense description of an active, staffed facility. aiClassification omitted: no source names AI/GPU/HPC use at this site.",
     "facilityType": "data_center"
   },
   {
@@ -27071,6 +27407,78 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "databank-lenexa-ks",
+    "name": "DataBank MCI3 South Lake Campus Data Center",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.925685125075,
+      "lon": -94.769520334995,
+      "city": "Lenexa",
+      "county": "Johnson",
+      "street": "11200 Lakeview Ave",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 12.75
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/kansas-city/",
+        "label": "Kansas City Data Center and Colocation Solutions",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Operator's own site lists this as (MCI3) South Lake Campus Data Center, 69,762 IT sq ft, 12.75MW critical IT load, 15 onsite carriers -- one of two named DataBank facilities in the Kansas City metro (the other is the separate Pine Ridge / Overland Park site, recorded separately). Coordinates are the US Census geocode of the listed street address, retrieved 2026-09-13; precision set to approximate since the parcel/building footprint was not independently confirmed.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-lga3-orangeburg-ny",
+    "name": "DataBank LGA3 (Orangeburg Data Center Campus)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.037331,
+      "lon": -73.987853,
+      "city": "Orangeburg",
+      "county": "Rockland",
+      "street": "2000 Corporate Dr.",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 40,
+      "operational": 20
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/new-york/lga3",
+        "label": "LGA3 / Orangeburg Data Center",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/site-selection/article/55056553/databanks-orangeburg-data-center-campus-targets-ai-for-the-empire-state",
+        "label": "DataBank's Orangeburg Data Center Campus Targets AI for the Empire State",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "DataBank's third metro-NYC facility, described by DataBank's own site (fetched 2026-09-13) as 20 MW critical IT load operational across 110,000 IT sq ft, with the full campus planned to reach 40 MW / 200,000 sq ft across 5 data halls. Data Center Frontier's trade-press coverage states different figures for the same campus (30 MW initially available with planned expansion to 45 MW, 200,000 sq ft at full build-out) -- both figures are reported here rather than reconciled; the operator's own current site is treated as the more current figure for the operational MW. A second planned facility, LGA4, is also referenced by Data Center Frontier at 45 MW but not yet named on DataBank's own site as of this fetch -- omitted as a separate record since it is not yet independently confirmed as a distinct, addressable site. Data Center Frontier ties the campus's HPC/AI-oriented data-hall design to New York's Empire AI Consortium initiative, but does not name a specific AI tenant or offtaker at this site -- aiClassification omitted rather than guessed (colocation is multi-tenant and general-purpose). Distinct from the existing bloomberg-orangeburg-ny and the newly-added jpmorgan-chase-orangeburg-ny records -- three separate Orangeburg, Rockland County data-center campuses. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed parcel), hence approximate precision.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "databank-mem1-memphis-tn",
     "name": "DataBank MEM1 (Memphis)",
     "operator": "DataBank",
@@ -27194,6 +27602,38 @@
     ],
     "lastUpdated": "2026-08-31",
     "notes": "DataBank's market page lists ORD4 at 77,510 IT sq ft and 8.75MW — its largest Illinois site. Coordinates geocoded from the published street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-overland-park-ks",
+    "name": "DataBank MCI2 Pine Ridge Data Center",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.975738717441,
+      "lon": -94.708635080112,
+      "city": "Overland Park",
+      "county": "Johnson",
+      "street": "10605 W 84th Ter",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/kansas-city/",
+        "label": "Kansas City Data Center and Colocation Solutions",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Operator's own site lists this as (MCI2) Pine Ridge Data Center, 11,510 IT sq ft, 2MW critical IT load, 15 onsite carriers, and describes it as home to DataBank's primary Network Operations Center. Coordinates are the US Census geocode of the listed street address, retrieved 2026-09-13; precision set to approximate since the parcel/building footprint was not independently confirmed.",
     "facilityType": "data_center"
   },
   {
@@ -27823,6 +28263,73 @@
     "notes": "Operator spec page states verbatim: \"Up to 5MW critical load; expandable up to 60MW\" and \"31,000 sq. ft. initially; expandable up to 200,000 sq. ft.\", with a planned expansion building of 263,000 SF. A campus-level stat block on the same page reads \"4 Data Centers (Operational & in Development)\", \"294,000 Square Feet\", \"49 Critical MW (Committed & Planned)\" — the 60MW and 49MW figures are stated on the same page and are not reconciled by DC BLOX; both recorded here verbatim rather than normalized. Cooling: the source says only \"N+1 cooling\", \"Hot aisle containment\" and \"High efficiency Direct Expansion (DX)\" and does not state whether a recirculating water circuit is present, so coolingType is deliberately not classified. Site is the former Ingalls Ironworks building; DC BLOX states it is the first multi-tenant data center in Alabama to hold Uptime Institute Tier III Certification of Constructed Facility. Coordinates are the OSM building polygon centroid for the parcel, which OSM independently tags as a data centre named \"DC Blox Data Center\". Investment, jobs and subsidies not stated on any source fetched in this run — not checked at the Jefferson County / City of Birmingham tier, so their absence here is a gap in this research, NOT an audited negative.",
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "dc-blox-camp-hall-berkeley-county-sc",
+    "name": "DC BLOX Camp Hall Data Center Campus",
+    "operator": "DC BLOX",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.1595951,
+      "lon": -79.9070461,
+      "county": "Berkeley",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 45
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.dcblox.com/dc-blox-purchases-land-secures-power-in-berkeley-county-south-carolina/",
+        "label": "DC BLOX Purchases Land and Secures Power in Berkeley County, South Carolina",
+        "publisher": "DC BLOX",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://scbiz.com/tech-company-to-build-200k-square-foot-data-center-in-berkeley-county/",
+        "label": "Tech company to build 200K-square-foot data center in Berkeley County",
+        "publisher": "SC Biz News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Third DC BLOX site committed in South Carolina (after Myrtle Beach cable landing station and Greenville colocation): DC BLOX purchased 27.5 acres from Santee Cooper in the Camp Hall commerce park, Berkeley County (announced 2023-09-27), with a preliminary plan of four buildings totaling approximately 200,000 sq ft and 45 MW of planned power; build-to-suit options available. Both sources describe it as still in the planning/land-secured phase with no stated construction start date, hence status 'proposed'. No source gives a street address or parcel for the specific building site within the multi-thousand-acre Camp Hall park, so the coordinates used here are the Berkeley County centroid (from OSM Nominatim) as an explicitly disclosed county-level placeholder, not even a city-level pin -- do not read this as parcel- or city-level precision. A third-party aggregator (baxtel.com) lists larger figures for this same project (64.5 acres, 1,131,000 sq ft, 3 buildings) attributed to 2027, which was not used here because it conflicts with the operator's own press release and no primary source confirming an expansion was found this session; flagging for a future refresh check.",
+    "landAcres": 27.5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "dc-blox-greenville-sc",
+    "name": "DC BLOX Greenville Data Center",
+    "operator": "DC BLOX",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.80455191966,
+      "lon": -82.342676840132,
+      "city": "Greenville",
+      "county": "Greenville",
+      "street": "33 Global Drive",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.dcblox.com/data-centers/greenville/",
+        "label": "DC BLOX Greenville Data Center",
+        "publisher": "DC BLOX",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Multi-tenant colocation site in Global Business Park off I-85, described by the operator as the first multi-tenant data center in South Carolina, Uptime Institute Tier III certified (Data Hall 2). Capacity is omitted: the operator's own page gives two figures that do not cleanly separate operational from planned capacity ('8 Critical MW (Committed & Planned)' as a site total, and 'Up to 3MW critical load in phase 1; expandable up to 18MW' for one phase), so no single number can be attributed to 'operational' without guessing. Square footage: 36,493 sq ft built, up to 54,000 sq ft of data hall space, 6,700 sq ft tenant space, per the same source. Coordinates geocoded from the operator's stated street address via the US Census geocoder, not stated directly by any source as facility coordinates.",
+    "facilityType": "data_center"
   },
   {
     "id": "dc-blox-henrico-county-va",
@@ -32640,6 +33147,47 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "eco-yotta-oneonta-ny",
+    "name": "Eco-Yotta Data Center (proposed, County Route 9)",
+    "operator": "Eco-Yotta Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.451656,
+      "lon": -75.115285,
+      "city": "Oneonta",
+      "county": "Otsego",
+      "street": "357 County Route 9",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "Oneonta Town Board passed a 1-year moratorium on data centers/crypto mining (2026-05-13), pausing the Eco-Yotta rezoning application while the town studies code amendments.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.thedailystar.com/news/local_news/oneonta-town-board-passes-one-year-data-center-moratorium/article_a68f1baa-9dec-4ac5-8bae-3dd86ba53b1c.html",
+        "label": "Oneonta Town Board passes one-year data center moratorium",
+        "publisher": "The Daily Star",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Coordinates geocoded from the street address via US Census geocoder (address-range interpolation on County Route 9, not a confirmed parcel), hence approximate precision. No capacity/MW, acreage, or investment figure found in the directly-fetched source as of 2026-09-13; omitted rather than guessed.",
+    "community": {
+      "status": "contested",
+      "notes": "Town of Oneonta (Otsego County) Town Board unanimously passed a one-year moratorium on data centers/crypto facilities on 2026-05-13, in direct response to Eco-Yotta Inc.'s application to rezone the County Route 9 parcel to a Planned Development District. Board cited the need for time to study impacts and amend town code before any project could proceed; per the article the applicant had earlier floated the site as an agricultural-research project. No capacity, acreage, or investment figure was confirmed by direct source fetch as of 2026-09-13 -- omitted rather than estimated.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "ecp-york-2-energy-center-data-center-peach-bottom-york-pa",
     "name": "York 2 Energy Center Data Center",
     "operator": "Energy Capital Partners",
@@ -36396,6 +36944,35 @@
     "energy": {
       "utility": "PSE&G"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-ny9-manhattan-ny",
+    "name": "Equinix NY9",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.740907,
+      "lon": -74.001768,
+      "city": "New York",
+      "county": "New York",
+      "street": "111 8th Avenue",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/38",
+        "label": "Equinix NY9 - New York, 111 8th Avenue",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Equinix-operated colocation floors (Suites 518, 536, 734, and 1533) within 111 8th Avenue, a large multi-tenant carrier hotel in Manhattan's Chelsea neighborhood. Distinct facility record from the existing digital-realty-jfk10-manhattan-ny record (Digital Realty's separately-leased floors in the same building) -- this is genuinely a different operator's colocation space, not a duplicate of the same footprint. Hosts 78 networks and 4 internet exchanges (DE-CIX New York, Equinix Internet Exchange New York, MegaIX New York, NetIX) per PeeringDB. No capacity, investment, or AI-use figure found as of 2026-09-13, omitted rather than guessed. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed suite/floor footprint), hence approximate precision. aiClassification omitted -- general-purpose colocation, no AI/GPU capacity confirmed at this specific site.",
     "facilityType": "data_center"
   },
   {
@@ -41362,6 +41939,43 @@
     }
   },
   {
+    "id": "gawk-enerpower-amory-ms",
+    "name": "Gawk Enerpower Amory Bitcoin Mining Facility",
+    "operator": "Gawk Enerpower Ltd",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.9944791,
+      "lon": -88.5028344,
+      "city": "Amory",
+      "county": "Monroe",
+      "street": "Waterway Drive North",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.wtva.com/2026/05/30/bitcoin-mining-facility-be-built-amory/",
+        "label": "Bitcoin mining facility to be built in Amory",
+        "publisher": "WTVA",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.it-boltwise.de/bitcoin-mining-projekt-in-amory-gawk-enerpower-startet-ausbau-auf-5-hektar-nahe-trainingszentrum.html",
+        "label": "Bitcoin-Mining-Projekt in Amory: Gawk Enerpower startet Ausbau auf 5 Hektar nahe Trainingszentrum",
+        "publisher": "IT BOLTWISE",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Odessa, Texas-based Gawk Enerpower Ltd is building a small, containerized Bitcoin-mining operation ('a few shipping containers on the site filled with equipment') on a 5-acre lot along Waterway Drive next to the Jimmy Bost Training Center in Amory. Amory Utilities Manager Mike King said the load is intended to help 'offset the load on utilities' and should not meaningfully affect customer service; local coverage explicitly distinguishes it from 'a large data center.' As of the most recent reporting found (2026-05-30), the city targeted an August 2026 completion; no source located this session confirms the facility has actually gone live, so status is carried as under_construction rather than assumed operational. No capacity (MW), investment or job figures were disclosed in the available coverage.",
+    "landAcres": 5,
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "gci-anchorage-ak",
     "name": "GCI Anchorage Data Center",
     "operator": "GCI",
@@ -41878,6 +42492,103 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "globalinx-fastnet-cls-ocean-city-md",
+    "name": "Globalinx Fastnet Cable Landing Station",
+    "operator": "Globalinx (GLX)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.3117282,
+      "lon": -75.1228506,
+      "city": "Berlin",
+      "county": "Worcester",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 5
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.submarinenetworks.com/en/systems/trans-atlantic/fastnet/globalinx-to-build-a-cable-landing-station-in-maryland-for-aws%E2%80%99s-fastnet-subsea-cable",
+        "label": "Globalinx to Build a Cable Landing Station in Maryland for AWS's Fastnet Subsea Cable",
+        "publisher": "Submarine Networks",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.telecomramblings.com/2026/01/globalinx-poised-to-construct-a-subsea-cable-landing-station-in-ocean-city-worcester-county-maryland/",
+        "label": "Globalinx Poised to Construct a Subsea Cable Landing Station in Ocean City, Worcester County, Maryland",
+        "publisher": "Telecom Ramblings",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://worcestermd.gov/news/worcester-county-enacts-moratorium-data-centers-and-cable-landing-stations-while-new",
+        "label": "Worcester County Enacts Moratorium on Data Centers and Cable Landing Stations While New Regulations Are Developed",
+        "publisher": "Worcester County, Maryland",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.wboc.com/news/worcester-county-approves-one-year-moratorium-on-data-centers-cable-landings/article_809ad634-6f4f-48d6-bb07-a7e6febcde31.html",
+        "label": "Worcester County approves one-year moratorium on data centers, cable landings",
+        "publisher": "WBOC",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "AWS is the anchor tenant of the Fastnet transatlantic subsea cable (Ocean City, MD to Castlefreke, County Cork, Ireland; ~320 Tbps across 16 fiber pairs); Globalinx's lease agreement was signed late 2025 with a targeted Q3 2027 ready-for-service date and Fastnet operational in 2028. No source fetched this run states a specific street address or parcel — reporting places the site 'near Ocean City Municipal Airport' off Route 611 / Stephen Decatur Highway outside Berlin. Coordinates are therefore a disclosed representative pin at Ocean City Municipal Airport (via OSM Nominatim), NOT a confirmed parcel location; precision is approximate. 24,000 sq ft facility designed to support up to four subsea cable systems; capacityMw.planned=5 reflects the reported scalable-to-5MW power capacity, not a confirmed operational figure.",
+    "community": {
+      "status": "contested",
+      "notes": "Worcester County staff determined the proposed cable landing station does not qualify as a public utility and is not permitted under the site's current C-2 zoning. After 'months of debate' and public hearings, the County Commissioners unanimously enacted a 12-month moratorium (Resolution No. 26-18, enacted 2026-07-21) on the submittal and issuance of permits for both data centers and cable landing stations, applying to Globalinx's pending application while the county drafts new zoning rules.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "gmi-computing-mountain-pine-ar",
+    "name": "GMI Computing Mountain Pine Bitcoin Mine",
+    "operator": "GMI Computing (General Mint Inc.)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.5720347,
+      "lon": -93.1732401,
+      "city": "Mountain Pine",
+      "county": "Garland",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://katv.com/news/local/mountain-pine-residents-decry-noise-pollution-from-new-cryptomining-facility-cryptomine-gmi-computing-ptsd-arkansas-garland-county-noise-ordinance-hot-springs-piney-property-values-loud-servers-fans-cooling-city-hall-data-center-bitcoin-gary-muston",
+        "label": "Mountain Pine residents decry noise pollution from new cryptomining facility",
+        "publisher": "KATV",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kait8.com/2023/10/10/its-freaking-loud-neighbors-fed-up-with-crypto-mine-noise/",
+        "label": "'It's freaking loud': Neighbors fed up with crypto-mine noise",
+        "publisher": "KAIT8",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "No street address given in either source; location is a Nominatim city-level geocode for Mountain Pine, Garland County (disclosed via precision: approximate). Status 'operational' reflects the last confirmed reporting (October 2023, KATV/KAIT8); no 2024-2025 coverage was found either confirming continued operation or reporting closure as of this 2026-09-13 search -- flagged as an information gap, not a confirmed current status.",
+    "community": {
+      "status": "contested",
+      "notes": "Mountain Pine City Hall issued a noise ordinance and ordered GMI Computing (General Mint Inc.) to install sound barriers by end-of-year 2023, after residents reported constant loud noise audible 4-5 miles away and said the company represented the facility as a 'data center' rather than a crypto mine when it was proposed. Of roughly five employees at the site, only one was a local resident.",
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining"
   },
   {
     "id": "goldendale-energy-storage-klickitat-wa",
@@ -46421,9 +47132,9 @@
   },
   {
     "id": "greenidge-columbus-ms",
-    "name": "Greenidge Columbus (Mississippi)",
-    "operator": "Greenidge Generation",
-    "status": "cancelled",
+    "name": "Columbus Bitcoin Mining Facility (formerly Greenidge Columbus)",
+    "operator": "LM Funding America, Inc. (Power & Compute)",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 33.4957,
@@ -46438,7 +47149,14 @@
       "operational": 8.5
     },
     "announcedDate": "2024-03-11",
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-09",
+        "note": "CORRECTION: this record currently describes Greenidge Generation's own project as cancelled/divested, but the 11 MW site itself did not go dark -- it changed hands and is operating. Greenidge sold the Columbus, MS facility (per this record's own existing SEC/Business Wire sources, closed on or about 2025-09-16/17); LM Funding America, Inc. (now rebranded 'Power & Compute') announced closing its acquisition of the same 11 MW site plus ~7.5 MW / 157 PH/s of operating hashrate (~2,300 Bitmain S19-series miners) on 2025-09-18 for $4.0M total consideration, at power pricing of ~$0.036/kWh, with stated plans to fill the remaining ~3.5 MW. Status should read operational under the new operator (LM Funding America, Inc. / Power & Compute), not cancelled. Re-attempted geocoding of 249 Datco Industrial Road this run: both US Census and OSM Nominatim again failed to resolve the street (re-confirming a prior agent's result) -- no independent coordinate correction is possible, so the existing city-centroid pin is left unchanged.",
+        "sourceIndex": 5
+      }
+    ],
     "sources": [
       {
         "url": "https://www.sec.gov/Archives/edgar/data/1844971/000184497124000010/ex991pressrelease3-11x2024.htm",
@@ -46474,10 +47192,17 @@
         "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
         "retrievedAt": "2026-09-09",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.power-compute.com/investors/news-events/press-releases/detail/168/lm-funding-america-closes-acquisition-of-11-mw-site-and",
+        "label": "LM Funding America Closes Acquisition of 11 MW Site and Miners in Columbus Mississippi for $4.0 Million",
+        "publisher": "LM Funding America, Inc. (Power & Compute)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
-    "notes": "12-acre parcel at 249 Datco Industrial Road, Columbus (Lowndes County), MS, bought April 2024 for $1.45M, announced Mar 11 2024 alongside the North Dakota lease. Built with Greenidge's modular 'Pod X' design; live July 1, 2024 (7 MW self-mining per SEC filings). Sold via APA (closed Sept 16, 2025) for $4.2M to US Digital Mining Mississippi LLC, a subsidiary of LM Funding America (Nasdaq: LMFA). Status cancelled: Greenidge fully divested. (Greenidge separately still owns an UNRELATED 34-acre Columbus greenfield site for a future AI/HPC datacenter - not this record.)",
+    "lastUpdated": "2025-09",
+    "notes": "12-acre parcel at 249 Datco Industrial Road, Columbus (Lowndes County), MS, bought April 2024 for $1.45M, announced Mar 11 2024 alongside the North Dakota lease. Built with Greenidge's modular 'Pod X' design; live July 1, 2024 (7 MW self-mining per SEC filings). Sold via APA (closed Sept 16, 2025) for $4.2M to US Digital Mining Mississippi LLC, a subsidiary of LM Funding America (Nasdaq: LMFA). Greenidge fully divested on 2025-09-16; the site did NOT go dark. LM Funding America, Inc. (since rebranded Power & Compute) closed its acquisition of the 11 MW site plus ~7.5 MW / 157 PH/s of operating hashrate on 2025-09-18 for $4.0M, and the facility is operational under that operator. Record renamed and operator updated 2026-09-13 to match; the id is retained for stability. (Greenidge separately still owns an UNRELATED 34-acre Columbus greenfield site for a future AI/HPC datacenter - not this record.)",
     "investmentUsd": 1450000,
     "facilityType": "crypto_mining",
     "mining": {
@@ -47341,6 +48066,52 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "1125 Energy Park Dr., Suite 100, St. Paul, MN 55108, 17,000 SF. Single-sourced to H5's own dedicated marketing page (no independent MW figure could be verified — aggregator sites gave conflicting, non-primary 5/8/15 MW guesses, none fetched/quotable, so capacityMw omitted rather than guessed). 'Suite 100' in the address raises a flag: could this be a suite within a larger shared building rather than a facility H5 solely owns/operates? H5's own 'about' page lists its core markets (Ashburn, Atlanta, Charlotte, Cleveland, Cincinnati, Denver, Phoenix, San Jose, San Luis Obispo, Seattle) and does NOT mention Minnesota, which is inconsistent with the dedicated St. Paul subpage. Recommend a human double-check ownership/tenancy before promoting — flagged as the weakest of this batch's net-new candidates, not dropped outright since I did successfully fetch a dedicated H5-branded page for this address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "h5-denver-greenwood-village-co",
+    "name": "H5 Data Centers Denver (Denver Tech Center campus)",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.6167549,
+      "lon": -104.8916814,
+      "city": "Greenwood Village",
+      "county": "Arapahoe",
+      "street": "5350 S Valentia Way",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 17.5
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/denver-data-center.html",
+        "label": "Denver Data Center - H5 Data Centers",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://h5datacenters.com/denver-colocation.html",
+        "label": "Denver Colocation - H5 Data Centers",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Two independent Tier III, concurrently maintainable buildings totaling 300,000 sq ft on a 12-acre campus in the Denver Tech Center; N+1 backup generators with 48-hour diesel runtime, 24/7 on-site staffing. Marketed as Denver's only wholesale colocation facility with ~15 years at 100% uptime. Water/cooling-circuit type not stated in either operator page checked (2026-09-13) — omitted rather than guessed.",
+    "energy": {
+      "source": "grid",
+      "utility": "Xcel Energy",
+      "onSiteGenerationMw": 0.4,
+      "notes": "400 kW rooftop solar array supplements Xcel Energy grid power to reduce peak demand costs."
+    },
+    "landAcres": 12,
     "facilityType": "data_center"
   },
   {
@@ -48216,6 +48987,38 @@
     "facilityType": "data_center"
   },
   {
+    "id": "hog-lick-aggregates-white-hall-marion-wv",
+    "name": "Hog Lick Aggregates Data Center / Microgrid Proposal",
+    "operator": "Hog Lick Aggregates",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.4211977,
+      "lon": -80.1825815,
+      "city": "White Hall",
+      "county": "Marion",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.wdtv.com/2026/05/05/local-company-proposes-data-center-marion-county/",
+        "label": "Local company proposes data center in Marion County",
+        "publisher": "WDTV",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Very early-stage: Hog Lick Aggregates, which owns a 277-acre site in White Hall, Marion County (adjacent to the I-79 High Tech Park), launched a feasibility study (reported 2026-05-05/06) into a microgrid-powered data center on the property, explicitly with 'no timeframe for development' and expected to take 'several years before yielding actionable results' per company president Brian Redmond. The site is pitched partly as potential support capacity for the NOAA supercomputing facility at the adjacent I-79 High Tech Park. No capacity, investment, or job figures were disclosed. Coordinates are a White Hall community-level pin, not a parcel-level location, since no street address was given.",
+    "energy": {
+      "notes": "Company describes a plan combining natural gas generation with geothermal cooling drawing on water from a shuttered nearby coal mine, plus potential carbon capture and storage integration -- all still at feasibility-study stage, not a committed energy source or technology."
+    },
+    "landAcres": 277,
+    "facilityType": "data_center"
+  },
+  {
     "id": "holtec-brigham-city-smr-ut",
     "name": "Brigham City Nuclear Energy Ecosystem (Holtec SMR-300)",
     "operator": "Hi Tech Solutions with Holtec International",
@@ -48583,6 +49386,38 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "honda-longmont-co",
+    "name": "Honda Data Center (1601 Dry Creek Drive)",
+    "operator": "Honda",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.139512,
+      "lon": -105.1361216,
+      "city": "Longmont",
+      "county": "Boulder",
+      "street": "1601 Dry Creek Drive",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1.6
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/honda-longmont",
+        "label": "Honda Longmont Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "18,700 sq ft computer room (1.6 MW equipment load) inside a 543,610 sq ft, 44.13-acre multi-tenant office complex built 1982; Tier III, LEED Silver. Originally built out by Stream Data Centers, later Zayo (2017); current Honda operator attribution is per aggregator listing only (checked 2026-09-13), not an operator press release, so confidence is 'reported' rather than 'confirmed'. The same building separately houses Intrado Life & Safety's own headquarters/data-center operation (per public directory listings, 2026-09-13) — a distinct facility, not captured here for lack of independently-verified capacity detail; worth a follow-up pass. Coordinates are an approximate geocode of the building address, not a confirmed suite/parcel.",
+    "facilityType": "data_center"
   },
   {
     "id": "host-digital-northeast-oklahoma-ok",
@@ -51824,6 +52659,61 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "jpmorgan-chase-orangeburg-ny",
+    "name": "JPMorgan Chase Data Center, Orangeburg",
+    "operator": "JPMorgan Chase",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.044286,
+      "lon": -73.973952,
+      "city": "Orangeburg",
+      "county": "Rockland",
+      "street": "140 Old Orangeburg Rd",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.theregister.com/2026/04/20/chase_77m_tax_subsidy_datacenter_job/",
+        "label": "$77M tax subsidy for NY datacenter project will create 1 job",
+        "publisher": "The Register",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/jpmc-orangeburg",
+        "label": "JPMC Orangeburg Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Distinct facility from the existing bloomberg-orangeburg-ny record (Bloomberg LP's separate data center also sited in Orangeburg, Rockland County). No MW capacity or investment figure was disclosed in either fetched source as of 2026-09-13, omitted rather than guessed. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed parcel), hence approximate precision.",
+    "subsidies": [
+      {
+        "program": "Rockland County IDA sales/PILOT tax abatement (existing facility expansion)",
+        "amountUsd": 77000000,
+        "jurisdiction": "Rockland County Industrial Development Agency",
+        "year": "2024",
+        "sourceIndex": 0
+      }
+    ],
+    "jobs": {
+      "construction": 1450,
+      "permanent": 1,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Rockland County IDA approved a roughly $77M sales-tax-exemption package (construction materials/equipment) on 2024-02 for an existing-facility expansion (the facility began construction in 2017 and is already operational), promising exactly one new permanent job; JPMorgan Chase will pay ~$600,000/year in PILOT payments through 2044. Reporting (NY Focus, The Register, Reinvent Albany) characterized this as the largest per-job subsidy of its kind in the country; the IDA hearing drew no public attendees. Expected full completion of the expansion ~2028.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "jumping-bison-greensburg-decatur-county-in",
     "name": "Jumping Bison Greensburg Data Center",
     "operator": "Jumping Bison LLC",
@@ -52099,6 +52989,61 @@
     "notes": "Proposed campus on 180 acres on 101st Avenue east of Deep River County Park, at up to $900 million and reported to bring hundreds of jobs. Described as early-stage.",
     "investmentUsd": 900000000,
     "landAcres": 180,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "kentucky-industrial-alliance-cave-point-cave-city-ky",
+    "name": "Cave Point Commerce Center",
+    "operator": "Kentucky Industrial Alliance LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.1367544,
+      "lon": -85.9562169,
+      "city": "Cave City",
+      "county": "Barren",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.wbko.com/2026/06/10/kentucky-industrial-alliance-says-proposed-cave-city-data-center-could-bring-millions-tax-revenue/",
+        "label": "Kentucky Industrial Alliance says proposed Cave City data center could bring millions in tax revenue",
+        "publisher": "WBKO",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wbko.com/2026/06/09/developer-sues-cave-city-over-data-center-zoning-moratorium/",
+        "label": "Developer sues Cave City over data center zoning moratorium",
+        "publisher": "WBKO",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://bgdailynews.com/2026/08/27/barren-data-center-suits-proceed/",
+        "label": "Barren data center suits proceed",
+        "publisher": "Bowling Green Daily News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Proposed multi-building hyperscale campus (10 buildings x ~200,000 sq ft, ~2M sq ft total) at the Cave City Industrial Park spanning Cave City and unincorporated Barren County. Combined critical capacity reported as 'about 1,200 megawatts.' Jobs figure of 360 is direct jobs at full build-out (300 data-center operations + 60 power generation, per the source, implying an on-site generation component not independently confirmed or itemized this run -- no separate power_generation record created without a source stating its own capacity/technology). An additional ~569 indirect/induced jobs were estimated (total ~929) but only the direct figure is recorded here. Developer/operator name is the plaintiff of record in the zoning lawsuit (Kentucky Industrial Alliance LLC), which the coverage also identifies as the current landowner; no separate development-company name was disclosed in the sources checked. Exact parcel location within the industrial park not confirmed -- coordinates are a Cave City town-center pin.",
+    "landAcres": 600,
+    "jobs": {
+      "permanent": 360,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Cave City enacted a 12-month data-center zoning moratorium 2026-05-20. Developer Kentucky Industrial Alliance LLC sued the city 2026-06-08 in Barren District/Circuit Court, arguing its application should be reviewed under the zoning rules in place 2026-05-11 (before the moratorium) and separately challenging the city's annexation of the tract (alleging improper procedure involving a cemetery on the parcel). The two suits were consolidated; first hearing 2026-08-26, status conference set 2026-11-23, no ruling issued as of 2026-08-27. Site is ~10 miles from Mammoth Cave National Park; residents have raised water-resource and land-use concerns.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -52535,6 +53480,75 @@
     "facilityType": "data_center"
   },
   {
+    "id": "leola-data-center-mcpherson-county-sd",
+    "name": "Leola Data Center",
+    "operator": "Leola Data Center, LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.704374067105,
+      "lon": -99.035447087942,
+      "city": "Leola",
+      "county": "McPherson",
+      "street": "11641 358th Avenue",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-11",
+        "note": "Original conditional use permit application filed with McPherson County for a 50 MW data center on 2 of 20 acres adjacent to MDU's Leola Substation.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2024-12",
+        "note": "McPherson County enacted a moratorium on data-center siting and a one-mile setback ordinance while continuing to review this application.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2024/EL24-027/CondUsePermit.pdf",
+        "label": "Leola Data Center -- McPherson County Conditional Use Permit Application & Supplemental Information",
+        "publisher": "McPherson County, SD (via South Dakota PUC docket EL24-027)",
+        "retrievedAt": "2026-09-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://aberdeeninsider.com/mcpherson-county-postpones-approval-of-leola-data-center-conditional-use-permit/",
+        "label": "McPherson County Postpones Approval Of Leola Data Center Conditional Use Permit",
+        "publisher": "Aberdeen Insider",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://aberdeeninsider.com/mcpherson-county-approves-moratorium-on-data-centers-enacts-1-mile-setback/",
+        "label": "McPherson County Approves Moratorium On Data Centers, Enacts 1 Mile Setback",
+        "publisher": "Aberdeen Insider",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Site is legally described as Section 28 (part E1/2), Township 126N, Range 68W, McPherson County -- a 20-acre parcel adjacent to Montana-Dakota Utilities' Leola Substation, at the SW corner of 358th Avenue (Highway 17) and 116th Street, about 5 miles southwest of Leola. The CUP application itself lists 11641 358th Avenue, Leola, SD 57456 as the site's general area/street address, which is what was geocoded here (US Census geocoder); precision is approximate because this is a street-level geocode, not a confirmed parcel-corner survey point. As of 2026-09-13 no final CUP decision had been located in sources checked this run.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "McPherson County CUP supplemental filing (2024-11-07) describes a closed-loop, 30:70 glycol:water immersion cooling process, with the glycol:water solution itself air-cooled via low-noise fans -- a recirculating water circuit is present, so this is closed_loop under the schema's tie-breaker rule, not air."
+    },
+    "landAcres": 20,
+    "community": {
+      "status": "contested",
+      "notes": "McPherson County's Board of Adjustment deferred action on Leola Data Center's conditional use permit application (confirmed via direct fetch of Aberdeen Insider's report, 2026-09-13; the site's own article text was largely paywalled so the exact hearing date could not be independently confirmed this run). The county separately enacted a moratorium on data-center siting plus a one-mile setback from any church, school or residence, in county reporting tied explicitly to this application and dated to December 2024 (Aberdeen Insider, fetched 2026-09-13, also partially paywalled). Other press coverage surfaced by search but NOT independently fetched this run additionally describes a subsequent county ordinance permitting data centers as a conditional use, a July 2026 refiling of the application, an August 11, 2026 hearing, and a proposed $150,000/year payment to local emergency services -- these specific figures are flagged as unverified against a primary document this run.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "lerner-brightseat-tech-park-md",
     "name": "Brightseat Tech Park",
     "operator": "Lerner Enterprises / The Tower Companies (Brightseat Associates LLC)",
@@ -52587,9 +53601,23 @@
         "publisher": "Nature Forward",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://wtop.com/maryland/2026/07/prince-georges-co-extends-pause-on-hyperscale-data-center-development/",
+        "label": "Two-year moratorium on data center development passes in Prince George's Co.",
+        "publisher": "WTOP News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://pgccouncil.us/m/newsflash",
+        "label": "Chair Oriadha Announces Two-Year Moratorium to Prevent New Data Centers from Operating in the County",
+        "publisher": "Prince George's County Council",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-13",
     "notes": "2101 Brightseat Road, Landover MD. Project has final plan approvals but is politically frozen pending task force report. Five buildings on 87 acres of former mall site. As a permitted-but-frozen project, no facility-specific water design, subsidy award, or committed job figures have been disclosed; job figures circulating in press are Maryland Tech Council sector benchmarks, not Brightseat commitments. Re-checked 2026-09-10: status remains PERMITTED (no enum value exists for 'construction paused by opposition/moratorium'). Groundbreaking has not occurred; community opposition (23,000+ petition signatures) and PG County Council ordinances CB-019-2026/CB-020-2026 (introduced March 2026 to repeal the qualified-data-center site-plan-review exemption) continue to threaten the timeline. Subsidies: found only a general-program reference (MD/PG County 2020 sales-and-use tax exemption for qualified data centers, Tax-General Article Sec.11-239(a)(5)(i)) with no site-specific dollar figure for this project, so no subsidies entry is reported -- record as a program-level fact only. No street-address source was independently fetched this run (existing statusHistory note already cites 2101 Brightseat Road from an earlier source), so location.street is left for a future run with a fresh citation.",
     "energy": {
       "source": "grid",
@@ -55460,6 +56488,40 @@
     "community": {
       "status": "opposed",
       "notes": "The Sept. 9, 2026 Planning & Zoning Commission meeting drew a standing-room-only crowd. Opposition speakers, including a former mayor, argued the county's focus should be job retention and expanding existing businesses rather than attracting a data center.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "md-squared-power-pikeville-pike-ky",
+    "name": "Kentucky Enterprise Industrial Park Data Center",
+    "operator": "MD Squared Power LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.4792672,
+      "lon": -82.5187629,
+      "city": "Pikeville",
+      "county": "Pike",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.wymt.com/2026/06/05/pikeville-signs-agreement-explore-data-center-development/",
+        "label": "Pikeville signs agreement to explore data center development",
+        "publisher": "WYMT",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "City of Pikeville and Lexington-based MD Squared Power LLC signed a preliminary MOU on 2026-04-20 to explore a data center at the Kentucky Enterprise Industrial Park, with a 120-day exclusive negotiation window; either party could withdraw without penalty. No final development agreement, capacity figure, or exact parcel/address was disclosed as of the source date. Coordinates are a city-level pin (Pikeville, Pike County) since the exact parcel within the industrial park is not confirmed in the source.",
+    "investmentUsd": 250000000,
+    "jobs": {
+      "construction": 190,
+      "permanent": 40,
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -64343,6 +65405,48 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "neural-nexus-memphis-tn",
+    "name": "Neural Nexus Innovation District",
+    "operator": "Legacy Power Capital",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.1428067,
+      "lon": -90.0500147,
+      "city": "Memphis",
+      "county": "Shelby",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://memphischamber.com/blog/press-release/legacy-power-capital-announces-neural-nexus-innovation-district-in-downtown-memphis/",
+        "label": "Legacy Power Capital Announces \"Neural Nexus\" Innovation District in Downtown Memphis - Greater Memphis Chamber",
+        "publisher": "Greater Memphis Chamber",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://downtownmemphis.com/post/downtown-memphis-to-get-94-billion-neural-nexus-mixed-use-development",
+        "label": "Downtown Memphis to Get $9.4 Billion \"Neural Nexus\" Mixed-Use Development",
+        "publisher": "Downtown Memphis Commission",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Announced 2025-12-10 (per the Chamber press release dateline: 'MEMPHIS, TN. Wednesday, December 10, 2025'). Located on 'two full city blocks' in downtown Memphis described both as 'adjacent to FedExForum and Beale Street' and 'across from AutoZone Park' (Downtown Memphis Commission) -- these are the same downtown block cluster, but no street address or parcel has been published, so this pin uses the AutoZone Park landmark centroid, disclosed as approximate. Total project investment reported as $9.4B mixed-use (housing, retail, hotel, innovation center) anchored by a cloud data center; a separate reported first-phase figure of ~$400M and ~70MW of power (seen in secondary aggregation, not independently fetched this run) is omitted pending verification against a fetched primary source. Site is the former location of The Walk development on Union Avenue.",
+    "investmentUsd": 9400000000,
+    "community": {
+      "status": "mixed",
+      "notes": "No opposition or hearing documented in the sources fetched this run; flagged mixed only because the project includes a public tax-increment mechanism (25% of district tax revenue redirected to a 5-mile radius) that has not yet been through a public approval process as of the 2025-12-10 announcement.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "new-carlisle-chicago-trail-data-center-st-joseph-county-in",
     "name": "New Carlisle Chicago Trail Data Center (rezoning denied)",
     "operator": "Undisclosed",
@@ -65335,11 +66439,19 @@
         "label": "Energy and water use, projected jobs and revenue: Spartanburg's NorthMark data center by the numbers",
         "retrievedAt": "2026-09-10",
         "kind": "other"
+      },
+      {
+        "url": "https://des.sc.gov/sites/des/files/Documents/BAQ/Valara/Application.pdf",
+        "label": "Air - Construction Permit (Modification), Submission HQJ-32R0-VR9VC — Valara Holdings High Performance Compute Center",
+        "publisher": "SC Department of Environmental Services",
+        "retrievedAt": "2026-09-13",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-13",
     "notes": "Adaptive reuse of the former Kohler manufacturing facility in Spartanburg County, developed by NorthMark Strategies through its subsidiary Valara Holdings. This is a DIFFERENT Spartanburg County site from the tracked Greenidge record at 300 Jones Road. Coordinates are an approximate geocode of the South Pine Street address reported in local coverage; no parcel-level source was retrieved. Subsidies checked 2026-09-10: Spartanburg County Council approved a tax incentive package for the project, but the article does not give a FILOT dollar figure or program name -- only projected resulting property-tax revenue ($10.5M in 2026 rising to $15M/yr 2029-2045). Not filing a structured subsidies entry since no incentive amount is stated; flagging for a follow-up pass that can find the actual FILOT ordinance.",
     "energy": {
+      "source": "on_site_gas",
       "notes": "The project is being built with on-site power generation rather than drawing the full load from the local grid. NorthMark applied to the S.C. Department of Environmental Services on 2026-03-04 for 'additional equipment to support increased power generation capacity' at the site; the application was under technical review as of April 2026."
     },
     "water": {
@@ -71592,6 +72704,44 @@
     "aiClassification": "likely"
   },
   {
+    "id": "priseda-prosperity-drive-silver-spring-md",
+    "name": "12401 Prosperity Drive Data Center",
+    "operator": "Sansone Group / Priseda",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.058994201626,
+      "lon": -76.965681665201,
+      "city": "Silver Spring",
+      "county": "Montgomery",
+      "street": "12401 Prosperity Drive",
+      "state": "MD",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 35.2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.pdcproperty-silverspring.com/",
+        "label": "12401 Prosperity Drive Data Center - Property Site",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://rebusinessonline.com/sansone-group-priseda-acquire-214000-sf-data-center-in-metro-d-c/",
+        "label": "Sansone Group, Priseda Acquire 214,000 SF Data Center in Metro D.C.",
+        "publisher": "REBusinessOnline",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Coordinates confirmed via US Census geocoder (exact match on 12401 Prosperity Dr, Silver Spring, MD 20904; county is Montgomery per standard MD zip-to-county geography, not stated by either source). This is a previously-existing colocation facility (built 2009; operated historically as ByteGrid MDC1/MDC2 and later as Lincoln Rackhouse, brand retired 2024) acquired by a Sansone Group / Priseda partnership in an off-market deal reported at $28.8M (RE Business Online, announced Aug 2025); Priseda is both co-owner and operator. The property's own site states a 214,000 SF 'ultra secure' facility with ~50,000 SF of data hall available for lease and a phased power build-out to '35.2 MW gross by end of 2027' -- recorded as capacityMw.planned since that figure is the forward target, not a confirmed current operational total (no source fetched this run states the pre-upgrade operational MW). aiClassification omitted: no source names AI/GPU/HPC use at this site. Distinct from and not to be confused with the existing ainet-cybernap-glen-burnie-md record (different operator, different county).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "project-altair-newberry-county-sc",
     "name": "Project Altair (Mid-Carolina Commerce Park II)",
     "operator": "Undisclosed developer (Project Altair)",
@@ -75359,6 +76509,42 @@
     "facilityType": "data_center"
   },
   {
+    "id": "qts-overland-park-ks",
+    "name": "QTS Overland Park Data Center (OVP1)",
+    "operator": "QTS Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.896635385342,
+      "lon": -94.673564928144,
+      "city": "Overland Park",
+      "county": "Johnson",
+      "street": "12851 Foster St",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/qts-overland-park",
+        "label": "QTS Overland Park Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterjournal.com/data-centers/kansas/overland-park/qts-overland-park-ovp1/",
+        "label": "QTS Overland Park (OVP1) Data Center",
+        "publisher": "Data Center Journal",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "QTS's own site (qtsdatacenters.com) 301-redirects to an unrelated domain (q.com) and could not be fetched this session; sourced instead from two directory/aggregator pages that agree on address and operational status. Historically this facility is described as QTS's corporate headquarters and the founding site of its data-center portfolio. capacityMw omitted: sources disagree or withhold the figure (one blocks it behind a paid dataset, the other omits it; an unfetched search snippet claimed 8MW but that number was not confirmed against a page this session actually retrieved). Coordinates are the US Census geocode of the listed street address, retrieved 2026-09-13; precision set to approximate since the parcel/building footprint was not independently confirmed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "qts-phoenix-2-az",
     "name": "QTS Phoenix 2",
     "operator": "QTS Data Centers",
@@ -75881,8 +77067,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
-    "notes": "Site is near Hands Mill Highway and Campbell Road in unincorporated York County (Clover area). York County sold 173 acres to QTS on 2023-07-26; QTS also purchased additional private land, so total campus acreage exceeds the county-sold figure. investmentUsd reflects the $1 billion figure in the 2023 state announcement; York County's current page cites 'over $8 billion' in committed long-term investment for the campus. Coordinates are an approximate geocode of Hands Mill Highway.",
+    "lastUpdated": "2026-09-13",
+    "notes": "Site is near Hands Mill Highway and Campbell Road in unincorporated York County (Clover area). York County sold 173 acres to QTS on 2023-07-26; QTS also purchased additional private land, so total campus acreage exceeds the county-sold figure. investmentUsd reflects the $1 billion figure in the 2023 state announcement; York County's current page cites 'over $8 billion' in committed long-term investment for the campus. Coordinates are an approximate geocode of Hands Mill Highway. Re-checked 2026-09-13: the SC Commerce announcement (the record's own listed source) states no megawatt capacity figure and describes QTS only in generic colocation terms, so aiClassification cannot be confirmed for this specific site per contract rule F (an AI/GPU/HPC claim must be site-specific, not inferred from the operator's general business description). No community reception (support, opposition, hearings, or council votes) is documented in this source beyond standard economic-development congratulatory statements from the Governor, York County Council Chairwoman, and Secretary of Commerce, which describe state/county officials' reaction to the investment announcement, not documented public reception of the site by residents — declining to characterize these as community.status per contract's caution against treating officials' remarks as a proxy for public reception. Attempted qtsdatacenters.com (broken redirect to unrelated q.com domain), York County government site search (JS-rendered, no results retrievable via fetch), and a general web search for a capacity figure or local news coverage — all environmentally blocked (WebSearch quota exhausted session-wide at time of this run; DuckDuckGo HTML search returned only a CAPTCHA page; bizjournals.com and heraldonline.com fetches were blocked/refused by the tool). No genuine negative finding is being claimed for capacityMw/aiClassification/community — this is an inconclusive search, not a confirmed absence.",
     "energy": {
       "source": "grid",
       "utility": "York Electric Cooperative"
@@ -76019,8 +77205,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
-    "notes": "This record is the master-planned 2,100-acre park itself (the former Alcoa Eastalco Works site), NOT a duplicate of any single tenant building. The individual tenant campuses already tracked separately in this dataset -- Aligned Data Centers IAD-04/IAD-06 (aligned-quantum-frederick-md, aligned-iad-06-frederick-md) and Rowan Digital Infrastructure Bauxite I/II/III (rowan-digital-frederick-md, rowan-bauxite-ii-frederick-md, rowan-bauxite-iii-frederick-md) -- sit on parcels within this same park and should NOT be re-summed against this record's acreage. Original developer Quantum Loophole, Inc. was removed from active management/development of the project in a Dec. 2025 dispute settlement with its financial partner TPG Real Estate; TPG now serves as Manager and its affiliate Catellus Development Corporation as Developer, per Catellus's own statement ('TPG Real Estate and Quantum Loophole, Inc. have resolved their dispute over management and development of the 2,100-acre data center campus... Quantum Loophole will no longer have any active involvement in managing or developing the Project.'). The Frederick County Council separately created a Critical Digital Infrastructure Overlay Zone in January 2026 that expanded the area eligible for data-center development around this site by nearly 1,000 acres, but that is a zoning designation, not confirmed additional owned/developed acreage, so it is not included in landAcres here.",
+    "lastUpdated": "2026-09-13",
+    "notes": "This record is the master-planned 2,100-acre park itself (the former Alcoa Eastalco Works site), NOT a duplicate of any single tenant building. The individual tenant campuses already tracked separately in this dataset -- Aligned Data Centers IAD-04/IAD-06 (aligned-quantum-frederick-md, aligned-iad-06-frederick-md) and Rowan Digital Infrastructure Bauxite I/II/III (rowan-digital-frederick-md, rowan-bauxite-ii-frederick-md, rowan-bauxite-iii-frederick-md) -- sit on parcels within this same park and should NOT be re-summed against this record's acreage. Original developer Quantum Loophole, Inc. was removed from active management/development of the project in a Dec. 2025 dispute settlement with its financial partner TPG Real Estate; TPG now serves as Manager and its affiliate Catellus Development Corporation as Developer, per Catellus's own statement ('TPG Real Estate and Quantum Loophole, Inc. have resolved their dispute over management and development of the 2,100-acre data center campus... Quantum Loophole will no longer have any active involvement in managing or developing the Project.'). The Frederick County Council separately created a Critical Digital Infrastructure Overlay Zone in January 2026 that expanded the area eligible for data-center development around this site by nearly 1,000 acres, but that is a zoning designation, not confirmed additional owned/developed acreage, so it is not included in landAcres here. CORRECTION: this record's `notes` field states the Quantum Loophole / TPG dispute was resolved in a 'Dec. 2025 dispute settlement.' Primary sources -- Catellus's own statement and Quantum Loophole's own statement, both published/dated 2024-12-23 -- show the settlement and mutual litigation dismissal occurred in DECEMBER 2024, not December 2025. The operator field and the substance of what happened (Quantum Loophole removed from active management/development, TPG + Catellus took over) are already correct and need no change -- only the year cited in the notes prose is wrong. Re-checked 2026-09-13 for any further operator/ownership change since: found none; TPG Real Estate / Catellus Development Corporation remain the manager/developer of record, no new litigation found.",
     "landAcres": 2100,
     "facilityType": "data_center"
   },
@@ -77185,6 +78371,53 @@
     "facilityType": "data_center"
   },
   {
+    "id": "redivider-homestead-speedway-fl",
+    "name": "Redivider Homestead Bitcoin Mining Facility",
+    "operator": "Redivider Blockchain (joint venture with Esperanza Opportunity Fund)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 25.451752,
+      "lon": -80.40943,
+      "city": "Homestead",
+      "county": "Miami-Dade",
+      "street": "One Ralph Sanchez Speedway Blvd",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 10
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.einnews.com/pr_news/556618857/redivider-blockchain-and-esperanza-opportunity-fund-announce-partnership-bringing-bitcoin-mining-to-homestead-florida",
+        "label": "Redivider Blockchain and Esperanza Opportunity Fund Announce Partnership Bringing Bitcoin Mining to Homestead Florida",
+        "publisher": "EIN Presswire",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Redivider_Miami-Dade_County_facility",
+        "label": "Redivider Miami-Dade County facility",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=us&q=Homestead-Miami%20Speedway%2C%20Homestead%2C%20FL",
+        "label": "OSM Nominatim match for Homestead-Miami Speedway, Homestead, FL",
+        "publisher": "OpenStreetMap Nominatim",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Partnership announced November 2021 to site a 10 MW immersion-cooled Bitcoin mining operation on land at the Homestead-Miami Speedway, using an Opportunity Zone tax-incentive structure and a specialized rate from the city-owned utility (Homestead Public Services). Global Energy Monitor's own tracker (checked 2026-09-13) still lists this as 'Proposed' with development status 'unclear as of July 2022' and no confirmed construction or operational milestone since the 2021 announcement -- flagging this as a stalled multi-year proposal, not an active build. Coordinates are the speedway venue centroid (OSM), not a confirmed parcel within the property; precision set to approximate accordingly.",
+    "investmentUsd": 15000000,
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "regence-salt-lake-city-ut",
     "name": "Regence BlueCross BlueShield Salt Lake City Data Center",
     "operator": "Regence BlueCross BlueShield",
@@ -77833,6 +79066,65 @@
     }
   },
   {
+    "id": "river-run-energy-center-mercer-county-nd",
+    "name": "River Run Energy Center",
+    "operator": "Basin Electric Power Cooperative / NextEra Energy Resources",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.32111,
+      "lon": -101.381548,
+      "city": "Stanton",
+      "county": "Mercer",
+      "state": "ND",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1450
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12",
+        "note": "Basin Electric and NextEra Energy Resources signed an MOU to jointly explore development of the River Run Energy Center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.basinelectric.com/news-center/news-releases/Basin-Electric-Power-Cooperative-and-NextEra-Energy-Resources-announce-collaboration-to-bring-responsible-growth-jobs-and-economic-benefits-to-North-Dakota-through-development-of-the-River-Run-Energy-Center",
+        "label": "Basin Electric Power Cooperative and NextEra Energy Resources announce collaboration to bring responsible growth, jobs and economic benefits to North Dakota through development of the River Run Energy Center",
+        "publisher": "Basin Electric Power Cooperative",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.inforum.com/news/north-dakota/data-center-concerns-rise-in-2nd-western-north-dakota-county-as-nextera-basin-eye-project",
+        "label": "Data center concerns rise in 2nd western North Dakota county as NextEra, Basin eye project",
+        "publisher": "InForum / The Dickinson Press",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Location is a representative pin for Stanton, the Mercer County seat and site of the project's public open house (Stanton Civic Center) -- no source checked this run states a specific parcel, township/range, or road for the plant/data-center site itself. NextEra subsidiary Boulevard Associates holds real-estate purchase-option agreements on roughly 530 acres across four landowner parcels in Mercer County, signed December 2025-January 2026, but the exact parcel location was not disclosed in sources fetched this run. Treat this coordinate as county/town-level context, not a site-level pin.",
+    "investmentUsd": 18000000000,
+    "jobs": {
+      "permanent": 230,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The Mercer County Commission voted 3-2 on 2026-03-03 to impose a one-year moratorium on new data-center development in the county. Roughly 50 residents attended the meeting, predominantly supporting the pause, citing insufficient transparency from developers; one fourth-generation farmer described his family's land future as newly uncertain. Neighboring Oliver County was separately considering its own multi-year suspension of data-center siting. NextEra's project director said the company remained committed to community engagement and transparency.",
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Combined-cycle natural gas generation facility developed under Basin Electric's Large Load Commercial Program, in partnership with NextEra Energy Resources (via subsidiary Boulevard Associates), Roughrider Electric Cooperative and Upper Missouri Power Cooperative. Intended to anchor an associated multi-gigawatt data center campus in Mercer County; no specific data-center operator/tenant has been publicly named in sources checked this run (2026-09-13)."
+    }
+  },
+  {
     "id": "riverhawk-energy-center-ia",
     "name": "Riverhawk Energy Center",
     "operator": "Alliant Energy",
@@ -77980,6 +79272,113 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "rochester-colo-pittsford-ny",
+    "name": "Rochester Colo",
+    "operator": "Rochester Colo (James Salviski)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.090959,
+      "lon": -77.515298,
+      "city": "Pittsford",
+      "county": "Monroe",
+      "street": "Pittsford Victor Road",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://rochestercolo.com/contact/",
+        "label": "Contact Us - Rochester Colo Data Center",
+        "publisher": "Rochester Colo",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://rochestercolo.com/",
+        "label": "Home - Rochester Colo Data Center",
+        "publisher": "Rochester Colo",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Carrier-neutral colocation facility on Pittsford Victor Road in Pittsford (Rochester metro), Monroe County, operating since 2008; site's own contact page (fetched 2026-09-13) does not list a specific street number, and the company's homepage describes N+1 power with 96-hour outage protection but no MW/sq ft figures. Third-party aggregator listings (not independently confirmed by direct fetch this session -- datacentermap.com returned HTTP 429 on every attempt) describe the building as a converted ~36,000 sq ft former Voplex automotive facility with ~7,000 sq ft of white space and 1 MW live capacity, expandable to 15,000 sq ft / 4 MW; these figures are OMITTED here pending direct-source confirmation rather than sourced to an unfetched page. Coordinates are the Town of Pittsford centroid (OSM Nominatim) -- both the US Census geocoder and OSM Nominatim failed to resolve the street address without a confirmed house number, so this is a disclosed city/town-level pin, NOT parcel-level precision. No capacity, investment, or AI-use figure found in a directly-fetched source as of 2026-09-13, omitted rather than guessed.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "rocklocker-kalkaska-go-mi",
+    "name": "Kalkaska Go",
+    "operator": "Rocklocker LLC",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.7254528,
+      "lon": -85.2916494,
+      "county": "Kalkaska",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11",
+        "note": "Rocklocker LLC (through project name 'Kalkaska Go') proposed a hyperscale data center campus with a captive on-site natural-gas power plant and carbon capture on 1,440 acres of Michigan DNR-managed state land, projecting roughly $35M/year in local tax revenue.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-11-20",
+        "note": "Rocklocker withdrew the proposal after public opposition and the DNR's rejection of the state-land purchase request.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.traverseticker.com/news/developer-pulls-plug-on-kalkaska-data-center/",
+        "label": "Developer Pulls Plug on Kalkaska Data Center",
+        "publisher": "The Ticker (Traverse City)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/rocklocker-kalkaska-township-mi",
+        "label": "Rocklocker: Kalkaska Township, MI Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.9and10news.com/2025/11/17/residents-voice-concerns-over-proposed-data-center-in-kalkaska-county/",
+        "label": "Residents voice concerns over proposed data center in Kalkaska County",
+        "publisher": "9&10 News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://upnorthlive.com/news/local/proposed-kalkaska-county-data-center-halted-after-public-feedback-company-president-says-rocklocker",
+        "label": "Proposed Kalkaska County data center halted after public feedback, company president says",
+        "publisher": "UpNorthLive (WPBN/WGTU)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Location is a representative point at Island Lake in Kalkaska Township, Kalkaska County -- the state-land parcel was never assigned a street address in any source found (checked 2026-09-13). Coverage places it 'near Island Lake and South River roads'; a data-center directory listing (baxtel.com) separately gives 'N River Rd, Kalkaska Township, MI' for the same withdrawn project -- the two road names were not reconciled to a single confirmed segment, so precision is set to approximate rather than exact. A community informational meeting tied to this project was separately reported as scheduled/cancelled in Coldsprings Township, a different township in the same county; that is the meeting venue, not the project site.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Proposed as a 'net-zero' design with an on-site natural gas power plant paired with carbon-capture technology intended to sequester emissions in the local Antrim Shale formation (Traverse Ticker, retrieved 2026-09-13). No MW figure for either the data center or the power plant was published; coverage described it only as 'gigawatt-scale' and 'multi-billion-dollar', which is not a number this record can carry."
+    },
+    "landAcres": 1440,
+    "community": {
+      "status": "opposed",
+      "notes": "A Nov 17, 2025 community forum drew organized opposition over noise, water use, and industrializing public state land; project personnel reportedly received anonymous threats (upnorthlive, WKAR-syndicated coverage). The Michigan DNR formally rejected Rocklocker's request to purchase the state land parcel. Developer Matt Rine withdrew the proposal on 2025-11-20, citing the community response: \"We sought public input because we want to be partners with the community we live and work in. And we heard you.\"",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "roundhouse-cascade-locks-or",
@@ -78535,6 +79934,52 @@
       "notes": "Athens Township trustees (Aug 1, 2026), Athens City Council (Aug 3, 2026) and the Athens County commissioners (Aug 4, 2026) each adopted one-year data center moratoria after residents packed July 28 meetings.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "sabey-butte-mt",
+    "name": "Sabey Data Centers Butte Campus (Montana Connections)",
+    "operator": "Sabey Data Centers",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.9965283,
+      "lon": -112.6981966,
+      "city": "Butte",
+      "county": "Silver Bow",
+      "street": "German Gulch Rd & Rick Jones Way",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "Land purchase/sale agreement for a 606.5-acre parcel in the Montana Connections Industrial Park was still contingent on closing, with the deadline extended to Feb 11, 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/sabey-butte-montana",
+        "label": "Sabey: Butte, Montana Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.bozemandailychronicle.com/news/power-drain-a-guide-to-proposed-data-centers-so-far-in-montana/article_a01fd8b1-ba3e-5eeb-8ffa-38b809273906.html",
+        "label": "Power Drain: A guide to proposed data centers so far in Montana",
+        "publisher": "Bozeman Daily Chronicle",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Sabey withdrew/terminated its buy-sell agreement on 2026-05-13 after REC Silicon exercised a right of first refusal (dating to 1996) over part of the 606.5-acre Montana Connections parcel in April 2026. The project had planned an initial 50MW of power under a non-binding LOI with NorthWestern Energy for 2027, with scalability to 250MW+ by 2029 -- the higher figure is an aspirational scale-up target, not recorded in capacityMw. Butte-Silver Bow officials said afterward they were working with Sabey to identify an alternative parcel within or adjacent to the same industrial park; no replacement site was confirmed in sources checked this run (2026-09-13). Coordinate is a road-level OSM Nominatim geocode of German Gulch Road near the Ramsay/Ramsay-Butte area (Silver Bow County), not a confirmed parcel boundary.",
     "facilityType": "data_center"
   },
   {
@@ -80918,6 +82363,51 @@
     "facilityType": "data_center"
   },
   {
+    "id": "sequitor-edge-rapid-city-sd",
+    "name": "Sequitor Edge Rapid City",
+    "operator": "Sequitor Edge",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.0222987,
+      "lon": -103.1914102,
+      "city": "Rapid City",
+      "county": "Pennington",
+      "street": "S Highway 79, Black Hills Industrial Center",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/sequitor-edge-rapid-city-south-dakota",
+        "label": "Sequitor Edge: Rapid City, South Dakota Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.kotatv.com/2026/07/02/south-dakota-drought-strains-power-grid-rapid-city-data-center-moves-forward/",
+        "label": "South Dakota drought strains power grid as Rapid City data center moves forward",
+        "publisher": "KOTA TV",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Capacity is disputed between the two sources fetched this run and is deliberately omitted from capacityMw rather than guessed: Baxtel states an initial 2MW phase scaling to 10MW; KOTA TV separately reports 15MW for the same project (also citing a 1.3 PUE design target vs. an industry average of 1.8-2.0). Tier 3 edge computing facility, greenfield, an initial ~30,000 sq ft building on a 1-acre footprint within a 10-acre site, expandable to five data halls across 7 acres. Construction was reported (both sources) to begin late summer 2026 with a roughly 14-month build targeting a 2027 opening; no source checked this run (2026-09-13) confirms construction has actually started. Coordinate is an OSM Nominatim road-level geocode of S Highway 79, Rapid City -- not a confirmed parcel.",
+    "energy": {
+      "utility": "Black Hills Energy",
+      "notes": "Reported to require no new grid infrastructure for the initial phase."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling system with a one-time water fill of approximately 19,000 gallons (Baxtel, fetched 2026-09-13)."
+    },
+    "landAcres": 10,
+    "facilityType": "data_center"
+  },
+  {
     "id": "serverfarm-ch1-chicago-il",
     "name": "Serverfarm CH1",
     "operator": "Serverfarm",
@@ -81496,6 +82986,87 @@
       "unitCount": 71,
       "notes": "71 GE turbines across Wayne and Stanton counties. \"The energy will serve customers of OPPD through a 20-year power purchase agreement.\" Expected to deliver over $30 million in property taxes to the counties over 30 years and roughly $40 million in landowner payments."
     }
+  },
+  {
+    "id": "silicon-ranch-stockton-solar-baldwin-al",
+    "name": "Stockton Solar Farm",
+    "operator": "Silicon Ranch Corporation",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.9905875,
+      "lon": -87.8606214,
+      "city": "Stockton",
+      "county": "Baldwin",
+      "state": "AL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 260
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "http://www.siliconranch.com/Stockton/",
+        "label": "Stockton Solar Farm",
+        "publisher": "Silicon Ranch Corporation",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.fox10tv.com/2026/02/05/solar-farm-approved-north-baldwin-county-power-meta-data-center/",
+        "label": "Solar farm approved for north Baldwin County to power Meta data center",
+        "publisher": "FOX10 News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "investmentUsd": 350000000,
+    "landAcres": 4500,
+    "community": {
+      "status": "contested",
+      "notes": "Approved by the Alabama Public Service Commission at its Nov. 12, 2025 meeting over opposition from Stockton-area residents citing environmental and land-use concerns in the rural, unincorporated area. The solar footprint covers about 2,000 of the 4,500 acres purchased; Silicon Ranch states roughly 2,500 acres will remain in long-term conservation."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "notes": "Two phases on one Stockton I-65 LLC tract: Stockton I (80 MWac) and Stockton II (180 MWac). Silicon Ranch will own, build and operate the project for a stated 40-year life; Alabama Power purchases the output under a 20-year agreement, with Meta funding the arrangement to supply its Montgomery-area AI data center. Solar modules are First Solar, made at a Lawrence County, Alabama plant. Construction is slated to begin in 2027."
+    }
+  },
+  {
+    "id": "simple-helix-huntsville-al",
+    "name": "Simple Helix Data Center",
+    "operator": "Simple Helix, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.744816340398,
+      "lon": -86.691765682048,
+      "city": "Huntsville",
+      "county": "Madison",
+      "street": "165 W Park Loop NW",
+      "state": "AL",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://prnewswire.com/news-releases/simple-helix-announces-opening-of-new-tier-iii-data-center-in-huntsville-alabama-300488165.html",
+        "label": "Simple Helix Announces Opening of New Tier III Data Center in Huntsville, Alabama",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Privately held Huntsville colocation operator (founded 2008); this Tier III facility opened July 14, 2017 with 1.1MW of power capacity across two independent, redundant data halls, sited outside the 100-year flood zone, serving enterprise, government and DoD-contractor tenants (colocation, web hosting, DR, managed cloud/IT). A third-party listing found this session (not independently verified/fetched) cites a higher current capacity, plausibly reflecting expansion since 2017 -- only the operator's own opening-day figure is recorded here, so capacityMw is omitted rather than guessed.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator's 2017 opening release describes 'custom-engineered closed-loop chiller systems.'"
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "simple-mining-cascade-ia",
@@ -84945,6 +86516,64 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "starwood-tamarack-west-columbia-mason-wv",
+    "name": "Project Tamarack",
+    "operator": "Starwood Digital Ventures",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.9831343,
+      "lon": -82.0634753,
+      "city": "West Columbia",
+      "county": "Mason",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2160
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.wdtv.com/2026/09/03/starwood-digital-ventures-announces-data-center-mason-county/",
+        "label": "Starwood Digital Ventures announces data center for Mason County",
+        "publisher": "WDTV",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wsaz.com/2026/09/04/total-shocker-residents-react-second-data-center-coming-mason-county/",
+        "label": "'Total shocker': Residents react to second data center coming to Mason County",
+        "publisher": "WSAZ",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Announced 2026-09-03 by Gov. Morrisey as a separate, distinct project from Nscale's Monarch Compute Campus (also Mason County, ~20 min drive south near Point Pleasant). Governor's office figure of 'approximately 2.16 gigawatts' converted directly to MW (2,160) -- exact stated figure, not a rounded estimate. Project details at projecttamarack.com (not independently fetched this run).",
+    "energy": {
+      "source": "grid",
+      "utility": "Appalachian Power",
+      "notes": "Reported to use existing Appalachian Power grid infrastructure rather than dedicated on-site generation, unlike the nearby Nscale/Monarch project."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer describes a closed-loop cooling system intended to limit water consumption."
+    },
+    "investmentUsd": 12000000000,
+    "jobs": {
+      "construction": 1000,
+      "permanent": 300,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Announced 2026-09-03 as a High Impact Data Center certification, ~10 miles from Nscale's existing Monarch project. Local advocacy group Mason County United (Elaine Matheny): 'It was a total, total shocker' -- 'we never dreamed that one would already have the [High-Impact Data Center] designation' before the public knew. Resident Sandra Kapp welcomed the growth/income but said 'I don't know what the adverse effects of that's going to be down the road for our children'; resident Jacob Hatcher was more concerned about land loss than the jobs tradeoff. The Mason County Commission sent a letter requesting amendments to HB 2014 to allow greater local control over data-center siting. No vote, formal hearing, or litigation documented as of 2026-09-04, so classified mixed rather than contested.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "state-of-ohio-computer-center-columbus-oh",
     "name": "State of Ohio Computer Center (SOCC)",
     "operator": "State of Ohio",
@@ -85013,6 +86642,36 @@
       "technology": "battery",
       "notes": "EIA-860M's July 2026 planned inventory lists generator SFES at 50 MW nameplate, technology \"Batteries,\" with a December 2026 planned operation date and status \"(V) Under construction, more than 50 percent complete.\" The site shares a name with the existing Steele Flats Wind Energy Center in Jefferson and Gage counties."
     }
+  },
+  {
+    "id": "stem-practice-sycamore-view-memphis-tn",
+    "name": "The STEM Practice Sycamore View AI Data Center",
+    "operator": "Golden Acquisitions / The STEM Practice",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.161633,
+      "lon": -89.85969,
+      "city": "Memphis",
+      "county": "Shelby",
+      "street": "1341 Sycamore View Road",
+      "state": "TN",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.actionnews5.com/2026/01/14/another-ai-data-center-coming-memphis-sources-say/",
+        "label": "Another AI data center coming to Memphis, sources say",
+        "publisher": "Action News 5 (WMC)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Reported 2026-01-13: 'Nate Golden of Golden Acquisitions' is purchasing the building at 1341 Sycamore View and working with The STEM Practice, described as 'a tech company that works with Oracle,' to build a modular AI data center ('will be modular instead' of a hyperscale build like xAI's Colossus). Timeline per the source: 'the plan is to have part of the data center running by May 1.' A secondary aggregator (datacentermap.com, rate-limited/not independently fetched this run) reports ~9MW at full build-out, 38,500 sq ft across a 4-story redevelopment on a 1.5-acre parcel, and states this is one of four planned STEM Practice sites in Tennessee -- those figures and the multi-site claim are omitted pending a directly-fetched primary source. Coordinates are an OSM-mapped building way at the exact street address.",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "stillwater-lovejoy-panhandle-road-clayton-ga",
@@ -88812,6 +90471,71 @@
     "facilityType": "data_center"
   },
   {
+    "id": "telehouse-chelsea-manhattan-ny",
+    "name": "Telehouse New York Chelsea (85 10th Avenue)",
+    "operator": "Telehouse America (KDDI)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.743446,
+      "lon": -74.00734,
+      "city": "New York",
+      "county": "New York",
+      "street": "85 10th Avenue",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/telehouse-chelsea-center-85-10th-avenue",
+        "label": "Telehouse Chelsea Center (85 10th Avenue) Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Telehouse leases and operates carrier-neutral colocation space within an 11-story, 635,000 sq ft former Nabisco factory building (owned by Related Companies and Vornado Realty Trust) on the border of West Chelsea and the Meatpacking District; PUE reported as 1.69. Acquired by Telehouse in 2011 (previously a Lehman Brothers data center). Distinct building and operator from the existing 32 Avenue of the Americas, 60 Hudson Street, and 325 Hudson Street carrier-hotel records already in the dataset. No capacity in MW, investment, or AI-use figure found as of 2026-09-13, omitted rather than guessed. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed floor footprint), hence approximate precision. aiClassification omitted -- general-purpose carrier-neutral colocation, no AI/GPU capacity confirmed at this specific site.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "telehouse-staten-island-ny",
+    "name": "Telehouse New York (Staten Island Teleport)",
+    "operator": "Telehouse America (KDDI)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.606205,
+      "lon": -74.171125,
+      "city": "Staten Island",
+      "county": "Richmond",
+      "street": "7 Teleport Drive",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/7-teleport-drive-staten-island/telehouse/datacenter/telehouse-new-york-teleport",
+        "label": "Telehouse New York Teleport building profile",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.telehouse.com/2016/06/07/benefits-colocation-staten-island/",
+        "label": "Surprising Benefits to Colocation on Staten Island",
+        "publisher": "Telehouse",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Carrier-neutral colocation data center within the Staten Island Teleport, a ~100-acre office park (440 acres total) operated by the Port Authority of NY/NJ; construction began 1989. Facility carries dual utility feeds (Con Edison and PSE&G). Not previously in the dataset's NY carrier-hotel coverage (existing records are Manhattan-only: 32 Avenue of the Americas, 60 Hudson Street, 325 Hudson Street, JFK10). No capacity, investment, or AI-use figures found as of 2026-09-13; coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed parcel/building footprint), hence approximate precision.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "tenaska-lindsay-hill-billingsley-al",
     "name": "Lindsay Hill Generating Station",
     "operator": "Alabama Power",
@@ -88929,6 +90653,42 @@
       ],
       "notes": "Privately built plant intended to serve the proposed Google campus, with excess sold back to the local public power district. Timeline: online as soon as 2029."
     }
+  },
+  {
+    "id": "tenhats-fort-summit-knoxville-tn",
+    "name": "The Fort (TenHats Knoxville Data Center)",
+    "operator": "TenHats (formerly SH Data Technologies)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.9704933,
+      "lon": -83.9184704,
+      "city": "Knoxville",
+      "county": "Knox",
+      "street": "550 Fort Summit Way",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.teknovation.biz/sh-data-technologies-rebrands-as-tenhats/",
+        "label": "SH Data Technologies rebrands as TenHats",
+        "publisher": "Teknovation.biz",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.tenhats.com/",
+        "label": "TenHats",
+        "publisher": "TenHats",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Carrier-neutral colocation facility branded 'The Fort,' originally built out by SH Data Technologies at the former Fort Hill building (901 E Summit Hill Ave, per secondary sources not independently fetched this run) after a 2014 purchase, then relocated/rebranded as TenHats at '550 Fort Summit Way, near Knoxville's Old City' (Teknovation.biz, 2022-02-01 -- confirmed again on tenhats.com's own site, which lists '550 Fort Summit Way, Knoxville, TN 37915'). Never previously in the dataset. COORDINATE CAVEAT: neither the US Census geocoder nor OSM Nominatim could resolve '550 Fort Summit Way' (zero matches, tried with and without zip, plus a structured query) -- the street appears to postdate both services' address indexes. This pin is the OSM 'Old City' quarter centroid (a landmark disclosed in the sources as the facility's location), not the parcel; precision is explicitly 'approximate' for that reason despite a street address being on file. A city-wide one-year moratorium on new data-center permits (Knoxville City Council, reported by WATE) postdates this facility's 2014 origin and does not apply retroactively to it; not modeled as a community-status entry here because no source fetched this run ties it specifically to this site. Capacity/MW not found in any source fetched this run -- a third-party aggregator (baxtel.com) surfaced but is unconfirmed and omitted.",
+    "facilityType": "data_center"
   },
   {
     "id": "tenkey-franklin-ky",
@@ -90705,6 +92465,42 @@
     "facilityType": "data_center"
   },
   {
+    "id": "tierpoint-jacksonville-fl",
+    "name": "TierPoint Jacksonville Data Center",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.220681,
+      "lon": -81.585108,
+      "city": "Jacksonville",
+      "county": "Duval",
+      "street": "8324 Baymeadows Way",
+      "state": "FL",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/florida/jacksonville/",
+        "label": "Jacksonville Data Center | TierPoint",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=8324%20Baymeadows%20Way%2C%20Jacksonville%2C%20FL%2032256&benchmark=Public_AR_Current&format=json",
+        "label": "US Census Geocoder match for 8324 Baymeadows Way, Jacksonville, FL 32256",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Colocation facility, 120,000+ sq ft total / 17,000+ sq ft raised floor. Two 2 MW redundant generators (48hr runtime) stated on operator site, but this describes backup generation, not confirmed site operational load, so capacityMw omitted rather than guessed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "tierpoint-kansas-city-lenexa-ks",
     "name": "TierPoint Kansas City - Lenexa",
     "operator": "TierPoint",
@@ -91068,6 +92864,41 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "tierpoint-russell-street-baltimore-md",
+    "name": "TierPoint Baltimore (Russell Street)",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.275776951529,
+      "lon": -76.625636130534,
+      "city": "Baltimore",
+      "street": "1401 Russell Street",
+      "state": "MD",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/maryland/",
+        "label": "Maryland Data Centers | TierPoint",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://business.maryland.gov/news/tierpoint-expands-to-second-maryland-facility",
+        "label": "TierPoint Expands to Second Maryland Facility",
+        "publisher": "Maryland Department of Commerce",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Coordinates confirmed via US Census geocoder (exact match on 1401 Russell St, Baltimore, MD 21230). This is a DISTINCT TierPoint facility from the existing tierpoint-baltimore-bwi-md record (813 Pinnacle Drive, Linthicum Heights) -- the Maryland Department of Commerce's own release on the Linthicum Heights opening explicitly frames it as TierPoint's 'second Maryland facility,' confirming this Baltimore City site as the first/other one. TierPoint's own site states 28,000+ total sq ft (14,000+ sq ft raised floor) and 'two 1.5 MW redundant generators with a minimum of 48 hours runtime'; capacityMw omitted because that figure describes backup generator/runtime capacity, not a stated IT load or site power total. aiClassification omitted: no source names AI/GPU/HPC use at this site.",
+    "facilityType": "data_center"
   },
   {
     "id": "tierpoint-sioux-falls-west-sd",
@@ -93899,6 +95730,42 @@
     "facilityType": "data_center"
   },
   {
+    "id": "vantage-co21-aurora-co",
+    "name": "Vantage Data Centers CO21 Campus (Building 3)",
+    "operator": "Vantage Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.7837993,
+      "lon": -104.7259922,
+      "city": "Aurora",
+      "county": "Adams",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/vantage-colorado-co21",
+        "label": "Vantage: Colorado CO21 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/vantage-data-centers/48th-avenue-and-e-470/co21-building-3",
+        "label": "Vantage Data Centers CO21 (Building 3) | 48th Avenue and E-470, Denver",
+        "publisher": "DataCenterHawk",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Vantage owns a 143-acre site near 48th Avenue & E-470 in Aurora (Adams County) for a planned five-building CO21 campus. Per two independent data-center industry trade directories (Baxtel, DataCenterHawk) as of 2026-09-13, this building 'has not yet been commissioned or leased,' target completion year 2028, no power currently under construction. NOT listed on Vantage's own public data-center-locations page as checked directly on 2026-09-13 (vantage-dc.com/data-center-locations/) — treat as an early-stage land hold rather than a confirmed active build. Coordinates are an approximate geocode of the '48th Avenue and E-470' road intersection (Nominatim), not a parcel address.",
+    "landAcres": 143,
+    "facilityType": "data_center"
+  },
+  {
     "id": "vantage-douglasville-campus-ga",
     "name": "Vantage Data Centers Douglasville Campus",
     "operator": "Vantage Data Centers",
@@ -95482,6 +97349,56 @@
     "facilityType": "data_center"
   },
   {
+    "id": "volt-edge-project-alpaca-union-county-sc",
+    "name": "Project Alpaca (Midway Green Industrial Park)",
+    "operator": "Volt Edge Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.708932747649,
+      "lon": -81.662386821414,
+      "city": "Union",
+      "county": "Union",
+      "street": "265 Midway Drive",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 49
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.foxcarolina.com/2026/05/05/union-county-data-center-tax-breaks-tabled-by-county-council/",
+        "label": "Union County tables tax breaks for $400M data center | Project Alpaca",
+        "publisher": "Fox Carolina",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://uniondevelopmentboard.com/union-midway-industrial-park/",
+        "label": "Midway Green Industrial Park",
+        "publisher": "Union County Development Board",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Site address per the Union County Development Board's own park page is 265 Midway Drive, Union, SC 29379 (a secondary source gave 260 Midway Drive; the two geocode ~40m apart, consistent with the same industrial park). Coordinates geocoded from that street address via the US Census geocoder — not stated as facility coordinates by any source, and the industrial park spans multiple parcels so the specific building footprint is unconfirmed. No source names an AI-specific workload for this site, so aiClassification is omitted.",
+    "investmentUsd": 410000000,
+    "jobs": {
+      "construction": 500,
+      "permanent": 50,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Union County Council tabled the first reading of the FILOT ordinance for Project Alpaca on 2026-04-28 and cancelled a May 12, 2026 public hearing after resident concerns raised at a community listening session; council said the project would need to be reintroduced, with a public information forum required before any further tax-agreement decision.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "voltagrid-covington-power-plant-ga",
     "name": "VoltaGrid Covington Power Plant (Hazelbrand Road)",
     "operator": "VoltaGrid",
@@ -95805,6 +97722,42 @@
       "notes": "Two lawsuits were filed in Spalding County Superior Court against the Board of Commissioners' Jan. 22, 2026 approval, alleging the county ignored its own procedural requirements and data center rules and seeking to have the zoning decision vacated.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "walmart-bentonville-data-center-ar",
+    "name": "Walmart Bentonville Data Center",
+    "operator": "Walmart",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.363598477537,
+      "lon": -94.183277242948,
+      "city": "Bentonville",
+      "county": "Benton",
+      "street": "805 SE Moberly Ln",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.interconnection.fyi/data-center/project/walmart-bd0fb0db",
+        "label": "Walmart Data Center in Benton County, AR (10-25 MW) — Interconnection.fyi Data Center Tracker",
+        "publisher": "Interconnection.fyi (GridTracker)",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenter.fyi/facility/walmart-ar-ae65a04c",
+        "label": "Walmart — Bentonville, AR",
+        "publisher": "datacenter.fyi",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Address (805 SE Moberly Ln, Bentonville, Benton County) and operational status corroborated independently by two aggregator databases (interconnection.fyi/GridTracker and datacenter.fyi). Coordinates are the US Census geocode of that street address, retrieved 2026-09-13. capacityMw omitted: the two aggregators give inconsistent figures (10-25 MW vs 12.884 MW), and datacenter.fyi's page additionally states the site 'connects to the El Paso Electric power grid' -- El Paso Electric serves only West Texas and southern New Mexico and has no Arkansas service territory, indicating a data-quality/auto-generation error in that source. No primary press release, permit filing, or PSC docket naming this specific site was found as of 2026-09-13; precision set to approximate because the exact building/data-hall footprint within Walmart's Bentonville technology campus was not confirmed.",
     "facilityType": "data_center"
   },
   {
@@ -96346,6 +98299,62 @@
     "notes": "Digital Realty holds ~98% ownership and manages/operates the facility (internally referenced as SEA10 per PeeringDB); the westinbldg.com site itself could not be reached in this session (connection error), so corroborated via DCD/PRNewswire/DataCenterKnowledge reporting instead.",
     "energy": {
       "utility": "Seattle City Light"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "wf-industrial-yaphank-ny",
+    "name": "Brookhaven Digital Infrastructure Facility (WF Industrial / Wildflower, Yaphank)",
+    "operator": "WF Industrial (Wildflower)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.832188,
+      "lon": -72.929969,
+      "city": "Yaphank",
+      "county": "Suffolk",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 176.6
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07",
+        "note": "Facing both a proposed 18-month Town of Brookhaven moratorium and a statewide NY moratorium on hyperscale (50MW+) data centers; developer states the project is still moving ahead.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.longislandpress.com/2026/07/15/moratorium-data-centers-state/",
+        "label": "The debate about data centers as state leaders place moratorium",
+        "publisher": "Long Island Press",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://longisland.news12.com/2026/06/26/proposed-ai-data-center-in-yaphank-meets-opposition-from-residents-and-town-leaders/4dG9mouCvXwvgvC6Mjsvkr",
+        "label": "Proposed AI data center in Yaphank meets opposition from residents and town leaders",
+        "publisher": "News 12 Long Island",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "No confirmed street address found as of 2026-09-13 -- sources describe the parcel only as 'west of Sills Road, north side of the LIE North Service Road' in Yaphank. Coordinates are the Yaphank hamlet centroid (OSM Nominatim), NOT the parcel -- disclosed here per contract rule H; do not treat as parcel-level precision.",
+    "investmentUsd": 1000000000,
+    "landAcres": 71,
+    "jobs": {
+      "construction": 1000,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Sits on a 71-acre site holding three existing empty warehouses, west of Sills Road on the north side of the LIE North Service Road, ~1,000 feet from a residential neighborhood. Brookhaven Town Supervisor Dan Panico proposed an 18-month town moratorium on data centers (expected to pass unanimously per a town spokesperson, reported 2026-07); other Suffolk town supervisors reportedly support it. New York State separately imposed a moratorium on new hyperscale (50MW+) data centers in 2026 that also covers this 176.6MW project. Residents cited electricity, water, and noise concerns. Developer (Michael Bowden, WF Industrial director of development) said as of 2026-06 the project was 'still moving ahead' and called the moratorium 'not necessary.' Project is projected to generate an estimated $40M/year in tax revenue for the Longwood School District per developer claims (not independently verified here).",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -97474,6 +99483,88 @@
         "asOf": "2026-08-26"
       }
     ],
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "xai-macrohardrr-southaven-ms",
+    "name": "MACROHARDRR (xAI Southaven Data Center III)",
+    "operator": "xAI",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.991886,
+      "lon": -90.034358,
+      "city": "Southaven",
+      "county": "DeSoto",
+      "street": "2400 Stateline Road West",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01-08",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://governorreeves.ms.gov/tech-leader-xai-investing-more-than-20-billion-in-southaven/",
+        "label": "Tech leader xAI investing more than $20 billion in Southaven",
+        "publisher": "Office of Governor Tate Reeves",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.desototimes.com/news/xai-buys-building-and-additional-land-in-southaven-for-data-center/article_99b4eb95-e5b1-4cd0-8f36-9ab0021b9cb5.html",
+        "label": "xAI buys building and additional land in Southaven for data center",
+        "publisher": "DeSoto Times",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/xai-macrohardrr",
+        "label": "xAI: MACROHARDRR Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "xAI's third Southaven/DeSoto County site, distinct from the existing dataset records for 'Colossus' (xai-southaven-ms, the data center at the former Electrolux plant) and 'Colossus 2' (xai-colossus-2-power-station-southaven-ms, the power station). MACROHARDRR retrofits an 810,000 sq ft former warehouse at 2400 Stateline Road West. Elon Musk announced the building purchase via X on 2025-12-30; Gov. Tate Reeves' office announced the '>$20 billion' investment and 'hundreds of permanent jobs throughout DeSoto County' on 2026-01-08, citing Mississippi's Data Center Incentive Program (sales/use tax exemptions on computing equipment and software) plus City of Southaven and DeSoto County fee-in-lieu agreements. xAI separately purchased two adjacent parcels (47 and 58 acres) near its power plant at 2875 Stanton Road; that acreage is not clearly attributable to this building's own site, so landAcres is omitted here rather than guessed. Musk's public claim that MACROHARDRR takes combined xAI Memphis-area training compute to '~2GW' describes the whole multi-site cluster, not this building's own capacity, so capacityMw is also omitted. Operational status is per Baxtel (aggregator, retrieved 2026-09-13); not yet independently corroborated by an xAI or Mississippi state press release stating a completion date, though a February 2026 operational target was reported at announcement.",
+    "investmentUsd": 20000000000,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "xai-minihard-memphis-tn",
+    "name": "Minihard",
+    "operator": "xAI",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.9994934,
+      "lon": -90.0429461,
+      "city": "Memphis",
+      "county": "Shelby",
+      "street": "5414 Tulane Road",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Colossus_(data_center)",
+        "label": "Colossus (data center) - Wikipedia",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/xai-colossus-2-bldg1",
+        "label": "xAI: Colossus 2 Bldg1 Data Center - Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Checked against existing-TN.txt before finishing: this is NOT a renamed/duplicate variant of xai-colossus-2-memphis-tn. That record is the original ~1M sq ft converted warehouse purchase (Whitehaven, operational per the existing roster). Minihard is a separate, NEW-CONSTRUCTION building on the same broader Tulane Road campus -- Baxtel (fetched) explicitly distinguishes the 'existing warehouse' (Colossus 2) from 'an additional planned facility' under 'a $659 million building permit for a new 312,000-square-foot facility,' and Wikipedia (fetched) independently names it 'a denser Minihard building under construction at ~5414 Tulane Road,' as distinct from both Colossus 2 and from the Southaven, MS 'Macrohardrr' site (out of state, excluded). Status also differs: Colossus 2 is operational; Minihard is under_construction. Press reporting (not independently fetched this run) puts the building at 4 stories / 75 ft on a 79-acre permit parcel with ~220,000 GB300 GPUs; those figures are omitted pending a directly-fetched primary source. Coordinates are an OSM ADDRESS POINT for 5414 Tulane Road (Nominatim returns category=place / type=house at 34.9994934,-90.0429461), NOT a mapped building footprint -- corrected 2026-09-13 after an earlier note in this record overclaimed it as a building way. precision is therefore approximate, not exact: the point locates the street address, not this building. Note the sibling record xai-colossus-2-memphis-tn carries the same class of address-point pin ~20m away, which is why the two appear near-identical; a separate review found an OSM building way tagged for Colossus 2 some 760m from that pin, so the campus buildings are NOT where either address point sits.",
+    "investmentUsd": 659000000,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
