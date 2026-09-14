@@ -15258,13 +15258,6 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-04",
         "kind": "other"
-      },
-      {
-        "url": "https://www.interconnection.fyi/project/spp-gen-2017-105",
-        "label": "SPP interconnection queue GEN-2017-105 — Tekamah–Raun 161 kV Line, Burt County, NE",
-        "publisher": "interconnection.fyi (Southwest Power Pool queue data)",
-        "retrievedAt": "2026-09-04",
-        "kind": "iso_queue"
       }
     ],
     "lastUpdated": "2026-09-04",
@@ -35593,13 +35586,6 @@
     "statusHistory": [],
     "sources": [
       {
-        "url": "https://www.interconnection.fyi/eia/plant/69990",
-        "label": "Bogalusa West Solar Station — Washington, LA — planned power plant (EIA-derived record)",
-        "publisher": "interconnection.fyi",
-        "retrievedAt": "2026-08-26",
-        "kind": "iso_queue"
-      },
-      {
         "url": "https://lpscpubvalence.lpsc.louisiana.gov/portal/PSC/ViewFile?fileId=kt5JixLAYFY%3D",
         "label": "Direct Testimony of Laura K. Beauchamp, Entergy Louisiana (Project Evest), March 2026 — 200 MW storage co-located at ELL's Bogalusa West Solar Facility 'which is under construction'",
         "publisher": "Louisiana Public Service Commission",
@@ -51293,13 +51279,6 @@
         "publisher": "Texas Tribune",
         "retrievedAt": "2026-07-07",
         "kind": "other"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/project/iren-sweetwater-1-8d9cdcbd",
-        "label": "IREN Sweetwater 1 — interconnection queue record",
-        "publisher": "Interconnection.fyi",
-        "retrievedAt": "2026-07-07",
-        "kind": "iso_queue"
       }
     ],
     "lastUpdated": "2026-07-25",
@@ -52267,13 +52246,6 @@
         "url": "https://its.tech/about/data-center/",
         "label": "Our Iowa Data Center — SOC 2 Certified Facility",
         "publisher": "Infrastructure Technology Solutions (ITS)",
-        "retrievedAt": "2026-09-04",
-        "kind": "other"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/state/IA",
-        "label": "Iowa data center records (ITS, Jones County, operational, under 10 MW)",
-        "publisher": "Interconnection.fyi",
         "retrievedAt": "2026-09-04",
         "kind": "other"
       }
@@ -60706,13 +60678,6 @@
         "kind": "other"
       },
       {
-        "url": "https://www.interconnection.fyi/data-center/project/microsoft-gainesville-data-center-mnz03-9f2b78f4",
-        "label": "Microsoft Gainesville/Bristow Data Center MNZ03 — interconnection.fyi",
-        "publisher": "interconnection.fyi",
-        "retrievedAt": "2026-07-06",
-        "kind": "other"
-      },
-      {
         "url": "https://www.microsoft.com/en-us/microsoft-cloud/blog/2024/07/25/sustainable-by-design-transforming-datacenter-water-efficiency/",
         "label": "Sustainable by design: Transforming datacenter water efficiency — Microsoft",
         "publisher": "Microsoft",
@@ -60741,7 +60706,7 @@
     "community": {
       "status": "mixed",
       "notes": "MNZ03 was built by-right on the former Atlantic Research rocket-testing site (existing heavy-industrial zoning within the county's data-center overlay), so it required no rezoning and faced no site-specific hearing. But it sits at the epicenter of Prince William County's data-center opposition — supervisors denied a nearby data center 4–2 in Sept 2025, residents sued over an adjacent rezoning, and the county is moving to end the overlay district. Microsoft is eligible for Virginia's data-center sales-and-use tax exemption, but state law bars disclosure of recipients and amounts.",
-      "sourceIndex": 4
+      "sourceIndex": 3
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
@@ -81871,13 +81836,6 @@
         "publisher": "Area Development",
         "retrievedAt": "2026-08-02",
         "kind": "press"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/project/scalematrix-5103cd17",
-        "label": "ScaleMatrix San Diego - interconnection/capacity cross-check",
-        "publisher": "Interconnection.fyi / GridTracker",
-        "retrievedAt": "2026-08-02",
-        "kind": "iso_queue"
       },
       {
         "url": "https://opengovwa.com/corporation/604264407",

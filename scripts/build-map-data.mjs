@@ -442,6 +442,12 @@ const ISLAND_GRID_BBOX = {
  * parts. `regionBBox`, when given, additionally requires the candidate to lie
  * within that region — see ISLAND_GRID_BBOX for why distance alone is not a
  * sufficient test for an island record.
+ *
+ * `regionBBox` is annotated explicitly: without it TypeScript infers the
+ * parameter as `null | undefined` from the default alone and every real
+ * caller fails to typecheck.
+ *
+ * @param {number[]|null} [regionBBox]
  */
 function nearestFromCandidates(pt, candidates, searchBBox, capMiles, regionBBox = null) {
   let best = null;

@@ -189,8 +189,9 @@ describe("island-grid reachability guard", () => {
       MP: [145.75, 15.19], // Saipan
       HI: [-157.86, 21.31], // Honolulu
     };
+    const boxes = ISLAND_GRID_BBOX as Record<string, number[]>;
     for (const [code, [lon, lat]] of Object.entries(inside)) {
-      const [minX, minY, maxX, maxY] = ISLAND_GRID_BBOX[code];
+      const [minX, minY, maxX, maxY] = boxes[code];
       expect(
         lon >= minX && lon <= maxX && lat >= minY && lat <= maxY,
         `${code} box must contain ${lon},${lat}`,
