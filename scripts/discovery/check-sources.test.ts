@@ -174,6 +174,66 @@ describe("checkSources", () => {
     expect(results[0].httpStatus).toBe(200);
   });
 
+  it("falls back to GET when HEAD 404s, and trusts the GET result", async () => {
+    // Regression: measured 2026-09-14, 24 of 59 live-dataset URLs reported
+    // `gone` answered 404 to HEAD and 200 to GET (deq.virginia.gov,
+    // constellationenergy.com, civicplus DocumentCenter hosts). Believing the
+    // HEAD status made ~41% of this tool's headline number wrong.
+    const calls: string[] = [];
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, init) => {
+      const method = init?.method ?? "GET";
+      calls.push(method);
+      if (method === "HEAD") {
+        return { ok: false, status: 404 } as Response;
+      }
+      return { ok: true, status: 200 } as Response;
+    });
+    const deps = baseDeps({ fetchImpl });
+    const results = await checkSources([makeFacility()], deps);
+    expect(calls).toEqual(["HEAD", "GET"]);
+    expect(results[0].classification).toBe("ok");
+    expect(results[0].httpStatus).toBe(200);
+  });
+
+  it("still reports gone when BOTH HEAD and GET 404", async () => {
+    const calls: string[] = [];
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, init) => {
+      calls.push(init?.method ?? "GET");
+      return { ok: false, status: 404 } as Response;
+    });
+    const deps = baseDeps({ fetchImpl });
+    const results = await checkSources([makeFacility()], deps);
+    expect(calls).toEqual(["HEAD", "GET"]);
+    expect(results[0].classification).toBe("gone");
+    expect(results[0].httpStatus).toBe(404);
+  });
+
+  it("falls back to GET when HEAD is bot-blocked with 403", async () => {
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, init) => {
+      if ((init?.method ?? "GET") === "HEAD") {
+        return { ok: false, status: 403 } as Response;
+      }
+      return { ok: true, status: 200 } as Response;
+    });
+    const deps = baseDeps({ fetchImpl });
+    const results = await checkSources([makeFacility()], deps);
+    expect(results[0].classification).toBe("ok");
+  });
+
+  it("does NOT re-fetch a redirect with GET", async () => {
+    // A 3xx is an answer, not a HEAD refusal — re-fetching would both waste a
+    // request and destroy the `redirected` classification.
+    const calls: string[] = [];
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, init) => {
+      calls.push(init?.method ?? "GET");
+      return { ok: false, status: 301 } as Response;
+    });
+    const deps = baseDeps({ fetchImpl });
+    const results = await checkSources([makeFacility()], deps);
+    expect(calls).toEqual(["HEAD"]);
+    expect(results[0].classification).toBe("redirected");
+  });
+
   it("dispatches requests with a browser-like User-Agent header", async () => {
     const fetchImpl = vi.fn<typeof fetch>(async () => ({ ok: true, status: 200 }) as Response);
     const deps = baseDeps({ fetchImpl });

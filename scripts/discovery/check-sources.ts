@@ -89,6 +89,31 @@ function classifyStatus(status: number): SourceClassification {
   return "client_error";
 }
 
+/**
+ * Whether a HEAD response warrants a second attempt with GET. Many CDNs and
+ * municipal document servers answer HEAD with 404/403 while serving the very
+ * same URL fine on GET — measured 2026-09-14 across the live dataset, 24 of
+ * the 59 URLs this checker classified `gone` from a HEAD 404 returned 200 to
+ * GET (all 8 deq.virginia.gov permits and all 4 constellationenergy.com press
+ * releases among them, 3 of those the record's only primary source). Treating
+ * a HEAD status as final is therefore a ~41% false-positive rate on the one
+ * number this tool exists to report.
+ *
+ * Redirects keep their own `redirected` classification and must NOT be
+ * re-fetched, and 429/5xx have a dedicated backoff-retry path below that owns
+ * them — so neither falls through to GET here.
+ */
+function shouldFallBackToGet(status: number): boolean {
+  // HEAD explicitly unsupported — the original, narrower trigger.
+  if (status === 405 || status === 501) return true;
+  // 2xx/3xx are answers in their own right.
+  if (status >= 200 && status < 400) return false;
+  // Transient; the retry loop re-attempts these with backoff.
+  if (status === 429 || status >= 500) return false;
+  // Any other 4xx may be a HEAD-only refusal — verify with a real GET.
+  return true;
+}
+
 async function probeUrl(
   url: string,
   fetchImpl: typeof fetch,
@@ -108,9 +133,9 @@ async function probeUrl(
 
   try {
     let res = await attempt("HEAD");
-    // Some servers reject HEAD (405/501) or otherwise behave oddly — retry
-    // with GET as a fallback. Never read the body either way.
-    if (!res.ok && (res.status === 405 || res.status === 501)) {
+    // Some servers reject or misreport HEAD — verify with GET before
+    // believing a failure. Never read the body either way.
+    if (shouldFallBackToGet(res.status)) {
       res = await attempt("GET");
     }
 
@@ -127,7 +152,7 @@ async function probeUrl(
       }
       retries++;
       res = await attempt("HEAD");
-      if (!res.ok && (res.status === 405 || res.status === 501)) {
+      if (shouldFallBackToGet(res.status)) {
         res = await attempt("GET");
       }
     }
