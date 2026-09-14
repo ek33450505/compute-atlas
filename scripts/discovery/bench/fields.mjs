@@ -25,6 +25,7 @@ export const FIELD_KINDS = {
   energyUtility: KIND.TEXT,
   aiClassification: KIND.ENUM,
   aiClassificationStated: KIND.ENUM,
+  aiClassificationConfirmed: KIND.ENUM,
 };
 
 /** kind for a field, defaulting to NUMERIC for anything undeclared -- keeps
@@ -63,6 +64,19 @@ export const FIELD_ENUM_VALUES = {
   energySource: ["grid", "on_site_gas", "nuclear", "solar", "wind", "hydro", "mixed", "other"],
   aiClassification: ["confirmed", "likely", "mixed_use"],
   aiClassificationStated: ["confirmed", "mixed_use"],
+  // The ONE-value variant. Same task again, vocabulary narrowed to a single
+  // member, to test whether the two-value run's "confirmed answered 14 times,
+  // right 14 times" survives the removal of the tier that was absorbing the
+  // marketing pages. That section of the README warns in as many words that it
+  // must not be assumed to.
+  // A one-member enum is not a degenerate case to optimise away: `confirmed`
+  // vs abstain is a real binary task, and the vocabulary machinery
+  // (isInVocabulary, normalizeEnum) is what keeps its scoring identical to the
+  // other two runs rather than a second scoring path that could differ.
+  // ⛔ BENCH INSTRUMENT ONLY, like aiClassificationStated. lib/schema.ts's
+  // aiClassificationEnum still has three members and is unchanged; nothing may
+  // write this to a facility.
+  aiClassificationConfirmed: ["confirmed"],
 };
 
 export function isInVocabulary(normalizedValue, vocabulary) {

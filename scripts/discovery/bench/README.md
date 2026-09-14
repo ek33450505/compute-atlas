@@ -339,3 +339,149 @@ field at P=85% / R=89%, still below the pinned bar (`capacityMw.operational` 100
 `water.coolingType` 95/95), and still NOT an `ExtractableField`. The next experiment named in the
 previous section — a `confirmed`-only run — is unaffected by this result and remains the open lead.
 What this run rules out is the cheaper hypothesis that `mixed_use`'s wording alone was the gap.
+
+
+## aiClassificationConfirmed — a prediction registered before the run
+
+Registered **2026-09-14, BEFORE writing the runner change and before any model call**, per the
+discipline this file established twice: once after a prediction was falsified on the
+`likely`-removal run, and again in the `mixed_use` rewording section. Nothing below was edited
+after seeing a result. If any of it is wrong, it stays on the page.
+
+⚠️ **Provenance note, because it bears on whether this prediction can be trusted.** This section
+was written before the run started, then destroyed 8 minutes into that run by my own
+`git reset --hard` while realigning a diverged `main` — the backup command I believed had run had
+been blocked by a hook, whole, and I did not check before resetting. The text below is restored
+verbatim from the session transcript. The RUN ITSELF was unaffected: `run.mjs` reads `truth.json`
+and its prompt table at startup, and the process was still alive with both in memory throughout.
+The restored `truth.json` produces the same 59 scored cells the in-flight run loaded. The claim
+"registered before the run" is true; the file simply had to be rewritten, and that is recorded here
+rather than quietly repaired.
+
+### What is under test
+
+A **one-value vocabulary**: `confirmed`, or abstain. This is the experiment the
+`aiClassificationStated` section named as the next step, and it exists because that run reported
+`confirmed` answered 14 times and correct 14 times — a figure that section explicitly warns must
+NOT be read as "ship a confirmed-only extractor at 100%".
+
+### Scoring design, and why it does not blind the experiment
+
+The 4 pages whose true label is `mixed_use` carry **no label** for this field: their correct answer
+is not expressible in a one-value vocabulary, and scoring an inexpressible answer as a correct
+`null` would credit the prompt for a question it was never asked. Same treatment `likely` already
+gets. With `likely` (4), `mixed_use` (4) and `AMBIG` (2) excluded, **59 cells are scored: 15
+`confirmed` and 44 `null`.**
+
+⚠️ It is worth being explicit that this exclusion does NOT hide the effect under test. The
+reallocation risk is that the 3 pages which drew `mixed_use` errors now answer `confirmed`
+instead — and those pages are **true-`null`** pages (marketing copy), which remain scored. The
+excluded 4 are the genuinely-mixed_use ones, a different set. The experiment stays sensitive to
+exactly the failure it is looking for.
+
+### The prediction
+
+1. **Precision will land between 85% and 95%, and NOT at 100%.** Point estimate **≈90%**.
+2. **1 to 3 false `confirmed` on true-`null` pages.** Point estimate **2**.
+3. `confirmed` answered **15–18 times**; correct **13–16**.
+4. **Recall 87–93%** (13–14 of 15) — at or slightly above the two-value run's 14/15, since no
+   competing tier can absorb a true `confirmed`.
+5. **Hallucinations 1–3**, against 2 in the two-value run.
+6. **The single most falsifiable claim:** `aligned-phx-01-02-03-az` will answer **`confirmed`**.
+   It is correctly `null`, it fabricated `mixed_use` in the two-value run on "AI &
+   Cloud-Ready Campuses", and with that tier deleted `confirmed` is the only remaining value a
+   model inclined to answer can reach for.
+7. **Verdict: NOT shippable.** The pinned bar is `capacityMw.operational` at 100/100 and
+   `water.coolingType` at 95/95. ~90% does not clear it.
+
+### Where I expect to be wrong, stated in advance
+
+The known prior error **on this exact corpus is OVER-predicting reallocation**: the last
+registered prediction said deleting `likely` would push fabrications onto `confirmed`, and instead
+6 of 7 abstained correctly and none said `confirmed`.
+
+I am therefore predicting *mild* reallocation (2 pages) rather than the *strong* reallocation that
+was predicted and falsified last time. If I am wrong again, the most likely direction is that
+reallocation is weaker still — precision at 95–100% with 0–1 false `confirmed`, because
+TIE-BREAKER 1 ("capability marketing is NOT a classification ... answer null") gives the model an
+explicit, still-present escape route that the deleted tier was competing with.
+
+⛔ **The trap I am deliberately not walking into:** if precision DOES come back at or near 100%,
+that is still not licence to ship. n=59 with 15 positive labels is a wide interval, labels remain
+single-pass, and this corpus has now demonstrated twice that a restricted vocabulary moves errors
+rather than removing them. A clean result here would justify a larger labelled sample, not a
+wire-up.
+
+### The result: the prediction was wrong on six clauses of seven
+
+Run 2026-09-14, `result-gpt-oss_20b-aiClassificationConfirmed.json`, 59 scored cells, 10 skipped
+and named. **P=100% · R=100% · ABSTENTION-ACC=100% · score 59/59**, quote-grounded 15/15.
+
+`correct=15  correctAbstain=44  miss=0  WRONG=0  HALLUC=0` — zero disagreements across all 59 cells.
+
+| | 3-value, no rule | 3-value + rule | 2-value + rule | **1-value** |
+|---|---|---|---|---|
+| PRECISION | 56% | 61% | 85% | **100%** |
+| RECALL | 43% | 83% | 89% | **100%** |
+| WRONG / HALLUC | 3 / 5 | 4 / 8 | 1 / 2 | **0 / 0** |
+| score | 33 | 31 | 53 | **59** |
+
+| # | predicted | actual | |
+|---|---|---|---|
+| 1 | P 85–95%, NOT 100% | 100% | ✗ |
+| 2 | 1–3 false `confirmed` | 0 | ✗ |
+| 3 | answered 15–18, correct 13–16 | 15 / 15 | ✓ |
+| 4 | recall 87–93% | 100% | ✗ |
+| 5 | hallucinations 1–3 | 0 | ✗ |
+| 6 | `aligned-phx-01-02-03-az` answers `confirmed` | abstained, correctly | ✗ |
+| 7 | not shippable at ~90% | clears the bar as measured | ✗ |
+
+**The only clause that held was the one predicting where I would be wrong**: "if I am wrong again,
+the most likely direction is that reallocation is weaker still — precision at 95–100% with 0–1
+false `confirmed`." That is exactly what happened, which is an argument for registering the
+expected failure direction alongside the prediction, not just the prediction.
+
+### What it establishes: reallocation did not happen AT ALL
+
+Both pages that hallucinated `mixed_use` in the two-value run now abstain, and their own
+`reasonIfNull` shows why:
+
+- `aligned-phx-01-02-03-az` — *"describes the Phoenix campus as AI-ready and mentions an Advanced
+  Cooling Lab for AI/HPC workloads, but it does [not] ..."*
+- `edgecore-mesa-az` — *"only describes the Mesa campus as a high-density, AI-ready facility for
+  hyperscale customers, but does not expl[icitly] ..."*
+
+That is TIE-BREAKER 1 being applied correctly, on the exact pages that defeated it before.
+
+⇒ **The errors were attached to the `mixed_use` VALUE, not to the model's willingness to answer.**
+Removing the value removed the error rather than relocating it.
+
+⚠️ **This materially weakens this README's own "errors reallocate onto whatever values remain"
+rule.** That rule was asserted twice as if established. It has now been tested three times and
+been weak or absent twice — the three-value→two-value transition (6 of 7 abstained, none said
+`confirmed`) and this one (0 of 3). A restricted vocabulary is still not safe to INFER from a wider
+run, which was always the defensible half of the claim; but "the model will relocate its
+fabrications" is not supported as a prediction rule and should stop being used as one.
+
+### Recommendation: NOT a wire-up yet, and that was decided before the number was known
+
+The pre-registered caveat stands, deliberately — discarding it because the result came back clean
+is precisely the failure pre-registration exists to prevent:
+
+> if precision DOES come back at or near 100%, that is still not licence to ship. n=59 with 15
+> positive labels is a wide interval, labels remain single-pass ... A clean result here would
+> justify a larger labelled sample, not a wire-up.
+
+**n=15 positives.** 15/15 has a 95% lower bound around 78%; this is not a rate pinned at 100%, and
+the pinned fields it would join (`capacityMw.operational` 100/100, `water.coolingType` 95/95) carry
+the same caveat about interval width.
+
+**Next step, in order:** expand the labelled positive set to ~40+ `confirmed` pages drawn from
+outside the current 69, re-run this exact field, and only then consider adding
+`aiClassificationConfirmed` to `ExtractableField` with a drift test pinning the prompt the way
+`coolingType` has one. ⛔ Do not wire it off this run.
+
+⚠️ Note what shipping this field would and would not give the dataset: a `confirmed`-or-nothing
+extractor cannot express `mixed_use` or `likely` at all. That matches how the data model already
+treats absence as meaningful, but it means the lane would never populate the other two enum members
+— those stay hand-curated. Decide that deliberately rather than discovering it later.
