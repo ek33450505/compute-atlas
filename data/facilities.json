@@ -256,10 +256,20 @@
         "publisher": "Wikipedia",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/165-halsey-street",
+        "label": "165 Halsey Street Data Center and Carrier Hotel",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-13",
     "notes": "Major carrier-neutral carrier hotel and colocation building in downtown Newark: 1.2M sq ft, 14-story former Bamberger's department store (built 1912-1929) converted to telecom use starting 1996 (retrofit initiated by Samuel Jemal). Over 360,000 sq ft of active colocation space plus roughly 110,000 sq ft available; six meet-me rooms totaling 240,000+ sq ft; 60+ networks with no MRC cross-connect fees; a landing point for the Apollo transatlantic submarine cable system. 80 MW power capacity confirmed independently by both Baxtel and the operator's own site.",
+    "water": {
+      "coolingType": "closed_loop"
+    },
     "facilityType": "data_center"
   },
   {
@@ -1246,10 +1256,20 @@
         "publisher": "Ohio River Valley Institute",
         "retrievedAt": "2026-09-10",
         "kind": "other"
+      },
+      {
+        "url": "https://www.wvhighlands.org/article/despite-public-pushback-west-virginia-approves-air-quality-permits-for-data-center-energy-campus-in-mingo-county/",
+        "label": "Despite public pushback, West Virginia approves air quality permits for data center energy campus in Mingo County",
+        "publisher": "West Virginia Highlands Conservancy",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-13",
     "notes": "Proposed at the former Twisted Gun Golf Course site in Wharncliffe, Mingo County, to be powered exclusively by the co-located off-grid natural-gas plant (facility id adams-fork-wharncliffe-power-plant-mingo-county-wv, WV DEP permit R13-3714, approved October 2, 2025). No data-center-specific capacity, investment, or job figures distinct from the power plant were found in this research pass (2026-09-10); reporting describes the plant and data center as a single 'energy campus' without separately quantifying the data center building. Part of TransGas's larger 'Adams Fork Energy' project alongside a proposed large natural-gas ammonia plant. Confidence set to 'reported' rather than 'confirmed' (maintainer adjudication 2026-09-10): the WV DEP permit numbers and their 2025-10-02 approval are reported consistently by two independent organisations, but the permit documents themselves could not be retrieved this pass (both dep.wv.gov URLs 404'd), so the sourcing is advocacy-group reporting rather than the primary record. Upgrade to 'confirmed' once R13-3714 / R13-3715 are pulled from WV DEP directly.",
+    "water": {
+      "coolingType": "closed_loop"
+    },
     "facilityType": "data_center"
   },
   {
@@ -1477,6 +1497,61 @@
       "unitCount": 41,
       "notes": "41 Vestas turbines with blade tips reaching 692 feet, described by Canary Media as the tallest onshore turbines in the country. Amazon is the power purchase agreement offtaker; the PPA value is undisclosed. Canary Media: 'Tech giant Amazon is purchasing power from the 41-turbine facility to support its growing data center operations and logistics hubs in the region.' Power Magazine frames the same output as helping power Amazon's Mississippi operations 'which include fulfillment and sortation centers, delivery stations, and a Whole Foods Market location' — i.e. the offtake is corporate-wide, not dedicated to a single named campus."
     }
+  },
+  {
+    "id": "agincourt-valparaiso-porter-county-in",
+    "name": "Agincourt Valparaiso Data Center Campus",
+    "operator": "Agincourt Investments, LLC",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.5031027,
+      "lon": -87.0201162,
+      "city": "Valparaiso",
+      "county": "Porter",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-01-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01-09",
+        "note": "Valparaiso Redevelopment Commission approved a purchase option agreement giving Agincourt exclusive rights to buy roughly 180 acres of a 238-acre city-owned parcel for just over $9 million, subject to 180 days of due diligence.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-03-11",
+        "note": "Mayor Jon Costas announced the city would cease all efforts toward a data center on the east side; Agincourt agreed to withdraw and release its land option after resident opposition at the March 10 council meeting.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.govtech.com/products/valparaiso-ind-mayor-says-data-center-dead-after-outcry",
+        "label": "Valparaiso, Ind., Mayor Says Data Center Dead After Outcry",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://greatnews.life/article/city-of-valparaiso-statement-on-data-center/",
+        "label": "City of Valparaiso Statement on Data Center (March 7, 2025)",
+        "publisher": "GreatNews.Life",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Four-building complex proposed on city-owned land near St. Mary Medical Center off Indiana 49. No tax abatement or economic incentive was requested. Coordinates are the St. Mary Drive medical-center address used to anchor the site in public descriptions, not a parcel-confirmed footprint.",
+    "landAcres": 180,
+    "community": {
+      "status": "opposed",
+      "notes": "Heavy resident opposition over water use, noise, environmental impact and property values drove the withdrawal; Valparaiso's council later advanced its own data-center moratorium ordinance in mid-2026.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "agriforce-east-palestine-columbiana-oh",
@@ -2028,6 +2103,66 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "aligned-data-centers-amber-ok",
+    "name": "Aligned Data Centers Amber Site (Grady County)",
+    "operator": "Aligned Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.1603415,
+      "lon": -97.8792104,
+      "city": "Amber",
+      "county": "Grady",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-02",
+        "note": "Land purchase near Amber surfaced publicly; Aligned says the project remains in early stages with many details unfinalized.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.news9.com/data-centers-in-oklahoma/grady-county-commissioners-special-meeting-data-center-oklahoma",
+        "label": "Grady County commissioners to hold special meeting on planned data center",
+        "publisher": "News 9 (KWTV)",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.radiooklahomanews.com/post/grady-county-data-center-concerns-prompt-special-meeting",
+        "label": "Grady County Data Center Concerns Prompt Special Meeting",
+        "publisher": "Radio Oklahoma News",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kswo.com/2026/09/02/grady-county-commissioners-hold-special-meeting-planned-data-center/",
+        "label": "Grady County Commissioners to hold special meeting on planned data center",
+        "publisher": "KSWO",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "An affiliate of Aligned Data Centers bought roughly 800 acres of rural land near Amber, northwest of Chickasha in Grady County, for more than $17 million. That $17M is the LAND purchase price only — it is not a project investment figure and is deliberately not recorded as investmentUsd. No capacity, building count or timeline has been made public. Coordinates are the town of Amber, not a parcel. This is a separate Grady County site from the tracked Chickasha Airport Industrial Park project.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Aligned states its facilities employ \"a closed-loop cooling system designed to minimize water use.\" This is the operator's general design claim, not a site-specific permit or measurement."
+    },
+    "landAcres": 800,
+    "community": {
+      "status": "contested",
+      "notes": "Neighboring landowners raised concerns about water supply, electricity demand, roads and infrastructure, noise, lighting, agriculture and nearby rural property. The Grady County Board of Commissioners called a special meeting for Sept 8, 2026 to consider county response options. Grady County officials have separately said the county cannot impose a data center moratorium.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "aligned-dfw-01-tx",
@@ -3652,6 +3787,61 @@
     }
   },
   {
+    "id": "alliant-west-riverside-energy-center-beloit-wi",
+    "name": "West Riverside Energy Center",
+    "operator": "Alliant Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.5800725,
+      "lon": -89.0393972,
+      "city": "Beloit",
+      "county": "Rock",
+      "state": "WI",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 730
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020",
+        "note": "Alliant Energy states the 730 MW natural gas facility entered service in 2020 following a $670 million investment.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alliantenergy.com/our-energy/natural-gas/west-riverside",
+        "label": "Alliant Energy — West Riverside Energy Center (730 MW, natural gas, in service 2020, $670 million)",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=West+Riverside+Energy+Center%2C+Wisconsin&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim named feature \"West Riverside Energy Center, Town of Beloit, Rock County, Wisconsin\" (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "The largest gas generating station in Rock County, in the Town of Beloit — the same township where the Panattoni \"Project Cornmaze\" data center campus and Alliant's proposed $512 million Rock County LNG storage plant are located. Recorded as \"reported\": Alliant's own page is the only substantive source fetched, and it does not mention the separately-reported $52.8 million, seven-engine, +17.5 MW expansion that a Rock County building permit is said to cover, so that expansion is not asserted here. The coordinate is OSM's named feature for the plant itself.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Alliant Energy",
+      "notes": "Alliant Energy describes it as \"an advanced technology, highly efficient natural gas facility\" that emits less than half the CO2 of a coal facility, serves about 550,000 homes, and returns more than $3 million a year in shared revenues to local governments."
+    },
+    "investmentUsd": 670000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "In service 2020. Sited in the Town of Beloit, Rock County, adjacent to the Alliant Energy gas complex on W. B R Townline Road."
+    }
+  },
+  {
     "id": "alliant-wever-bess-ia",
     "name": "Wever Battery Energy Storage System",
     "operator": "Alliant Energy",
@@ -4845,6 +5035,47 @@
     "lastUpdated": "2026-09-02",
     "notes": "Edge data center on an 83.5-acre site at 1309 NE 122nd Street, Oklahoma City. Coordinates are an approximate geocode of the street address.",
     "landAcres": 83.5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "american-tower-pike-township-indianapolis-in",
+    "name": "American Tower Pike Township Data Center",
+    "operator": "American Tower Corporation",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.9241559,
+      "lon": -86.2030783,
+      "city": "Indianapolis",
+      "county": "Marion",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-02",
+        "note": "American Tower pulled its mid-size data center proposal out of the Indianapolis zoning process after neighborhood opposition; residents noted the developer could refile later.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/articles/american-tower-corporation-withdraws-data-051459463.html",
+        "label": "American Tower Corporation withdraws data center plans in Pike Township",
+        "publisher": "Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Site described as near 79th Street and Township Line Road in Pike Township. No acreage, capacity or investment figure was published. Coordinates are the Township Line Road corridor in Pike Township, not a parcel-confirmed footprint.",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents plus local and state lawmakers opposed the rezoning. City-County Councilor Leroy Robinson said: 'When the people who elect us stand up and say, we don't want something, we have to support the people.'",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -8241,6 +8472,110 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "aventus-715-marshfield-wi",
+    "name": "Aventus 715 Data Center",
+    "operator": "Aventus Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.632178,
+      "lon": -90.1734887,
+      "city": "Marshfield",
+      "county": "Wood",
+      "street": "901 Commerce Dr.",
+      "postalCode": "54449",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://aventusdatacenters.com/aventus-715/",
+        "label": "Aventus 715 — operator facility page (901 Commerce Dr., Marshfield, WI 54449; 20,000 sq ft)",
+        "publisher": "Aventus Data Centers",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"Aventus 715, Marshfield\")",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=901+Commerce+Drive%2C+Marshfield%2C+WI+54449&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of Commerce Drive, Mill Creek Business Park, Marshfield, Wood County (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "20,000 sq ft central-Wisconsin colocation facility with carrier-neutral connectivity, hierarchical local/cloud hybrid storage and backup replication to a facility 100 miles away. Same operator as Aventus Lakes in Milwaukee but a separate site. ⚠️ The geocode resolved to \"East Commerce Drive, Mill Creek Business Park, Marshfield\" rather than the exact street number the operator publishes (901 Commerce Dr.), so the pin is street-level within the business park and should be treated as approximate, not parcel-confirmed.",
+    "energy": {
+      "source": "grid",
+      "notes": "Dual 2,500 kVA utility power feeds, dual full-load long-haul diesel generators, dual UPS power conditioning and battery backup."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Operator describes \"Redundant Cooling systems\" with plenum-directed cooling in both vaults and 24/7/365 equipment and temperature monitoring, but does not identify the heat-rejection method."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "aventus-lakes-milwaukee-wi",
+    "name": "Aventus Lakes Data Center",
+    "operator": "Aventus Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.1513247,
+      "lon": -88.009665,
+      "city": "Milwaukee",
+      "county": "Milwaukee",
+      "street": "7901 W. Clinton Ave.",
+      "postalCode": "53223",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://aventusdatacenters.com/aventus-lakes/",
+        "label": "Aventus Lakes — operator facility page (address, 26,432 sq ft, vaults, power)",
+        "publisher": "Aventus Data Centers",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"Aventus Lakes, Milwaukee\")",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=7901+W+Clinton+Ave%2C+Milwaukee%2C+WI+53223&format=json&limit=1&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode of 7901 West Clinton Avenue, Granville, Milwaukee (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "26,432 sq ft carrier-hotel and colocation facility in Milwaukee's Granville area, marketed as engineered for AI/GPU retrofit (415V three-phase, direct liquid cooling) alongside conventional air-cooled cabinets. Not a duplicate of any tracked Milwaukee site: distinct from Data Holdings (3135 W. Highland), TierPoint, and Expedient MKE1 (4777 W. Ironwood, Franklin).",
+    "energy": {
+      "source": "grid",
+      "notes": "4,000 amp underground utility power feed, dual full-load long-haul diesel generators, dual UPS power conditioning and battery backup."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "The operator describes three \"data vaults\" — Vault 1 air-cooled secure cabinets (4,900 sq ft), Vault 2 a liquid-cooled supercomputer configuration (2,000 sq ft), Vault 3 air-cooled expansion (4,000 sq ft) — plus \"Redundant Cooling systems\" and plenum-directed cooling. Those describe rack-level heat capture, not the heat-rejection method, so the coolingType axis is genuinely not identified by the source."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "aws-2550-beech-road-new-albany-oh",
     "name": "AWS New Albany (2550 Beech Road)",
     "operator": "Amazon Web Services",
@@ -10511,6 +10846,61 @@
     "facilityType": "data_center"
   },
   {
+    "id": "aws-portage-in",
+    "name": "AWS Portage Data Center (AmeriPlex at the Port)",
+    "operator": "Amazon Web Services",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.6090532,
+      "lon": -87.170469,
+      "city": "Portage",
+      "county": "Porter",
+      "street": "West Prairie School Drive",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023-12-20",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-12-20",
+        "note": "Amazon announced an $87 million data center at AmeriPlex at the Port after a 2.5-year local recruitment effort.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026",
+        "note": "Listed as an operational Amazon data center in Porter County on an interconnection/data-center tracker.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.insideindianabusiness.com/articles/amazon-building-87m-data-center-in-portage",
+        "label": "Amazon building $87M data center in Portage",
+        "publisher": "Inside INdiana Business",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.interconnection.fyi/data-center/state/IN",
+        "label": "Indiana Data Center Records — Interconnection.fyi (Amazon, Porter County, operational)",
+        "publisher": "Interconnection.fyi",
+        "retrievedAt": "2026-09-13",
+        "kind": "iso_queue"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "$87M total comprises roughly $35M of building and $52M of IT equipment, in the AmeriPlex at the Port business park north of I-94 and south of Ports of Indiana-Burns Harbor. At least 10 jobs at $100,000+ were committed, and Portage reported $7.5M of property taxes over ten years under the abatement agreement — that figure is taxes payable, not an abatement amount, so no subsidy entry is asserted. This is a small AWS edge/availability-zone site, entirely separate from the New Carlisle Project Rainier campus already tracked.",
+    "investmentUsd": 87000000,
+    "jobs": {
+      "permanent": 10,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "aws-project-atlas-madison-county-ms",
     "name": "AWS Project Atlas – Madison County Mega Site (Canton)",
     "operator": "Amazon Web Services",
@@ -12454,8 +12844,12 @@
       "lon": -97.795,
       "city": "Oklahoma City",
       "county": "Oklahoma",
+      "street": "3025 N Frisco Road",
       "state": "OK",
       "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
     },
     "statusHistory": [],
     "sources": [
@@ -12465,10 +12859,28 @@
         "publisher": "OK Energy Today",
         "retrievedAt": "2026-07-11",
         "kind": "press"
+      },
+      {
+        "url": "https://investigatemidwest.org/2026/07/14/oklahoma-data-centers-water-use-loophole/",
+        "label": "A loophole leaves Oklahoma data center water consumption largely untracked",
+        "publisher": "Investigate Midwest",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.okenergytoday.com/2026/01/data-center-wins-rezoning-approval-from-okc-planning-board/",
+        "label": "Data center wins rezoning approval from OKC planning board",
+        "publisher": "Oklahoma Energy Today",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-14",
     "notes": "Two adjoining parcels rezoned via PUD cases likely numbered PUD-2105 (111.5 acres at 3025 N. Frisco Road, near I-40/Frisco Rd) and PUD-2124 (184 acres at 13921 NW 23rd Street, near NW 23rd/Frisco Rd, ~0.5 mi west of Yukon) — the case-number-to-address pairing is probable (inferred by matching geographic descriptors across sources) but not confirmed by a single primary document naming both together. OKC Planning Commission voted 7-0 to recommend approval Jan 21 2026; City Council final vote status is unconfirmed as of this writing (okc.gov council agendas were inaccessible during research) — treat as still-pending, not approved. Explicitly carved out of OKC's citywide data-center moratorium (~April 2026) as an already-pending application, confirming it remains active. Press coverage separately cites a larger '350-acre' and '480-acre' project total that doesn't reconcile with the confirmed 295.5-acre rezoned total (111.5+184) — the gap is plausibly an adjacent ~184.5-acre parcel Yukon Municipal Authority sold to BLE Landholdings LLC for $15.8M in Aug 2025 (near Hwy 66/Frisco Rd), which may be the same tract as the NW 23rd St parcel, but this is not confirmed. A $1B investment / 0.5GW capacity figure is associated with the broader Yukon-area BLE deal in local reporting but was not found tied specifically to this OKC rezoning by a primary source — omitted from capacityMw/investmentUsd pending confirmation rather than asserted.",
+    "water": {
+      "reportedMgd": 2.5,
+      "notes": "Investigate Midwest reports the Yukon/Oklahoma City campus proposes to use up to 2.5 million gallons per day of wastewater (not potable supply). This is a proposed maximum from the development plan, not metered consumption."
+    },
     "landAcres": 295.5,
     "community": {
       "status": "supported",
@@ -12490,6 +12902,9 @@
       "state": "OK",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 1200
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -12505,9 +12920,16 @@
         "publisher": "OKCFOX",
         "retrievedAt": "2026-07-11",
         "kind": "press"
+      },
+      {
+        "url": "https://okcfox.com/news/local/commission-urges-council-to-deny-cloverleaf-plan-beltline-energy-vote-delayed-for-review",
+        "label": "Commission urges council to deny Cloverleaf plan; Beltline Energy vote delayed for review",
+        "publisher": "KOKH FOX 25",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-14",
     "notes": "321-acre rezoning filed via BLE Holdings LLC / BLE Landholdings LLC, SW/4 of Section 26, Township 15N, Range 6W, Kingfisher County — legal descriptions and Kingfisher County parcel numbers 0000-26-15N-06W-3-000-00, -3-001-00, -3-002-00, -3-003-00 (plus an adjacent 5th parcel, -4-000-00) per the city's own PUD filing. Bounded by E 870 Rd (N), N 2920 Rd (E), Azalea St NW (S), N 2910 Rd (W). City vote delayed for further review as of source date. This is a distinct, separate, competing site from Cloverleaf's 630-acre 'Project Open Sky' proposal also in Piedmont (different parcels, different developer, different acreage) — despite sharing a host city, do not conflate the two (both independently confirmed as separate projects via direct source verification). No primary-sourced capacity or investment figure was found for this specific site — omitted rather than guessed.",
     "landAcres": 321,
     "community": {
@@ -18991,7 +19413,7 @@
     "id": "cloudburst-oklahoma-city-campus-ok",
     "name": "CloudBurst Oklahoma City Campus",
     "operator": "CloudBurst Data Centers",
-    "status": "proposed",
+    "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 35.4676,
@@ -19010,6 +19432,12 @@
         "date": "2026-08",
         "note": "Developer's site shows a Q4 2025 groundbreaking target with 30 MW revenue-generating service in Q4 2026; still pre-construction as of retrieval.",
         "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-09-14",
+        "note": "News 9 reports the campus \"broke ground at the end of 2025\" and is under development on a three-phase schedule: Phase 1 delivering 30 MW at the end of 2026, Phase 2 delivering 50 MW around mid-2027, and Phase 3 completing at the end of 2028 for the full 200 MW across three data centers. This moves the record past 'proposed'.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -19026,9 +19454,23 @@
         "publisher": "News On 6",
         "retrievedAt": "2026-08-19",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/cloudburst-data-center-campus-okc",
+        "label": "What to know about OKC CloudBurst data center campus",
+        "publisher": "News 9 (KWTV)",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/cloudburst-data-center-campus-okc",
+        "label": "What to know about OKC CloudBurst data center campus",
+        "publisher": "News 9 (KWTV)",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-09-14",
     "notes": "200 MW IT load across a planned multi-building campus reported near 2000 S Council Rd. Coordinates are an Oklahoma City centroid approximation. Oklahoma City's 2026 data-center moratorium is reported to have affected the timeline.",
     "energy": {
       "source": "grid",
@@ -19555,15 +19997,35 @@
         "publisher": "More Than Just Parks Data Center Tracker",
         "retrievedAt": "2026-08-06",
         "kind": "other"
+      },
+      {
+        "url": "https://okcfox.com/news/local/commission-urges-council-to-deny-cloverleaf-plan-beltline-energy-vote-delayed-for-review",
+        "label": "Commission urges council to deny Cloverleaf plan; Beltline Energy vote delayed for review",
+        "publisher": "KOKH FOX 25",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.radiooklahomanews.com/post/piedmont-data-center-proposal-heads-to-city-council-vote-tonight",
+        "label": "Piedmont Data Center Proposal Heads To City Council Vote Tonight",
+        "publisher": "Radio Oklahoma News",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-06",
+    "lastUpdated": "2026-09-14",
     "notes": "630-acre proposed data campus near the Mathewson Substation, NW 248th Street, Piedmont (Canadian/Kingfisher county line) — part of a transmission corridor drawing multiple competing proposals; see beltline-piedmont-kingfisher-county-ok (this same batch), a separate, distinct 321-acre Beltline Energy site nearby — do not conflate despite both being in Piedmont. Closed-loop cooling planned. Cloverleaf recently withdrew from two Wisconsin data center projects after local opposition (context, not this project). Reported as 'over $1 billion taxable investment' (DCD) — read as a tax-abatement eligibility threshold rather than a confirmed capex figure, so not populated as investmentUsd.",
     "water": {
       "coolingType": "closed_loop",
       "notes": "Project Open Sky is planned to use a closed-loop cooling system to greatly reduce water use."
     },
+    "investmentUsd": 1000000000,
     "landAcres": 630,
+    "jobs": {
+      "construction": 1000,
+      "permanent": 300,
+      "sourceIndex": 5
+    },
     "community": {
       "status": "contested",
       "notes": "Piedmont Planning Commission recommended the City Council DENY the 'Project Open Sky' PUD rezoning pending additional information; Council vote rescheduled to late July 2026 — approval not yet granted as of this writing."
@@ -22606,6 +23068,8 @@
       "lon": -95.42,
       "city": "Muskogee",
       "county": "Muskogee",
+      "street": "1525 West 43rd Street South",
+      "postalCode": "74401",
       "state": "OK",
       "precision": "exact"
     },
@@ -22660,9 +23124,16 @@
         "label": "Core Scientific plans expansion to 1.5 gigawatts of gross power at Muskogee, Oklahoma campus",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://corescientific.com/high-density-data-centers/muskogee-ok/",
+        "label": "Oklahoma Data Center | High-Density in Muskogee",
+        "publisher": "Core Scientific",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-14",
     "notes": "1525 W Smith Ferry Rd, Port Muskogee Industrial Park. Distinct from the existing tracked Google Muskogee County campuses - same county, different developer/site. Coordinates are approximate. CoreWeave is the anchor customer.",
     "energy": {
       "source": "grid",
@@ -25411,6 +25882,54 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cyberlynk-franklin-mke1-wi",
+    "name": "CyberLynk Franklin Data Center (MKE1)",
+    "operator": "CyberLynk Network, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.8618895,
+      "lon": -87.982841,
+      "city": "Franklin",
+      "county": "Milwaukee",
+      "street": "10125 S. 52nd Street",
+      "postalCode": "53132",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cyberlynk.net/facilities/milwaukee-datacenter/",
+        "label": "Milwaukee, WI (MKE1) Data Center — operator facility page (address, SOC 2, carriers)",
+        "publisher": "CyberLynk Network",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"CyberLynk Network Inc., Franklin\")",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=10125+S+52nd+Street%2C+Franklin%2C+WI+53132&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode returning the named \"CyberLynk\" feature at 10125 South 52nd Street, Franklin Business Park (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "SOC 2-certified colocation facility in the Franklin Business Park, marketed both as CyberLynk MKE1 and under the MilwaukeeColo brand, with RFID/biometric access, IP camera monitoring, and peering with Cogent, Lumen, NTT, AT&T, Everstream and Spectrum. IMPORTANT anti-duplication note: this is NOT the tracked Expedient MKE1 record — Expedient's Milwaukee facility is a separate building at 4777 W. Ironwood, Franklin, WI 53132 (1.6 MW critical load, 27,000 sq ft), verified this session. Two operators in the same municipality both use the \"MKE1\" label.",
+    "energy": {
+      "source": "grid",
+      "notes": "Two utility power feeds with UPS systems and backup generators; redundant power, cooling and network connectivity per the operator."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cyrusone-bosque-county-thad-hill-tx",
     "name": "CyrusOne Bosque County Campus (Thad Hill Energy Center)",
     "operator": "CyrusOne",
@@ -26879,6 +27398,52 @@
     "aiClassification": "likely"
   },
   {
+    "id": "data-holdings-eau-claire-wi",
+    "name": "Data Holdings Eau Claire Data Center",
+    "operator": "Data Holdings LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.811349,
+      "lon": -91.4984941,
+      "city": "Eau Claire",
+      "county": "Eau Claire",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://dataholdings.com/eau-claire-data-center",
+        "label": "Eau Claire Data Center | SOC2 Compliant — operator facility page (4,000 SF raised floor, 1 MW, 2N cooling and standby power)",
+        "publisher": "Data Holdings",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Eau+Claire%2C+Eau+Claire+County%2C+Wisconsin&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of Eau Claire, Eau Claire County, WI (city-level coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "4,000 sq ft raised-floor, Tier III-design colocation facility: 1 MW, 16 kW max per rack, 2N standby power (two diesel generators) and 2N cooling, with SOC 2 Type II attestation and HIPAA, PCI DSS and NDAA compliance. Sibling of the already-tracked Data Holdings Milwaukee site (3135 W. Highland Ave.). ⚠️ Data Holdings publishes no street address, saying only that the facility is \"on the south side of Eau Claire\", so the coordinates are an approximate CITY-LEVEL point and are NOT the facility footprint — they should be corrected before the pin is treated as meaningful. Single-source, hence \"reported\".",
+    "energy": {
+      "source": "grid",
+      "notes": "1 MW of power with a maximum of 16 kW per rack; dual and redundant UPS, 2N standby power via two diesel generators."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Operator states \"Cooling redundancy: 2N\" and a Tier III design allowing critical systems to be maintained during normal operations, but does not identify the heat-rejection method."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "data-holdings-milwaukee-wi",
     "name": "Data Holdings Milwaukee Data Center",
     "operator": "Data Holdings LLC",
@@ -26971,6 +27536,57 @@
       "coolingType": "closed_loop",
       "notes": "Operator's own site describes the facility as 'built with food-grade closed-loop cooling, heat reuse, zero tax breaks' -- a recirculating water circuit, classified closed_loop per the contract's marketing-language tie-breaker regardless of the 'eco-friendly' framing."
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "data3-tulsa-ok",
+    "name": "DATA3 Tulsa Data Center",
+    "operator": "DATA3 Corporation",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.042795,
+      "lon": -95.9534996,
+      "city": "Tulsa",
+      "county": "Tulsa",
+      "street": "2448 E 81st St, Suite 700",
+      "postalCode": "74137",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-14",
+        "note": "Listed as an operating carrier-neutral colocation facility in the Cloud and Colocation Oklahoma directory.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/datacenters/data3-tulsa-data-center/",
+        "label": "Data3 - Tulsa Data Center",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://cloudandcolocation.com/state/oklahoma/",
+        "label": "Oklahoma Data Center Location Map",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=2448+E+81st+St%2C+Tulsa%2C+OK+74137&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for 2448 E 81st St, Tulsa, OK 74137",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Carrier-neutral Tier-3-style colocation suite in the Cityplex Towers complex in south Tulsa. Backup power is a 500 kVA diesel generator with two utility feeds and in-line UPS; fire suppression is waterless FM200. No IT load figure is published, so capacityMw is omitted. Coordinates are a street-address geocode of the tower complex.",
     "facilityType": "data_center"
   },
   {
@@ -28601,16 +29217,32 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.dcblox.com/indianapolisdatacenter/",
+        "label": "Indianapolis Data Center in Marion County, Indianapolis — DC BLOX",
+        "publisher": "DC BLOX",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-09-13",
     "notes": "Three-building campus, scaled back from an original 28MW-larger plan. Capex breakout: $700-800M construction + $1.3-1.4B in 'servers, networking equipment, and AI hardware' per the developer's own figures. Coordinates are approximate.",
     "energy": {
       "source": "grid",
-      "utility": "AES Indiana"
+      "utility": "AES Indiana",
+      "notes": "DC BLOX states the campus will be served by AES Indiana and that the company, not ratepayers, funds the utility infrastructure it requires."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator states the campus uses closed-loop cooling systems and that ongoing operations require no more water than a typical commercial building."
     },
     "investmentUsd": 2000000000,
     "landAcres": 150,
+    "jobs": {
+      "construction": 600,
+      "sourceIndex": 4
+    },
     "community": {
       "status": "contested",
       "notes": "Opponents filed an appeal against the hearing examiner's June 11, 2026 approval recommendation; full City-County Council vote pending, likely August 2026.",
@@ -28795,6 +29427,58 @@
     "notes": "Status re-checked 2026-09-09: no change, stays proposed. Metro Council authorised eminent domain on 2026-08-04, DC BLOX sued on 2026-08-11, and as of this check no ruling on its preliminary-injunction request has been reported; two zoning challenges are not heard until at least December 2026. investmentUsd left unset - $23 million is the land purchase price, not the project investment, and the widely quoted \"$700 million\" figure could not be sourced to a page fetched in this run.",
     "community": {
       "status": "opposed"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "decennial-akron-fulton-county-in",
+    "name": "Decennial Group Akron Data Center",
+    "operator": "Decennial Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.0387819,
+      "lon": -86.0282647,
+      "city": "Akron",
+      "county": "Fulton",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-02-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-04",
+        "note": "Decennial Group co-founder David Pavlick unveiled early plans at an Akron Banquet Hall open house; no site had been selected and no formal application had been filed with the county.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.abc57.com/news/developer-unveils-data-center-plan-in-akron-amid-resident-concerns",
+        "label": "Developer unveils data center plan in Akron amid resident concerns",
+        "publisher": "ABC57",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterbans.com/state/indiana",
+        "label": "Indiana — Data Center Moratoriums (Fulton County, 1 year, enacted 3/3/2026)",
+        "publisher": "Data Center Bans",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Developer says the project would require roughly 300 acres and $100–150 million of infrastructure improvements (roads, bridges, water system), with an unnamed hyperscale end user. Those are stated requirements, not a secured site or a total project investment, so neither landAcres nor investmentUsd is asserted. Coordinates are the town of Akron; no parcel has been identified publicly.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer described a proposed closed-loop water system to minimize consumption."
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "The February 4, 2026 open house grew contentious, with more than 40 residents voicing frustration and saying they were blindsided; Fulton County commissioners then approved a one-year moratorium on data center construction, effective March 3, 2026.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -32266,9 +32950,16 @@
         "publisher": "PR Newswire / Digital Power Optimization",
         "retrievedAt": "2026-08-18",
         "kind": "press"
+      },
+      {
+        "url": "https://biztimes.com/data-center-developer-plans-200-million-project-in-wisconsin-rapids/",
+        "label": "Data center developer plans $200 million project in Wisconsin Rapids (up to 20 MW, ~10 acres, power from Consolidated Water Power Company, 50-year land lease)",
+        "publisher": "BizTimes Milwaukee",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-18",
+    "lastUpdated": "2026-09-13",
     "notes": "Pre-development funded by an investor consortium led by Salutem Capital; Stantec providing engineering support. Exact street address and acreage not disclosed in the announcement, so coordinates are the Wisconsin Rapids city geocode. Single-source, hence 'reported'.",
     "energy": {
       "source": "hydro",
@@ -32276,6 +32967,7 @@
       "notes": "Firm power from CWPCo (a Billerud subsidiary and regulated utility operating 32 MW of hydroelectric generation). DPO secured a land lease of up to 50 years and interconnection rights to an existing, energized substation."
     },
     "investmentUsd": 200000000,
+    "landAcres": 10,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -41706,6 +42398,50 @@
     "aiClassification": "likely"
   },
   {
+    "id": "fulltel-okc01-oklahoma-city-ok",
+    "name": "FullTel Communications OKC01",
+    "operator": "FullTel Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.46994,
+      "lon": -97.516522,
+      "city": "Oklahoma City",
+      "county": "Oklahoma",
+      "street": "201 Robert S Kerr Avenue",
+      "postalCode": "73102",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-14",
+        "note": "Listed as an in-building operating colocation data center at 201 Robert S Kerr Avenue.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/201-robert-s-kerr-avenue-oklahoma-city",
+        "label": "201 Robert S Kerr Avenue, Oklahoma City — data center building listing (FullTel Communications OKC01, Lumen Oklahoma City)",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=201+Robert+S+Kerr+Ave%2C+Oklahoma+City%2C+OK+73102&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for 201 Robert S Kerr Ave, Oklahoma City, OK 73102",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Small carrier colocation footprint sharing 201 Robert S Kerr Avenue with Lumen Oklahoma City 1 — a separate operator in the same building, not a duplicate of it. Single-directory sourcing only: no capacity, square footage or commissioning date was available from a source read this session, so all are omitted. Flagged as the thinnest of this batch; a maintainer may reasonably reject it pending an operator-published page.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "fundamental-data-ridgeline-datacenter-tucker-county-wv",
     "name": "Ridgeline Data Center",
     "operator": "Fundamental Data LLC",
@@ -42410,6 +43146,50 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "gibson-county-data-center-in",
+    "name": "Gibson County Data Center",
+    "operator": "Undisclosed",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 38.3079744,
+      "lon": -87.5775949,
+      "county": "Gibson",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Listed as a 600 MW undisclosed-developer proposal in Gibson County on two public trackers.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cleanview.co/data-centers/indiana",
+        "label": "Data Centers in Indiana — Project List (Gibson County Data Center, undisclosed, 600 MW, planned)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://ailawtracker.org/data-centers",
+        "label": "Indiana Data Center Map | AI Infrastructure Projects (Gibson/Posey County, 600 MW, proposed)",
+        "publisher": "AI Law Tracker",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Recorded as rumored: two trackers list a 600 MW southwest-Indiana proposal, one attributing it to Gibson County and one to 'Gibson/Posey County', and no county filing or local news naming a Gibson County site was found this session. Kept separate from posey-county-boberg-road-data-center-in, which is a specific, separately sourced Posey County site the commissioners rejected; if a primary source later ties the 600 MW figure to Boberg Road these should be merged. Coordinates are the Gibson County centroid.",
+    "facilityType": "data_center"
   },
   {
     "id": "gigaland-data-centers-remington-fauquier-va",
@@ -44296,6 +45076,8 @@
       "lon": -86.8950297,
       "city": "Michigan City",
       "county": "LaPorte",
+      "street": "402 Royal Road",
+      "postalCode": "46360",
       "state": "IN",
       "precision": "approximate"
     },
@@ -44349,14 +45131,40 @@
         "publisher": "Northwest Indiana Business Magazine",
         "retrievedAt": "2026-09-01",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wndu.com/2026/04/16/google-confirms-acquisition-michigan-city-data-center-site/",
+        "label": "Google confirms plans for data center in Michigan City",
+        "publisher": "WNDU",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://michigancityin.gov/major-projects/phoenix-investors-project-maize/",
+        "label": "Phoenix Investors / Project Maize — City of Michigan City major projects",
+        "publisher": "City of Michigan City",
+        "retrievedAt": "2026-09-13",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-09-13",
     "notes": "Announced by Google in 2026 as a planned Indiana data center, distinct from Google's operational Fort Wayne site and its Morgan County (Monrovia) development. No capacity or investment figure published. Coordinates are the Michigan City centroid (approximate).",
     "water": {
       "coolingType": "closed_loop",
       "notes": "Google states the facility uses a closed-loop water system. City officials say existing water supply is adequate with no additional taxpayer cost."
     },
+    "subsidies": [
+      {
+        "program": "Vacant building deduction tax abatement (Phoenix MC Invest LLC)",
+        "jurisdiction": "Michigan City, Indiana",
+        "sourceIndex": 7
+      },
+      {
+        "program": "Real property improvement tax abatement (Phoenix MC Invest LLC)",
+        "jurisdiction": "Michigan City, Indiana",
+        "sourceIndex": 7
+      }
+    ],
     "investmentUsd": 832000000,
     "landAcres": 70,
     "jobs": {
@@ -44567,9 +45375,16 @@
         "publisher": "KTUL",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.portmuskogee.com/google-announces-two-data-center-campuses-in-muskogee-county-oklahoma_news/",
+        "label": "Google Announces Two Data Center Campuses in Muskogee County, Oklahoma",
+        "publisher": "Port Muskogee",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-09-14",
     "notes": "Two separate campuses near Summit and Council Hill in Muskogee County. Combined into one record; site-by-site capacity and investment breakdown not publicly available. Coordinates corrected to approximate Council Hill location (35.57°N, 95.65°W); original coordinates (35.65, −95.37) fell near Muskogee city / Summit area rather than Council Hill. Summit campus is located near Muskogee city (~17 miles east). Exact parcels not disclosed. Part of Google's $9B Oklahoma investment announced August 2025.",
     "energy": {
       "source": "grid",
@@ -45513,12 +46328,20 @@
         "publisher": "Pryor Information Publication",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/over-700mwac-new-solar-projects-in-ok/",
+        "label": "LRE Announces Over 700 MWac of New Solar Projects in Oklahoma",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-09-14",
     "notes": "Campus operational since 2011; Google's second-largest data center globally per Alphabet CIO Ruth Porat. Four expansions now underway. $5.7B+ invested historically in Oklahoma prior to August 2025 $9B commitment. Expansion capacity and MW not publicly specified. Coordinates are Pryor city center.",
     "energy": {
       "source": "grid",
+      "utility": "Grand River Dam Authority (GRDA)",
       "notes": "Google's second-largest data center campus in the world. Oklahoma wind generates ~42% of in-state electricity. New expansion announced as part of $9B Oklahoma investment (August 2025). Google has invested $5.7B+ in Oklahoma historically (prior to August 2025 $9B commitment)."
     },
     "water": {
@@ -46271,9 +47094,16 @@
         "publisher": "News 9 (KWTV Oklahoma City)",
         "retrievedAt": "2026-07-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.publicradiotulsa.org/local-regional/2026-08-06/some-data-centers-are-building-their-own-power-plants-in-oklahoma-most-want-to-plug-into-the-grid",
+        "label": "Some data centers are building their own power plants. In Oklahoma, most want to plug into the grid",
+        "publisher": "Public Radio Tulsa / StateImpact Oklahoma",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-21",
+    "lastUpdated": "2026-09-14",
     "notes": "Campus at intersection of Perkins Road and Richmond Road, north of Stillwater. Coordinates are approximate (city centroid shifted north). Up to 6 data center buildings, each 300,000 sq ft. Phase I targeted for 2027. City Council acceptance of final plat required before recording with Payne County Clerk. Job figures are projections (~30 permanent per phase; construction cited as 'thousands') - not recorded as confirmed counts. Oklahoma's Sec. 1357 data-center sales-tax exemption applies by statute but no Stillwater-specific award amount is published.",
     "energy": {
       "source": "grid",
@@ -46920,6 +47750,62 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "grda-grand-river-energy-center-unit-4-ok",
+    "name": "Grand River Energy Center Unit 4",
+    "operator": "Grand River Dam Authority",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1906497,
+      "lon": -95.2907489,
+      "city": "Chouteau",
+      "county": "Mayes",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 426
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-09",
+        "note": "Unit dedicated September 9, 2026; GRDA gave an in-service date of September 16, 2026 — two days after this record was compiled, so the unit is not yet recorded as operational.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://okenergytoday.com/2026/09/oklahomas-largest-public-power-electric-utility-dedicates-new-525-million-project/",
+        "label": "Oklahoma's largest public power electric utility dedicates new $525 million project",
+        "publisher": "Oklahoma Energy Today",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Grand+River+Energy+Center&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim record for Grand River Energy Center, Mayes County, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Coordinates are OSM's point for the Grand River Energy Center, marked approximate — OSM's address line associates the site with Pryor Creek while the dedication coverage locates it at Chouteau; the city recorded here follows the news source. Status is 'under_construction' rather than 'operational' only because the stated in-service date (2026-09-16) falls after this record's compile date; it should be flipped once in service.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Grand River Dam Authority (GRDA)",
+      "notes": "Simple-cycle natural gas combustion turbine, described as hydrogen-capable."
+    },
+    "investmentUsd": 525000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 1,
+      "notes": "SCOPE CAVEAT: this is GRDA system generation, not a behind-the-meter plant dedicated to a single campus. It is recorded because GRDA is the supplying utility for the tracked Google Pryor campus and the MidAmerica Industrial Park data center cluster, and because the dedication coverage explicitly frames the unit against rising demand \"especially as data centers and major companies that use a lot of electricity continue to grow.\" No offtaker or poweredFacilityIds are set, because no compute customer is named as the buyer. A maintainer may reasonably judge this out of scope."
+    }
   },
   {
     "id": "greeley-wind-nebraska-greeley-ne",
@@ -48618,6 +49504,50 @@
     ],
     "lastUpdated": "2026-09-12",
     "notes": "Landing station for the Hawaiki trans-Pacific submarine cable (completed 2018), providing 43 terabits of carrier-neutral capacity via six fiber pairs to the US west coast, Australia, New Zealand and American Samoa. DRFortress has operated landing and colocation activities here under a long-term partnership with Hawaiki dating to 2016; 1547 Critical Systems Realty (which acquired DRFortress in 2025) lists a Kapolei facility (\"HAII1\", branded AlohaNAP-adjacent, ~10,200 sq ft expandable to 60,200 sq ft) that this record treats as the same site rather than a separate parcel, since both describe DRFortress/1547 colocation activity at the one cable landing station Hawaiki owns in Kapolei — flag for a human split if that assumption is wrong. In early 2026 the Honolulu City Council granted a Special Management Area Major Permit for an expansion project at this site to add landing capacity for Google's Taihei and Tabua cables plus BW Digital's own Hawaiki Nui cable. Coordinates are a Census TIGER-line geocode of the street address, not a confirmed parcel survey.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "heartland-business-systems-little-chute-wi",
+    "name": "Heartland Business Systems Little Chute Data Center",
+    "operator": "Heartland Business Systems, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.2965755,
+      "lon": -88.2938896,
+      "city": "Little Chute",
+      "county": "Outagamie",
+      "street": "1700 Stephen Street",
+      "postalCode": "54140",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.hbs.net/contact-us",
+        "label": "HBS locations — Northeast Wisconsin headquarters, 1700 Stephen Street, Little Chute, WI 54140",
+        "publisher": "Heartland Business Systems",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"HBS Little Chute, Little Chute\")",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=1700+Stephen+Street%2C+Little+Chute%2C+WI+54140&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of 1700 Stephen Street, Little Chute Industrial Park, Outagamie County (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Colocation and cloud data center at HBS's northeast Wisconsin headquarters in the Little Chute Industrial Park. Fills a gap in the Fox River Valley, where Compute Atlas currently tracks only Ark Data Centers Green Bay (Harrison) and Netsonic Green Bay. No MW or square footage figure is published by the operator, so none is asserted.",
     "facilityType": "data_center"
   },
   {
@@ -51171,6 +52101,64 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "iren-project-emerald-kiowa-ok",
+    "name": "Project Emerald (Kiowa)",
+    "operator": "IREN",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.7206516,
+      "lon": -95.8991586,
+      "city": "Kiowa",
+      "county": "Pittsburg",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-21",
+        "note": "Pittsburg County Tax Incentive District review committee voted to advance an economic development plan tied to the project to the participating taxing entities.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kjrh.com/news/local-news/project-emerald-ai-data-center-plan-in-pittsburg-county-moving-forward",
+        "label": "'Project Emerald': AI data center plan in Pittsburg County moving forward",
+        "publisher": "KJRH",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.mcalesternews.com/news/proposed-data-center-concerns-residents/article_41fbeecd-9293-49d4-8156-1d3aaa3f686b.html",
+        "label": "Proposed data center concerns residents",
+        "publisher": "McAlester News-Capital",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Proposed 2,000-acre campus along U.S. Highway 69 just south of Kiowa in Pittsburg County, with an alternative siting roughly 8 miles south in Atoka County also under consideration; both sides of Highway 69 are in play. Coordinates are the town of Kiowa, not a parcel-confirmed footprint. This is a DIFFERENT IREN site from the already-tracked IREN Woods County campus in northwest Oklahoma. Capacity and investment figures circulating in secondary coverage were not stated in the two sources read here, so they are deliberately omitted.",
+    "energy": {
+      "source": "grid",
+      "utility": "Public Service Company of Oklahoma (PSO)",
+      "notes": "IREN representative Jason Date told KJRH the campus would draw power from PSO."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "IREN says water would come from the City of Kiowa, with the possibility of hauling water in from outside the county or state if needed, and states it is \"confident it would not use excess water quantities.\" Residents at the April 2026 hearings cited a ~5 million gallons/day operating figure as a concern; that figure is a community claim, not an operator-reported number."
+    },
+    "landAcres": 2000,
+    "community": {
+      "status": "contested",
+      "notes": "Residents raised concerns over electricity costs, water use, noise, property values, pre-existing oil leases and grid reliability; two public meetings were scheduled at Kiowa High School in May 2026.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "iren-sweetwater-tx",
     "name": "IREN Sweetwater Campus",
     "operator": "IREN (Iris Energy)",
@@ -52126,6 +53114,54 @@
       "notes": "Operator states a \"waterless cooling design\" — no cooling-water circuit at all, so classified air per the contract's cooling-type tie-breaker."
     },
     "landAcres": 58.3,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "iscorp-mequon-mqs5-wi",
+    "name": "ISCorp Mequon Data Center (MQS5)",
+    "operator": "ISCorp",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.205315,
+      "lon": -87.9243984,
+      "city": "Mequon",
+      "county": "Ozaukee",
+      "street": "10325 N. Port Washington Road",
+      "postalCode": "53092",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.iscorp.com/iscorp-facilities/",
+        "label": "ISCorp Data Centers — MQS5, 10325 N. Port Washington Rd., Mequon, WI 53092 (Tier III+, SSAE18, 8,000 sq ft raised floor)",
+        "publisher": "ISCorp",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"ISCorp North MQN\" and \"ISCorp South MQN\", Mequon)",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=10325+N+Port+Washington+Road%2C+Mequon%2C+WI+53092&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of 10325 North Port Washington Road, Mequon, Ozaukee County (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Tier III+, SSAE18-audited private-cloud data center with 8,000 sq ft of raised floor and 20,000 sq ft of operations space, redundant hospital-grade generators, N+1 cooling and a private dark-fiber metro ring. Directories and the Journal Sentinel map list TWO ISCorp Mequon facilities — \"North MQN\" at 10325 and \"South MQN\" at 10235 N. Port Washington Road — but only the 10325 building is described on ISCorp's own facilities page, so this record covers that building alone rather than emitting a second, thinly-sourced record.",
+    "energy": {
+      "source": "grid",
+      "notes": "Redundant hospital-grade generators and N+1 cooling; operator reports 100% uptime since inception."
+    },
     "facilityType": "data_center"
   },
   {
@@ -53762,6 +54798,352 @@
     "facilityType": "data_center"
   },
   {
+    "id": "leeward-huckleberry-solar-mayes-county-ok",
+    "name": "Huckleberry Solar",
+    "operator": "Leeward Renewable Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.2544,
+      "lon": -95.3975,
+      "county": "Mayes",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 125
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-01-15",
+        "note": "Construction begun as part of the Mayes County Solar Portfolio under Google PPAs.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-07-07",
+        "note": "Listed as commercial in Leeward's Oklahoma portfolio milestone release.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.lreus.com/lre-celebrates-major-milestones-across-725-mw-oklahoma-solar-portfolio-supporting-google-operations-and-regional-power-demand/",
+        "label": "LRE Celebrates Major Milestones Across 725 MW Oklahoma Solar Portfolio Supporting Google Operations",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/projects/mayes-county-solar/",
+        "label": "Mayes County Solar — project page",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gem.wiki/Huckleberry_solar_farm",
+        "label": "Huckleberry solar farm — Global Solar Power Tracker",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Coordinates are Global Energy Monitor's plant point, marked approximate. Portfolio-wide economics ($76M lifetime tax revenue, 300+ construction jobs across all three Mayes County projects) are deliberately not attributed to this single record.",
+    "energy": {
+      "source": "solar",
+      "utility": "AEP",
+      "notes": "Contracted to Google under a long-term PPA; portfolio output is delivered under firm transmission service to GRDA to support Google's Pryor data center operations."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "poweredFacilityIds": [
+        "google-pryor-ok"
+      ],
+      "notes": "Second of three projects in Leeward's 372 MWac Mayes County Solar Portfolio, sited less than one mile from Google's Pryor data center. Leeward's project page gives the nameplate as 124.7 MWac; its July 2026 milestone release rounds it to 125 MW, the figure recorded here."
+    }
+  },
+  {
+    "id": "leeward-mayes-solar-mayes-county-ok",
+    "name": "Mayes Solar",
+    "operator": "Leeward Renewable Energy",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.2901,
+      "lon": -95.4265,
+      "county": "Mayes",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 102
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-01-15",
+        "note": "Construction begun as part of the Mayes County Solar Portfolio under Google PPAs.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.lreus.com/lre-celebrates-major-milestones-across-725-mw-oklahoma-solar-portfolio-supporting-google-operations-and-regional-power-demand/",
+        "label": "LRE Celebrates Major Milestones Across 725 MW Oklahoma Solar Portfolio Supporting Google Operations",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/projects/mayes-county-solar/",
+        "label": "Mayes County Solar — project page",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gem.wiki/Mayes_County_solar_farm",
+        "label": "Mayes County solar farm — Global Solar Power Tracker",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Coordinates are Global Energy Monitor's plant point, marked approximate. Portfolio-wide economics across all three Mayes County projects are not attributed to this record.",
+    "energy": {
+      "source": "solar",
+      "utility": "Grand River Dam Authority (GRDA)",
+      "notes": "Contracted to Google under a long-term PPA, delivered under firm transmission service to GRDA to support Google's Pryor data center operations."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "poweredFacilityIds": [
+        "google-pryor-ok"
+      ],
+      "notes": "Third of three projects in Leeward's 372 MWac Mayes County Solar Portfolio. Leeward's project page gives the nameplate as 101.5 MWac; the July 2026 milestone release rounds it to 102 MW, the figure recorded here. Still under construction as of that release, while its two sibling projects had reached commercial operation."
+    }
+  },
+  {
+    "id": "leeward-salt-branch-solar-mayes-county-ok",
+    "name": "Salt Branch Solar (Phases 1 & 2)",
+    "operator": "Leeward Renewable Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.3316,
+      "lon": -95.2293,
+      "county": "Mayes",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 145
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-01-15",
+        "note": "Leeward announced construction had begun on the 372 MWac Mayes County Solar Portfolio under Google PPAs.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-07-07",
+        "note": "Listed as commercial in Leeward's Oklahoma portfolio milestone release.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.lreus.com/lre-celebrates-major-milestones-across-725-mw-oklahoma-solar-portfolio-supporting-google-operations-and-regional-power-demand/",
+        "label": "LRE Celebrates Major Milestones Across 725 MW Oklahoma Solar Portfolio Supporting Google Operations",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/over-700mwac-new-solar-projects-in-ok/",
+        "label": "LRE Announces Over 700 MWac of New Solar Projects in Oklahoma",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Saltbranch_solar_farm",
+        "label": "Saltbranch solar farm — Global Solar Power Tracker",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Coordinates are Global Energy Monitor's plant point, marked approximate: GEM's sibling page for Leeward's Twelvemile project carries this same coordinate while Leeward places Twelvemile in Bryan/Johnston counties, so GEM's points in this portfolio are treated as indicative rather than parcel-confirmed. Mayes County portfolio figures ($76M tax revenue over the projects' lifespan, 300+ construction jobs) are portfolio-wide across all three projects and are therefore NOT attributed to this record.",
+    "energy": {
+      "source": "solar",
+      "utility": "Grand River Dam Authority (GRDA) for Salt Branch 1; AEP for Salt Branch 2",
+      "notes": "Output is contracted to Google under a long-term PPA and delivered under firm transmission service to GRDA, which uses it to support Google's Pryor data center operations."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "poweredFacilityIds": [
+        "google-pryor-ok"
+      ],
+      "notes": "One of three projects in Leeward's 372 MWac Mayes County Solar Portfolio, all sited less than one mile from Google's Pryor data center. Reached commercial operation per Leeward's July 7, 2026 portfolio milestone release."
+    }
+  },
+  {
+    "id": "leeward-twelvemile-solar-1-2-bryan-county-ok",
+    "name": "Twelvemile Solar 1 & 2",
+    "operator": "Leeward Renewable Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.9919761,
+      "lon": -96.3776762,
+      "county": "Bryan",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 152.5
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-01-15",
+        "note": "Announced with construction beginning in early 2025 under Google PPAs.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-07-07",
+        "note": "Listed as commercial in Leeward's Oklahoma portfolio milestone release.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.lreus.com/lre-celebrates-major-milestones-across-725-mw-oklahoma-solar-portfolio-supporting-google-operations-and-regional-power-demand/",
+        "label": "LRE Celebrates Major Milestones Across 725 MW Oklahoma Solar Portfolio Supporting Google Operations",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/over-700mwac-new-solar-projects-in-ok/",
+        "label": "LRE Announces Over 700 MWac of New Solar Projects in Oklahoma",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/projects/twelvemile-solar/",
+        "label": "Twelvemile Solar — project page",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Durant%2C+Bryan+County%2C+Oklahoma&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Durant, Bryan County, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "COORDINATE CAVEAT — read before using this pin. Leeward's own project page places the Twelvemile facilities in Bryan and Johnston counties northwest of Durant, and its July 2026 release assigns Twelvemile 1 & 2 to Bryan County. Global Energy Monitor's Twelvemile page instead reports Mayes County at 36.3316, -95.2293 — the identical coordinate GEM gives for Leeward's Saltbranch project, about 260 km away — so that point was rejected as a copy error rather than used. The coordinate here is the city of Durant, an approximate county anchor, NOT the array footprint.",
+    "energy": {
+      "source": "solar",
+      "utility": "OG&E",
+      "notes": "Contracted to Google under a long-term PPA. Leeward's January 2025 announcement described the Oklahoma portfolio's output as delivered under firm transmission service to GRDA to support Google's data center operations; the July 2026 milestone release names OG&E as the interconnecting utility for Twelvemile 1 & 2."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "unitCount": 2,
+      "notes": "Twelvemile I (100 MW) and Twelvemile II (52.2 MW). Leeward's January 2025 release gives the combined figure as 152.5 MWac and its July 2026 release rounds it to 153 MW; the 152.5 MWac figure is recorded here. No poweredFacilityIds are set because no single named compute campus is identified for this project as opposed to the Mayes County portfolio."
+    }
+  },
+  {
+    "id": "leeward-twelvemile-solar-3-johnston-county-ok",
+    "name": "Twelvemile Solar 3",
+    "operator": "Leeward Renewable Energy",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.31888,
+      "lon": -96.6752298,
+      "county": "Johnston",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-01-15",
+        "note": "Announced with construction beginning in early 2025 as part of the 724 MWac Oklahoma portfolio.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.lreus.com/lre-celebrates-major-milestones-across-725-mw-oklahoma-solar-portfolio-supporting-google-operations-and-regional-power-demand/",
+        "label": "LRE Celebrates Major Milestones Across 725 MW Oklahoma Solar Portfolio Supporting Google Operations",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/over-700mwac-new-solar-projects-in-ok/",
+        "label": "LRE Announces Over 700 MWac of New Solar Projects in Oklahoma",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/projects/twelvemile-solar/",
+        "label": "Twelvemile Solar — project page",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Johnston+County%2C+Oklahoma&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Johnston County, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "COORDINATE CAVEAT: the pin is the Johnston County centroid, an approximate county anchor and not the array footprint. Global Energy Monitor's Twelvemile entry places the project in Mayes County at a coordinate identical to its Saltbranch entry; that point was rejected as a copy error in favour of the developer's own county assignment.",
+    "energy": {
+      "source": "solar",
+      "notes": "Part of Leeward's 725 MW Oklahoma solar portfolio developed alongside long-term Google PPAs. The July 2026 milestone release does not name an interconnecting utility for this phase, so none is recorded."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "notes": "Third Twelvemile phase, 200 MWac, in Johnston County. Under construction as of Leeward's July 7, 2026 release, which expected commercial operation \"in coming months.\" Leeward's project page also describes a future Twelvemile IV anticipated around 2029; that phase is not recorded here. No poweredFacilityIds set — no single named compute campus is identified for this phase."
+    }
+  },
+  {
     "id": "leola-data-center-mcpherson-county-sd",
     "name": "Leola Data Center",
     "operator": "Leola Data Center, LLC",
@@ -54233,9 +55615,23 @@
         "publisher": "StateImpact Oklahoma / Public Radio Tulsa",
         "retrievedAt": "2026-08-19",
         "kind": "press"
+      },
+      {
+        "url": "https://okenergytoday.com/2025/06/more-details-about-the-proposed-chickasha-data-center/",
+        "label": "More details about the proposed Chickasha data center",
+        "publisher": "Oklahoma Energy Today",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.southwestledger.news/chickasha-industrial-park-development-could-generate-35b-investment-3000-jobs",
+        "label": "Chickasha industrial park development could generate $3.5B investment, 3,000 jobs",
+        "publisher": "Southwest Ledger",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-09-14",
     "notes": "The $3.5B figure is for the combined plant-plus-data-center project and is therefore recorded in generation.notes, not as this record's investmentUsd. As of the August 2026 reporting no firm data-center tenant had been made public; the compute side of the site is intentionally not created as a separate record until it is named.",
     "energy": {
       "source": "on_site_gas",
@@ -55421,6 +56817,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumen-oklahoma-city-1-ok",
+    "name": "Lumen Oklahoma City 1",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.46994,
+      "lon": -97.516522,
+      "city": "Oklahoma City",
+      "county": "Oklahoma",
+      "street": "201 Robert S Kerr Avenue",
+      "postalCode": "73102",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an existing, operating Oklahoma City data center in News on 6's statewide inventory.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (statewide inventory)",
+        "publisher": "News on 6 (KOTV)",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://inflect.com/building/201-robert-s-kerr-avenue-oklahoma-city",
+        "label": "201 Robert S Kerr Avenue, Oklahoma City — data center building listing",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=201+Robert+S+Kerr+Ave%2C+Oklahoma+City%2C+OK+73102&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for 201 Robert S Kerr Ave, Oklahoma City, OK 73102",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Carrier colocation site in downtown Oklahoma City, in the same building as FullTel Communications' OKC01. Formerly a Level 3 facility. Coordinates are a street-address geocode, not a parcel-confirmed footprint. No capacity or square-footage figure is recorded here — the figures in circulation come from directory aggregators that were not readable this session.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumen-phoenix-1-az",
     "name": "Lumen Phoenix 1",
     "operator": "Lumen Technologies",
@@ -55690,6 +57137,57 @@
     "energy": {
       "utility": "Pacific Gas & Electric (PG&E)"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-tulsa-1-ok",
+    "name": "Lumen Tulsa 1",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1571337,
+      "lon": -95.993394,
+      "city": "Tulsa",
+      "county": "Tulsa",
+      "street": "18 W Archer St",
+      "postalCode": "74103",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as an existing, operating Tulsa data center in News on 6's statewide inventory.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (statewide inventory)",
+        "publisher": "News on 6 (KOTV)",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://inflect.com/building/18-west-archer-street-tulsa/lumen/datacenter/level-3-tulsa",
+        "label": "Lumen Tulsa — 18 West Archer Street, Tulsa, OK 74103",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=18+W+Archer+St%2C+Tulsa%2C+OK+74103&format=json&limit=3&addressdetails=1",
+        "label": "OpenStreetMap Nominatim geocode for 18 W Archer St, Tulsa, OK 74103",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Carrier colocation site in downtown Tulsa (formerly Level 3 Tulsa 1), with direct interconnection to OneNet and the Great Plains Network. Distinct from the tracked TierPoint Tulsa - Archer facility at 322 E Archer St. Coordinates are a street-address geocode, not a parcel-confirmed footprint.",
     "facilityType": "data_center"
   },
   {
@@ -55971,6 +57469,50 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "mapletree-riverwood-pewaukee-wi",
+    "name": "N15W24250 Riverwood Drive Data Centre (Pewaukee)",
+    "operator": "Mapletree Redwood Data Centre Trust",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.052836,
+      "lon": -88.2304946,
+      "city": "Pewaukee",
+      "county": "Waukesha",
+      "street": "N15 W24250 Riverwood Drive",
+      "postalCode": "53188",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/mapletree-n15-w24250-riverwood",
+        "label": "Mapletree: N15 W24250 Riverwood Data Center — ownership history and status",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/wisconsin",
+        "label": "Wisconsin Data Centers & Colocation (lists N15 W24250 Riverwood at 142,952 sq ft, ~40,000 sq ft gross)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=N15W24250+Riverwood+Drive%2C+Pewaukee%2C+WI+53188&format=json&limit=1&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode of N15W24250 Riverwood Drive, Riverwood Corporate Center, City of Pewaukee (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Two-storey data centre in the Riverwood Corporate Center, 142,952 sq ft total with roughly 40,000 sq ft of gross data centre area, completed 1985 and described as fully operational. Ownership chain: AT&T sold to Carter Validus Mission Critical REIT for $51.8 million in 2013 (with a 10-year AT&T leaseback); Hudson DC Assets LLC acquired it in 2017; Mapletree acquired it in 2020. Baxtel's MW figure is paywalled on the facility page, so no capacity is recorded. Both substantive sources are the same publisher, hence \"reported\".",
+    "facilityType": "data_center"
   },
   {
     "id": "mara-findlay-oh",
@@ -57490,6 +59032,7 @@
       "lon": -88.837,
       "city": "Beaver Dam",
       "county": "Dodge",
+      "street": "County Road A",
       "state": "WI",
       "precision": "exact"
     },
@@ -57554,9 +59097,37 @@
         "publisher": "The Daily Reporter",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wisbusiness.com/2026/new-details-revealed-for-metas-beaver-dam-data-center/",
+        "label": "New details revealed for Meta's Beaver Dam data center (up to 220 MW, per newly unredacted Alliant Energy service contract)",
+        "publisher": "WisBusiness",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.alliantenergy.com/news/news-center/2025/11/111225-metabeaverdamannouncement",
+        "label": "Meta announces $1 billion Data Center Investment in Beaver Dam, Wisconsin Project (dry cooling, water restoration, renewable match, $200M energy infrastructure)",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.revenue.wi.gov/Pages/FAQS/ExemptionforQualifiedDataCenter.aspx",
+        "label": "DOR Qualified Data Center Exemption — certified qualified data centers, incl. Degas LLC, Beaver Dam (County Road A), certified 2/18/2025",
+        "publisher": "Wisconsin Department of Revenue",
+        "retrievedAt": "2026-09-13",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.wpr.org/news/bloomberg-meta-developer-beaver-dam-data-center",
+        "label": "Bloomberg: Meta is the developer behind planned Beaver Dam data center (agreements made with \"a company working through Degas LLC\"; state incentive deal reached February 2025)",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-13",
     "notes": "Coordinates are approximate city centroid for Beaver Dam; exact site is Alliant Energy Beaver Dam Commerce Park (Wisconsin's largest certified development-ready site). 700,000+ sq ft campus. Meta's 26th US data center. AI workloads are the stated purpose.",
     "energy": {
       "source": "grid",
@@ -57567,6 +59138,14 @@
       "coolingType": "air",
       "notes": "Dry cooling — no water consumption for cooling once operational; 570 acres of wetland/prairie restoration surrounding facility via Ducks Unlimited partnership"
     },
+    "subsidies": [
+      {
+        "program": "Wisconsin sales and use tax exemption for a qualified data center (WEDC certification of Degas LLC, Beaver Dam — County Road A; certified 2/18/2025)",
+        "jurisdiction": "Wisconsin",
+        "year": "2025",
+        "sourceIndex": 8
+      }
+    ],
     "investmentUsd": 1000000000,
     "jobs": {
       "construction": 1000,
@@ -60160,6 +61739,7 @@
       "lon": -86.1197,
       "city": "Indianapolis",
       "county": "Marion",
+      "street": "2505 N. Sherman Ave.",
       "state": "IN",
       "precision": "approximate"
     },
@@ -60209,12 +61789,25 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.wfyi.org/wfyi-news/2026-05-04/metrobloks-data-center-gets-final-approval-for-martindale-brightwood",
+        "label": "Indianapolis council approves data center for Martindale-Brightwood",
+        "publisher": "WFYI",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-09-13",
     "notes": "$500M (two phases; first ~$150M), 75 MW data center on the 14-acre former Sherman Drive-In site at 2505 N Sherman Dr, Indianapolis. ~168,000 sq ft with 36 backup generators. MDC approved rezoning 6-2 on 2026-04-01. Coordinates approximate from the cited street address (pending parcel-precise geocode).",
     "energy": {
-      "utility": "AES Indiana"
+      "source": "grid",
+      "utility": "AES Indiana",
+      "notes": "Electricity supplied by AES Indiana under contract rather than off the residential grid supply."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling: roughly 19,000 gallons for the first building and 47,500 gallons for the second, added once during construction and then continuously recirculated rather than consumed."
     },
     "investmentUsd": 500000000,
     "landAcres": 14,
@@ -62342,6 +63935,7 @@
       "lon": -87.89,
       "city": "Kenosha",
       "county": "Kenosha",
+      "street": "State Highway 142 west of Interstate 94",
       "state": "WI",
       "precision": "exact"
     },
@@ -62388,14 +63982,32 @@
         "label": "Area Development — Microsoft Plans Kenosha, Wisconsin, Data Center Operations",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wpr.org/news/plan-commission-approves-new-kenosha-data-center",
+        "label": "Plan commission approves new Kenosha data center (four 250,000 sq ft buildings, new substation, air cooling, city sewer and water, annexation from Town of Paris, unanimous approval Nov. 22, 2024)",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wgtd.org/news/proposed-kenosha-data-center-remains-table",
+        "label": "Proposed Kenosha Data Center Remains on the Table (243-acre site west of I-94 along State Highway 142; city awaiting Microsoft site plans; construction could begin 2027)",
+        "publisher": "WGTD",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-09-13",
     "notes": "Coordinates approximate for NW quadrant of I-94/Hwy 142 intersection, Kenosha County. Land was already properly zoned for data center operations per DCD; Navix Engineering filed November 2024 permit application for four-building campus. Site is 6 miles south of Microsoft's Mount Pleasant facility; part of Microsoft's broader Wisconsin investment commitment. No building permit issued as of Jan 2025.",
     "energy": {
       "source": "grid",
       "utility": "We Energies (WEC Energy Group)",
       "notes": "We Energies serves Kenosha County; the utility received PSC approval (May 2025) for a 128 MW gas plant in the Town of Paris partly to meet data-center demand. Kenosha City Council unanimously annexed and rezoned ~240 acres (late 2024; four 250,000-sq-ft buildings planned). NOTE: Microsoft's larger Wisconsin figures ($3.3B/$4B investment, thousands of jobs) are for the SEPARATE Mount Pleasant / Racine County campus, NOT this Kenosha site; no Kenosha-specific investment, jobs, water, or site-specific tax-exemption figures have been disclosed."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "At the November 2024 plan commission hearing the developer's representative said the data center \"will be cooled by air, not water\", while the site will still be connected to Kenosha's sewer and water systems. ⚠️ This is a developer characterization at a zoning hearing, not a published design document, and operators commonly describe a recirculating closed-loop circuit as \"air-cooled\" — revisit when Microsoft files site plans, which the city was still awaiting as of June 2026."
     },
     "investmentUsd": 35000000,
     "landAcres": 240,
@@ -62820,9 +64432,23 @@
         "publisher": "Futurism",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://blogs.microsoft.com/on-the-issues/2025/09/18/made-in-wisconsin-the-worlds-most-powerful-ai-datacenter/",
+        "label": "Made in Wisconsin: The world's most powerful AI datacenter (Brad Smith; total Wisconsin investment \"more than $7 billion\", closed-loop cooling, 3,000 construction workers, ~500 then ~800 full-time employees)",
+        "publisher": "Microsoft On the Issues",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://rcedc.org/microsoft-in-racine-county/",
+        "label": "Microsoft in Racine County – News & Updates (investment timeline $1B→$3.3B→$7.3B, site described as west of 90th Street in the Wisconsin Science and Technology Park, 1,575 acres owned, first facility fully operational June 23 2026, 250 MW National Grid Renewables solar partnership)",
+        "publisher": "Racine County Economic Development Corporation",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-13",
     "energy": {
       "source": "mixed",
       "utility": "We Energies",
@@ -63173,6 +64799,82 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "microsoft-project-nova-caledonia-wi",
+    "name": "Project Nova Data Center Campus (Caledonia)",
+    "operator": "Microsoft",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.8210813,
+      "lon": -87.8501324,
+      "city": "Caledonia",
+      "county": "Racine",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-09-29",
+        "note": "Caledonia Plan Commission voted 5-2 to rezone the 244-acre site from agriculture to light manufacturing and office; a Village Board vote was scheduled for Oct. 14, 2025.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-10-08",
+        "note": "Microsoft withdrew the rezoning request: \"Based on the community feedback we heard, we have chosen not to move forward with this site.\"",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/news/caledonia-rezoning-microsoft-data-center-wisconsin",
+        "label": "Wisconsin village's plan commission approves rezoning for Microsoft data center",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.tmj4.com/news/racine-county/microsoft-pulls-plug-on-plans-for-244-acre-data-center-in-caledonia-after-community-pushback",
+        "label": "Microsoft pulls plug on plans for 244-acre data center in Caledonia after community pushback",
+        "publisher": "TMJ4 News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/microsoft-cancels-wisconsin-data-center-154306947.html",
+        "label": "Microsoft cancels Wisconsin data center (Project Nova) — three buildings and a 15-acre substation",
+        "publisher": "Tom's Hardware via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"Project Nova, Caledonia\")",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Botting+Road%2C+Caledonia%2C+Racine+County%2C+Wisconsin&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of Botting Road, Caledonia, Racine County, WI (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Microsoft's third Racine County site, known internally as Project Nova: 244 acres of farmland at County Line Road and State Highway 32 (Douglas Avenue/Botting Road area), southwest of the We Energies Oak Creek Power Plant, planned for three data center structures plus a 15-acre electrical substation. Distinct from Microsoft's Mount Pleasant campus and its Kenosha site. WPR reported the project would have employed \"anywhere from 50 to 200 people\" with \"about 300 to 400 construction workers\" — a range, so no jobs figures are recorded here. Coordinates are a street-level geocode of Botting Road, not a parcel-confirmed point.",
+    "landAcres": 244,
+    "community": {
+      "status": "opposed",
+      "notes": "More than 2,000 people signed a petition opposing the rezoning. Microsoft said it remains committed to finding another site in Caledonia or elsewhere in Racine County.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "microsoft-ruthenium-west-des-moines-ia",
@@ -65506,6 +67208,69 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "nemadji-trail-energy-center-superior-wi",
+    "name": "Nemadji Trail Energy Center",
+    "operator": "South Shore Energy, LLC (ALLETE) and Dairyland Power Cooperative",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 46.6915618,
+      "lon": -92.045028,
+      "city": "Superior",
+      "county": "Douglas",
+      "street": "31st Avenue East",
+      "postalCode": "54880",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 550
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2020-01-31",
+        "note": "The Public Service Commission of Wisconsin issued a final decision in docket 9698-CE-100 for the approximately 550 MW natural gas generating facility and associated 345 kV generator tie line. At approval, construction was anticipated to begin in Q3 2023 with commercial operation in 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://psc.wi.gov/Pages/CommissionActions/CasePages/NemadjiTrailEnergyCenterProject.aspx",
+        "label": "PSC Nemadji Trail Energy Center Project — docket 9698-CE-100 case page (applicants, ~550 MW, site acreage, final decision date)",
+        "publisher": "Public Service Commission of Wisconsin",
+        "retrievedAt": "2026-09-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.nemadjitrailenergycenter.com/",
+        "label": "Nemadji Trail Energy Center — project site (owners, siting, permitting and schedule)",
+        "publisher": "South Shore Energy / Dairyland Power Cooperative",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=31st+Avenue+East%2C+Superior%2C+Wisconsin&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of 31st Avenue East, City of Superior, Douglas County (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "State-permitted 550 MW gas plant in the City of Superior, on 31st Avenue East between Grand Avenue and E. 10th Street. Compute Atlas already tracks the two We Energies gas projects driven by southeast Wisconsin data center load; this is the state's other large pending gas plant and is untracked. Note it has faced local setbacks: the Superior city council has declined to set the public hearings required for the land-use changes and the utilities still need to re-apply for a state air permit, per contemporaneous reporting not cited here. Coordinates are a street-level geocode, not a parcel.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural gas-fired generating facility with an associated 345 kV generator tie line, sited in a \"shovel-ready, industrial area\" next to existing electric and natural gas infrastructure east of the Enbridge Superior Terminal on the banks of the Nemadji River."
+    },
+    "landAcres": 26.3,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "PSC of Wisconsin docket 9698-CE-100; CPCN issued January 31, 2020. Project site is approximately 26.3 acres plus approximately 24.8 acres of staging and laydown area across 31st Avenue East. The developers' own published schedule shows regulatory review 2017–2024, construction and commissioning 2024–2027 and operation in 2028 — every post-2024 milestone marked \"pending regulatory approval\" — and the project remains in a multiyear federal and state permitting process (Wisconsin DNR, EPA, PSC, USACE). Recorded as permitted rather than under_construction because no fetched source shows construction has started."
+    }
+  },
+  {
     "id": "netrality-210-north-tucker-st-louis-mo",
     "name": "Netrality 210 North Tucker (St. Louis)",
     "operator": "Netrality Data Centers",
@@ -65964,6 +67729,50 @@
     "landAcres": 3500,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "new-era-technology-appleton-wi",
+    "name": "New Era Technology Appleton Data Center",
+    "operator": "New Era Technology",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.2998488,
+      "lon": -88.370814,
+      "city": "Appleton",
+      "county": "Outagamie",
+      "street": "2201 E. Enterprise Avenue",
+      "postalCode": "54913",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.godatacenters.com/data-centers/wisconsin/appleton/3069b211-42d8-4380-8f43-77c22a7c2397",
+        "label": "New Era Technology - Appleton, WI Data Center (2201 E Enterprise Avenue; Tier 3; built 2020)",
+        "publisher": "GoDataCenters",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"New Era Technology-Appleton, Appleton\")",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=2201+E+Enterprise+Avenue%2C+Appleton%2C+WI+54913&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of 2201 East Enterprise Avenue, Appleton, Outagamie County (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Tier 3 colocation facility built in 2020, offering colocation, cross-connects, remote hands, backup generation and managed services. New Era Technology's own locations page lists only a Milwaukee-area office (10400 West Innovation Drive, Wauwatosa) and does not mention Appleton, so the address rests on a directory listing corroborated by the Journal Sentinel's statewide map — hence \"reported\". The directory also publishes a PUE of 1.40, which is not recorded here because it is not attributed to the operator.",
+    "facilityType": "data_center"
   },
   {
     "id": "newfold-digital-provo-ut",
@@ -66571,6 +68380,58 @@
       ],
       "unitCount": 2
     }
+  },
+  {
+    "id": "noec-core-data-center-vinita-ok",
+    "name": "CORE Data Center (Vinita)",
+    "operator": "Northeast Oklahoma Electric Cooperative",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.6408372,
+      "lon": -95.156363,
+      "city": "Vinita",
+      "county": "Craig",
+      "street": "27039 South 4440 Road",
+      "postalCode": "74301",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2014",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2014",
+        "note": "Built 2014; listed as an operating 5,000 sq ft cooperative-owned colocation facility in News on 6's statewide inventory.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "What data centers are being built in Oklahoma? (statewide inventory)",
+        "publisher": "News on 6 (KOTV)",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.corecolocate.com/why-core-colocate/about-us/",
+        "label": "About Us — Core Data Center, Northeast Oklahoma Electric Cooperative",
+        "publisher": "CoreColocate (Northeast Oklahoma Electric Cooperative)",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.noec.coop/about-noec/contact-us/",
+        "label": "Contact Us — Northeast Oklahoma Electric Cooperative, Vinita headquarters address",
+        "publisher": "Northeast Oklahoma Electric Cooperative",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Wholly owned, operated and managed by Northeast Oklahoma Electric Cooperative and co-located at its Vinita headquarters. Houses head-end equipment for BOLT Fiber Optic Services plus colocated business customers, with redundant fiber to multiple providers. Street address is the cooperative's Vinita headquarters, taken from its own contact page; coordinates are the town of Vinita, since the address did not resolve in OSM. Square footage (5,000 sq ft) and the 2014 build year come from the News on 6 inventory and are recorded in the notes rather than as structured capacity.",
+    "facilityType": "data_center"
   },
   {
     "id": "northern-data-maysville-jackson-ga",
@@ -69291,6 +71152,7 @@
       "lon": -88.8373,
       "city": "Beaver Dam",
       "county": "Dodge",
+      "street": "Highway 151 and Hemlock Road",
       "state": "WI",
       "precision": "approximate"
     },
@@ -69310,11 +71172,26 @@
         "publisher": "Daily Dodge",
         "retrievedAt": "2026-09-01",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wpr.org/economy/second-data-center-project-proposed-in-beaver-dam",
+        "label": "Second data center project proposed in Beaver Dam (90,000 sq ft, 13-acre site at Highway 151 and Hemlock Road, under 20 MW, 5,929 gallons/day estimated water use, 15 full-time jobs)",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-09-13",
     "notes": "A 90,000-square-foot single-story regional edge data center — a separate, much smaller project from Meta's ~700,000-square-foot Beaver Dam campus already tracked. Council deliberations raised water use, utility rates and tax-fairness concerns. Coordinates are a municipality-level locator; the site is at Highway 151 and Hemlock Road.",
+    "water": {
+      "reportedMgd": 0.0059,
+      "notes": "Estimated daily water usage of 5,929 gallons for the 90,000 sq ft facility — about 0.0059 million gallons per day. This is the project's own estimate as presented to the Beaver Dam City Council, not a measured figure, and the source does not identify a cooling method."
+    },
     "landAcres": 14,
+    "jobs": {
+      "permanent": 15,
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -70896,6 +72773,59 @@
     "facilityType": "data_center"
   },
   {
+    "id": "plainsmen-project-thunderbird-enid-ok",
+    "name": "Project Thunderbird (Enid)",
+    "operator": "Plainsmen Holdings, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.3967623,
+      "lon": -97.8791341,
+      "city": "Enid",
+      "county": "Garfield",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-08",
+        "note": "Unveiled publicly by Plainsmen Holdings; no city approvals, formal agreements or MOUs signed. Final approval would rest with the Enid City Commission.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.enidnews.com/news/local_news/enid-natives-announce-local-data-center-power-generation-project/article_0465bc43-e183-4d3a-b602-9afd55ff300e.html",
+        "label": "UPDATED: Enid natives announce local data center, power generation project",
+        "publisher": "Enid News & Eagle",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://okenergytoday.com/2026/09/massive-data-center-campus-unveiled-for-enid/",
+        "label": "Massive data center campus unveiled for Enid",
+        "publisher": "Oklahoma Energy Today",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Four proposed campuses along a single corridor in Enid and Garfield County (sites north, east, west-central and south of Enid; Enid News & Eagle names 22nd and Phillips, 5th and Rupe, and South 5th south of Rupe). Acreage is reported as 1,735 by Oklahoma Energy Today and ~1,655 by the Enid News & Eagle — the larger figure is recorded here and the discrepancy is unresolved. Coordinates are the city of Enid: this is a four-campus proposal with no single footprint. The $35 billion investment figure appears only in secondary coverage and is omitted here. Briefed to Vance Air Force Base and the Department of the Air Force, but nothing has been signed.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 3300,
+      "notes": "Behind-the-meter natural-gas-fired generation of up to 3.3 GW, developed in partnership with a midstream energy provider, enabled by Oklahoma's 2025 behind-the-meter law (SB 480). The developers also describe the plant as a backup supply to Vance Air Force Base. Generation capacity is the developers' stated figure, not a permitted or interconnected number."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developers state the campuses would use raw (untreated) pipeline water from the new Kaw Lake pipeline — the lake sits about 8 miles east of Ponca City — with closed-loop recirculating cooling rather than treated drinking water."
+    },
+    "landAcres": 1735,
+    "facilityType": "data_center"
+  },
+  {
     "id": "plan-c-crypto-fayetteville-cumberland-county-nc",
     "name": "Plan C Crypto Fayetteville (Dedication Drive)",
     "operator": "Plan C Crypto",
@@ -71057,6 +72987,68 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "point-beach-nuclear-plant-two-rivers-wi",
+    "name": "Point Beach Nuclear Plant",
+    "operator": "NextEra Energy Resources",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.28111,
+      "lon": -87.53667,
+      "city": "Two Rivers",
+      "county": "Manitowoc",
+      "state": "WI",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 1182
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1970-12-21",
+        "note": "Unit 1 entered commercial operation December 21, 1970; Unit 2 on October 1, 1972.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/energy/we-energies-buy-power-from-point-beach-nuclear-plant",
+        "label": "We Energies plans to buy power from Point Beach Nuclear Plant into the 2050s",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nexteraenergyresources.com/what-we-do/nuclear/point-beach.html",
+        "label": "NextEra Energy Resources — Point Beach (site acreage, operating since 1970, one-sixth of Wisconsin's power)",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Point_Beach_Nuclear_Plant",
+        "label": "Point Beach Nuclear Plant — coordinates, 1,182 MW net across two 625 MW Westinghouse PWRs, commercial operation and license dates",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Wisconsin's only operating nuclear station, and directly relevant to this tracker's scope: the August 2026 We Energies PPA for 86% of its output to 2050/2053 was justified on hyperscale data center load growth. Compute Atlas already tracks the proposed NEW nuclear project at the retired Kewaunee Power Station about 12 miles north (energysolutions-kewaunee-new-nuclear-wi); this is a separate, operating plant in Manitowoc County, not a duplicate of that record. Sited in the Town of Two Creeks; \"Two Rivers\" is the locality both NextEra and WPR use.",
+    "energy": {
+      "source": "nuclear",
+      "notes": "Two Westinghouse two-loop pressurized water reactors of 625 MW each (1,182 MW net combined). NextEra says the plant has \"safely operated since 1970\" and produces approximately one-sixth of all electric power in Wisconsin."
+    },
+    "landAcres": 1200,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "unitCount": 2,
+      "notes": "Sited on approximately 1,200 acres in the Town of Two Creeks near Two Rivers, bordered by farms and Lake Michigan. Both units received subsequent license renewals on September 29, 2025, extending operation into the early 2050s (Unit 1 to 2050, Unit 2 to 2053). In August 2026 We Energies announced a power purchase agreement to buy 86% of both units' energy through 2050/2053, replacing an agreement expiring in 2030 and 2033; the utility tied the extension to state projections that Wisconsin electricity demand could rise more than 40% by 2032, driven by hyperscale data centers. The PPA requires PSC of Wisconsin approval, with a filing expected in fall 2026."
+    }
   },
   {
     "id": "pointone-lower-moncure-road-lee-county-nc",
@@ -71393,6 +73385,45 @@
     "landAcres": 568,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "posey-county-boberg-road-data-center-in",
+    "name": "Posey County Boberg Road Data Center",
+    "operator": "Undisclosed",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.033661,
+      "lon": -87.7368008,
+      "county": "Posey",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-08-04",
+        "note": "Posey County commissioners said they would vote no on the proposed data center at Boberg and Hoenert roads, while noting they were still reviewing proposals in other parts of the county.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.14news.com/2026/08/04/posey-co-commissioners-vote-no-proposed-data-center-near-boberg-hoenert-rd/",
+        "label": "Posey Co. commissioners vote no on proposed data center near Boberg, Hoenert Rd",
+        "publisher": "14 News (WFIE)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Developer is not public — county commissioners signed a non-disclosure agreement and the area plan commission said it had received no application. Farmers along Boberg and Hoenert roads had been approached about leasing land. Acreage and capacity were never disclosed. Coordinates are the Boberg Road corridor in Posey County.",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents packed the August 4, 2026 meeting at Hovey House in Mount Vernon and submitted hundreds of letters in opposition, asking for a two-year moratorium; several criticized the commissioners for signing a non-disclosure agreement with the developer.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "potentia-oklahoma-campus-02-inola-ok",
@@ -71924,6 +73955,52 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "powerhouse-hobart-lake-county-in",
+    "name": "PowerHouse Hobart",
+    "operator": "PowerHouse Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5322592,
+      "lon": -87.2550353,
+      "city": "Hobart",
+      "county": "Lake",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 450
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Operator lists the site in site development (2025–2026) with entitlements and design in Q3 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.powerhousedata.com/data-center/powerhouse-hobart",
+        "label": "PowerHouse Hobart — site specifications",
+        "publisher": "PowerHouse Data Centers",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cleanview.co/data-centers/indiana",
+        "label": "Data Centers in Indiana — Project List & Locations (PowerHouse Hobart, Lake County, 450 MW, 2027)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Operator lists up to six buildings, up to two stories, 1,890,000 sq ft developable on 170 acres, max utility power 450 MW, power delivery Q2 2027 and construction/delivery 2027–2030. PowerHouse Data Centers is wholly owned by American Real Estate Partners (AREP). Distinct from the separately tracked AWS Hobart campus — different developer and a different stated capacity; no street address is published, so coordinates are the city of Hobart.",
+    "landAcres": 170,
+    "facilityType": "data_center"
   },
   {
     "id": "powerhouse-louisville-ky",
@@ -74950,10 +77027,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "provident-chesterton-porter-county-in",
+    "name": "Provident Chesterton Data Center Campus (former Brassie Golf Club)",
+    "operator": "Provident Realty Advisors",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.6006171,
+      "lon": -87.0910251,
+      "city": "Chesterton",
+      "county": "Porter",
+      "street": "1110 Pearson Road",
+      "postalCode": "46304",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-05",
+        "note": "Dallas-based Provident Realty Advisors proposed an eight-building, $1.3 billion campus on the former Brassie Golf Club site, with annexation of the southernmost 27 acres along Pearson Road.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2024-06-10",
+        "note": "Provident notified Chesterton officials it was withdrawing its application and the annexation request after the Town Council said it could never support the project at that scale and location.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/provident-chesterton-in",
+        "label": "Provident: Chesterton, IN Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Eight buildings proposed; per-building square footage and site MW were never published. Coordinates are the 1110 Pearson Road address given for the site. Single-source, so recorded as reported.",
+    "investmentUsd": 1300000000,
+    "community": {
+      "status": "opposed",
+      "notes": "Residents and environmental groups raised water and power consumption, noise, property-value and wildlife concerns; the Town Council held a series of public forums before the developer withdrew.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "province-group-bristol-innovation-park-elkhart-county-in",
     "name": "Bristol Innovation Park",
     "operator": "The Province Group",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 41.7203,
@@ -74969,6 +77096,12 @@
         "date": "2026-07-09",
         "note": "Elkhart County Advisory Plan Commission voted 7-2 to forward the rezoning with an unfavorable recommendation after a five-hour hearing attended by more than 500 opponents.",
         "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-09-13",
+        "note": "The petitioning landowners withdrew the Bristol Innovation Park rezoning on August 3, 2026 and the Bristol Town Council formally accepted the withdrawal, after the Elkhart County Plan Commission forwarded it with an unfavorable recommendation following a five-hour hearing attended by more than 500 opponents.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -74992,9 +77125,16 @@
         "publisher": "WVPE",
         "retrievedAt": "2026-09-01",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wvpe.org/wvpe-news/2026-08-07/landowners-pull-rezoning-request-that-could-have-allowed-for-data-center-in-bristol",
+        "label": "Landowners pull rezoning request that could have allowed for data center in Bristol",
+        "publisher": "WVPE",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-09-13",
     "notes": "Campus on 247 acres of farmland at county roads 14 and 23 north of Bristol, with roughly a million square feet of single-story buildings over a five-to-seven year build. The Province Group is acting for an undisclosed tech company; the rezoning requires both county council and Bristol Town Council action.",
     "investmentUsd": 1000000000,
     "landAcres": 247,
@@ -77897,6 +80037,57 @@
       "notes": "Operator describes a closed-loop cooling system that uses little to no water; classified closed_loop because a recirculating water circuit is present."
     },
     "landAcres": 12,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "radiusdc-plainfield-hendricks-county-in",
+    "name": "RadiusDC Plainfield Campus (Indy I / Indy II)",
+    "operator": "RadiusDC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.7416036,
+      "lon": -86.35343,
+      "city": "Plainfield",
+      "county": "Hendricks",
+      "street": "9323 AllPoints Parkway",
+      "postalCode": "46168",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 24
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Operator markets a developing purpose-built colocation campus; public trackers list the campus as planned.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.radius-dc.com/location/indianapolis",
+        "label": "Indianapolis Data Center | RadiusDC Location",
+        "publisher": "RadiusDC",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://dcmap.us/states/indiana/",
+        "label": "Indiana Data Center Map (RadiusDC Plainfield Campus, 24 MW, planned)",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Two buildings marketed as Indy I and Indy II, roughly 100,000 sq ft and 12 MW each (200,000 sq ft / 24 MW total), concurrently maintainable N+1, up to 400 W/sq ft, 24 hours of on-site fuel. Status is recorded as proposed because both trackers read this session list the campus as planned while the operator page markets in-service data-hall specifications; the two are in tension and a permit-level source would be needed to resolve it.",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy Indiana"
+    },
     "facilityType": "data_center"
   },
   {
@@ -83606,6 +85797,56 @@
     "aiClassification": "likely"
   },
   {
+    "id": "smarttec-site-01-mead-ok",
+    "name": "SmartTec Site 01 (Mead)",
+    "operator": "SmartTec by Z1Power",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.0005295,
+      "lon": -96.5110921,
+      "city": "Mead",
+      "county": "Bryan",
+      "street": "8460 US Highway 70",
+      "postalCode": "73449",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 0.114
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-14",
+        "note": "Land and buildings owned; construction start scheduled 24 September 2026, transformer commissioning 8 October 2026, fiber delivery October–November 2026. Operator states the campus is not yet offering commissioned capacity.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://smarttec.dev/site",
+        "label": "Mead, Oklahoma Data Center Site — 39.39 acres, Bryan County",
+        "publisher": "SmartTec by Z1Power",
+        "retrievedAt": "2026-09-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-14",
+    "notes": "Very small GPU colocation site on US-70 in Bryan County: three existing buildings (A 1,500 sq ft compute, B 2,083 sq ft batteries/utilities, C 3,535 sq ft compute), ~5,035 sq ft of gross data-center area. Phase 1A is 8× HGX-class systems, 64 GPUs, ~114 kW IT load — recorded here as 0.114 MW planned. Status is 'proposed' rather than 'under_construction' because as of 2026-09-14 the operator's own schedule puts construction start ten days out. Single-source (operator self-published), so confidence is 'reported'. Coordinates are the town of Mead; the street address did not resolve in OSM.",
+    "energy": {
+      "source": "grid",
+      "utility": "Oklahoma Gas & Electric (OG&E)",
+      "notes": "Existing on-site transformer rated 3,000 A at 208 V three-phase, awaiting OG&E commissioning (targeted 8 October 2026). The design is battery-backed with z1power LFP storage and sub-10 ms failover, on the stated premise that grid instability is the design basis of the site."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Initial proposal is 8 Supermicro systems using direct liquid cooling. The operator does not publish a water-use figure."
+    },
+    "landAcres": 39.39,
+    "facilityType": "data_center"
+  },
+  {
     "id": "socrates-north-new-albany-oh",
     "name": "Socrates North Generation Facility",
     "operator": "Will-Power OH, LLC (Williams Companies)",
@@ -86325,6 +88566,7 @@
       "city": "Port Washington",
       "county": "Ozaukee",
       "street": "Between I-43, Dixie Road, and the Ozaukee Interurban Trail, north of the city of Port Washington",
+      "postalCode": "53074",
       "state": "WI",
       "precision": "exact"
     },
@@ -86417,9 +88659,23 @@
         "publisher": "Wisconsin Public Radio",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.revenue.wi.gov/Pages/FAQS/ExemptionforQualifiedDataCenter.aspx",
+        "label": "DOR Qualified Data Center Exemption — Oracle America Cloud Services LLC (formerly Green Chile Ventures, LLC), Port Washington, WI: \"Four data center buildings at 531, 533, 701, and 723 E. Lake Drive\", certified 10/31/2025",
+        "publisher": "Wisconsin Department of Revenue",
+        "retrievedAt": "2026-09-13",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=E+Lake+Drive%2C+Port+Washington%2C+Ozaukee+County%2C+Wisconsin&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of Lake Drive, Town of Port Washington, Ozaukee County, WI 53074 (postal code provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-13",
     "energy": {
       "source": "mixed",
       "utility": "We Energies (WEC Energy Group)",
@@ -87836,6 +90092,54 @@
       "status": "mixed",
       "notes": "Residents questioned grid impact and electricity prices; Commissioner Tyler Kochirka said the ordinance change 'came about in, I think, an undermining way,' while Commissioner Cheryl McDermott supported the project.",
       "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "supranet-madison-wi",
+    "name": "SupraNet Madison Data Center",
+    "operator": "SupraNet Communications, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.075033,
+      "lon": -89.525037,
+      "city": "Madison",
+      "county": "Dane",
+      "street": "8000 Excelsior Drive, Suite 204",
+      "postalCode": "53717",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.supranet.net/cloud-solutions/",
+        "label": "SupraNet Data Center, Cloud, Disaster Recovery — Madison (address, SOC 2 Type II, carriers, redundancy)",
+        "publisher": "SupraNet Communications",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"SupraNet Madison, Madison\")",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=8000+Excelsior+Drive%2C+Madison%2C+WI+53717&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of 8000 Excelsior Drive, Old Sauk Trails Park, Madison (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "SOC 2 Type II carrier-neutral colocation facility in Old Sauk Trails Park on Madison's west side, with on-net access to Spectrum, TDS, AT&T, WIN, Lumen, US Signal and Verizon and no cross-connect fees. Distinct address from every tracked Madison-area site (US Signal WI01 at 222 W. Washington Ave., US Signal WI02/OneNeck at 5515 Nobel Dr. in Fitchburg, EdgeConneX MAD01, Lumen Madison 1).",
+    "energy": {
+      "source": "grid",
+      "notes": "Multiple backup power generators, enterprise UPS and redundant power systems; colocation is sold unmetered."
     },
     "facilityType": "data_center"
   },
@@ -89885,6 +92189,58 @@
       "notes": "Wythe County Administrator Stephen Bear welcomed the TAC project for its tax-revenue benefit; TAC's general counsel framed the campus as designed to minimize traffic/visual/noise/water impact. Wythe County has no zoning ordinance, so TAC needs only building and state environmental permits (no rezoning hearing). IMPORTANT CONTEXT: the same article reports organized resident opposition (water/electricity use, air pollution, noise, visual impact) to a DIFFERENT, separate data center proposal in the same county (Solis Arx, not in our facility dataset), which is what is now driving the county to draft its first zoning ordinance. TAC itself was not the target of that opposition per this source.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "takanock-goshen-elkhart-county-in",
+    "name": "Takanock Goshen Data Center",
+    "operator": "Takanock",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 41.5850394,
+      "lon": -85.8344491,
+      "city": "Goshen",
+      "county": "Elkhart",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "Listed as a proposed Elkhart County data center on three independent public trackers.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cleanview.co/data-centers/indiana",
+        "label": "Data Centers in Indiana — Project List (Takanock Goshen Data Center, Elkhart, 1,500 MW, planned)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://ailawtracker.org/data-centers",
+        "label": "Indiana Data Center Map | AI Infrastructure Projects (Takanock, Goshen, 1,500 MW, proposed)",
+        "publisher": "AI Law Tracker",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.interconnection.fyi/data-center/state/IN",
+        "label": "Indiana Data Center Records (Takanock - Goshen, Elkhart County, 250+ MW, proposed)",
+        "publisher": "Interconnection.fyi",
+        "retrievedAt": "2026-09-13",
+        "kind": "iso_queue"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Takanock assembles and entitles sites and then sells them to operators rather than operating them itself. Recorded as rumored: three public trackers list this consistently as an Elkhart County proposal, but no permit filing, rezoning docket item or local-news confirmation was found this session, and one tracker page conflated it with the separate Bristol Innovation Park petition. Distinct from province-group-bristol-innovation-park-elkhart-county-in (different developer and a different part of the county). Coordinates are the city of Goshen; no parcel is public.",
     "facilityType": "data_center"
   },
   {
@@ -93495,6 +95851,69 @@
     "water": {
       "coolingType": "closed_loop",
       "notes": "TigerDC documentation described a closed-loop cooling system with negligible water impact."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "town-of-janesville-data-center-rock-county-wi",
+    "name": "Town of Janesville Data Center Inquiry (Polzin/Fenric Roads)",
+    "operator": "Undisclosed (approached through a San Diego-based consulting firm)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.7158171,
+      "lon": -89.1216592,
+      "city": "Janesville",
+      "county": "Rock",
+      "street": "North Polzin Road at West Fenric Road",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04",
+        "note": "The town received a letter proposing the concept of a data center on 80 acres of farmland at the corner of North Polzin Road and West Fenric Road, near dozens of homes; contact came through a San Diego-based consulting firm. Rock County planning staff described it as \"more speculative\" with no application filed, and the town board said no NDAs were signed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://spectrumnews1.com/wi/milwaukee/news/2026/05/13/town-of-janesville--data-center--rock-county--paul-terpstra--petition",
+        "label": "Rock County sees third data center proposal request",
+        "publisher": "Spectrum News 1 Wisconsin",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://608scanner.com/the-rock-county-data-center-fight-janesvilles-three-proposals-and-the-vote-that-could-decide-them/",
+        "label": "The Rock County data center fight: Janesville's three proposals and the vote that could decide them",
+        "publisher": "608 Scanner",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gazettextra.com/news/more-rock-county-townships-are-seeking-data-center-moratoriums/article_c7214f26-7749-4c17-9e60-73e66da327b7.html",
+        "label": "More Rock County townships are seeking data center moratoriums",
+        "publisher": "Janesville Gazette (GazetteXtra)",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=North+Polzin+Road%2C+Janesville%2C+Rock+County%2C+Wisconsin&format=json&limit=1",
+        "label": "OpenStreetMap/Nominatim geocode of North Polzin Road, Town of Janesville, Rock County, WI (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "The third of three Rock County data center proposals and the only one not already tracked here: the other two are the City of Janesville / former GM site (Viridian Acquisitions, tracked as viridian-apecs-janesville-wi) and the Town of Beloit quarry campus (tracked as cambrin-project-cornmaze-town-of-beloit-wi, since taken over by Panattoni Development and extended into the Town of Turtle as \"Project Cornmaze\"). This is in the unincorporated TOWN of Janesville, not the city. The end user has never been named; one leaked email referenced an entity called IGNIS, which no fetched source corroborates, so the operator field records only what is verifiable. Coordinates are a street-level geocode of North Polzin Road, not a parcel.",
+    "landAcres": 80,
+    "community": {
+      "status": "opposed",
+      "notes": "An opposition petition gathered roughly 100 signatures per the town clerk, who said he had \"never seen a proposal like this in the town.\" The Town of Janesville board subsequently approved a data center moratorium, one of several Rock County townships to do so.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -98260,6 +100679,50 @@
       ],
       "notes": "Behind-the-meter gas plant co-permitted alongside the adjacent Nine Mile Data Center and reWater LLC water-recycling facility."
     }
+  },
+  {
+    "id": "wells-interconnection-milwaukee-wi",
+    "name": "Wells Interconnection Data Center (Wells Building)",
+    "operator": "Wells Interconnection",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.0389885,
+      "lon": -87.9069379,
+      "city": "Milwaukee",
+      "county": "Milwaukee",
+      "street": "324 E. Wisconsin Ave.",
+      "postalCode": "53202",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/324-east-wisconsin-avenue-milwaukee/wells-interconnection/datacenter/324-e-wisconsin",
+        "label": "Wells Interconnection 324 E Wisconsin — carrier-hotel facility listing",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-09-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/data-center-community-heres-map-131352571.html",
+        "label": "Is there a data center in your community? Here's a map of the data centers in Wisconsin (lists \"1547 Critical Systems Realty, Milwaukee\")",
+        "publisher": "Milwaukee Journal Sentinel via Yahoo News",
+        "retrievedAt": "2026-09-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=324+E+Wisconsin+Ave%2C+Milwaukee%2C+WI+53202&format=json&limit=1&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode of the Wells Building, 324 East Wisconsin Avenue, Milwaukee (coordinate provenance)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-13",
+    "notes": "Downtown Milwaukee carrier hotel in the historic Wells Building, offering cabinets and cages with seven on-net networks. The building is a shared carrier-hotel address: Cogent Communications, Netwurx and TSR Solutions all list space at 324 E. Wisconsin Ave. and the Journal Sentinel's map records the building under 1547 Critical Systems Realty, which owns it. Those tenant listings are deliberately NOT emitted as separate facilities — they would double-count this one site. Because the building owner (1547) and the facility operator (Wells Interconnection) are reported differently by different sources, this is recorded as \"reported\", not \"confirmed\", and no MW or square footage is asserted.",
+    "facilityType": "data_center"
   },
   {
     "id": "westblock-shiprock-nm",
