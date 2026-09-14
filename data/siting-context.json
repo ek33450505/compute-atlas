@@ -32273,7 +32273,7 @@
     "nearestWater": {
       "name": "Cypress Creek",
       "kind": "river",
-      "distanceMi": 0.7
+      "distanceMi": 0.8
     },
     "nearestTransmission": {
       "voltageKv": 500,
