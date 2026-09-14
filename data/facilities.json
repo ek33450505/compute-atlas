@@ -55075,14 +55075,14 @@
     ],
     "sources": [
       {
-        "url": "http://web.archive.org/web/20260724010609/https://richmondbizsense.com/2026/06/26/one-data-center-project-pulled-and-another-delayed-in-hanover, as-supervisors-reinstitute-equipment-tax/",
+        "url": "http://web.archive.org/web/20260724010609/https://richmondbizsense.com/2026/06/26/one-data-center-project-pulled-and-another-delayed-in-hanover-as-supervisors-reinstitute-equipment-tax/",
         "label": "One data center project pulled and another delayed in Hanover, as supervisors reinstitute equipment tax",
         "publisher": "Richmond BizSense (via Internet Archive)",
         "retrievedAt": "2026-09-09",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-09-14",
     "notes": "Campus was envisioned as three or four data center buildings on 200 acres near Kings Dominion, per the latest site plan submitted to the county. An LLC tied to LS Power is listed as contract purchaser of the two-parcel assemblage; it is unclear whether the land sale remains pending. LS Power previously owned the Doswell Energy Center gas plant on the other side of Old Ridge Road and sold it to NRG Energy in 2026.",
     "landAcres": 200,
     "facilityType": "data_center"
@@ -57718,14 +57718,14 @@
         "kind": "press"
       },
       {
-        "url": "https://datacenters.atmeta.com/wp-content/uploads/2025/02/Meta_s-Altoona-Data-Center.pdf",
+        "url": "https://datacenters.atmeta.com/asset/altoona-data-center-info-sheet/",
         "label": "Meta's Altoona Data Center (site info sheet)",
         "publisher": "Meta",
-        "retrievedAt": "2026-08-14",
+        "retrievedAt": "2026-09-14",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-14",
     "notes": "Operational since 2013; 5M+ sq ft after seven expansions — Meta's largest cloud campus. Meta's engineering blog documents Altoona as a GenAI infrastructure / LLaMA training site. INVESTMENT: 'more than $2.5 billion' is a cumulative multi-year figure across all expansions (in notes, not investmentUsd). 400+ on-site operations staff is a cumulative daily figure (in notes). ~350 MW per third-party index. Coordinates are the Altoona town centroid. Meta cites a cumulative capital investment of 'more than $2.5 billion' across seven Altoona expansions since 2013 (Data Center Frontier); the 2019 Building 5 phase was ~$400M (IEDA). Both are cumulative/single-phase figures -> investmentUsd omitted.",
     "energy": {
       "source": "wind",
@@ -58515,9 +58515,9 @@
         "kind": "other"
       },
       {
-        "url": "https://datacenters.atmeta.com/wp-content/uploads/2025/02/Meta_s-Forest-City-Data-Center.pdf",
+        "url": "https://datacenters.atmeta.com/asset/forest-city-data-center-info-sheet/",
         "label": "Meta Data Centers — Meta's Forest City Data Center info sheet (Meta's own newsroom)",
-        "retrievedAt": "2026-07-25",
+        "retrievedAt": "2026-09-14",
         "kind": "press"
       },
       {
@@ -58540,7 +58540,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-09-14",
     "notes": "Meta (Facebook) data center on Social Circle, Forest City, Rutherford County — broke ground 2010, operational ~2012, a multi-parcel campus (parcels owned by 'Andale LLC', a Meta subsidiary confirmed via Meta's SEC 10-K Exhibit 21.1 and the Menlo Park HQ mailing address), with a third facility announced 2015. Meta reports $750M+ invested in North Carolina; the 408 Social Circle parcel alone carries $176.9M assessed building value (built, not land-bank). No site-specific IT-load MW is disclosed. Coordinates are a Rutherford County GIS parcel centroid, held approximate pending a raw-geometry re-pull; a follow-up GIS pass could upgrade precision to exact.",
     "energy": {
       "source": "solar",
@@ -59823,10 +59823,10 @@
         "kind": "filing"
       },
       {
-        "url": "https://datacenters.atmeta.com/wp-content/uploads/2025/02/Metas-Prineville-Data-Center.pdf",
+        "url": "https://datacenters.atmeta.com/asset/prineville-data-center-info-sheet/",
         "label": "Meta's Prineville Data Center (fact sheet)",
         "publisher": "Meta",
-        "retrievedAt": "2026-08-14",
+        "retrievedAt": "2026-09-14",
         "kind": "other"
       },
       {
@@ -59858,7 +59858,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-05",
+    "lastUpdated": "2026-09-14",
     "energy": {
       "source": "grid",
       "utility": "Pacific Power (PacifiCorp)",
@@ -60218,10 +60218,10 @@
         "kind": "other"
       },
       {
-        "url": "https://datacenters.atmeta.com/wp-content/uploads/2025/02/Meta_s-Sarpy-Data-Center.pdf",
+        "url": "https://datacenters.atmeta.com/asset/sarpy-data-center-info-sheet/",
         "label": "Meta's Sarpy Data Center (site info sheet)",
         "publisher": "Meta",
-        "retrievedAt": "2026-08-14",
+        "retrievedAt": "2026-09-14",
         "kind": "other"
       },
       {
@@ -60238,7 +60238,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-14",
     "notes": "Campus spans Papillion and Springfield, Sarpy County. Existing multi-building campus operational since 2019; ongoing expansion toward a 9-building, 4-million-sq-ft footprint. Meta has invested more than $1.5B at this site since 2017 (confirmed by DCD and multiple sources; a $2.5B total figure appeared in the record but was not supported by any cited source). Planned MW capacity of 2,000 was removed — no source confirms a MW figure for this campus. Springfield buildings were targeted for completion by end 2024; operational status of those buildings as of mid-2026 should be verified against a current source. Coordinates approximate for the Springfield expansion area; original Papillion buildings are slightly northeast.",
     "energy": {
       "source": "mixed",
@@ -98561,8 +98561,8 @@
     "status": "operational",
     "confidence": "reported",
     "location": {
-      "lat": 36.363598477537,
-      "lon": -94.183277242948,
+      "lat": 36.364241,
+      "lon": -94.182712,
       "city": "Bentonville",
       "county": "Benton",
       "street": "805 SE Moberly Ln",
@@ -98572,10 +98572,10 @@
     "statusHistory": [],
     "sources": [
       {
-        "url": "https://www.interconnection.fyi/data-center/project/walmart-bd0fb0db",
-        "label": "Walmart Data Center in Benton County, AR (10-25 MW) — Interconnection.fyi Data Center Tracker",
-        "publisher": "Interconnection.fyi (GridTracker)",
-        "retrievedAt": "2026-09-13",
+        "url": "https://adeq.state.ar.us/home/pdssql/p_facil_details.aspx?AFINDash=04-01474&AFIN=0401474",
+        "label": "Facility AFIN 04-01474 — \"WAL-MART DGTC/ISD #9280\", alternate name \"EAST DATA CENTER\", 805 Moberly Lane, Bentonville (Benton County); owner WALMART INC; status Active",
+        "publisher": "Arkansas Division of Environmental Quality — Permit Data System",
+        "retrievedAt": "2026-09-14",
         "kind": "other"
       },
       {
@@ -98586,8 +98586,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
-    "notes": "Address (805 SE Moberly Ln, Bentonville, Benton County) and operational status corroborated independently by two aggregator databases (interconnection.fyi/GridTracker and datacenter.fyi). Coordinates are the US Census geocode of that street address, retrieved 2026-09-13. capacityMw omitted: the two aggregators give inconsistent figures (10-25 MW vs 12.884 MW), and datacenter.fyi's page additionally states the site 'connects to the El Paso Electric power grid' -- El Paso Electric serves only West Texas and southern New Mexico and has no Arkansas service territory, indicating a data-quality/auto-generation error in that source. No primary press release, permit filing, or PSC docket naming this specific site was found as of 2026-09-13; precision set to approximate because the exact building/data-hall footprint within Walmart's Bentonville technology campus was not confirmed.",
+    "lastUpdated": "2026-09-14",
+    "notes": "Walmart's East Data Center, on the David Glass Technology Center campus (DGTC) at 805 SE Moberly Ln, Bentonville. Identity, owner, address, county and coordinates are from the Arkansas DEQ Permit Data System facility record AFIN 04-01474, which names the site \"WAL-MART DGTC/ISD #9280\" with alternate name \"EAST DATA CENTER\", owner WALMART INC, status Active. Coordinates are ADEQ's own (36.364241, -94.182712; NAD83, ADEQ photo interpolation, measured 2013-02-04), which supersede the earlier US Census street geocode they sit ~87 m from. precision remains approximate: the campus holds several buildings and the specific data-hall footprint is not established. capacityMw omitted: the aggregator figures disagree (10-25 MW vs 12.884 MW) and neither is a primary source. ⚠ datacenter.fyi (source 1) additionally states the site \"connects to the El Paso Electric power grid\" — El Paso Electric serves only West Texas and southern New Mexico and has no Arkansas service territory, so that field is a data-quality error in that source and nothing from it is relied on beyond corroborating the site's existence.",
     "facilityType": "data_center"
   },
   {
@@ -100060,6 +100060,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 1200,
       "operational": 495
     },
     "statusHistory": [
@@ -100105,10 +100106,24 @@
         "publisher": "NAACP",
         "retrievedAt": "2026-09-09",
         "kind": "press"
+      },
+      {
+        "url": "https://www.actionnews5.com/2026/07/31/xai-announces-fourth-data-center-turbines-be-removed-southaven-site/",
+        "label": "xAI announces fourth data center; turbines to be removed from Southaven site",
+        "publisher": "Action News 5 (WMC, Memphis)",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.themississippimonitor.com/spacexai-powers-down-11-of-69-temporary-turbines-at-southaven-facility/",
+        "label": "SpaceXAI powers down 11 of 69 temporary turbines at Southaven facility",
+        "publisher": "The Mississippi Monitor",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
-    "notes": "Former Duke Energy site on Stanton Rd, Southaven. ~46 turbines operational by May 2026; permitting contested — 41 permitted Mar 2026, additional turbines unpermitted; NAACP/Earthjustice/SELC litigation. Distinct facility from the separately tracked xAI Southaven data center (Colossus).",
+    "lastUpdated": "2026-09-14",
+    "notes": "Former Duke Energy site on Stanton Rd, Southaven. 69 temporary gas turbines, being removed August 2026 → July 2027 and replaced by a permanent 1.2 GW / 41-turbine plant under construction; 11 turbines were powered down as of 2026-08-31. The permanent 41 are the MDEQ PSD 0680-00119 fleet (see generation.notes — this resolves the \"two 41s\" ambiguity rather than leaving it open). ⚠ capacityMw.operational (495) derives from the July 2026 reporting and PREDATES the August power-downs; it is not restated by any source after removal began, so treat it as the last sourced figure rather than a current one. Distinct facility from the separately tracked xAI Southaven data center (Colossus). ⚠ Several outlets now style the operator \"SpaceXAI\", reporting that SpaceX acquired xAI. That is secondary-source only and would touch `operator` on 11 records, so it is deliberately NOT applied here — verify against a filing first.",
     "energy": {
       "source": "on_site_gas",
       "notes": "Gas-turbine generation dedicated to xAI's Colossus 2 compute; MDEQ authorised 41 permanent turbines in March 2026 while 27 turbines were operating in Southaven without an air permit at the time of the April 2026 suit. No utility interconnection is claimed."
@@ -100124,7 +100139,7 @@
       "permitType": "psd",
       "issuingAgency": "Mississippi Department of Environmental Quality",
       "issuedDate": "2026-03-11",
-      "notes": "Permitted CEILINGS from MDEQ PSD Air Construction Permit 0680-00119 (permittee MZX Tech LLC, an xAI affiliate; AI 12592), not measured emissions. Every per-group tonnage is PER TURBINE on a 12-month rolling total basis — they are limits on each individual machine and must never be summed or multiplied by the unit count to state a facility total; the permit itself states no facility-wide tonnage for NOx, CO, VOC, SO2, PM10, PM2.5, NH3 or formaldehyde. SCOPE CAVEAT: this permit authorises 41 turbines, while this record's generation.unitCount of 59 describes the larger on-site fleet, which includes turbines operating without this permit and is the subject of NAACP/SELC/Earthjustice litigation filed 2026-04-14. The two counts measure different things and must not be reconciled by editing either. GHG: the permit sets CO2 as a rate only — BACT of 120 lb/MMBtu, short-term and long-term — with NO annual tonnage cap, so co2e is deliberately left undefined; a missing co2e here does not mean the facility has no GHG limit. HAPs: the only facility-wide caps in the permit are 24.0 tpy total combined HAPs and 9.50 tpy for any individual HAP (Condition 3.3, \"For the entire facility\"); the schema records the combined figure, and the per-individual cap has no field. The permit prints formaldehyde as \"CH2O\"; PM10 and PM2.5 are stated as filterable + condensable.",
+      "notes": "Permitted CEILINGS from MDEQ PSD Air Construction Permit 0680-00119 (permittee MZX Tech LLC, an xAI affiliate; AI 12592), not measured emissions. Every per-group tonnage is PER TURBINE on a 12-month rolling total basis — they are limits on each individual machine and must never be summed or multiplied by the unit count to state a facility total; the permit itself states no facility-wide tonnage for NOx, CO, VOC, SO2, PM10, PM2.5, NH3 or formaldehyde. SCOPE CAVEAT: this permit authorises the 41 PERMANENT turbines, which reporting confirms are the 1.2 GW replacement plant now under construction. This record's generation.unitCount of 69 is a different fleet: the TEMPORARY turbines on site, being removed August 2026 → July 2027, which include machines operating outside this permit and are the subject of NAACP/SELC/Earthjustice litigation filed 2026-04-14. The two counts measure different things and must not be reconciled by editing either. GHG: the permit sets CO2 as a rate only — BACT of 120 lb/MMBtu, short-term and long-term — with NO annual tonnage cap, so co2e is deliberately left undefined; a missing co2e here does not mean the facility has no GHG limit. HAPs: the only facility-wide caps in the permit are 24.0 tpy total combined HAPs and 9.50 tpy for any individual HAP (Condition 3.3, \"For the entire facility\"); the schema records the combined figure, and the per-individual cap has no field. The permit prints formaldehyde as \"CH2O\"; PM10 and PM2.5 are stated as filterable + condensable.",
       "sourceIndex": 3,
       "unitGroups": [
         {
@@ -100183,8 +100198,8 @@
     "generation": {
       "technology": "natural_gas",
       "offtaker": "xAI (Colossus data center)",
-      "unitCount": 59,
-      "notes": "~46 turbines operational by May 2026; permitting contested — 41 permitted Mar 2026, additional turbines unpermitted; NAACP/Earthjustice/SELC litigation."
+      "unitCount": 69,
+      "notes": "69 TEMPORARY turbines on the Stanton Rd site. Under an agreement reported 2026-07-31, removal began August 2026 and must be complete by July 2027; 11 had been powered down as of 2026-08-31, leaving 58 running. They are being replaced by a PERMANENT 1.2 GW plant of 41 turbines, under construction. ⭐ The permanent 41 ARE the fleet authorised by MDEQ PSD permit 0680-00119 (issued 2026-03-11, cited at sources[3], which itemises exactly 41 machines: 17 Solar Titan PGM-130 + 16 Solar Titan 350 + 8 ProEnergy 6000PE). An earlier note in this repo warned the permitted 41 and the replacement 41 were \"probably NOT the same 41\" — that was a reasonable caution but the reporting resolves it the other way, and this record now says so explicitly so the question is not reopened. Permitting remains contested: NAACP/Earthjustice/SELC litigation filed 2026-04-14 concerns turbines operating outside that permit."
     }
   },
   {
