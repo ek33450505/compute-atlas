@@ -59,6 +59,7 @@ const PROPS: SurveyLedgerProps = {
   count: 727,
   states: 45,
   includesDc: false,
+  stateCodes: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT"],
   operators: 210,
   sources: 2570,
   operationalMw: 4000, // 4.0 GW
@@ -127,7 +128,7 @@ describe("SurveyLedger", () => {
 
   it("phrases the states tile as '50 states and DC covered', animating the number to the actual state count (50) not the raw jurisdiction total (51), when the dataset includes DC", () => {
     setReducedMotion(true);
-    render(<SurveyLedger {...PROPS} states={51} includesDc={true} />);
+    render(<SurveyLedger {...PROPS} states={51} includesDc={true} stateCodes={["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"]} />);
 
     // The bug this guards: the tile's animated number must land on the
     // actual state count (50), not the raw distinct-code total (51) — "51 /

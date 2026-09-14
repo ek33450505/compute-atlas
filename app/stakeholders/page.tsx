@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getStakeholders } from "@/lib/data";
-import { containsDc, statesStat } from "@/lib/us-states";
+import { statesStat } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -31,10 +31,8 @@ export const metadata: Metadata = {
 export default async function StakeholdersIndexPage() {
   const people = await getStakeholders();
   const stakeholderStateCodes = new Set(people.flatMap((p) => p.states));
-  const stateCount = stakeholderStateCodes.size;
-  const stakeholderStatesIncludeDc = containsDc(stakeholderStateCodes);
   const totalFacilityLinks = people.reduce((sum, p) => sum + p.facilityCount, 0);
-  const statesTile = statesStat(stateCount, stakeholderStatesIncludeDc);
+  const statesTile = statesStat(stakeholderStateCodes);
 
   return (
     <div

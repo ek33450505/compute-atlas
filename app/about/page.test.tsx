@@ -64,6 +64,13 @@ function mockNonZero() {
   mockGetStats.mockReset().mockResolvedValue({
     count: 1659,
     states: 45,
+    stateCodes: [
+      "AL", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI",
+      "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA",
+      "MI", "MN", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY",
+      "NC", "ND", "OH", "OR", "PA", "RI", "SC", "SD", "TN", "TX",
+      "UT", "VA", "WA", "WI", "WY"
+    ],
     includesDc: true,
     operationalMw: 50000,
     plannedMw: 90000,
@@ -171,6 +178,7 @@ describe("AboutPage — § The stance", () => {
     mockGetStats.mockReset().mockResolvedValue({
       count: 0,
       states: 0,
+      stateCodes: [],
       includesDc: false,
       operationalMw: 0,
       plannedMw: 0,

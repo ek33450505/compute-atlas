@@ -379,6 +379,25 @@ describe("getStats", () => {
       .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
     expect(underConstructionMw).toBe(Math.round(expected * 10) / 10);
   });
+
+  it("stateCodes is sorted and de-duplicated", async () => {
+    const { stateCodes } = await getStats();
+    expect(stateCodes).toEqual([...stateCodes].sort());
+    expect(stateCodes).toEqual([...new Set(stateCodes)]);
+  });
+
+  it("stateCodes is consistent with states and includesDc — the sibling fields cannot drift apart", async () => {
+    const { states, includesDc, stateCodes } = await getStats();
+    expect(stateCodes.length).toBe(states);
+    expect(stateCodes.includes("DC")).toBe(includesDc);
+  });
+
+  it("stateCodes contains known live-dataset jurisdictions (spot check)", async () => {
+    const { stateCodes } = await getStats();
+    // sanity: fixture this test relies on — CA, TX, and DC are large/stable
+    // presences in the live dataset and are not expected to disappear.
+    expect(stateCodes).toEqual(expect.arrayContaining(["CA", "TX", "DC"]));
+  });
 });
 
 describe("getCivicCoverage", () => {
@@ -1204,6 +1223,38 @@ describe("getOperatorSummary", () => {
     expect(hasDc).toBe(false); // sanity: the fixture this test relies on
     expect(summary.includesDc).toBe(false);
   });
+
+  it("stateCodes contains exactly the expected codes for CoreSite (has DC)", async () => {
+    // sanity: typed-out literal, not derived from the same Set-building
+    // expression the implementation uses — snapshotted from the live dataset.
+    const expected = ["CA", "CO", "DC", "FL", "GA", "IL", "MA", "NJ", "OR", "VA"];
+    const summary = (await getOperatorSummary("CoreSite"))!;
+    expect(summary.stateCodes).toEqual(expected);
+  });
+
+  it("stateCodes contains exactly the expected codes for Google (no DC)", async () => {
+    // sanity: typed-out literal, snapshotted from the live dataset.
+    const expected = [
+      "AL", "AR", "AZ", "GA", "IA", "IN", "MI", "MN", "MO", "NC", "NE", "NV",
+      "OH", "OK", "OR", "SC", "TN", "TX", "UT", "VA", "WV", "WY",
+    ];
+    const summary = (await getOperatorSummary("Google"))!;
+    expect(summary.stateCodes).toEqual(expected);
+  });
+
+  it("stateCodes is sorted and de-duplicated", async () => {
+    const summary = (await getOperatorSummary("CoreSite"))!;
+    expect(summary.stateCodes).toEqual([...summary.stateCodes].sort());
+    expect(summary.stateCodes).toEqual([...new Set(summary.stateCodes)]);
+  });
+
+  it("stateCodes is consistent with stateCount and includesDc — the sibling fields cannot drift apart", async () => {
+    for (const name of ["CoreSite", "Google"]) {
+      const summary = (await getOperatorSummary(name))!;
+      expect(summary.stateCodes.length).toBe(summary.stateCount);
+      expect(summary.stateCodes.includes("DC")).toBe(summary.includesDc);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -1822,6 +1873,30 @@ describe("getCryptoMiningStats", () => {
     );
     expect(hasDc).toBe(false); // sanity: the fixture this test relies on
     expect((await getCryptoMiningStats()).includesDc).toBe(false);
+  });
+
+  it("stateCodes contains exactly the expected codes for the live crypto_mining fixture", async () => {
+    // sanity: typed-out literal, not derived from the same Set-building
+    // expression the implementation uses — snapshotted from the live dataset.
+    const expected = [
+      "AK", "AL", "AR", "CO", "FL", "GA", "IA", "ID", "IL", "IN", "KS", "KY",
+      "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NM", "NY", "OH", "OK",
+      "OR", "PA", "SC", "SD", "TN", "TX", "VA", "WA", "WI", "WV", "WY",
+    ];
+    const { stateCodes } = await getCryptoMiningStats();
+    expect(stateCodes).toEqual(expected);
+  });
+
+  it("stateCodes is sorted and de-duplicated", async () => {
+    const { stateCodes } = await getCryptoMiningStats();
+    expect(stateCodes).toEqual([...stateCodes].sort());
+    expect(stateCodes).toEqual([...new Set(stateCodes)]);
+  });
+
+  it("stateCodes is consistent with stateCount and includesDc — the sibling fields cannot drift apart", async () => {
+    const { stateCount, includesDc, stateCodes } = await getCryptoMiningStats();
+    expect(stateCodes.length).toBe(stateCount);
+    expect(stateCodes.includes("DC")).toBe(includesDc);
   });
 });
 

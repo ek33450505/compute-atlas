@@ -7,6 +7,7 @@ const PROPS: LensGatewayProps = {
     sites: 1095,
     states: 45,
     includesDc: false,
+    stateCodes: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT"],
     utilityLinked: 307,
     frictionCount: 153,
     aiClassified: 347,
@@ -54,7 +55,7 @@ describe("LensGateway", () => {
     render(
       <LensGateway
         {...PROPS}
-        counts={{ ...PROPS.counts, states: 51, includesDc: true }}
+        counts={{ ...PROPS.counts, states: 51, includesDc: true, stateCodes: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"] }}
       />
     );
 

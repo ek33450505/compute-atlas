@@ -9,7 +9,6 @@ import {
 import {
   stateNameFromCode,
   stateSlugFromCode,
-  containsDc,
   statesPhrase,
   statesStat,
 } from "@/lib/us-states";
@@ -74,8 +73,8 @@ export default async function AiPage() {
     counts,
     total: counts.confirmed + counts.likely + counts.mixed_use,
   }));
-  const stateRowsIncludeDc = containsDc(stateRows.map((s) => s.code));
-  const statesTile = statesStat(stateRows.length, stateRowsIncludeDc);
+  const stateRowCodes = stateRows.map((s) => s.code);
+  const statesTile = statesStat(stateRowCodes);
 
   return (
     <div
@@ -125,7 +124,7 @@ export default async function AiPage() {
               enterprise and general-purpose facilities. {totalAiClassified}{" "}
               data {totalAiClassified === 1 ? "center carries" : "centers carry"}{" "}
               an AI classification today, across{" "}
-              {statesPhrase(stateRows.length, stateRowsIncludeDc)}.
+              {statesPhrase(stateRowCodes)}.
             </p>
             <dl className="space-y-3 text-sm">
               {AI_CLASSIFICATION_ENTRIES.map((entry) => (

@@ -447,7 +447,7 @@ export default async function AboutPage() {
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
           The dataset now covers {stats.count.toLocaleString("en-US")}{" "}
-          facilities across {statesPhrase(stats.states, stats.includesDc)},
+          facilities across {statesPhrase(stats.stateCodes)},
           compiled from publicly available sources. Every record links to the
           specific sources used to create or update it. Source types include:
         </p>

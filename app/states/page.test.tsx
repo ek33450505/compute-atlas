@@ -144,4 +144,71 @@ describe("StatesIndexPage", () => {
     expect(within(statesTile!).queryByText("2")).not.toBeInTheDocument();
     expect(within(statesTile!).queryByText("States")).not.toBeInTheDocument();
   });
+
+  it("renders a District of Columbia and U.S. territories section, and keeps DC and the territory out of the states list", async () => {
+    mockGetStates.mockResolvedValue(["VA", "TX", "DC", "PR"]);
+    mockGetStateSummary.mockImplementation((code: string) =>
+      Promise.resolve(makeStateSummary({ code, count: 1 }))
+    );
+
+    const page = await StatesIndexPage();
+    render(page);
+
+    const otherSection = screen.getByRole("region", {
+      name: "District of Columbia and U.S. territories",
+    });
+    expect(
+      within(otherSection).getByText("District of Columbia")
+    ).toBeInTheDocument();
+    expect(within(otherSection).getByText("Puerto Rico")).toBeInTheDocument();
+
+    const statesSection = screen.getByRole("region", { name: "The 50 states" });
+    expect(
+      within(statesSection).queryByText("District of Columbia")
+    ).not.toBeInTheDocument();
+    expect(within(statesSection).queryByText("Puerto Rico")).not.toBeInTheDocument();
+    expect(within(statesSection).getByText("Virginia")).toBeInTheDocument();
+    expect(within(statesSection).getByText("Texas")).toBeInTheDocument();
+  });
+
+  it("omits the District of Columbia and U.S. territories section entirely when every tracked code is one of the 50 states", async () => {
+    mockGetStates.mockResolvedValue(["VA", "TX"]);
+    mockGetStateSummary.mockImplementation((code: string) =>
+      Promise.resolve(makeStateSummary({ code, count: 1 }))
+    );
+
+    const page = await StatesIndexPage();
+    render(page);
+
+    expect(
+      screen.queryByRole("heading", {
+        name: "District of Columbia and U.S. territories",
+      })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", {
+        name: "District of Columbia and U.S. territories",
+      })
+    ).not.toBeInTheDocument();
+  });
+
+  it("covers both the states group and the DC/territories group in the ItemList JSON-LD", async () => {
+    mockGetStates.mockResolvedValue(["VA", "TX", "DC", "PR"]);
+    mockGetStateSummary.mockImplementation((code: string) =>
+      Promise.resolve(makeStateSummary({ code, count: 1 }))
+    );
+
+    const page = await StatesIndexPage();
+    const { container } = render(page);
+
+    const scripts = container.querySelectorAll('script[type="application/ld+json"]');
+    expect(scripts).toHaveLength(1);
+    const itemList = JSON.parse(scripts[0]!.textContent!);
+    expect(itemList.numberOfItems).toBe(4);
+    expect(itemList.itemListElement).toHaveLength(4);
+    const names = itemList.itemListElement.map((i: { name: string }) => i.name);
+    expect(names).toEqual(
+      expect.arrayContaining(["Virginia", "Texas", "District of Columbia", "Puerto Rico"])
+    );
+  });
 });

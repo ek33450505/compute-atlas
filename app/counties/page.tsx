@@ -6,7 +6,6 @@ import { formatCountyLabel } from "@/lib/metros";
 import {
   stateNameFromCode,
   stateSlugFromCode,
-  containsDc,
   statesStat,
 } from "@/lib/us-states";
 import { itemListJsonLdString } from "@/lib/seo";
@@ -80,8 +79,7 @@ export default async function CountiesIndexPage() {
   // Derived from the same group keys the tile counts, not getStats() — a
   // county-bearing DC record (coresite-dc1-washington-d-c-dc) already puts
   // DC in `groups` today.
-  const groupsIncludeDc = containsDc(groups.map((g) => g.code));
-  const statesTile = statesStat(groups.length, groupsIncludeDc);
+  const statesTile = statesStat(groups.map((g) => g.code));
 
   const facilitiesInCounties = counties.reduce((sum, c) => sum + c.count, 0);
   // Derived, never hardcoded: a record with no `location.county` on file

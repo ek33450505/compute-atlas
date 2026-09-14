@@ -48,12 +48,11 @@ export async function generateMetadata({
   const { state: slug } = await params;
   const code = stateCodeFromSlug(slug);
   const summary = code ? await getStateSummaryCached(code) : null;
+  const stateName = code ? stateNameFromCode(code) : undefined;
 
-  if (!code || !summary) {
+  if (!code || !summary || !stateName) {
     return { title: "State not found" };
   }
-
-  const stateName = stateNameFromCode(code)!;
 
   return {
     title: `Data centers in ${stateName}`,
@@ -87,7 +86,10 @@ export default async function StatePage({
   }
 
   const facilities = await getFacilitiesByStateCached(code);
-  const stateName = stateNameFromCode(code)!;
+  const stateName = stateNameFromCode(code);
+  if (!stateName) {
+    notFound();
+  }
 
   // Cross-link callout: only fetched when this state has
   // documented friction, since a zero-friction state renders no callout.

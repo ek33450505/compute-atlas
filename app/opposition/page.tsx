@@ -13,7 +13,7 @@ import {
   FRICTION_CAUSES_FINDING,
   FRICTION_ELECTRICITY_CONTRAST,
 } from "@/lib/glossary";
-import { containsDc, statesStat, statesPhrase } from "@/lib/us-states";
+import { statesStat, statesPhrase } from "@/lib/us-states";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
@@ -59,9 +59,7 @@ export default async function OppositionPage() {
   const frictionStateCodes = new Set(
     groups.flatMap((g) => g.facilities.map((f) => f.location.state))
   );
-  const statesWithFriction = frictionStateCodes.size;
-  const frictionIncludesDc = containsDc(frictionStateCodes);
-  const statesTile = statesStat(statesWithFriction, frictionIncludesDc);
+  const statesTile = statesStat(frictionStateCodes);
   const jsonLdFacilities = [
     ...groups.flatMap((g) => g.facilities),
     ...defeatedProjects,
@@ -142,7 +140,7 @@ export default async function OppositionPage() {
               for the sourced case-by-case breakdown.
             </p>
             <p>
-              Those sites span {statesPhrase(statesWithFriction, frictionIncludesDc)}{" "}
+              Those sites span {statesPhrase(frictionStateCodes)}{" "}
               across the country. A
               facility with no friction status on file has not necessarily been
               welcomed locally — it may simply be a project nobody has yet documented

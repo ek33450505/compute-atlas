@@ -31,11 +31,10 @@ export async function generateMetadata({
   // instead, not a broken iframe (see the empty-state branch in the page
   // component below). So metadata only depends on whether the slug maps to
   // a real US state at all, not on whether it currently has data.
-  if (!code) {
+  const stateName = code ? stateNameFromCode(code) : undefined;
+  if (!code || !stateName) {
     return { title: "State not found", robots: { index: false, follow: false } };
   }
-
-  const stateName = stateNameFromCode(code)!;
 
   return {
     title: `Data centers in ${stateName} — embed`,
@@ -74,7 +73,10 @@ export default async function EmbedStatePage({
     notFound();
   }
 
-  const stateName = stateNameFromCode(code)!;
+  const stateName = stateNameFromCode(code);
+  if (!stateName) {
+    notFound();
+  }
   const facilities = await getFacilitiesByStateCached(code);
   const hubHref = `${siteConfig.url}/states/${slug}`;
 

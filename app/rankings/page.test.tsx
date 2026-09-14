@@ -80,6 +80,7 @@ describe("RankingsPage — states tile DC wording", () => {
     mockGetStats.mockResolvedValue({
       count: 5,
       states: 2,
+      stateCodes: ["CA", "TX"],
       includesDc: false,
       operationalMw: 500,
       plannedMw: 300,
@@ -97,6 +98,7 @@ describe("RankingsPage — states tile DC wording", () => {
     mockGetStats.mockResolvedValue({
       count: 5,
       states: 3,
+      stateCodes: ["CA", "DC", "TX"],
       includesDc: true,
       operationalMw: 500,
       plannedMw: 300,
@@ -121,6 +123,7 @@ describe("RankingsPage — survey stat row", () => {
     mockGetStats.mockResolvedValue({
       count: 5,
       states: 2,
+      stateCodes: ["CA", "TX"],
       includesDc: false,
       operationalMw: 500,
       plannedMw: 300,

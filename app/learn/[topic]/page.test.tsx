@@ -95,6 +95,7 @@ beforeEach(() => {
   mockGetStats.mockReset().mockResolvedValue({
     count: 0,
     states: 0,
+    stateCodes: [],
     includesDc: false,
     operationalMw: 0,
     plannedMw: 0,
@@ -161,7 +162,14 @@ describe("LearnTopicPage", () => {
     mockGetStats.mockResolvedValue({
       count: 900,
       states: 51,
-      includesDc: true,
+    stateCodes: [
+      "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
+      "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME",
+      "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
+      "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
+      "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+    ],
+    includesDc: true,
       operationalMw: 1000,
       plannedMw: 2000,
       underConstructionMw: 500,
@@ -190,7 +198,14 @@ describe("LearnTopicPage", () => {
     mockGetStats.mockResolvedValue({
       count: 900,
       states: 49,
-      includesDc: false,
+    stateCodes: [
+      "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL",
+      "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME",
+      "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
+      "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
+      "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI"
+    ],
+    includesDc: false,
       operationalMw: 1000,
       plannedMw: 2000,
       underConstructionMw: 500,

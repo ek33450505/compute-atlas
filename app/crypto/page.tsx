@@ -37,7 +37,7 @@ export default async function CryptoPage() {
   ]);
   const allFacilities = [...facilities].sort(sortByMaxMwDesc);
   const disclosedCapacityCount = countDisclosedCapacity(allFacilities);
-  const statesTile = statesStat(stats.stateCount, stats.includesDc);
+  const statesTile = statesStat(stats.stateCodes);
 
   return (
     <div
@@ -70,7 +70,7 @@ export default async function CryptoPage() {
               this site. {formatPower(stats.operationalMw)} of that capacity
               is already operational, with {formatPower(stats.plannedMw)}{" "}
               more in the pipeline, across{" "}
-              {statesPhrase(stats.stateCount, stats.includesDc)}.
+              {statesPhrase(stats.stateCodes)}.
             </p>
             <p className="text-base leading-relaxed text-muted-foreground">
               The facilities below are the crypto-mining sites in Compute

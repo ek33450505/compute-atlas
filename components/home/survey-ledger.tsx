@@ -19,6 +19,7 @@ export interface SurveyLedgerProps {
   count: number;
   states: number;
   includesDc: boolean;
+  stateCodes: string[];
   operators: number;
   sources: number;
   operationalMw: number;
@@ -217,8 +218,7 @@ function PipelineBar({ label, figure, ariaLabel, pct, color }: PipelineBarProps)
 
 export function SurveyLedger({
   count,
-  states,
-  includesDc,
+  stateCodes,
   operators,
   sources,
   operationalMw,
@@ -235,7 +235,7 @@ export function SurveyLedger({
   // names — statesStat couples them so a state that drops out of DC (or a
   // state gaining DC) can't leave the count-up target stale against the
   // label the way "51 / States + DC" did before this helper existed.
-  const statesTile = statesStat(states, includesDc);
+  const statesTile = statesStat(stateCodes);
 
   const displayCount = useCountUp(count, start, reducedMotion, 0);
   const displayStates = useCountUp(statesTile.value, start, reducedMotion, 0);
@@ -295,7 +295,7 @@ export function SurveyLedger({
         <LedgerTile
           value={displayStates}
           label={statesTile.label + " covered"}
-          ariaLabel={`${statesPhrase(states, includesDc)} covered`}
+          ariaLabel={`${statesPhrase(stateCodes)} covered`}
         />
         <LedgerTile
           value={displayOperators}

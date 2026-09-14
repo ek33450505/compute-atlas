@@ -43,8 +43,15 @@ export const metadata: Metadata = {
  */
 export default async function HomePage() {
   const edition = getDatasetEdition();
-  const { count, states, includesDc, operationalMw, plannedMw, underConstructionMw } =
-    await getStats();
+  const {
+    count,
+    states,
+    includesDc,
+    stateCodes,
+    operationalMw,
+    plannedMw,
+    underConstructionMw,
+  } = await getStats();
   const notable = await getNotableFacilities(6);
   const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
   const oppositionCases = await getNotableOppositionCases(3);
@@ -161,7 +168,16 @@ export default async function HomePage() {
           {/* Subhead — text-foreground/85 (not text-muted-foreground): needs
               to stay legible against the map showing through the scrim. */}
           <p className="text-base text-foreground/85 leading-relaxed max-w-2xl">
-            Public data on data centers is everywhere and nowhere — split across hundreds of local permits, tax abatements, water filings, and interconnection queues. Compute Atlas unifies it into a single open, source-cited map: what is being built, what it will burn and draw to run, and where communities have objected. Open data, open corrections, and a public source behind every record.
+            Public data on data centers is everywhere and nowhere — fragmented
+            across hundreds of local permits, tax abatements, water filings,
+            and grid queues.
+          </p>
+          <p className="text-base text-foreground/85 leading-relaxed max-w-2xl">
+            Compute Atlas pulls it into one source-cited dataset. Track
+            what&rsquo;s being built, where, who&rsquo;s behind it — and how
+            much of its cost to power, water, and neighbors is actually on the
+            record. Open data, transparent sourcing, and a public correction
+            path on every record.
           </p>
 
           {/* Gazetteer search — the first next step for a first-time
@@ -210,6 +226,7 @@ export default async function HomePage() {
           count={count}
           states={states}
           includesDc={includesDc}
+          stateCodes={stateCodes}
           operators={operatorCount}
           sources={sourcesCited}
           operationalMw={operationalMw}
@@ -237,6 +254,7 @@ export default async function HomePage() {
             sites: count,
             states,
             includesDc,
+            stateCodes,
             utilityLinked,
             frictionCount,
             aiClassified,

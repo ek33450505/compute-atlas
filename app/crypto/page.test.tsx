@@ -84,6 +84,7 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
       operationalMw: 50,
       plannedMw: 10,
       stateCount: 1,
+      stateCodes: ["TX"],
       includesDc: false,
     });
 
@@ -119,6 +120,7 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
       operationalMw: 50,
       plannedMw: 10,
       stateCount: 1,
+      stateCodes: ["TX"],
       includesDc: false,
     });
 
@@ -150,6 +152,7 @@ describe("CryptoPage — disclosure sentence matches the operationalMw/plannedMw
       operationalMw: 50,
       plannedMw: 20,
       stateCount: 1,
+      stateCodes: ["TX"],
       includesDc: false,
     });
 
@@ -172,6 +175,7 @@ describe("CryptoPage — DC-aware states wording", () => {
       operationalMw: 5,
       plannedMw: 0,
       stateCount: 2,
+      stateCodes: ["DC", "TX"],
       includesDc: true,
     });
 
@@ -202,6 +206,7 @@ describe("CryptoPage — DC-aware states wording", () => {
       operationalMw: 5,
       plannedMw: 0,
       stateCount: 1,
+      stateCodes: ["TX"],
       includesDc: false,
     });
 

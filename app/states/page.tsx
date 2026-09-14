@@ -3,7 +3,12 @@ import type { Metadata } from "next";
 
 import { getStates, getStateSummary, getAllFacilities } from "@/lib/data";
 import { formatPower } from "@/lib/format";
-import { stateNameFromCode, stateSlugFromCode, statesStat, containsDc } from "@/lib/us-states";
+import {
+  stateNameFromCode,
+  stateSlugFromCode,
+  statesStat,
+  splitJurisdictions,
+} from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
@@ -19,36 +24,88 @@ export const metadata: Metadata = {
   alternates: { canonical: "/states" },
 };
 
+/** One jurisdiction's row on this page: a resolved name/slug plus its facility summary. */
+type JurisdictionEntry = {
+  code: string;
+  name: string;
+  slug: string;
+  summary: NonNullable<Awaited<ReturnType<typeof getStateSummary>>>;
+};
+
 /**
- * /states — index of all tracked states. Static server component.
+ * Resolves a list of `location.state` codes into renderable rows, sorted by
+ * facility count desc (tie-break: name A→Z). `splitJurisdictions` already
+ * drops any code that is neither a recognized state, DC, nor a territory, so
+ * `stateNameFromCode`/`stateSlugFromCode` should always resolve here — but
+ * this list feeds public URLs and JSON-LD, so an entry that fails to resolve
+ * is filtered out rather than rendered as a broken `/states/undefined` link
+ * (the non-null assertions this replaced would have shipped exactly that).
+ */
+async function buildRows(codes: string[]): Promise<JurisdictionEntry[]> {
+  const rows = await Promise.all(
+    codes.map(async (code): Promise<JurisdictionEntry | undefined> => {
+      const name = stateNameFromCode(code);
+      const slug = stateSlugFromCode(code);
+      const summary = await getStateSummary(code);
+      if (name === undefined || slug === undefined || summary === null) {
+        return undefined;
+      }
+      return { code, name, slug, summary };
+    })
+  );
+  return rows
+    .filter((row): row is JurisdictionEntry => row !== undefined)
+    .sort(
+      (a, b) => b.summary.count - a.summary.count || a.name.localeCompare(b.name)
+    );
+}
+
+/** The shared card link used by both jurisdiction lists on this page. */
+function JurisdictionCard({ name, slug, summary }: JurisdictionEntry) {
+  return (
+    <Link
+      href={`/states/${slug}`}
+      className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      <span className="flex flex-col gap-0.5 min-w-0">
+        <span className="text-sm text-foreground truncate">{name}</span>
+        <span className="font-mono text-xs text-muted-foreground">
+          {formatPower(summary.operationalMw)} operational
+        </span>
+      </span>
+      <span className="font-mono tabular-nums text-sm text-muted-foreground shrink-0">
+        {summary.count}
+      </span>
+    </Link>
+  );
+}
+
+/**
+ * /states — index of all tracked jurisdictions. Static server component.
  *
- * Links to /states/[state] for each state with at least one tracked
- * facility, sorted by facility count desc (tie-break: name A→Z).
+ * Two groups, both linking to /states/[state]: the 50 states (ranked by
+ * facility count desc, tie-break name A→Z), and — in a section of their own
+ * — DC plus any tracked US territories, sorted the same way. DC groups with
+ * the territories rather than the states because the organizing principle is
+ * membership of the 50, not statehood-adjacency.
  */
 export default async function StatesIndexPage() {
   const codes = await getStates();
-  const includesDc = containsDc(codes);
-  const statesTile = statesStat(codes.length, includesDc);
-  const rows = (
-    await Promise.all(
-      codes.map(async (code) => ({
-        code,
-        name: stateNameFromCode(code)!,
-        slug: stateSlugFromCode(code)!,
-        summary: (await getStateSummary(code))!,
-      }))
-    )
-  ).sort(
-    (a, b) =>
-      b.summary.count - a.summary.count || a.name.localeCompare(b.name)
-  );
+  const split = splitJurisdictions(codes);
+  const statesTile = statesStat(codes);
+
+  const [stateRows, otherRows] = await Promise.all([
+    buildRows(split.states),
+    buildRows(split.other),
+  ]);
+  const allRows = [...stateRows, ...otherRows];
 
   const totalFacilities = (await getAllFacilities()).length;
-  const totalOperationalMw = rows.reduce(
+  const totalOperationalMw = allRows.reduce(
     (sum, r) => sum + r.summary.operationalMw,
     0
   );
-  const totalPlannedMw = rows.reduce(
+  const totalPlannedMw = allRows.reduce(
     (sum, r) => sum + r.summary.plannedMw,
     0
   );
@@ -62,7 +119,7 @@ export default async function StatesIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: itemListJsonLdString(
-            rows.map(({ name, slug }) => ({
+            allRows.map(({ name, slug }) => ({
               name,
               url: `${siteConfig.url}/states/${slug}`,
             }))
@@ -107,31 +164,45 @@ export default async function StatesIndexPage() {
 
       <section aria-labelledby="states-list-heading" className="space-y-4">
         <h2 id="states-list-heading" className="sr-only">
-          All tracked states
+          The 50 states
         </h2>
         <ul className="grid gap-2 sm:grid-cols-2">
-          {rows.map(({ code, name, slug, summary }) => (
-            <li key={code}>
-              <Link
-                href={`/states/${slug}`}
-                className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <span className="flex flex-col gap-0.5 min-w-0">
-                  <span className="text-sm text-foreground truncate">
-                    {name}
-                  </span>
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {formatPower(summary.operationalMw)} operational
-                  </span>
-                </span>
-                <span className="font-mono tabular-nums text-sm text-muted-foreground shrink-0">
-                  {summary.count}
-                </span>
-              </Link>
+          {stateRows.map((row) => (
+            <li key={row.code}>
+              <JurisdictionCard {...row} />
             </li>
           ))}
         </ul>
       </section>
+
+      {split.other.length > 0 && (
+        <section
+          aria-labelledby="other-jurisdictions-heading"
+          className="space-y-4"
+        >
+          <div className="max-w-2xl space-y-4">
+            <h2
+              id="other-jurisdictions-heading"
+              className="font-display text-2xl text-foreground"
+            >
+              District of Columbia and U.S. territories
+            </h2>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              Compute Atlas tracks these places exactly like it tracks a
+              state — the same sourcing, the same record shape — but none of
+              them is one of the 50, so they are counted separately here
+              rather than folded into the ranking above.
+            </p>
+          </div>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {otherRows.map((row) => (
+              <li key={row.code}>
+                <JurisdictionCard {...row} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

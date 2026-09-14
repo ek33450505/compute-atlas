@@ -61,7 +61,7 @@ export default async function RankingsPage() {
     slug: stateSlugFromCode(s.state),
   }));
 
-  const statesTile = statesStat(stats.states, stats.includesDc);
+  const statesTile = statesStat(stats.stateCodes);
 
   return (
     <div

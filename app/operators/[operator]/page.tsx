@@ -42,7 +42,7 @@ export async function generateMetadata({
 
   return {
     title: `${operatorName} data centers`,
-    description: `${summary.count} data centers and compute facilities operated by ${operatorName} across ${statesPhrase(summary.stateCount, summary.includesDc)} — capacity, build status, and locations, each with a public source.`,
+    description: `${summary.count} data centers and compute facilities operated by ${operatorName} across ${statesPhrase(summary.stateCodes)} — capacity, build status, and locations, each with a public source.`,
     alternates: { canonical: `/operators/${slug}` },
   };
 }
@@ -87,8 +87,8 @@ export default async function OperatorPage({
   } else {
     capacitySentence = "None have reported operational capacity or an active build phase yet.";
   }
-  const overviewSentence = `Compute Atlas tracks ${summary.count} facilit${summary.count === 1 ? "y" : "ies"} operated by ${operatorName} across ${statesPhrase(summary.stateCount, summary.includesDc)}. ${capacitySentence}`;
-  const statesTile = statesStat(summary.stateCount, summary.includesDc);
+  const overviewSentence = `Compute Atlas tracks ${summary.count} facilit${summary.count === 1 ? "y" : "ies"} operated by ${operatorName} across ${statesPhrase(summary.stateCodes)}. ${capacitySentence}`;
+  const statesTile = statesStat(summary.stateCodes);
 
   const topFacilityNames = facilities.slice(0, 3).map((f) => f.name);
   const facilitySentence =

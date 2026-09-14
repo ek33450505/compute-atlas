@@ -117,7 +117,7 @@ export default async function StatsPage() {
   const disclosedCapacityCount = countDisclosedCapacity(allFacilities);
   const unclassifiedCount =
     dataCenterCount - (aiCounts.confirmed + aiCounts.likely + aiCounts.mixed_use);
-  const statesTile = statesStat(stats.states, stats.includesDc);
+  const statesTile = statesStat(stats.stateCodes);
 
   return (
     <div
@@ -520,7 +520,7 @@ export default async function StatsPage() {
         >
           <SectionHeading kicker="Geography" id="geography-heading" title="Top states" />
           <p className="text-sm text-muted-foreground">
-            {statesPhrase(stats.states, stats.includesDc)}{" "}
+            {statesPhrase(stats.stateCodes)}{" "}
             covered &middot; top 10 by
             facility count
           </p>

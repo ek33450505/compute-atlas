@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getStates, getOperators, getCounties } from "@/lib/data";
-import { containsDc, statesPhrase } from "@/lib/us-states";
+import { statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
@@ -114,13 +114,11 @@ const LENSES = [
  */
 export default async function ExplorePage() {
   const stateCodes = await getStates();
-  const stateCount = stateCodes.length;
-  const includesDc = containsDc(stateCodes);
   const operatorCount = (await getOperators()).length;
   const countyCount = (await getCounties()).length;
 
   const stats: Partial<Record<(typeof LENSES)[number]["label"], string>> = {
-    States: statesPhrase(stateCount, includesDc),
+    States: statesPhrase(stateCodes),
     Operators: `${operatorCount} operators`,
     Counties: `${countyCount} counties`,
   };

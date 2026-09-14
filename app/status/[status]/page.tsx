@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { getFacilitiesByStatus } from "@/lib/data";
 import { formatPower } from "@/lib/format";
 import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
-import { containsDc, statesPhrase } from "@/lib/us-states";
+import { statesPhrase } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
 
@@ -136,13 +136,11 @@ export default async function StatusPage({
   // the exact per-status count. Omitted entirely when the status is empty
   // (the CollectionPage emptyMessage below covers that case instead).
   const stateCodes = new Set(facilities.map((f) => f.location.state));
-  const stateCount = stateCodes.size;
-  const includesDc = containsDc(stateCodes);
   const factLine =
     facilities.length > 0
       ? `${facilities.length} ${statusLabel.toLowerCase()} facilit${
           facilities.length === 1 ? "y" : "ies"
-        }, spanning ${statesPhrase(stateCount, includesDc)}.`
+        }, spanning ${statesPhrase(stateCodes)}.`
       : null;
 
   return (

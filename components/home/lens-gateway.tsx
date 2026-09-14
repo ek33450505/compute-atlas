@@ -18,6 +18,7 @@ export interface LensGatewayProps {
     sites: number;
     states: number;
     includesDc: boolean;
+    stateCodes: string[];
     utilityLinked: number;
     frictionCount: number;
     aiClassified: number;
@@ -50,7 +51,7 @@ const LENSES: Lens[] = [
     label: "By state",
     href: "/states",
     icon: MapPin,
-    stat: (c) => statesPhrase(c.states, c.includesDc),
+    stat: (c) => statesPhrase(c.stateCodes),
     blurb: "Every state, ranked by capacity, build status, and friction.",
   },
   {

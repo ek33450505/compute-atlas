@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { getStakeholders, getStakeholderBySlug, getFacilitiesByStakeholder } from "@/lib/data";
-import { containsDc, statesStat } from "@/lib/us-states";
+import { statesStat } from "@/lib/us-states";
 import { CollectionPage } from "@/components/collection/collection-page";
 import { formatStakeholderRole } from "../format-role";
 
@@ -60,8 +60,7 @@ export default async function StakeholderPage({
   const summary = people.find((p) => p.slug === slug);
   const roles = summary?.roles ?? [];
   const states = summary?.states ?? [];
-  const statesIncludeDc = containsDc(states);
-  const statesTile = statesStat(states.length, statesIncludeDc);
+  const statesTile = statesStat(states);
   const roleList = roles.map(formatStakeholderRole).join(", ");
 
   return (

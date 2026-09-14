@@ -22,8 +22,8 @@ export const contentType = "image/png";
 
 export default async function OGImage() {
   const fraunces = loadFrauncesFont();
-  const { count, states, includesDc, operationalMw } = await getStats();
-  const statLine = `${count} SITES · ${statesPhrase(states, includesDc).toUpperCase()} · ${(operationalMw / 1000).toFixed(1)} GW OPERATIONAL`;
+  const { count, stateCodes, operationalMw } = await getStats();
+  const statLine = `${count} SITES · ${statesPhrase(stateCodes).toUpperCase()} · ${(operationalMw / 1000).toFixed(1)} GW OPERATIONAL`;
 
   return new ImageResponse(
     (

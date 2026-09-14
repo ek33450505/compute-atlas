@@ -85,6 +85,7 @@ function makeSummary(overrides: Partial<OperatorSummary> = {}): OperatorSummary 
     },
     stateCount: 1,
     includesDc: false,
+    stateCodes: ["TX"],
     capacityReporting: 2,
     ...overrides,
   } as OperatorSummary;
@@ -169,7 +170,7 @@ describe("OperatorPage generateMetadata", () => {
 
   it("phrases the description as '1 state and DC' when the operator's summary includesDc", async () => {
     mockGetOperatorSummary.mockResolvedValue(
-      makeSummary({ stateCount: 2, includesDc: true })
+      makeSummary({ stateCount: 2, includesDc: true, stateCodes: ["DC", "VA"] })
     );
 
     const metadata = await generateMetadata({
@@ -184,7 +185,7 @@ describe("OperatorPage generateMetadata", () => {
 describe("OperatorPage — DC-aware states stat and overview sentence", () => {
   it("labels the states tile 'State + DC', shows the state count (1) not the raw jurisdiction total (2), and phrases the overview sentence with DC when includesDc is true", async () => {
     mockGetOperatorSummary.mockResolvedValue(
-      makeSummary({ stateCount: 2, includesDc: true })
+      makeSummary({ stateCount: 2, includesDc: true, stateCodes: ["DC", "VA"] })
     );
 
     const page = await OperatorPage({ params: Promise.resolve({ operator: "acme-corp" }) });
@@ -211,7 +212,7 @@ describe("OperatorPage — DC-aware states stat and overview sentence", () => {
 
   it("labels the states tile plain 'States' when includesDc is false", async () => {
     mockGetOperatorSummary.mockResolvedValue(
-      makeSummary({ stateCount: 2, includesDc: false })
+      makeSummary({ stateCount: 2, includesDc: false, stateCodes: ["CA", "TX"] })
     );
 
     const page = await OperatorPage({ params: Promise.resolve({ operator: "acme-corp" }) });

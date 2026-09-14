@@ -478,6 +478,13 @@ export async function getStats(): Promise<{
   states: number;
   /** True when `states` includes DC — the count is not "states" alone. */
   includesDc: boolean;
+  /**
+   * Sorted, de-duplicated jurisdiction codes underlying `states`/`includesDc`.
+   * A count plus a DC boolean can't express a set that also contains
+   * territories (PR, GU, VI, MP, ...) — the codes are the only
+   * representation that stays correct as jurisdictions are added.
+   */
+  stateCodes: string[];
   operationalMw: number;
   plannedMw: number;
   underConstructionMw: number;
@@ -487,6 +494,7 @@ export async function getStats(): Promise<{
   const stateSet = new Set(facilities.map((f) => f.location.state));
   const states = stateSet.size;
   const includesDc = containsDc(stateSet);
+  const stateCodes = Array.from(stateSet).sort();
   const active = facilities.filter((f) => f.status !== "cancelled");
   const operationalMw = roundMw(
     active.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0)
@@ -499,7 +507,7 @@ export async function getStats(): Promise<{
       .filter((f) => f.status === "under_construction")
       .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
   );
-  return { count, states, includesDc, operationalMw, plannedMw, underConstructionMw };
+  return { count, states, includesDc, stateCodes, operationalMw, plannedMw, underConstructionMw };
 }
 
 // ============================================================
@@ -1643,6 +1651,13 @@ export interface CryptoMiningStats {
   stateCount: number;
   /** True when `stateCount` includes DC — the count is not "states" alone. */
   includesDc: boolean;
+  /**
+   * Sorted, de-duplicated jurisdiction codes underlying `stateCount`/`includesDc`.
+   * A count plus a DC boolean can't express a set that also contains
+   * territories (PR, GU, VI, MP, ...) — the codes are the only
+   * representation that stays correct as jurisdictions are added.
+   */
+  stateCodes: string[];
 }
 
 /**
@@ -1667,6 +1682,7 @@ export async function getCryptoMiningStats(): Promise<CryptoMiningStats> {
     plannedMw,
     stateCount: states.size,
     includesDc: containsDc(states),
+    stateCodes: Array.from(states).sort(),
   };
 }
 
@@ -1897,6 +1913,13 @@ export interface OperatorSummary {
   /** True when `stateCount` includes DC — the count is not "states" alone. */
   includesDc: boolean;
   /**
+   * Sorted, de-duplicated jurisdiction codes underlying `stateCount`/`includesDc`.
+   * A count plus a DC boolean can't express a set that also contains
+   * territories (PR, GU, VI, MP, ...) — the codes are the only
+   * representation that stays correct as jurisdictions are added.
+   */
+  stateCodes: string[];
+  /**
    * Count of non-cancelled facilities with a disclosed operational or
    * planned capacityMw figure. Restricted to non-cancelled so this matches
    * the population `operationalMw`/`plannedMw` sum over — otherwise the
@@ -1956,6 +1979,7 @@ export async function getOperatorSummary(name: string): Promise<OperatorSummary 
     byStatus,
     stateCount: states.size,
     includesDc: containsDc(states),
+    stateCodes: Array.from(states).sort(),
     capacityReporting,
   };
 }

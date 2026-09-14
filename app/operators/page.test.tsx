@@ -57,6 +57,7 @@ function makeOperatorSummary(overrides: Partial<OperatorSummary> = {}): Operator
     },
     stateCount: 0,
     includesDc: false,
+    stateCodes: [],
     capacityReporting: 0,
     ...overrides,
   };

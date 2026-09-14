@@ -217,15 +217,23 @@ export async function buildFacilityRoutes(): Promise<MetadataRoute.Sitemap> {
  */
 export async function buildStateRoutes(): Promise<MetadataRoute.Sitemap> {
   const [codes, facilities] = await Promise.all([getStates(), getAllFacilities()]);
-  return codes.map((code) => {
-    const stateFacilities = facilities.filter((f) => f.location.state === code);
-    return {
-      url: `${siteConfig.url}/states/${stateSlugFromCode(code)}`,
-      lastModified: maxLastUpdated(stateFacilities),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    };
-  });
+  return codes
+    .map((code) => {
+      const slug = stateSlugFromCode(code);
+      // A code that doesn't resolve to a slug is dropped rather than
+      // submitted as a broken `/states/undefined` URL.
+      if (slug === undefined) {
+        return undefined;
+      }
+      const stateFacilities = facilities.filter((f) => f.location.state === code);
+      return {
+        url: `${siteConfig.url}/states/${slug}`,
+        lastModified: maxLastUpdated(stateFacilities),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      };
+    })
+    .filter((route): route is NonNullable<typeof route> => route !== undefined);
 }
 
 /**
