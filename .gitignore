@@ -48,6 +48,7 @@ next-env.d.ts
 /docs/NEXT-SESSION.md
 /docs/ROADMAP.md
 /docs/session-archive-*.md
+/docs/archive/
 /docs/track-c-candidate-ledger.md
 /docs/seo-promotion-checklist.md
 /docs/manual-steps.md
