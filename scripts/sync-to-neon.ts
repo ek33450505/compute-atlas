@@ -266,7 +266,7 @@ export interface ApplyResult {
  */
 export async function applySync(
   plan: SyncPlan,
-  options: { source?: string } = {}
+  options: { source?: string; skipNotify?: boolean } = {}
 ): Promise<ApplyResult> {
   const db = getDb();
   const source = options.source ?? SYNC_HISTORY_SOURCE;
@@ -346,20 +346,39 @@ export async function applySync(
   // facility) is what lets a recipient watching several of them get ONE
   // email instead of one per facility — see lib/notify.ts's
   // notifySubscribersOfChanges doc comment.
-  try {
-    const changes = [
-      ...result.created.map((change) => ({
-        facility: change.doc,
-        changeLabel: "added to the atlas",
-      })),
-      ...result.updated.map((change) => ({
-        facility: change.doc,
-        changeLabel: "record updated",
-      })),
-    ];
-    await notifySubscribersOfChanges(changes);
-  } catch (err) {
-    console.error("subscriber notification failed", err);
+  //
+  // `--skip-notify` exists for METADATA-ONLY publishes. The source-URL dedupe
+  // (scripts/dedupe-source-urls.ts) touches 226 records without changing a
+  // single asserted fact — no status, capacity, operator or coordinate moves,
+  // only a redundant citation disappearing. Mailing a watcher "record updated"
+  // for that is how a change feed teaches people to ignore it, and the blast
+  // radius was real: 1 confirmed facility subscriber plus 2 confirmed state
+  // subscribers, measured before the publish.
+  //
+  // Deliberately opt-in and deliberately NOT inferred from the diff: "did this
+  // change matter to a human" is a judgement the person publishing makes, and
+  // a heuristic that guesses wrong fails silently in the direction of not
+  // telling someone about a fact they asked to be told about.
+  if (options.skipNotify) {
+    console.log(
+      `↷ skipping subscriber notification for ${result.created.length + result.updated.length} change(s) (--skip-notify)`
+    );
+  } else {
+    try {
+      const changes = [
+        ...result.created.map((change) => ({
+          facility: change.doc,
+          changeLabel: "added to the atlas",
+        })),
+        ...result.updated.map((change) => ({
+          facility: change.doc,
+          changeLabel: "record updated",
+        })),
+      ];
+      await notifySubscribersOfChanges(changes);
+    } catch (err) {
+      console.error("subscriber notification failed", err);
+    }
   }
 
   return result;
@@ -551,9 +570,17 @@ export interface CliOptions {
   apply: boolean;
   forceOverDrift: boolean;
   skipRevalidate: boolean;
+  /** Suppress subscriber email. For metadata-only publishes — see applySync. */
+  skipNotify: boolean;
 }
 
-const KNOWN_FLAGS = new Set(["--apply", "--dry-run", "--force-over-drift", "--skip-revalidate"]);
+const KNOWN_FLAGS = new Set([
+  "--apply",
+  "--dry-run",
+  "--force-over-drift",
+  "--skip-revalidate",
+  "--skip-notify",
+]);
 
 export function parseCliArgs(argv: string[]): CliOptions {
   const unknown = argv.filter((arg) => !KNOWN_FLAGS.has(arg));
@@ -568,6 +595,7 @@ export function parseCliArgs(argv: string[]): CliOptions {
     apply: argv.includes("--apply"),
     forceOverDrift: argv.includes("--force-over-drift"),
     skipRevalidate: argv.includes("--skip-revalidate"),
+    skipNotify: argv.includes("--skip-notify"),
   };
 }
 
@@ -698,7 +726,7 @@ async function main(): Promise<void> {
   console.log(
     `\nAPPLYING to Neon${revalidateConfig ? ` and busting tags at ${revalidateConfig.baseUrl}` : " (--skip-revalidate: NOT busting tags)"}…`
   );
-  const result = await applySync(plan);
+  const result = await applySync(plan, { skipNotify: options.skipNotify });
   console.log(`Created ${result.created.length}, updated ${result.updated.length}.`);
 
   let failed = plan.blocked.length > 0;

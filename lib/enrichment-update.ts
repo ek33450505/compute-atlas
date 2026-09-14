@@ -7,7 +7,7 @@ import {
   communityStatusEnum,
   aiClassificationEnum,
 } from "@/lib/schema";
-import type { Facility } from "@/lib/schema";
+import type { Facility, Source } from "@/lib/schema";
 
 /**
  * Append-only enrichment core.
@@ -201,12 +201,68 @@ export function missingEnrichableFamilies(facility: Facility): EnrichableFamily[
 // guarantee (the same contract as `applyStatusUpdate`).
 // ---------------------------------------------------------------------------
 
+/**
+ * Field-wise merge for a source URL the record ALREADY cites.
+ *
+ * Re-citing is routine: the enrichment lane re-reads the same page on a later
+ * run and re-proposes it. Appending a second copy is what produced 283
+ * redundant source entries across 235 records (measured 2026-09-14), inflating
+ * the apparent provenance of a record — a 5-source facility reading as
+ * better-corroborated than the 3 distinct sources it actually has.
+ *
+ * Obeys this module's fill-missing rule: a curated value is never overwritten.
+ * `label` and `url` are left strictly alone — two different labels for one URL
+ * is a curation question, not something a merge should silently resolve — and
+ * `kind` is left alone because it carries a schema default of "other", so an
+ * absent value is indistinguishable from a deliberate one here.
+ *
+ * `retrievedAt` is the one deliberate exception, and it only ever moves
+ * FORWARD. The lane fetches and verifies each URL before proposing it, so a
+ * later date is a real re-verification of the same page; keeping the older one
+ * would understate when we last confirmed the source said what we claim.
+ */
+function mergeRecitedSource(existing: Source, incoming: Source): Source {
+  const merged: Source = { ...existing };
+  if (merged.publisher === undefined && incoming.publisher !== undefined) {
+    merged.publisher = incoming.publisher;
+  }
+  // Both are strict YYYY-MM-DD (sourceSchema), so lexicographic > is date order.
+  if (incoming.retrievedAt > merged.retrievedAt) {
+    merged.retrievedAt = incoming.retrievedAt;
+  }
+  return merged;
+}
+
 export function applyEnrichmentUpdate(
   existing: Facility,
   intent: EnrichmentUpdateIntent
 ): Facility {
-  const appendBase = existing.sources.length;
-  const sources = [...existing.sources, ...intent.sources];
+  // Append-only is preserved EXACTLY: an incoming source whose URL is already
+  // cited is POINTED AT its existing entry instead of appended, so `sources` is
+  // never reordered and never shortened and no retained `sourceIndex` moves.
+  // This appends strictly less than before; it rewrites nothing.
+  const sources: Source[] = [...existing.sources];
+  const indexByUrl = new Map<string, number>();
+  sources.forEach((source, i) => {
+    if (!indexByUrl.has(source.url)) indexByUrl.set(source.url, i);
+  });
+
+  // Replaces the old fixed-offset remap of the intent's relative indices: they
+  // are no longer a contiguous block at the end, because a re-cited source
+  // resolves to wherever it already lives.
+  const absoluteIndexFor: number[] = intent.sources.map((incoming) => {
+    const hit = indexByUrl.get(incoming.url);
+    if (hit === undefined) {
+      const appendedAt = sources.length;
+      sources.push(incoming);
+      indexByUrl.set(incoming.url, appendedAt);
+      return appendedAt;
+    }
+    // New object, not a mutation — `existing.sources` must stay untouched to
+    // honour this function's pure/no-mutate contract.
+    sources[hit] = mergeRecitedSource(sources[hit], incoming);
+    return hit;
+  });
   const fields = intent.fields;
 
   const overrides: Record<string, unknown> = {
@@ -318,7 +374,7 @@ export function applyEnrichmentUpdate(
     overrides.jobs = {
       ...(fields.jobs.construction !== undefined ? { construction: fields.jobs.construction } : {}),
       ...(fields.jobs.permanent !== undefined ? { permanent: fields.jobs.permanent } : {}),
-      sourceIndex: appendBase + fields.jobs.sourceRel,
+      sourceIndex: absoluteIndexFor[fields.jobs.sourceRel],
     };
   }
 
@@ -328,7 +384,7 @@ export function applyEnrichmentUpdate(
     overrides.community = {
       ...(fields.community.status !== undefined ? { status: fields.community.status } : {}),
       ...(fields.community.notes !== undefined ? { notes: fields.community.notes } : {}),
-      sourceIndex: appendBase + fields.community.sourceRel,
+      sourceIndex: absoluteIndexFor[fields.community.sourceRel],
     };
   }
 
@@ -345,7 +401,7 @@ export function applyEnrichmentUpdate(
         ...(s.amountUsd !== undefined ? { amountUsd: s.amountUsd } : {}),
         ...(s.jurisdiction !== undefined ? { jurisdiction: s.jurisdiction } : {}),
         ...(s.year !== undefined ? { year: s.year } : {}),
-        sourceIndex: appendBase + s.sourceRel,
+        sourceIndex: absoluteIndexFor[s.sourceRel],
       }));
     if (toAppend.length > 0) {
       overrides.subsidies = [...(existing.subsidies ?? []), ...toAppend];
