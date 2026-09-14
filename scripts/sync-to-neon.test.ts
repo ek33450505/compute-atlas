@@ -9,8 +9,16 @@ import { join } from "node:path";
 // PGlite instance below, so applySync()'s internal getDb() resolves to it.
 // Same pattern as scripts/seed.test.ts.
 vi.mock("../lib/db/client");
+// Mocked so the notification decision is OBSERVABLE. Without this the real
+// function runs and returns quietly whether or not it was meant to, which
+// makes "did we email anyone" untestable — and that is the one thing about a
+// metadata-only publish that must not be left to inspection.
+vi.mock("../lib/notify", () => ({
+  notifySubscribersOfChanges: vi.fn(async () => {}),
+}));
 
 import * as dbClient from "../lib/db/client";
+import { notifySubscribersOfChanges } from "../lib/notify";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
 import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import type { DataCenterFacility, PowerGenerationFacility, Source } from "../lib/schema";
@@ -301,6 +309,37 @@ describe("applySync", () => {
       .where(eq(facilityHistoryTable.facilityId, id));
   }
 
+  it("notifies subscribers by DEFAULT on an ordinary publish", async () => {
+    vi.mocked(notifySubscribersOfChanges).mockClear();
+    const doc = makeDoc({ id: "notify-default", name: "Notify Default" });
+    const plan = planSync([doc], await snapshot(), { basis: BASIS });
+
+    await applySync(plan);
+
+    expect(notifySubscribersOfChanges).toHaveBeenCalledTimes(1);
+    const [changes] = vi.mocked(notifySubscribersOfChanges).mock.calls[0];
+    expect(changes.map((c) => c.facility.id)).toEqual(["notify-default"]);
+  });
+
+  it("sends NOTHING when skipNotify is set, while still applying the write", async () => {
+    // The metadata-only publish path. Both halves matter: silence AND the data
+    // landing — a flag that suppressed the write too would pass a call-count
+    // assertion on its own.
+    vi.mocked(notifySubscribersOfChanges).mockClear();
+    const doc = makeDoc({ id: "notify-suppressed", name: "Notify Suppressed" });
+    const plan = planSync([doc], await snapshot(), { basis: BASIS });
+
+    const result = await applySync(plan, { skipNotify: true });
+
+    expect(notifySubscribersOfChanges).not.toHaveBeenCalled();
+    expect(result.created.map((c) => c.id)).toEqual(["notify-suppressed"]);
+    const rows = await tdb.db
+      .select()
+      .from(facilitiesTable)
+      .where(eq(facilitiesTable.id, "notify-suppressed"));
+    expect(rows).toHaveLength(1);
+  });
+
   it("inserts a create and writes exactly one 'create' audit row attributed to maintainer-sync", async () => {
     const doc = makeDoc({ id: "fresh-facility", name: "Fresh" });
     const plan = planSync([doc], await snapshot(), { basis: BASIS });
@@ -583,15 +622,25 @@ describe("parseCliArgs", () => {
       apply: false,
       forceOverDrift: false,
       skipRevalidate: false,
+      skipNotify: false,
     });
   });
 
   it("reads each flag", () => {
-    expect(parseCliArgs(["--apply", "--force-over-drift", "--skip-revalidate"])).toEqual({
+    expect(
+      parseCliArgs(["--apply", "--force-over-drift", "--skip-revalidate", "--skip-notify"])
+    ).toEqual({
       apply: true,
       forceOverDrift: true,
       skipRevalidate: true,
+      skipNotify: true,
     });
+  });
+
+  it("leaves notification ON by default — silence must be opt-in", () => {
+    // The dangerous direction is a publish that quietly tells nobody, so the
+    // default is asserted explicitly rather than left implied by the shape test.
+    expect(parseCliArgs(["--apply"]).skipNotify).toBe(false);
   });
 
   it("accepts an explicit --dry-run", () => {

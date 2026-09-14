@@ -9,7 +9,7 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Support",
   description:
-    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a one-off tip or a sponsorship helps cover the database and hosting that keep it running — without changing what the record says.",
+    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a one-off tip or a sponsorship helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
   alternates: { canonical: "/support" },
 };
 
@@ -24,7 +24,21 @@ const LINK_CLASS =
  *
  * Claims discipline (audited copy, do not extend): no privacy/tracking claim
  * (Vercel Analytics + Speed Insights are mounted in app/layout.tsx), no Ko-fi/
- * GitHub fee percentage, no facility count or dollar figure.
+ * GitHub fee percentage, no facility count, and NO DOLLAR FIGURE.
+ *
+ * Named cost CATEGORIES and suppliers are permitted (added 2026-09-14, Ed's
+ * call) — a database, hosting, and the discovery pipeline's model
+ * subscription. A dollar amount is still barred, and deliberately: a monthly
+ * bill is the fastest-rotting number on the site, nothing here re-checks it,
+ * and the project's own claims discipline prefers countable-and-stable over
+ * impressive-and-rotting.
+ *
+ * ⛔ "It has never published a record." must survive any edit to the discovery
+ * sentence. Disclosing an AI cost invites the reading that the DATASET is
+ * AI-generated, which is the most damaging conclusion a reader could draw and
+ * is false — every candidate is staged for human approval (see the core
+ * invariant in CLAUDE.md). Delete the whole discovery line before shipping it
+ * without that clause.
  */
 export default function SupportPage() {
   return (
@@ -40,10 +54,10 @@ export default function SupportPage() {
         dek={
           <>
             Compute Atlas is free to read, open source, and carries no
-            advertising. It runs on a small monthly infrastructure budget
-            &mdash; a database and hosting &mdash; that I cover myself. If the
-            atlas is useful to you, there are two ways to help pay for it, and
-            several that cost nothing.
+            advertising. It runs on a small monthly budget I cover myself: a
+            managed Postgres database, hosting, and the AI subscription behind
+            the discovery pipeline. If the atlas is useful to you, there are
+            two ways to help pay for it, and several that cost nothing.
           </>
         }
       />
@@ -64,11 +78,38 @@ export default function SupportPage() {
           awake, hosting that serves every facility page and a full-screen map
           without a paywall, and the geospatial data the map draws on.
         </p>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Three things cost money every month. The database is the largest
+          &mdash; a managed Postgres instance (Neon) holding every facility,
+          every citation, and the full revision history behind the change log;
+          almost all of that is data moving between the database and the site
+          rather than data stored, because the dataset itself is only tens of
+          megabytes. Hosting (Vercel) serves every facility page, the
+          full-screen map, and an open JSON API, with no paywall and no paid
+          tier. The third is the discovery pipeline, which runs on a paid
+          Claude subscription: it reads public sources overnight and proposes
+          candidates. It has never published a record. Every candidate is
+          staged for a person to approve or reject by hand &mdash; so what
+          that line item buys is the search, not the writing.
+        </p>
         <SupportCta />
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Ko-fi takes one-off tips without an account &mdash; guest checkout,
           card or PayPal. GitHub Sponsors is the other path; it needs a GitHub
           account, which is why it sits second here.
+        </p>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Compute Atlas is an independent project by{" "}
+          <a
+            href="https://edwardkubiak.com"
+            target="_blank"
+            rel="noreferrer noopener"
+            className={LINK_CLASS}
+          >
+            Edward Kubiak <span aria-hidden="true">↗</span>
+          </a>
+          , a software engineer in Columbus, Ohio. There is no company behind
+          it and no outside funding.
         </p>
       </section>
 

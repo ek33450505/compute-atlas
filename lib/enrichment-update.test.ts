@@ -82,6 +82,129 @@ function minimalIntent(overrides: Partial<EnrichmentUpdateIntent> = {}): Enrichm
 }
 
 describe("applyEnrichmentUpdate", () => {
+  describe("re-cited source URLs are not appended twice", () => {
+    it("points a re-cited URL at its EXISTING index instead of appending a copy", () => {
+      // The whole correctness property: sourceRel 0 refers to the intent's own
+      // array, and that URL is already cited at absolute index 0. It must
+      // resolve to 0, not to a freshly appended duplicate.
+      const existing = makeDataCenter({ sources: [makeSource("s0")] });
+      const intent: EnrichmentUpdateIntent = {
+        date: "2026-02-01",
+        sources: [makeSource("s0")],
+        fields: { jobs: { permanent: 50, sourceRel: 0 } },
+      };
+      const result = applyEnrichmentUpdate(existing, intent);
+      expect(result.sources).toHaveLength(1);
+      expect(result.jobs?.sourceIndex).toBe(0);
+      expect(facilitySchema.safeParse(result).success).toBe(true);
+    });
+
+    it("resolves a MIX of re-cited and new sources to the right absolute indices", () => {
+      // sourceRel 0 is already cited (index 1); sourceRel 1 is genuinely new
+      // and must land at the end. A fixed offset cannot express both.
+      const existing = makeDataCenter({ sources: [makeSource("a"), makeSource("b")] });
+      const intent: EnrichmentUpdateIntent = {
+        date: "2026-02-01",
+        sources: [makeSource("b"), makeSource("c")],
+        fields: {
+          jobs: { permanent: 10, sourceRel: 0 },
+          community: { status: "supported", sourceRel: 1 },
+        },
+      };
+      const result = applyEnrichmentUpdate(existing, intent);
+      expect(result.sources.map((x) => x.url)).toEqual([
+        "https://example.com/a",
+        "https://example.com/b",
+        "https://example.com/c",
+      ]);
+      expect(result.jobs?.sourceIndex).toBe(1);
+      expect(result.community?.sourceIndex).toBe(2);
+      expect(facilitySchema.safeParse(result).success).toBe(true);
+    });
+
+    it("keeps every pre-existing sourceIndex pointing at the SAME url", () => {
+      // Bounds validation cannot catch a ref that lands in range but on the
+      // wrong source. Assert URL identity, which can.
+      const existing = makeDataCenter({
+        sources: [makeSource("a"), makeSource("b")],
+        statusHistory: [{ status: "proposed", date: "2026-01-01", sourceIndex: 1 }],
+      });
+      const before = existing.sources[1].url;
+      const intent: EnrichmentUpdateIntent = {
+        date: "2026-02-01",
+        sources: [makeSource("a")],
+        fields: { landAcres: 12 },
+      };
+      const result = applyEnrichmentUpdate(existing, intent);
+      const idx = result.statusHistory[0].sourceIndex!;
+      expect(result.sources[idx].url).toBe(before);
+    });
+
+    it("moves retrievedAt FORWARD on a re-cite but never backward", () => {
+      const existing = makeDataCenter({
+        sources: [{ ...makeSource("a"), retrievedAt: "2026-05-01" }],
+      });
+      const forward = applyEnrichmentUpdate(existing, {
+        date: "2026-06-01",
+        sources: [{ ...makeSource("a"), retrievedAt: "2026-06-01" }],
+        fields: { landAcres: 1 },
+      });
+      expect(forward.sources[0].retrievedAt).toBe("2026-06-01");
+
+      const backward = applyEnrichmentUpdate(existing, {
+        date: "2026-06-01",
+        sources: [{ ...makeSource("a"), retrievedAt: "2026-01-01" }],
+        fields: { landAcres: 1 },
+      });
+      expect(backward.sources[0].retrievedAt).toBe("2026-05-01");
+    });
+
+    it("fills an absent publisher but never overwrites a curated one", () => {
+      const noPublisher = makeDataCenter({ sources: [makeSource("a")] });
+      const filled = applyEnrichmentUpdate(noPublisher, {
+        date: "2026-06-01",
+        sources: [{ ...makeSource("a"), publisher: "Reuters" }],
+        fields: { landAcres: 1 },
+      });
+      expect(filled.sources[0].publisher).toBe("Reuters");
+
+      const curated = makeDataCenter({
+        sources: [{ ...makeSource("a"), publisher: "Curated Publisher" }],
+      });
+      const untouched = applyEnrichmentUpdate(curated, {
+        date: "2026-06-01",
+        sources: [{ ...makeSource("a"), publisher: "Reuters" }],
+        fields: { landAcres: 1 },
+      });
+      expect(untouched.sources[0].publisher).toBe("Curated Publisher");
+    });
+
+    it("leaves a curated label alone when the same URL is re-cited differently", () => {
+      const existing = makeDataCenter({
+        sources: [{ ...makeSource("a"), label: "Curated label" }],
+      });
+      const result = applyEnrichmentUpdate(existing, {
+        date: "2026-06-01",
+        sources: [{ ...makeSource("a"), label: "Pipeline label" }],
+        fields: { landAcres: 1 },
+      });
+      expect(result.sources[0].label).toBe("Curated label");
+    });
+
+    it("does not mutate existing.sources when merging a re-cite", () => {
+      const existing = makeDataCenter({
+        sources: [{ ...makeSource("a"), retrievedAt: "2026-01-01" }],
+      });
+      const snapshot = JSON.stringify(existing.sources);
+      applyEnrichmentUpdate(existing, {
+        date: "2026-06-01",
+        sources: [{ ...makeSource("a"), retrievedAt: "2026-09-01", publisher: "X" }],
+        fields: { landAcres: 1 },
+      });
+      expect(JSON.stringify(existing.sources)).toBe(snapshot);
+    });
+  });
+
   it("is append-only: sources grow by exactly intent.sources.length, existing entries unchanged", () => {
     const existing = makeDataCenter({ sources: [makeSource("s0"), makeSource("s1")] });
     const existingClone = structuredClone(existing);
