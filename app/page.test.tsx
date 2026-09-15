@@ -57,9 +57,19 @@ vi.mock("@/lib/dataset-edition", () => ({
   getDatasetEdition: mockGetDatasetEdition,
 }));
 
-// MapLibre needs `window` at module scope and is pure decoration here.
+// MapLibre needs `window` at module scope and is pure decoration here — but
+// the `plate` prop is NOT decoration: it is the static dot map, rendered on
+// this page (the server component) precisely so the `"use client"` wrapper
+// never imports its ~23 KB path artifact. The stand-in renders it so that
+// wiring is observable; it is deliberately OUTSIDE the aria-hidden div,
+// because the real wrapper does not hide the plate either.
 vi.mock("@/components/home/hero-globe-dynamic", () => ({
-  HeroGlobe: () => <div aria-hidden="true" />,
+  HeroGlobe: ({ plate }: { plate?: React.ReactNode }) => (
+    <>
+      <div aria-hidden="true" />
+      {plate}
+    </>
+  ),
 }));
 
 vi.mock("next/link", () => ({
@@ -79,8 +89,20 @@ vi.mock("next/link", () => ({
 }));
 
 import HomePage from "./page";
+import { HERO_PLATE } from "@/components/home/hero-plate-paths";
 
 const STATE_CODES = ["CA", "TX", "VA", "DC"];
+
+// The component renders this count through `toLocaleString("en-US")`
+// (components/home/hero-provenance.tsx), so the expectation has to format it
+// the same way. Raw interpolation agrees below 1000 and diverges at 1000
+// ("1000" vs "1,000"), so a data wave that pushed `omitted` past 999 would turn
+// this suite red for a formatting reason, under a message blaming the
+// disclosure text. Extracted rather than inlined so that 4-digit behaviour can
+// be asserted directly (below) instead of waiting for such a wave to arrive.
+const nf = new Intl.NumberFormat("en-US");
+const omittedDisclosure = (omitted: number) =>
+  `static map omits ${nf.format(omitted)} in U.S. territories`;
 
 /** Three facilities carrying 7 sources between them. */
 const FACILITIES = [
@@ -258,6 +280,57 @@ describe("HomePage hero", () => {
     expect(provenanceLine().textContent).toContain(
       "+41 new this quarter, 3 cancelled"
     );
+  });
+
+  // The plate's OWN accessible name cannot carry this: that <svg role="img">
+  // is replaced by the aria-hidden globe canvas as soon as MapLibre mounts, so
+  // on desktop the disclosure was announced or not depending on timing. The
+  // provenance rule is on the page in every state, at every viewport.
+  it("discloses on the provenance rule what the static map cannot place", async () => {
+    // Precondition for the plural branch — a wave that dropped this to 1 would
+    // render "1 in a U.S. territory" and should fail loudly here, not silently
+    // stop matching.
+    expect(HERO_PLATE.omitted).toBeGreaterThan(1);
+
+    render(await HomePage());
+
+    expect(provenanceLine().textContent).toContain(
+      omittedDisclosure(HERO_PLATE.omitted)
+    );
+  });
+
+  // Proves the formatting above rather than trusting it. Today's
+  // HERO_PLATE.omitted is a 2-digit number, where raw interpolation and en-US
+  // formatting produce the identical string — so the assertion above cannot
+  // distinguish the two and would pass either way. This pins the 4-digit case
+  // the suite would otherwise first meet on the day a data wave broke it.
+  it("formats the omitted count with thousands separators past 999", () => {
+    expect(omittedDisclosure(1000)).toBe(
+      "static map omits 1,000 in U.S. territories"
+    );
+    expect(omittedDisclosure(12)).toBe("static map omits 12 in U.S. territories");
+  });
+
+  // The hero wrapper is a client component; the plate is a server-rendered
+  // node handed to it as a prop. If this page stopped passing it, every
+  // non-globe state (which is EVERY state on a phone) would show a bare
+  // graticule and no map at all — and no test in hero-globe.test.tsx would
+  // notice, because there the plate is supplied by the test itself.
+  it("hands the hero wrapper a server-rendered dot plate", async () => {
+    render(await HomePage());
+
+    // Scoped by accessible NAME, not a bare getByRole("img"). The hero is about
+    // to gain a legend and caption, and an unscoped query would then throw
+    // "found multiple elements with the role img" — a failure that says nothing
+    // about whether the plate is still being handed across the boundary, which
+    // is the only thing this test is here to catch. Naming it means the next
+    // unit gets a real failure (the plate is gone / renamed) or none at all.
+    const plate = screen.getByRole("img", {
+      name: /Dot map of [\d,]+ tracked sites/,
+    });
+    // role="img" is also reachable from <img> and <div role="img">; this is the
+    // server-rendered inline SVG or it is not the plate.
+    expect(plate.tagName.toLowerCase()).toBe("svg");
   });
 
   it("keeps the primary map CTA pointing at /map", async () => {

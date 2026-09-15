@@ -150,6 +150,59 @@ describe("HeroProvenance", () => {
     expect(container.textContent).not.toContain("new this quarter");
   });
 
+  // The hero plate discloses this in its accessible name too, but that element
+  // is swapped out for the (aria-hidden) globe the moment MapLibre mounts, so
+  // on desktop the disclosure came and went with the mount. This rule is on
+  // the page at every viewport in every state — asserting the WHOLE line also
+  // pins that the segment joins the same single interpolated string as the
+  // rest (the repo's remedy for the JSX entity-swallows-a-leading-space bug),
+  // not an adjacent JSX child.
+  it("discloses what the static map cannot place, as the last segment", () => {
+    render(<HeroProvenance {...BASE_PROPS} mapOmitted={9} />);
+
+    expect(
+      screen.getByText(
+        "1,929 sites · 3 states and DC · 8,421 sources · edition 15 Sep 2026 · static map omits 9 in U.S. territories"
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the omission after the quarter when both are present", () => {
+    render(
+      <HeroProvenance {...BASE_PROPS} newThisQuarter={41} mapOmitted={9} />
+    );
+
+    expect(
+      screen.getByText(
+        "1,929 sites · 3 states and DC · 8,421 sources · edition 15 Sep 2026 · +41 new this quarter · static map omits 9 in U.S. territories"
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("says `a U.S. territory` when exactly one site is unplaceable", () => {
+    const { container } = render(
+      <HeroProvenance {...BASE_PROPS} mapOmitted={1} />
+    );
+
+    expect(container.textContent).toContain(
+      "static map omits 1 in a U.S. territory"
+    );
+    expect(container.textContent).not.toContain("territories");
+  });
+
+  // Same reasoning as the quarter segment above: an absence is not a finding.
+  it.each([
+    ["nothing is omitted", 0],
+    ["the caller does not know", undefined],
+  ])("drops the segment entirely when %s", (_case, mapOmitted) => {
+    const { container } = render(
+      <HeroProvenance {...BASE_PROPS} mapOmitted={mapOmitted} />
+    );
+
+    expect(container.textContent).not.toContain("static map");
+    expect(container.textContent).not.toContain("omits");
+  });
+
   it("thousands-separates large figures", () => {
     render(
       <HeroProvenance {...BASE_PROPS} sites={12345} sources={101112} />

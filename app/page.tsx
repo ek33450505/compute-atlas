@@ -23,6 +23,8 @@ import {
 import { METROS } from "@/lib/metros";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
+import { HeroPlate } from "@/components/home/hero-plate";
+import { HERO_PLATE } from "@/components/home/hero-plate-paths";
 import { HeroSearch } from "@/components/home/hero-search";
 import { HeroProvenance } from "@/components/home/hero-provenance";
 import { SurveyLedger } from "@/components/home/survey-ledger";
@@ -132,8 +134,18 @@ export default async function HomePage() {
          * payload instead cost every visitor — phones included — ~98 KB
          * brotli for a surface phones never render.
          */}
+        {/*
+         * The static dot plate is rendered HERE, on the server, and passed
+         * into the client wrapper as an already-rendered node. Importing it
+         * inside that `"use client"` wrapper instead would pull
+         * components/home/hero-plate-paths (~23 KB raw / ~5 KB brotli of path
+         * data) into the eagerly-loaded client chunk, duplicating data that is
+         * already inline in this page's HTML — the same per-visitor cost the
+         * point set was moved to a CDN artifact to avoid, and paid by the same
+         * phones. Keep the import on this side of the boundary.
+         */}
         <div className="absolute inset-0">
-          <HeroGlobe heightClass="h-full" />
+          <HeroGlobe heightClass="h-full" plate={<HeroPlate />} />
         </div>
 
         {/*
@@ -246,6 +258,11 @@ export default async function HomePage() {
               editionAsOf={edition.asOf}
               newThisQuarter={quarterly.newThisQuarter}
               cancelledThisQuarter={quarterly.cancelledThisQuarter}
+              /* The plate's territory omission, stated in durable visible text.
+                 The plate's own accessible name cannot carry it: that element
+                 is replaced by the (aria-hidden) globe on desktop, so the
+                 disclosure would come and go with the mount. */
+              mapOmitted={HERO_PLATE.omitted}
             />
           </div>
 
