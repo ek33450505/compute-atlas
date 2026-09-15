@@ -27,6 +27,7 @@ import { HeroPlate } from "@/components/home/hero-plate";
 import { HERO_PLATE } from "@/components/home/hero-plate-paths";
 import { HeroSearch } from "@/components/home/hero-search";
 import { HeroProvenance } from "@/components/home/hero-provenance";
+import { PlateKey } from "@/components/home/plate-key";
 import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
@@ -116,8 +117,14 @@ export default async function HomePage() {
           reserving a full 60vh here would hand that saving straight back as
           dead space above the fold. Below sm the box floors just under the
           plate and otherwise sizes to the real content — overline, H1,
-          subhead, search, CTAs. sm+ is unchanged. */}
-      <div className="relative mb-10 min-h-[46vh] sm:min-h-[60vh] overflow-hidden">
+          subhead, search, CTAs. sm+ is unchanged.
+
+          `flex flex-col` is load-bearing and belongs to <PlateKey> below: it
+          is what lets that card's `sm:mt-auto` absorb whatever slack this box
+          has and settle on its bottom edge without leaving flow. Don't strip
+          it, and don't give the cartouche column `flex-1` — see the comment
+          at the <PlateKey> call site for the overlap that caused. */}
+      <div className="relative mb-10 flex min-h-[46vh] flex-col overflow-hidden sm:min-h-[60vh]">
         {/*
          * Living globe hero — every tracked facility plotted on a
          * globe-projection basemap, drawn in west→east on load. Purely
@@ -310,7 +317,7 @@ export default async function HomePage() {
 
             <Link
               href="/methodology"
-              className="inline-flex min-h-11 items-center rounded-sm bg-background/85 px-2 backdrop-blur-sm font-mono text-sm text-muted-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 items-center rounded-sm bg-background/85 px-2 backdrop-blur-sm font-mono text-sm text-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               {/* min-h-11 (44px), not padding: the sibling map CTA is h-11, so
                   this matches its touch target and its baseline in the flex row
@@ -325,10 +332,26 @@ export default async function HomePage() {
                   HeroSearch's root is bg-card), so the cartouche scrim above
                   deliberately stops short of this row. This link paints
                   nothing, so on sm+ it sits directly over live MapLibre tiles —
-                  land, water, roads and status-coloured dots. --muted-foreground
-                  #5C5344 is contrast-audited at 6.70:1 against parchment
-                  #F5F1E6, and that audit ASSUMES parchment behind it; over
-                  tiles the effective ratio is unknown and lower. This is the
+                  land, water, roads and status-coloured dots. --foreground
+                  #2B2721 computes to 13.15:1 against parchment #F5F1E6, and
+                  that audit ASSUMES parchment behind it; over tiles the
+                  effective ratio is still unknown and lower — the backing is
+                  what the reader actually has, not the token. That caveat is
+                  exactly why this link was darkened from --muted-foreground
+                  (#5C5344, 6.70:1) on Ed's read of the live page: it does not
+                  measure the over-tiles case, it raises its FLOOR, roughly
+                  doubling the headroom the 85% backing has to give away.
+
+                  Hover shifts to --primary (#3F5B43, 6.672:1) rather than
+                  keeping `hover:text-foreground`, which is now the rest state
+                  and would be a dead class. It is the house pattern for a
+                  text-foreground link (app/counties/page.tsx,
+                  app/facilities/[slug]/page.tsx) and it keeps
+                  `transition-colors` meaning something. Note the direction:
+                  hover LOWERS contrast here, which is only acceptable because
+                  it is transient, still clears AA on parchment, and arrives
+                  with `hover:underline` — a non-colour affordance that carries
+                  the interactive signal on its own. This is the
                   same treatment .maplibregl-ctrl-scale gets in globals.css
                   (85% background + a blur) and that the map's own quiet
                   overlays already use in Tailwind form
@@ -339,6 +362,135 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
+
+        {/* The dot plate's key — the legend that makes its status colours
+            decodable, and a one-line caption of what the plate drew.
+
+            Rendered HERE, as a sibling of the globe/plate box, and NOT inside
+            <HeroPlate> or the `plate` node handed to <HeroGlobe>: that whole
+            node is swapped out for the aria-hidden globe canvas on sm+ once
+            MapLibre mounts, so a key living in it would vanish at exactly the
+            viewports where the map is richest. Same reason the territory
+            disclosure sits on <HeroProvenance> rather than on the plate's
+            accessible name.
+
+            ⚠️ A direct child of the HERO BOX, deliberately — NOT of the
+            `relative z-10` cartouche column above. The hero box is the flex
+            column (`flex flex-col` on it), and only a direct child of it can
+            claim its free space; nested inside the cartouche column this card
+            would be laid out against the column's content box instead, which
+            has no slack to give, and the corner placement silently stops
+            meaning what it says.
+
+            The mechanism is FLOW, not absolute positioning. The card is an
+            ordinary flex item and `sm:mt-auto` absorbs ALL free space above
+            it. Tall viewport ⇒ the box is taller than its content, the auto
+            margin eats the slack, and the card lands on the hero's bottom
+            edge (`sm:mb-4` off it) as a cartographic corner key floating over
+            the plate/globe. Short viewport ⇒ the content already fills the
+            box, the auto margin resolves to zero, and the card simply follows
+            the CTA row. It cannot overlap anything at any viewport height
+            because it never leaves flow — structurally impossible, not merely
+            unlikely.
+
+            That distinction is a recorded failure, not a preference. This
+            card was first pinned `sm:absolute sm:bottom-4 sm:left-4`, and it
+            overlapped the CTA row and search field on every viewport where
+            the cartouche column filled the box. The box is `min-h`, so its
+            height is max(60vh, column height): once the column (~440-450px)
+            reaches 60vh there is NO bottom slack at all. A 1440x900 laptop
+            (~750px viewport ⇒ 60vh ≈ 450px) is exactly that case, and the
+            ~180px card pinned `bottom-4` landed ~60-120px INSIDE the primary
+            CTA. Bottom-LEFT did not help, because the CTA row is left-aligned
+            too. Do not reintroduce absolute positioning to "guarantee" the
+            corner — the corner is not the invariant here, non-overlap is.
+
+            Two layouts, ONE element — never render it twice:
+            • sm+: shrink-wrapped and pushed to the hero box's bottom edge by
+              the auto margin, over the globe. A real cartographic corner key
+              (Ed, live browser, 2026-09-15 — the earlier full-width in-flow
+              card read as hero furniture).
+            • below sm: full width, directly under the column, with no auto
+              margin. Deliberate, and also moot: a 5-row key is ~180-220px
+              tall and at 390x844 the hero box already sizes to its content
+              past `min-h-[46vh]`, so there is no slack for `mt-auto` to
+              absorb even if it applied. The column's `pb-10` is the gap.
+              `hidden sm:block` is not an option either: phones are where the
+              plate is the ONLY map (hero-globe-dynamic.tsx gates MapLibre to
+              sm+).
+
+            ⚠️ CSS 2.1 §10.6.4 (the trap the scrim comment above derives
+            `calc(100% - 24px)` from) does NOT engage here, and both halves of
+            that are checked rather than assumed: the hero box carries no
+            `space-y-*` at all, and this element is no longer absolutely
+            positioned, so the offset equation that subtracts a sibling margin
+            has nothing to bite on. Keep it that way — re-pinning this card
+            with BOTH `top` and `bottom` set walks straight back into it.
+            Moving it out of the column did cost the CTA row its
+            `margin-block-end` (the CTA row is the new `:last-child`), which
+            is harmless: the scrim's constant is a function of the INNER
+            `relative space-y-4` wrapper's five children, not the outer
+            column's.
+
+            The hero box becoming a flex container changes nothing for its
+            other two children. The globe wrapper is `absolute inset-0` and so
+            out of flow entirely (an abspos child is not a flex item). The
+            cartouche column stretches to full width exactly as it did as a
+            block, and must keep `flex-grow: 0` — no `flex-1`, no `grow`. The
+            slack belongs to THIS card; handing it to the column puts the
+            overlap back.
+
+            z-20 clears both the globe wrapper (`absolute inset-0`, no
+            z-index) and the cartouche column (`z-10`); a `relative` flex item
+            with a z-index participates in the same stacking context it did
+            before, so the paint order is unchanged. The card now holds no
+            focusable content at all — its map link was removed as a duplicate
+            of the hero's primary "Explore the map" CTA — so it sits outside
+            the tab order entirely and adds no stop between the CTA row and
+            what follows.
+
+            `sm:w-fit` + `sm:max-w-xs` (20rem) is a ceiling, no longer the
+            binding constraint. It was sized for a ~115-character caption that
+            no longer exists: the caption is now one short line and, on sm+,
+            the `<ul>` stacks vertically, so max-content is set by the longest
+            badge label ("Under construction") and resolves well inside 20rem.
+            The cap is kept rather than dropped because it can only ever
+            narrow this card, never widen it — cheap insurance against a
+            future longer label reading as a banner across the hero's
+            lower-left. `w-fit` is what keeps it shrink-wrapped now that the
+            parent is a flex container: `align-items` defaults to `stretch`,
+            but stretch applies only to an `auto` cross size and
+            `width: fit-content` is definite — so an `sm:self-start` beside it
+            would be pure redundancy and is deliberately absent. Below sm the
+            width stays `auto` and that same stretch gives the full-width card.
+
+            No left inset: in flow the card's left edge aligns with the H1 and
+            the CTA row above it rather than sitting 16px in from the hero's
+            border, which is the stronger alignment — `sm:left-4` was
+            deliberately NOT translated into an `sm:ml-4`.
+
+            The shadow is the popup treatment from globals.css
+            (`.atlas-popup .maplibregl-popup-content`, the "soft, warm float
+            shadow" third layer) reused verbatim — same tokens, same values,
+            no new token. Only its drop half: the inset neatline duplicates
+            what `border-border` already draws here. `sm:`-gated because below
+            sm the card is in flow on flat parchment and floats over nothing.
+
+            `plotted` is total MINUS omitted — facilities the plate draws
+            ground for. Never HERO_PLATE.plotted, which counts drawn marks
+            and under-counts facilities wherever co-located same-status sites
+            collapse onto one.
+
+            It is also the card's ONLY number, deliberately. The snapshot's
+            own total used to sit here too ("1,920 of 1,929"), a few lines
+            under <HeroProvenance>'s `sites={count}` — which is live Neon.
+            Equal today, contradictory the first time a sync lands without a
+            plate rebuild. The build-time artifact describes what it drew; the
+            dataset total is stated once, above, from the database. */}
+        <PlateKey
+          plotted={HERO_PLATE.total - HERO_PLATE.omitted}
+          className="relative z-20 sm:mt-auto sm:mb-4 sm:w-fit sm:max-w-xs sm:shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_30%,transparent)]"
+        />
       </div>
 
       {/* Below the hero: stats + cross-links + primary CTA, grouped as one
@@ -403,7 +555,7 @@ export default async function HomePage() {
               <Link
                 key={f.id}
                 href={`/facilities/${f.id}`}
-                className="neatline group flex flex-col gap-2 rounded-sm border border-border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="neatline plate-hover group flex flex-col gap-2 rounded-sm border border-border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <span className="font-display text-base leading-snug text-foreground group-hover:text-primary transition-colors">
                   {f.name}

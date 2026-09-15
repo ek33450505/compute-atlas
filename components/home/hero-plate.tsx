@@ -52,22 +52,32 @@ const COVERED = HERO_PLATE.total - HERO_PLATE.omitted;
  * which is aria-hidden), so on desktop the disclosure was announced or not
  * purely on timing. It now lives in the always-present provenance rule
  * (components/home/hero-provenance.tsx, `mapOmitted`), which no viewport or
- * mount order can take away. The omitted jurisdictions' NAMES are deferred to
- * the plate's caption in the next unit — the provenance rule is one line above
- * the fold and four territory names would not fit it.
+ * mount order can take away. It is disclosed there as a COUNT ("static map
+ * omits 9 in U.S. territories"); the omitted jurisdictions' individual NAMES
+ * are no longer rendered anywhere, having been cut from the plate's caption
+ * (components/home/plate-key.tsx) as prose the fold did not need. That is a
+ * loss of four names, not of the fact — and it is not an argument for moving
+ * the disclosure back into this name, which the paragraph above rules out on
+ * grounds the deletion does not touch.
  */
 const ACCESSIBLE_NAME = `Dot map of ${NUMBER.format(
   COVERED
 )} tracked sites, coloured by project status.`;
 
 /**
- * ⚠️ KNOWN GAP, DEFERRED ON PURPOSE — not an oversight. The name above says
- * "coloured by project status" while the page carries no legend, so status is
- * currently colour-ONLY encoding with no key: a reader who cannot resolve the
- * five hues has no way to decode the plate. The legend, caption and corner
- * link are the next unit's scope; this comment exists so the gap is not
- * re-discovered as a fresh finding, and so it is not closed by quietly
- * deleting the colour claim from the name instead.
+ * The colour-only-encoding gap the name above used to leave open is CLOSED:
+ * the key (status legend + caption) is components/home/plate-key.tsx,
+ * rendered by app/page.tsx.
+ *
+ * ⚠️ It is rendered there as a persistent SIBLING, not inside this <svg> and
+ * not inside the `plate` prop — hero-globe-dynamic.tsx swaps this whole node
+ * out for the aria-hidden globe canvas on sm+ once MapLibre mounts, so a key
+ * placed in it would disappear at exactly the viewports where the map is
+ * richest. Do not "tidy" it in here.
+ *
+ * ⚠️ And the colour claim in the name above stays. Deleting it would make the
+ * name agree with a page that had no key, which is the wrong direction — the
+ * plate really is coloured by status, and the key is what earns the claim.
  */
 
 interface HeroPlateProps {

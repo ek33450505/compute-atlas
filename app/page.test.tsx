@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 // vi.mock calls are hoisted above imports, so the shared mock fns go through
 // vi.hoisted() (same pattern as app/power/page.test.tsx).
@@ -368,8 +368,10 @@ describe("HomePage hero", () => {
   // text block above and stops short of this CTA row, so on sm+ this link
   // renders over live MapLibre tiles. Its two siblings paint their own opaque
   // fills (solid bg-primary, bg-card) and need no backing; this one paints
-  // nothing, so without the plate --muted-foreground's audited 6.70:1 (which
-  // assumes parchment behind it) does not hold.
+  // nothing, so without the plate --foreground's 13.15:1 (which assumes
+  // parchment behind it) does not hold. The link was darkened from
+  // --muted-foreground's 6.70:1 on 2026-09-15, which raises the floor on that
+  // unverified over-tiles case but does not remove the need for the backing.
   //
   // A class assertion is the honest limit here. jsdom does no layout and no
   // compositing, so this CANNOT prove contrast — it only proves the backing
@@ -386,6 +388,12 @@ describe("HomePage hero", () => {
     expect(link).toHaveClass("bg-background/85");
     expect(link).toHaveClass("backdrop-blur-sm");
     expect(link).toHaveClass("px-2");
+    // The 2026-09-15 darkening itself, which the comment above describes and
+    // nothing else pinned. Reverting this one token to `text-muted-foreground`
+    // drops the link to 6.70:1 over unknown tiles while every other assertion
+    // here stays green — and makes the contrast figures in that comment false.
+    expect(link).toHaveClass("text-foreground");
+    expect(link).toHaveClass("hover:text-primary");
   });
 
   // The scrim used to span the whole hero box with hand-measured percentage
@@ -493,5 +501,215 @@ describe("HomePage hero", () => {
     expect(block).not.toContainElement(
       screen.getByRole("link", { name: "How this is sourced" })
     );
+  });
+});
+
+/**
+ * The hero plate's key (components/home/plate-key.tsx). Its unit tests own the
+ * component's behaviour; these assert the things only the assembled page can
+ * show — that it is WIRED, that it is placed where the globe swap cannot take
+ * it, and that adding it did not break the sibling that shares its role.
+ */
+describe("HomePage plate key", () => {
+  function plateKey(): HTMLElement {
+    return screen.getByRole("region", { name: "Map key" });
+  }
+
+  it("decodes the plate's status colours with a named legend", async () => {
+    render(await HomePage());
+
+    // Scoped with within(), not queried page-wide: <StatusBadge> is rendered
+    // elsewhere on this page (the notable-site cards), so a bare
+    // getAllByText("Operational") would pass on those alone even with the key
+    // deleted — an assertion about the wrong element entirely.
+    const key = within(plateKey());
+    for (const label of [
+      "Operational",
+      "Under construction",
+      "Permitted",
+      "Proposed",
+      "Cancelled",
+    ]) {
+      expect(key.getByText(label)).toBeInTheDocument();
+    }
+  });
+
+  // The key's own "Open the interactive map" link was removed (Ed,
+  // 2026-09-15) as a duplicate of the hero's primary CTA a few lines above it.
+  // Pinned here rather than only in the component's unit tests because this is
+  // the assembled page, where a link re-added anywhere in the card would also
+  // put the Playwright hazard below back.
+  it("adds no second route into /map", async () => {
+    render(await HomePage());
+
+    expect(within(plateKey()).queryAllByRole("link")).toHaveLength(0);
+  });
+
+  // ⛔ e2e/home.spec.ts resolves the hero's primary CTA with
+  // `getByRole("link", { name: /Explore the map/i })`, and Playwright's strict
+  // mode FAILS on two matches. The plate key's own /map link is gone, so today
+  // this page has exactly one — but the guard is page-wide, not about that
+  // link: any future second link whose name falls inside that regex breaks a
+  // Playwright spec this Vitest suite never runs, surfacing a whole gate later.
+  // Counting matches here is what turns that into a unit-test failure.
+  it("leaves exactly one link matching the primary CTA's Playwright matcher", async () => {
+    render(await HomePage());
+
+    expect(
+      screen.getAllByRole("link", { name: /Explore the map/i })
+    ).toHaveLength(1);
+  });
+
+  // Computed from the artifact rather than pasted as literals: every data wave
+  // regenerates hero-plate-paths.ts, and hard-coded figures here would go
+  // stale silently while still passing against nothing.
+  it("captions the plate with exactly one number — what it draws", async () => {
+    render(await HomePage());
+
+    const covered = HERO_PLATE.total - HERO_PLATE.omitted;
+    const caption = within(plateKey()).getByText(
+      new RegExp(`^${nf.format(covered)} sites plotted$`)
+    );
+
+    // `covered` is total MINUS omitted, never HERO_PLATE.plotted — that counts
+    // drawn MARKS and under-counts facilities wherever co-located same-status
+    // sites collapse onto one. The anchored regex above is what enforces that:
+    // pass HERO_PLATE.plotted instead and the getByText throws. A sibling
+    // `not.toContain(plotted)` is deliberately absent — it could never run (the
+    // query throws first), and it WOULD fire against correct code on any wave
+    // that happens to yield `plotted === total - omitted`.
+    expect(caption).toBeInTheDocument();
+
+    // Anchored at BOTH ends, and this is the half that matters on the
+    // ASSEMBLED page. The caption used to read "N of TOTAL sites plotted",
+    // where TOTAL came from the build-time plate artifact while
+    // <HeroProvenance>'s `sites` — rendered a few lines above, in this same
+    // fold — comes from live Neon. Equal today; two different site totals one
+    // line apart the first sync that lands without a plate rebuild. Restoring
+    // that clause, or appending the old territory segment, fails here.
+    //
+    // Counting digit groups rather than asserting `not.toContain(total)`, for
+    // the reason given just above about HERO_PLATE.plotted: a wave where
+    // `omitted` reached 0 would make total === covered and turn that check red
+    // against correct code. A count of one cannot false-fire that way.
+    expect(caption.textContent?.match(/[\d,]+/g)).toHaveLength(1);
+  });
+
+  // The placement is the whole design decision. hero-globe-dynamic.tsx swaps
+  // the plate node out for the aria-hidden MapLibre canvas on sm+, so a key
+  // rendered inside <HeroPlate> or the `plate` prop would disappear at exactly
+  // the viewports where the map is richest. It must also stay out of the
+  // scrimmed text block (whose `calc(100% - 24px)` constant is derived from
+  // that wrapper's child count).
+  it("renders the key as a persistent sibling, not inside the swappable plate", async () => {
+    render(await HomePage());
+
+    const key = plateKey();
+
+    expect(cartouche()).not.toContainElement(key);
+
+    const plate = screen.getByRole("img", {
+      name: /Dot map of [\d,]+ tracked sites/,
+    });
+    expect(plate).not.toContainElement(key);
+  });
+
+  // The key is a CORNER OVERLAY on the hero box, not a row in the hero's text
+  // column. The invariant is DIRECT CHILDHOOD, not mere containment: the hero
+  // box is the flex column, and `sm:mt-auto` claims free space only for a flex
+  // ITEM of it. Wrap the key in any intermediate <div> and that wrapper — not
+  // the key — becomes the flex item, so the auto margin resolves against the
+  // wrapper's own content box, which has no slack, and the card stops moving
+  // to the bottom edge. Same failure one level further out: left inside the
+  // cartouche column the margin resolves against the column, and the card sits
+  // wherever the copy ended. Both break the placement SILENTLY, with every
+  // other test still green — hence `parentElement` is asserted by identity
+  // rather than with the transitive `toContainElement`.
+  //
+  // What this test canNOT see: whether the card OVERLAPS the CTA row. jsdom
+  // computes no layout, and the earlier `sm:absolute sm:bottom-4` version —
+  // which did overlap it on any viewport under ~1,100px tall — satisfied
+  // every assertion below. Containment is a precondition for the fix, not
+  // evidence of it; the non-overlap guarantee comes from the card being in
+  // flow, and is only observable in a browser.
+  //
+  // Asserted as DOM containment, never as a className string: a class
+  // assertion cannot see nesting at all, and would keep passing for the wrong
+  // reason the moment Tailwind's utilities or output change.
+  it("hangs the key off the hero box, outside the text column", async () => {
+    render(await HomePage());
+
+    const key = plateKey();
+    const column = cartouche().parentElement;
+    expect(column).not.toBeNull();
+
+    const heroBox = column?.parentElement ?? null;
+    expect(heroBox).not.toBeNull();
+
+    // Proves the ancestor walked to is really the hero box and not some outer
+    // page wrapper: the hero box is the element holding BOTH the text column
+    // and the plate. Without it, the identity check below would be pinning the
+    // key to whatever element the walk happened to land on rather than to the
+    // flex container `sm:mt-auto` actually resolves against.
+    const plate = screen.getByRole("img", {
+      name: /Dot map of [\d,]+ tracked sites/,
+    });
+    expect(heroBox).toContainElement(plate);
+
+    expect(key.parentElement).toBe(heroBox);
+    expect(column).not.toContainElement(key);
+
+    // The MECHANISM, not just the precondition. Direct childhood is what makes
+    // `sm:mt-auto` resolve against the hero box, but on its own it says nothing
+    // about whether the box is a column flex container or whether the key still
+    // asks to be pushed down. Strip `flex flex-col` — which the comment at
+    // app/page.tsx:120-126 predicts someone will, as "unused" — and `sm:mt-auto`
+    // goes inert, the card stops settling on the bottom edge, and the identity
+    // check above still passes. Class assertions are the right tool for exactly
+    // this half, for the same reason as the scrim's `absolute` and the hero
+    // block's `relative`/`z-10` above.
+    expect(heroBox).toHaveClass("flex");
+    expect(heroBox).toHaveClass("flex-col");
+    expect(key).toHaveClass("sm:mt-auto");
+  });
+});
+
+/**
+ * The "Notable sites" grid, whose cards carry the hover tilt.
+ *
+ * Its own describe because it needs `getNotableFacilities` to return something
+ * — the shared beforeEach resolves it to `[]`, which is the right default for
+ * every other block here (the grid disappears entirely and cannot interfere
+ * with a page-wide query).
+ */
+describe("HomePage notable sites", () => {
+  const NOTABLE = [
+    {
+      id: "alpha-site",
+      name: "Alpha Site",
+      operator: "Acme",
+      status: "operational",
+      facilityType: "data_center",
+      location: { lat: 39.0438, lon: -77.4874, city: "Ashburn", state: "VA" },
+      capacityMw: { operational: 120 },
+    },
+  ];
+
+  // The tilt is wired by a class alone (`.plate-hover`, app/globals.css), so
+  // deleting it from this card's className is a silent revert: the card looks
+  // identical until a pointer enters it, and nothing else in this file
+  // changes. jsdom has no `:hover`, applies no `@media` block and does no
+  // compositing, so the class list is the only observable surface — the same
+  // honest limit as the hero backing and `sm:mt-auto` assertions above. The
+  // angle itself, and the clearance it has to fit inside, are pinned in
+  // app/globals.css.test.ts.
+  it("carries the plate-hover tilt on each notable-site card", async () => {
+    mockGetNotableFacilities.mockResolvedValue(NOTABLE);
+
+    render(await HomePage());
+
+    const card = screen.getByRole("link", { name: /Alpha Site/ });
+    expect(card).toHaveAttribute("href", "/facilities/alpha-site");
+    expect(card).toHaveClass("plate-hover");
   });
 });

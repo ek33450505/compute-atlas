@@ -51,6 +51,20 @@ function atRuleBody(header: string, searchFrom = 0, source: string = CSS): strin
   return atRuleBlock(header, searchFrom, source).body;
 }
 
+/**
+ * Body of a rule located by the literal text that opens it (selector + `{`).
+ * Brace-balanced like `atRuleBlock`, and reads CODE rather than CSS so a
+ * selector discussed in the surrounding prose cannot be mistaken for the rule.
+ */
+function ruleBody(opener: string, source: string = CODE): string {
+  const start = source.indexOf(opener);
+  if (start === -1) {
+    throw new Error(`rule not found in app/globals.css: ${opener}`);
+  }
+  const open = source.indexOf("{", start);
+  return source.slice(open + 1, closeOf(source, open));
+}
+
 /** Body of the innermost `{ ... }` block enclosing `at`. */
 function enclosingBlockBody(source: string, at: number): string {
   let depth = 0;
@@ -75,75 +89,68 @@ function enclosingBlockBody(source: string, at: number): string {
  * animation is driven by scroll position against a view() timeline, and what
  * it produces mid-range is a composited matrix, not a queryable style.
  *
- * So what is pinned is the DECLARATION: that the tilt exists in the keyframe,
- * that the settled state is square, and that both progressive-enhancement
- * gates still wrap the rule. Whether it LOOKS right is a human judgement that
+ * So what is pinned is the DECLARATION: that the container reveal fades and
+ * lifts WITHOUT rotating, that the hover tilt exists at an angle inside its
+ * measured ceiling, and that both progressive-enhancement gates still wrap the
+ * rules they belong to. Whether either LOOKS right is a human judgement that
  * no test in this repo makes.
  */
+const MEDIA = "@media (prefers-reduced-motion: no-preference)";
+
 describe("app/globals.css — plate-settle keyframe", () => {
   const keyframe = atRuleBody("@keyframes plate-settle");
 
   const fromState = keyframe.match(/\bfrom\s*\{([^}]*)\}/)?.[1] ?? "";
   const toState = keyframe.match(/\bto\s*\{([^}]*)\}/)?.[1] ?? "";
 
+  /** `rotate(...)`, `rotateZ(...)`, `rotate3d(...)` — any transform rotation. */
+  const ROTATE_FN = /\brotate(?:[XYZ]|3d)?\s*\(/;
+  /** The `rotate:` longhand, the other way to turn an element. */
+  const ROTATE_LONGHAND = /(?:^|[;{\s])rotate\s*:/;
+
   it("parses a from and a to state", () => {
     expect(fromState.trim()).not.toBe("");
     expect(toState.trim()).not.toBe("");
   });
 
-  /**
-   * The measured clipping ceiling (the overhang table in globals.css). Mobile
-   * 358x700 is the BINDING viewport, not desktop: it overhangs the 16px px-4
-   * gutter by 18.1px at 3deg while desktop still has 5px of room, so 2.5deg is
-   * the last angle that fits on every breakpoint.
-   */
-  const MAX_TILT_DEG = 2.5;
-
-  it("enters off-register: the from state carries a tilt within the clipping ceiling, and the lift", () => {
-    const tilt = fromState.match(/rotate\(\s*(-?[\d.]+)deg\s*\)/);
-    // Non-vacuity: a deleted, malformed or unit-less rotate must fail HERE,
-    // rather than leave the bound checks below unreachable and silently green.
-    expect(tilt, "from state must declare rotate(<n>deg)").not.toBeNull();
-
-    const degrees = Math.abs(Number(tilt?.[1]));
-    expect(Number.isFinite(degrees)).toBe(true);
-    // There must BE a tilt: 0deg in `from` reduces the whole keyframe to a
-    // fade with no off-register entry at all.
-    expect(degrees).toBeGreaterThan(0);
-    // Bounded, not pinned to an exact literal, because the bound is the half
-    // of this with a physical basis — past it the plate's corner leaves the
-    // gutter and visibly clips. The exact angle inside the bound is taste
-    // (0.4deg read as nothing in a browser; 2deg is the current call) and will
-    // move again, and an exact match would only ever be edited to match
-    // whatever was just written. This assertion instead survives the taste
-    // change and still fails the thing that is actually a defect.
-    expect(degrees).toBeLessThanOrEqual(MAX_TILT_DEG);
-
+  it("enters with the lift and the fade", () => {
     expect(fromState).toContain("translateY(8px)");
-    // Composed into ONE transform, not two declarations — a second `transform`
-    // would silently drop the first.
-    expect(fromState.match(/transform\s*:/g) ?? []).toHaveLength(1);
-  });
-
-  it("settles square: the to state has zero rotation and zero offset", () => {
-    expect(toState).toMatch(/rotate\(\s*0(?:deg)?\s*\)/);
+    expect(fromState).toMatch(/opacity\s*:\s*0\b/);
     expect(toState).toContain("translateY(0)");
-    // The settled state is also the UNANIMATED default every reduced-motion
-    // and non-supporting browser sees, so a non-zero resting angle here would
-    // ship a permanently crooked page to them. The `toMatch` above is what
-    // says so — `rotate(0.4deg)` fails it, because `)` must follow the zero.
-    // The negative regex below covers the one case that cannot: a SECOND,
-    // non-zero rotate alongside a valid `rotate(0deg)` (e.g.
-    // `rotate(0deg) rotate(2deg)`), which would satisfy the `toMatch`. It
-    // deliberately does not match `0.4` — `0*[1-9]` cannot start at `0.`, so
-    // do not delete the `toMatch` on the belief that this line covers it.
-    expect(toState).not.toMatch(/rotate\(\s*-?0*[1-9][\d.]*\s*(?:deg|rad|grad|turn)?\s*\)/);
+    expect(toState).toMatch(/opacity\s*:\s*1\b/);
+    // Composed into ONE transform per state, not two declarations — a second
+    // `transform` would silently drop the first.
+    expect(fromState.match(/transform\s*:/g) ?? []).toHaveLength(1);
+    expect(toState.match(/transform\s*:/g) ?? []).toHaveLength(1);
   });
 
-  it("keeps the tilt behind both progressive-enhancement gates", () => {
-    // globals.css has three `prefers-reduced-motion` blocks, so take the LAST
+  it("does NOT rotate: the container tilt was removed, and re-adding one fails here", () => {
+    // Asserted POSITIVELY rather than by deletion. The container used to enter
+    // at 2deg and turn square; Ed removed that on 2026-09-15 in favour of the
+    // per-card hover tilt, which is a taste call someone could very reasonably
+    // mistake for damage and "restore". This is the test that says it was
+    // deliberate.
+    for (const [name, state] of [
+      ["from", fromState],
+      ["to", toState],
+    ] as const) {
+      const transform = state.match(/transform\s*:\s*([^;}]+)/);
+      // Non-vacuity: a state that lost its transform entirely must fail HERE,
+      // rather than make the two no-rotate checks below trivially true by
+      // having nothing left to read.
+      expect(transform, `${name} state must declare a transform`).not.toBeNull();
+      expect(transform?.[1], `${name} state must not rotate`).not.toMatch(ROTATE_FN);
+      // Both spellings, because `rotate: 2deg` turns the plate just as far and
+      // would sail past a check that only knew the transform function.
+      expect(state, `${name} state must not use the rotate longhand`).not.toMatch(
+        ROTATE_LONGHAND
+      );
+    }
+  });
+
+  it("keeps the reveal behind both progressive-enhancement gates", () => {
+    // globals.css has several `prefers-reduced-motion` blocks, so take the LAST
     // one opening before `.plate-reveal` — the one that actually wraps it.
-    const MEDIA = "@media (prefers-reduced-motion: no-preference)";
     const ruleAt = CSS.indexOf(".plate-reveal {");
     expect(ruleAt).toBeGreaterThan(-1);
     const gateAt = CSS.lastIndexOf(MEDIA, ruleAt);
@@ -153,6 +160,115 @@ describe("app/globals.css — plate-settle keyframe", () => {
     expect(reducedMotion).toContain("@supports (animation-timeline: view())");
     expect(reducedMotion).toContain(".plate-reveal");
     expect(reducedMotion).toContain("animation: plate-settle");
+  });
+});
+
+/**
+ * The hover tilt (`.plate-hover`), which is where the off-register metaphor
+ * lives now that the container reveal no longer rotates.
+ *
+ * Same honest ceiling as the block above, for one more reason: jsdom has no
+ * `:hover` state to enter and never applies a `@media` block, so there is no
+ * DOM in which a tilted card is observable. Playwright could hover, but what
+ * `getComputedStyle` returns mid-transition is a composited matrix, not the
+ * authored angle. The DECLARATION is the honest thing to pin.
+ */
+describe("app/globals.css — plate-hover tilt", () => {
+  /**
+   * The SOLVED card ceiling (the card table in globals.css): the angle at
+   * which the lens gateway's widest card grows past its 12px row gap. That
+   * card is the single-column one at a 639px viewport — 639 - 2x16 = 607px,
+   * the widest instance of the tightest grid — not the phone-width card; a
+   * grid's binding case is the viewport just below its next breakpoint.
+   * Per-band ceilings run 2.27deg (that card, vertical growth) to 9.87deg
+   * (contested's narrowest 3-col card); the tightest horizontal constraint is
+   * looser still at 5.92deg. The minimum governs, and 2.26 is it rounded DOWN
+   * so the literal stays a true bound (2.266deg for a zero-height card, the
+   * pessimistic limit — a taller card grows less).
+   *
+   * This bound is loose-ish — 4.5x the 0.5deg shipped — so it catches "this
+   * became a novelty spin", not "0.5 drifted to 1.5". Pinning the exact
+   * literal instead would fail on every taste change and be edited to match
+   * whatever was just written, which is not a test. What is NOT bounded here
+   * is whether the angle reads well; that needs a browser and a person.
+   *
+   * It previously read 4.3, inherited from a card table whose widths had the
+   * page gutter subtracted twice — i.e. it would have passed a 4.0deg tilt
+   * that clips a neighbouring card.
+   */
+  const MAX_CARD_TILT_DEG = 2.26;
+
+  it("declares the tilt inside the reduced-motion gate", () => {
+    // Against CODE, the comment-stripped sheet: globals.css names
+    // `.plate-hover` in the prose above the rule, so a raw-text scan could
+    // anchor on the commentary instead of the declaration.
+    const ruleAt = CODE.indexOf(".plate-hover {");
+    expect(ruleAt).toBeGreaterThan(-1);
+    const gateAt = CODE.lastIndexOf(MEDIA, ruleAt);
+    expect(gateAt).toBeGreaterThan(-1);
+
+    // The unanimated state must be the square, settled, fully-usable card, so
+    // a reduced-motion reader loses nothing. That only holds while BOTH the
+    // transition and the transform live inside this block — a rule hoisted out
+    // of the gate would tilt for everyone, including people who asked the
+    // operating system not to animate.
+    const reducedMotion = atRuleBody(MEDIA, gateAt, CODE);
+    expect(reducedMotion).toContain(".plate-hover {");
+    expect(reducedMotion).toContain(".plate-hover:hover {");
+    expect(reducedMotion).toMatch(/transform\s*:\s*rotate\(/);
+  });
+
+  it("tilts on :hover only, within the solved card ceiling", () => {
+    const body = ruleBody(".plate-hover:hover {");
+
+    const tilt = body.match(/transform\s*:\s*rotate\(\s*(-?[\d.]+)deg\s*\)/);
+    // Non-vacuity: a deleted, malformed or unit-less rotation must fail HERE,
+    // rather than leave the bound checks below unreachable and silently green.
+    // `rotate(0.5)` without the unit is invalid CSS and would be dropped by the
+    // parser, shipping no tilt at all while reading fine in a diff.
+    expect(tilt, ":hover must declare transform: rotate(<n>deg)").not.toBeNull();
+
+    const degrees = Math.abs(Number(tilt?.[1]));
+    expect(Number.isFinite(degrees)).toBe(true);
+    // There must BE a tilt: 0deg is a no-op rule that still costs a stacking
+    // context and a containing block on every hover.
+    expect(degrees).toBeGreaterThan(0);
+    expect(degrees).toBeLessThanOrEqual(MAX_CARD_TILT_DEG);
+  });
+
+  it("re-declares the colour transitions it displaces", () => {
+    const body = ruleBody(".plate-hover {");
+
+    // This rule is emitted after Tailwind's generated utilities in the same
+    // @layer, so at equal specificity its `transition-property` REPLACES the
+    // card's `transition-colors` outright — an element carries exactly one
+    // such list. Listing only `transform` would silently kill the existing
+    // hover:bg / hover:border fades on every card, with no trace in the class
+    // list and nothing to see in a diff of this file.
+    const props = body.match(/transition-property\s*:\s*([^;}]+)/)?.[1];
+    expect(props, ".plate-hover must declare transition-property").toBeDefined();
+    // Compare as a SET of comma-separated names, never with `toContain` on the
+    // raw string: `"background-color".includes("color")` is true, so a
+    // substring check for `color` cannot fail while `background-color` is
+    // present — it would pass over the exact regression this test exists for.
+    const declared = new Set(
+      (props ?? "").split(",").map((property) => property.trim())
+    );
+    for (const property of [
+      "transform",
+      "color",
+      "background-color",
+      "border-color",
+    ]) {
+      expect(declared, `transition-property must list ${property}`).toContain(
+        property
+      );
+    }
+    // The resting state must carry no transform of its own: one there would
+    // make every card a permanent containing block for fixed/absolute
+    // descendants and a permanent stacking context, which is exactly what
+    // scoping the rotation to :hover avoids.
+    expect(body).not.toMatch(/(?:^|[;{\s])transform\s*:/);
   });
 });
 

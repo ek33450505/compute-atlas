@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import type { Facility } from "@/lib/schema";
 import { ContestedStrip } from "./contested-strip";
@@ -160,6 +160,24 @@ describe("ContestedStrip", () => {
       "/opposition"
     );
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+  });
+
+  // Same wiring guard as lens-gateway.test.tsx: `.plate-hover` (app/globals.css)
+  // is the whole mechanism, so stripping the class from this className reverts
+  // the hover tilt on these cards while leaving every other assertion green.
+  // jsdom has no `:hover` and applies no `@media` block, so the class is the
+  // only observable; the angle and its clearance are pinned in
+  // app/globals.css.test.ts.
+  it("carries the plate-hover tilt on every case card surface", () => {
+    render(
+      <ContestedStrip cases={CASES} frictionCount={FRICTION_COUNT} breakdown={BREAKDOWN} />
+    );
+
+    const cards = screen.getAllByRole("listitem");
+    expect(cards).toHaveLength(CASES.length);
+    for (const card of cards) {
+      expect(within(card).getByRole("link")).toHaveClass("plate-hover");
+    }
   });
 
   it("passes className through to the section element", () => {

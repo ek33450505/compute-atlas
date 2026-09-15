@@ -55,7 +55,7 @@ export function ContestedStrip({
             <li key={f.id}>
               <Link
                 href={`/facilities/${f.id}`}
-                className="neatline group flex h-full flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="neatline plate-hover group flex h-full flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <span className="font-display text-base leading-snug text-foreground transition-colors motion-reduce:transition-none group-hover:text-primary">
                   {f.name}

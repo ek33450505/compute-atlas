@@ -353,10 +353,23 @@
       }
     }
   }
-  /* The tilt: each plate enters off-register and turns square as it settles —
-     the same metaphor the wordmark uses (two printing plates sliding into
-     register). 2deg is a deliberate taste call (0.4deg was too subtle to read
-     in a browser); the CEILING below is not taste, it is measured.
+  /* The container reveal is a FADE AND LIFT ONLY — it does not rotate.
+     It used to: whole sections entered off-register at 2deg and turned square
+     as they settled. Ed removed that on 2026-09-15 after watching it live, in
+     favour of the per-card hover tilt below ("we need to dial it way back
+     again and apply it to the individual plates on hover - not on the whole
+     container"). That was a TASTE call, not a clipping failure — 2deg sat
+     comfortably inside the measured section ceiling recorded below. Do not
+     re-add a rotate here; `.plate-hover` is where the metaphor lives now. */
+  @keyframes plate-settle {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* Plate hover — each card turns a half-degree off-register under the
+     pointer, the same metaphor the wordmark uses (two printing plates sliding
+     into register). 0.5deg is a deliberate taste call by Ed ("just a slight
+     moment when you hover on each topic or link plate on home"); the CEILING
+     below is not taste, it is measured.
 
      No `transform-origin` is set, i.e. the default 50% 50% centre pivot. That
      is the sensible pivot here: rotating about the centre splits the
@@ -364,34 +377,155 @@
      whereas a corner origin doubles the far-corner travel and reads as a hinge
      swinging shut.
 
-     ⛔ 2.5deg IS THE HARD CEILING — do not raise the tilt past it without
-     re-measuring. Horizontal overhang past the container, per side, is
-     (w cos0 + h sin0)/2 - w/2; the page gutter is px-4 = 16px a side at every
-     breakpoint, so overhang > 16px CLIPS:
+     ── The derivation ──────────────────────────────────────────────────────
+     Horizontal overhang past the unrotated box, per side, is
+     (w cos0 + h sin0)/2 - w/2. Vertical growth per edge is the same formula
+     with w and h swapped: (h cos0 + w sin0)/2 - h/2. A card overhangs into a
+     grid GAP (or, at the grid's edges, into the page gutter or the margin
+     above), so those are what it has to fit inside.
+
+     THE SECTION-SCALE NUMBERS, kept because they are the measured evidence
+     that this method produces and the reason the container tilt never went
+     past 2deg. Full-width sections against the px-4 = 16px page gutter:
 
        tilt    desktop 1280x420   lens gateway 1152x600   mobile 358x700
        0.4deg          1.5px                  2.1px              2.4px
        1deg            3.6px                  5.1px              6.1px
-       2deg  <-current 6.9px                 10.1px             12.1px
+       2deg            6.9px                 10.1px             12.1px
        2.5deg          8.6px                 12.5px             15.1px
        3deg           10.1px                 14.9px      18.1px  CLIPS
 
-     MOBILE IS THE BINDING VIEWPORT, not desktop — the tall wrapped layout has
-     the worst width:height ratio, so it overhangs ~1.75x what desktop does at
-     the same angle and clips first. Desktop still has 5px of room at 3deg
-     while mobile is already over. At the current 2deg mobile keeps ~4px of
-     margin. Vertical growth at 2deg is ~22px per edge (desktop; mobile ~6px)
-     against 40-48px section gaps (mb-10 / mt-12), so neighbouring sections do
-     not collide. Rotation composites on the same layer as the existing
-     translateY, so this adds no layout or paint cost.
+     MOBILE WAS THE BINDING VIEWPORT there, not desktop — the tall wrapped
+     layout has the worst width:height ratio, so it overhangs ~1.75x what
+     desktop does at the same angle and clips first. 2.5deg was the last angle
+     that fitted every breakpoint.
 
-     `rotate(0deg)` (not bare `rotate(0)`) in the `to` state: the spec permits
-     a unitless <zero> here, but the explicit unit does not lean on that
-     production and states "square" unambiguously. The settled state must stay
-     square — see the reduced-motion / @supports note above. */
-  @keyframes plate-settle {
-    from { opacity: 0; transform: translateY(8px) rotate(2deg); }
-    to   { opacity: 1; transform: translateY(0) rotate(0deg); }
+     THE CARD-SCALE NUMBERS, which are what now governs, at 0.5deg.
+
+     Widths come from the real container, `mx-auto max-w-7xl px-4 sm:px-6`
+     (app/page.tsx:109). max-w-7xl is 1280px and, box-sizing being border-box,
+     the gutter sits INSIDE it, so the content width is
+     min(viewport, 1280) - 2 x gutter — gutter subtracted ONCE (16px below sm,
+     24px from sm up). Worked, at a 390px phone: min(390, 1280) - 2 x 16 =
+     358px, and a single-column card is that full 358px. (An earlier revision
+     of this table said 326px there; that is 358 with the gutter taken off a
+     second time, and it is what made the ceiling below come out ~1.9x too
+     permissive.)
+
+     The binding instance of a column count is the WIDEST one — the viewport
+     just BELOW the next breakpoint, not whichever viewport happens to be
+     sampled. All three grids are single-column up to 639px, so each one's
+     widest card is at 639px (639 - 32 = 607px), NOT at the 390px phone width.
+     Card w = (content - (cols - 1) x gap) / cols; heights are the observed
+     card range:
+
+       grid / band (viewport at top of band)  card w x h  dx/side dy/edge  gap
+       notable   1col  @639px                  607 x 170   0.73px  2.65px  16px
+       notable   2col  @1023px                 480 x 190   0.82px  2.09px  16px
+       notable   3col  >=1280px                400 x 180   0.78px  1.74px  16px
+       lens      1col  @639px                  607 x 120   0.51px  2.65px  12px
+       lens      2col  @1023px                 482 x 140   0.60px  2.10px  12px
+       lens      4col  >=1280px                299 x 150   0.65px  1.30px  12px
+       contested 1col  @639px                  607 x 150   0.64px  2.65px  16px
+       contested 3col  >=1280px                400 x 190   0.82px  1.74px  16px
+       contested 3col  @640px (narrowest)      187 x 320   1.39px  0.81px  16px
+
+     The last row is not the widest 3-col instance and is kept anyway: the
+     narrow-and-tall card is the pessimistic case for the HORIZONTAL term,
+     which height drives.
+
+     Largest vertical growth is 2.65px, on every 607px single-column card —
+     2.65 against that grid's OWN row gap, i.e. of 12px in the lens gateway
+     and of 16px in the other two. Largest horizontal overhang is 1.39px,
+     against a 16px column gap. Note the term that binds FLIPS at card scale:
+     for a full-width section, horizontal overhang against the gutter clipped
+     first; for a card, VERTICAL growth against the row gap does, because
+     cards are wider than they are tall and it is the OTHER dimension that
+     drives each term.
+
+     ⛔ 2.27deg IS THE CARD CEILING — solved, not eyeballed. Set vertical
+     growth equal to the row gap, (h cos0 + w sin0)/2 - h/2 = gap, and solve
+     per band: the ceilings run 2.27deg (lens gateway, single column, 607px
+     card against its 12px row gap) to 9.87deg (contested's narrowest 3-col
+     card). Every horizontal constraint is looser — the tightest is 5.92deg,
+     that same narrow card against a 16px column gap, and the 607px
+     single-column cards never reach their page gutter at any angle. The
+     minimum governs, so the BINDING row is the lens gateway's single-column
+     band: the widest card on the page meeting the tightest gap on the page.
+
+     That 2.27 is quoted for a zero-height card, which is the pessimistic
+     limit here — the h(cos0 - 1) term is NEGATIVE, so a TALLER card grows
+     less, and the real ~120px card gives 2.275deg. Height moves the ceiling
+     by <0.03deg across 0..300px, so it does not need re-measuring when a card
+     gains a line of text — only if the ANGLE, a grid's gap, or a breakpoint
+     changes.
+
+     4.5x the 0.5deg shipped: real headroom, but not the ~8.6x an earlier
+     revision of this note claimed off the mis-derived 326px width, and much
+     closer to the section scale where 3deg already clipped. Equivalently in
+     the other direction: at 0.5deg a single-column card would have to be
+     ~2,750px wide to close a 12px row gap, against a 1,232px container.
+
+     Nothing clips the overhang either. The homepage has three
+     `overflow-hidden` boxes — the hero (app/page.tsx:127), the globe canvas
+     within it (components/home/hero-globe-dynamic.tsx:135) and the survey
+     ledger's progress track (components/home/survey-ledger.tsx:214) — and
+     none of them contains a card grid, so no `.plate-hover` element has a
+     clipping ancestor.
+
+     Two edges have no neighbouring card to absorb the overhang, and both fit:
+       - LAST COLUMN overhangs toward the page gutter — 24px from sm up, 16px
+         on mobile, against <=1.39px.
+       - FIRST ROW overhangs upward toward whatever precedes the grid — mb-5
+         (20px) under the "Notable sites" heading, mt-4 (16px) under the lens
+         gateway's blurb, mt-6 (24px) under the contested strip's lead — all
+         >= 16px against <=2.65px.
+
+     Applied on :hover ONLY, never to the resting state. A `transform` other
+     than `none` makes the element a containing block for fixed/absolute
+     descendants and opens a new stacking context; confining it to :hover keeps
+     both transient. No current target has an absolutely-positioned or
+     z-indexed descendant, so neither is observable today — but a card that
+     gains one is where this note is owed. */
+  @media (prefers-reduced-motion: no-preference) {
+    .plate-hover {
+      /* An element carries exactly ONE transition-property list, and this rule
+         is emitted AFTER Tailwind's generated utilities in the same @layer
+         (verified against the compiled sheet), so at equal specificity it
+         REPLACES the card's `transition-colors` rather than adding to it. The
+         colour properties are therefore re-declared here: omitting them would
+         silently kill the existing hover:bg / hover:border fades on every card
+         this lands on — a regression with no trace in the class list.
+
+         The list below matches every standard property `.transition-colors`
+         compiles to. It deliberately drops the three Tailwind-internal
+         gradient custom properties that utility also carries
+         (--tw-gradient-from / -via / -to): those are implementation-detail
+         names that can be renamed by a Tailwind release, none of the three
+         card surfaces transitions a gradient, and a stale name in this list
+         would be dead text rather than a visible fault. A card that gains an
+         animated gradient is where that call is owed.
+
+         Timing likewise: `.transition-colors` resolves to
+         var(--tw-ease, var(--default-transition-timing-function)), which
+         compiles to cubic-bezier(.4, 0, .2, 1). A literal `ease-out` here
+         would not kill the colour fades but would silently RE-TIME them, so
+         take the same token. The 150ms duration stays literal because it is
+         the authored speed of the tilt; it happens to equal
+         --default-transition-duration (.15s in the compiled sheet), so the
+         colour fades keep their duration too. If those two ever diverge, this
+         literal is the line to revisit. */
+      transition-property: transform, color, background-color, border-color,
+        outline-color, text-decoration-color, fill, stroke;
+      transition-duration: 150ms;
+      transition-timing-function: var(--default-transition-timing-function);
+    }
+    /* Rotation is compositor-driven: no layout, no paint. The colour
+       properties above already painted before this rule existed, so the net
+       cost of the tilt itself is zero. */
+    .plate-hover:hover {
+      transform: rotate(0.5deg);
+    }
   }
 }
 

@@ -136,7 +136,7 @@ export function LensGateway({ counts, className }: LensGatewayProps) {
           <li key={href}>
             <Link
               href={href}
-              className={`group flex h-full min-h-11 flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2${
+              className={`plate-hover group flex h-full min-h-11 flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2${
                 lead ? " border-primary/40 bg-primary/5 hover:bg-primary/10" : ""
               }`}
             >
