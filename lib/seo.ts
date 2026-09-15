@@ -1,5 +1,7 @@
 import type { Facility } from "@/lib/schema";
 import { siteConfig } from "@/lib/site";
+import { STATUS_META } from "@/lib/status";
+import { ENERGY_SOURCE_ENTRIES } from "@/lib/energy";
 
 /**
  * Compute Atlas's Zenodo concept DOI, resolvable and always pointing at the
@@ -29,7 +31,39 @@ export interface FacilityJsonLd {
     latitude: number;
     longitude: number;
   };
+  additionalProperty?: FacilityJsonLdProperty[];
 }
+
+/**
+ * One `schema.org/PropertyValue` entry on a facility's `Place`.
+ *
+ * `additionalProperty` is the documented schema.org mechanism for facts a type
+ * has no dedicated property for — `Place` has no `operator`, `status` or
+ * `capacity`, and inventing those keys would emit invalid structured data.
+ * Capacity entries also carry `unitCode: "MAW"` (the UN/CEFACT code for
+ * megawatt) so a consumer never has to infer the unit from the name.
+ */
+export interface FacilityJsonLdProperty {
+  "@type": "PropertyValue";
+  name: string;
+  value: string | number;
+  unitCode?: "MAW";
+  unitText?: "MW";
+}
+
+/** Human-readable label for a `facilityType`, matching the rendered page. */
+const FACILITY_TYPE_LABELS: Record<Facility["facilityType"], string> = {
+  data_center: "Data center",
+  crypto_mining: "Crypto mining",
+  power_generation: "Power generation",
+};
+
+/** Human-readable label for an `aiClassification` tier. */
+const AI_CLASSIFICATION_LABELS: Record<"confirmed" | "likely" | "mixed_use", string> = {
+  confirmed: "Confirmed AI-specific",
+  likely: "Likely AI-specific",
+  mixed_use: "Mixed use",
+};
 
 /**
  * Builds a schema.org Place JSON-LD object for a facility.
@@ -51,6 +85,76 @@ export function buildFacilityJsonLd(facility: Facility): FacilityJsonLd {
     address.postalCode = facility.location.postalCode;
   }
 
+  // Every fact the project exists to publish lived only in prose until
+  // 2026-09-15:
+  // the Place carried name/url/address/geo, so a retrieval model learned that
+  // a pin existed and nothing about it. These entries put the same facts a
+  // reader sees into machine-extractable form. Labels are read from the
+  // canonical maps (STATUS_META, ENERGY_SOURCE_ENTRIES) rather than retyped,
+  // so the structured data cannot drift from the rendered page.
+  const additionalProperty: FacilityJsonLdProperty[] = [
+    { "@type": "PropertyValue", name: "Operator", value: facility.operator },
+    {
+      "@type": "PropertyValue",
+      name: "Status",
+      value: STATUS_META[facility.status].label,
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Facility type",
+      value: FACILITY_TYPE_LABELS[facility.facilityType],
+    },
+  ];
+
+  if (facility.capacityMw?.operational !== undefined) {
+    additionalProperty.push({
+      "@type": "PropertyValue",
+      name: "Operational capacity",
+      value: facility.capacityMw.operational,
+      unitCode: "MAW",
+      unitText: "MW",
+    });
+  }
+  if (facility.capacityMw?.planned !== undefined) {
+    additionalProperty.push({
+      "@type": "PropertyValue",
+      name: "Planned capacity",
+      value: facility.capacityMw.planned,
+      unitCode: "MAW",
+      unitText: "MW",
+    });
+  }
+  // `aiClassification` is absent from the `power_generation` arm of the
+  // discriminated union, so narrow on facilityType rather than casting — a
+  // power plant has no AI classification by construction, not by omission.
+  if (
+    facility.facilityType !== "power_generation" &&
+    facility.aiClassification
+  ) {
+    additionalProperty.push({
+      "@type": "PropertyValue",
+      name: "AI classification",
+      value: AI_CLASSIFICATION_LABELS[facility.aiClassification],
+    });
+  }
+  if (facility.energy?.source) {
+    const source = facility.energy.source;
+    const label =
+      ENERGY_SOURCE_ENTRIES.find((e) => e.key === source)?.label ?? source;
+    additionalProperty.push({
+      "@type": "PropertyValue",
+      name: "Energy source",
+      value: label,
+    });
+  }
+  if (facility.energy?.utility) {
+    additionalProperty.push({
+      "@type": "PropertyValue",
+      name: "Utility",
+      value: facility.energy.utility,
+    });
+  }
+
   return {
     "@context": "https://schema.org",
     "@type": "Place",
@@ -62,6 +166,7 @@ export function buildFacilityJsonLd(facility: Facility): FacilityJsonLd {
       latitude: facility.location.lat,
       longitude: facility.location.lon,
     },
+    additionalProperty,
   };
 }
 
