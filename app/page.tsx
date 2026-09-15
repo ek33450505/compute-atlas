@@ -18,11 +18,13 @@ import {
   getWaterStressExposure,
   getFrictionTotal,
   getCounties,
+  getQuarterlyPipelineSummary,
 } from "@/lib/data";
 import { METROS } from "@/lib/metros";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
 import { HeroSearch } from "@/components/home/hero-search";
+import { HeroProvenance } from "@/components/home/hero-provenance";
 import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
@@ -92,6 +94,10 @@ export default async function HomePage() {
   // index the /counties hub uses, so this adds no DB work; METROS is static.
   const countyCount = (await getCounties()).length;
   const metroCount = METROS.length;
+  // Hero provenance line. DB-only: with no DATABASE_URL this resolves to all
+  // zeros, which HeroProvenance renders by omitting the quarter segment
+  // entirely rather than claiming "+0 new this quarter".
+  const quarterly = await getQuarterlyPipelineSummary();
   const buildout = await getGenerationBuildoutStats();
   const waterStressExposure = await getWaterStressExposure();
   const gasNotYetBuilt =
@@ -172,19 +178,26 @@ export default async function HomePage() {
           </h1>
 
           {/* Subhead — text-foreground/85 (not text-muted-foreground): needs
-              to stay legible against the map showing through the scrim. */}
-          <p className="text-base text-foreground/85 leading-relaxed max-w-2xl">
-            Public data on data centers is everywhere and nowhere — fragmented
-            across hundreds of local permits, tax abatements, water filings,
-            and grid queues.
+              to stay legible against the map showing through the scrim.
+              max-w-xl (not max-w-2xl) so it reads as a caption under the H1
+              rather than a second column of body copy. */}
+          <p className="text-base text-foreground/85 leading-relaxed max-w-xl">
+            Public data on data centers is everywhere and nowhere — scattered
+            across local permits, tax abatements, water filings, and grid
+            queues. Compute Atlas pulls it into one source-cited dataset.
           </p>
-          <p className="text-base text-foreground/85 leading-relaxed max-w-2xl">
-            Compute Atlas pulls it into one source-cited dataset. Track
-            what&rsquo;s being built, where, who&rsquo;s behind it — and how
-            much of its cost to power, water, and neighbors is actually on the
-            record. Open data, transparent sourcing, and a public correction
-            path on every record.
-          </p>
+
+          {/* Provenance rule — deliberately ABOVE the search box, not below
+              the CTA: the scale and sourcing of the dataset is the claim this
+              page is making, so it has to be inside the fold. */}
+          <HeroProvenance
+            sites={count}
+            stateCodes={stateCodes}
+            sources={sourcesCited}
+            editionAsOf={edition.asOf}
+            newThisQuarter={quarterly.newThisQuarter}
+            cancelledThisQuarter={quarterly.cancelledThisQuarter}
+          />
 
           {/* Gazetteer search — the first next step for a first-time
               visitor; opens the same ⌘K command palette rendered in the
@@ -192,9 +205,17 @@ export default async function HomePage() {
           <HeroSearch facilityCount={count} className="max-w-2xl" />
 
           {/* Primary CTA — the accessible next step this hero's own comment
-              above already claimed existed. Deliberately the ONLY button
-              here: a second "browse all sites" link duplicated the header's
-              Table nav, and competing CTAs blunt the primary one.
+              above already claimed existed. Deliberately the only BUTTON
+              here: the candidate that was rejected was a second "browse all
+              sites" link, which was a straight duplicate of the header's
+              Table nav, and two competing buttons blunt the primary one.
+              That objection was about duplication, not about ever having a
+              second action — "How this is sourced" is differentiated (it
+              answers "why should I believe this?", which nothing else in the
+              fold does) and is styled as a quiet text link precisely so it
+              reads as a footnote to the primary button rather than a rival
+              to it. Keep any future addition to that test: differentiated,
+              and visually subordinate.
 
               Solid --primary (not the bg-primary/10 tint it started as):
               a 10% sage wash on parchment reads as a disabled/ghost control,
@@ -218,6 +239,19 @@ export default async function HomePage() {
                 aria-hidden="true"
                 className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
               />
+            </Link>
+
+            <Link
+              href="/methodology"
+              className="inline-flex min-h-11 items-center rounded-sm font-mono text-sm text-muted-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              {/* min-h-11 (44px), not padding: the sibling map CTA is h-11, so
+                  this matches its touch target and its baseline in the flex row
+                  without gaining a button's visual weight. The arrow is
+                  aria-hidden for the same reason the map CTA's ArrowRight is —
+                  otherwise the accessible name is announced as "How this is
+                  sourced right arrow". */}
+              How this is sourced <span aria-hidden="true">→</span>
             </Link>
           </div>
         </div>
