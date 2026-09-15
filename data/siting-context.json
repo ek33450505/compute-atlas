@@ -610,6 +610,29 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "aes-oak-ridge-solar-morehouse-parish-la": {
+    "nearestWater": {
+      "name": "Boeuf River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "agincourt-valparaiso-porter-county-in": {
     "nearestWater": {
       "name": "Flint Lake",
@@ -3814,6 +3837,29 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "bayou-galion-solar-morehouse-parish-la": {
+    "nearestWater": {
+      "name": "Delemar Bayou",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "beacon-calvert-al": {
     "nearestWater": {
       "name": "Poll Bayou",
@@ -5386,6 +5432,29 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "capital-region-solar-west-baton-rouge-la": {
+    "nearestWater": {
+      "name": "Alligator Bayou",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "cascade-advanced-energy-facility-wa": {
@@ -9339,6 +9408,52 @@
       "rock": "Sandstone"
     }
   },
+  "dartpoints-btr1-baton-rouge-la": {
+    "nearestWater": {
+      "name": "Ward Creek",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "dartpoints-btr2-baton-rouge-la": {
+    "nearestWater": {
+      "name": "Ward Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "dartpoints-greenville-sc": {
     "nearestWater": {
       "name": "Laurel Creek",
@@ -12912,6 +13027,29 @@
       "rock": "Carbonate-rock"
     }
   },
+  "elizabeth-solar-allen-parish-la": {
+    "nearestWater": {
+      "name": "Perkins Branch",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 20.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "elk-river-capital-swervo-mn": {
     "nearestWater": {
       "name": "Orono Lake",
@@ -13322,6 +13460,29 @@
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "entergy-new-orleans-solar-station-la": {
+    "nearestWater": {
+      "name": "Lake Borgne",
+      "kind": "lake",
+      "distanceMi": 3.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "entergy-penton-solar-desoto-ms": {
@@ -14072,6 +14233,25 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "estrella-solar-storage-bernalillo-county-nm": {
+    "nearestWater": {
+      "name": "Rio Puerco",
+      "kind": "river",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.4
+    },
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "etc-dc-opco-lysite-fremont-county-wy": {
@@ -15872,6 +16052,25 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "foxtail-flats-solar-storage-san-juan-county-nm": {
+    "nearestWater": {
+      "name": "Youngs Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
     }
   },
   "franklin-partners-pavilion-township-mi": {
@@ -18962,6 +19161,29 @@
       "label": "High (40-80%)"
     }
   },
+  "iris-solar-washington-parish-la": {
+    "nearestWater": {
+      "name": "Catca Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "iron-city-wells-karthaus-township-clearfield-pa": {
     "nearestWater": {
       "name": "Saltlick Run",
@@ -20655,6 +20877,29 @@
     "aquifer": {
       "name": "Ordovician Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "lumen-new-orleans-1-la": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "lumen-norristown-pa": {
@@ -24491,6 +24736,25 @@
       "rock": "Sandstone"
     }
   },
+  "nova-innova-data-center-albuquerque-nm": {
+    "nearestWater": {
+      "name": "Tijeras Arroyo",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "novva-apex-industrial-park-north-las-vegas-nv": {
     "nearestWater": {
       "name": "Gypsum Wash",
@@ -25631,6 +25895,29 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "oxbow-solar-pointe-coupee-la": {
+    "nearestWater": {
+      "name": "Discharge Bayou",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "panattoni-burgin-mercer-county-ky": {
     "nearestWater": {
       "name": "Cane Run",
@@ -26570,6 +26857,29 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "prairie-ronde-solar-st-landry-la": {
+    "nearestWater": {
+      "name": "Bayou Mallet",
+      "kind": "river",
+      "distanceMi": 2.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "prime-avondale-az": {
@@ -28230,6 +28540,25 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "quail-ranch-solar-storage-bernalillo-county-nm": {
+    "nearestWater": {
+      "name": "Arroyo de los Montoyas",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "quantica-bsdi-billings-mt": {
     "nearestWater": {
       "name": "South Fork Alkali Creek",
@@ -29046,6 +29375,29 @@
       "rock": "Carbonate-rock"
     }
   },
+  "rocking-r-solar-caddo-parish-la": {
+    "nearestWater": {
+      "name": "Hosston Lake",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 13.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "rocklocker-kalkaska-go-mi": {
     "nearestWater": {
       "name": "Island Lake",
@@ -29059,6 +29411,29 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "roswell-information-park-chaves-county-nm": {
+    "nearestWater": {
+      "name": "Rio Hondo",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.4
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Roswell Basin Aquifer System",
+      "rock": "Carbonate-rock"
     }
   },
   "roundhouse-cascade-locks-or": {
@@ -29078,6 +29453,25 @@
     "aquifer": {
       "name": "Pacific Northwest Basaltic-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "route-66-solar-storage-cibola-county-nm": {
+    "nearestWater": {
+      "name": "Laguna del Chical",
+      "kind": "lake",
+      "distanceMi": 3.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 17.3
+    },
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
     }
   },
   "rowan-bauxite-ii-frederick-md": {
@@ -29748,6 +30142,44 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "san-juan-solar-storage-kirtland-nm": {
+    "nearestWater": {
+      "name": "Coolidge Arroyo",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.8
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "sandia-725e-hpc-data-center-albuquerque-nm": {
+    "nearestWater": {
+      "name": "Tijeras Arroyo",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "sandow-lakes-energy-station-lee-county-tx": {
@@ -31102,6 +31534,29 @@
       "rock": "Carbonate-rock"
     }
   },
+  "st-james-solar-vacherie-la": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 2.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "stack-berry-hill-va": {
     "nearestWater": {
       "name": "Lawless Creek",
@@ -31559,6 +32014,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "star-light-energy-center-valencia-county-nm": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.7
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "stargate-abilene-tx": {
@@ -32080,6 +32554,48 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "sunlight-road-solar-washington-parish-la": {
+    "nearestWater": {
+      "name": "Catca Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "sunzia-wind-central-nm": {
+    "nearestWater": {
+      "name": "Salina Lake",
+      "kind": "lake",
+      "distanceMi": 24.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 32
+    },
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
     }
   },
   "supranet-madison-wi": {
@@ -33194,6 +33710,25 @@
     "waterStress": {
       "cat": -1,
       "label": "Arid and Low Water Use"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "teraplex-gallup-tradeport-mckinley-county-nm": {
+    "nearestWater": {
+      "name": "Puerco River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     },
     "aquifer": {
       "name": "Colorado Plateaus Aquifers",
@@ -35611,6 +36146,29 @@
       "rock": "Carbonate-rock"
     }
   },
+  "walker-buddy-ellis-road-data-center-livingston-la": {
+    "nearestWater": {
+      "name": "West Colyell Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "wallace-jackson-data-center-campus-spalding-ga": {
     "nearestWater": {
       "name": "Grape Creek",
@@ -36096,6 +36654,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "windy-lane-energy-center-de-baca-county-nm": {
+    "nearestWater": {
+      "name": "Pecos River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 13
+    },
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
     }
   },
   "wintersburg-313-tonopah-az": {
