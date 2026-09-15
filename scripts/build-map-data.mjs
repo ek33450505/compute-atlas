@@ -36,6 +36,8 @@
  *   public/data/map-layers.json             (attribution + asOf manifest)
  *   public/data/hero-points.json            (homepage hero globe point set — see
  *                                             build-hero-points.mjs; local, no network)
+ *   components/home/hero-plate-paths.ts     (homepage hero static Albers USA dot plate —
+ *                                             see build-hero-plate.mjs; local, no network)
  *   data/siting-context.json                (per-facility nearest-water/-transmission +
  *                                             waterStress/groundwaterDecline/aquifer stats)
  *
@@ -60,6 +62,7 @@ import polygonToLine from '@turf/polygon-to-line';
 import { lineString as turfLineString, point as turfPoint } from '@turf/helpers';
 
 import { buildHeroPoints } from './build-hero-points.mjs';
+import { buildHeroPlate } from './build-hero-plate.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
@@ -1094,6 +1097,12 @@ async function main() {
   // be missing from the hero just because the slow NHD pass was skipped.
   const heroPointsResult = buildHeroPoints();
 
+  // Homepage hero plate: the static, zero-JS Albers USA dot map phones get
+  // instead of the sm+-gated WebGL globe. Same reasoning as hero-points — a
+  // pure local transform of data/facilities.json, so it runs under --skip-nhd
+  // too, and a wave that skipped it would ship a plate missing new facilities.
+  const heroPlateResult = buildHeroPlate();
+
   console.log('\n--- Build Summary ---');
   if (!skipNHD) {
     console.log(`water.geojson:   ${(waterResult.waterSize / 1024).toFixed(0)} KB (tolerance ${waterResult.waterTolerance})`);
@@ -1108,6 +1117,7 @@ async function main() {
   console.log(`map-layers.json: ${MANIFEST_OUT}`);
   console.log(`siting-context.json: ${SITING_CONTEXT_OUT} (${Object.keys(sitingContext).length} entries)`);
   console.log(`hero-points.json: ${heroPointsResult.outPath} (${heroPointsResult.count} points, ${(heroPointsResult.bytes / 1024).toFixed(0)} KB)`);
+  console.log(`hero-plate-paths.ts: ${heroPlateResult.outPath} (${heroPlateResult.plotted} marks, ${heroPlateResult.deduped} co-located collapsed, ${heroPlateResult.omitted} omitted${heroPlateResult.omittedJurisdictions.length ? ` in ${heroPlateResult.omittedJurisdictions.join('/')}` : ''}, ${(heroPlateResult.bytes / 1024).toFixed(1)} KB)`);
   console.log('\nDone.');
 }
 
