@@ -182,6 +182,17 @@ function provenanceLine(): HTMLElement {
   return screen.getByText(/edition 15 Sep 2026/);
 }
 
+/**
+ * The cartouche: the wrapper holding the hero's bare text. Located by walking
+ * up from the H1 rather than by a class, because its identity here is
+ * structural — it is whatever element the scrim is sized against.
+ */
+function cartouche(): HTMLElement {
+  const h1 = screen.getByRole("heading", { level: 1 });
+  expect(h1.parentElement).not.toBeNull();
+  return h1.parentElement as HTMLElement;
+}
+
 describe("HomePage hero", () => {
   it("renders the H1 verbatim", async () => {
     render(await HomePage());
@@ -273,10 +284,25 @@ describe("HomePage hero", () => {
     expect(link).toHaveAccessibleName("How this is sourced");
   });
 
-  // A >=44px touch target on the quiet text link beside the h-11 map CTA.
+  // A >=44px touch target on the quiet text link beside the h-11 map CTA,
+  // plus the backing that keeps it readable.
+  //
   // jsdom computes no layout, so the class list is the only assertable
   // surface here; the rendered geometry is covered by the a11y e2e pass.
-  it("gives the sourcing link a 44px-tall hit area", async () => {
+  //
+  // The bg-background/85 + backdrop-blur-sm + px-2 trio is asserted for
+  // LEGIBILITY, not aesthetics: the hero's parchment scrim is sized by the
+  // text block above and stops short of this CTA row, so on sm+ this link
+  // renders over live MapLibre tiles. Its two siblings paint their own opaque
+  // fills (solid bg-primary, bg-card) and need no backing; this one paints
+  // nothing, so without the plate --muted-foreground's audited 6.70:1 (which
+  // assumes parchment behind it) does not hold.
+  //
+  // A class assertion is the honest limit here. jsdom does no layout and no
+  // compositing, so this CANNOT prove contrast — it only proves the backing
+  // has not been silently stripped as decoration. Real contrast over tiles is
+  // unverifiable in this suite.
+  it("gives the sourcing link a 44px-tall hit area and a backing that survives over map tiles", async () => {
     render(await HomePage());
 
     const link = screen.getByRole("link", { name: "How this is sourced" });
@@ -284,5 +310,115 @@ describe("HomePage hero", () => {
     expect(link).toHaveClass("inline-flex");
     expect(link).toHaveClass("min-h-11");
     expect(link).toHaveClass("items-center");
+    expect(link).toHaveClass("bg-background/85");
+    expect(link).toHaveClass("backdrop-blur-sm");
+    expect(link).toHaveClass("px-2");
+  });
+
+  // The scrim used to span the whole hero box with hand-measured percentage
+  // stops, which every copy edit silently invalidated. It is now a child of
+  // the text block, so it is sized by what it protects. jsdom computes no
+  // layout, so what is assertable here is the CONTAINMENT that makes that
+  // true — which is exactly the part a refactor would break.
+  it("backs the cartouche with a decorative scrim sized by the text block", async () => {
+    render(await HomePage());
+
+    const block = cartouche();
+    const scrim = block.firstElementChild;
+
+    expect(scrim).not.toBeNull();
+    expect(scrim).toHaveAttribute("aria-hidden", "true");
+    // Decorative and click-through: it sits over the map, so it must never
+    // intercept a pointer event aimed at the globe beneath it.
+    expect(scrim).toHaveClass("pointer-events-none");
+    // Sized by its offset parent, which the wrapper only is while positioned
+    // — drop `relative` and the scrim escapes to the hero box, restoring the
+    // hero-relative coupling this structure exists to remove.
+    expect(scrim).toHaveClass("absolute");
+    expect(block).toHaveClass("relative");
+    // Behind every sibling in the hero block (and NOT isolated), so the tail
+    // bleeding past the text passes under the search card instead of over it.
+    expect(scrim).toHaveClass("-z-10");
+    expect(block).not.toHaveClass("isolate");
+
+    // A horizontal offset PAIR — not its magnitude — is what gives this
+    // absolutely-positioned box a resolved width. Without one it shrink-wraps
+    // its (empty) content instead of spanning the wrapper, so deleting the
+    // class collapses the scrim rather than trimming its bleed. The magnitude
+    // is deliberately NOT pinned: -inset-x-4's extra 16px per side is headroom
+    // the hero's overflow-hidden clips today, so inset-x-0 would render
+    // identically and is a legitimate future edit. Removal is not.
+    expect(scrim!.className).toMatch(/(^|\s)-?inset-x-/);
+
+    // The fade is anchored in PIXELS, so the opaque region ends on the text
+    // block's bottom edge at EVERY content height. 24px is the real bottom
+    // bleed, not the 40px `-bottom-10` advertises: `space-y-4` compiles to
+    // `margin-block-end: 1rem` on `:not(:last-child)` and the scrim is child
+    // 1 of 5, and CSS 2.1 §10.6.4 subtracts that margin from an auto-height
+    // box that sets both `top` and `bottom` — so the height resolves to
+    // H + 40 + 40 − 16, leaving 24px below the text.
+    //
+    // HONEST LIMIT: jsdom computes no layout and resolves no gradient, so
+    // this is necessarily a structural/class assertion, NOT a rendered-
+    // geometry one. It cannot prove the text is covered. What it does prove
+    // is that the pixel anchor has not been swapped back for content-relative
+    // percentage stops — the regression that put <HeroProvenance>, the
+    // lowest-contrast line on the page, inside the fade instead of the opaque
+    // band. Real contrast over map tiles is unverifiable in this suite.
+    expect(scrim).toHaveClass(
+      "bg-[linear-gradient(to_bottom,var(--background)_0,var(--background)_calc(100%_-_24px),transparent_100%)]"
+    );
+    // No content-relative gradient stop survives anywhere in the class list:
+    // `via-background/92 via-92%` is exactly what this replaced.
+    expect(scrim!.className).not.toMatch(/(^|\s)(from|via|to)-\d+%/);
+
+    // …and it spans all of the bare text, not just the heading.
+    expect(block).toContainElement(
+      screen.getByText(/Public data on data centers is everywhere and nowhere/)
+    );
+    expect(block).toContainElement(provenanceLine());
+  });
+
+  // The class that actually traps the scrim in the right stacking context is
+  // the `z-10` on the cartouche's PARENT, not the `-z-10` on the scrim itself.
+  // `relative` alone leaves `z-index: auto`, which creates NO stacking
+  // context; `relative` + `z-10` does. That is what makes the scrim's negative
+  // z-index resolve inside the hero block — behind its own siblings, but still
+  // in front of <HeroGlobe>. Strip the `z-10` and the scrim escapes to the
+  // nearest ancestor stacking context and paints BEHIND the globe, leaving the
+  // cartouche completely unbacked over live map tiles.
+  //
+  // Every other assertion in this file passes in that broken state, including
+  // the `-z-10` / `not.toHaveClass("isolate")` pair above — which is precisely
+  // why this test exists. Mutation-tested: removing `z-10` from app/page.tsx
+  // fails this and nothing else.
+  it("anchors the scrim's stacking context on the cartouche's parent", async () => {
+    render(await HomePage());
+
+    const heroBlock = cartouche().parentElement;
+
+    expect(heroBlock).not.toBeNull();
+    expect(heroBlock).toHaveClass("relative");
+    expect(heroBlock).toHaveClass("z-10");
+  });
+
+  it("keeps the search box and both CTAs outside the scrimmed text block", async () => {
+    render(await HomePage());
+
+    const block = cartouche();
+
+    // These three paint their own backgrounds (bg-card, solid bg-primary) and
+    // are legible over the map unaided. A scrim stretched to cover them was
+    // measured burying everything except the Gulf — pulling any of them into
+    // the wrapper above would silently reinstate that.
+    expect(block).not.toContainElement(
+      screen.getByRole("button", { name: /opens a search dialog/ })
+    );
+    expect(block).not.toContainElement(
+      screen.getByRole("link", { name: /Explore the map/ })
+    );
+    expect(block).not.toContainElement(
+      screen.getByRole("link", { name: "How this is sourced" })
+    );
   });
 });

@@ -137,67 +137,117 @@ export default async function HomePage() {
         </div>
 
         {/*
-         * Parchment scrim so the cartouche stays legible over the map.
-         * Scoped to the text region, not a full-hero fade: near-opaque
-         * (≥92%) through 58% of the hero's height — enough for the overline,
-         * H1 and subhead even when the subhead wraps on narrow viewports —
-         * then fully transparent by 85%.
-         *
-         * The stops are set by the BARE TEXT only. The search field and the
-         * CTA below it paint their own opaque backgrounds (bg-card and solid
-         * bg-primary), so they are legible over the map without help; sizing
-         * the scrim to cover them too was measured at 70%/95% and buried
-         * everything except the Gulf, which defeats the point of plotting
-         * 1,034 sites behind the cartouche.
-         *
-         * Measured (Playwright, against the live DOM) — subhead bottom as a
-         * share of this box: desktop 1280px = 52.7%, inside the 58% band.
-         * Phones measure 71%, i.e. past it — but that is NOT a legibility bug
-         * today, because below `sm` the globe never mounts at all
-         * (hero-globe-dynamic.tsx) and the static plate it is replaced by
-         * ends around 51%, so the lower text sits on bare parchment with
-         * nothing behind it to compete with.
-         *
-         * ⚠️ That makes these stops COUPLED to the mobile globe gate: if the
-         * globe is ever allowed to render below `sm`, the bottom ~13% of the
-         * subhead lands over live map tiles and this needs a responsive
-         * near-opaque stop (roughly `via-76% sm:via-58%`).
+         * `relative z-10` here is load-bearing, and it is the class the
+         * cartouche's scrim actually depends on. `z-10` + `relative` makes
+         * THIS element a stacking context, which is what traps the scrim's
+         * `-z-10` inside the hero block: the scrim paints behind its own
+         * siblings but still in FRONT of <HeroGlobe> above. Strip the `z-10`
+         * and the scrim escapes to the nearest ancestor stacking context and
+         * paints behind the globe instead, leaving the cartouche unbacked
+         * over live map tiles. Pinned by app/page.test.tsx.
          */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background from-0% via-background/92 via-58% to-transparent to-85%"
-        />
-
         <div className="relative z-10 space-y-4 pt-8 pb-10">
-          <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            {`United States · Edition v${edition.version} · 39.5°N 98.5°W`}
-          </p>
+          {/*
+           * Cartouche — the bare text (overline, H1, subhead, provenance
+           * rule) and, as an absolutely-positioned child of THIS wrapper, the
+           * parchment scrim that keeps it legible over the map.
+           *
+           * The invariant: the scrim is sized by the text block it protects,
+           * not by the hero box. It therefore needs no measurement, scales
+           * with the copy on its own, and is independent of what renders
+           * behind it — including whether a map draws at a given viewport.
+           * Every stop below is relative to this wrapper's own height, so an
+           * edit to the H1 or subhead cannot leave the lower text unbacked.
+           *
+           * The search field and the CTA row stay OUTSIDE it deliberately:
+           * they paint their own opaque backgrounds (bg-card and solid
+           * bg-primary) and are legible over the map unaided, and a scrim
+           * stretched to cover them was measured burying everything except
+           * the Gulf — which defeats the point of plotting the sites behind
+           * the cartouche.
+           *
+           * -z-10 with NO `isolate` here is load-bearing: it keeps the scrim
+           * below every sibling in the block above, so the tail that bleeds
+           * past the text dissolves behind the search card instead of
+           * veiling it. The top and side bleed is clipped by the hero's
+           * overflow-hidden.
+           */}
+          <div className="relative space-y-4">
+            {/*
+             * The fade is anchored in PIXELS, not percentages. Percentage
+             * stops make the opaque band a function of the copy's height, so
+             * every rewording silently moved it — the exact coupling this
+             * structure exists to remove. A fixed offset from the scrim's own
+             * bottom edge is scale-INVARIANT: the stop lands in the same place
+             * relative to the text at every content height.
+             *
+             * Why the constant is 24px and not the 40px `-bottom-10`
+             * advertises: this element is the FIRST of five children of a
+             * `space-y-4` wrapper, and Tailwind v4 compiles `space-y-4` to
+             * `margin-block-end: 1rem` on `:where(& > :not(:last-child))` —
+             * which includes this scrim. An absolutely-positioned box with
+             * BOTH `top` and `bottom` set and `height: auto` resolves its
+             * height through the offset equation (CSS 2.1 §10.6.4), and that
+             * margin is subtracted from it:
+             *
+             *     height = H + 40 (top) + 40 (bottom) - 16 (margin) = H + 64
+             *
+             * so the real bottom bleed below the text is 24px, not 40. Ending
+             * the opaque region at `calc(100% - 24px)` therefore puts it
+             * exactly on the text block's bottom edge: all of the copy sits in
+             * the fully opaque region at every height, and the fade occupies
+             * only the bare bleed below it.
+             *
+             * ⚠️ Do NOT "restore" this to 40px to match `-bottom-10`, and do
+             * not reintroduce percentage stops. Either change pushes the fade
+             * ~16px up into <HeroProvenance>, the lowest-contrast text on the
+             * page: --muted-foreground (#5C5344) needs alpha >= 0.825 over a
+             * dark backdrop to hold 4.5:1, and the satellite basemap makes a
+             * near-black backdrop reachable. If the `space-y-4` above ever
+             * changes, re-derive this constant from the equation, don't guess.
+             *
+             * `-inset-x-4` is load-bearing, not decoration: without a
+             * horizontal offset pair an absolutely-positioned box shrink-wraps
+             * its content instead of spanning the wrapper, so removing it
+             * collapses the scrim's width rather than trimming its bleed. The
+             * extra 16px per side is deliberate headroom that the hero's
+             * `overflow-hidden` currently clips — keep it.
+             */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-x-4 -top-10 -bottom-10 -z-10 bg-[linear-gradient(to_bottom,var(--background)_0,var(--background)_calc(100%_-_24px),transparent_100%)]"
+            />
 
-          <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl max-w-4xl">
-            America&rsquo;s data centers, mapped and sourced.
-          </h1>
+            <p className="font-mono text-xs uppercase tracking-widest text-primary">
+              {`United States · Edition v${edition.version} · 39.5°N 98.5°W`}
+            </p>
 
-          {/* Subhead — text-foreground/85 (not text-muted-foreground): needs
-              to stay legible against the map showing through the scrim.
-              max-w-xl (not max-w-2xl) so it reads as a caption under the H1
-              rather than a second column of body copy. */}
-          <p className="text-base text-foreground/85 leading-relaxed max-w-xl">
-            Public data on data centers is everywhere and nowhere — scattered
-            across local permits, tax abatements, water filings, and grid
-            queues. Compute Atlas pulls it into one source-cited dataset.
-          </p>
+            <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl max-w-4xl">
+              America&rsquo;s data centers, mapped and sourced.
+            </h1>
 
-          {/* Provenance rule — deliberately ABOVE the search box, not below
-              the CTA: the scale and sourcing of the dataset is the claim this
-              page is making, so it has to be inside the fold. */}
-          <HeroProvenance
-            sites={count}
-            stateCodes={stateCodes}
-            sources={sourcesCited}
-            editionAsOf={edition.asOf}
-            newThisQuarter={quarterly.newThisQuarter}
-            cancelledThisQuarter={quarterly.cancelledThisQuarter}
-          />
+            {/* Subhead — text-foreground/85 (not text-muted-foreground): needs
+                to stay legible against the map showing through the scrim.
+                max-w-xl (not max-w-2xl) so it reads as a caption under the H1
+                rather than a second column of body copy. */}
+            <p className="text-base text-foreground/85 leading-relaxed max-w-xl">
+              Public data on data centers is everywhere and nowhere — scattered
+              across local permits, tax abatements, water filings, and grid
+              queues. Compute Atlas pulls it into one source-cited dataset.
+            </p>
+
+            {/* Provenance rule — deliberately ABOVE the search box, not below
+                the CTA: the scale and sourcing of the dataset is the claim this
+                page is making, so it has to be inside the fold. */}
+            <HeroProvenance
+              sites={count}
+              stateCodes={stateCodes}
+              sources={sourcesCited}
+              editionAsOf={edition.asOf}
+              newThisQuarter={quarterly.newThisQuarter}
+              cancelledThisQuarter={quarterly.cancelledThisQuarter}
+            />
+          </div>
 
           {/* Gazetteer search — the first next step for a first-time
               visitor; opens the same ⌘K command palette rendered in the
@@ -243,14 +293,31 @@ export default async function HomePage() {
 
             <Link
               href="/methodology"
-              className="inline-flex min-h-11 items-center rounded-sm font-mono text-sm text-muted-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 items-center rounded-sm bg-background/85 px-2 backdrop-blur-sm font-mono text-sm text-muted-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               {/* min-h-11 (44px), not padding: the sibling map CTA is h-11, so
                   this matches its touch target and its baseline in the flex row
                   without gaining a button's visual weight. The arrow is
                   aria-hidden for the same reason the map CTA's ArrowRight is —
                   otherwise the accessible name is announced as "How this is
-                  sourced right arrow". */}
+                  sourced right arrow".
+
+                  bg-background/85 + backdrop-blur-sm + px-2 is a BACKING, not
+                  decoration — do not strip it. Its two siblings in the fold
+                  paint their own opaque fills (the map CTA is solid bg-primary,
+                  HeroSearch's root is bg-card), so the cartouche scrim above
+                  deliberately stops short of this row. This link paints
+                  nothing, so on sm+ it sits directly over live MapLibre tiles —
+                  land, water, roads and status-coloured dots. --muted-foreground
+                  #5C5344 is contrast-audited at 6.70:1 against parchment
+                  #F5F1E6, and that audit ASSUMES parchment behind it; over
+                  tiles the effective ratio is unknown and lower. This is the
+                  same treatment .maplibregl-ctrl-scale gets in globals.css
+                  (85% background + a blur) and that the map's own quiet
+                  overlays already use in Tailwind form
+                  (components/map/facility-map.tsx). px-2 so the plate reads as
+                  a soft backing rather than a tight box; it is still a text
+                  link, not a second button. */}
               How this is sourced <span aria-hidden="true">→</span>
             </Link>
           </div>
