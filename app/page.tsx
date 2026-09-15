@@ -17,7 +17,9 @@ import {
   getGenerationBuildoutStats,
   getWaterStressExposure,
   getFrictionTotal,
+  getCounties,
 } from "@/lib/data";
+import { METROS } from "@/lib/metros";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
 import { HeroSearch } from "@/components/home/hero-search";
@@ -86,6 +88,10 @@ export default async function HomePage() {
   const typeCounts = await getFacilityTypeCounts();
   const cryptoCount = typeCounts.crypto_mining ?? 0;
   const utilityLinked = allFacilities.filter((f) => f.energy?.utility).length;
+  // County/metro lens counts. `getCounties` reads the same memoized county
+  // index the /counties hub uses, so this adds no DB work; METROS is static.
+  const countyCount = (await getCounties()).length;
+  const metroCount = METROS.length;
   const buildout = await getGenerationBuildoutStats();
   const waterStressExposure = await getWaterStressExposure();
   const gasNotYetBuilt =
@@ -261,6 +267,8 @@ export default async function HomePage() {
             operators: operatorCount,
             plannedGw: Math.round(plannedMw / 1000),
             cryptoCount,
+            metros: metroCount,
+            counties: countyCount,
           }}
         />
       </div>

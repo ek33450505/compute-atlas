@@ -2,9 +2,11 @@ import Link from "next/link";
 import {
   BarChart3,
   Bitcoin,
+  Building,
   Building2,
   Cpu,
   Globe,
+  Landmark,
   Megaphone,
   MapPin,
   Zap,
@@ -25,6 +27,8 @@ export interface LensGatewayProps {
     operators: number;
     plannedGw: number;
     cryptoCount: number;
+    metros: number;
+    counties: number;
   };
   className?: string;
 }
@@ -53,6 +57,20 @@ const LENSES: Lens[] = [
     icon: MapPin,
     stat: (c) => statesPhrase(c.stateCodes),
     blurb: "Every state, ranked by capacity, build status, and friction.",
+  },
+  {
+    label: "By metro",
+    href: "/metros",
+    icon: Building,
+    stat: (c) => `${c.metros} metros`,
+    blurb: "Curated metro clusters driving the buildout, each with a live count.",
+  },
+  {
+    label: "Counties",
+    href: "/counties",
+    icon: Landmark,
+    stat: (c) => `${c.counties.toLocaleString("en-US")} counties`,
+    blurb: "Where permits are filed and hearings are held — every county with a tracked site.",
   },
   {
     label: "Power & energy",

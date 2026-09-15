@@ -51,6 +51,95 @@ describe("buildFacilityJsonLd", () => {
     expect(ld.name).toBe("Test Datacenter");
   });
 
+  // Measured 2026-09-15: the Place carried name/url/address/geo only, so a
+  // retrieval model learned a pin existed and nothing about it. Every fact a
+  // reader sees must now also be machine-extractable.
+  describe("additionalProperty (the citable facts)", () => {
+    const propsOf = (f: Facility) =>
+      Object.fromEntries(
+        (buildFacilityJsonLd(f).additionalProperty ?? []).map((p) => [
+          p.name,
+          p.value,
+        ])
+      );
+
+    it("carries operator, status and facility type as PropertyValue entries", () => {
+      const props = buildFacilityJsonLd(baseFacility).additionalProperty ?? [];
+      expect(props.length).toBeGreaterThan(0);
+      props.forEach((p) => expect(p["@type"]).toBe("PropertyValue"));
+
+      const byName = propsOf(baseFacility);
+      expect(byName["Operator"]).toBe("Acme Corp");
+      expect(byName["Facility type"]).toBe("Data center");
+    });
+
+    it("uses the canonical STATUS_META label, not a retyped string", () => {
+      // Mutation coverage: emitting the raw enum yields "operational" and
+      // fails here. Guards against the structured data drifting from the
+      // rendered page the way title/H1 once did.
+      expect(propsOf(baseFacility)["Status"]).toBe("Operational");
+    });
+
+    it("tags capacity with the megawatt unit code, not a bare number", () => {
+      const ld = buildFacilityJsonLd({
+        ...baseFacility,
+        capacityMw: { planned: 4500, operational: 120 },
+      } as Facility);
+      const planned = (ld.additionalProperty ?? []).find(
+        (p) => p.name === "Planned capacity"
+      );
+      const operational = (ld.additionalProperty ?? []).find(
+        (p) => p.name === "Operational capacity"
+      );
+      expect(planned).toMatchObject({ value: 4500, unitCode: "MAW", unitText: "MW" });
+      expect(operational).toMatchObject({ value: 120, unitCode: "MAW" });
+    });
+
+    it("omits capacity, AI classification and energy entries when unset", () => {
+      // Absent must mean absent — never an entry with an empty or
+      // "undefined" value, which would read as a published fact.
+      const names = (buildFacilityJsonLd(baseFacility).additionalProperty ?? []).map(
+        (p) => p.name
+      );
+      expect(names).not.toContain("Planned capacity");
+      expect(names).not.toContain("Operational capacity");
+      expect(names).not.toContain("Energy source");
+      expect(names).not.toContain("Utility");
+      names.forEach((n) => expect(n).toBeTruthy());
+    });
+
+    it("maps the energy source through ENERGY_SOURCE_ENTRIES, not the raw enum", () => {
+      const props = propsOf({
+        ...baseFacility,
+        energy: { source: "on_site_gas", utility: "Duke Energy" },
+      } as Facility);
+      expect(props["Energy source"]).toBe("On-site gas");
+      expect(props["Utility"]).toBe("Duke Energy");
+    });
+
+    it("emits no AI classification for a power_generation facility", () => {
+      // That arm of the discriminated union has no such field; the absence is
+      // structural, so this must hold without a cast.
+      const names = (
+        buildFacilityJsonLd({
+          ...baseFacility,
+          facilityType: "power_generation",
+          capacityMw: { operational: 800 },
+        } as Facility).additionalProperty ?? []
+      ).map((p) => p.name);
+      expect(names).not.toContain("AI classification");
+      expect(names).toContain("Operational capacity");
+    });
+
+    it("survives serialization through facilityJsonLdString", () => {
+      const parsed = JSON.parse(
+        facilityJsonLdString(baseFacility).replace(/\\u003c/g, "<")
+      );
+      expect(parsed.additionalProperty).toBeInstanceOf(Array);
+      expect(parsed.additionalProperty[0]["@type"]).toBe("PropertyValue");
+    });
+  });
+
   it("includes geo coordinates matching the facility location", () => {
     const ld = buildFacilityJsonLd(baseFacility);
     expect(ld.geo["@type"]).toBe("GeoCoordinates");
