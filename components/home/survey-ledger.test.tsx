@@ -236,6 +236,42 @@ describe("SurveyLedger", () => {
     });
   });
 
+  it("centres the ledger tile row below sm and packs it left from sm up", () => {
+    setReducedMotion(true);
+    render(<SurveyLedger {...PROPS} />);
+
+    // Located structurally — the row is the shared parent of the four ledger
+    // tiles, not a child index or a class selector, so re-ordering the tiles
+    // or restyling the row cannot silently retarget the assertion onto some
+    // other element and keep passing.
+    const tiles = [
+      screen.getByLabelText("727 sites tracked"),
+      screen.getByLabelText("45 states covered"),
+      screen.getByLabelText("210 operators"),
+      screen.getByLabelText("2,570 sources cited"),
+    ];
+    const row = tiles[0].parentElement;
+    expect(row).not.toBeNull();
+    tiles.forEach((tile) => expect(tile.parentElement).toBe(row));
+
+    // Pinned because Ed QA'd and approved exactly this on a phone (2026-09-15):
+    // each tile is internally centred but the row packs left, so a wrapped row
+    // went ragged on iPhone widths. Centring below sm is what fixed it — losing
+    // either class is a real visual regression, not style drift, and nothing
+    // else in this file would notice. `flex flex-wrap` is pinned alongside
+    // because `justify-*` is inert on a non-flex container: dropping `flex`
+    // would un-centre the row while both justify classes still read as present.
+    // Sibling guard: components/survey-stat-row.test.tsx holds an exact-string
+    // toBe() on the same pair for SurveyStatRow, which this row deliberately
+    // matches.
+    expect(row).toHaveClass(
+      "flex",
+      "flex-wrap",
+      "justify-center",
+      "sm:justify-start"
+    );
+  });
+
   it("does not throw when motion is allowed (count-up / bar-grow code paths execute)", () => {
     setReducedMotion(false);
     expect(() => render(<SurveyLedger {...PROPS} />)).not.toThrow();

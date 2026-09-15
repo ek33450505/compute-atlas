@@ -190,6 +190,24 @@ describe("HeroProvenance", () => {
     expect(container.textContent).not.toContain("territories");
   });
 
+  // Formatter gap: every other mapOmitted case here is a single digit, so the
+  // `toLocaleString("en-US")` call was doing nothing observable and a plain
+  // `${mapOmitted}` would have passed all of them. Four digits is the smallest
+  // input where the grouping separator appears, so this is the assertion that
+  // actually pins the formatter rather than the number.
+  it("groups a four-digit omission count with a thousands separator", () => {
+    const { container } = render(
+      <HeroProvenance {...BASE_PROPS} mapOmitted={1000} />
+    );
+
+    expect(container.textContent).toContain(
+      "static map omits 1,000 in U.S. territories"
+    );
+    // Guards the separator specifically: an unformatted `1000` would still
+    // satisfy a looser substring check on the surrounding prose.
+    expect(container.textContent).not.toContain("omits 1000 ");
+  });
+
   // Same reasoning as the quarter segment above: an absence is not a finding.
   it.each([
     ["nothing is omitted", 0],

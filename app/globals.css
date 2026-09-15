@@ -117,6 +117,72 @@
   html {
     @apply font-sans;
   }
+
+  /* ── Themed scrollbar — hairline sepia, square thumb ──────────────────────
+     A muted track with a square (radius 0) thumb, in the same key as the rest
+     of the atlas chrome.
+
+     CONTRAST — do NOT "restore" the lighter tan. A scrollbar thumb is a UI
+     component, so WCAG 1.4.11 applies and the floor is 3:1 against its
+     adjacent colour. Measured in this palette:
+       --border          #CDBFA0 on --muted #E9E2CF   1.41:1  ✗  (under 3:1)
+       --border          #CDBFA0 on parchment #F5F1E6 1.61:1  ✗  (under 3:1)
+       --muted-foreground #5C5344 on --muted #E9E2CF  5.85:1  ✓
+       --primary          #3F5B43 on --muted #E9E2CF  5.82:1  ✓  (hover)
+     Hence muted-foreground as the thumb, not border.
+
+     SIZE: `thin` / 8px is the floor, never a true hairline — a 2-3px target is
+     a motor-accessibility regression for anyone dragging the thumb.
+
+     SCOPE: `html` only, never `*`. Both `scrollbar-width` and `scrollbar-color`
+     inherit, so descendants pick up the theme without us styling them, and any
+     element that declares its own value still wins over an inherited one. That
+     is what keeps the two opt-out scrollbars intact:
+       - Base UI's ScrollArea viewport (components/ui/scroll-area.tsx, used by
+         components/explorer/filter-bar.tsx), which injects
+         `.base-ui-disable-scrollbar{scrollbar-width:none}` plus a webkit
+         display:none (node_modules/@base-ui/react/utils/styles.js), and
+       - shadcn's `@utility no-scrollbar` (same two declarations), which this
+         repo does not currently call anywhere but inherits from the vendored
+         `shadcn/tailwind.css` import at the top of this file.
+     Both declare `scrollbar-width: none` on the element itself, so the
+     inherited `thin` never reaches them and neither native scrollbar comes
+     back. */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) var(--muted);
+  }
+
+  /* Fallback for engines without the standard properties (Chromium <121,
+     Safari <18.2). Gated on @supports rather than layered underneath, because
+     Chromium >=121 IGNORES ::-webkit-scrollbar entirely on any element whose
+     scrollbar-color is not `auto` — and scrollbar-color inherits from html, so
+     that is every element. Left ungated, these four rules would be dead code on
+     the majority browser while looking live in review. Making the two blocks
+     mutually exclusive by construction also sidesteps the same precedence
+     question in WebKit, where the interaction is less well documented.
+
+     TRADEOFF, stated plainly: the standard `scrollbar-color` takes a static
+     pair and has no hover form, so the thumb-hover-to-sage affordance exists
+     ONLY on the legacy path below. On modern Chromium/Firefox/Safari the thumb
+     is a static 5.85:1 muted-foreground with no hover change. That is accepted
+     — hover is decorative here, and the contrast floor is met without it. */
+  @supports not (scrollbar-color: auto) {
+    html::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    html::-webkit-scrollbar-track {
+      background: var(--muted);
+    }
+    html::-webkit-scrollbar-thumb {
+      background: var(--muted-foreground);
+      border-radius: 0; /* square — engraved, not a pill */
+    }
+    html::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+  }
 }
 
 @layer utilities {
@@ -287,9 +353,45 @@
       }
     }
   }
+  /* The tilt: each plate enters off-register and turns square as it settles —
+     the same metaphor the wordmark uses (two printing plates sliding into
+     register). 2deg is a deliberate taste call (0.4deg was too subtle to read
+     in a browser); the CEILING below is not taste, it is measured.
+
+     No `transform-origin` is set, i.e. the default 50% 50% centre pivot. That
+     is the sensible pivot here: rotating about the centre splits the
+     displacement evenly between the two edges (a plate laid slightly askew),
+     whereas a corner origin doubles the far-corner travel and reads as a hinge
+     swinging shut.
+
+     ⛔ 2.5deg IS THE HARD CEILING — do not raise the tilt past it without
+     re-measuring. Horizontal overhang past the container, per side, is
+     (w cos0 + h sin0)/2 - w/2; the page gutter is px-4 = 16px a side at every
+     breakpoint, so overhang > 16px CLIPS:
+
+       tilt    desktop 1280x420   lens gateway 1152x600   mobile 358x700
+       0.4deg          1.5px                  2.1px              2.4px
+       1deg            3.6px                  5.1px              6.1px
+       2deg  <-current 6.9px                 10.1px             12.1px
+       2.5deg          8.6px                 12.5px             15.1px
+       3deg           10.1px                 14.9px      18.1px  CLIPS
+
+     MOBILE IS THE BINDING VIEWPORT, not desktop — the tall wrapped layout has
+     the worst width:height ratio, so it overhangs ~1.75x what desktop does at
+     the same angle and clips first. Desktop still has 5px of room at 3deg
+     while mobile is already over. At the current 2deg mobile keeps ~4px of
+     margin. Vertical growth at 2deg is ~22px per edge (desktop; mobile ~6px)
+     against 40-48px section gaps (mb-10 / mt-12), so neighbouring sections do
+     not collide. Rotation composites on the same layer as the existing
+     translateY, so this adds no layout or paint cost.
+
+     `rotate(0deg)` (not bare `rotate(0)`) in the `to` state: the spec permits
+     a unitless <zero> here, but the explicit unit does not lean on that
+     production and states "square" unambiguously. The settled state must stay
+     square — see the reduced-motion / @supports note above. */
   @keyframes plate-settle {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(8px) rotate(2deg); }
+    to   { opacity: 1; transform: translateY(0) rotate(0deg); }
   }
 }
 

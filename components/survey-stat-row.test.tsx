@@ -153,15 +153,21 @@ describe("SurveyStatRow", () => {
       { value: "20", label: "Operational" },
     ];
 
-    it("defaults to the original gap-8 container classes, unchanged", () => {
+    it("defaults to the gap-8 container classes, unchanged", () => {
       const { container } = render(<SurveyStatRow stats={stats} />);
       const row = container.firstElementChild;
 
-      // Regression guard: this exact string is what the other 13 call sites
-      // of SurveyStatRow have always rendered. If this ever fails, a change
-      // meant only for /power's wide variant has leaked into every page.
+      // Regression guard: this exact string is what SurveyStatRow renders at
+      // every default-variant call site (19 usages across 18 files, counted
+      // 2026-09-15). If this ever fails, a change meant only for /power's wide
+      // variant has leaked into every page.
+      //
+      // `justify-center sm:justify-start` IS intentionally site-wide (Ed,
+      // 2026-09-15): the mobile centring was asked for across the board, not
+      // per page, so it is pinned here deliberately rather than having leaked.
+      // The guard still does its job — the GAP tokens remain variant-scoped.
       expect(row?.className).toBe(
-        "flex flex-wrap gap-8 border-b border-border pb-10"
+        "flex flex-wrap justify-center sm:justify-start gap-8 border-b border-border pb-10"
       );
     });
 
@@ -170,7 +176,7 @@ describe("SurveyStatRow", () => {
       const row = container.firstElementChild;
 
       expect(row?.className).toBe(
-        "flex flex-wrap gap-x-16 gap-y-8 border-b border-border pb-10"
+        "flex flex-wrap justify-center sm:justify-start gap-x-16 gap-y-8 border-b border-border pb-10"
       );
       // The default rhythm must not leak into the wide variant as a bare token.
       expect(row?.className).not.toMatch(/(?:^|\s)gap-8(?:\s|$)/);
