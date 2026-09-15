@@ -2,7 +2,26 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * There is no dark mode, on purpose. The warm parchment palette is the
+ * identity of this site, not a default awaiting a toggle.
+ *
+ * A `@custom-variant dark (&:is(.dark *));` used to sit here. It did not
+ * CREATE the `dark:` variant — `dark:` is built into Tailwind — it REDEFINED
+ * it from `@media (prefers-color-scheme: dark)` to a class-based selector,
+ * and since nothing ever adds a `.dark` class, every `dark:` utility was
+ * inert. Deleting the line without first stripping those utilities would
+ * have handed them back to the media query and switched dark styling on for
+ * every visitor whose OS is in dark mode.
+ *
+ * So: the vendored shadcn primitives in `components/ui/` have had their
+ * `dark:` utilities stripped, and they deliberately diverge from upstream.
+ * `npx shadcn add` will re-introduce them. Strip them again — do not restore
+ * this variant to neutralise them, because a `dark:` class with no variant
+ * redefinition is the live hazard, not the safe state.
+ *
+ * Pinned by the "no dark mode" suite in app/globals.css.test.ts.
+ */
 
 @theme inline {
   --color-background: var(--background);
@@ -10,7 +29,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);
-  /* Status color utilities — maps to CSS vars so dark mode works automatically */
+  /* Status color utilities — maps the palette vars into Tailwind color utilities */
   --color-status-operational: var(--status-operational);
   --color-status-under-construction: var(--status-under-construction);
   --color-status-permitted: var(--status-permitted);

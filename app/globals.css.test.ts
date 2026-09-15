@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -340,5 +341,133 @@ describe("app/globals.css — webkit scrollbar fallback is gated", () => {
     const standardRule = enclosingBlockBody(CODE, declAt);
     expect(standardRule).toMatch(/scrollbar-width\s*:/);
     expect(standardRule).not.toContain(WEBKIT);
+  });
+});
+/**
+ * Dark mode was deleted deliberately (see the comment at the top of
+ * app/globals.css). Two assertions, guarding two different failure modes:
+ *
+ *  1. the `@custom-variant dark` line must not come back, and
+ *  2. no dark-variant utility may reappear in the sources.
+ *
+ * The second is the one that matters. The dark variant is BUILT IN to Tailwind;
+ * the deleted line only re-pointed it at a `.dark` ancestor. Such a class
+ * with no such redefinition resolves to `@media (prefers-color-scheme: dark)`,
+ * so it would style the site for every OS-dark visitor — the exact regression
+ * the removal order was chosen to avoid.
+ */
+describe("app/globals.css — no dark mode", () => {
+  // Built at runtime so this file can scan for the token without matching
+  // itself, which lets the sweep below cover tests as well as sources.
+  const DARK_VARIANT = `${"dark"}:`;
+
+  it("declares no dark custom-variant", () => {
+    // CODE, not CSS: the replacement comment quotes the deleted line verbatim,
+    // and a raw-text scan would read that prose as code (see CODE's docblock).
+    expect(CODE).not.toContain("@custom-variant dark");
+
+    // Nothing else may reintroduce a class-based dark scope either.
+    expect(CODE).not.toMatch(/\.dark\b/);
+
+    // The prose explaining the decision is load-bearing for the next reader,
+    // so a silent deletion of the comment fails here too.
+    expect(CSS).toContain("There is no dark mode, on purpose");
+  });
+
+  it("ships no dark-variant utility in any tracked file", () => {
+    // Enumerated from `git ls-files`, NOT from a hand-written root list.
+    //
+    // Tailwind v4 is configured here with no config file and no `@source`, so
+    // its automatic content detection scans every non-gitignored file in the
+    // project — which is the tracked set, near enough. A root list ("app",
+    // "components", "lib") is therefore narrower than the thing it claims to
+    // guard: `e2e/`, `scripts/`, `test/`, `docs/`, `drizzle/`, `.github/` and
+    // `data/` are all tracked, so a dark-variant class landing in any of them
+    // compiles into the shipped stylesheet AND passes a root-scoped sweep.
+    // Deriving the list closes that hole for directories nobody has created
+    // yet, which is how the hole was born in the first place.
+    //
+    // Tracked, not `--others`: a file that is untracked-but-unignored IS
+    // scanned by Tailwind on the author's machine, but it cannot reach a build
+    // — Vercel builds from git. Scanning it would only fail this suite on other
+    // people's scratch files.
+    let tracked: string[];
+    try {
+      tracked = execFileSync("git", ["ls-files", "-z"], {
+        cwd: process.cwd(),
+        encoding: "utf8",
+        maxBuffer: 64 * 1024 * 1024,
+      })
+        .split("\0")
+        .filter(Boolean);
+    } catch (cause) {
+      // Fail LOUDLY rather than fall back to an empty list. Without git (a
+      // tarball checkout, a CI image without it) the honest outcome is "this
+      // guard could not run", never a green tick over zero files.
+      throw new Error(
+        "cannot enumerate tracked files: `git ls-files` failed, so the " +
+          "dark-variant sweep has no source of truth to scan",
+        { cause }
+      );
+    }
+
+    // Deny-list, not allow-list — the same reasoning as the roots. Tailwind
+    // extracts candidate class names from any text file it scans, so listing
+    // the extensions to INCLUDE would leave the next one (.mdx, .vue, a plain
+    // shell script) silently unguarded. Excluded here: true binaries only,
+    // where a utf8 read is meaningless noise. Everything else is read —
+    // .ts/.tsx/.mjs/.md/.json/.yml/.sh/.bats/.sql/.svg/.py and extensionless
+    // files alike. Reading the whole tracked set costs ~20ms for ~22MB.
+    const BINARY = /\.(png|jpe?g|gif|ico|webp|avif|ttf|otf|woff2?|eot|mp4|webm|mov|zip|gz|pdf)$/i;
+    // app/globals.css is excluded for one specific reason: the comment at the
+    // top of it names the token five times (across four lines) while explaining
+    // why the variant was removed, and that prose is load-bearing for the next
+    // reader — a line scan would report every one of them. Its coverage
+    // is the comment-stripped CODE assertion below, which is strictly stronger
+    // for this file than a line scan would be.
+    const EXCLUDED = new Set(["app/globals.css"]);
+
+    const scanned = tracked.filter(
+      (file) => !BINARY.test(file) && !EXCLUDED.has(file)
+    );
+
+    // Non-vacuity: an enumeration that silently produced nothing would satisfy
+    // the emptiness check below without reading a single byte. This repo has
+    // shipped that false green before (a lint that scanned 0 files, exited 0),
+    // and it is the reason the catch above throws instead of returning [].
+    expect(scanned.length).toBeGreaterThan(400);
+    expect(scanned).toContain("components/ui/button.tsx");
+    // Pin the widening itself, not just a count: these are the roots the
+    // previous root list missed. A regression that narrows the enumeration back
+    // to app/components/lib fails HERE, naming what it stopped covering, rather
+    // than going quiet and passing.
+    for (const root of ["e2e/", "scripts/", "test/", "docs/"]) {
+      expect(
+        scanned.some((file) => file.startsWith(root)),
+        `the sweep must cover ${root}`
+      ).toBe(true);
+    }
+
+    const offenders: string[] = [];
+    for (const file of scanned) {
+      const text = readFileSync(path.resolve(process.cwd(), file), "utf8");
+      if (!text.includes(DARK_VARIANT)) continue;
+      text.split("\n").forEach((line, i) => {
+        if (line.includes(DARK_VARIANT)) offenders.push(`${file}:${i + 1}`);
+      });
+    }
+
+    // Reported as paths so a failure names the file to strip.
+    expect(offenders).toEqual([]);
+
+    // The stylesheet's own path back to the hazard, invisible to the sweep
+    // above twice over: globals.css is excluded from it, and an `@apply`
+    // directive is not a class in a source file at all. globals.css uses
+    // `@apply` three times, so `@apply` + a dark-variant utility would
+    // reintroduce exactly the regression this suite exists to prevent, and
+    // neither the file sweep nor the custom-variant check would see it.
+    // CODE, not CSS — the five occurrences in the explanatory comment are
+    // prose and must not trip this.
+    expect(CODE).not.toContain(DARK_VARIANT);
   });
 });
