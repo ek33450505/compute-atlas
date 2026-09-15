@@ -8,6 +8,7 @@ import {
 import mapLayers from "@/public/data/map-layers.json";
 import { StackedBand } from "@/components/chart/stacked-band";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { SectionHeading } from "@/components/section-heading";
 
 export interface CostLedgerProps {
   fossilPlannedMw: number;
@@ -81,15 +82,25 @@ export function CostLedger({
 
   return (
     <section aria-labelledby="cost-ledger-heading" className={className}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-        § What it takes
-      </p>
-      <h2
-        id="cost-ledger-heading"
-        className="mt-1 font-display text-2xl text-foreground"
-      >
-        The other side of the ledger
-      </h2>
+      {/* space-y-1 wrapper: see contested-strip.tsx for why the kicker/h2 gap
+          lives here rather than inside SectionHeading.
+
+          `mb-6` rather than a margin on the row itself: SurveyStatRow takes no
+          className and its class string is pinned by a regression test, so the
+          gap has to come from this side. 6 (24px) matches the heading→grid step
+          the sibling homepage sections use (open-record.tsx's fact `<ul>`,
+          contested-strip.tsx's case `<ul>`) — a row of 4xl figures is a block
+          of structured content, not the `mt-3` prose step. At size="lg" the h2
+          is text-3xl/sm:text-4xl and carried NO gap at all here, so on a phone
+          the figures sat directly under it (Ed, iPhone QA, 2026-09-15). */}
+      <div className="mb-6 space-y-1">
+        <SectionHeading
+          kicker="What it takes"
+          id="cost-ledger-heading"
+          size="lg"
+          title="The other side of the ledger"
+        />
+      </div>
       <SurveyStatRow
         spacing="wide"
         stats={[
@@ -97,7 +108,20 @@ export function CostLedger({
           { value: ratioLabel, label: "Gas to non-fossil" },
         ]}
       />
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+      {/* The homepage's one versal, and the site's second (app/about/page.tsx
+          has the other). Classes deliberately mirror that one — including
+          `leading-relaxed`, which the drop cap needs: the initial is 3.1em on
+          a 0.72 line-height, so at the default 1.5 leading it crowds the two
+          lines it floats beside.
+
+          ⚠️ `.drop-cap` is `::first-letter`, and ::first-letter absorbs any
+          punctuation PRECEDING the first letter. This copy opens on a literal
+          capital "O" in a plain text node, which is the case the rule was
+          designed for. If this sentence is ever rewritten to open on a digit,
+          an opening quote, or a formatPower interpolation, the versal sets a
+          numeral or a quote mark instead of a letter — at which point the
+          class should come off rather than be worked around. */}
+      <p className="drop-cap mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
         Of the generation being built specifically to serve compute,{" "}
         {formatPower(fossilPlannedMw)} of planned capacity is natural gas,
         against {formatPower(nonFossilPlannedMw)} for every non-fossil

@@ -241,7 +241,21 @@ export default async function HomePage() {
               {`United States · Edition v${edition.version} · 39.5°N 98.5°W`}
             </p>
 
-            <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl max-w-4xl">
+            {/* Three display steps, largest first: this h1 (5xl→7xl), the
+                homepage section h2s (SectionHeading size="lg", 3xl→4xl), then
+                card titles. The page used to run 4xl→5xl against a flat 2xl
+                everywhere below it, which is one step of hierarchy, not three.
+
+                max-w-4xl stays: the copy is 45 characters, so at lg:text-7xl
+                (72px) it sets to two lines inside a 56rem box — a narrower
+                measure would break it to three and start orphaning words.
+                `text-wrap: balance` (globals.css @layer base) evens those two
+                lines out.
+
+                font-display-wonk is display-scale only — see the utility's
+                comment in globals.css for why it sets SOFT/WONK and
+                deliberately not opsz or wght. */}
+            <h1 className="font-display font-display-wonk text-5xl leading-[1.05] text-foreground sm:text-6xl lg:text-7xl max-w-4xl">
               America&rsquo;s data centers, mapped and sourced.
             </h1>
 
@@ -544,7 +558,11 @@ export default async function HomePage() {
       </div>
 
       <div className="plate-reveal">
-        <h2 className="font-display text-2xl text-foreground mb-5">
+        {/* Raw h2 rather than SectionHeading: this one has no § kicker and no
+            wrapping <section aria-labelledby>, so it does not fit that
+            component's contract. Size matches SectionHeading's `lg` step by
+            hand so it does not read a rank below its homepage siblings. */}
+        <h2 className="font-display text-3xl sm:text-4xl text-foreground mb-5">
           Notable sites
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

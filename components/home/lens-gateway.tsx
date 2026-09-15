@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { statesPhrase } from "@/lib/us-states";
+import { SectionHeading } from "@/components/section-heading";
 
 export interface LensGatewayProps {
   counts: {
@@ -119,16 +120,22 @@ const LENSES: Lens[] = [
 export function LensGateway({ counts, className }: LensGatewayProps) {
   return (
     <section aria-labelledby="ways-in-heading" className={className}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-        § Explore the atlas
-      </p>
-      <h2
-        id="ways-in-heading"
-        className="mt-1 font-display text-2xl text-foreground"
-      >
-        Find your way in
-      </h2>
-      <p className="mt-1 text-sm text-muted-foreground">
+      {/* space-y-1 wrapper: see contested-strip.tsx for why the kicker/h2 gap
+          lives here rather than inside SectionHeading. */}
+      <div className="space-y-1">
+        <SectionHeading
+          kicker="Explore the atlas"
+          id="ways-in-heading"
+          size="lg"
+          title="Find your way in"
+        />
+      </div>
+      {/* mt-3, not the mt-1 this carried at the old text-2xl step: mt-1 is the
+          same gap the wrapper above puts between the kicker and the h2, so at
+          size="lg" the h2 was bound as tightly to the line below it as to the
+          one above and read as sandwiched. 3 is the heading→prose step already
+          used by open-record.tsx and contested-strip.tsx. */}
+      <p className="mt-3 text-sm text-muted-foreground">
         {LENSES.length} lenses on the same source-cited dataset.
       </p>
       <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

@@ -180,8 +180,15 @@ describe("ContestedStrip", () => {
     }
   });
 
-  it("passes className through to the section element", () => {
-    const { container } = render(
+  // Queried by role+name rather than container.querySelector("section"): a
+  // <section> is only exposed as an accessible "region" when it HAS a name, so
+  // this proves the section's aria-labelledby actually resolves to the h2's id.
+  // SectionHeading deliberately leaves that pairing to the caller (see its `id`
+  // doc comment), which is exactly the contract that can break silently — move
+  // the id onto the wrapper div and every other assertion in this file stays
+  // green while the landmark goes unnamed. Same form as lens-gateway.test.tsx.
+  it("renders as a labeled region and passes className through to it", () => {
+    render(
       <ContestedStrip
         cases={CASES}
         frictionCount={FRICTION_COUNT}
@@ -190,7 +197,10 @@ describe("ContestedStrip", () => {
       />
     );
 
-    const section = container.querySelector("section");
+    const section = screen.getByRole("region", { name: "Contested sites" });
     expect(section).toHaveClass("mt-12", "border-t", "border-border", "pt-10");
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Contested sites" })
+    ).toBeInTheDocument();
   });
 });

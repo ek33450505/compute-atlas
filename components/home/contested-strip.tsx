@@ -6,6 +6,7 @@ import {
   FRICTION_ELECTRICITY_CONTRAST,
 } from "@/lib/glossary";
 import type { Facility } from "@/lib/schema";
+import { SectionHeading } from "@/components/section-heading";
 
 interface ContestedStripProps {
   cases: Facility[];
@@ -22,15 +23,18 @@ export function ContestedStrip({
 }: ContestedStripProps) {
   return (
     <section aria-labelledby="contested-heading" className={className}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-        § Community friction
-      </p>
-      <h2
-        id="contested-heading"
-        className="mt-1 font-display text-2xl text-foreground"
-      >
-        Contested sites
-      </h2>
+      {/* space-y-1 reproduces the `mt-1` the h2 used to carry itself — the
+          kicker/h2 gap moves to the wrapper because SectionHeading owns the
+          pair and deliberately emits no margin of its own (same shape as
+          app/power/page.tsx's `space-y-2` wrapper). */}
+      <div className="space-y-1">
+        <SectionHeading
+          kicker="Community friction"
+          id="contested-heading"
+          size="lg"
+          title="Contested sites"
+        />
+      </div>
       <p className="mt-3 max-w-2xl text-base text-muted-foreground">
         {frictionCount} tracked sites carry a documented friction status —{" "}
         {breakdown.litigation} in litigation, {breakdown.opposed} opposed,{" "}

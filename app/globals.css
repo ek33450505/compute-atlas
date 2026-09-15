@@ -110,11 +110,31 @@
   --border: #CDBFA0;
   --input: #CDBFA0;
   --ring: #3F5B43;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* Chart series — the five DARKENED, contrast-audited status tokens above, in
+     STATUS_ORDER (lib/status.ts: operational, under_construction, permitted,
+     proposed, cancelled). These were shadcn's greyscale oklch defaults with no
+     reader anywhere in the app; binding them to the status palette means a
+     chart primitive that reads --chart-N lands on the same colour the map pins,
+     the status badges and the legends already use, instead of inventing a
+     second vocabulary. The contrast audit above covers these hues, so a
+     chart series inherits it rather than needing its own.
+     ⚠️ These are NOT lib/status.ts's `STATUS_META[...].hex`. That field is the
+     UNDARKENED Wong reference (#0072B2 / #B45309 / #007A53 / #9D2C6F /
+     #6B7280) and every one of the five differs from the token beside it; it
+     also has ZERO consumers anywhere in the repo — every real reader
+     (hero-globe.tsx's MapLibre paint, both opengraph-image.tsx route handlers)
+     duplicates the darkened value, because paint expressions and Satori can't
+     read a CSS var. So repointing these vars at `hex` to "use the source of
+     truth" would silently swap in five unaudited colours and drop the audit
+     above. If `hex` is ever wanted, audit it first.
+     ⚠️ The mapping is positional and pinned by app/globals.css.test.ts —
+     reordering STATUS_ORDER without reordering here silently recolours every
+     chart. */
+  --chart-1: var(--status-operational);
+  --chart-2: var(--status-under-construction);
+  --chart-3: var(--status-permitted);
+  --chart-4: var(--status-proposed);
+  --chart-5: var(--status-cancelled);
   --radius: 0.25rem;
   --sidebar: #FBF8EF;
   --sidebar-foreground: #2B2721;
@@ -135,6 +155,33 @@
   }
   html {
     @apply font-sans;
+  }
+
+  /* ── Line breaking ───────────────────────────────────────────────────────
+     Two site-wide typographic defaults. Both are layout-only: they change
+     where the browser chooses to break a line, never the text content, the
+     DOM, or the SSR byte stream.
+
+     `balance` on headings evens out the last line so a two-line heading does
+     not leave one orphaned word. It is deliberately NOT on paragraphs: the UA
+     is permitted to give up past a line-count threshold (~6-10 lines in
+     Chromium/Firefox today) because the algorithm is superlinear, so on body
+     copy it would cost layout time and then silently do nothing anyway.
+
+     `pretty` on paragraphs is the cheap counterpart — it only targets the
+     last few lines, avoiding orphans and (in Chromium) short-line raggedness,
+     which is exactly what long prose needs.
+
+     Unsupported engines ignore both and fall back to `wrap`; nothing here is
+     load-bearing for legibility. Scoped to bare element selectors so any
+     utility or component style still wins. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
 
   /* ── Themed scrollbar — hairline sepia, square thumb ──────────────────────
@@ -205,7 +252,23 @@
 }
 
 @layer utilities {
-  /* hairline lat/long graticule — subtle, flat */
+  /* hairline lat/long graticule — subtle, flat.
+     ── The 44px module ─────────────────────────────────────────────────────
+     44px is the page's one spatial constant: this grid, .graticule-survey's
+     animated twin, and the hero plate that sits on top of them all share it,
+     which is what makes the hero read as a single surveyed plate rather than
+     a stack of cards. Any LARGE surface added below the hero should adopt the
+     same 44px module (or an exact multiple) so the page keeps one grid —
+     specifically the specimen card and the status-over-time chart still to
+     land. Repeat the literal rather than adding a custom property: the two
+     gradients below already inline it, and a half-migrated token would be
+     worse than a grepable number.
+     ⚠️ "Adopt the module" means align to it, NOT paint it everywhere. A
+     graticule only earns its place on a surface taller than a few modules.
+     It is deliberately absent from CostLedger's StackedBand, whose bar track
+     is 10px — one 44px cell is taller than the whole chart, so the grid would
+     contribute a single stray line behind saturated colour, and the table
+     below it is type, not plate. */
   .graticule {
     background-image:
       repeating-linear-gradient(to right, color-mix(in oklab, var(--border) 45%, transparent) 0 1px, transparent 1px 44px),
@@ -341,6 +404,31 @@
     font-family: var(--font-display), Georgia, serif;
     font-optical-sizing: auto;
   }
+  /* Fraunces' expressive axes, at display scale only.
+     app/layout.tsx already loads `axes: ["opsz", "SOFT", "WONK"]`, so SOFT and
+     WONK cost zero additional bytes — until now nothing varied them and the
+     site paid for two axes it never moved. SOFT 40 rounds the terminals off
+     the default hard-cut 0; WONK 1 swaps in the alternate single-storey `g`
+     and the swashed descenders. Both are noise at body size and character at
+     H1 size, so this is a SEPARATE utility composed onto .font-display rather
+     than folded into it — never applied below ~text-4xl.
+
+     ⚠️ font-variation-settings is a low-level escape hatch and overrides the
+     high-level font properties PER AXIS (CSS Fonts 4 §6.13): a value set here
+     for `opsz` would beat `font-optical-sizing: auto`, and one for `wght`
+     would beat `font-weight`. This string deliberately sets NEITHER — opsz is
+     left to `font-optical-sizing: auto` on .font-display / .drop-cap so the
+     H1 keeps optically sizing across its 5xl→7xl responsive steps (a literal
+     opsz here would pin one optical size at every breakpoint, which is worse
+     than not varying it), and wght is left to font-weight so
+     .drop-cap::first-letter's 600 still applies where the two combine.
+     ⚠️ The property does not merge across declarations — whichever rule wins
+     replaces the whole set, it does not add to an inherited one. Anything
+     that later sets font-variation-settings on a descendant of a
+     .font-display-wonk element must restate SOFT and WONK or lose them. */
+  .font-display-wonk {
+    font-variation-settings: "SOFT" 40, "WONK" 1;
+  }
   /* versal drop-cap — Fraunces initial letter opening an editorial lead
      paragraph, like an atlas frontispiece. Reusable across editorial leads,
      not scoped to a single page. ::first-letter doesn't fragment the word
@@ -348,6 +436,16 @@
   .drop-cap::first-letter {
     font-family: var(--font-display), Georgia, serif;
     font-optical-sizing: auto;
+    /* Same axes as .font-display-wonk, declared here rather than composed:
+       ::first-letter is not an element and cannot take a utility class. A
+       versal at 3.1em is display scale by definition, which is the whole
+       criterion for using these axes. Kept literal (not a shared custom
+       property) so the two occurrences are greppable and each is pinned
+       independently by app/globals.css.test.ts.
+       This string sets neither `wght` nor `opsz`, so the font-weight below
+       and the font-optical-sizing above both still reach their axes (the
+       override in CSS Fonts 4 §6.13 is per axis, not per declaration). */
+    font-variation-settings: "SOFT" 40, "WONK" 1;
     font-weight: 600;
     float: left;
     font-size: 3.1em;

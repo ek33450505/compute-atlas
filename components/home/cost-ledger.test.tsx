@@ -33,6 +33,75 @@ describe("CostLedger", () => {
     expect(screen.getByText(/549 of the 1,651/)).toBeInTheDocument();
   });
 
+  it("opens the lead paragraph with a versal, on a letter and with room for it", () => {
+    render(<CostLedger {...BASE_PROPS} />);
+
+    const lead = screen.getByText(/^Of the generation being built/);
+    expect(lead).toHaveClass("drop-cap");
+    // `.drop-cap` is a ::first-letter rule setting a 3.1em initial on a 0.72
+    // line-height. At the default 1.5 leading it crowds the lines it floats
+    // beside, so the only other versal on the site (app/about/page.tsx) pairs
+    // it with leading-relaxed; this one must not drift from that.
+    expect(lead).toHaveClass("leading-relaxed");
+    // ::first-letter absorbs punctuation preceding the first letter and will
+    // happily set a digit, so the copy itself is part of the contract: this
+    // paragraph has to OPEN on a letter, not on a formatPower interpolation.
+    // That contract is enforced by the `getByText(/^Of the generation/)` query
+    // above (and the verbatim-copy assertion in the first test), both of which
+    // throw the moment the paragraph is rewritten to open on something else.
+    // A separate `lead.textContent?.[0]` check used to sit here; it could not
+    // fail independently of that query, so it was removed rather than left as
+    // an assertion indistinguishable from one that cannot fail.
+  });
+
+  it("renders the section heading at the homepage's louder display step", () => {
+    render(<CostLedger {...BASE_PROPS} />);
+
+    const heading = screen.getByRole("heading", {
+      level: 2,
+      name: "The other side of the ledger",
+    });
+    // Migrated onto SectionHeading size="lg" in the type pass — previously a
+    // hand-rolled `mt-1 font-display text-2xl` pair duplicated in four
+    // homepage components.
+    expect(heading).toHaveClass("text-3xl", "sm:text-4xl");
+    expect(heading).not.toHaveClass("text-2xl");
+    expect(screen.getByText("§ What it takes")).toBeInTheDocument();
+  });
+
+  it("puts real space between the heading block and the stat row", () => {
+    const { container } = render(<CostLedger {...BASE_PROPS} />);
+
+    // The heading wrapper carried NO bottom margin and SurveyStatRow carries no
+    // top margin of its own, so at size="lg" the 4xl figures sat directly under
+    // the h2 on a 390px phone (Ed, iPhone QA, 2026-09-15). jsdom computes no
+    // layout, so the class is the only observable — but the gap has to live on
+    // THIS element: SurveyStatRow accepts no className and its own class string
+    // is pinned by a regression test across fourteen call sites.
+    const headingBlock = container.querySelector(".space-y-1");
+    expect(headingBlock).toHaveClass("mb-6");
+    expect(headingBlock?.querySelector("h2")).toHaveAttribute(
+      "id",
+      "cost-ledger-heading"
+    );
+  });
+
+  // A <section> is only exposed as an accessible "region" when it HAS a name,
+  // so querying by role+name proves the section's aria-labelledby actually
+  // resolves to the h2's id. SectionHeading deliberately leaves that pairing to
+  // the caller (see its `id` doc comment), which is exactly the contract that
+  // can break silently — move the id onto the wrapper div and every other
+  // assertion in this file stays green while the landmark goes unnamed. Same
+  // form as lens-gateway.test.tsx.
+  it("renders as a labeled region and passes className through to it", () => {
+    render(<CostLedger {...BASE_PROPS} className="mt-12 border-t pt-10" />);
+
+    const section = screen.getByRole("region", {
+      name: "The other side of the ledger",
+    });
+    expect(section).toHaveClass("mt-12", "border-t", "pt-10");
+  });
+
   it("renders both links with the right href and a meaningful accessible name", () => {
     render(<CostLedger {...BASE_PROPS} />);
 

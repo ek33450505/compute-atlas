@@ -4,6 +4,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { STATUS_ORDER } from "@/lib/status";
+
 // Resolve from process.cwd() (the repo root Vitest runs from), matching
 // app/admin/facilities/facility-form-state.test.ts. `import.meta.url` is an
 // http:// URL under this project's jsdom environment, not a file:// one, so
@@ -469,5 +471,136 @@ describe("app/globals.css — no dark mode", () => {
     // CODE, not CSS — the five occurrences in the explanatory comment are
     // prose and must not trip this.
     expect(CODE).not.toContain(DARK_VARIANT);
+  });
+});
+
+/**
+ * Typographic rules added in the type-and-texture pass.
+ *
+ * Same ceiling as the block above: these assert the DECLARATION, because
+ * every one of them is a property jsdom neither parses meaningfully nor
+ * lays out. `text-wrap` needs a line-breaking engine; `font-variation-settings`
+ * needs a variable font binary and a shaper. So what a passing run here claims
+ * is that the rule is present, correctly scoped, and sets the axes/values it
+ * is supposed to — NOT that a heading balances, that SOFT 40 is visible, or
+ * that the versal is legible. Those are browser facts, unverified here.
+ */
+describe("app/globals.css — line-breaking defaults", () => {
+  const base = atRuleBody("@layer base");
+
+  it("balances headings and prettifies paragraphs, inside @layer base", () => {
+    // Scoped to the base layer deliberately: a bare element selector in
+    // @layer utilities would outrank every component class, and one outside
+    // any layer would outrank the whole Tailwind cascade.
+    expect(base).toMatch(/h1\s*,\s*h2\s*,\s*h3\s*\{[^}]*text-wrap\s*:\s*balance/);
+    expect(base).toMatch(/(?:^|[;{}\s])p\s*\{[^}]*text-wrap\s*:\s*pretty/);
+  });
+
+  it("does not put balance on paragraphs, where the UA gives up anyway", () => {
+    // `balance` is superlinear and browsers abandon it past ~6-10 lines, so on
+    // body copy it buys nothing and costs layout. If someone "upgrades" the
+    // paragraph rule, this is what says no.
+    const paragraphRule = base.match(/(?:^|[;{}\s])p\s*\{([^}]*)\}/)?.[1] ?? "";
+    expect(paragraphRule).not.toContain("balance");
+  });
+
+  it("applies the heading rule to h1-h3 only", () => {
+    // h4-h6 are sub-sub-headings here and are short enough that balancing
+    // them is churn. Pinned so the selector cannot quietly widen to `h4`.
+    const headingSelector = base.match(/(h1\s*,\s*h2\s*,\s*h3)\s*\{[^}]*text-wrap/)?.[1];
+    expect(headingSelector).toBeTruthy();
+    expect(base).not.toMatch(/h4[^{]*\{[^}]*text-wrap/);
+  });
+});
+
+describe("app/globals.css — Fraunces variable axes", () => {
+  const wonk = ruleBody(".font-display-wonk {");
+  const dropCap = ruleBody(".drop-cap::first-letter {");
+  const display = ruleBody(".font-display {");
+
+  /** The two axes app/layout.tsx loads but nothing varied before this pass. */
+  const AXES = /font-variation-settings\s*:\s*"SOFT"\s+40\s*,\s*"WONK"\s+1/;
+
+  it("varies SOFT and WONK in the display utility", () => {
+    expect(wonk).toMatch(AXES);
+  });
+
+  it("carries the same axes on the drop-cap versal", () => {
+    // ::first-letter is not an element and cannot take a utility class, so
+    // the axes are restated rather than composed. Both sites are pinned so
+    // the two cannot drift into different display voices.
+    expect(dropCap).toMatch(AXES);
+  });
+
+  it("sets neither opsz nor wght, so the high-level properties still win", () => {
+    // font-variation-settings overrides the high-level font properties PER
+    // AXIS (CSS Fonts 4 §6.13). Naming `opsz` here would beat
+    // `font-optical-sizing: auto` and pin ONE optical size across the h1's
+    // 5xl→7xl steps; naming `wght` would beat the versal's `font-weight: 600`.
+    // This is the assertion that keeps that from being reintroduced.
+    for (const body of [wonk, dropCap]) {
+      const settings = body.match(/font-variation-settings\s*:([^;]*)/)?.[1] ?? "";
+      expect(settings).not.toContain("opsz");
+      expect(settings).not.toContain("wght");
+    }
+  });
+
+  it("keeps optical sizing and the versal weight declared alongside", () => {
+    expect(display).toMatch(/font-optical-sizing\s*:\s*auto/);
+    expect(dropCap).toMatch(/font-optical-sizing\s*:\s*auto/);
+    expect(dropCap).toMatch(/font-weight\s*:\s*600/);
+  });
+});
+
+describe("app/globals.css — chart series bound to the status palette", () => {
+  const root = ruleBody(":root {");
+
+  it("maps --chart-1..5 onto the status hues in STATUS_ORDER", () => {
+    // Derived from STATUS_ORDER rather than a second hand-written list: if the
+    // order in lib/status.ts changes, this fails against the unchanged
+    // stylesheet and names the drift, which is the whole hazard the binding
+    // introduces.
+    STATUS_ORDER.forEach((status, index) => {
+      const token = `--status-${status.replace(/_/g, "-")}`;
+      expect(root).toMatch(
+        new RegExp(`--chart-${index + 1}\\s*:\\s*var\\(\\s*${token}\\s*\\)`)
+      );
+    });
+  });
+
+  it("leaves no greyscale shadcn default behind", () => {
+    // The pre-pass values were `oklch(L 0 0)` — chroma 0, hue 0. A chart var
+    // still holding one means the rebinding was partially reverted.
+    for (let n = 1; n <= STATUS_ORDER.length; n += 1) {
+      const value = root.match(new RegExp(`--chart-${n}\\s*:([^;]*)`))?.[1] ?? "";
+      expect(value.trim()).not.toBe("");
+      expect(value).not.toMatch(/oklch\(/);
+    }
+  });
+
+  it("declares exactly as many chart vars as there are statuses", () => {
+    // A sixth status added without a sixth chart var (or vice versa) silently
+    // leaves one series unbound; the count is what catches that.
+    const declared = (root.match(/--chart-\d+\s*:/g) ?? []).length;
+    expect(declared).toBe(STATUS_ORDER.length);
+  });
+});
+
+describe("app/globals.css — the 44px graticule module", () => {
+  it("draws every graticule surface on the same 44px grid", () => {
+    // The page's one spatial constant. The hero plate sits on this grid, and
+    // the comment on `.graticule` asks the surfaces still to land (the
+    // specimen card, the status-over-time chart) to adopt it. If any of the
+    // three existing surfaces drifts to a different pitch, the hero stops
+    // reading as one plate — and nothing else in the suite would notice.
+    for (const rule of [".graticule {", ".grat-axis-x {", ".grat-axis-y {"]) {
+      const body = ruleBody(rule);
+      expect(body).toContain("44px");
+      // No second pitch hiding in the same rule.
+      const pitches = new Set(
+        [...body.matchAll(/transparent\s+1px\s+(\d+)px/g)].map((m) => m[1])
+      );
+      expect([...pitches]).toEqual(["44"]);
+    }
   });
 });

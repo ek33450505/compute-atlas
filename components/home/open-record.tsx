@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { ActivityList } from "@/app/activity/activity-list";
 import type { ActivityEntry } from "@/lib/data";
+import { SectionHeading } from "@/components/section-heading";
 
 export interface OpenRecordProps {
   sources: number;
@@ -73,15 +74,16 @@ export function OpenRecord({
 
   return (
     <section aria-labelledby="record-heading" className={className}>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-        § How this is kept
-      </p>
-      <h2
-        id="record-heading"
-        className="mt-1 font-display text-2xl text-foreground"
-      >
-        A living, open record
-      </h2>
+      {/* space-y-1 wrapper: see contested-strip.tsx for why the kicker/h2 gap
+          lives here rather than inside SectionHeading. */}
+      <div className="space-y-1">
+        <SectionHeading
+          kicker="How this is kept"
+          id="record-heading"
+          size="lg"
+          title="A living, open record"
+        />
+      </div>
       <p className="mt-3 max-w-2xl text-base text-muted-foreground">
         Compute Atlas is built and corrected in the open. Every figure traces
         to a public source, nothing goes live without a human review, and the
@@ -105,12 +107,26 @@ export function OpenRecord({
         ))}
       </ul>
 
+      {/* `min-h-11 py-2.5`, never `h-11`: a fixed-height box with a text label
+          OVERFLOWS instead of wrapping, so the 35-character label this used to
+          carry spilled onto a second line outside the border on a 390px phone
+          (Ed, iPhone QA, 2026-09-15). Shortening the string alone leaves the
+          identical bug waiting at 200% zoom, at a larger user font size, or in
+          any translation — the min-height is the actual fix, and it keeps the
+          44px touch target the fixed height was there for. Same reasoning as
+          the hero's "How this is sourced" link (app/page.tsx).
+
+          The arrow is aria-hidden for the same reason the hero CTAs' ArrowRight
+          is: otherwise the accessible name computes as "Add a facility right
+          arrow". Dropping "· Correct a figure" loses nothing — the paragraph
+          above already says the record is corrected in the open. */}
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <Link
           href="/contribute"
-          className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors motion-reduce:transition-none hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="inline-flex min-h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 py-2.5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors motion-reduce:transition-none hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          Add a facility · Correct a figure →
+          Add a facility
+          <span aria-hidden="true">→</span>
         </Link>
       </div>
 

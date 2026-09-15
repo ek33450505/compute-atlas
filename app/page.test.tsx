@@ -227,6 +227,25 @@ describe("HomePage hero", () => {
     ).toBeInTheDocument();
   });
 
+  it("sets the H1 at the top display step, wonk axes and all", async () => {
+    render(await HomePage());
+
+    const h1 = screen.getByRole("heading", { level: 1 });
+    // Three steps: this h1 (5xl→7xl), the homepage section h2s (3xl→4xl via
+    // SectionHeading size="lg"), then card titles. Before this pass the page
+    // ran 4xl→5xl against a flat 2xl below, which is one step, not three.
+    expect(h1).toHaveClass("text-5xl", "sm:text-6xl", "lg:text-7xl");
+    expect(h1).not.toHaveClass("text-4xl");
+    // Fraunces' SOFT/WONK axes are already paid for in app/layout.tsx's
+    // `axes` list; this is the one element that varies them. jsdom renders no
+    // font, so this pins the OPT-IN only — whether the alternate glyphs
+    // actually shape is a browser fact no test here can reach.
+    expect(h1).toHaveClass("font-display", "font-display-wonk");
+    // The measure the 7xl step was chosen against. Narrower and the 45-char
+    // line breaks to three, which is what starts orphaning words.
+    expect(h1).toHaveClass("max-w-4xl");
+  });
+
   it("renders a single subhead paragraph", async () => {
     render(await HomePage());
 
