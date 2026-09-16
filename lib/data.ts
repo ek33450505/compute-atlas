@@ -734,9 +734,61 @@ const SPECIMEN_MIN_SOURCES = 3;
 const SPECIMEN_MIN_HISTORY = 2;
 
 /**
+ * The homepage specimen is PINNED to this record (Ed, 2026-09-16) rather than
+ * left to the ranking below: the Pike County, Ohio megasite on the former
+ * Portsmouth Gaseous Diffusion Plant. It is the record the maintainer is
+ * closest to — 60 miles from where he lives — and it is the clearest single
+ * illustration of what this site tracks: 10 GW of gross load with 9.2 GW of
+ * NEW natural-gas generation built to feed it, on a federal site, in a county
+ * of roughly thirty thousand people.
+ *
+ * ⚠️ It does NOT meet `SPECIMEN_MIN_HISTORY`, and that is the point of pinning
+ * rather than re-tuning the rule. Read the docblock below: the history floor
+ * exists because "highest capacity with >= 3 sources" TIES at 10,000 MW and the
+ * source tie-break lands on a one-event timeline. This record IS that tie —
+ * 12 sources against the automatic winner's 5, one status event against its
+ * two. Lowering the floor to let it through would re-admit every accidental
+ * one-event record along with it; pinning admits exactly this one, on purpose,
+ * and leaves the automatic rule intact underneath as the fallback.
+ *
+ * The pin still has to clear `SPECIMEN_MIN_SOURCES`, a disclosed capacity, and
+ * at least ONE status event — a specimen whose whole job is demonstrating
+ * citations cannot be thinner than the bar it demonstrates. If the record is
+ * ever retired, renamed, or falls below that bar, selection falls through to
+ * the ranking and the homepage keeps working. That fallback is silent by
+ * design; `lib/data.specimen-pin.test.ts` is what makes it loud, asserting the
+ * pinned id is present and still qualifies so a data wave that drops it turns
+ * CI red instead of quietly re-picking a different facility.
+ */
+const PINNED_SPECIMEN_ID = "new-day-ports-technology-campus-piketon-oh";
+
+/** Minimum `statusHistory` events for the PINNED record — one real, cited event. */
+const PINNED_SPECIMEN_MIN_HISTORY = 1;
+
+/**
+ * True when the pinned record is fit to render as the specimen. Exported for
+ * the pin test, which asserts the live dataset still satisfies it.
+ */
+export function qualifiesAsPinnedSpecimen(f: Facility): boolean {
+  return (
+    f.sources.length >= SPECIMEN_MIN_SOURCES &&
+    f.statusHistory.length >= PINNED_SPECIMEN_MIN_HISTORY &&
+    (getFacilityMaxMw(f) ?? 0) > 0
+  );
+}
+
+/** The pinned specimen's id, for tests and for callers that need to exclude it. */
+export const PINNED_RECORD_SPECIMEN_ID: string = PINNED_SPECIMEN_ID;
+
+/**
  * Picks the ONE facility the homepage renders at near-full fidelity (name,
  * operator, status, coordinates, capacity, citations, timeline) — the record
  * that demonstrates what "source-cited" means.
+ *
+ * `PINNED_SPECIMEN_ID` wins whenever it is present and clears
+ * `qualifiesAsPinnedSpecimen` — an editorial choice, documented as one at that
+ * constant. Everything below describes the FALLBACK that runs when the pin is
+ * absent or no longer qualifies, and is unchanged.
  *
  * Pure function of the list, taking no `loadFacilities()` of its own, so
  * `app/page.tsx` can reuse the `getAllFacilities()` result it already has and
@@ -764,6 +816,9 @@ const SPECIMEN_MIN_HISTORY = 2;
  * throws and never returns a facility that fails the filter.
  */
 export function selectRecordSpecimen(facilities: Facility[]): Facility | null {
+  const pinned = facilities.find((f) => f.id === PINNED_SPECIMEN_ID);
+  if (pinned && qualifiesAsPinnedSpecimen(pinned)) return pinned;
+
   const candidates = facilities.filter(
     (f) =>
       f.sources.length >= SPECIMEN_MIN_SOURCES &&

@@ -171,10 +171,16 @@ describe("selectRecordSpecimen against the bundled dataset", () => {
 
     // Guards the live rendering path: the homepage must actually get a
     // specimen out of the real data, and it must be one the component can
-    // render (>= 3 citations, >= 2 timeline events, a capacity to print).
+    // render (>= 3 citations, a timeline event to draw, a capacity to print).
+    //
+    // The timeline floor is ONE, not two, because the homepage specimen is
+    // pinned (PINNED_SPECIMEN_ID in lib/data.ts) to a record with a single
+    // cited status event. Two remains the floor for the automatic fallback,
+    // which the fixture cases above cover directly; this case asserts only
+    // what the RENDERED specimen needs, whichever path produced it.
     expect(specimen).not.toBeNull();
     expect(specimen!.sources.length).toBeGreaterThanOrEqual(3);
-    expect(specimen!.statusHistory.length).toBeGreaterThanOrEqual(2);
+    expect(specimen!.statusHistory.length).toBeGreaterThanOrEqual(1);
     expect(
       Math.max(
         specimen!.capacityMw?.operational ?? 0,

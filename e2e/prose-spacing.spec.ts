@@ -68,6 +68,25 @@ const ROUTES = [
   "/rankings",
   "/crypto",
   "/gaps",
+  // Added 2026-09-16, PRECAUTIONARY — and unlike every route above it, NOT
+  // because a known at-risk site was found on it. /support gained the "Why I
+  // built this", "Who's behind it" and "Where I stand" sections, which makes
+  // it the site's densest run of hand-written prose with inline links; it is
+  // listed so that prose is covered by both patterns as it changes.
+  //
+  // ⚠️ Do NOT cite /support as carrying the bug shape. Two plants were tried
+  // on it (2026-09-16, cold `.next/cache`, full rebuild each) and NEITHER
+  // reproduced a dropped space:
+  //   1. `</a>` followed by a chunk containing `&rsquo;` — rendered as
+  //      `…</a> and it’ll surface…`, space intact. An ELEMENT is not an
+  //      interpolation; the bug needs `{expr}`.
+  //   2. `{siteConfig.name} &mdash; one thing…` — rendered as
+  //      `Compute Atlas<!-- --> — one thing…`, space intact, and an em dash
+  //      is not a word character, so JOINED_ENTITY_PATTERN (which matches
+  //      `·` only) could not have flagged it even had the space dropped.
+  // The route's entry is coverage against future edits, not evidence about
+  // its current content.
+  "/support",
   // Added 2026-09-11: /contributors is a new route this session. No
   // entity-after-interpolation shape exists in app/contributors/page.tsx
   // today (verified by reading it), but this list's whole point is to catch
