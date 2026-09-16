@@ -7,19 +7,30 @@
  *
  * Output (committed): public/data/pipeline-history.json
  *
+ * ⚠️ EVERY FIGURE IN THIS COMMENT IS ILLUSTRATIVE AT A GIVEN DATASET SIZE, not
+ * a maintained constant. They are quoted at 1,956 facilities / 1,557 dated
+ * events (the 2026-09-15 wave) to make the reasoning concrete, and EVERY ONE
+ * of them drifts on the next `db:sync`. A consumer must READ these quantities
+ * off `public/data/pipeline-history.json` — `coverage`, and
+ * `coverage.ambiguousPeak` in particular — never copy a literal out of here.
+ * The figures below were last recomputed against that artifact on 2026-09-15;
+ * a wave that moves the dataset silently falsifies them again, which has now
+ * happened once (the peak's denominator was quoted as 373 after it had become
+ * 386).
+ *
  * ── Why composition, not arrival rate ────────────────────────────────────────
- * The raw event curve (1,533 status events — 2022: 45 · 2023: 54 · 2024: 150 ·
- * 2025: 403 · 2026: 769) substantially measures when Compute Atlas RECORDED
+ * The raw event curve (1,557 status events — 2022: 46 · 2023: 56 · 2024: 155 ·
+ * 2025: 409 · 2026: 775) substantially measures when Compute Atlas RECORDED
  * things, not when they happened. Shipping that as "the buildout accelerating"
  * would be precisely the error this site exists to criticise. So this artifact
  * is a STATE RECONSTRUCTION — a standing count per status at each quarter end —
  * never an event tally.
  *
  * ── The honesty problem composition does NOT solve ───────────────────────────
- * Only 1,120 of 1,929 facilities carry any `statusHistory`, and a facility's
+ * Only 1,142 of 1,956 facilities carry any `statusHistory`, and a facility's
  * status is only knowable from its first recorded event onward. So the
- * population the series describes GROWS: ~154 facilities at 2023Q1 against
- * ~1,120 today. A share can therefore shift purely because newly-tracked
+ * population the series describes GROWS: 160 facilities at 2023Q1 against
+ * 1,142 today. A share can therefore shift purely because newly-tracked
  * records skew toward `proposed`. Normalising to 100% here would hide that.
  * Hence: emit COUNTS, never percentages, and carry `known` (the denominator)
  * per quarter plus `coverage` metadata, so the consumer can render the
@@ -40,7 +51,7 @@
  *    denominator fall for facilities nothing happened to. `cancelled`
  *    facilities keep occupying the composition for the same reason — evicting
  *    them would silently re-normalise the mix and read as growth.
- * 5. Partial dates (`YYYY`, `YYYY-MM` — 246 and 588 of the 1,533 events) are
+ * 5. Partial dates (`YYYY`, `YYYY-MM` — 251 and 592 of the 1,557 events) are
  *    resolved to the START of the period they name. The alternative, resolving
  *    to the period's end, sounds more conservative but concentrates every
  *    year-only event onto a Q4 boundary, producing a fake annual sawtooth in
@@ -58,10 +69,10 @@
  *    The two precisions do NOT contribute equally, and it is worth being exact
  *    about why, because the obvious paraphrase ("year-only shifts by up to 3
  *    quarters, month-only by up to 1") is wrong on the second half:
- *      · YEAR-only (246 events) is the whole story. `"2026"` reads as 2026Q1
+ *      · YEAR-only (251 events) is the whole story. `"2026"` reads as 2026Q1
  *        when the source admits anything up to 2026Q4 — a 3-quarter shift, and
  *        3 is the measured maximum across the dataset.
- *      · MONTH-only (588 events) shifts by at most ~30 days, and a month nests
+ *      · MONTH-only (592 events) shifts by at most ~30 days, and a month nests
  *        entirely INSIDE a quarter, so it can never move a transition across a
  *        quarter boundary at all. It still contributes, but only by REORDERING
  *        two events that fall in the same quarter, which changes the status
@@ -70,12 +81,18 @@
  *        6 LOSE it, for a net of 15. It is a net, not a count — reordering can
  *        resolve an ambiguity as readily as create one. At the worst quarter
  *        the contribution is exactly 1 of the 52 (1 gained, 0 lost).
+ *        ⚠️ Unlike every other figure in this header, this 21/6/15 split is
+ *        NOT recoverable from the emitted artifact — it needs the script run
+ *        twice under both date readings — so it was NOT recomputed in the
+ *        2026-09-15 pass and still describes an earlier dataset. Treat the
+ *        DIRECTION (month imprecision is a small net contributor) as the
+ *        claim; re-measure before quoting the magnitudes.
  *
  *    `coverage.datePrecision` discloses only how coarse the dates are, which
  *    says nothing about direction or magnitude. The magnitude is therefore
  *    emitted per quarter as `ambiguous` (below) and peaked in
- *    `coverage.ambiguousPeak`: at the worst quarter, 2025Q1, 52 of 373 known
- *    facilities (13.94%) sit in a row this choice moves.
+ *    `coverage.ambiguousPeak`: at the worst quarter, 2025Q1, 52 of 386 known
+ *    facilities (13.47%) sit in a row this choice moves.
  *
  *    `ambiguous` is a PARTITION, not a union. Every flagged facility took
  *    exactly one of the two branches below, so the parts sum to the whole and
@@ -85,14 +102,14 @@
  *      · `ambiguousEntry` — `admissible === null`. The facility is in the
  *        denominator under start-of-period, but under the LATEST reading its
  *        sources admit it has not entered yet, so its presence is unsupported.
- *        At 2025Q1: 36 of 373 (9.65%).
+ *        At 2025Q1: 36 of 386 (9.33%).
  *      · `ambiguousStatus` — `admissible !== null && admissible !== status`.
  *        Present under both readings, but shown in a STATUS the sources do not
- *        pin to this quarter. At 2025Q1: 16 of 373 (4.29%).
- *    36 + 16 = 52, and 9.65% + 4.29% = 13.94%, which `ambiguousPeak.share`
- *    rounds to the 13.9% a caption is likely to print. Split it at TWO
- *    decimals: 9.7% + 4.3% is 14.0%, which does not reconcile against the
- *    13.9% sitting next to it.
+ *        pin to this quarter. At 2025Q1: 16 of 386 (4.15%).
+ *    36 + 16 = 52, and 9.33% + 4.15% = 13.48%, which `ambiguousPeak.share`
+ *    rounds to the 13.5% a caption is likely to print. Split it at TWO
+ *    decimals: 9.3% + 4.1% is 13.4%, which does not reconcile against the
+ *    13.5% sitting next to it.
  *
  *    Two earlier revisions of this comment carried figures that do NOT come
  *    from those branches: a `≤5.2%` peak, and a 9.9% / 12.3% pair described as
@@ -176,8 +193,8 @@ export const START_QUARTER = { year: 2020, quarter: 1 };
  * placing a September event on January 1st — 8 months early, and invisible
  * because it looks like an ordinary year-only date downstream.
  *
- * All 1,533 events in today's `data/facilities.json` are already one of the
- * three exact shapes (checked: 699 day, 588 month, 246 year), so anchoring
+ * All 1,557 events in today's `data/facilities.json` are already one of the
+ * three exact shapes (checked: 714 day, 592 month, 251 year), so anchoring
  * rejects nothing that exists — it closes the door on the next bad import.
  */
 const DATE_SHAPE = /^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$/;
