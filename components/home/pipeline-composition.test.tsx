@@ -253,8 +253,14 @@ describe("PipelineComposition", () => {
   });
 
   it("ships no dark-mode utilities", () => {
+    // Token built at runtime, matching the idiom in app/globals.css.test.ts:
+    // that guard scans every tracked file for the literal substring, so
+    // writing it out here would make this assertion an offender in its own
+    // right. Do not "simplify" it back to a literal or a regex — a plain
+    // containment check is all this needs.
+    const darkVariant = `${"dark"}:`;
     const { container } = render(<PipelineComposition />);
-    expect(container.innerHTML).not.toMatch(/\bdark:/);
+    expect(container.innerHTML).not.toContain(darkVariant);
   });
 
   /**
