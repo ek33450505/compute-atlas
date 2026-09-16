@@ -27,6 +27,7 @@
     "check:heartbeat": "tsx --env-file=.env.local scripts/discovery/check-heartbeat.ts",
     "check:digest": "tsx --env-file=.env.local scripts/discovery/check-digest-status.ts",
     "check:googlebot": "tsx scripts/check-googlebot-access.ts",
+    "indexnow": "tsx scripts/indexnow.ts",
     "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
     "db:sync": "tsx --env-file=.env.local scripts/sync-to-neon.ts",
