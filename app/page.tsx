@@ -33,6 +33,7 @@ import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
 import { CostLedger } from "@/components/home/cost-ledger";
+import { PipelineComposition } from "@/components/home/pipeline-composition";
 import { RecordSpecimen } from "@/components/home/record-specimen";
 import { OpenRecord } from "@/components/home/open-record";
 
@@ -638,6 +639,10 @@ export default async function HomePage() {
           waterStressHighOrExtreme={waterStressExposure.highOrExtreme}
           className="mb-10 border-b border-border pb-10"
         />
+
+        {/* Pipeline composition over time — the standing counts behind the
+            ledgers above. Placement is provisional: U10 reorders this page. */}
+        <PipelineComposition className="mb-10 border-b border-border pb-10" />
 
         {/* Lens gateway — the ways in */}
         <LensGateway

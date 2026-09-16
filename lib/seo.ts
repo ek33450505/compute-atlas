@@ -1,5 +1,5 @@
 import type { Facility } from "@/lib/schema";
-import { siteConfig } from "@/lib/site";
+import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 import { STATUS_META } from "@/lib/status";
 import { ENERGY_SOURCE_ENTRIES } from "@/lib/energy";
 
@@ -248,7 +248,7 @@ export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): Datase
       "subsidies",
       "United States",
     ],
-    license: "https://creativecommons.org/licenses/by/4.0/",
+    license: DATASET_LICENSE_URL,
     isAccessibleForFree: true,
     creator: { "@type": "Person", name: "Edward Kubiak", url: siteConfig.url },
     publisher: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
