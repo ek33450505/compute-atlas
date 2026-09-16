@@ -40,6 +40,64 @@ export const revalidate = 3600;
 
 const ACTIVITY_TEASER_LIMIT = 5;
 
+/**
+ * Compact cards rendered under the record specimen in "Notable sites".
+ *
+ * Six, not five: it divides evenly into both of the grid's breakpoints
+ * (`sm:grid-cols-2 lg:grid-cols-3`), where five left a ragged 3+2 final row on
+ * desktop. That is reasoned from the class list, not confirmed in a browser.
+ *
+ * The fetch below asks for one MORE than this — see the call site.
+ */
+const NOTABLE_CARD_COUNT = 6;
+
+/**
+ * Speculation Rules for the two routes this page treats as primary onward
+ * destinations: /map, the hero's solid-fill CTA (in the tree below), and
+ * /explore, the lens gateway's "See every lens" link
+ * (components/home/lens-gateway.tsx). Deliberately NOT the hero's second link
+ * /methodology, nor the gateway's sibling /stats — both are footnote-weight
+ * secondary links, and speculating every outbound route would spend bandwidth
+ * on the visitor's behalf for a guess this page has no basis to make.
+ *
+ * Rendered as an inline <script type="speculationrules"> on THIS page only
+ * (see the call site in the tree below) rather than in app/layout.tsx, so it
+ * does not ride along on 3,000-odd other routes that have no such links.
+ *
+ * ⚠️ `prefetch`, NOT `prerender`, and for /map that is the whole decision.
+ * `prerender` does not fetch a document — it loads and RUNS the page in a
+ * hidden tab, JS included. /map mounts MapLibre GL (~1 MB) and immediately
+ * starts pulling vector tiles from a third-party CDN. This app goes out of
+ * its way to keep that off phones: components/home/hero-globe-dynamic.tsx
+ * gates the globe to sm+ precisely so a phone visiting `/` never downloads
+ * MapLibre at all. Prerendering /map from `/` would hand that cost straight
+ * back, to every homepage visitor, on a page they have not asked for yet —
+ * silently undoing the gate from a file that does not mention it. `prefetch`
+ * pulls the document only: no subresources, no script execution, no tiles.
+ *
+ * `eagerness: "moderate"` (hover/pointer-near) rather than the list-rule
+ * default of immediate: a visitor who never moves toward either link pays
+ * nothing, and one who does gets the document already in cache.
+ *
+ * What this buys, stated honestly: speculation rules apply to DOCUMENT
+ * navigations, and a <Link> click after hydration is a soft navigation that
+ * never requests a document. The win is the pre-hydration click — next/link
+ * renders a real <a href>, so a tap that lands before this page has hydrated
+ * is a full document navigation — plus any case Next cannot keep client-side.
+ * Same narrow-but-real path the @view-transition rule in globals.css covers;
+ * the two are deliberately aimed at it together.
+ *
+ * Inline speculation rules are subject to `script-src`, which carries
+ * 'unsafe-inline' in next.config.ts for Next's own bootstrap script, so the
+ * enforcing CSP admits this. A future move to nonces has to cover it.
+ *
+ * Absent support, the script element is an unknown type and is ignored: no
+ * speculation happens and navigation is exactly what it is today.
+ */
+const HOME_SPECULATION_RULES = JSON.stringify({
+  prefetch: [{ source: "list", urls: ["/map", "/explore"], eagerness: "moderate" }],
+});
+
 export const metadata: Metadata = {
   title: "US data center map & database",
   description: siteConfig.description,
@@ -61,7 +119,11 @@ export default async function HomePage() {
     plannedMw,
     underConstructionMw,
   } = await getStats();
-  const notable = await getNotableFacilities(6);
+  // One more than we render, because the specimen below is picked by a
+  // DIFFERENT rule (sources + history + capacity) and so may or may not be one
+  // of these. Fetching NOTABLE_CARD_COUNT + 1 means removing it leaves at least
+  // NOTABLE_CARD_COUNT either way — see `specimenCards`.
+  const notable = await getNotableFacilities(NOTABLE_CARD_COUNT + 1);
   const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
   const oppositionCases = await getNotableOppositionCases(3);
 
@@ -114,17 +176,26 @@ export default async function HomePage() {
   // section degrades to the plain card grid it was before.
   const specimen = selectRecordSpecimen(allFacilities);
   // Cards below the specimen, minus the specimen itself so the same record is
-  // not printed twice. Re-sliced to 5 so the row count is stable even when the
-  // specimen is not one of the top-6 by capacity.
+  // not printed twice. Always NOTABLE_CARD_COUNT of them: the fetch above asks
+  // for one spare, so the filter leaves exactly that many when the specimen is
+  // among them and one too many when it is not — the slice floors both. BOTH
+  // branches are sliced; with no specimen (empty dataset / no DATABASE_URL)
+  // the unfiltered list would otherwise render the spare as a seventh card.
   const specimenCards = specimen
-    ? notable.filter((f) => f.id !== specimen.id).slice(0, 5)
-    : notable;
+    ? notable.filter((f) => f.id !== specimen.id).slice(0, NOTABLE_CARD_COUNT)
+    : notable.slice(0, NOTABLE_CARD_COUNT);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: datasetJsonLdString({ dateModified }) }}
+      />
+      {/* See HOME_SPECULATION_RULES above for why this is prefetch rather
+          than prerender, and why it lives on this page and not the layout. */}
+      <script
+        type="speculationrules"
+        dangerouslySetInnerHTML={{ __html: HOME_SPECULATION_RULES }}
       />
       {/* min-height is responsive: on phones the globe is replaced by a
           shorter static plate (h-[40vh], see hero-globe-dynamic.tsx), so
@@ -165,7 +236,15 @@ export default async function HomePage() {
          * point set was moved to a CDN artifact to avoid, and paid by the same
          * phones. Keep the import on this side of the boundary.
          */}
-        <div className="absolute inset-0">
+        {/* `hero-plate-vt` carries `view-transition-name: hero-plate` (see
+            globals.css). It is on THIS wrapper rather than the hero box or
+            the cartouche because this element is out of flow, decorative and
+            has no absolutely-positioned descendants that escape it, so
+            whatever containment a UA applies to a named element cannot reach
+            the scrim's `-z-10`-inside-`z-10` stacking documented below. Read
+            that rule's comment before moving the class: it also records that
+            this fires on document navigation only, not on a <Link> click. */}
+        <div className="hero-plate-vt absolute inset-0">
           <HeroGlobe heightClass="h-full" plate={<HeroPlate />} />
         </div>
 
@@ -245,10 +324,19 @@ export default async function HomePage() {
              * collapses the scrim's width rather than trimming its bleed. The
              * extra 16px per side is deliberate headroom that the hero's
              * `overflow-hidden` currently clips — keep it.
+             *
+             * `hero-scrim` paints nothing of its own. It is a hook for one
+             * media query in globals.css that answers to EITHER
+             * `prefers-reduced-transparency: reduce` or `prefers-contrast:
+             * more` — the two conditions share a block because they want the
+             * identical thing for different reasons — and swaps the gradient
+             * for SOLID --background. It does not touch the stops derived
+             * above, and it matches only when the reader has asked the OS for
+             * one of those, so the default rendering is unchanged.
              */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -inset-x-4 -top-10 -bottom-10 -z-10 bg-[linear-gradient(to_bottom,var(--background)_0,var(--background)_calc(100%_-_24px),transparent_100%)]"
+              className="hero-scrim pointer-events-none absolute -inset-x-4 -top-10 -bottom-10 -z-10 bg-[linear-gradient(to_bottom,var(--background)_0,var(--background)_calc(100%_-_24px),transparent_100%)]"
             />
 
             <p className="font-mono text-xs uppercase tracking-widest text-primary">
@@ -630,7 +718,34 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Contested sites — the differentiator */}
+      {/* Contested sites — the differentiator.
+
+          `defer-offscreen` (globals.css) — these last two sections are the
+          only ones on this page that are unambiguously off-screen at first
+          paint at every viewport, which is the criterion: the hero, the two
+          ledgers, the lens gateway and the notable-sites grid can all be
+          partly in view on a tall desktop, and skipping work the reader is
+          about to look at costs a frame for nothing.
+
+          ⚠️ The class itself lives on a wrapper INSIDE the component, not in
+          the class list below, because `content-visibility: auto` also paint-
+          contains the element and would clip the card grid's focus rings; the
+          wrapper reserves 8px for them and this section keeps its full-width
+          `border-t`. Only `--defer-h` is passed from here — it is a custom
+          property, so it inherits down to that wrapper, which keeps the
+          derivation below next to the markup it was derived from. See
+          components/home/contested-strip.tsx and the utility's comment.
+
+          --defer-h is the CONTENT-box height, derived from this section's
+          real markup at lg (the `pt-10` and the 1px top border are outside
+          it): heading block ~60 + `mt-3` lead paragraph over two lines ~60 +
+          `mt-3` findings paragraph over five lines ~132 + `mt-6` three-up
+          case grid ~182 (p-4 card: 2-line title 44, gap-2, location 16,
+          gap-2, 3-line clamped note 48) + `mt-6` trailing link 68 = ~502px,
+          taken to 520. The same markup at 390px stacks the grid to one
+          column and runs ~940px; see the utility's comment for why the
+          desktop figure is the right one to ship and why `auto` in front of
+          the length makes it matter for the first pass only. */}
       <ContestedStrip
         cases={oppositionCases}
         frictionCount={frictionCount}
@@ -639,14 +754,25 @@ export default async function HomePage() {
           opposed: communityCounts.opposed ?? 0,
           contested: communityCounts.contested ?? 0,
         }}
-        className="mt-12 border-t border-border pt-10 plate-reveal"
+        className="mt-12 border-t border-border pt-10 plate-reveal [--defer-h:520px]"
       />
 
-      {/* A living, open record — provenance, contribute, recent activity */}
+      {/* A living, open record — provenance, contribute, recent activity.
+
+          --defer-h derived the same way at lg: heading ~60 + `mt-3` lead over
+          three lines ~84 + `mt-6` four-up provenance grid ~147 (p-4 card:
+          10px label 13, mt-1, text-lg value 28, mt-1, 2-line sub 40) + `mt-8`
+          contribute CTA 76 (min-h-11) + `mt-10` activity block 332 (`mb-5`
+          heading row 48, then ACTIVITY_TEASER_LIMIT = 5 `py-3` rows of ~48
+          plus 4 divider hairlines) = ~699px, taken to 700. ~1,400px at 390px
+          wide, where every grid collapses to one column and the activity rows
+          wrap. Same split as the section above: `defer-offscreen` sits on a
+          wrapper inside components/home/open-record.tsx, and only the
+          inherited `--defer-h` is set here. */}
       <OpenRecord
         sources={sourcesCited}
         recentActivity={recentActivity}
-        className="mt-12 border-t border-border pt-10 plate-reveal"
+        className="mt-12 border-t border-border pt-10 plate-reveal [--defer-h:700px]"
       />
     </div>
   );

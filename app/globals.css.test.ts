@@ -604,3 +604,238 @@ describe("app/globals.css — the 44px graticule module", () => {
     }
   });
 });
+
+/**
+ * ── The modern-platform pass ────────────────────────────────────────────────
+ *
+ * Four platform features that share one property: each is inert where it is
+ * unsupported, and each degrades to exactly today's rendering. That property
+ * is guaranteeable without knowing any support figure, which matters — the
+ * comment on `.plate-reveal` above is more accurate about scroll-driven
+ * animation support than the published matrices were, and no percentage is
+ * recorded anywhere in this file or this test for that reason.
+ *
+ * Same honest ceiling as every block above: these assert on the STYLESHEET
+ * TEXT. jsdom applies no `@media` block, computes no layout and has no view
+ * transition machinery, and Playwright cannot query a mid-transition
+ * composited state. What is pinned is that each declaration exists and sits
+ * inside the gate it needs. Whether any of it LOOKS right in a browser is a
+ * human judgement no test here makes.
+ */
+const REDUCE = "@media (prefers-reduced-motion: reduce)";
+
+/** Every `{ open, close }` range for an at-rule header that repeats. */
+function gateRanges(header: string): Array<{ open: number; close: number }> {
+  const out: Array<{ open: number; close: number }> = [];
+  for (let at = CODE.indexOf(header); at !== -1; at = CODE.indexOf(header, at + 1)) {
+    const { open, close } = atRuleBlock(header, at, CODE);
+    out.push({ open, close });
+  }
+  return out;
+}
+
+/** Every index at which `needle` occurs in the comment-stripped stylesheet. */
+function occurrencesOf(needle: string): number[] {
+  const out: number[] = [];
+  for (let at = CODE.indexOf(needle); at !== -1; at = CODE.indexOf(needle, at + 1)) {
+    out.push(at);
+  }
+  return out;
+}
+
+/** Source context around an index, so a failure names the rule that escaped. */
+function snippetAt(at: number): string {
+  return CODE.slice(Math.max(0, at - 80), at + 80).trim();
+}
+
+/**
+ * The highest-value assertion in this pass. `content-visibility: auto`
+ * size-contains a skipped subtree, so without `contain-intrinsic-size` the
+ * element collapses to nothing until it is scrolled near — trading a render
+ * saving for a swinging scroll length, which is the worse bug. The two
+ * declarations are only correct TOGETHER, and separating them is a silent
+ * regression: the page still renders, the test suite still describes a
+ * `content-visibility` optimisation, and only the scrollbar gives it away.
+ */
+describe("app/globals.css — content-visibility is never separated from its intrinsic size", () => {
+  const SKIP = "content-visibility: auto";
+
+  it("declares contain-intrinsic-size in the same rule as every content-visibility: auto", () => {
+    const occurrences = occurrencesOf(SKIP);
+
+    // Non-vacuity: with no occurrences at all the filter below proves nothing
+    // and would pass on a stylesheet that had dropped the feature entirely.
+    expect(occurrences.length).toBeGreaterThan(0);
+
+    const orphans = occurrences
+      .filter((at) => !/contain-intrinsic-size\s*:/.test(enclosingBlockBody(CODE, at)))
+      .map(snippetAt);
+    expect(orphans).toEqual([]);
+  });
+
+  it("keeps the `auto` keyword in front of the fallback length", () => {
+    // `contain-intrinsic-size: auto <length>` tells the browser to remember
+    // the size the element last rendered at and prefer it over the literal.
+    // Drop the keyword and the authored guess governs forever, including on
+    // every re-render after the reader has already scrolled past the section.
+    expect(ruleBody(".defer-offscreen {")).toMatch(
+      /contain-intrinsic-size:\s*auto\s+var\(--defer-h/
+    );
+  });
+});
+
+describe("app/globals.css — view transitions are opted in and motion-gated", () => {
+  it("opts the document into cross-document navigation transitions", () => {
+    // `navigation: auto` is the whole at-rule. Without it the descriptor
+    // defaults to `none` and every rule below is unreachable.
+    expect(atRuleBody("@view-transition", 0, CODE)).toMatch(/navigation:\s*auto/);
+  });
+
+  it("names the hero plate and animates it inside the no-preference gate", () => {
+    const ruleAt = CODE.indexOf(".hero-plate-vt {");
+    expect(ruleAt).toBeGreaterThan(-1);
+
+    // Several `prefers-reduced-motion` blocks exist, so take the LAST one
+    // opening before the rule — the one that actually wraps it. Same shape as
+    // the `.plate-reveal` gate assertion above.
+    const gateAt = CODE.lastIndexOf(MEDIA, ruleAt);
+    expect(gateAt).toBeGreaterThan(-1);
+    const gate = atRuleBlock(MEDIA, gateAt, CODE);
+    expect(ruleAt).toBeLessThan(gate.close);
+
+    expect(gate.body).toContain("view-transition-name: hero-plate");
+    // Both halves, because the pair never forms: /map has no `hero-plate`
+    // name, so leaving `/` runs only the old half and arriving runs only the
+    // new one. Dropping either silently kills one direction.
+    expect(gate.body).toContain("::view-transition-old(hero-plate)");
+    expect(gate.body).toContain("::view-transition-new(hero-plate)");
+  });
+
+  it("puts every ::view-transition rule behind a reduced-motion gate", () => {
+    const gates = [...gateRanges(MEDIA), ...gateRanges(REDUCE)];
+    const occurrences = occurrencesOf("::view-transition-");
+
+    // Non-vacuity, as above: an empty set satisfies "all inside" trivially.
+    expect(occurrences.length).toBeGreaterThan(0);
+
+    const ungated = occurrences
+      .filter((at) => !gates.some((g) => at > g.open && at < g.close))
+      .map(snippetAt);
+    expect(ungated).toEqual([]);
+  });
+
+  it("flattens every view-transition animation under prefers-reduced-motion: reduce", () => {
+    // `@view-transition` opts the ROOT in too, and the UA's default root
+    // crossfade is not covered by any of the `hero-plate` rules — so without
+    // this block a reader who asked for reduced motion still gets an animated
+    // page swap. Located from the rule rather than from index 0 so a future
+    // `reduce` block elsewhere cannot make this assert about the wrong one.
+    const ruleAt = CODE.indexOf("::view-transition-group(*)");
+    expect(ruleAt).toBeGreaterThan(-1);
+    const gateAt = CODE.lastIndexOf(REDUCE, ruleAt);
+    expect(gateAt).toBeGreaterThan(-1);
+
+    const reduce = atRuleBody(REDUCE, gateAt, CODE);
+    expect(reduce).toContain("::view-transition-group(*)");
+    expect(reduce).toContain("::view-transition-old(*)");
+    expect(reduce).toContain("::view-transition-new(*)");
+    expect(reduce).toMatch(/animation-duration:\s*0s\s*!important/);
+    expect(reduce).toMatch(/animation-delay:\s*0s\s*!important/);
+  });
+});
+
+describe("app/globals.css — prefers-contrast and prefers-reduced-transparency do real work", () => {
+  const CONTRAST = "@media (prefers-contrast: more)";
+  const TRANSPARENCY = "@media (prefers-reduced-transparency: reduce)";
+  // The scrim answers to EITHER preference, so its one block is comma-joined
+  // (a comma in a media query is OR). Note this string also starts with
+  // CONTRAST, so `atRuleBlock(CONTRAST, ...)` below must keep finding the
+  // graticule block first — it does, because that one is emitted earlier.
+  const SCRIM_QUERY =
+    "@media (prefers-contrast: more), (prefers-reduced-transparency: reduce)";
+
+  /**
+   * The strength a graticule rule paints its hairline at, in percent. No
+   * `color-mix` at all means the raw token, i.e. full strength.
+   *
+   * ⚠️ A rule that paints NO hairline is a failure, never a maximum. An
+   * earlier version returned 100 for any body it found no `color-mix` in,
+   * including an empty one — so a contrast override that simply DROPPED its
+   * `background-image` scored 100 against the 45% base and sailed through the
+   * "strengthens every hairline" assertion below while deleting the grid for
+   * exactly the reader who asked to see it better. Only the sibling 44px-pitch
+   * test caught that, and it is not the test named for this. Absence throws.
+   */
+  function hairlineStrength(body: string): number {
+    if (!/background-image:[^;]*repeating-linear-gradient/.test(body)) {
+      throw new Error(
+        `graticule rule paints no hairline gradient: {${body.trim()}}`
+      );
+    }
+    const mix = body.match(/color-mix\(in oklab,\s*var\(--[a-z-]+\)\s+(\d+)%/);
+    return mix ? Number(mix[1]) : 100;
+  }
+
+  const GRATICULE_RULES = [".graticule {", ".grat-axis-x {", ".grat-axis-y {"];
+
+  it("strengthens every graticule hairline rather than restating it", () => {
+    const contrast = atRuleBlock(CONTRAST, 0, CODE);
+
+    for (const rule of GRATICULE_RULES) {
+      // `ruleBody`'s default source is the whole sheet, and the base rules all
+      // precede the media block, so the first match is the base every time.
+      const base = hairlineStrength(ruleBody(rule));
+      const raised = hairlineStrength(ruleBody(rule, contrast.body));
+      // A copy-paste override that forgot to raise the ramp would pass a mere
+      // "the rule exists" check and change nothing on screen.
+      expect(raised).toBeGreaterThan(base);
+    }
+  });
+
+  it("keeps the 44px module while it raises the contrast", () => {
+    const contrast = atRuleBlock(CONTRAST, 0, CODE);
+
+    // The page's one spatial constant (see the block above). Raising contrast
+    // must darken the grid, never re-pitch it — a different pitch here would
+    // give high-contrast readers a hero that no longer reads as one plate.
+    for (const rule of GRATICULE_RULES) {
+      const pitches = new Set(
+        [...ruleBody(rule, contrast.body).matchAll(/transparent\s+1px\s+(\d+)px/g)].map(
+          (m) => m[1]
+        )
+      );
+      expect([...pitches]).toEqual(["44"]);
+    }
+  });
+
+  it("makes the hero scrim opaque under both queries, gradient included", () => {
+    // The two conditions share ONE comma-joined block rather than repeating
+    // the declarations. `atRuleBlock` throws when the header is absent, so
+    // this line IS the assertion that the sheet carries that exact condition
+    // list — split the block back in two and it fails here.
+    const scrim = atRuleBlock(SCRIM_QUERY, 0, CODE);
+    expect(scrim.body).not.toContain("@media");
+
+    // …and the halves it replaced are gone, checked against the sheet rather
+    // than against this test's own constants: the standalone
+    // reduced-transparency block no longer exists at all, and the surviving
+    // `prefers-contrast: more` block (the graticule one, emitted earlier, so
+    // `indexOf` still finds it first) no longer mentions the scrim. Two
+    // copies of these declarations is the drift the merge removes.
+    expect(CODE).not.toContain(`${TRANSPARENCY} {`);
+    expect(atRuleBlock(CONTRAST, 0, CODE).body).not.toContain(".hero-scrim");
+
+    const body = ruleBody(".hero-scrim {", scrim.body);
+
+    // `background-image: none` is the load-bearing half. A background-color
+    // on its own paints UNDERNEATH the gradient, so the scrim would still
+    // fade to transparent at its tail and the declaration would look like a
+    // fix while changing nothing for the reader who asked for one.
+    expect(body).toMatch(/background-image:\s*none/);
+    expect(body).toMatch(/background-color:\s*var\(--background\)/);
+
+    // And it is the ONLY `.hero-scrim` override in the sheet: a second copy
+    // outside this block is how the two halves drifted apart before.
+    expect(occurrencesOf(".hero-scrim {")).toHaveLength(1);
+  });
+});

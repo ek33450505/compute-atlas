@@ -821,43 +821,103 @@ describe("HomePage notable sites", () => {
       ).toBeInTheDocument();
     });
 
-    // The other arm of `specimenCards`: `getNotableFacilities` returns 6 by
-    // capacity, and the specimen is picked by a DIFFERENT rule (sources +
-    // history + capacity), so it is not always one of them. When it is, the
-    // filter leaves 5; when it is not, the filter removes nothing and the
-    // `.slice(0, 5)` is what holds the row count at 5. Nothing else in the
-    // file exercises that slice — with only the filter, this render would put
-    // 6 cards under the specimen.
-    it("still shows exactly five cards when the specimen is not among the notable six", async () => {
-      const SIX = Array.from({ length: 6 }, (_, i) => ({
+    // `specimenCards` must yield exactly six cards in all three arms, and that
+    // takes BOTH the spare in the fetch (NOTABLE_CARD_COUNT + 1) and a slice on
+    // each branch. The specimen is picked by a DIFFERENT rule from
+    // `getNotableFacilities` (sources + history + capacity vs capacity alone),
+    // so whether it is one of the fetched seven is not knowable here:
+    //   arm 1 — specimen IS among the seven → filter alone leaves 6
+    //   arm 2 — specimen is NOT among them  → filter removes nothing, slice cuts 1
+    //   arm 3 — no specimen at all          → no filter runs, slice cuts 1
+    // The fixtures are built to tell the arms apart: arm 1's list CONTAINS the
+    // specimen object, arms 2 and 3 return a list it is absent from, and arm 3
+    // alone resolves the specimen to null. A fixture that merely happened to be
+    // the right length would pass arm 1 while arm 2 silently dropped a card —
+    // which is exactly the bug these replaced.
+    const makeNotables = (n: number) =>
+      Array.from({ length: n }, (_, i) => ({
         id: `notable-${i + 1}`,
         name: `Notable ${i + 1}`,
         operator: "Acme",
         status: "operational",
         facilityType: "data_center",
         location: { lat: 39.0438, lon: -77.4874, city: "Ashburn", state: "VA" },
-        capacityMw: { operational: 600 - i * 100 },
+        capacityMw: { operational: 700 - i * 100 },
       }));
-      mockGetNotableFacilities.mockResolvedValue(SIX);
+
+    it("drops the specimen from the seven and renders the six that remain", async () => {
+      // Seven back from the fetch, one of which IS the specimen.
+      mockGetNotableFacilities.mockResolvedValue([SPECIMEN, ...makeNotables(6)]);
       mockSelectRecordSpecimen.mockReturnValue(SPECIMEN);
 
       render(await HomePage());
 
-      expect(screen.getAllByRole("link", { name: /Notable [1-6]/ })).toHaveLength(5);
+      expect(
+        screen.getAllByRole("link", { name: /Notable [1-9]/ })
+      ).toHaveLength(6);
+      // The specimen still appears exactly once — as the full-fidelity record,
+      // not also as a compact card.
+      expect(
+        screen.getAllByRole("link", { name: /Specimen Site/ })
+      ).toHaveLength(1);
+    });
+
+    it("slices the lowest-capacity seventh when the specimen is not among them", async () => {
+      mockGetNotableFacilities.mockResolvedValue(makeNotables(7));
+      mockSelectRecordSpecimen.mockReturnValue(SPECIMEN);
+
+      render(await HomePage());
+
+      expect(
+        screen.getAllByRole("link", { name: /Notable [1-9]/ })
+      ).toHaveLength(6);
       // The one dropped is the LAST by capacity, not an arbitrary member: the
-      // five highest are all still on the page.
-      for (const n of [1, 2, 3, 4, 5]) {
+      // six highest are all still on the page.
+      for (const n of [1, 2, 3, 4, 5, 6]) {
         expect(
           screen.getByRole("link", { name: new RegExp(`Notable ${n}`) })
         ).toHaveAttribute("href", `/facilities/notable-${n}`);
       }
       expect(
-        screen.queryByRole("link", { name: /Notable 6/ })
+        screen.queryByRole("link", { name: /Notable 7/ })
       ).not.toBeInTheDocument();
       // And the specimen is still the record shown at full fidelity above them.
       expect(
         screen.getByRole("list", { name: "Cited sources" })
       ).toBeInTheDocument();
+    });
+
+    // The three arms above MOCK `getNotableFacilities`, so they get whatever
+    // the fixture hands back no matter what the call site asked for. This pins
+    // the ARGUMENT instead: reverting it to 6 would put five cards on the live
+    // page in arm 1 while every assertion above stayed green. The literal is
+    // deliberate — asserting against the page's own constant could not fail.
+    it("fetches one more notable than it renders", async () => {
+      mockGetNotableFacilities.mockResolvedValue(makeNotables(7));
+      mockSelectRecordSpecimen.mockReturnValue(SPECIMEN);
+
+      render(await HomePage());
+
+      expect(mockGetNotableFacilities).toHaveBeenCalledWith(7);
+    });
+
+    it("caps the cards at six when no record clears the specimen bar", async () => {
+      // The fallback branch never filters, so the spare seventh reaches the
+      // grid unless that branch is sliced too.
+      mockGetNotableFacilities.mockResolvedValue(makeNotables(7));
+      mockSelectRecordSpecimen.mockReturnValue(null);
+
+      render(await HomePage());
+
+      expect(
+        screen.getAllByRole("link", { name: /Notable [1-9]/ })
+      ).toHaveLength(6);
+      expect(
+        screen.queryByRole("link", { name: /Notable 7/ })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("list", { name: "Cited sources" })
+      ).not.toBeInTheDocument();
     });
 
     // The degraded path: an empty dataset or a local render with no
@@ -883,5 +943,222 @@ describe("HomePage notable sites", () => {
         screen.queryByText(/Every field traces to a citation/)
       ).not.toBeInTheDocument();
     });
+  });
+});
+
+/**
+ * The modern-platform pass. Every feature here is wired by markup that has no
+ * rendered consequence in jsdom — a class that only a `@media` block reads, a
+ * `<script>` type only a browser understands — so deleting any of it is a
+ * SILENT revert: the page renders identically and no other test in this file
+ * changes. The class list and the script body are the only observable surface,
+ * the same honest limit the hero-backing and `plate-hover` assertions above
+ * record. The declarations those hooks reach are pinned in
+ * app/globals.css.test.ts; whether any of it looks right in a real browser is
+ * not asserted anywhere, because nothing in this suite can see it.
+ */
+describe("HomePage modern-platform hooks", () => {
+  it("speculates the page's two primary destinations with prefetch, never prerender", async () => {
+    const { container } = render(await HomePage());
+
+    const script = container.querySelector('script[type="speculationrules"]');
+    expect(script).not.toBeNull();
+
+    const rules = JSON.parse(script!.textContent ?? "{}");
+
+    // ⚠️ The load-bearing assertion. `prerender` does not fetch a document —
+    // it LOADS AND RUNS the page, JS included, and /map mounts MapLibre (~1 MB
+    // plus third-party tile requests). components/home/hero-globe-dynamic.tsx
+    // deliberately keeps MapLibre off phones entirely; prerendering /map from
+    // `/` would hand that cost back to every homepage visitor and undo that
+    // gate from a file that never mentions it. If a future edit "upgrades"
+    // this to prerender, this is the test that has to be argued with.
+    expect(rules.prerender).toBeUndefined();
+    expect(rules.prefetch).toHaveLength(1);
+
+    const [rule] = rules.prefetch;
+    expect(rule.source).toBe("list");
+    expect(rule.urls).toEqual(["/map", "/explore"]);
+    // Hover-triggered rather than the list-rule default of immediate, so a
+    // visitor who never moves toward either link pays nothing.
+    expect(rule.eagerness).toBe("moderate");
+  });
+
+  it("names the hero's plate region for the view transition", async () => {
+    render(await HomePage());
+
+    // First child of the hero box: the out-of-flow wrapper around
+    // <HeroGlobe>/<HeroPlate>. Named THERE and not on the hero box or the
+    // cartouche — see globals.css for why the containment a UA applies to a
+    // named element must not be able to reach the scrim's stacking context.
+    const heroBox = cartouche().parentElement!.parentElement;
+    expect(heroBox).not.toBeNull();
+
+    const plateRegion = heroBox!.firstElementChild;
+    expect(plateRegion).toHaveClass("hero-plate-vt");
+    expect(plateRegion).toHaveClass("absolute", "inset-0");
+  });
+
+  it("gives the scrim its contrast/transparency hook without touching the gradient", async () => {
+    render(await HomePage());
+
+    const scrim = cartouche().firstElementChild;
+
+    // The hook two media queries in globals.css use to swap this gradient for
+    // solid parchment. Removing it leaves both queries matching nothing.
+    expect(scrim).toHaveClass("hero-scrim");
+    // …and the default rendering is untouched: the derived `calc(100% - 24px)`
+    // stop is still the gradient this element paints when neither query
+    // applies. (Pinned in full by the cartouche scrim test above; restated
+    // here so a "simplification" of the scrim into a plain colour fails in the
+    // test that introduced the hook, not only in a distant one.)
+    expect(scrim).toHaveClass(
+      "bg-[linear-gradient(to_bottom,var(--background)_0,var(--background)_calc(100%_-_24px),transparent_100%)]"
+    );
+  });
+
+  it("defers exactly the two sections that are off-screen at every viewport", async () => {
+    const { container } = render(await HomePage());
+
+    // Both closing sections, each with its own derived placeholder height.
+    // The height must travel WITH the deferral: `.defer-offscreen` falls back
+    // to a generic 640px, which is wrong for both of these. `--defer-h` is set
+    // on the SECTION and inherits to the wrapper that carries the class, which
+    // is what keeps the derivation in app/page.tsx next to the markup it was
+    // derived from — see the wrapper test below for why they are split.
+    const deferred: Array<[string, string]> = [
+      ["Contested sites", "[--defer-h:520px]"],
+      ["A living, open record", "[--defer-h:700px]"],
+    ];
+    for (const [name, height] of deferred) {
+      const section = screen.getByRole("heading", { name }).closest("section");
+      expect(section).not.toBeNull();
+      expect(section!.className).toContain(height);
+      expect(section!.querySelectorAll(".defer-offscreen")).toHaveLength(1);
+    }
+
+    // "Exactly", asserted against the whole page rather than inferred from the
+    // two lookups above — which is what the old name ("only") claimed and did
+    // not check. A third `.defer-offscreen` anywhere on the page is the thing
+    // worth failing over, and counting only inside the two sections already
+    // known to have one could never see it.
+    expect(container.querySelectorAll(".defer-offscreen")).toHaveLength(2);
+
+    // The hero is the counter-assertion, and it is the point of the test:
+    // skipping render work for content the reader is already looking at costs
+    // a frame and saves nothing. Walk the hero box and its cartouche column.
+    const heroBox = cartouche().parentElement!.parentElement!;
+    expect(heroBox).not.toHaveClass("defer-offscreen");
+    expect(heroBox.querySelector(".defer-offscreen")).toBeNull();
+  });
+
+  /**
+   * One step of Tailwind's spacing scale in CSS pixels. `--spacing` is left at
+   * its 0.25rem default in app/globals.css and the root font-size is only
+   * overridden inside `@media print`, so a `p-N` utility is N * 4px on screen.
+   */
+  const SPACING_STEP_PX = 4;
+
+  /**
+   * ⛔ The a11y half of the deferral, and the reason the class sits on an inner
+   * wrapper instead of on the <section> the way it first shipped.
+   *
+   * `content-visibility: auto` turns on layout, style and PAINT containment
+   * unconditionally — the containment is a property of the declaration, not of
+   * whether the subtree is currently being skipped. Paint containment clips
+   * every descendant to the element's padding box. Both deferred sections hold
+   * edge-flush card grids whose links carry `focus-visible:ring-2
+   * ring-offset-2`, which Tailwind compiles to a non-inset
+   * `box-shadow: 0 0 0 calc(2px + 2px)` — 4px OUTSIDE the card's border box.
+   * On the section, with no inline padding, the clip edge lands exactly on
+   * that border box and the outer column's focus indicator is cut off: a
+   * keyboard user loses the only signal of where they are.
+   *
+   * ⚠️ WHAT THIS CAN AND CANNOT PROVE. jsdom computes no layout, applies no
+   * containment and paints nothing, so it cannot show a ring being clipped or
+   * not clipped — no assertion in this file can. What it pins is the
+   * structural precondition that makes clipping impossible: the containment
+   * boundary is at least as far outside every card's border box as the largest
+   * focus ring inside it, and the reserve is handed straight back as negative
+   * margin so it costs no layout. Move the class back onto the padding-less
+   * section, shrink the reserve, or grow a card's ring past it, and this
+   * fails. Whether the ring is actually visible at the viewport edge is a
+   * browser check (e2e/a11y), not this one.
+   */
+  it("keeps each deferred wrapper's paint clip outside the focus rings it contains", async () => {
+    // ⚠️ SEEDED DELIBERATELY. The shared fixture resolves
+    // `getNotableOppositionCases` to [], so the contested case grid — the exact
+    // markup the clip was cutting — does not render at all by default. A first
+    // version of this test measured only the section's two prose links and
+    // survived a mutation that grew a CARD's ring to `ring-offset-8`.
+    mockGetNotableOppositionCases.mockResolvedValue([
+      {
+        id: "contested-1",
+        name: "Contested One",
+        operator: "Acme",
+        status: "operational",
+        facilityType: "data_center",
+        location: { lat: 39.0438, lon: -77.4874, city: "Ashburn", state: "VA" },
+      },
+    ]);
+
+    const { container } = render(await HomePage());
+
+    // Non-vacuity of the seed, and of the geometry below: the tilting cards
+    // are what sit edge-flush with the clip edge, so at least one has to be
+    // inside a wrapper for the per-element demand to mean anything.
+    expect(
+      container.querySelectorAll(".defer-offscreen .plate-hover").length
+    ).toBeGreaterThan(0);
+
+    const wrappers = [...container.querySelectorAll(".defer-offscreen")];
+    // Non-vacuity: with no wrappers at all the loop below asserts nothing and
+    // would pass on a page that had dropped the deferral entirely.
+    expect(wrappers.length).toBeGreaterThan(0);
+
+    for (const wrapper of wrappers) {
+      const classes = (wrapper.getAttribute("class") ?? "").split(/\s+/);
+
+      // The reserve, read off the Tailwind scale (1 step = 4px) rather than
+      // pinned to a literal, so widening it is not a failure.
+      const pad = classes
+        .map((c) => /^p-(\d+(?:\.\d+)?)$/.exec(c)?.[1])
+        .find((v): v is string => v !== undefined);
+      const give = classes
+        .map((c) => /^-m-(\d+(?:\.\d+)?)$/.exec(c)?.[1])
+        .find((v): v is string => v !== undefined);
+
+      expect(pad, `no padding reserve on ${wrapper.className}`).toBeDefined();
+      // Layout-neutral: the reserve is given straight back, so adding it moved
+      // nothing on the page. A reserve without its negative margin would inset
+      // these two sections' content 8px from every other section's.
+      expect(give, `reserve not cancelled on ${wrapper.className}`).toBe(pad);
+
+      // ⚠️ The two scales are NOT the same unit and comparing them raw would
+      // be a coincidence, not a check: `p-N` is N steps of Tailwind's spacing
+      // scale (0.25rem = 4px each), while `ring-N` / `ring-offset-N` are
+      // literal pixels. A ring paints at `box-shadow: 0 0 0 calc(N + offset)`
+      // outside the border box, so the demand is the SUM, derived per element
+      // from the rings actually inside this wrapper rather than assumed.
+      const reservePx = Number(pad) * SPACING_STEP_PX;
+      const demandsPx = [
+        ...wrapper.querySelectorAll('[class*="ring-offset-"]'),
+      ].map((el) => {
+        const cls = el.getAttribute("class") ?? "";
+        const width = /(?:^|[:\s])ring-(\d+)(?![\w-])/.exec(cls)?.[1] ?? "0";
+        const offset =
+          /(?:^|[:\s])ring-offset-(\d+)(?![\w-])/.exec(cls)?.[1] ?? "0";
+        return Number(width) + Number(offset);
+      });
+      expect(demandsPx.length).toBeGreaterThan(0);
+      expect(Math.max(...demandsPx)).toBeLessThanOrEqual(reservePx);
+
+      // The class is on a wrapper, not on the <section>. The section keeps its
+      // own full-width `border-t`: padding the section out and pulling it back
+      // would drag that hairline 8px into the page gutter, out of line with
+      // every other section's rule on the page.
+      expect(wrapper.tagName).not.toBe("SECTION");
+      expect(classes).not.toContain("border-t");
+    }
   });
 });
