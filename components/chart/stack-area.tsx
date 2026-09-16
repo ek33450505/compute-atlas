@@ -301,7 +301,7 @@ export function StackArea({
       <ul
         role="list"
         aria-label={`${tableCaption} — band key`}
-        className="mt-3 flex flex-wrap gap-x-4 gap-y-1"
+        className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1"
       >
         {rows.map((row, k) => (
           <li key={k} className="flex items-center gap-2 text-sm">
@@ -345,15 +345,27 @@ export function StackArea({
         </tbody>
       </table>
 
-      {/* mt-5, deliberately not the mt-2 stacked-band.tsx uses for its caption:
+      {/* mt-8, deliberately not the mt-2 stacked-band.tsx uses for its caption:
           there the caption follows a VISIBLE table, so a tight step reads as
           "attached to the thing above". Here the only element between caption
           and legend is an sr-only table with zero visual height, so the margin
-          is the whole gap, and mt-3 there was reported as reading too tight
-          under a wrapping text-sm legend row. The step to 20px is a typographic
-          judgement, not a measured value. Do not harmonise the two values. */}
+          is the whole gap, and both mt-3 and then mt-5 were reported as reading
+          too tight under a wrapping text-sm legend row. The step to 32px is a
+          typographic judgement, not a measured value. Do not harmonise the two
+          values. `mx-auto` centres the BOX on the container and `text-center`
+          centres the text inside that box; `max-w-2xl` on its own leaves the
+          box left-aligned in a wider parent, which reads as hanging off the
+          chart rather than sitting beneath it. ⚠️ Container-centred is not
+          plot-centred: PAD_LEFT (46) exceeds PAD_RIGHT (10), so the plot spans
+          x=46→710 and centres at x=378 against the container's x=360. The
+          legend and caption therefore sit 18 user units left of the plot's own
+          centre — 2.5% of the width, which at a ~1232px render is ~31 CSS px
+          (the px figure scales with the container; the 2.5% does not). That is
+          an accepted simplification, not an oversight: correcting it would
+          mean compensating for the padding asymmetry, which is more than was
+          asked for. Do not add that compensation without being asked. */}
       {caption ? (
-        <p className="mt-5 max-w-2xl font-mono text-[10px] leading-relaxed text-muted-foreground">
+        <p className="mx-auto mt-8 max-w-2xl text-center font-mono text-[10px] leading-relaxed text-muted-foreground">
           {caption}
         </p>
       ) : null}
