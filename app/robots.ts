@@ -19,13 +19,12 @@ import { siteConfig } from "@/lib/site";
 // "# BEGIN Cloudflare Managed content" / "# END Cloudflare Managed Content"
 // markers) and re-adds a Google-Extended block, silencing this change.
 //
-// Also note: the live robots.txt currently carries a
-// `Content-Signal: search=yes,ai-train=no,use=reference` line, which comes
-// from that same Cloudflare feature and will disappear once it's turned
-// off. We do NOT try to reproduce it here -- Next's MetadataRoute.Robots
-// has no field for a Content-Signal directive, and hand-rolling the route
-// to emit one is out of scope for this change. Flagged as a concern for the
-// maintainer to decide separately.
+// The `Content-Signal` directive below used to be injected by that same
+// Cloudflare feature. It is gone from the live robots.txt as of 2026-09-15
+// (measured at origin, cf-cache-status: MISS), so we now emit it from our
+// own code via MetadataRoute.Robots' `other` field (added in Next 16.3.0).
+// Keys keep their casing and values pass through verbatim, and the entry is
+// scoped to the User-Agent block it sits on -- so it rides the "*" rule.
 export const BLOCKED_AI_CRAWLERS = [
   "Amazonbot",
   "Applebot-Extended",
@@ -47,6 +46,25 @@ export default function robots(): MetadataRoute.Robots {
       // NOT the public doc page at the bare "/api" path (app/api/page.tsx),
       // which stays crawlable and is listed in the sitemap.
       disallow: ["/admin/", "/api/"],
+      // Content-Signal (contentsignals.org): search indexing yes, training
+      // no, retrieval/citation allowed. It speaks to crawlers that read the
+      // directive but not our User-Agent blocks, and it matches the CC BY 4.0
+      // data licence's reuse-with-attribution terms.
+      //
+      // OPEN QUESTION for the maintainer: it does not sit perfectly with the
+      // Google-Extended exemption above. Content-Signal has no per-agent
+      // form, so on the "*" rule it also tells Google-Extended ai-train=no --
+      // stricter than the exemption this file goes out of its way to
+      // preserve. It ships anyway for two reasons: prod already served this
+      // exact line via Cloudflare, so emitting it restores the prior position
+      // rather than inventing a stricter one; and Content-Signal states a
+      // PREFERENCE, whereas the User-Agent blocks below are the enforceable
+      // statement, which still exempts Google-Extended. Resolving the tension
+      // (varying the signal per agent, or dropping ai-train=no) is a policy
+      // call and is deliberately NOT made here.
+      other: {
+        "Content-Signal": "search=yes,ai-train=no,use=reference",
+      },
     },
     ...BLOCKED_AI_CRAWLERS.map((userAgent) => ({
       userAgent,

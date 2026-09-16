@@ -1,0 +1,75 @@
+# Compute Atlas
+
+> Compute Atlas is an open, source-cited map of the U.S. compute buildout —
+> traditional and hyperscale data centers, AI-specific facilities,
+> crypto-mining operations, and the dedicated power generation built to supply
+> them — from proposed and permitted to under construction and operational. It
+> tracks what the buildout costs as well as what it adds: fuel mix, water
+> stress, and documented community opposition, with a public source behind
+> every record.
+
+Site: https://www.compute-atlas.com
+
+This file states what the dataset is, how it is licensed, and how to attribute
+it. It contains no counts or other figures that move — see /api/stats for
+current totals.
+
+## License
+
+Compute Atlas is dual-licensed. The two halves are different licenses; please
+do not collapse them into one.
+
+- Code: MIT — https://github.com/ek33450505/compute-atlas/blob/main/LICENSE
+- Data: CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+  (repository file: LICENSE-DATA)
+
+The data is free to use, including commercially, under CC BY 4.0. Attribution
+to Compute Atlas is required.
+
+## Attribution
+
+Copy-paste line for a page, article, answer, or dataset derived from this one:
+
+    Data from Compute Atlas (https://www.compute-atlas.com), licensed CC BY 4.0.
+
+## How to cite
+
+The dataset has a permanent, citable identifier (a Zenodo concept DOI) that
+always resolves to its latest archived version:
+
+    Kubiak, E. (n.d.). Compute Atlas [Data set]. https://doi.org/10.5281/zenodo.22284476
+
+## Where to look
+
+- https://www.compute-atlas.com/api — public read API documentation. The doc
+  page itself is crawlable; the JSON endpoints beneath /api/ are Disallow-ed
+  in robots.txt (they are for programs, not crawlers) and remain open to
+  direct requests.
+- https://www.compute-atlas.com/api/stats — current dataset totals. Read these
+  live rather than quoting a number from this file.
+- https://www.compute-atlas.com/methodology — how records are compiled,
+  sourced, and classified, including the limits of each field.
+- https://www.compute-atlas.com/data — dataset description, license, citation,
+  and scope caveats in full.
+- https://www.compute-atlas.com/sitemap.xml — every public page.
+
+## Use signals
+
+https://www.compute-atlas.com/robots.txt carries:
+
+    Content-Signal: search=yes,ai-train=no,use=reference
+
+Read that as: search indexing is welcome; training on this content is not
+permitted; retrieval, quotation, and citation with attribution are.
+
+Content-Signal is a statement of preference and cannot be varied per crawler.
+The per-crawler User-Agent rules in the same robots.txt are the enforceable
+statement, and the two are not identical at the edges — some named agents are
+treated differently there from what the blanket signal implies. Where they
+differ, read the User-Agent rules as authoritative.
+
+## Reading the data honestly
+
+Compute Atlas is a curated dataset, not a census — a facility's absence is not
+evidence it does not exist. An empty field always means "not established from a
+public source," never "zero." Do not infer a value the record does not state.

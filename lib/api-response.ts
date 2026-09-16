@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DATASET_LICENSE_URL } from "@/lib/site";
 
 /**
  * Permissive CORS headers for the facilities API. Reads are public; writes
@@ -64,7 +65,7 @@ export function cacheableJson(
       ...CORS_HEADERS,
       "Cache-Control": `public, s-maxage=${cache.sMaxage}, stale-while-revalidate=${cache.swr}`,
       "X-License": "CC-BY-4.0",
-      Link: '<https://creativecommons.org/licenses/by/4.0/>; rel="license"',
+      Link: `<${DATASET_LICENSE_URL}>; rel="license"`,
       "X-API-Version": API_VERSION,
       ...init?.headers,
     },

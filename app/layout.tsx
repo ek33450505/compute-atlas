@@ -12,7 +12,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FooterGate, HeaderGate } from "@/components/footer-gate";
-import { siteConfig } from "@/lib/site";
+import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 import { siteJsonLdString } from "@/lib/seo";
 
 const fraunces = Fraunces({
@@ -78,6 +78,16 @@ export default function RootLayout({
           title={`${siteConfig.name} — Recent activity`}
           href="/activity/feed.xml"
         />
+        {/* The HTML-document twin of the JSON API's `Link: <…>;
+            rel="license"` header (lib/api-response.ts) and the Dataset
+            JSON-LD's `license` (lib/seo.ts). All three read
+            DATASET_LICENSE_URL from lib/site.ts, so they cannot drift apart.
+            Rendered directly because
+            Next's Metadata API has no rel="license" slot: `alternates.types`
+            emits rel="alternate" and `metadata.other` emits <meta>, not
+            <link>. It would also hit the per-segment `alternates` replacement
+            described above. */}
+        <link rel="license" href={DATASET_LICENSE_URL} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <script

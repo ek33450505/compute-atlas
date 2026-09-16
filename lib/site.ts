@@ -1,3 +1,20 @@
+/**
+ * The data license deed. Three machine-readable surfaces declare it and must
+ * not drift apart: the `Dataset` JSON-LD `license` (`lib/seo.ts`), the JSON
+ * API's `Link: <…>; rel="license"` header (`lib/api-response.ts`), and the
+ * HTML `<link rel="license">` in `app/layout.tsx`. All three read this
+ * constant. The rendered prose on /about, /api and /data links the deed too,
+ * but those are anchors with visible text, not machine declarations, so they
+ * are left as-is.
+ *
+ * It lives here rather than beside `DATASET_DOI_URL` in `lib/seo.ts` because
+ * `lib/api-response.ts` is a dependency of every API route, and `lib/seo.ts`
+ * reaches `lucide-react` through `lib/status.ts` — importing it there would
+ * put React icon components in ~20 route bundles to read one string. This
+ * file has no imports at all.
+ */
+export const DATASET_LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
+
 export const siteConfig = {
   name: "Compute Atlas",
   tagline: "Mapping the U.S. compute buildout",
