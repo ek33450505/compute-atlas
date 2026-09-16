@@ -247,17 +247,37 @@ describe("StackArea", () => {
     // Pinned because the obvious "tidy" is to copy stacked-band.tsx's mt-2,
     // where the caption follows a VISIBLE table. Here it follows an sr-only
     // one — zero visual height — so this margin is the entire gap between the
-    // caption and the legend, and mt-3 shipped too tight. A class assertion is
-    // crude, but it is the only thing that turns that edit red.
+    // caption and the legend, and mt-3 and then mt-5 both shipped too tight. A
+    // class assertion is crude, but it is the only thing that turns that edit
+    // red.
     render(<StackArea {...BASE_PROPS} caption="Counts, not shares." />);
-    expect(screen.getByText("Counts, not shares.")).toHaveClass("mt-5");
+    expect(screen.getByText("Counts, not shares.")).toHaveClass("mt-8");
 
     // The premise the margin above rests on, pinned separately: that margin is
     // the WHOLE legend-to-caption gap only because this table is out of flow.
     // Drop `sr-only` and the table takes real height, the gap stops being this
-    // margin, and the visual defect returns — while the mt-5 assertion above
+    // margin, and the visual defect returns — while the mt-8 assertion above
     // stays green throughout. This is the only assertion that catches that.
     expect(screen.getByRole("table")).toHaveClass("sr-only");
+  });
+
+  it("centres the legend and the caption on the container", () => {
+    // Also crude class assertions, and for the same reason: jsdom computes no
+    // layout, so nothing here can observe an actual centre. What they catch is
+    // the specific regression — dropping `justify-center` leaves the legend
+    // left-packed, and dropping `mx-auto` leaves the capped-width caption box
+    // hanging off the left of a wider parent. `text-center` does neither: it
+    // aligns the text INSIDE that box and has no say in where the box sits, so
+    // it is pinned on its own terms. All three centre on the CONTAINER, which
+    // is 2.5% of the width left of the plot's own centre because the plot
+    // padding is asymmetric — see the note on the caption in stack-area.tsx.
+    // Ed reported this visually; only a real render settles how it looks.
+    render(<StackArea {...BASE_PROPS} caption="Counts, not shares." />);
+    expect(screen.getByRole("list")).toHaveClass("justify-center");
+    expect(screen.getByText("Counts, not shares.")).toHaveClass(
+      "mx-auto",
+      "text-center",
+    );
   });
 
   it("ships no dark-mode utilities", () => {
