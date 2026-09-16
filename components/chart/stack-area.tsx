@@ -345,8 +345,15 @@ export function StackArea({
         </tbody>
       </table>
 
+      {/* mt-5, deliberately not the mt-2 stacked-band.tsx uses for its caption:
+          there the caption follows a VISIBLE table, so a tight step reads as
+          "attached to the thing above". Here the only element between caption
+          and legend is an sr-only table with zero visual height, so the margin
+          is the whole gap, and mt-3 there was reported as reading too tight
+          under a wrapping text-sm legend row. The step to 20px is a typographic
+          judgement, not a measured value. Do not harmonise the two values. */}
       {caption ? (
-        <p className="mt-3 max-w-2xl font-mono text-[10px] leading-relaxed text-muted-foreground">
+        <p className="mt-5 max-w-2xl font-mono text-[10px] leading-relaxed text-muted-foreground">
           {caption}
         </p>
       ) : null}

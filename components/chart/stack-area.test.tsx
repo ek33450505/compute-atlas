@@ -243,6 +243,23 @@ describe("StackArea", () => {
     expect(screen.queryByText("Counts, not shares.")).not.toBeInTheDocument();
   });
 
+  it("steps the caption clear of the legend", () => {
+    // Pinned because the obvious "tidy" is to copy stacked-band.tsx's mt-2,
+    // where the caption follows a VISIBLE table. Here it follows an sr-only
+    // one — zero visual height — so this margin is the entire gap between the
+    // caption and the legend, and mt-3 shipped too tight. A class assertion is
+    // crude, but it is the only thing that turns that edit red.
+    render(<StackArea {...BASE_PROPS} caption="Counts, not shares." />);
+    expect(screen.getByText("Counts, not shares.")).toHaveClass("mt-5");
+
+    // The premise the margin above rests on, pinned separately: that margin is
+    // the WHOLE legend-to-caption gap only because this table is out of flow.
+    // Drop `sr-only` and the table takes real height, the gap stops being this
+    // margin, and the visual defect returns — while the mt-5 assertion above
+    // stays green throughout. This is the only assertion that catches that.
+    expect(screen.getByRole("table")).toHaveClass("sr-only");
+  });
+
   it("ships no dark-mode utilities", () => {
     // Token built at runtime, matching the idiom in app/globals.css.test.ts:
     // that guard scans every tracked file for the literal substring, so
