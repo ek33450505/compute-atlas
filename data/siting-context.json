@@ -1286,6 +1286,59 @@
       "rock": "Sandstone"
     }
   },
+  "alliant-cedar-river-generating-station-ia": {
+    "nearestWater": {
+      "name": "Cedar River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "alliant-decorah-bess-ia": {
+    "nearestWater": {
+      "name": "Upper Iowa River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 28.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "alliant-deer-run-bess-ia": {
+    "nearestWater": {
+      "name": "Cedar River",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.9
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "alliant-golden-plains-bess-ia": {
     "nearestWater": {
       "name": "Black Cat Creek",
@@ -1324,6 +1377,25 @@
       "rock": "Sandstone"
     }
   },
+  "alliant-pleasant-creek-solar-ia": {
+    "nearestWater": {
+      "name": "Big Lewis Lake",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "alliant-west-riverside-energy-center-beloit-wi": {
     "nearestWater": {
       "name": "Rock River",
@@ -1356,6 +1428,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "alliant-wever-solar-ia": {
+    "nearestWater": {
+      "name": "Lost Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 20.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "alliant-whispering-willow-north-bess-ia": {
@@ -4179,6 +4270,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "big-allis-solar-clay-ne": {
+    "nearestWater": {
+      "name": "Liberty Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "big-digital-energy-10netzero-hood-county-tx": {
     "nearestWater": {
       "name": "Lake Granbury",
@@ -5060,6 +5170,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "brady-island-wind-lincoln-ne": {
+    "nearestWater": {
+      "name": "Pawnee Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "breaker-street-data-center-jessup-lackawanna-pa": {
     "nearestWater": {
       "name": "Grassy Island Creek",
@@ -5153,6 +5282,25 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "broken-bow-wind-custer-ne": {
+    "nearestWater": {
+      "name": "Lillian Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 28.6
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "brookfield-nextera-paducah-site-mccracken-ky": {
@@ -5489,6 +5637,21 @@
     "nearestTransmission": {
       "voltageKv": 345,
       "distanceMi": 20.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "cass-county-solar-cass-ne": {
+    "nearestWater": {
+      "name": "Beaver Lake",
+      "kind": "lake",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
     },
     "waterStress": {
       "cat": 0,
@@ -6690,6 +6853,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "clenera-wapello-solar-ia": {
+    "nearestWater": {
+      "name": "Otter Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.8
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "cloudburst-oklahoma-city-campus-ok": {
     "nearestWater": {
       "name": "North Canadian River",
@@ -7371,6 +7549,21 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "cologix-dsm3-altoona-ia": {
+    "nearestWater": {
+      "name": "Little Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "cologix-jax1-fl": {
@@ -8606,6 +8799,21 @@
     "aquifer": {
       "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
+    }
+  },
+  "crofton-bluffs-wind-knox-ne": {
+    "nearestWater": {
+      "name": "Beaver Creek",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 21.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "crosland-southeast-matthews-project-accelerate-nc": {
@@ -13069,6 +13277,21 @@
       "rock": "Sandstone"
     }
   },
+  "elkhorn-ridge-wind-knox-ne": {
+    "nearestWater": {
+      "name": "Weigand Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 23.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "elysian-partners-fairview-crossroads-fairview-township-york-pa": {
     "nearestWater": {
       "name": "Fishing Creek",
@@ -13109,6 +13332,25 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "emerick-wind-madison-ne": {
+    "nearestWater": {
+      "name": "Battle Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "empire-ai-beta-buffalo-ny": {
@@ -13284,6 +13526,25 @@
     "groundwaterDecline": {
       "cat": 3,
       "label": "High (4-8 cm/y)"
+    }
+  },
+  "enseva-hiawatha-ia": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "entergy-arkansas-cypress-solar-battery-jefferson-county-ar": {
@@ -16187,6 +16448,21 @@
       "rock": "Sandstone"
     }
   },
+  "gage-wind-gage-ne": {
+    "nearestWater": {
+      "name": "Town Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.7
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    }
+  },
   "galaxy-digital-mcgregor-tx": {
     "nearestWater": {
       "name": "Harris Creek",
@@ -16464,6 +16740,25 @@
     "groundwaterDecline": {
       "cat": 1,
       "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "global-reach-ames-ia": {
+    "nearestWater": {
+      "name": "Worrell Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "global-stack-vallejo-fairgrounds-ca": {
@@ -17556,6 +17851,25 @@
       "rock": "Sandstone"
     }
   },
+  "grande-prairie-wind-holt-ne": {
+    "nearestWater": {
+      "name": "North Branch Verdigre Creek",
+      "kind": "river",
+      "distanceMi": 2.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.6
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "grandilla-foot-creek-491st-thomas-tonopah-az": {
     "nearestWater": {
       "name": "Centennial Wash",
@@ -17626,6 +17940,21 @@
     "nearestTransmission": {
       "voltageKv": 345,
       "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "great-lakes-colocation-lake-park-ia": {
+    "nearestWater": {
+      "name": "Silver Lake",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
     },
     "waterStress": {
       "cat": 0,
@@ -18201,6 +18530,25 @@
   },
   "hawaiiantel-kawaihae-hi": {},
   "hawaiki-cable-kapolei-hi": {},
+  "haystack-wind-wayne-ne": {
+    "nearestWater": {
+      "name": "South Branch Deer Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 8.6
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "hca-it-services-data-center-nashville-tn": {
     "nearestWater": {
       "name": "Collins Creek",
@@ -19101,6 +19449,21 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "ip-pathways-urbandale-ia": {
+    "nearestWater": {
+      "name": "North Walnut Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "iren-horizon-childress-tx": {
     "nearestWater": {
       "name": "Park Lake",
@@ -19917,6 +20280,25 @@
       "label": "High (40-80%)"
     }
   },
+  "karis-dubuque-county-ia": {
+    "nearestWater": {
+      "name": "Buncombe Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "kentucky-industrial-alliance-cave-point-cave-city-ky": {
     "nearestWater": {
       "name": "Creacy Lake",
@@ -20437,6 +20819,25 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "little-blue-wind-webster-ne": {
+    "nearestWater": {
+      "name": "Flat Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.4
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "ln-compute-cuthbert-ga": {
@@ -23307,6 +23708,36 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "midamerican-holliday-creek-solar-ia": {
+    "nearestWater": {
+      "name": "Holliday Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "midamerican-knoxville-bess-ia": {
+    "nearestWater": {
+      "name": "English Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 21.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "midcon-recovery-solutions-oklahoma-city-ok": {
     "nearestWater": {
       "name": "Dry Creek",
@@ -24084,6 +24515,25 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "nebraska-colocation-centers-lincoln-ne": {
+    "nearestWater": {
+      "name": "Middle Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
     }
   },
   "nemadji-trail-energy-center-superior-wi": {
@@ -24909,6 +25359,21 @@
     "nearestTransmission": {
       "voltageKv": 345,
       "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "nppd-sheldon-station-lancaster-ne": {
+    "nearestWater": {
+      "name": "Salt Creek Reservoir 13-A",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
     },
     "waterStress": {
       "cat": 0,
@@ -25918,6 +26383,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "panama-energy-center-lancaster-ne": {
+    "nearestWater": {
+      "name": "Clatonia Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "panattoni-burgin-mercer-county-ky": {
     "nearestWater": {
       "name": "Cane Run",
@@ -25992,6 +26476,21 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "pathone-ida-county-galva-ia": {
+    "nearestWater": {
+      "name": "Maple River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "patmos-fairfield-al": {
@@ -26347,6 +26846,29 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "platte-wind-keith-ne": {
+    "nearestWater": {
+      "name": "South Platte River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "platteview-solar-saunders-ne": {
     "nearestWater": {
       "name": "Clear Creek",
@@ -26383,6 +26905,25 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "plum-creek-wind-wayne-ne": {
+    "nearestWater": {
+      "name": "Plum Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "pnnl-ai-data-center-richland-wa": {
@@ -26857,6 +27398,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "prairie-breeze-wind-antelope-ne": {
+    "nearestWater": {
+      "name": "Blacksnake Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.7
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "prairie-ronde-solar-st-landry-la": {
@@ -27754,9 +28314,9 @@
   },
   "prsm-preble-county-oh": {
     "nearestWater": {
-      "name": "Bantas Fork",
-      "kind": "river",
-      "distanceMi": 0.4
+      "name": "Halls Lake",
+      "kind": "lake",
+      "distanceMi": 4.3
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -29413,6 +29973,25 @@
       "label": "Low (<10%)"
     }
   },
+  "rokeby-energy-center-lancaster-ne": {
+    "nearestWater": {
+      "name": "Cardwell Branch",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "roswell-information-park-chaves-county-nm": {
     "nearestWater": {
       "name": "Rio Hondo",
@@ -30123,6 +30702,21 @@
     "aquifer": {
       "name": "Lower Cretaceous Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "salt-creek-solar-lancaster-ne": {
+    "nearestWater": {
+      "name": "Monahan Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "samx-data-centers-remington-fauquier-va": {
@@ -31026,6 +31620,29 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "sioux-county-wind-sioux-ne": {
+    "nearestWater": {
+      "name": "Sowbelly Creek",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 25.1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "site-layer-4-goshen-hole-platte-county-wy": {
@@ -32634,6 +33251,25 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "swarm-systems-marshalltown-ia": {
+    "nearestWater": {
+      "name": "Linn Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 30
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "swift-willow-westover-al": {

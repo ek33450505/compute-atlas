@@ -1263,7 +1263,7 @@
         "url": "https://www.acehost.com/crypto-mining-colocation.php",
         "label": "Crypto Mining Colocation - AceHost.com",
         "publisher": "AceHost",
-        "retrievedAt": "2026-09-13",
+        "retrievedAt": "2026-09-16",
         "kind": "other"
       },
       {
@@ -1281,8 +1281,11 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-09-16",
     "notes": "Downtown Tampa autonomous ASIC/GPU mining colocation facility, dubbed 'the Marion mining facility' by the operator. AceHost's own marketing page advertises up to '100MW+' of available hosting capacity at the site; capacityMw.operational uses Global Energy Monitor's more conservative sourced figure (3 MW) rather than the marketing maximum, since the two describe different things (available hookup vs. actual draw) and only one is independently tracked.",
+    "water": {
+      "coolingType": "air"
+    },
     "facilityType": "crypto_mining"
   },
   {
@@ -3903,6 +3906,153 @@
     "aiClassification": "likely"
   },
   {
+    "id": "alliant-cedar-river-generating-station-ia",
+    "name": "Cedar River Generating Station",
+    "operator": "Alliant Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.9468018,
+      "lon": -91.6378945,
+      "city": "Cedar Rapids",
+      "county": "Linn County",
+      "street": "3304 C Street Southwest",
+      "postalCode": "52404",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 94
+    },
+    "announcedDate": "2026-02-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-09",
+        "note": "Alliant Energy announced plans for a 94 MW natural gas generating station of five reciprocating internal combustion engines on the Prairie Creek Generating Station property in southwest Cedar Rapids, with construction expected to begin in early 2026 and operation in 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kcrg.com/2026/02/09/alliant-energy-plans-new-natural-gas-generating-station-cedar-rapids-coal-era-ends/",
+        "label": "Alliant Energy plans new natural gas generating station in Cedar Rapids as coal era ends",
+        "publisher": "KCRG-TV9",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Distinct from Alliant's other tracked Iowa gas projects: Bobcat Energy Center (720 MW, Marshalltown), Riverhawk Energy Center (1,200 MW, Cerro Gordo County) and Morgan Valley Energy Center (unincorporated Linn County, 2030). Status is recorded conservatively as proposed: reporting from February 2026 stated construction was expected to start in early 2026, but no source retrieved this session confirms that construction has actually begun. Coordinates are approximate - the address is the existing Prairie Creek Generating Station, on whose property the new units will sit.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 5,
+      "notes": "Five reciprocating internal combustion engine (RICE) units, described by the utility as able to start in about five minutes and ramp quickly. Built on the same property as the Prairie Creek Generating Station, which stopped burning coal at the end of 2025."
+    }
+  },
+  {
+    "id": "alliant-decorah-bess-ia",
+    "name": "Decorah Battery Project",
+    "operator": "Alliant Energy (Interstate Power and Light)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.3241694,
+      "lon": -91.7928804,
+      "city": "Decorah",
+      "county": "Winneshiek County",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 2.5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-06",
+        "note": "2.5 MW battery placed in service on a Decorah circuit with a high concentration of customer-owned solar, storing excess output and releasing it at peak.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alliantenergy.com/our-energy/energy-storage/decorah",
+        "label": "Decorah Battery Project",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://api.openstreetmap.org/api/0.6/way/1464602551.json",
+        "label": "OpenStreetMap way 1464602551 - Decorah Battery (2.5 MW, EIA 64375, in service 2021-06)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Alliant's first Iowa battery project. Secondary reporting describes a 2.9 MWh rating and a $200,000 Iowa Economic Development Authority grant; neither was confirmed against a source retrieved this session, so both are left off the record.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "battery",
+      "notes": "EIA plant ID 64375. Operates as an 'electron bank' for a distribution circuit dense in customer-owned solar. Performance data is shared with Sandia National Laboratories and Iowa State University's Electric Power Research Center for power-quality research."
+    }
+  },
+  {
+    "id": "alliant-deer-run-bess-ia",
+    "name": "Deer Run Battery Energy Storage System",
+    "operator": "Alliant Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.951305,
+      "lon": -91.6939826,
+      "city": "Cedar Rapids",
+      "county": "Linn County",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-08-02",
+        "note": "5 MW battery storage system adjacent to Alliant Energy's Deer Run substation placed in service, doubling the utility's Iowa battery capacity from about 3.5 MW to 8.5 MW.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alliantenergy.com/news/news-center/2022/08/2-deerrunbattery",
+        "label": "New battery storage project to power energy transformation in Cedar Rapids",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://api.openstreetmap.org/api/0.6/way/1177362113.json",
+        "label": "OpenStreetMap way 1177362113 - Deer Run Battery Storage (5 MW / 10 MWh, EIA 65531)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "One of Alliant's earliest Iowa storage installations, predating the Lansing, Wever, Golden Plains and Whispering Willow North projects already tracked.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "battery",
+      "notes": "10 MWh of storage per OpenStreetMap/EIA-860 (EIA plant ID 65531); the utility describes it as storing enough electricity to power about 5,000 homes for two hours. Used by Alliant for research on performance, design and grid integration."
+    }
+  },
+  {
     "id": "alliant-golden-plains-bess-ia",
     "name": "Golden Plains Battery Energy Storage System",
     "operator": "Alliant Energy",
@@ -4010,6 +4160,57 @@
     }
   },
   {
+    "id": "alliant-pleasant-creek-solar-ia",
+    "name": "Pleasant Creek Solar Project",
+    "operator": "Alliant Energy (Interstate Power and Light)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.1193687,
+      "lon": -91.8020582,
+      "county": "Linn County",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 200
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-12",
+        "note": "First 50 MW began operating March 2024; the remaining 150 MW was placed in service December 2024, making it Iowa's largest solar field.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alliantenergy.com/news/news-center/2025/04/042825-pleasantcreek",
+        "label": "Solar field in Linn County generating energy, benefiting Alliant Energy's customers",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://api.openstreetmap.org/api/0.6/relation/17923393.json",
+        "label": "OpenStreetMap relation 17923393 - Pleasant Creek Solar Project 1 & 2 (200 MW, EIA 67537;67140)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Reported at approximately 1,100 acres in Linn County. Distinct from the tracked Duane Arnold Energy Center (nuclear restart) and from Alliant's battery projects, though co-located with the Duane Arnold site.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Developed by Duane Arnold Solar LLC, a NextEra Energy Resources subsidiary, and known as Duane Arnold Solar during development and construction; now owned and operated by Alliant Energy. Sited beside Pleasant Creek Lake, adjacent to the Duane Arnold Energy Center. EIA plant IDs 67537 and 67140."
+    }
+  },
+  {
     "id": "alliant-west-riverside-energy-center-beloit-wi",
     "name": "West Riverside Energy Center",
     "operator": "Alliant Energy",
@@ -4101,16 +4302,71 @@
         "url": "https://www.alliantenergy.com/our-energy/energy-storage/wever",
         "label": "Wever Battery Energy Storage System — project page",
         "publisher": "Alliant Energy",
-        "retrievedAt": "2026-09-04",
+        "retrievedAt": "2026-09-16",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-09-16",
     "notes": "Alliant frames the project as meeting growing energy demand and avoiding customer costs from additional transmission and distribution build. Coordinate is a town-level approximation for Wever, Lee County; Alliant's news release names Lee County explicitly.",
+    "energy": {
+      "notes": "Charges from the adjacent 150 MW Wever solar project or from other grid sources; four-hour duration, described by the utility as enough to power about 100,000 homes for four hours. Estimated 20-year operational life."
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "battery",
       "notes": "Four hours of storage duration, sited adjacent to Alliant Energy's 150 MW Wever solar farm. Alliant's February 2026 announcement rounds the rating to 100 MW while the project page states 99 MW; the project page value is recorded here. One of four Iowa storage projects Alliant says will bring its planned Iowa battery capacity to roughly 400 MW."
+    }
+  },
+  {
+    "id": "alliant-wever-solar-ia",
+    "name": "Wever Solar Project",
+    "operator": "Alliant Energy (Interstate Power and Light)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.7191277,
+      "lon": -91.2530154,
+      "city": "Wever",
+      "county": "Lee County",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 150
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-11",
+        "note": "150 MW solar project placed in service; Alliant's Wever battery storage system was later built adjacent to it and stores power generated by this field.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://api.openstreetmap.org/api/0.6/relation/20083513.json",
+        "label": "OpenStreetMap relation 20083513 - Wever Solar (150 MW, EIA 67538, in service 2024-11)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-16",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.alliantenergy.com/our-energy/energy-storage/wever",
+        "label": "Wever Battery Energy Storage System",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "The generating field itself is not currently tracked; only the co-located battery storage system (alliant-wever-bess-ia) is. Alliant's own storage page confirms the neighbouring solar project's 150 MW rating.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "EIA plant ID 67538. Directly adjacent to Alliant's 99 MW Wever battery energy storage system, which charges from this field. Reported at about 900 acres."
     }
   },
   {
@@ -4151,11 +4407,11 @@
         "url": "https://www.alliantenergy.com/our-energy/energy-storage/whispering-willow-north",
         "label": "Whispering Willow North Battery Energy Storage System — project page",
         "publisher": "Alliant Energy",
-        "retrievedAt": "2026-09-04",
+        "retrievedAt": "2026-09-16",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-09-16",
     "notes": "Alliant states the project exists to meet growing energy demand and boost grid reliability. Coordinate is a town-level approximation for Latimer, Franklin County.",
     "landAcres": 9,
     "facilityType": "power_generation",
@@ -5953,6 +6209,7 @@
       "lon": -93.9258365,
       "city": "Waukee",
       "county": "Dallas",
+      "street": "2995 W. Hickman Road",
       "state": "IA",
       "precision": "approximate"
     },
@@ -6007,9 +6264,16 @@
         "publisher": "Construction Dive",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-16",
     "notes": "Apple data center near the intersection of Hickman Rd and S Avenue, Waukee, Dallas County — announced by Tim Cook in 2017; first building became operational in October 2024 on a 2,000-acre site, a $1.3B investment (AppleInsider). Apple's Feb 2025 newsroom names Iowa among states for continued data-center capacity expansion. No site-specific IT-load MW is disclosed. Coordinates are an approximate geocode; a county-parcel pass could upgrade precision to exact.",
     "energy": {
       "source": "grid",
@@ -6706,7 +6970,7 @@
     "id": "archgreen-doniphan-hall-ne",
     "name": "ArchGreen Doniphan Data Center (proposed)",
     "operator": "ArchGreen Infrastructure",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 40.772,
@@ -6724,6 +6988,12 @@
         "date": "2023-10-10",
         "note": "Conditional use permit application heard by the Hall County Commission; decision deferred, with the board expected to return to it Oct. 24, 2023.",
         "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-09-16",
+        "note": "Hall County commissioners denied ArchGreen's conditional use permit for the second data center, at 2502 E. Giltner Road near Doniphan, in October 2023. A June 2026 Central Nebraska Today survey of the county's data centers records the application as denied and describes no revived or refiled proposal; only the approved northwest Grand Island site and the separate Fortitude site at 380 Museum Drive are treated as live.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -6740,9 +7010,23 @@
         "publisher": "KSNB Local4",
         "retrievedAt": "2026-09-04",
         "kind": "press"
+      },
+      {
+        "url": "https://www.centralnebraskatoday.com/2026/06/26/data-center-nearing-completion-in-east-grand-island/",
+        "label": "Data center nearing completion in east Grand Island",
+        "publisher": "Central Nebraska Today",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.centralnebraskatoday.com/2026/06/26/data-center-nearing-completion-in-east-grand-island/",
+        "label": "Data center nearing completion in east Grand Island",
+        "publisher": "Central Nebraska Today",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-09-16",
     "notes": "ArchGreen's second Hall County proposal: 14 removable equipment containers on land owned by a private landowner at 2502 E. Giltner Road east of Doniphan, near the Hamilton County line, with two full-time employees and a stated noise level of 30–40 dB. The last step documented by a source retrievable this session is the Oct. 10, 2023 commission hearing, at which the decision was deferred; later coverage indicates the commission subsequently denied the permit, but that account could not be retrieved and is therefore not recorded as a status. A moderator should confirm the final disposition before publishing — this record may need to move to 'cancelled'.",
     "jobs": {
       "permanent": 2,
@@ -8353,7 +8637,7 @@
         "url": "https://aureon.com/solutions/data-center-solutions/",
         "label": "Aureon colocation data center solutions — 616 Data Center",
         "publisher": "Aureon",
-        "retrievedAt": "2026-09-04",
+        "retrievedAt": "2026-09-16",
         "kind": "other"
       },
       {
@@ -8364,7 +8648,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-09-16",
     "notes": "Carrier-neutral colocation facility in downtown Des Moines: 30,000 total sq ft with 10,000 sq ft of white space, 2N electrical distribution with concurrently maintainable components, backup generators carrying 32 hours of on-site fuel, FM-200 suppression, and a structure the operator says is built to withstand an F3 tornado. Aureon was formerly Iowa Network Services.",
     "energy": {
       "source": "grid",
@@ -13515,6 +13799,56 @@
     }
   },
   {
+    "id": "big-allis-solar-clay-ne",
+    "name": "Big Allis Solar",
+    "operator": "Apex Clean Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.3603,
+      "lon": -98.1602,
+      "county": "Clay",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 305
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-16",
+        "note": "Nebraska DWEE lists the project as under development at 305 MW; Global Energy Monitor marks it shelved as of October 2025.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Big_Allis_Solar",
+        "label": "Big Allis Solar",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/solar-thermal-photovoltaic/solar-energy-generation-nebraska",
+        "label": "Solar Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Up to 305 MW in southwestern Clay County, developed by Apex Clean Energy. Confidence is \"reported\" because the two sources disagree on liveness — GEM records the project as shelved as of October 2025 while the state's own inventory still carries it as under development. COORDINATES ARE APPROXIMATE: GEM's own approximate figure.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
     "id": "big-digital-energy-10netzero-hood-county-tx",
     "name": "Big Digital Energy–10NetZero Hood County AI Data Center Campus",
     "operator": "Big Digital Energy, Inc. / 10NetZero, Inc. (50/50 joint venture)",
@@ -16047,11 +16381,11 @@
         "url": "https://www.alliantenergy.com/our-energy/natural-gas/bobcat",
         "label": "Bobcat Energy Center project page",
         "publisher": "Alliant Energy",
-        "retrievedAt": "2026-08-21",
+        "retrievedAt": "2026-09-16",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-21",
+    "lastUpdated": "2026-09-16",
     "notes": "720 MW gas peaker in Marshalltown, fully permitted. The Iowa Utilities Commission unanimously approved Alliant's Certificate of Public Convenience, Use and Necessity on 2025-12-16, and the Iowa DNR approved the air permits in early August 2026. Construction anticipated to begin in Q3 2026 with an operational date of 2029. Status is 'permitted' rather than 'under_construction' because no source fetched this session confirms construction has actually started.",
     "energy": {
       "source": "on_site_gas",
@@ -16177,6 +16511,62 @@
       "hardwareType": "asic",
       "coolingType": "air",
       "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "brady-island-wind-lincoln-ne",
+    "name": "Brady Island Wind",
+    "operator": "RWE Clean Energy",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.0220411,
+      "lon": -100.3657985,
+      "city": "Brady",
+      "county": "Lincoln",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 231
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-16",
+        "note": "RWE lists the project as \"in development\", slated to begin operations in 2030; Nebraska DWEE lists it as under development with a 2030 target.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://americas.rwe.com/our-energy/onshore-wind/onshore-wind-projects-and-locations/brady-island-wind/",
+        "label": "Brady Island Wind",
+        "publisher": "RWE Clean Energy",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "231 MW across a roughly 35,000-acre project area in Lincoln County, ~300 construction jobs plus 4–6 permanent operations positions, and $24 million in total tax revenue over the project's lifetime (RWE's figures). Proposed in a county that spent 2026 writing ten pages of data-center zoning regulation and rejecting a data-center moratorium. COORDINATES ARE APPROXIMATE: the pin is the village of Brady (OpenStreetMap/Nominatim); RWE notes most turbines would sit in the hills north of the Platte River, so the true centroid is north of this point.",
+    "energy": {
+      "source": "wind"
+    },
+    "landAcres": 35000,
+    "jobs": {
+      "construction": 300,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
     }
   },
   {
@@ -16442,6 +16832,57 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "broken-bow-wind-custer-ne",
+    "name": "Broken Bow Wind Energy Center (Phases I and II)",
+    "operator": "Nebraska Public Power District",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.5075,
+      "lon": -99.6109,
+      "city": "Broken Bow",
+      "county": "Custer",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 152.6
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2012-12",
+        "note": "Phase I online December 2012; Phase II followed in October 2014 (Nebraska DWEE).",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Broken_Bow_wind_farm",
+        "label": "Broken Bow wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Two phases in Custer County. Nebraska DWEE: Broken Bow I 77.6 MW (Dec 2012, NPPD/OPPD/Lincoln Electric System/Grand Island) and Broken Bow II 75 MW (Oct 2014, NPPD/OPPD) — 152.6 MW combined, the figure recorded here. Global Energy Monitor puts phase 1 at 80 MW (41.5075/-99.6109) and phase 2 at 75 MW (41.5184/-99.5533), 155 MW combined. Coordinates are phase 1's, hence approximate for the pair.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "brookfield-nextera-paducah-site-mccracken-ky",
@@ -17410,6 +17851,61 @@
       "hardwareType": "asic",
       "coolingType": "air",
       "powerArrangement": "behind_meter"
+    }
+  },
+  {
+    "id": "cass-county-solar-cass-ne",
+    "name": "Cass County Solar",
+    "operator": "NextEra Energy Resources",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.915278,
+      "lon": -95.930286,
+      "city": "Murray",
+      "county": "Cass",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 265
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-16",
+        "note": "NextEra's project page describes a proposed project of up to 265 MW; Nebraska DWEE lists Cass County solar development by NextEra as under development.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nexteraenergyresources.com/cass-county-solar.html",
+        "label": "Cass County Solar",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/solar-thermal-photovoltaic/solar-energy-generation-nebraska",
+        "label": "Solar Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Developer states up to 265 MW, 250–300 construction jobs and $36 million in tax revenue estimated over the first 30 years (the $566 million figure on the same page is labelled 30-year project investment, i.e. a lifetime economic-impact figure, so it is NOT recorded as investmentUsd here). Nebraska DWEE separately lists a 320 MW \"Boulevard Associates Solar\" in Cass County near Murray — Boulevard Associates is the NextEra subsidiary named on this project's county filings, so the two entries almost certainly describe one site; the capacity discrepancy is unresolved. COORDINATES ARE APPROXIMATE: the pin is the village of Murray (OpenStreetMap/Nominatim). Cass County is also one of the counties where Tenaska has optioned land for the proposed Google campus, and its planning commission recommended a data-center moratorium in 2026.",
+    "energy": {
+      "source": "solar"
+    },
+    "jobs": {
+      "construction": 250,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
     }
   },
   {
@@ -20732,6 +21228,58 @@
     }
   },
   {
+    "id": "clenera-wapello-solar-ia",
+    "name": "Wapello Solar",
+    "operator": "Clēnera",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.1530814,
+      "lon": -91.175855,
+      "county": "Louisa County",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-03-08",
+        "note": "127.5 MWdc / 100 MWac project near Wapello reached commercial operation, delivering to the grid under a 25-year power purchase agreement with Central Iowa Power Cooperative.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prweb.com/releases/clenera-s-wapello-solar-project-reaches-commercial-operation-861926437.html",
+        "label": "Clēnera's Wapello Solar Project Reaches Commercial Operation",
+        "publisher": "Clēnera / PRWeb",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://api.openstreetmap.org/api/0.6/relation/13705201.json",
+        "label": "OpenStreetMap relation 13705201 - Wapello Solar (100 MW, EIA 63378, in service 2021-03-08)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "capacityMw records the 100 MW AC rating that matches EIA-860; the developer's 127.5 MWdc figure is a DC nameplate and the two are not interchangeable. Its offtaker, CIPCO, is the same cooperative behind the tracked Hickory Grove Generating Station.",
+    "energy": {
+      "source": "solar"
+    },
+    "landAcres": 800,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "127.5 MWdc nameplate; OpenStreetMap/EIA-860 record 100 MW AC (EIA plant ID 63378). Built on nearly 800 acres with 318,000 bifacial panels on single-axis trackers and 34 inverters; EPC was RES, completed in about six months with roughly 250 peak construction jobs. Offtake is an exclusive 25-year PPA with Central Iowa Power Cooperative, whose adjacent transmission system it interconnects to."
+    }
+  },
+  {
     "id": "cloudburst-oklahoma-city-campus-ok",
     "name": "CloudBurst Oklahoma City Campus",
     "operator": "CloudBurst Data Centers",
@@ -22736,6 +23284,43 @@
     ],
     "lastUpdated": "2026-08-08",
     "notes": "Carrier-hotel / interconnection facility inside the downtown Financial Center building at 666 Walnut Street; Cologix acquired it (and DSM2, see separate record) from Connect Des Moines in June 2024 — Cologix owns/operates the space, this is not a colo tenancy. Small (4,000 sq ft) and telecom/peering-focused (25+ networks, DesMoinesIX exchange) rather than AI-compute-oriented — flagging for the human moderator to judge fit against the dataset's AI/crypto/power focus. Has a confirmed additional 10,000 sq ft / 1.0 MW expansion shell not yet built out, so I left capacityMw.operational at the currently-live 0.6MW rather than guess a combined 'planned' total.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cologix-dsm3-altoona-ia",
+    "name": "Cologix DSM3 Altoona",
+    "operator": "Cologix",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.6633344,
+      "lon": -93.5030853,
+      "city": "Altoona",
+      "county": "Polk County",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-09",
+        "note": "Cologix purchased 78 acres of farmland along Northeast 56th Street in Altoona, east of Meta's campus, for a site designated DSM3. Specific plans have not been released.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Site is described as east of Northeast 56th Street and about a quarter-mile north of 25th Street Northwest, Altoona. Coordinates are approximate and sit on Northeast 56th Street near the Meta Altoona campus; the parcel itself has not been publicly platted. Distinct from the tracked Cologix DSM1 (Des Moines) and DSM2 (Cedar Falls) records.",
+    "landAcres": 78,
     "facilityType": "data_center"
   },
   {
@@ -26677,6 +27262,56 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "crofton-bluffs-wind-knox-ne",
+    "name": "Crofton Bluffs Wind Farm",
+    "operator": "Nebraska Public Power District",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.7078,
+      "lon": -97.5745,
+      "county": "Knox",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 40.6
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2012-11",
+        "note": "Nebraska DWEE records a November 2012 online date; Global Energy Monitor records 2012 commissioning.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Crofton_Bluffs_wind_farm",
+        "label": "Crofton Bluffs wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Nebraska DWEE lists 40.6 MW with NPPD, OPPD, MEAN and Lincoln Electric System as offtakers; Global Energy Monitor lists 40 MW and records NPPD at 50% ownership alongside Clearway Energy Group. Second wind site in Knox County alongside Elkhorn Ridge — the two carry distinct coordinates and capacities.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "crosland-southeast-matthews-project-accelerate-nc",
@@ -38344,6 +38979,7 @@
       "lon": -93.6058,
       "city": "Ankeny",
       "county": "Polk",
+      "street": "2701 SE 90th Street",
       "state": "IA",
       "precision": "approximate"
     },
@@ -38359,16 +38995,44 @@
         "publisher": "Edged Energy",
         "retrievedAt": "2026-08-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businessrecord.com/ankeny-council-to-consider-data-center-development-agreement/",
+        "label": "Ankeny council approves data center development agreement",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-21",
+    "lastUpdated": "2026-09-16",
     "notes": "AI-focused colocation developer (not a Big-5 hyperscaler) building a waterless-cooled, high-density facility at 9100 SE Four Mile Drive, Ankeny (address confirmed via secondary aggregators; coordinates are city-level, not parcel-geocoded — mark approximate). Design PUE 1.15 portfolio-wide; ThermalWorks closed-loop cooling claims >52M gal/yr water savings vs conventional. Third-party trade press (Site Selection Magazine, via search only — not independently fetched) cited a $187M investment and a 105,000 sq ft building; not included here since I couldn't confirm those two figures on a page I fetched myself. Also be aware: a 2024 DCD article (403'd on fetch, so NOT used as a source) described a much larger 'I-80 Commerce Center' two-building proposal (~535K + ~775K sq ft) at what looks like the same general site/intersection under 'Commerce Center LLC' — possibly an earlier or future-phase master plan for the same park. Could not verify, so this record covers ONLY the confirmed Edged 13.2MW project. Worth a follow-up pass to see if the 13.2MW figure has grown, since news headlines referenced the building having since 'topped out.'",
     "water": {
       "coolingType": "closed_loop",
       "reportedMgd": 0,
       "notes": "Closed-loop, air-based ThermalWorks waterless cooling; Edged projects it will save more than 52 million gallons of water annually versus a similar-sized conventional data center. Supports up to 70 kW/rack air-cooled, 200 kW/rack with plug-and-play liquid integration."
     },
+    "subsidies": [
+      {
+        "program": "Tax increment financing (five-year sliding scale)",
+        "amountUsd": 2000000,
+        "jurisdiction": "City of Ankeny",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 187000000,
     "landAcres": 17.5,
+    "jobs": {
+      "permanent": 22,
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -38817,6 +39481,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "elkhorn-ridge-wind-knox-ne",
+    "name": "Elkhorn Ridge Wind Farm",
+    "operator": "Nebraska Public Power District",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.6909,
+      "lon": -97.6252,
+      "city": "Bloomfield",
+      "county": "Knox",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 81
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2009-03",
+        "note": "Nebraska DWEE records a March 2009 online date; Global Energy Monitor records 2009 commissioning.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Elkhorn_Ridge_wind_farm",
+        "label": "Elkhorn Ridge wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "81 MW in both sources. Nebraska DWEE lists NPPD, OPPD, MEAN, Lincoln Electric System and the City of Grand Island as offtakers; GEM records NPPD as 100% owner with Edison Mission Group as operator. Ownership of operating Nebraska wind is frequently restructured — verify the current operator before relying on it.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
+  },
+  {
     "id": "elysian-partners-fairview-crossroads-fairview-township-york-pa",
     "name": "Fairview Crossroads Data Center",
     "operator": "Elysian Partners",
@@ -38928,6 +39643,50 @@
       "notes": "Chesapeake City Council denied the rezoning; project did not proceed."
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "emerick-wind-madison-ne",
+    "name": "Emerick Wind Farm",
+    "operator": "Ørsted",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.891,
+      "lon": -97.7176,
+      "city": "Emerick",
+      "county": "Madison",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 322
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-16",
+        "note": "Global Energy Monitor records the project as \"announced\" with a planned 2029 commissioning.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Emerick_wind_farm",
+        "label": "Emerick wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Single-source (Global Energy Monitor), hence confidence \"reported\". 322 MW, Ørsted (developed originally by Lincoln Clean Energy), planned commissioning 2029. Madison County is one of the three counties (with Wayne and Pierce) a county commissioner named in mid-2026 as being scouted by renewable developers to serve data-center load; Madison County adopted special-permit requirements for data centers in May 2026. Not listed in Nebraska DWEE's wind inventory as of this retrieval — verify against a county zoning filing or an Ørsted release before raising confidence.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "empire-ai-beta-buffalo-ny",
@@ -39367,6 +40126,47 @@
       "offtaker": "Not contracted; developers cite rising Wisconsin demand driven largely by data centers",
       "notes": "New advanced nuclear generation at the retired Kewaunee Power Station site rather than a restart of the 1974-2013 reactor. EnergySolutions is acquiring surrounding land and running site-suitability studies."
     }
+  },
+  {
+    "id": "enseva-hiawatha-ia",
+    "name": "Enseva Hiawatha Data Center",
+    "operator": "Enseva",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0562849,
+      "lon": -91.6795571,
+      "city": "Hiawatha",
+      "county": "Linn County",
+      "street": "755 Metzger Drive",
+      "postalCode": "52233",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-16",
+        "note": "Purpose-built colocation facility at 755 Metzger Drive, Hiawatha, listed as operating with 15,000 sq ft in phase 1 and 2N power infrastructure.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cloudandcolocation.com/datacenters/enseva-hiawatha-data-center/",
+        "label": "Enseva - Hiawatha Data Center",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "15,000 sq ft in phase 1; cabinet densities 10-30 kW; 200 mph wind-rated prestressed concrete construction. The operator's own site (enseva.com) currently serves an expired TLS certificate and could not be retrieved this session, so the facility directory entry is cited instead. Coordinates geocoded from the published street address to an OpenStreetMap address point. Hiawatha is a separate city adjoining Cedar Rapids; this is not the tracked Ark Data Centers (formerly Involta) record.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator describes a closed-loop chilled water system in a 2N redundant configuration, with free cooling available during winter months."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "entergy-arkansas-cypress-solar-battery-jefferson-county-ar",
@@ -46323,6 +47123,7 @@
       "lon": -98.35861,
       "city": "Grand Island",
       "county": "Hall",
+      "street": "380 Museum Drive",
       "state": "NE",
       "precision": "approximate"
     },
@@ -46338,9 +47139,16 @@
         "publisher": "The Block",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.centralnebraskatoday.com/2026/06/26/data-center-nearing-completion-in-east-grand-island/",
+        "label": "Data center nearing completion in east Grand Island",
+        "publisher": "Central Nebraska Today",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-16",
     "notes": "Fortitude Mining Holdings (Zcash-mining subsidiary of Digital Currency Group / Barry Silbert) energized this 12MW facility in east Grand Island, Hall County on/around July 28, 2026 -- described as Fortitude's first SELF-DEVELOPED (greenfield) Nebraska site, sited 'between two solar power facilities' and 'next to a substation with excess capacity', with an estimated power cost of ~$0.045/kWh. Raised Fortitude's total owned-and-operated power portfolio past 60MW across seven sites in four states (SD, NE, TX, NY). Single-outlet sourcing (The Block, a reputable crypto-trade publication reporting the company's own announcement) -> confidence=reported rather than confirmed. Exact parcel/address not given in the source; coordinates are Grand-Island-city-level only.",
     "facilityType": "crypto_mining"
   },
@@ -46976,6 +47784,50 @@
         "fundamental-data-ridgeline-datacenter-tucker-county-wv"
       ],
       "notes": "785MW natural-gas plant with diesel backup, per West Virginia Highlands Conservancy. Diesel backup corroborated by Country Roads News (2026 paywalled report): 'the power plant to run on natural gas, with 30 million gallons of diesel fuel stored on site as a backup' -- consistent with an earlier trade-press description of three 10-million-gallon diesel tanks. Fundamental Data LLC (described by Country Roads News as 'a secretive Virginia company') applied to WV DEP for the air quality construction permit March 18, 2025 (permit R13-3713, Ridgeline Facility); the WV Air Quality Board rejected an environmental-group appeal and upheld the permit February 6, 2026, and a state appeals court dismissed further environmental-group lawsuits in late August 2026, though jurisdictional litigation was still being pursued to the WV Supreme Court as of an August 31, 2026 report. Potential-to-emit figures, if any, from the permit application are not included in this record."
+    }
+  },
+  {
+    "id": "gage-wind-gage-ne",
+    "name": "Gage Wind Project",
+    "operator": "NextEra Energy Resources",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.4197,
+      "lon": -96.663,
+      "city": "Pickrell",
+      "county": "Gage",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 124
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-09-16",
+        "note": "Global Energy Monitor records the project's status as cancelled.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Gage_Wind_Project",
+        "label": "Gage Wind Project",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Single-source (Global Energy Monitor), hence confidence \"reported\". 124 MW at Pickrell, Gage County, recorded as cancelled; coordinates are GEM's own approximate figure. Gage County is also one of the four southeast-Nebraska counties where Tenaska has optioned land for the proposed Google campus, and its planning commission recommended an 18-month data-center moratorium in June 2026 — context worth keeping even for a dead generation project.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
     }
   },
   {
@@ -47917,6 +48769,51 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "global-reach-ames-ia",
+    "name": "Global Reach Ames Data Center",
+    "operator": "Global Reach Internet Productions",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0020484,
+      "lon": -93.6351121,
+      "city": "Ames",
+      "county": "Story County",
+      "street": "2321 North Loop Drive",
+      "postalCode": "50010",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-16",
+        "note": "Operator lists a data center at its Ames headquarters in the Iowa State University Research Park; Business Record records the site as in service since 2017 with 48,000 sq ft.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.globalreach.com/contact/locations/headquarters",
+        "label": "Global Reach headquarters - Ames, Iowa",
+        "publisher": "Global Reach Internet Productions",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Business Record records 14 acres, 48,000 sq ft (25,000 sq ft of additional capacity possible), in service since 2017, assessed valuation $7.3 million. Coordinates geocoded from the operator's published address to the OpenStreetMap building at 2321 North Loop Drive in the ISU Research Park. This is a small enterprise/hosting facility, not a hyperscale site.",
+    "landAcres": 14,
+    "facilityType": "data_center"
   },
   {
     "id": "global-stack-vallejo-fairgrounds-ca",
@@ -49523,10 +50420,20 @@
         "publisher": "KLKN-TV (Lincoln)",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.1011now.com/2026/06/04/construction-begins-10-million-wastewater-line-transport-cooling-water-lincoln-data-center-recovery-site/",
+        "label": "Construction begins on $10 million wastewater line to transport cooling water from Lincoln data center to recovery site",
+        "publisher": "1011 NOW (KOLN)",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-16",
     "notes": "Google's FOURTH Nebraska site by official count and genuinely distinct from both Papillion (Sarpy Co.) and Omaha (Douglas Co.) -- also DISTINCT from the separate proposed Google/Tenaska gas-plant mega-campus already tracked as google-nebraska-ai-campus-proposed (that one is a ~4-county, still-undeveloped 1,000-3,000MW proposal; this one is Google's confirmed, currently-building third/fourth site in north Lincoln). Google's own Nebraska locations page (fetched) confirms Lincoln as a distinct site, 'development announced in 2023', part of a $1.2B investment announced that year across all three then-existing NE locations. A local TV station (KLKN, fetched) confirms the site is 'currently operational with ongoing construction phases' with roughly 200 on-site personnel, and that Google has committed to work with the city on water infrastructure; the city says it is not currently approving additional data centers beyond this one. IMPORTANT CAVEAT: widely-repeated secondary figures for this project (codename 'Agate', ~580 acres, ~$600M, sited northwest of N. 56th St & I-80) come from outlets that 403'd or paywalled on direct fetch this session (Lincoln Journal Star/tollbit, Nebraska Examiner) -- those specific numbers are NOT independently verified here and are omitted from the structured fields (capacityMw/investmentUsd/landAcres) rather than risk propagating an unverified figure; coordinates are Lincoln-city-center-level only. Recommend a follow-up pass to re-fetch a non-paywalled primary source for the acreage/investment/MW specifics. Public-reception check (2026-09-10): Checked Google's own data center locations page (2026-09-10); it describes community partnerships/workforce programs in generic marketing terms but documents no specific public hearing, resident testimony, or independently-reported local reaction.",
+    "water": {
+      "notes": "Google is funding a $10 million, roughly three-mile dedicated line carrying non-contact cooling water from the data center's cooling system at 56th Street and Interstate 80 to Lincoln's Northeast Water Resource Recovery Facility at North 70th and McCormick Drive. The line is sized for 2,040 gallons per minute at peak — about 2.9 million gallons per day — and the water is dechlorinated and discharged to Salt Creek, bypassing standard wastewater treatment. Construction began June 2026 with completion expected January 2027. This is the discharge line's peak design capacity, NOT measured or reported facility water use; do not publish it as consumption. coolingType is left unset: 'non-contact cooling water' does not map cleanly onto the enum's evaporative/closed_loop/air distinction."
+    },
     "facilityType": "data_center"
   },
   {
@@ -50109,9 +51016,16 @@
         "publisher": "1011 Now (KOLN/KGIN)",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.1011now.com/2026/03/13/google-proposes-nebraska-data-center-requiring-more-power-than-all-lincoln/",
+        "label": "Google proposes Nebraska data center requiring more power than all of Lincoln",
+        "publisher": "1011 NOW (KOLN)",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-09-16",
     "notes": "Exact site is unknown and undisclosed. Tenaska has optioned over 2,600 acres across Gage, Lancaster, Otoe, and Cass Counties in SE Nebraska since December 2025. Coordinates are approximate centroid of the Otoe/Gage County search area. Reported capacity range is 1,000–3,000 MW depending on phase; 1,000 MW used as minimum. Google has invested $3.5B in Nebraska since 2019 across existing Papillion, Omaha, and Lincoln data centers. Legislative feasibility depends on LB1261; could be operational by 2029 if approved.",
     "energy": {
       "source": "on_site_gas",
@@ -52314,6 +53228,56 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "grande-prairie-wind-holt-ne",
+    "name": "Grande Prairie Wind Farm",
+    "operator": "BHE Renewables",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.5607,
+      "lon": -98.4443,
+      "county": "Holt",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 400
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2016",
+        "note": "Commissioned; Global Energy Monitor and the Nebraska Department of Water, Energy and Environment both record a 2016 online date.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Grande_Prairie_wind_farm",
+        "label": "Grande Prairie wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Nebraska's largest operating wind farm by nameplate capacity. Nebraska DWEE lists it at 400 MW in Holt County near O'Neill, owned by BHE Renewables, online 2016; Global Energy Monitor agrees on owner, capacity and year and supplies the coordinates.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
+  },
+  {
     "id": "grandilla-foot-creek-491st-thomas-tonopah-az",
     "name": "491st Avenue and Thomas Road Data Center / Solar Site",
     "operator": "Grandilla (Arizona) Inc. and Foot Creek Corporation",
@@ -52510,6 +53474,59 @@
       "unitCount": 1,
       "notes": "SCOPE CAVEAT: this is GRDA system generation, not a behind-the-meter plant dedicated to a single campus. It is recorded because GRDA is the supplying utility for the tracked Google Pryor campus and the MidAmerica Industrial Park data center cluster, and because the dedication coverage explicitly frames the unit against rising demand \"especially as data centers and major companies that use a lot of electricity continue to grow.\" No offtaker or poweredFacilityIds are set, because no compute customer is named as the buyer. A maintainer may reasonably judge this out of scope."
     }
+  },
+  {
+    "id": "great-lakes-colocation-lake-park-ia",
+    "name": "Great Lakes Colocation Data Center",
+    "operator": "Great Lakes Communication",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.455556,
+      "lon": -95.3207429,
+      "city": "Lake Park",
+      "county": "Dickinson County",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-16",
+        "note": "Operator advertises an N+1 colocation facility in Lake Park, Iowa with dual generators, redundant chillers and free-air cooling; Business Record records the company's data center as in service since 2011 with 9,000 sq ft.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://greatlakescolocation.com/contact-us/",
+        "label": "Contact Great Lakes: Advanced Colocation Services in Iowa",
+        "publisher": "Great Lakes Communication",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://greatlakescolocation.com/facility/",
+        "label": "State-of-the-Art Reliability & Security - Great Lakes Colocation",
+        "publisher": "Great Lakes Communication",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "The operator states that for security reasons the facility's exact address is not publicly disclosed, and places it in Lake Park; its corporate office is 1501 35th Ave W, Spencer. Business Record lists the data center against the Spencer corporate address (9,000 sq ft, in service 2011), so the two sources disagree on which town holds the building. Coordinates are the Lake Park municipal centroid and are approximate accordingly. Cooling type is inferred from the operator's own description of a chilled, recirculating plant, per the recirculating-circuit tie-breaker.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator describes redundant chillers plus redundant compressors supporting free-air cooling, with hot/cold aisle separation."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "greeley-wind-nebraska-greeley-ne",
@@ -54263,6 +55280,54 @@
     "lastUpdated": "2026-09-12",
     "notes": "Landing station for the Hawaiki trans-Pacific submarine cable (completed 2018), providing 43 terabits of carrier-neutral capacity via six fiber pairs to the US west coast, Australia, New Zealand and American Samoa. DRFortress has operated landing and colocation activities here under a long-term partnership with Hawaiki dating to 2016; 1547 Critical Systems Realty (which acquired DRFortress in 2025) lists a Kapolei facility (\"HAII1\", branded AlohaNAP-adjacent, ~10,200 sq ft expandable to 60,200 sq ft) that this record treats as the same site rather than a separate parcel, since both describe DRFortress/1547 colocation activity at the one cable landing station Hawaiki owns in Kapolei — flag for a human split if that assumption is wrong. In early 2026 the Honolulu City Council granted a Special Management Area Major Permit for an expansion project at this site to add landing capacity for Google's Taihei and Tabua cables plus BW Digital's own Hawaiki Nui cable. Coordinates are a Census TIGER-line geocode of the street address, not a confirmed parcel survey.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "haystack-wind-wayne-ne",
+    "name": "Haystack Wind Project",
+    "operator": "Ørsted",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.2605,
+      "lon": -97.1983,
+      "city": "Carroll",
+      "county": "Wayne",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-03",
+        "note": "Nebraska DWEE records a March 2022 online date; Global Energy Monitor records 2022 commissioning.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Haystack_Wind_Project",
+        "label": "Haystack Wind Project",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "capacityMw is deliberately unset: the two sources disagree materially. Nebraska DWEE lists 255 MW; Global Energy Monitor lists 298 MW. Both agree on Ørsted as owner/operator, Wayne County (Carroll) as the location and 2022 as the commissioning year. Resolve against an Ørsted or EIA-860 filing before publishing a number.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "hca-it-services-data-center-nashville-tn",
@@ -56976,6 +58041,46 @@
     }
   },
   {
+    "id": "ip-pathways-urbandale-ia",
+    "name": "IP Pathways Urbandale Data Center",
+    "operator": "IP Pathways",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.6275758,
+      "lon": -93.7672535,
+      "city": "Urbandale",
+      "county": "Polk County",
+      "street": "3600 109th Street",
+      "postalCode": "50322",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-16",
+        "note": "Operator lists the Urbandale facility as a live colocation data center with 5,817 sq ft of white space and 5,000 kW of critical power capacity.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ippathways.com/solutions/data-center-and-colocation/",
+        "label": "Data Center and Colocation Services - IP Pathways",
+        "publisher": "IP Pathways",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Operator-published figures: 5,817 sq ft white space, 5,000 kW critical power, up to 17.2 kW per rack, SOC 2 Type II and HIPAA compliant, carrier-neutral with a meet-me room. Coordinates geocoded from the operator's published street address to an OpenStreetMap building-level match. IP Pathways also operates data centers in Omaha, NE and Kansas City, MO; only the Iowa site is recorded here.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "iren-horizon-childress-tx",
     "name": "IREN Horizon — Childress, TX",
     "operator": "IREN (Iris Energy)",
@@ -59492,6 +60597,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "karis-dubuque-county-ia",
+    "name": "Karis Dubuque County Data Center",
+    "operator": "Karis",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.388,
+      "lon": -90.67,
+      "county": "Dubuque County",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-16",
+        "note": "Karis filed an incomplete rezoning application with the Dubuque County zoning department for farmland near Olde Davenport Road between Laudeville and Feeney roads, east of Dubuque Regional Airport; the company says discussions have been preliminary and no final decision to proceed has been made.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.telegraphherald.com/news/tri-state/article_76c9d4f6-6aa1-410a-9073-4be5b479363e.html",
+        "label": "Company seeking Dubuque County data center land revealed",
+        "publisher": "Telegraph Herald",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kcrg.com/2026/07/10/potential-dubuque-data-center-could-require-3-million-gallons-water-city-seeks-public-input/",
+        "label": "Potential Dubuque data center could require 3 million gallons of water, city seeks public input",
+        "publisher": "KCRG-TV9",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Coordinates are approximate: the point sits on the Olde Davenport Road corridor between Feeney Road and Laudeville Road in unincorporated Dubuque County, the location described in reporting. No parcel has been identified publicly and no formal site plan or development agreement has been presented. Acreage, capacity, investment and job figures were not disclosed by the company.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Karis told the City of Dubuque a closed-loop cooling system would need up to 3 million gallons for its initial charge and up to 250,000 gallons annually to maintain."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The proposal prompted Dubuque County supervisors to enact a one-year data center moratorium; the city held public input sessions in July 2026 and both city and county began drafting data center ordinances.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "kentucky-industrial-alliance-cave-point-cave-city-ky",
     "name": "Cave Point Commerce Center",
     "operator": "Kentucky Industrial Alliance LLC",
@@ -61238,6 +62394,57 @@
       "permanent": 66
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "little-blue-wind-webster-ne",
+    "name": "Little Blue Wind Project",
+    "operator": "NextEra Energy Resources",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.2863,
+      "lon": -98.5777,
+      "city": "Blue Hill",
+      "county": "Webster",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 249.6
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-12",
+        "note": "Nebraska DWEE records a December 2021 online date.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Little_Blue_Wind_Project",
+        "label": "Little Blue Wind Project",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Spans Webster and Franklin counties per Nebraska DWEE, which lists 249.6 MW; Global Energy Monitor lists 250.7 MW and places the site at Blue Hill, Webster County. The state figure is recorded here.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "ln-compute-cuthbert-ga",
@@ -67960,6 +69167,7 @@
       "lon": -93.7083034,
       "city": "West Des Moines",
       "county": "Polk",
+      "street": "550 SE White Crane Road",
       "state": "IA",
       "precision": "approximate"
     },
@@ -67978,10 +69186,18 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-16",
     "notes": "Announced April 2014. 8-building campus on SE White Crane Rd / 3590 SE Soteria Ave, south of the Ginger East site. Distinct parcel/campus from all currently-tracked Microsoft IA records. Annual property tax ~$8.1M, $45M public infrastructure investment per WDM Chamber (not campus construction cost — other reporting citing ~$1.1B total investment was not independently fetched this session and is omitted).",
+    "landAcres": 127,
     "facilityType": "data_center"
   },
   {
@@ -69217,9 +70433,16 @@
         "publisher": "Go West Des Moines (City of West Des Moines economic development)",
         "retrievedAt": "2026-08-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-16",
     "notes": "1475 SE Maffitt Lake Road - a distinct 146-acre campus from the already-tracked 'Ginger West' (11100 Booneville Rd, different parcel). Building 1 (250,000 sq ft) came online 2023; up to 5 buildings / ~1.8M sq ft planned campus-wide (Microsoft's own naming convention pairs Ginger East/West as siblings but they are separate parcels/addresses). investmentUsd is the value of ONE building permit, not full campus capex. Public-reception check (2026-09-10): Checked baxtel.com's project page (2026-09-10); it notes the West Des Moines Planning and Zoning Commission approved site plans for two new data centers in February 2024, but gives no detail on public input, hearing testimony, or resident/official reaction to that approval.",
     "investmentUsd": 358000000,
     "landAcres": 146,
@@ -69297,9 +70520,16 @@
         "publisher": "Go West Des Moines (City of West Des Moines economic development)",
         "retrievedAt": "2026-08-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-21",
+    "lastUpdated": "2026-09-16",
     "notes": "Site at 11100 Booneville Rd area, West Des Moines (Polk County). 1.8M sq ft planned across multiple buildings. Turner Construction is general contractor; completion estimated summer 2028. Companion Ginger East campus (124 acres, 5 buildings) is a separate site in West Des Moines. Part of Microsoft's multi-billion dollar total Iowa investment since 2009. Planned MW capacity not confirmed from primary sources; 444 MW figure removed as unsupported. Iowa's Sec. 423.3(95) data-center sales-tax exemption applies, but Iowa data-center incentive awards are not publicly disclosed; no Ginger West-specific job count is published.",
     "energy": {
       "source": "grid",
@@ -70444,6 +71674,7 @@
       "lon": -93.8253005,
       "city": "West Des Moines",
       "county": "Dallas",
+      "street": "8855 Grand Avenue",
       "state": "IA",
       "precision": "approximate"
     },
@@ -70462,10 +71693,18 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-16",
     "notes": "Microsoft's FIRST Iowa data center campus (planned since 2008, construction from 2010, expanded 2011/2013) - a two-building campus at/near 8855 Grand Ave, distinct from the already-tracked 'Ginger West' campus (11100 Booneville Rd). Address sourced from a secondary aggregator search summary (not independently fetched this session) but independently geocode-verified as a real West Des Moines / Dallas County address via OSM Nominatim. Annual property tax ~$1.6M and $10M public infrastructure investment per WDM Chamber page (not campus construction cost).",
+    "landAcres": 41,
     "facilityType": "data_center"
   },
   {
@@ -70598,6 +71837,7 @@
       "lon": -93.7755662,
       "city": "West Des Moines",
       "county": "Warren",
+      "street": "5855 SW Kerry Street",
       "state": "IA",
       "precision": "approximate"
     },
@@ -70623,10 +71863,18 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.businessrecord.com/growth-of-data-centers-in-iowa/",
+        "label": "Growth of data centers in Iowa",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-16",
     "notes": "Announced 2016; Microsoft's largest Iowa campus (1.7M sq ft once built out), at 5855 SW Kerry St. Distinct parcel/campus from all currently-tracked Microsoft IA records. Other reporting (not independently fetched this session) says the site spans 160 acres in Warren County + 40 in Madison County, and totals $1.5-2B investment; only the Warren County / building-address / sqft facts below are independently confirmed via direct fetch.",
+    "landAcres": 110,
     "facilityType": "data_center"
   },
   {
@@ -71302,6 +72550,106 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "midamerican-holliday-creek-solar-ia",
+    "name": "Holliday Creek Solar",
+    "operator": "MidAmerican Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.5671497,
+      "lon": -94.101957,
+      "county": "Webster County",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-07-27",
+        "note": "MidAmerican completed its 100 MW Holliday Creek solar array in Webster County, the largest of its six inaugural solar projects, with 265,000 panels.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.midamericanenergy.com/newsroom/2022-holliday-creek",
+        "label": "MidAmerican powers-up its largest solar array, sixth in 2022",
+        "publisher": "MidAmerican Energy",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://api.openstreetmap.org/api/0.6/relation/15697742.json",
+        "label": "OpenStreetMap relation 15697742 - Holliday Creek Solar (100 MW, EIA 64738, in service 2022-07)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "MidAmerican's own release places the array in Webster County northeast of Fort Dodge; county-level reporting describes it as about three miles southeast of Badger on roughly 700 acres. Acreage is not asserted here because it was not stated in a source retrieved this session.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "265,000 panels; utility states peak output can serve the equivalent of 19,000 average Iowa homes. EIA plant ID 64738. Located northeast of Fort Dodge, near Badger."
+    }
+  },
+  {
+    "id": "midamerican-knoxville-bess-ia",
+    "name": "MidAmerican Energy Knoxville Battery Storage",
+    "operator": "MidAmerican Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.315934,
+      "lon": -93.0608256,
+      "city": "Knoxville",
+      "county": "Marion County",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2019",
+        "note": "1 MW / 4 MWh utility-scale battery pilot announced November 2018 and now in operation in Knoxville, able to supply about 900 average Iowa homes for up to four hours.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.midamericanenergy.com/battery-storage",
+        "label": "Battery Storage - MidAmerican Energy",
+        "publisher": "MidAmerican Energy",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://api.openstreetmap.org/api/0.6/way/1088636714.json",
+        "label": "OpenStreetMap way 1088636714 - Knoxville Power Plant (oil;battery, 17.1 MW, EIA 62569;7849)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Coordinates are approximate: the OpenStreetMap object covers the whole Knoxville Power Plant site, which includes an older oil-fired peaker as well as the battery, so the point is the site centroid rather than the battery footprint. Only the 1 MW battery is recorded here - the 17.1 MW site figure includes the peaker and must not be read as storage capacity. Small pilot asset; flagged for the reviewer in case the project's scope excludes sub-5 MW pilots.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "battery",
+      "notes": "4 MWh of storage. Framed by the utility as a pilot for pairing storage with its roughly 2,600 wind turbines to manage intermittency and peak demand. Co-located with MidAmerican's Knoxville peaking plant, which OpenStreetMap/EIA-860 record as a combined 17.1 MW oil-and-battery site (EIA plant IDs 62569 and 7849)."
+    }
   },
   {
     "id": "midcon-recovery-solutions-oklahoma-city-ok",
@@ -73662,6 +75010,50 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "nebraska-colocation-centers-lincoln-ne",
+    "name": "Nebraska Colocation Centers — Lincoln (Sharp Building)",
+    "operator": "Nebraska Colocation Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.8120852,
+      "lon": -96.7022622,
+      "city": "Lincoln",
+      "county": "Lancaster",
+      "street": "206 S 13th St",
+      "postalCode": "68508",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2013-10",
+        "note": "NCC opened the first phase of raised-floor data center space in the Sharp Building in October 2013.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://strictly-business.com/cover-story/nebraska-colocation-centers-defining-moment-technology-lincoln-nebraska/",
+        "label": "Nebraska Colocation Centers — A Defining Moment in Technology for Lincoln, Nebraska",
+        "publisher": "Strictly Business Magazine",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=206+S+13th+St%2C+Lincoln%2C+NE+68508&format=json&limit=1",
+        "label": "OpenStreetMap geocode — Sharp Building, 206 S 13th St, Lincoln NE 68508",
+        "publisher": "OpenStreetMap / Nominatim",
+        "retrievedAt": "2026-09-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Carrier-neutral colocation across floors of the 1929 Sharp Building at 206 S. 13th Street in downtown Lincoln, opened October 2013. Coordinates are the OpenStreetMap building match for that address (display name \"Sharp, 206, South 13th Street, Downtown, Lincoln, Lancaster County, Nebraska, 68508\"), not a recalled geocode. Operationally interconnected with the operator's Omaha carrier hotel at 1623 Farnam, which this tracker already carries as a separate site — this is the Lincoln site, not a duplicate of it. Capacity, floor area and utility feeds are not asserted: the source describes redundant UPS, four Lincoln Electric System circuits and redundant CRAC cooling but publishes no MW or square-footage figure. Operator name is as printed in the source; the 1623 Farnam site is marketed under Nebraska Data Centers, so verify the current corporate name before publishing.",
+    "facilityType": "data_center"
   },
   {
     "id": "nemadji-trail-energy-center-superior-wi",
@@ -76129,6 +77521,55 @@
     }
   },
   {
+    "id": "nppd-sheldon-station-lancaster-ne",
+    "name": "Sheldon Station",
+    "operator": "Nebraska Public Power District",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.559264,
+      "lon": -96.783911,
+      "city": "Hallam",
+      "county": "Lancaster",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 228
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1961",
+        "note": "Unit 1 online 1961; Unit 2 online 1965 (Global Energy Monitor).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Sheldon_Station",
+        "label": "Sheldon Station",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.powermag.com/nebraska-public-power-district-breaks-ground-on-694-mw-princeton-road-station/",
+        "label": "Nebraska Public Power District Breaks Ground on 694-MW Princeton Road Station",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "NPPD's coal station at Hallam in southern Lancaster County: Unit 1 (108.8 MW, 1961) and Unit 2 (119.9 MW, 1965), both subcritical bituminous coal, 228 MW combined. energy.source is left unset because the schema's enum has no coal member. Included because this site is now the anchor of a cluster the tracker already partly covers: NPPD broke ground on the 694 MW Princeton Road Station directly adjacent on 17 July 2026, and the proposed Sagebrush/Stark Power 1.7 GW hyperscale campus near Hallam is sited explicitly on its proximity to Sheldon and Princeton Road.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "unitCount": 2
+    }
+  },
+  {
     "id": "nscale-monarch-mason-county-wv",
     "name": "Monarch Compute Campus",
     "operator": "Nscale",
@@ -78173,9 +79614,16 @@
         "publisher": "The Gazette",
         "retrievedAt": "2026-09-04",
         "kind": "press"
+      },
+      {
+        "url": "https://corridorbusiness.com/building-permit-issued-for-new-cedar-rapids-data-center/",
+        "label": "Building permit issued for new Cedar Rapids data center",
+        "publisher": "Corridor Business Journal",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-16",
     "notes": "Just north of Highway 30 on the southwest side. Over 98,000 sq ft, no city incentives, construction expected to start in fall 2026 or early spring 2027 depending on equipment availability. Permit documents name the applicant entity as CLOP Cedar Rapids, IA LLC. The Gazette reports the facility is intended for networking, signal boosting and storage rather than AI training or inference, so no aiClassification value is recorded — the existing enum cannot express 'assessed, not AI.' Oppidan built a comparable 60,000 sq ft, 5 MW facility in Des Moines in 2024, which is tracked separately.",
     "water": {
       "coolingType": "closed_loop",
@@ -78233,9 +79681,16 @@
         "publisher": "The Gazette",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://corridorbusiness.com/building-permit-issued-for-new-cedar-rapids-data-center/",
+        "label": "Building permit issued for new Cedar Rapids data center",
+        "publisher": "Corridor Business Journal",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-16",
     "notes": "60,000 sq ft, 5 MW LEED-certified data center delivered design-build by The Weitz Company for developer Oppidan. Construction started summer 2023 and completed May 2024. Oppidan's first data center in Iowa, and the model for its larger Cedar Rapids project. A street address (5900 Thornton Ave) appears in third-party listings but could not be confirmed on a page fetched this session, so it is not recorded here.",
     "facilityType": "data_center"
   },
@@ -79006,6 +80461,69 @@
     }
   },
   {
+    "id": "panama-energy-center-lancaster-ne",
+    "name": "Panama Energy Center",
+    "operator": "NextEra Energy Resources",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.53778,
+      "lon": -96.787246,
+      "city": "Hallam",
+      "county": "Lancaster",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 304
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-07-15",
+        "note": "1011 NOW reported construction and testing under way and approaching completion, with operations expected December 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nexteraenergyresources.com/panama-energy-center/project-overview.html",
+        "label": "Panama Energy Center — project overview",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.1011now.com/2026/07/15/what-does-it-take-build-nebraskas-largest-solar-energy-facility/",
+        "label": "What does it take to build Nebraska's largest solar energy facility?",
+        "publisher": "1011 NOW (KOLN)",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/solar-thermal-photovoltaic/solar-energy-generation-nebraska",
+        "label": "Solar Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Set to be Nebraska's largest solar facility, just east of the village of Hallam in southwest Lancaster County. Developer states 304 MW solar + 120 MW storage, approximately 1,100 acres, up to 250 construction jobs, and $42 million in community revenue over the first 30 years; 1011 NOW reported ~400 workers at peak and 4 permanent staff. landAcres is deliberately unset — the developer's page says approximately 1,100 acres while local coverage says 2,400 acres, and the two are not reconcilable from what was read. COORDINATES ARE APPROXIMATE: the pin is the village of Hallam (OpenStreetMap/Nominatim); the array lies east of it. Note this is a different Hallam-area project from the proposed Sagebrush hyperscale campus and from NPPD's Sheldon and Princeton Road stations.",
+    "energy": {
+      "source": "solar",
+      "notes": "Up to 304 MW of photovoltaic solar paired with 120 MW of battery energy storage. Phase one — 202 MW of solar plus 80 MW of storage — was nearing completion in July 2026, with roughly half a million panels installed at 8,000–10,000 per day."
+    },
+    "jobs": {
+      "construction": 250,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
     "id": "panattoni-burgin-mercer-county-ky",
     "name": "Panattoni Burgin Data Center Campus",
     "operator": "Panattoni",
@@ -79228,6 +80746,65 @@
       "status": "contested",
       "notes": "Sioux County has a one-year moratorium on data centers in unincorporated areas, effective 2026-06-16, and no formal county approval has been granted. At a public meeting residents sought specific enforceable commitments rather than estimates, and raised water supply impact on nearby wells, low-frequency noise effects on people and livestock, construction duration and evening work schedules, and accountability under future ownership. PathOne says it will pay full property taxes without requesting abatement, and projects 10 to 20 permanent full-time positions plus temporary construction jobs.",
       "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "pathone-ida-county-galva-ia",
+    "name": "PathOne Ida County Data Center (Galva site)",
+    "operator": "PathOne Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.5069289,
+      "lon": -95.4172221,
+      "city": "Galva",
+      "county": "Ida County",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-08-11",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-11",
+        "note": "PathOne presented early plans for a small-scale data center to the Ida County Board of Supervisors, naming two industrial-zoned candidate sites — the shuttered Quad County ethanol plant near Galva and a site near Arthur. No site has been selected and no application has been filed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ktiv.com/2026/08/11/ida-county-data-center-proposal-path-one-presents-plans-urges-strong-county-rules/",
+        "label": "Ida County data center proposal: Path One presents plans, urges strong county rules",
+        "publisher": "KTIV",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ktiv.com/2026/08/25/arthur-residents-ask-questions-pathones-data-center-meeting/",
+        "label": "Arthur residents question PathOne's data center plans",
+        "publisher": "KTIV",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.businessrecord.com/iowa-communities-grapple-with-regulating-data-centers-as-development-spreads/",
+        "label": "Iowa communities grapple with regulating data centers as development spreads",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "PathOne described a 10-25 MW facility of about 40,000 sq ft on 5-25 acres costing $100-150 million; because those are ranges rather than single figures, capacityMw, landAcres and investmentUsd are deliberately left unset. This record is placed at the Galva option (the shuttered Quad County ethanol plant, which PathOne named specifically); the alternative site near Arthur is about 20 km south and no selection has been made. Distinct from the tracked PathOne Sioux County (Hull) site.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Company described a closed-loop water system using 350,000-700,000 gallons annually (35,000-70,000 gallons per MW per year), with water not returning to the local ecosystem."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Ida County enacted a data center moratorium effective June 30, 2026. Residents packed informational meetings in Ida Grove and Arthur in August 2026 with questions on noise, electricity use, fire suppression and property taxes; PathOne is forming a community advisory council and has urged the county to write strong rules first.",
+      "sourceIndex": 1
     },
     "facilityType": "data_center"
   },
@@ -80180,6 +81757,61 @@
     }
   },
   {
+    "id": "platte-wind-keith-ne",
+    "name": "Platte Wind",
+    "operator": "NextEra Energy Resources",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.1248328,
+      "lon": -101.7189583,
+      "city": "Ogallala",
+      "county": "Keith",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 800
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-16",
+        "note": "NextEra Energy Resources' project page describes the project as proposed and scheduled to begin operations by June 2028, subject to local and state approvals; Nebraska DWEE lists it as under development with the same June 2028 target.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nexteraenergyresources.com/platte-wind/project-overview.html",
+        "label": "Platte Wind — project overview",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Up to 250 GE turbines totalling approximately 800 MW across Keith, Garden and Deuel counties; up to 300 construction jobs; approximately $98.5 million in additional county revenue and approximately $180 million in payments to Deuel County landowners, both estimated over the first 30 years (developer figures, subject to change). Would be Nebraska's largest wind project by a wide margin. COORDINATES ARE APPROXIMATE: the project spans three counties and has no single published site point, so the pin is the Keith County seat (Ogallala), geocoded via OpenStreetMap/Nominatim — it is an index point, not a surveyed footprint.",
+    "energy": {
+      "source": "wind"
+    },
+    "jobs": {
+      "construction": 300,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
+  },
+  {
     "id": "platteview-solar-saunders-ne",
     "name": "Platteview Solar",
     "operator": "AES Corporation",
@@ -80291,6 +81923,56 @@
       "offtaker": "Digi Power X Inc. (non-binding letter of intent only)",
       "unitCount": 2,
       "notes": "Coal-fired station acquired by Omnis in July 2023 and marketed for conversion to hydrogen/graphite production, which never happened. Omnis Pleasants LLC filed Chapter 11 on 2026-07-27 with more than $70 million of debt, including $50.9 million owed to the West Virginia Economic Development Authority and $20 million to modular-data-center builder Bilt Technology LLC. The plant employs 136 people and continues to operate while a going-concern sale is pursued. Its compute linkage is the January 2026 Digi Power X LOI for up to 1.3 GW of load study and up to 200 leased acres — an intent, not a contracted offtake."
+    }
+  },
+  {
+    "id": "plum-creek-wind-wayne-ne",
+    "name": "Plum Creek Wind Farm",
+    "operator": "Ørsted",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.1441,
+      "lon": -97.1375,
+      "county": "Wayne",
+      "state": "NE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 230
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020",
+        "note": "Commissioned 2020 per Global Energy Monitor; Nebraska DWEE also lists a 2020 online date at 230 MW.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Plum_Creek_(%C3%98rsted)_wind_farm",
+        "label": "Plum Creek (Ørsted) wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Both sources give 230 MW in Wayne County. Distinct from the Haystack Wind Project, also Ørsted-owned and also in Wayne County — GEM carries separate coordinates, capacity and commissioning year for each.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
     }
   },
   {
@@ -81896,6 +83578,56 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "prairie-breeze-wind-antelope-ne",
+    "name": "Prairie Breeze Wind Energy Center",
+    "operator": "Invenergy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.9517,
+      "lon": -98.1165,
+      "county": "Antelope",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 311
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2014-03",
+        "note": "Phase I online March 2014 (Nebraska DWEE); phases II and III followed in 2015 and 2016.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Prairie_Breeze_wind_farm",
+        "label": "Prairie Breeze wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Three phases. Global Energy Monitor: phase 1 201 MW (2014) at 41.9517/-98.1165, phase 2 74 MW (2015) at 41.9729/-97.8735, phase 3 36 MW (2016) at 41.9736/-97.8520 — total 311 MW, operated by Invenergy throughout (phases 2 and 3 are 90% owned by Excelsior Energy Capital). Nebraska DWEE lists the same three phases at 200.6 / 73.39 / 35.8 MW (309.79 MW total) with OPPD, Lincoln Electric System and the municipalities of Grand Island, Nebraska City and Neligh as the respective offtakers, and records phases spanning Antelope, Boone and Madison counties. Coordinates are phase 1's, hence precision \"approximate\" for the campus as a whole.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "prairie-ronde-solar-st-landry-la",
@@ -85240,9 +86972,16 @@
         "publisher": "The Gazette (Cedar Rapids)",
         "retrievedAt": "2026-07-18",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businessrecord.com/iowa-communities-grapple-with-regulating-data-centers-as-development-spreads/",
+        "label": "Iowa communities grapple with regulating data centers as development spreads",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-18",
+    "lastUpdated": "2026-09-16",
     "notes": "Coordinates approximate for Big Cedar Industrial Center; parcel is adjacent to Google's campus in the same 1,391-acre industrial park. $10B investment is total planned across 7 phases over up to 25 years; minimum $250M per phase, each requiring a 300,000 sq ft building. 7 buildings planned at full build-out. Permanent jobs figure is minimum per phase. QTS Co-CEO Tag Greason stated the completed seven-building campus will ultimately draw about 1,050 MW of power from Alliant Energy (planned, full build-out). QTS Data Centers is owned by Blackstone (2021 take-private).",
     "energy": {
       "source": "grid",
@@ -89725,6 +91464,56 @@
     "facilityType": "data_center"
   },
   {
+    "id": "rokeby-energy-center-lancaster-ne",
+    "name": "Rokeby Energy Center",
+    "operator": "NextEra Energy Resources",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.7128546,
+      "lon": -96.7351763,
+      "county": "Lancaster",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 226
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-16",
+        "note": "NextEra's community-benefits page targets operations \"as early as December 2026, pending all required permits and approvals\"; Nebraska DWEE lists the project as under development.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nexteraenergyresources.com/rokeby-energy-center/community-benefits.html",
+        "label": "Rokeby Energy Center — community benefits",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/solar-thermal-photovoltaic/solar-energy-generation-nebraska",
+        "label": "Solar Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Up to 226 MW of solar in Lancaster County with a 30-year operating life; the developer cites \"hundreds of construction jobs\" without a number, so jobs is left unset. Third distinct NextEra solar project proposed in Lancaster County alongside Panama Energy Center and separate from the Ranger Power Salt Creek site. COORDINATES ARE APPROXIMATE: the pin is the Rokeby locality south of Lincoln (OpenStreetMap/Nominatim), not a surveyed array footprint.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
     "id": "roswell-information-park-chaves-county-nm",
     "name": "Roswell Information Park",
     "operator": "Roswell Information Park LLC (developer Sustany LLC)",
@@ -91213,7 +93002,7 @@
         "url": "https://www.1011now.com/2026/08/27/data-center-developers-eyeing-land-near-hallam/",
         "label": "Data center developers eyeing land near Hallam",
         "publisher": "1011 NOW (KOLN)",
-        "retrievedAt": "2026-09-04",
+        "retrievedAt": "2026-09-16",
         "kind": "press"
       },
       {
@@ -91224,11 +93013,14 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-09-16",
     "notes": "Land assemblage only — memorandums of purchase agreement with 13 landowners along Southwest 58th Street just west of Hallam, giving exclusivity windows of roughly six months to four years. Sagebrush Infrastructure Partners LLC was acquired by Tel Aviv-based Stark Power in June 2026 as part of a reported 5.6 GW US development pipeline; the Hallam site is one of five planned hyperscale campuses targeting MISO and SPP territory. Coordinates are an approximation of the reported SW 58th Street assemblage west of Hallam; no parcel map has been published. Distinct from the separate 35 MW Monolith/Crusoe proposal inside the Village of Hallam's zoning jurisdiction.",
     "energy": {
       "source": "on_site_gas",
       "notes": "Sagebrush is described as a developer of hyperscale data centers with co-located natural gas-fired power plants. Reporting says the developer wants natural gas, water, and a grid interconnection as a redundant source: \"They're going to provide their own power, but they also want to hook up to the grid in case their power goes down.\" The optioned land sits near NPPD's Sheldon Station and its Princeton Road Station site."
+    },
+    "water": {
+      "notes": "The campus requires water access; 1011 NOW reports Hallam's water supply as one of the site's attractions for the developer. No withdrawal or consumption figure has been published."
     },
     "landAcres": 1400,
     "community": {
@@ -91700,6 +93492,69 @@
       "sourceIndex": 2
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "salt-creek-solar-lancaster-ne",
+    "name": "Salt Creek Solar",
+    "operator": "Ranger Power",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.8326,
+      "lon": -96.5052,
+      "county": "Lancaster",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 250
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-16",
+        "note": "Developer's site records a special permit approved by the Lincoln–Lancaster County Planning Commission and the Lincoln City Council; Nebraska DWEE still lists the project as under development.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://saltcreeksolar.com/",
+        "label": "Salt Creek Solar by Ranger Power",
+        "publisher": "Ranger Power",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Salt_Creek_solar_farm",
+        "label": "Salt Creek solar farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/solar-thermal-photovoltaic/solar-energy-generation-nebraska",
+        "label": "Solar Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "250 MWac on approximately 1,500 acres east of Lincoln; developer projects a $230 million investment, more than 300 construction jobs and roughly $20 million in lifetime tax revenue. Confidence is \"reported\" rather than \"confirmed\" because the three sources disagree on whether the project is live: Global Energy Monitor marks it shelved (inferred October 2025), Nebraska DWEE still lists it under development, and the developer's own site is undated. Neighbours filed suit against the approval. COORDINATES ARE APPROXIMATE: GEM's own approximate figure.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 230000000,
+    "landAcres": 1500,
+    "jobs": {
+      "construction": 300,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
   },
   {
     "id": "samx-data-centers-remington-fauquier-va",
@@ -94238,6 +96093,50 @@
     "lastUpdated": "2026-08-08",
     "notes": "Manchester City Council approved the site plan for what company owner Adam Haynes called the company's 'largest facility yet': 50 modular ~8x20-ft container units (each paired with cooling units), a new electrical substation, and a small office building, in Manchester's industrial park. Draws power from a separate electrical grid per the company; air-cooled, minimal water use. Six to eight full-time jobs. Construction was reported (as of Jan 2025) scheduled to start 'later this spring' [2025] — that's the last independently-confirmed checkpoint I could source; by now (Aug 2026, ~19 months later) it has very likely advanced to under_construction or operational, but I could not independently reconfirm current status, so left it at the last-verified 'permitted' (site-plan-approved) stage. RECOMMEND A STATUS RECHECK before publishing. Exact street address (widely reported elsewhere as 1016 Grant Street) is NOT included here because I only ever saw it in WebSearch AI-summaries of manchesterpress.com/telegraphherald.com, never on a page I successfully fetched (manchesterpress.com 429'd twice) — used Manchester city-seat coordinates instead per the approximate-precision fallback rule. No MW capacity figure found anywhere.",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "sioux-county-wind-sioux-ne",
+    "name": "Sioux County Wind Farm",
+    "operator": "NextEra Energy Resources",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.6873162,
+      "lon": -103.883042,
+      "city": "Harrison",
+      "county": "Sioux",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-16",
+        "note": "Nebraska DWEE lists the project as under development with no target date.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dwee.nebraska.gov/state-energy-information/energy-statistics/fuels/wind/wind-energy-generation-nebraska",
+        "label": "Wind Energy Generation in Nebraska",
+        "publisher": "Nebraska Department of Water, Energy and Environment",
+        "retrievedAt": "2026-09-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Single-source (Nebraska DWEE), hence confidence \"reported\". Sioux County board and planning-commission minutes appear to record a conditional-use-permit application by Sioux County Wind Farm, LLC for a 300 MW / ~107-turbine project, but the county's posted PDFs would not resolve or render this session, so no permit detail is asserted here — a curator should pull those minutes directly before raising confidence or setting status to \"permitted\". COORDINATES ARE APPROXIMATE: the pin is the county seat (Harrison, via OpenStreetMap/Nominatim); DWEE places the project in eastern unincorporated Sioux County, so the true site lies east of this point.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "site-layer-4-goshen-hole-platte-county-wy",
@@ -99174,6 +101073,68 @@
     "facilityType": "data_center"
   },
   {
+    "id": "swarm-systems-marshalltown-ia",
+    "name": "Swarm Systems Marshalltown Data Center",
+    "operator": "Swarm Systems",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.056,
+      "lon": -92.897,
+      "city": "Marshalltown",
+      "county": "Marshall County",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-08-26",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-26",
+        "note": "Swarm Systems CEO Amir Atefi presented to the Marshalltown City Council seeking a purchase contract for 21 acres of city-owned land in the Edgewood Industrial Park to conduct due diligence; the council passed a 120-day data center moratorium the same night.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.timesrepublican.com/news/todays-news/2026/08/city-council-passes-second-and-third-readings-of-data-center-moratorium-hears-from-prospective-developer/",
+        "label": "City council passes second and third readings of data center moratorium, hears from prospective developer",
+        "publisher": "Times Republican",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.businessrecord.com/iowa-communities-grapple-with-regulating-data-centers-as-development-spreads/",
+        "label": "Iowa communities grapple with regulating data centers as development spreads",
+        "publisher": "Business Record",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-16",
+    "notes": "Building size is reported inconsistently: the Times Republican account of the Aug. 26, 2026 council presentation says 125,000 sq ft, while Business Record reports 150,000 sq ft. Jobs were described as a 50-60 permanent range; the lower bound is recorded. No MW capacity was stated. Coordinates are approximate — the point sits at the JBS Marshalltown industrial site, next to which the Edgewood Industrial Park city-owned parcels lie; no specific parcel has been identified publicly.",
+    "energy": {
+      "source": "grid",
+      "notes": "Developer told the council there would be no on-site power generation; the facility would tie into the electrical grid."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer stated annual water use under 500,000 gallons using a closed-loop recirculation system on roughly a 10-year cycle."
+    },
+    "investmentUsd": 345000000,
+    "landAcres": 21,
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Marshalltown City Council adopted a 120-day data center moratorium (expires Nov. 23, 2026, extendable 60 days) while drafting land-use rules; a public petition opposing data centers in Marshalltown is circulating. The developer said it supports the moratorium and is requesting no tax incentives.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "swift-willow-westover-al",
     "name": "Swift Willow Westover Data Center Campus",
     "operator": "Swift Willow Property, LLC",
@@ -102322,9 +104283,16 @@
         "publisher": "Grist",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.1011now.com/2026/03/13/google-proposes-nebraska-data-center-requiring-more-power-than-all-lincoln/",
+        "label": "Google proposes Nebraska data center requiring more power than all of Lincoln",
+        "publisher": "1011 NOW (KOLN)",
+        "retrievedAt": "2026-09-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-16",
     "notes": "The dedicated-generation half of the proposed Google/Tenaska southeast-Nebraska campus already tracked as google-nebraska-ai-campus-proposed, split into its own record per the dataset's same-site power+compute convention (cf. alterra-marshall-technology-energy-center-gas-mi). Tenaska (Omaha-based) would build and operate a privately owned combined-cycle natural gas plant sized at 1,000-3,000 MW — at the top of that range larger than Gerald Gentleman Station, Nebraska's largest existing plant. A Tenaska representative told Otoe County landowner Rick Wheatley the company was assembling roughly 2,000 acres near a gas pipeline for a plant that could serve an AI center; landAcres records that stated assembly TARGET, not a purchased parcel. capacityMw.planned uses the LOW end (1,000 MW) of the reported range. Carbon capture is planned with Tallgrass Energy named as a possible CO2 transporter — Tallgrass has publicly denied any current partnership, so that link is recorded as reported-and-denied, not as fact. The project depends on passage of Nebraska LB1261, which would let privately owned plants interconnect to public power district grids and sell excess power back. No site has been fixed: Tenaska holds options across Gage (1,509 ac), Otoe (1,454 ac), Cass (1,123 ac) and Lancaster (~680 ac) counties. Coordinates mirror the approximate Otoe/Gage search-area centroid already used on the paired compute record — NOT a siting-confirmed point.",
     "energy": {
       "source": "on_site_gas",
