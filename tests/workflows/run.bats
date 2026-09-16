@@ -491,3 +491,120 @@ write_fixture() {
 	[ "$status" -eq 0 ]
 	[ "$output" = "detector-broken" ]
 }
+
+# ---------------------------------------------------------------------------
+# neon-sync.yml — the two artifact path lists vs build-map-data.mjs's outputs
+#
+# Why this exists: PR #329 (2026-09-16) opened red. `build:mapdata` gained two
+# committed outputs in #324/#325 — components/home/hero-plate-paths.ts and
+# public/data/pipeline-history.json — but neon-sync.yml's `add-paths` list was
+# never extended, so the workflow REGENERATED both on the runner and then left
+# them out of the commit. The hero plate has a currency test, so it went red;
+# pipeline-history.json has none, so it would have gone stale in silence and
+# stayed stale (the merge resolves the facilities.json drift, so the next run
+# finds none and never rebuilds).
+#
+# The workflow already says these lists "MUST stay in sync" with the output
+# list in the header of scripts/build-map-data.mjs. Nothing enforced it. This
+# does, one-directionally: every committed output must appear in BOTH lists.
+# The reverse is not asserted — add-paths legitimately also carries
+# data/facilities.json and data/facilities.meta.json, which db:export writes.
+# ---------------------------------------------------------------------------
+
+# Echoes the committed-output paths from build-map-data.mjs's header block, one
+# per line. Entries sit at exactly three spaces after the `*`; wrapped
+# description lines are indented far deeper and so are skipped. A bare `*` line
+# ends the scan, but only AFTER an entry has been seen — one also sits between
+# the trigger sentence and the first path, and exiting on it yields nothing.
+mapdata_outputs() {
+	awk '
+		/outputs below are committed:/ { f = 1; next }
+		f && /^ \*   [^ ]/ { n++; print $2; next }
+		f && n > 0 && /^ \*$/ { exit }
+	' "$REPO_ROOT/scripts/build-map-data.mjs"
+}
+
+# Echoes the paths listed under `add-paths: |` in neon-sync.yml.
+addpaths_list() {
+	awk '
+		/^          add-paths: \|$/ { f = 1; next }
+		f && /^            [^ ]/ { print $1; next }
+		f { exit }
+	' "$REPO_ROOT/.github/workflows/neon-sync.yml"
+}
+
+# Echoes the paths reverted by the `Discard generated map data on failure` step.
+discard_list() {
+	awk '
+		/^          git checkout -- \\$/ { f = 1; next }
+		f && /^            [^ ]/ { print $1; next }
+		f { exit }
+	' "$REPO_ROOT/.github/workflows/neon-sync.yml"
+}
+
+@test "neon-sync: the output extractor finds the real header block (anti-vacuity)" {
+	# Without this, a header reformat that breaks the awk pattern would make the
+	# two coverage tests below iterate over an EMPTY list and pass forever.
+	run mapdata_outputs
+	[ "$status" -eq 0 ]
+	[ "${#lines[@]}" -ge 11 ]
+	[[ "$output" == *"public/data/water.geojson"* ]]
+	[[ "$output" == *"data/siting-context.json"* ]]
+	[[ "$output" == *"components/home/hero-plate-paths.ts"* ]]
+	[[ "$output" == *"public/data/pipeline-history.json"* ]]
+	# A wrapped description line must never be mistaken for a path.
+	[[ "$output" != *"build-hero-plate.mjs;"* ]]
+}
+
+@test "neon-sync: add-paths commits every committed output of build:mapdata" {
+	local outputs added missing=""
+	outputs="$(mapdata_outputs)"
+	added="$(addpaths_list)"
+	[ -n "$outputs" ]
+	[ -n "$added" ]
+	while IFS= read -r path; do
+		[ -n "$path" ] || continue
+		grep -qxF "$path" <<<"$added" || missing="$missing $path"
+	done <<<"$outputs"
+	[ -z "$missing" ] || {
+		echo "build:mapdata writes these, but neon-sync.yml add-paths does not commit them:$missing"
+		return 1
+	}
+}
+
+@test "neon-sync: the failure-discard list reverts every committed output of build:mapdata" {
+	local outputs discarded missing=""
+	outputs="$(mapdata_outputs)"
+	discarded="$(discard_list)"
+	[ -n "$outputs" ]
+	[ -n "$discarded" ]
+	while IFS= read -r path; do
+		[ -n "$path" ] || continue
+		grep -qxF "$path" <<<"$discarded" || missing="$missing $path"
+	done <<<"$outputs"
+	[ -z "$missing" ] || {
+		echo "build:mapdata writes these, but the fail-closed discard step leaves them in the tree:$missing"
+		return 1
+	}
+}
+
+@test "neon-sync: add-paths and the discard list carry the same generated artifacts" {
+	# The two lists may differ only by db:export's own outputs, which
+	# build:mapdata never touches and which must therefore never be reverted.
+	local added discarded extra=""
+	added="$(addpaths_list)"
+	discarded="$(discard_list)"
+	[ -n "$added" ]
+	[ -n "$discarded" ]
+	while IFS= read -r path; do
+		[ -n "$path" ] || continue
+		case "$path" in
+			data/facilities.json|data/facilities.meta.json) continue ;;
+		esac
+		grep -qxF "$path" <<<"$discarded" || extra="$extra $path"
+	done <<<"$added"
+	[ -z "$extra" ] || {
+		echo "committed by add-paths but never reverted on a failed build:mapdata:$extra"
+		return 1
+	}
+}

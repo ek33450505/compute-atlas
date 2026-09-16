@@ -242,7 +242,9 @@ jobs:
             public/data/groundwater-decline.geojson \
             public/data/aquifers.geojson \
             public/data/map-layers.json \
-            public/data/hero-points.json
+            public/data/hero-points.json \
+            public/data/pipeline-history.json \
+            components/home/hero-plate-paths.ts
 
       # Heredoc form of $GITHUB_OUTPUT, not `key=value`: the note contains
       # backticks, quotes and emoji, and key=value is single-line-only — a stray
@@ -313,6 +315,8 @@ jobs:
             public/data/aquifers.geojson
             public/data/map-layers.json
             public/data/hero-points.json
+            public/data/pipeline-history.json
+            components/home/hero-plate-paths.ts
 
       # Native GitHub auto-merge: merges once the PR's required checks report
       # success. Does NOT bypass branch protection — if the PAT isn't set (so
