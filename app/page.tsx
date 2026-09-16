@@ -19,6 +19,7 @@ import {
   getFrictionTotal,
   getCounties,
   getQuarterlyPipelineSummary,
+  selectRecordSpecimen,
 } from "@/lib/data";
 import { METROS } from "@/lib/metros";
 import { StatusBadge } from "@/components/status-badge";
@@ -32,6 +33,7 @@ import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
 import { CostLedger } from "@/components/home/cost-ledger";
+import { RecordSpecimen } from "@/components/home/record-specimen";
 import { OpenRecord } from "@/components/home/open-record";
 
 export const revalidate = 3600;
@@ -105,6 +107,18 @@ export default async function HomePage() {
   const waterStressExposure = await getWaterStressExposure();
   const gasNotYetBuilt =
     buildout.gas.proposed + buildout.gas.permitted + buildout.gas.underConstruction;
+
+  // The one record shown at near-full fidelity under "Notable sites". Derived
+  // from the facility set already loaded above — no new DB read. `null` when
+  // nothing meets the bar (empty dataset / no DATABASE_URL), in which case the
+  // section degrades to the plain card grid it was before.
+  const specimen = selectRecordSpecimen(allFacilities);
+  // Cards below the specimen, minus the specimen itself so the same record is
+  // not printed twice. Re-sliced to 5 so the row count is stable even when the
+  // specimen is not one of the top-6 by capacity.
+  const specimenCards = specimen
+    ? notable.filter((f) => f.id !== specimen.id).slice(0, 5)
+    : notable;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
@@ -565,8 +579,11 @@ export default async function HomePage() {
         <h2 className="font-display text-3xl sm:text-4xl text-foreground mb-5">
           Notable sites
         </h2>
+
+        <RecordSpecimen facility={specimen} count={count} className="mb-4" />
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {notable.map((f) => {
+          {specimenCards.map((f) => {
             const cap =
               f.capacityMw?.operational ?? f.capacityMw?.planned ?? null;
             return (

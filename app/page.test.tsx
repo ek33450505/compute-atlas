@@ -17,6 +17,7 @@ const {
   mockGetFrictionTotal,
   mockGetCounties,
   mockGetQuarterlyPipelineSummary,
+  mockSelectRecordSpecimen,
   mockGetDatasetEdition,
 } = vi.hoisted(() => ({
   mockGetStats: vi.fn(),
@@ -32,6 +33,7 @@ const {
   mockGetFrictionTotal: vi.fn(),
   mockGetCounties: vi.fn(),
   mockGetQuarterlyPipelineSummary: vi.fn(),
+  mockSelectRecordSpecimen: vi.fn(),
   mockGetDatasetEdition: vi.fn(),
 }));
 
@@ -49,6 +51,7 @@ vi.mock("@/lib/data", () => ({
   getFrictionTotal: mockGetFrictionTotal,
   getCounties: mockGetCounties,
   getQuarterlyPipelineSummary: mockGetQuarterlyPipelineSummary,
+  selectRecordSpecimen: mockSelectRecordSpecimen,
 }));
 
 // Pinned so the provenance line's date is deterministic — the real helper
@@ -138,7 +141,13 @@ beforeEach(() => {
     schemaVersion: 2,
   });
   mockGetStats.mockResolvedValue({
-    count: 1929,
+    // Deliberately NOT the live figure the homepage copy was written against
+    // (1,929). Every caption and stat that claims to read the live count has to
+    // be provably reading THIS mock: with a fixture equal to the snapshot
+    // literal, a hardcoded `count={1929}` at a call site passes identically to
+    // `count={count}` and the prop chain goes untested. A synthetic value that
+    // appears nowhere in the source makes that substitution fail.
+    count: 2412,
     states: 3,
     includesDc: true,
     stateCodes: STATE_CODES,
@@ -192,6 +201,9 @@ beforeEach(() => {
     cancelledThisQuarter: 0,
     statusChangesThisQuarter: 0,
   });
+  // Defaults to "no record clears the bar" — the degraded path every other
+  // test in this file renders through, so none of them depend on the specimen.
+  mockSelectRecordSpecimen.mockReturnValue(null);
 });
 
 /**
@@ -265,7 +277,7 @@ describe("HomePage hero", () => {
     render(await HomePage());
 
     const line = provenanceLine();
-    expect(line).toHaveTextContent("1,929 sites");
+    expect(line).toHaveTextContent("2,412 sites");
     expect(line).toHaveTextContent("3 states and DC");
     expect(line).toHaveTextContent("7 sources");
   });
@@ -730,5 +742,146 @@ describe("HomePage notable sites", () => {
     const card = screen.getByRole("link", { name: /Alpha Site/ });
     expect(card).toHaveAttribute("href", "/facilities/alpha-site");
     expect(card).toHaveClass("plate-hover");
+  });
+
+  describe("record specimen", () => {
+    const SPECIMEN = {
+      id: "specimen-site",
+      name: "Specimen Site",
+      operator: "Specimen Energy",
+      status: "under_construction",
+      confidence: "reported",
+      facilityType: "data_center",
+      location: { lat: 39.3527, lon: -112.5777, city: "Delta", state: "UT" },
+      capacityMw: { planned: 10000 },
+      statusHistory: [
+        { status: "proposed", date: "2025-06" },
+        { status: "under_construction", date: "2025-12", sourceIndex: 0 },
+      ],
+      sources: [
+        {
+          url: "https://example.com/one",
+          label: "First citation",
+          publisher: "Example Wire",
+          retrievedAt: "2026-07-06",
+          kind: "press",
+        },
+        {
+          url: "https://example.com/two",
+          label: "Second citation",
+          retrievedAt: "2026-07-07",
+          kind: "permit",
+        },
+        {
+          url: "https://example.com/three",
+          label: "Third citation",
+          publisher: "Example Register",
+          retrievedAt: "2026-08-25",
+          kind: "filing",
+        },
+      ],
+      lastUpdated: "2026-08-25",
+    };
+
+    it("renders the pinned record with its citations, under the same heading", async () => {
+      mockGetNotableFacilities.mockResolvedValue([SPECIMEN, ...NOTABLE]);
+      mockSelectRecordSpecimen.mockReturnValue(SPECIMEN);
+
+      render(await HomePage());
+
+      expect(
+        screen.getByRole("heading", { name: "Notable sites" })
+      ).toBeInTheDocument();
+      const citations = screen.getByRole("list", { name: "Cited sources" });
+      expect(within(citations).getAllByRole("link")).toHaveLength(3);
+      // The caption reads the LIVE count from getStats, not a snapshot literal.
+      // 2,412 is the mock's synthetic figure and appears nowhere in the source,
+      // so this fails if the call site ever reverts to `count={1929}` — which
+      // it could not do while the fixture agreed with the copy.
+      expect(
+        screen.getByText("One of 2,412. Every field traces to a citation.")
+      ).toBeInTheDocument();
+      // And the figure the copy was written against is not on the page at all.
+      expect(screen.queryByText(/One of 1,929/)).not.toBeInTheDocument();
+    });
+
+    it("does not print the specimen a second time as a compact card", async () => {
+      mockGetNotableFacilities.mockResolvedValue([SPECIMEN, ...NOTABLE]);
+      mockSelectRecordSpecimen.mockReturnValue(SPECIMEN);
+
+      render(await HomePage());
+
+      // One link to the specimen's page — the record's own title — and no
+      // duplicate card beneath it.
+      expect(
+        screen.getAllByRole("link", { name: /Specimen Site/ })
+      ).toHaveLength(1);
+      expect(
+        screen.getByRole("link", { name: /Alpha Site/ })
+      ).toBeInTheDocument();
+    });
+
+    // The other arm of `specimenCards`: `getNotableFacilities` returns 6 by
+    // capacity, and the specimen is picked by a DIFFERENT rule (sources +
+    // history + capacity), so it is not always one of them. When it is, the
+    // filter leaves 5; when it is not, the filter removes nothing and the
+    // `.slice(0, 5)` is what holds the row count at 5. Nothing else in the
+    // file exercises that slice — with only the filter, this render would put
+    // 6 cards under the specimen.
+    it("still shows exactly five cards when the specimen is not among the notable six", async () => {
+      const SIX = Array.from({ length: 6 }, (_, i) => ({
+        id: `notable-${i + 1}`,
+        name: `Notable ${i + 1}`,
+        operator: "Acme",
+        status: "operational",
+        facilityType: "data_center",
+        location: { lat: 39.0438, lon: -77.4874, city: "Ashburn", state: "VA" },
+        capacityMw: { operational: 600 - i * 100 },
+      }));
+      mockGetNotableFacilities.mockResolvedValue(SIX);
+      mockSelectRecordSpecimen.mockReturnValue(SPECIMEN);
+
+      render(await HomePage());
+
+      expect(screen.getAllByRole("link", { name: /Notable [1-6]/ })).toHaveLength(5);
+      // The one dropped is the LAST by capacity, not an arbitrary member: the
+      // five highest are all still on the page.
+      for (const n of [1, 2, 3, 4, 5]) {
+        expect(
+          screen.getByRole("link", { name: new RegExp(`Notable ${n}`) })
+        ).toHaveAttribute("href", `/facilities/notable-${n}`);
+      }
+      expect(
+        screen.queryByRole("link", { name: /Notable 6/ })
+      ).not.toBeInTheDocument();
+      // And the specimen is still the record shown at full fidelity above them.
+      expect(
+        screen.getByRole("list", { name: "Cited sources" })
+      ).toBeInTheDocument();
+    });
+
+    // The degraded path: an empty dataset or a local render with no
+    // DATABASE_URL, where selectRecordSpecimen finds no qualifying record.
+    it("falls back to the cards alone when no record clears the bar", async () => {
+      mockGetNotableFacilities.mockResolvedValue(NOTABLE);
+      mockSelectRecordSpecimen.mockReturnValue(null);
+
+      render(await HomePage());
+
+      expect(
+        screen.getByRole("heading", { name: "Notable sites" })
+      ).toBeInTheDocument();
+      // Still at least one card — what e2e/home.spec.ts asserts is visible.
+      expect(screen.getByRole("link", { name: /Alpha Site/ })).toHaveAttribute(
+        "href",
+        "/facilities/alpha-site"
+      );
+      expect(
+        screen.queryByRole("list", { name: "Cited sources" })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Every field traces to a citation/)
+      ).not.toBeInTheDocument();
+    });
   });
 });
