@@ -161,8 +161,15 @@ describe("normalizeUrl", () => {
   // One foreign URL invalidates the whole IndexNow batch, so this must reject
   // loudly rather than filter silently — a silently-dropped URL would look
   // exactly like a submitted one in the printed count.
+  // `toThrow(string)` asserts the message CONTAINS that string, with no regex
+  // semantics — which is exactly the intent here. It was `new RegExp(HOST)`,
+  // which CodeQL flagged as js/incomplete-hostname-regexp: the dots in
+  // "www.compute-atlas.com" are unescaped metacharacters, so that pattern also
+  // matched "wwwXcompute-atlasYcom". Harmless against our own error text, but a
+  // matcher looser than it claims to be. Do not "fix" this back into a regex —
+  // building one from a value containing dots is the bug, not the escaping.
   it("rejects a URL on another host", () => {
-    expect(() => normalizeUrl("https://example.com/table")).toThrow(new RegExp(HOST));
+    expect(() => normalizeUrl("https://example.com/table")).toThrow(HOST);
   });
 
   it("rejects the apex host, which is not the canonical one", () => {
@@ -328,10 +335,14 @@ describe("submitBatch", () => {
     expect(JSON.parse(init.body as string)).toEqual(payload);
   });
 
+  // Plain string, not `new RegExp(String(status))`, for the same reason as the
+  // host matcher above. CodeQL did not flag this one only because digits carry
+  // no regex metacharacters — it is the identical mistake, and leaving it would
+  // leave a template for the next edit to copy.
   it.each([400, 403, 422, 429, 500])("throws on HTTP %i", async (status) => {
     stubFetch(async () => jsonResponse(status, "rejected"));
     await expect(submitBatch(buildPayload(["https://www.compute-atlas.com/table"]))).rejects.toThrow(
-      new RegExp(String(status))
+      String(status)
     );
   });
 
