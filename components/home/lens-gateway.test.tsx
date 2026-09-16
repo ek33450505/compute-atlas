@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { LensGateway, type LensGatewayProps } from "./lens-gateway";
 
 const PROPS: LensGatewayProps = {
@@ -119,6 +119,26 @@ describe("LensGateway", () => {
     icons.forEach((icon) => {
       expect(icon).toHaveAttribute("aria-hidden", "true");
     });
+  });
+
+  // The hover tilt is wired by a class alone (`.plate-hover`, app/globals.css),
+  // so deleting it from this component's className is a silent, invisible
+  // revert: every other assertion here stays green and the cards look
+  // identical until a pointer enters one.
+  //
+  // A class assertion is the honest limit. jsdom has no `:hover` state, never
+  // applies a `@media` block and does no compositing, so the rotation itself
+  // is unobservable in this suite — what is pinned is the WIRING, that these
+  // card surfaces still opt in. The angle and its geometry are pinned in
+  // app/globals.css.test.ts; whether it reads well needs a browser.
+  it("carries the plate-hover tilt on every lens card surface", () => {
+    render(<LensGateway {...PROPS} />);
+
+    const cards = screen.getAllByRole("listitem");
+    expect(cards).toHaveLength(10);
+    for (const card of cards) {
+      expect(within(card).getByRole("link")).toHaveClass("plate-hover");
+    }
   });
 
   it("renders as a labeled region with a single heading, and passes through className", () => {

@@ -103,4 +103,24 @@ describe("StatusTimeline", () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
+
+  describe("compact", () => {
+    it("omits event notes but keeps every event, its status, date and source", () => {
+      render(<StatusTimeline history={HISTORY} sources={SOURCES} compact />);
+
+      // Notes are dropped whole — never truncated to a half-sentence.
+      expect(screen.queryByText("Initial announcement made.")).not.toBeInTheDocument();
+      expect(screen.queryByText("Construction started.")).not.toBeInTheDocument();
+
+      expect(screen.getAllByRole("listitem")).toHaveLength(HISTORY.length);
+      expect(screen.getByText("Proposed")).toBeInTheDocument();
+      expect(screen.getByText("2024-01")).toBeInTheDocument();
+      expect(screen.getAllByRole("link")).toHaveLength(2);
+    });
+
+    it("still renders notes when compact is not set", () => {
+      render(<StatusTimeline history={HISTORY} sources={SOURCES} />);
+      expect(screen.getByText("Initial announcement made.")).toBeInTheDocument();
+    });
+  });
 });

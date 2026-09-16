@@ -728,6 +728,61 @@ export async function getNotableFacilities(n = 6): Promise<Facility[]> {
     .slice(0, n);
 }
 
+/** Minimum cited sources a homepage record specimen must carry. */
+const SPECIMEN_MIN_SOURCES = 3;
+/** Minimum `statusHistory` events, so the rendered timeline isn't a single dot. */
+const SPECIMEN_MIN_HISTORY = 2;
+
+/**
+ * Picks the ONE facility the homepage renders at near-full fidelity (name,
+ * operator, status, coordinates, capacity, citations, timeline) — the record
+ * that demonstrates what "source-cited" means.
+ *
+ * Pure function of the list, taking no `loadFacilities()` of its own, so
+ * `app/page.tsx` can reuse the `getAllFacilities()` result it already has and
+ * the rule can be tested against fixtures rather than live data.
+ *
+ * The rule is a FILTER then a total ordering:
+ *   - filter: >= 3 sources, >= 2 status events, and a disclosed capacity > 0.
+ *     The history floor matters as much as the source floor — "highest capacity
+ *     with >= 3 sources" alone TIES at 10,000 MW in the current dataset, and the
+ *     source-count tie-break lands on a facility with one history entry, which
+ *     renders a degenerate one-event timeline.
+ *   - sort: capacity desc, then source count desc, then `id` ascending. The id
+ *     term is what makes it total: ids are unique, so the winner cannot change
+ *     between renders even if a future wave ties at every earlier level.
+ *
+ * Capacity is `getFacilityMaxMw` — the larger of operational/planned, the same
+ * expression `getNotableFacilities` and `sortByMaxMwDesc` rank on, rather than
+ * `operational ?? planned`. The two differ only for a facility disclosing both
+ * with a larger planned figure, and there "highest capacity" plainly means the
+ * larger disclosed number; reusing the shared helper also keeps the specimen
+ * ranked on the same axis as the cards it sits above.
+ *
+ * Returns `null` when nothing qualifies (empty dataset, or a local render with
+ * no `DATABASE_URL`) — callers degrade to their plain rendering. It never
+ * throws and never returns a facility that fails the filter.
+ */
+export function selectRecordSpecimen(facilities: Facility[]): Facility | null {
+  const candidates = facilities.filter(
+    (f) =>
+      f.sources.length >= SPECIMEN_MIN_SOURCES &&
+      f.statusHistory.length >= SPECIMEN_MIN_HISTORY &&
+      (getFacilityMaxMw(f) ?? 0) > 0
+  );
+  if (candidates.length === 0) return null;
+
+  // `filter` already returned a fresh array, so this sort never mutates the
+  // caller's list (loadFacilities' memoized JSON fallback is shared).
+  candidates.sort(
+    (a, b) =>
+      (getFacilityMaxMw(b) ?? 0) - (getFacilityMaxMw(a) ?? 0) ||
+      b.sources.length - a.sources.length ||
+      a.id.localeCompare(b.id)
+  );
+  return candidates[0];
+}
+
 // ============================================================
 // Capacity-ranking helpers (used by the /rankings hub)
 // ============================================================

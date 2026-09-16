@@ -1,7 +1,8 @@
 import "@testing-library/jest-dom/vitest";
 
-// jsdom does not implement window.matchMedia — mock it for next-themes and any
-// component that queries prefers-color-scheme or similar media features.
+// jsdom does not implement window.matchMedia — mock it for any component that
+// queries a media feature, `prefers-reduced-motion` above all (this site has no
+// dark mode, so nothing reads prefers-color-scheme).
 // Guarded: this setup file runs for every test file regardless of a per-file
 // `@vitest-environment node` docblock (e.g. the DB integration tests), where
 // `window` is undefined.

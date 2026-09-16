@@ -2,7 +2,26 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * There is no dark mode, on purpose. The warm parchment palette is the
+ * identity of this site, not a default awaiting a toggle.
+ *
+ * A `@custom-variant dark (&:is(.dark *));` used to sit here. It did not
+ * CREATE the `dark:` variant — `dark:` is built into Tailwind — it REDEFINED
+ * it from `@media (prefers-color-scheme: dark)` to a class-based selector,
+ * and since nothing ever adds a `.dark` class, every `dark:` utility was
+ * inert. Deleting the line without first stripping those utilities would
+ * have handed them back to the media query and switched dark styling on for
+ * every visitor whose OS is in dark mode.
+ *
+ * So: the vendored shadcn primitives in `components/ui/` have had their
+ * `dark:` utilities stripped, and they deliberately diverge from upstream.
+ * `npx shadcn add` will re-introduce them. Strip them again — do not restore
+ * this variant to neutralise them, because a `dark:` class with no variant
+ * redefinition is the live hazard, not the safe state.
+ *
+ * Pinned by the "no dark mode" suite in app/globals.css.test.ts.
+ */
 
 @theme inline {
   --color-background: var(--background);
@@ -10,7 +29,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);
-  /* Status color utilities — maps to CSS vars so dark mode works automatically */
+  /* Status color utilities — maps the palette vars into Tailwind color utilities */
   --color-status-operational: var(--status-operational);
   --color-status-under-construction: var(--status-under-construction);
   --color-status-permitted: var(--status-permitted);
@@ -91,11 +110,31 @@
   --border: #CDBFA0;
   --input: #CDBFA0;
   --ring: #3F5B43;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* Chart series — the five DARKENED, contrast-audited status tokens above, in
+     STATUS_ORDER (lib/status.ts: operational, under_construction, permitted,
+     proposed, cancelled). These were shadcn's greyscale oklch defaults with no
+     reader anywhere in the app; binding them to the status palette means a
+     chart primitive that reads --chart-N lands on the same colour the map pins,
+     the status badges and the legends already use, instead of inventing a
+     second vocabulary. The contrast audit above covers these hues, so a
+     chart series inherits it rather than needing its own.
+     ⚠️ These are NOT lib/status.ts's `STATUS_META[...].hex`. That field is the
+     UNDARKENED Wong reference (#0072B2 / #B45309 / #007A53 / #9D2C6F /
+     #6B7280) and every one of the five differs from the token beside it; it
+     also has ZERO consumers anywhere in the repo — every real reader
+     (hero-globe.tsx's MapLibre paint, both opengraph-image.tsx route handlers)
+     duplicates the darkened value, because paint expressions and Satori can't
+     read a CSS var. So repointing these vars at `hex` to "use the source of
+     truth" would silently swap in five unaudited colours and drop the audit
+     above. If `hex` is ever wanted, audit it first.
+     ⚠️ The mapping is positional and pinned by app/globals.css.test.ts —
+     reordering STATUS_ORDER without reordering here silently recolours every
+     chart. */
+  --chart-1: var(--status-operational);
+  --chart-2: var(--status-under-construction);
+  --chart-3: var(--status-permitted);
+  --chart-4: var(--status-proposed);
+  --chart-5: var(--status-cancelled);
   --radius: 0.25rem;
   --sidebar: #FBF8EF;
   --sidebar-foreground: #2B2721;
@@ -117,10 +156,119 @@
   html {
     @apply font-sans;
   }
+
+  /* ── Line breaking ───────────────────────────────────────────────────────
+     Two site-wide typographic defaults. Both are layout-only: they change
+     where the browser chooses to break a line, never the text content, the
+     DOM, or the SSR byte stream.
+
+     `balance` on headings evens out the last line so a two-line heading does
+     not leave one orphaned word. It is deliberately NOT on paragraphs: the UA
+     is permitted to give up past a line-count threshold (~6-10 lines in
+     Chromium/Firefox today) because the algorithm is superlinear, so on body
+     copy it would cost layout time and then silently do nothing anyway.
+
+     `pretty` on paragraphs is the cheap counterpart — it only targets the
+     last few lines, avoiding orphans and (in Chromium) short-line raggedness,
+     which is exactly what long prose needs.
+
+     Unsupported engines ignore both and fall back to `wrap`; nothing here is
+     load-bearing for legibility. Scoped to bare element selectors so any
+     utility or component style still wins. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+
+  /* ── Themed scrollbar — hairline sepia, square thumb ──────────────────────
+     A muted track with a square (radius 0) thumb, in the same key as the rest
+     of the atlas chrome.
+
+     CONTRAST — do NOT "restore" the lighter tan. A scrollbar thumb is a UI
+     component, so WCAG 1.4.11 applies and the floor is 3:1 against its
+     adjacent colour. Measured in this palette:
+       --border          #CDBFA0 on --muted #E9E2CF   1.41:1  ✗  (under 3:1)
+       --border          #CDBFA0 on parchment #F5F1E6 1.61:1  ✗  (under 3:1)
+       --muted-foreground #5C5344 on --muted #E9E2CF  5.85:1  ✓
+       --primary          #3F5B43 on --muted #E9E2CF  5.82:1  ✓  (hover)
+     Hence muted-foreground as the thumb, not border.
+
+     SIZE: `thin` / 8px is the floor, never a true hairline — a 2-3px target is
+     a motor-accessibility regression for anyone dragging the thumb.
+
+     SCOPE: `html` only, never `*`. Both `scrollbar-width` and `scrollbar-color`
+     inherit, so descendants pick up the theme without us styling them, and any
+     element that declares its own value still wins over an inherited one. That
+     is what keeps the two opt-out scrollbars intact:
+       - Base UI's ScrollArea viewport (components/ui/scroll-area.tsx, used by
+         components/explorer/filter-bar.tsx), which injects
+         `.base-ui-disable-scrollbar{scrollbar-width:none}` plus a webkit
+         display:none (node_modules/@base-ui/react/utils/styles.js), and
+       - shadcn's `@utility no-scrollbar` (same two declarations), which this
+         repo does not currently call anywhere but inherits from the vendored
+         `shadcn/tailwind.css` import at the top of this file.
+     Both declare `scrollbar-width: none` on the element itself, so the
+     inherited `thin` never reaches them and neither native scrollbar comes
+     back. */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) var(--muted);
+  }
+
+  /* Fallback for engines without the standard properties (Chromium <121,
+     Safari <18.2). Gated on @supports rather than layered underneath, because
+     Chromium >=121 IGNORES ::-webkit-scrollbar entirely on any element whose
+     scrollbar-color is not `auto` — and scrollbar-color inherits from html, so
+     that is every element. Left ungated, these four rules would be dead code on
+     the majority browser while looking live in review. Making the two blocks
+     mutually exclusive by construction also sidesteps the same precedence
+     question in WebKit, where the interaction is less well documented.
+
+     TRADEOFF, stated plainly: the standard `scrollbar-color` takes a static
+     pair and has no hover form, so the thumb-hover-to-sage affordance exists
+     ONLY on the legacy path below. On modern Chromium/Firefox/Safari the thumb
+     is a static 5.85:1 muted-foreground with no hover change. That is accepted
+     — hover is decorative here, and the contrast floor is met without it. */
+  @supports not (scrollbar-color: auto) {
+    html::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    html::-webkit-scrollbar-track {
+      background: var(--muted);
+    }
+    html::-webkit-scrollbar-thumb {
+      background: var(--muted-foreground);
+      border-radius: 0; /* square — engraved, not a pill */
+    }
+    html::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+  }
 }
 
 @layer utilities {
-  /* hairline lat/long graticule — subtle, flat */
+  /* hairline lat/long graticule — subtle, flat.
+     ── The 44px module ─────────────────────────────────────────────────────
+     44px is the page's one spatial constant: this grid, .graticule-survey's
+     animated twin, and the hero plate that sits on top of them all share it,
+     which is what makes the hero read as a single surveyed plate rather than
+     a stack of cards. Any LARGE surface added below the hero should adopt the
+     same 44px module (or an exact multiple) so the page keeps one grid —
+     specifically the specimen card and the status-over-time chart still to
+     land. Repeat the literal rather than adding a custom property: the two
+     gradients below already inline it, and a half-migrated token would be
+     worse than a grepable number.
+     ⚠️ "Adopt the module" means align to it, NOT paint it everywhere. A
+     graticule only earns its place on a surface taller than a few modules.
+     It is deliberately absent from CostLedger's StackedBand, whose bar track
+     is 10px — one 44px cell is taller than the whole chart, so the grid would
+     contribute a single stray line behind saturated colour, and the table
+     below it is type, not plate. */
   .graticule {
     background-image:
       repeating-linear-gradient(to right, color-mix(in oklab, var(--border) 45%, transparent) 0 1px, transparent 1px 44px),
@@ -256,6 +404,31 @@
     font-family: var(--font-display), Georgia, serif;
     font-optical-sizing: auto;
   }
+  /* Fraunces' expressive axes, at display scale only.
+     app/layout.tsx already loads `axes: ["opsz", "SOFT", "WONK"]`, so SOFT and
+     WONK cost zero additional bytes — until now nothing varied them and the
+     site paid for two axes it never moved. SOFT 40 rounds the terminals off
+     the default hard-cut 0; WONK 1 swaps in the alternate single-storey `g`
+     and the swashed descenders. Both are noise at body size and character at
+     H1 size, so this is a SEPARATE utility composed onto .font-display rather
+     than folded into it — never applied below ~text-4xl.
+
+     ⚠️ font-variation-settings is a low-level escape hatch and overrides the
+     high-level font properties PER AXIS (CSS Fonts 4 §6.13): a value set here
+     for `opsz` would beat `font-optical-sizing: auto`, and one for `wght`
+     would beat `font-weight`. This string deliberately sets NEITHER — opsz is
+     left to `font-optical-sizing: auto` on .font-display / .drop-cap so the
+     H1 keeps optically sizing across its 5xl→7xl responsive steps (a literal
+     opsz here would pin one optical size at every breakpoint, which is worse
+     than not varying it), and wght is left to font-weight so
+     .drop-cap::first-letter's 600 still applies where the two combine.
+     ⚠️ The property does not merge across declarations — whichever rule wins
+     replaces the whole set, it does not add to an inherited one. Anything
+     that later sets font-variation-settings on a descendant of a
+     .font-display-wonk element must restate SOFT and WONK or lose them. */
+  .font-display-wonk {
+    font-variation-settings: "SOFT" 40, "WONK" 1;
+  }
   /* versal drop-cap — Fraunces initial letter opening an editorial lead
      paragraph, like an atlas frontispiece. Reusable across editorial leads,
      not scoped to a single page. ::first-letter doesn't fragment the word
@@ -263,6 +436,16 @@
   .drop-cap::first-letter {
     font-family: var(--font-display), Georgia, serif;
     font-optical-sizing: auto;
+    /* Same axes as .font-display-wonk, declared here rather than composed:
+       ::first-letter is not an element and cannot take a utility class. A
+       versal at 3.1em is display scale by definition, which is the whole
+       criterion for using these axes. Kept literal (not a shared custom
+       property) so the two occurrences are greppable and each is pinned
+       independently by app/globals.css.test.ts.
+       This string sets neither `wght` nor `opsz`, so the font-weight below
+       and the font-optical-sizing above both still reach their axes (the
+       override in CSS Fonts 4 §6.13 is per axis, not per declaration). */
+    font-variation-settings: "SOFT" 40, "WONK" 1;
     font-weight: 600;
     float: left;
     font-size: 3.1em;
@@ -287,9 +470,433 @@
       }
     }
   }
+  /* The container reveal is a FADE AND LIFT ONLY — it does not rotate.
+     It used to: whole sections entered off-register at 2deg and turned square
+     as they settled. Ed removed that on 2026-09-15 after watching it live, in
+     favour of the per-card hover tilt below ("we need to dial it way back
+     again and apply it to the individual plates on hover - not on the whole
+     container"). That was a TASTE call, not a clipping failure — 2deg sat
+     comfortably inside the measured section ceiling recorded below. Do not
+     re-add a rotate here; `.plate-hover` is where the metaphor lives now. */
   @keyframes plate-settle {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+  /* Plate hover — each card turns a half-degree off-register under the
+     pointer, the same metaphor the wordmark uses (two printing plates sliding
+     into register). 0.5deg is a deliberate taste call by Ed ("just a slight
+     moment when you hover on each topic or link plate on home"); the CEILING
+     below is not taste, it is measured.
+
+     No `transform-origin` is set, i.e. the default 50% 50% centre pivot. That
+     is the sensible pivot here: rotating about the centre splits the
+     displacement evenly between the two edges (a plate laid slightly askew),
+     whereas a corner origin doubles the far-corner travel and reads as a hinge
+     swinging shut.
+
+     ── The derivation ──────────────────────────────────────────────────────
+     Horizontal overhang past the unrotated box, per side, is
+     (w cos0 + h sin0)/2 - w/2. Vertical growth per edge is the same formula
+     with w and h swapped: (h cos0 + w sin0)/2 - h/2. A card overhangs into a
+     grid GAP (or, at the grid's edges, into the page gutter or the margin
+     above), so those are what it has to fit inside.
+
+     THE SECTION-SCALE NUMBERS, kept because they are the measured evidence
+     that this method produces and the reason the container tilt never went
+     past 2deg. Full-width sections against the px-4 = 16px page gutter:
+
+       tilt    desktop 1280x420   lens gateway 1152x600   mobile 358x700
+       0.4deg          1.5px                  2.1px              2.4px
+       1deg            3.6px                  5.1px              6.1px
+       2deg            6.9px                 10.1px             12.1px
+       2.5deg          8.6px                 12.5px             15.1px
+       3deg           10.1px                 14.9px      18.1px  CLIPS
+
+     MOBILE WAS THE BINDING VIEWPORT there, not desktop — the tall wrapped
+     layout has the worst width:height ratio, so it overhangs ~1.75x what
+     desktop does at the same angle and clips first. 2.5deg was the last angle
+     that fitted every breakpoint.
+
+     THE CARD-SCALE NUMBERS, which are what now governs, at 0.5deg.
+
+     Widths come from the real container, `mx-auto max-w-7xl px-4 sm:px-6`
+     (app/page.tsx:109). max-w-7xl is 1280px and, box-sizing being border-box,
+     the gutter sits INSIDE it, so the content width is
+     min(viewport, 1280) - 2 x gutter — gutter subtracted ONCE (16px below sm,
+     24px from sm up). Worked, at a 390px phone: min(390, 1280) - 2 x 16 =
+     358px, and a single-column card is that full 358px. (An earlier revision
+     of this table said 326px there; that is 358 with the gutter taken off a
+     second time, and it is what made the ceiling below come out ~1.9x too
+     permissive.)
+
+     The binding instance of a column count is the WIDEST one — the viewport
+     just BELOW the next breakpoint, not whichever viewport happens to be
+     sampled. All three grids are single-column up to 639px, so each one's
+     widest card is at 639px (639 - 32 = 607px), NOT at the 390px phone width.
+     Card w = (content - (cols - 1) x gap) / cols; heights are the observed
+     card range:
+
+       grid / band (viewport at top of band)  card w x h  dx/side dy/edge  gap
+       notable   1col  @639px                  607 x 170   0.73px  2.65px  16px
+       notable   2col  @1023px                 480 x 190   0.82px  2.09px  16px
+       notable   3col  >=1280px                400 x 180   0.78px  1.74px  16px
+       lens      1col  @639px                  607 x 120   0.51px  2.65px  12px
+       lens      2col  @1023px                 482 x 140   0.60px  2.10px  12px
+       lens      4col  >=1280px                299 x 150   0.65px  1.30px  12px
+       contested 1col  @639px                  607 x 150   0.64px  2.65px  16px
+       contested 3col  >=1280px                400 x 190   0.82px  1.74px  16px
+       contested 3col  @640px (narrowest)      187 x 320   1.39px  0.81px  16px
+
+     The last row is not the widest 3-col instance and is kept anyway: the
+     narrow-and-tall card is the pessimistic case for the HORIZONTAL term,
+     which height drives.
+
+     Largest vertical growth is 2.65px, on every 607px single-column card —
+     2.65 against that grid's OWN row gap, i.e. of 12px in the lens gateway
+     and of 16px in the other two. Largest horizontal overhang is 1.39px,
+     against a 16px column gap. Note the term that binds FLIPS at card scale:
+     for a full-width section, horizontal overhang against the gutter clipped
+     first; for a card, VERTICAL growth against the row gap does, because
+     cards are wider than they are tall and it is the OTHER dimension that
+     drives each term.
+
+     ⛔ 2.27deg IS THE CARD CEILING — solved, not eyeballed. Set vertical
+     growth equal to the row gap, (h cos0 + w sin0)/2 - h/2 = gap, and solve
+     per band: the ceilings run 2.27deg (lens gateway, single column, 607px
+     card against its 12px row gap) to 9.87deg (contested's narrowest 3-col
+     card). Every horizontal constraint is looser — the tightest is 5.92deg,
+     that same narrow card against a 16px column gap, and the 607px
+     single-column cards never reach their page gutter at any angle. The
+     minimum governs, so the BINDING row is the lens gateway's single-column
+     band: the widest card on the page meeting the tightest gap on the page.
+
+     That 2.27 is quoted for a zero-height card, which is the pessimistic
+     limit here — the h(cos0 - 1) term is NEGATIVE, so a TALLER card grows
+     less, and the real ~120px card gives 2.275deg. Height moves the ceiling
+     by <0.03deg across 0..300px, so it does not need re-measuring when a card
+     gains a line of text — only if the ANGLE, a grid's gap, or a breakpoint
+     changes.
+
+     4.5x the 0.5deg shipped: real headroom, but not the ~8.6x an earlier
+     revision of this note claimed off the mis-derived 326px width, and much
+     closer to the section scale where 3deg already clipped. Equivalently in
+     the other direction: at 0.5deg a single-column card would have to be
+     ~2,750px wide to close a 12px row gap, against a 1,232px container.
+
+     Nothing clips the overhang, but that takes TWO checks, not one.
+
+     The first is the obvious one. The homepage has three `overflow-hidden`
+     boxes — the hero (app/page.tsx:127), the globe canvas within it
+     (components/home/hero-globe-dynamic.tsx:135) and the survey ledger's
+     progress track (components/home/survey-ledger.tsx:214) — and none of them
+     contains a card grid.
+
+     ⚠️ The second is `.defer-offscreen` below, and an earlier revision of this
+     note missed it because nothing in that class list says "clip".
+     `content-visibility: auto` turns on layout, style and PAINT containment
+     unconditionally — not only while the subtree is skipped — and paint
+     containment clips descendants to the element's padding box. The contested
+     strip's case grid (components/home/contested-strip.tsx) sits inside one of
+     those wrappers, so it DOES have a clipping ancestor; "no `.plate-hover`
+     element has one" is no longer true.
+
+     It fits because that wrapper reserves 8px of padding it immediately gives
+     back as negative margin (`p-2 -m-2`, layout-neutral), putting the clip
+     edge 8px outside every card's border box. The binding demand there is not
+     the tilt but the 4px focus ring (see `.defer-offscreen`); the tilt's
+     <=1.39px horizontal and <=2.65px vertical overhang clears the same reserve
+     with room to spare. A `.defer-offscreen` caller that drops that padding
+     re-breaks both at once, which is why the reserve is asserted per call site
+     in app/page.test.tsx rather than left to this comment.
+
+     Two edges have no neighbouring card to absorb the overhang, and both fit:
+       - LAST COLUMN overhangs toward the page gutter — 24px from sm up, 16px
+         on mobile, against <=1.39px.
+       - FIRST ROW overhangs upward toward whatever precedes the grid — mb-5
+         (20px) under the "Notable sites" heading, mt-4 (16px) under the lens
+         gateway's blurb, mt-6 (24px) under the contested strip's lead — all
+         >= 16px against <=2.65px.
+
+     Applied on :hover ONLY, never to the resting state. A `transform` other
+     than `none` makes the element a containing block for fixed/absolute
+     descendants and opens a new stacking context; confining it to :hover keeps
+     both transient. No current target has an absolutely-positioned or
+     z-indexed descendant, so neither is observable today — but a card that
+     gains one is where this note is owed. */
+  @media (prefers-reduced-motion: no-preference) {
+    .plate-hover {
+      /* An element carries exactly ONE transition-property list, and this rule
+         is emitted AFTER Tailwind's generated utilities in the same @layer
+         (verified against the compiled sheet), so at equal specificity it
+         REPLACES the card's `transition-colors` rather than adding to it. The
+         colour properties are therefore re-declared here: omitting them would
+         silently kill the existing hover:bg / hover:border fades on every card
+         this lands on — a regression with no trace in the class list.
+
+         The list below matches every standard property `.transition-colors`
+         compiles to. It deliberately drops the three Tailwind-internal
+         gradient custom properties that utility also carries
+         (--tw-gradient-from / -via / -to): those are implementation-detail
+         names that can be renamed by a Tailwind release, none of the three
+         card surfaces transitions a gradient, and a stale name in this list
+         would be dead text rather than a visible fault. A card that gains an
+         animated gradient is where that call is owed.
+
+         Timing likewise: `.transition-colors` resolves to
+         var(--tw-ease, var(--default-transition-timing-function)), which
+         compiles to cubic-bezier(.4, 0, .2, 1). A literal `ease-out` here
+         would not kill the colour fades but would silently RE-TIME them, so
+         take the same token. The 150ms duration stays literal because it is
+         the authored speed of the tilt; it happens to equal
+         --default-transition-duration (.15s in the compiled sheet), so the
+         colour fades keep their duration too. If those two ever diverge, this
+         literal is the line to revisit. */
+      transition-property: transform, color, background-color, border-color,
+        outline-color, text-decoration-color, fill, stroke;
+      transition-duration: 150ms;
+      transition-timing-function: var(--default-transition-timing-function);
+    }
+    /* Rotation is compositor-driven: no layout, no paint. The colour
+       properties above already painted before this rule existed, so the net
+       cost of the tilt itself is zero. */
+    .plate-hover:hover {
+      transform: rotate(0.5deg);
+    }
+  }
+
+  /* ── Deferred render for off-screen sections ────────────────────────────
+     `content-visibility: auto` lets the browser skip layout and paint for a
+     subtree until it is near the viewport. Absent support, the declaration
+     is dropped and the section renders exactly as it does today — there is
+     no fallback to write, which is why this carries no @supports.
+
+     ⚠️ `contain-intrinsic-size` is NOT optional here and must stay in THIS
+     rule. While a subtree is skipped it is also size-contained, so without an
+     intrinsic size the element collapses to zero height and the document's
+     scroll length swings as sections render in — trading a render cost for a
+     scrollbar/CLS bug, which is the worse of the two. app/globals.css.test.ts
+     pins the pairing by scanning every rule that declares
+     `content-visibility: auto`, so separating them fails the suite.
+
+     The `auto` KEYWORD in front of the length is the second half of that
+     guard: it tells the browser to remember the size the element actually
+     took the last time it was rendered and use that instead of the fallback
+     from then on. The literal below therefore only governs the first pass,
+     before the reader has ever scrolled that far.
+
+     `--defer-h` is supplied per call site because the two sections this lands
+     on are not the same height; the 640px default exists so a future caller
+     that forgets still gets a placeholder rather than a collapse. Heights are
+     derived from the real markup at the desktop breakpoint (see the call
+     sites in app/page.tsx). Deliberately biased to the DESKTOP figure, which
+     is the smaller one: a narrow viewport stacks the same grids into one
+     column and roughly doubles each section, and under-estimating is the
+     safer error here because these are the last two sections on the page —
+     only the site footer follows, so a correction moves the footer and the
+     scrollbar thumb, never anything the reader is looking at.
+
+     ⚠️ EVERY CALL SITE MUST RESERVE 8px OF INLINE AND BLOCK PADDING
+     (`p-2 -m-2` — the negative margin hands the space straight back, so the
+     box occupies exactly what it did before). This is an accessibility
+     requirement, not a nicety. `content-visibility: auto` turns on layout,
+     style and PAINT containment unconditionally — the containment is not
+     conditional on the subtree being skipped — and paint containment clips
+     every descendant to this element's padding box. Both sections this lands
+     on hold edge-flush card grids whose links carry
+     `focus-visible:ring-2 ring-offset-2`, which Tailwind compiles to a
+     non-inset `box-shadow: 0 0 0 4px` — i.e. 4px OUTSIDE the card's border
+     box. With no padding the clip edge sits exactly on that border box and
+     the outer column's focus indicator is cut off: a keyboard user loses the
+     only signal of where they are, on the widest cards on the page. 8px, not
+     4px, because a card can be focused and hovered at once and the
+     `.plate-hover` tilt adds up to 1.39px more.
+
+     That is also why this class belongs on an INNER wrapper rather than on
+     the <section> itself: the sections carry `border-t` at the container's
+     full width, so padding them out and pulling them back with a negative
+     margin would drag their hairline rules 8px into the page gutter and out
+     of line with every other section. The wrapper pads; the section keeps its
+     rule. `--defer-h` is set on the section and INHERITS to the wrapper, so
+     the derivation stays at the call site next to the markup it describes.
+
+     ⚠️ Do NOT put this on the hero, or on anything that can be in view at
+     first paint: skipping work the reader is about to look at costs a frame
+     and saves nothing. */
+  .defer-offscreen {
+    content-visibility: auto;
+    contain-intrinsic-size: auto var(--defer-h, 640px);
+  }
+
+  /* ── prefers-contrast: more ─────────────────────────────────────────────
+     The graticule is a hairline by design — .graticule paints --border at
+     45% and the surveyed twin paints --muted-foreground at 15%, both chosen
+     to sit at the edge of visibility behind other content. A reader who has
+     asked the OS for more contrast is telling us that edge is past their
+     floor, so both ramps go up. Nothing moves and nothing reflows: the
+     gradients keep their geometry (including the 44px module) and only the
+     mix percentage changes, so the grid gets darker, not busier.
+
+     Absent support for the query, these rules never match and the hairlines
+     render exactly as they do today. */
+  @media (prefers-contrast: more) {
+    .graticule {
+      background-image:
+        repeating-linear-gradient(to right, var(--border) 0 1px, transparent 1px 44px),
+        repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px 44px);
+    }
+    .grat-axis-x {
+      background-image: repeating-linear-gradient(to right, color-mix(in oklab, var(--muted-foreground) 45%, transparent) 0 1px, transparent 1px 44px);
+    }
+    .grat-axis-y {
+      background-image: repeating-linear-gradient(to bottom, color-mix(in oklab, var(--muted-foreground) 45%, transparent) 0 1px, transparent 1px 44px);
+    }
+  }
+
+  /* ── The hero scrim, for both readers who asked for less of it ──────────
+     The hero cartouche's scrim (app/page.tsx) is a parchment-to-transparent
+     gradient whose entire job is to be partly see-through, so the map reads
+     behind the lower edge of the copy. A reader who has asked the OS to
+     reduce transparency gets the backing it was standing in for: SOLID
+     parchment, not a removed scrim. Removing it would take the legibility
+     floor away from exactly the reader who asked for a firmer one.
+
+     `prefers-contrast: more` gets the identical treatment for a different
+     reason, which is why the two conditions share one block rather than
+     repeating the declarations: the cartouche's worst case is its text read
+     through a partly transparent scrim over live map tiles, and the honest
+     fix for "more contrast" is to stop making them share the pixel. A comma
+     in a media query is OR, so either preference alone matches.
+
+     Only the paint changes. `background-image: none` drops the gradient and
+     `background-color` fills the same box, so the element keeps its size,
+     its -z-10, and the `calc(100% - 24px)` geometry documented at the call
+     site is simply no longer reachable — there is no fade left to misplace.
+     This rule does NOT touch that gradient's stops; do not "simplify" it by
+     editing the utility in app/page.tsx instead.
+
+     Equal specificity to Tailwind's generated `bg-[linear-gradient(...)]`
+     utility (both 0,1,0) and emitted AFTER it in the same @layer, which is
+     what makes it win — the same cascade fact `.plate-hover` above relies on
+     and was verified against the compiled sheet. Absent support for the
+     query, this never matches and the gradient stands. */
+  @media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
+    .hero-scrim {
+      background-image: none;
+      background-color: var(--background);
+    }
+  }
+}
+
+/* ── Cross-document view transitions ───────────────────────────────────────────
+   Opts every same-origin document navigation into the browser's view
+   transition machinery, and gives the hero's plate/globe region an identity
+   so it fades and settles rather than being swapped out with the rest of the
+   page. UNLAYERED: `@view-transition` is a document-level at-rule and the
+   `::view-transition-*` pseudo-elements live on their own tree, not in the
+   document's cascade layers.
+
+   ⚠️ READ THIS BEFORE EXPECTING TO SEE IT. `@view-transition` governs
+   CROSS-DOCUMENT navigation only — a real document load. Next's <Link> does a
+   client-side soft navigation, which is same-document, and Next 16's App
+   Router drives those through React's <ViewTransition> component instead
+   (node_modules/next/dist/docs/01-app/02-guides/view-transitions.md; that
+   guide never mentions this at-rule, and there is no config flag). So
+   clicking "Explore the map" in the hero does NOT run this.
+
+   What DOES run it, and why the rule is still worth having: next/link renders
+   a real <a href>, so a click that lands before the page has hydrated is a
+   plain document navigation — a window that is longest on exactly the slow
+   phones this page is tuned for. Same for any navigation Next cannot keep
+   client-side. Those are the paths this covers. Adopting React's
+   <ViewTransition> for the soft-navigation path is a separate, larger change
+   (its types live behind @types/react's canary entry point, which this
+   project does not currently load) and is deliberately NOT done here.
+
+   ⚠️ SCOPE — THIS IS GLOBAL, AND THAT IS THE DECISION, not an oversight of
+   the hero-only discussion above. `@view-transition` is a document-level
+   at-rule with no selector, and app/globals.css is the one stylesheet every
+   route loads, so this opts in all ~3,000 routes' document navigations. It
+   cannot be narrowed from here: scoping would mean serving a route-specific
+   stylesheet, which is out of all proportion to what is being opted into.
+   Accepted, because what the other routes get is the UA's default whole-page
+   cross-fade and nothing more — `hero-plate` is the only named participant in
+   the app and it exists on `/` alone, so no other route has an element-level
+   pairing that could go wrong, and the reduced-motion block below is
+   document-wide for the same reason and flattens all of it. The real blast
+   radius is also narrower than "every route" sounds: a cross-document
+   transition needs BOTH documents same-origin and opted in, so an arrival
+   from off-site never transitions, and a post-hydration <Link> click is
+   same-document and never reaches this at-rule at all (see above). What is
+   left is our own routes navigating to each other by real document load.
+
+   Absent support, the at-rule and the pseudo-element rules are all dropped
+   and navigation looks exactly as it does today. There is no fallback to
+   write and nothing degrades. */
+@view-transition {
+  navigation: auto;
+}
+
+/* Scoped to `no-preference`, matching how every other motion in this file is
+   gated. A view transition is motion: under `reduce` the name is never
+   assigned, so the region is captured as part of the root snapshot instead of
+   animating on its own, and the block below flattens what remains. */
+@media (prefers-reduced-motion: no-preference) {
+  /* On app/page.tsx's `absolute inset-0` wrapper around <HeroGlobe>/<HeroPlate>.
+     `view-transition-name` must be unique per document; this element exists on
+     `/` only and is the sole named participant in the app.
+
+     Named on the WRAPPER rather than on the cartouche or the hero box: the
+     wrapper is out of flow, aria-hidden decoration with no absolutely
+     positioned escapees, so whatever containment a UA applies to a named
+     element cannot disturb the scrim's documented `-z-10`-inside-`z-10`
+     stacking (see app/page.tsx). */
+  .hero-plate-vt {
+    view-transition-name: hero-plate;
+  }
+
+  /* A region fade-and-settle, deliberately NOT a morph into /map's canvas:
+     there is no `hero-plate` name on /map, so the pair never forms and each
+     direction runs one half — leaving `/` fades the plate out, arriving at
+     `/` settles it in. Attempting to morph this region into a live WebGL
+     canvas would interpolate between two snapshots that share no structure. */
+  ::view-transition-group(hero-plate) {
+    animation-duration: 320ms;
+  }
+  ::view-transition-old(hero-plate) {
+    transform-origin: center;
+    animation: 220ms cubic-bezier(0.4, 0, 1, 1) both hero-plate-lift;
+  }
+  ::view-transition-new(hero-plate) {
+    transform-origin: center;
+    animation: 320ms cubic-bezier(0, 0, 0.2, 1) both hero-plate-settle;
+  }
+}
+
+/* The plate lifts very slightly off the page as it leaves and settles onto it
+   as it arrives — the same "plate laid into a bound atlas" metaphor as
+   .plate-reveal, at the scale of the whole hero rather than one section. 1.5%
+   because this box is ~60vh tall: a larger scale reads as a zoom. */
+@keyframes hero-plate-lift {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1.015); }
+}
+@keyframes hero-plate-settle {
+  from { opacity: 0; transform: scale(1.015); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* `@view-transition` above opts the ROOT in as well, and the UA's default
+   root animation is a crossfade that the rules above never touch. Flatten
+   every view-transition animation — root and named alike — for a reader who
+   asked for reduced motion, so the swap is instantaneous, which is what the
+   browser does with no transition at all. Recipe taken from Next 16's own
+   view-transitions guide. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
   }
 }
 

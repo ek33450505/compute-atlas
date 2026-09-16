@@ -1,11 +1,17 @@
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import type { ReactNode } from "react";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { HeroGlobe, type HeroPoint } from "./hero-globe";
 import {
   HeroGlobe as HeroGlobeDynamic,
+  HeroGlobeLoadingFrame,
+  HeroPlateSlot,
   parseHeroPoints,
 } from "./hero-globe-dynamic";
+import { HeroPlate } from "./hero-plate";
+import { STATUS_ORDER } from "@/lib/status";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -130,6 +136,17 @@ describe("HeroGlobe dynamic wrapper", () => {
     } as Response);
 
   /**
+   * The wrapper exactly as app/page.tsx uses it: the plate arrives as an
+   * already-rendered NODE from the server component. The wrapper is
+   * `"use client"`, so importing the plate inside it would drag
+   * hero-plate-paths (~23 KB of path strings) into the eagerly-loaded client
+   * chunk — see the bundle-boundary test at the bottom of this file.
+   */
+  function renderWrapper() {
+    return render(<HeroGlobeDynamic plate={<HeroPlate />} />);
+  }
+
+  /**
    * Deterministic settle point for the wrapper's fetch → json → setState chain.
    *
    * The degrade tests assert an ABSENCE, which is trivially true on tick 0:
@@ -151,35 +168,67 @@ describe("HeroGlobe dynamic wrapper", () => {
   }
 
   /**
+   * The non-globe state is the static HeroPlate dot map sitting ON the
+   * graticule, not the graticule alone — on phones it is the terminal state
+   * and therefore the only map they ever get. Assert both: the hairline
+   * backdrop AND the plate that carries the data.
+   */
+  function expectPlateOnGraticule(container: HTMLElement) {
+    const graticule = container.querySelector(".graticule-survey");
+    expect(graticule).toBeInTheDocument();
+
+    const plate = container.querySelector('svg[role="img"]');
+    expect(plate).toBeInTheDocument();
+    // The plate is informative, so nothing between it and the document root
+    // may be aria-hidden — a role inside an aria-hidden subtree announces
+    // nothing while still looking accessible in review.
+    for (
+      let node: Element | null = plate;
+      node !== null && node !== container;
+      node = node.parentElement
+    ) {
+      expect(node.getAttribute("aria-hidden")).not.toBe("true");
+    }
+    // The graticule stays decorative and hides itself.
+    expect(graticule).toHaveAttribute("aria-hidden", "true");
+  }
+
+  /**
    * Assert the wrapper is sitting in its OWN placeholder state, not merely
    * "map not painted yet". The distinction matters: next/dynamic's `loading`
-   * placeholder renders the same GraticuleSurvey, so `.graticule-survey` alone
-   * cannot tell "never mounted the globe" from "mounting it this instant".
-   * The two plates differ in height — HERO_MOBILE_HEIGHT_CLASS's `h-[40vh]`
-   * here vs HERO_DEFAULT_HEIGHT_CLASS's `h-[60vh]` there — so the height class
-   * is the discriminator.
+   * placeholder renders the same GraticuleSurvey + HeroPlate pair, so neither
+   * `.graticule-survey` nor the plate alone can tell "never mounted the globe"
+   * from "mounting it this instant". The two wrappers differ in height —
+   * HERO_MOBILE_HEIGHT_CLASS's `h-[40vh]` here vs HERO_DEFAULT_HEIGHT_CLASS's
+   * `h-[60vh]` there — so the height class is the discriminator.
    */
   function expectDegradedToPlaceholder(container: HTMLElement) {
-    const plate =
+    const wrapper =
       container.querySelector(".graticule-survey")?.parentElement ?? null;
-    expect(plate).not.toBeNull();
-    expect(plate).toHaveClass("h-[40vh]");
+    expect(wrapper).not.toBeNull();
+    expect(wrapper).toHaveClass("h-[40vh]");
+    expectPlateOnGraticule(container);
     expect(screen.queryByTestId("mock-map")).not.toBeInTheDocument();
   }
 
-  it("renders the animated survey graticule as the placeholder on narrow (sub-640px) viewports, and never mounts the real globe", () => {
+  it("renders the static dot plate over the survey graticule on narrow (sub-640px) viewports, and never mounts the real globe", () => {
     // DEFAULT_MATCH_MEDIA returns matches: false for every query, including
     // "(min-width: 640px)" — simulating a phone with no sm+ match, so the
     // mobile gate in hero-globe-dynamic.tsx never allows the dynamic import.
+    // This is the TERMINAL state on a phone, so "placeholder" here means the
+    // real thing: the plate must be present, not just the empty grid.
     stubFetch(okPoints);
-    const { container } = render(<HeroGlobeDynamic />);
-    expect(container.querySelector(".graticule-survey")).toBeInTheDocument();
+    const { container } = renderWrapper();
+    expectPlateOnGraticule(container);
+    expect(container.querySelectorAll("svg[role='img'] path").length).toBe(
+      STATUS_ORDER.length
+    );
     expect(screen.queryByTestId("mock-map")).not.toBeInTheDocument();
   });
 
   it("issues no point-set request below sm — phones pay for neither MapLibre nor the data", () => {
     const fetchMock = stubFetch(okPoints);
-    render(<HeroGlobeDynamic />);
+    renderWrapper();
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -187,7 +236,7 @@ describe("HeroGlobe dynamic wrapper", () => {
     allowSmViewport();
     const fetchMock = stubFetch(okPoints);
 
-    render(<HeroGlobeDynamic />);
+    renderWrapper();
 
     await waitFor(() =>
       expect(screen.getByTestId("mock-map")).toBeInTheDocument()
@@ -204,7 +253,7 @@ describe("HeroGlobe dynamic wrapper", () => {
       Promise.reject(new Error("network down"))
     );
 
-    const { container } = render(<HeroGlobeDynamic />);
+    const { container } = renderWrapper();
     await settleHeroPointsFetch(fetchMock);
 
     expect(fetchMock).toHaveBeenCalled();
@@ -223,7 +272,7 @@ describe("HeroGlobe dynamic wrapper", () => {
       Promise.resolve({ ok: false, json } as unknown as Response)
     );
 
-    const { container } = render(<HeroGlobeDynamic />);
+    const { container } = renderWrapper();
     await settleHeroPointsFetch(fetchMock);
 
     expect(fetchMock).toHaveBeenCalled();
@@ -240,7 +289,7 @@ describe("HeroGlobe dynamic wrapper", () => {
       } as unknown as Response)
     );
 
-    const { container } = render(<HeroGlobeDynamic />);
+    const { container } = renderWrapper();
     await settleHeroPointsFetch(fetchMock);
 
     expect(fetchMock).toHaveBeenCalled();
@@ -260,11 +309,188 @@ describe("HeroGlobe dynamic wrapper", () => {
       } as unknown as Response)
     );
 
-    const { container } = render(<HeroGlobeDynamic />);
+    const { container } = renderWrapper();
     await settleHeroPointsFetch(fetchMock);
 
     expect(fetchMock).toHaveBeenCalled();
     expectDegradedToPlaceholder(container);
+  });
+
+  // Nothing about the plate is imported by this wrapper any more, so a caller
+  // that forgets to pass one must degrade rather than throw — the graticule
+  // alone, exactly as it behaved before the plate existed.
+  it("falls back to the bare graticule when no plate node is passed", () => {
+    stubFetch(okPoints);
+    const { container } = render(<HeroGlobeDynamic />);
+
+    expect(container.querySelector(".graticule-survey")).toBeInTheDocument();
+    expect(container.querySelector('svg[role="img"]')).toBeNull();
+    expect(screen.queryByTestId("mock-map")).not.toBeInTheDocument();
+  });
+});
+
+/**
+ * The `loading:` fallback — the frame rendered in the window between the point
+ * set landing and the globe chunk arriving.
+ *
+ * Asserted directly rather than through the component: that window is bounded
+ * by a module import resolving, so catching it via the wrapper would be a race
+ * dressed up as a test. next/dynamic renders this as a real element inside its
+ * own <Suspense> at the wrapper's position (next/dist/shared/lib/lazy-dynamic/
+ * loadable.js), which is why it can read the plate out of context at all.
+ */
+describe("HeroGlobeLoadingFrame", () => {
+  it("renders the plate from context, over the graticule, at the mounted globe's height", () => {
+    const { container } = render(
+      <HeroPlateSlot value={<HeroPlate />}>
+        <HeroGlobeLoadingFrame />
+      </HeroPlateSlot>
+    );
+
+    const graticule = container.querySelector(".graticule-survey");
+    expect(graticule).toBeInTheDocument();
+    expect(graticule).toHaveAttribute("aria-hidden", "true");
+
+    const plate = container.querySelector('svg[role="img"]');
+    expect(plate).toBeInTheDocument();
+    expect(plate?.querySelectorAll("path")).toHaveLength(STATUS_ORDER.length);
+
+    // Height discriminator: this frame matches the globe it is standing in for
+    // (60vh), not the wrapper's own shorter mobile placeholder (40vh), so the
+    // swap is height-stable.
+    expect(graticule?.parentElement).toHaveClass("h-[60vh]");
+    expect(graticule?.parentElement).not.toHaveClass("h-[40vh]");
+  });
+
+  // The plate is informative — it is the only map a phone ever sees, and the
+  // reason this wrapper stopped being aria-hidden. A role inside an
+  // aria-hidden subtree announces nothing while still looking accessible in
+  // review, so walk the whole chain rather than checking the root alone.
+  it("hides nothing between the plate and the document root", () => {
+    const { container } = render(
+      <HeroPlateSlot value={<HeroPlate />}>
+        <HeroGlobeLoadingFrame />
+      </HeroPlateSlot>
+    );
+
+    for (
+      let node: Element | null = container.querySelector('svg[role="img"]');
+      node !== null && node !== container;
+      node = node.parentElement
+    ) {
+      expect(node.getAttribute("aria-hidden")).not.toBe("true");
+    }
+    expect(screen.getByRole("img")).toBeInTheDocument();
+  });
+
+  // Proves it READS the slot rather than importing a plate of its own — the
+  // failure mode this whole indirection exists to prevent.
+  it("renders no plate when the slot is empty", () => {
+    const { container } = render(<HeroGlobeLoadingFrame />);
+
+    expect(container.querySelector(".graticule-survey")).toBeInTheDocument();
+    expect(container.querySelector('svg[role="img"]')).toBeNull();
+  });
+});
+
+/**
+ * A bundle-size invariant, which no rendering assertion can see: the wrapper is
+ * `"use client"`, so importing the plate (or its path artifact) there ships
+ * ~23 KB raw / ~5 KB brotli of `d` strings in the eagerly-loaded client chunk,
+ * duplicating data already inline in the SSR'd HTML — paid by exactly the
+ * phones the wrapper's mobile gate exists to protect. The plate must arrive as
+ * a server-rendered node, and every rendering test above still passes with a
+ * re-import, so reading the source is the only lever this suite has.
+ *
+ * ⚠️ Read the scope literally — an earlier version of this comment claimed to
+ * be "the only way to catch a re-import", which overclaims. These two tests
+ * read SOURCE TEXT and reach exactly two hops:
+ *   1. the wrapper's own `import` statements;
+ *   2. the `import` statements of each first-party module the wrapper imports
+ *      as a VALUE (`import type` is erased at compile time and cannot ship the
+ *      artifact, so following it would only manufacture false failures).
+ *
+ * What still slips through, unasserted:
+ *   · depth ≥ 2 — `wrapper → a → b → hero-plate-paths` is invisible here;
+ *   · any non-`import` acquisition: `require`, a dynamic `import()`
+ *     expression, or a re-export chain that renames the module on the way
+ *     through (the grep is for the literal string "hero-plate");
+ *   · a first-party specifier that resolves through a path alias other than
+ *     `@/`, or to a file extension outside .ts/.tsx.
+ *
+ * The assertion that would actually GUARANTEE the invariant is one against the
+ * BUILT client chunk — "no `d`-string path artifact in the eagerly-loaded
+ * wrapper bundle" — which needs a production build this vitest suite does not
+ * run. Until something runs that, treat these as a cheap tripwire on the two
+ * likeliest shapes, not as proof of the bundle's contents.
+ */
+const CLIENT_WRAPPER = "components/home/hero-globe-dynamic.tsx";
+
+// `process.cwd()` (the repo root under vitest), not `import.meta.url` — vite
+// does not serve these modules from a file: URL, so `new URL(…,
+// import.meta.url)` throws ERR_INVALID_URL_SCHEME here.
+const readRepoFile = (relPath: string) =>
+  readFileSync(path.join(process.cwd(), relPath), "utf8");
+
+/** Every `import … ;` statement in a source file, multiline forms included. */
+const importStatementsOf = (source: string): string[] =>
+  source.match(/^import\s[^;]*?;$/gm) ?? [];
+
+/** The module specifier of an import statement — `from "x"` or a bare `import "x"`. */
+const specifierOf = (statement: string): string | null =>
+  statement.match(/(?:from\s*|^import\s*)["']([^"']+)["']/)?.[1] ?? null;
+
+/**
+ * Resolve a FIRST-PARTY specifier (`@/…` or relative) to a repo-relative file
+ * path. Returns null for a bare package specifier (`react`, `next/dynamic`),
+ * which cannot be the plate artifact, and null for anything that does not land
+ * on a .ts/.tsx file — see the scope note above for what that concedes.
+ */
+function resolveFirstParty(spec: string, fromFile: string): string | null {
+  let base: string;
+  if (spec.startsWith("@/")) base = spec.slice(2);
+  else if (spec.startsWith("."))
+    base = path.normalize(path.join(path.dirname(fromFile), spec));
+  else return null;
+
+  const candidates = /\.tsx?$/.test(base)
+    ? [base]
+    : [`${base}.ts`, `${base}.tsx`, `${base}/index.ts`, `${base}/index.tsx`];
+  return (
+    candidates.find((c) => existsSync(path.join(process.cwd(), c))) ?? null
+  );
+}
+
+describe("client bundle boundary", () => {
+  it("never imports the plate artifact into the client wrapper", () => {
+    const statements = importStatementsOf(readRepoFile(CLIENT_WRAPPER));
+
+    expect(statements.length).toBeGreaterThan(0);
+    expect(statements.join("\n")).not.toContain("hero-plate");
+  });
+
+  // Depth 1 beyond the wrapper, and no further. This catches the one shape the
+  // direct check above structurally cannot see: a wrapper import that is itself
+  // innocent-looking while pulling the artifact in behind it.
+  it("never reaches the plate artifact through a module it imports (one level)", () => {
+    const firstParty = importStatementsOf(readRepoFile(CLIENT_WRAPPER))
+      .filter((s) => !/^import\s+type\b/.test(s))
+      .map(specifierOf)
+      .filter((s): s is string => s !== null)
+      .map((spec) => resolveFirstParty(spec, CLIENT_WRAPPER))
+      .filter((f): f is string => f !== null);
+
+    // Without this the test is a false proxy: if the resolver ever stops
+    // resolving anything (an alias change, a rename), the loop below iterates
+    // zero times and the run is green for having checked NOTHING.
+    expect(firstParty.length).toBeGreaterThan(0);
+
+    for (const file of firstParty) {
+      expect(
+        importStatementsOf(readRepoFile(file)).join("\n"),
+        `${file} is imported by ${CLIENT_WRAPPER} and pulls the plate artifact into the client graph`
+      ).not.toContain("hero-plate");
+    }
   });
 });
 

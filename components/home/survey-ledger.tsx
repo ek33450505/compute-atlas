@@ -294,7 +294,10 @@ export function SurveyLedger({
       <h2 id="survey-heading" className="sr-only">
         Dataset survey
       </h2>
-      <div className="flex flex-wrap gap-8">
+      {/* justify-center sm:justify-start — matches SurveyStatRow: the tiles are
+          internally centred but the row packs left, so a wrapped row goes
+          ragged on a phone. Centred below sm, original left rhythm from sm up. */}
+      <div className="flex flex-wrap justify-center sm:justify-start gap-8">
         <LedgerTile
           value={displayCount}
           label="Sites tracked"

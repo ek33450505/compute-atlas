@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
+import { BarLabelRow } from "@/components/chart/bar-label-row";
+import { BarTrack } from "@/components/chart/bar-track";
 
 export interface PercentageBarProps {
   /**
@@ -49,13 +51,12 @@ export function PercentageBar({
   const Wrapper = as;
   return (
     <Wrapper className="space-y-1.5">
-      <div className="flex items-baseline justify-between gap-2 text-sm">
-        <span className="text-foreground">{label}</span>
-        <span className="font-mono tabular-nums text-muted-foreground">
-          {valueLabel}
-        </span>
-      </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+      {/* Title row shared with StackedBand (components/chart/bar-label-row.tsx). */}
+      <BarLabelRow label={label} valueLabel={valueLabel} />
+      {/* Rail shared with StackedBand (components/chart/bar-track.tsx) so the
+          two never drift on height/radius/ground color. Output of both shared
+          pieces is byte-identical to the inline markup they replace. */}
+      <BarTrack>
         <div
           aria-hidden="true"
           className={cn("h-full rounded-full", transition && "transition-all")}
@@ -65,7 +66,7 @@ export function PercentageBar({
             opacity,
           }}
         />
-      </div>
+      </BarTrack>
     </Wrapper>
   );
 }

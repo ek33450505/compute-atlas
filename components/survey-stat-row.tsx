@@ -58,11 +58,16 @@ export function SurveyStatRow({ stats, spacing = "default" }: SurveyStatRowProps
   const { markerAt, footnotes } = assignFootnoteMarkers(stats);
 
   // Base + gap variant + shared trailing classes, in that literal order, so
-  // the "default" variant's output stays byte-for-byte the prior literal string.
+  // both variants' output stays a single predictable literal string.
+  //
+  // `justify-center sm:justify-start`: each tile is already internally centred,
+  // but the ROW packs left, so a row that wraps on a phone leaves a ragged
+  // short last line. Centring below `sm` closes that; from `sm` up the row fits
+  // on one line and keeps its original left-aligned masthead rhythm.
   return (
     <div
       className={cn(
-        "flex flex-wrap",
+        "flex flex-wrap justify-center sm:justify-start",
         SPACING_CLASSES[spacing],
         "border-b border-border pb-10"
       )}

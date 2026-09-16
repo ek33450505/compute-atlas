@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import type { Facility } from "@/lib/schema";
 import { ContestedStrip } from "./contested-strip";
@@ -162,8 +162,33 @@ describe("ContestedStrip", () => {
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
   });
 
-  it("passes className through to the section element", () => {
-    const { container } = render(
+  // Same wiring guard as lens-gateway.test.tsx: `.plate-hover` (app/globals.css)
+  // is the whole mechanism, so stripping the class from this className reverts
+  // the hover tilt on these cards while leaving every other assertion green.
+  // jsdom has no `:hover` and applies no `@media` block, so the class is the
+  // only observable; the angle and its clearance are pinned in
+  // app/globals.css.test.ts.
+  it("carries the plate-hover tilt on every case card surface", () => {
+    render(
+      <ContestedStrip cases={CASES} frictionCount={FRICTION_COUNT} breakdown={BREAKDOWN} />
+    );
+
+    const cards = screen.getAllByRole("listitem");
+    expect(cards).toHaveLength(CASES.length);
+    for (const card of cards) {
+      expect(within(card).getByRole("link")).toHaveClass("plate-hover");
+    }
+  });
+
+  // Queried by role+name rather than container.querySelector("section"): a
+  // <section> is only exposed as an accessible "region" when it HAS a name, so
+  // this proves the section's aria-labelledby actually resolves to the h2's id.
+  // SectionHeading deliberately leaves that pairing to the caller (see its `id`
+  // doc comment), which is exactly the contract that can break silently — move
+  // the id onto the wrapper div and every other assertion in this file stays
+  // green while the landmark goes unnamed. Same form as lens-gateway.test.tsx.
+  it("renders as a labeled region and passes className through to it", () => {
+    render(
       <ContestedStrip
         cases={CASES}
         frictionCount={FRICTION_COUNT}
@@ -172,7 +197,10 @@ describe("ContestedStrip", () => {
       />
     );
 
-    const section = container.querySelector("section");
+    const section = screen.getByRole("region", { name: "Contested sites" });
     expect(section).toHaveClass("mt-12", "border-t", "border-border", "pt-10");
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Contested sites" })
+    ).toBeInTheDocument();
   });
 });
