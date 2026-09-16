@@ -259,6 +259,15 @@ describe("StackArea", () => {
     // margin, and the visual defect returns — while the mt-8 assertion above
     // stays green throughout. This is the only assertion that catches that.
     expect(screen.getByRole("table")).toHaveClass("sr-only");
+
+    // And the caption carries `sr-only` itself, on top of the table's. A
+    // `<caption>` renders outside the table's border box, so the table's clip
+    // rect does not reliably hide it and the text escaped as a stray visible
+    // line on prod. jsdom computes no layout, so this assertion CANNOT observe
+    // that: it only turns the removal of the class red.
+    const tableCaption = screen.getByText(BASE_PROPS.tableCaption);
+    expect(tableCaption.tagName).toBe("CAPTION");
+    expect(tableCaption).toHaveClass("sr-only");
   });
 
   it("centres the legend and the caption on the container", () => {

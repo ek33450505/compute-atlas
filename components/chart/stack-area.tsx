@@ -316,7 +316,15 @@ export function StackArea({
       </ul>
 
       <table className="sr-only">
-        <caption>{tableCaption}</caption>
+        {/* `sr-only` sits on the caption AS WELL AS the table, deliberately: a
+            `<caption>` box is rendered outside the table's border box, so the
+            table's own `position:absolute; clip:rect(0,0,0,0)` does not
+            reliably clip it and the caption text can paint as a stray visible
+            line above the plot. Hiding it per-element is what
+            stacked-band.tsx does (there the table itself is visible). Keep
+            both — the table's class is load-bearing for the legend-to-caption
+            margin below, so this is not a duplicate to tidy away. */}
+        <caption className="sr-only">{tableCaption}</caption>
         <thead>
           <tr>
             <th scope="col">{xHeading}</th>
