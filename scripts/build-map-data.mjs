@@ -38,6 +38,8 @@
  *                                             build-hero-points.mjs; local, no network)
  *   components/home/hero-plate-paths.ts     (homepage hero static Albers USA dot plate —
  *                                             see build-hero-plate.mjs; local, no network)
+ *   public/data/pipeline-history.json       (per-quarter status composition — see
+ *                                             build-pipeline-history.mjs; local, no network)
  *   data/siting-context.json                (per-facility nearest-water/-transmission +
  *                                             waterStress/groundwaterDecline/aquifer stats)
  *
@@ -63,6 +65,7 @@ import { lineString as turfLineString, point as turfPoint } from '@turf/helpers'
 
 import { buildHeroPoints } from './build-hero-points.mjs';
 import { buildHeroPlate } from './build-hero-plate.mjs';
+import { buildPipelineHistory } from './build-pipeline-history.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
@@ -1103,6 +1106,12 @@ async function main() {
   // too, and a wave that skipped it would ship a plate missing new facilities.
   const heroPlateResult = buildHeroPlate();
 
+  // Homepage pipeline-history series: per-quarter status composition
+  // reconstructed from statusHistory. Same reasoning again — a pure local
+  // transform of data/facilities.json, so it runs under --skip-nhd too, and a
+  // wave that skipped it would chart a time axis that stops before the wave.
+  const pipelineHistoryResult = buildPipelineHistory();
+
   console.log('\n--- Build Summary ---');
   if (!skipNHD) {
     console.log(`water.geojson:   ${(waterResult.waterSize / 1024).toFixed(0)} KB (tolerance ${waterResult.waterTolerance})`);
@@ -1118,6 +1127,7 @@ async function main() {
   console.log(`siting-context.json: ${SITING_CONTEXT_OUT} (${Object.keys(sitingContext).length} entries)`);
   console.log(`hero-points.json: ${heroPointsResult.outPath} (${heroPointsResult.count} points, ${(heroPointsResult.bytes / 1024).toFixed(0)} KB)`);
   console.log(`hero-plate-paths.ts: ${heroPlateResult.outPath} (${heroPlateResult.plotted} marks, ${heroPlateResult.deduped} co-located collapsed, ${heroPlateResult.omitted} omitted${heroPlateResult.omittedJurisdictions.length ? ` in ${heroPlateResult.omittedJurisdictions.join('/')}` : ''}, ${(heroPlateResult.bytes / 1024).toFixed(1)} KB)`);
+  console.log(`pipeline-history.json: ${pipelineHistoryResult.outPath} (${pipelineHistoryResult.quarters} quarters, ${pipelineHistoryResult.known} known at the last quarter, ${pipelineHistoryResult.excluded} excluded for having no statusHistory, ${(pipelineHistoryResult.bytes / 1024).toFixed(1)} KB)`);
   console.log('\nDone.');
 }
 

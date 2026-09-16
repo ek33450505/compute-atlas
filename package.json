@@ -20,6 +20,7 @@
     "build:mapdata": "node scripts/build-map-data.mjs",
     "build:heropoints": "node scripts/build-hero-points.mjs",
     "build:heroplate": "node scripts/build-hero-plate.mjs",
+    "build:pipelinehistory": "node scripts/build-pipeline-history.mjs",
     "db:generate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs generate",
     "check:drift": "tsx --env-file=.env.local scripts/check-neon-drift.ts",
     "check:schema": "tsx --env-file=.env.local scripts/check-schema-drift.ts",
