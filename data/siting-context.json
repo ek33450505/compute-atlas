@@ -446,6 +446,25 @@
       "rock": "Carbonate-rock"
     }
   },
+  "actapio-east-wenatchee-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "active-infrastructure-spring-valley-tech-park-loudoun-va": {
     "nearestWater": {
       "name": "Beaverdam Reservoir",
@@ -3045,6 +3064,52 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "aws-boardman-bombing-range-road-or": {
+    "nearestWater": {
+      "name": "Lake Umatilla",
+      "kind": "lake",
+      "distanceMi": 2.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "aws-boardman-lewis-clark-west-or": {
+    "nearestWater": {
+      "name": "Lake Umatilla",
+      "kind": "lake",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "aws-boardman-morrow-county-or": {
     "nearestWater": {
       "name": "Lake Umatilla",
@@ -3066,6 +3131,29 @@
     "aquifer": {
       "name": "Columbia Plateau Basaltic-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "aws-boardman-rippee-road-or": {
+    "nearestWater": {
+      "name": "Lake Umatilla",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "aws-butts-county-ga": {
@@ -5799,6 +5887,25 @@
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "centersquare-lynnwood-se1-wa": {
+    "nearestWater": {
+      "name": "Scriber Lake",
+      "kind": "lake",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -10875,6 +10982,25 @@
       "label": "Low (<10%)"
     }
   },
+  "digital-fortress-lynnwood-wa": {
+    "nearestWater": {
+      "name": "Scriber Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.8
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "digital-fortress-pnj-piscataway-nj": {
     "nearestWater": {
       "name": "Raritan River",
@@ -10892,6 +11018,63 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "digital-fortress-ptl-portland-or": {
+    "nearestWater": {
+      "name": "Willamette River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "digital-fortress-ptl2-beaverton-or": {
+    "nearestWater": {
+      "name": "Fanno Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "digital-fortress-ptl3-beaverton-or": {
+    "nearestWater": {
+      "name": "Fanno Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "digital-realty-727-s-grand-ave-la-ca": {
@@ -11143,6 +11326,25 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "digital-realty-cornelius-pass-cornell-hillsboro-or": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "digital-realty-iad38-va": {
@@ -14357,6 +14559,44 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "equinix-se3-seattle-wa": {
+    "nearestWater": {
+      "name": "Lake Union",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "equinix-se4-kent-wa": {
+    "nearestWater": {
+      "name": "Green River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "equinix-sv1-ca": {
@@ -18762,6 +19002,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "hines-walker-road-hillsboro-or": {
+    "nearestWater": {
+      "name": "Bronson Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "hivelocity-tpa1-tampa-fl": {
     "nearestWater": {
       "name": "Sweetwater Creek",
@@ -20316,6 +20575,25 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "komo-plaza-seattle-wa": {
+    "nearestWater": {
+      "name": "Lake Union",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "ku-ew-brown-12-mercer-ky": {
@@ -23444,6 +23722,29 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "microsoft-mwh-quincy-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "microsoft-northlake-il": {
@@ -28314,9 +28615,9 @@
   },
   "prsm-preble-county-oh": {
     "nearestWater": {
-      "name": "Halls Lake",
-      "kind": "lake",
-      "distanceMi": 4.3
+      "name": "Bantas Fork",
+      "kind": "river",
+      "distanceMi": 0.4
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -30319,6 +30620,44 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "sabey-intergate-columbia-building-b-wa": {
+    "nearestWater": {
+      "name": "Blue Heron Lake",
+      "kind": "lake",
+      "distanceMi": 2.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "sabey-intergate-columbia-building-d-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 2.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "sabey-intergate-east-building-1-wa": {
     "nearestWater": {
       "name": "Duwamish River",
@@ -30328,6 +30667,25 @@
     "nearestTransmission": {
       "voltageKv": 230,
       "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "sabey-intergate-east-building-3-wa": {
+    "nearestWater": {
+      "name": "Duwamish River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
     },
     "waterStress": {
       "cat": 1,
@@ -30400,6 +30758,25 @@
       "name": "Duwamish River",
       "kind": "river",
       "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "sabey-intergate-west-building-b-wa": {
+    "nearestWater": {
+      "name": "Duwamish River",
+      "kind": "river",
+      "distanceMi": 0.5
     },
     "nearestTransmission": {
       "voltageKv": 230,
@@ -31893,6 +32270,29 @@
     },
     "aquifer": {
       "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "soluna-project-edith-wenatchee-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -36698,6 +37098,29 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "voltagrid-quincy-gas-generation-wa": {
+    "nearestWater": {
+      "name": "Babcock Ridge Lake",
+      "kind": "lake",
+      "distanceMi": 3.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "voonami-orem-ut": {
     "nearestWater": {
       "name": "Provo River",
@@ -36864,6 +37287,25 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "washington-state-data-center-olympia-wa": {
+    "nearestWater": {
+      "name": "Capitol Lake",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 287,
+      "distanceMi": 3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "wave-garden-macedonia-ar": {
