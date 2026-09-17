@@ -1091,17 +1091,18 @@
         "url": "https://www.sec.gov/Archives/edgar/data/1864055/000149315226019612/form20-f.htm",
         "label": "Abits Group Inc Form 20-F (FY2025) — self-owned property at 4458 White Oak Road, Duff, TN 37729",
         "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-09-17",
         "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-09-17",
     "notes": "Street address is stated verbatim in the 20-F; the point is the Duff community centroid because the street address could not be geocoded. Capacity is not recorded: the filing's 10 MW -> 22 MW figure is the company's combined Duff + hosted-Memphis power capacity, not this site's. Distinct from the CleanSpark Campbell Junction record already tracked in Campbell County (different operator, different place).",
     "energy": {
       "source": "grid",
       "notes": "Company reports average power cost consistently below $0.04 per kWh and $2,760,377 of electricity cost at the Duff site in 2025; mining is run mostly off-peak."
     },
     "water": {
+      "coolingType": "closed_loop",
       "notes": "Two on-site water wells were installed and commissioned in Q3 2025, cutting monthly water expense by up to $25,000; water fees at the Duff site were $295,135 in 2025 (down from $571,053 in 2024)."
     },
     "facilityType": "crypto_mining",
@@ -1287,6 +1288,57 @@
       "coolingType": "air"
     },
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "actapio-east-wenatchee-wa",
+    "name": "Actapio East Wenatchee Data Center",
+    "operator": "Actapio, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.4072423,
+      "lon": -120.213935,
+      "city": "East Wenatchee",
+      "county": "Douglas",
+      "street": "207 North United Sakura Drive",
+      "postalCode": "98802",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2018",
+        "note": "Ecology lists Actapio's East Wenatchee facility under Approval Order No. 18AQ-C226 in its data-center air-permit index.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ecology.wa.gov/air-climate/air-quality/data-centers",
+        "label": "Data centers - air quality permits index (East Wenatchee: Actapio, Approval Order No. 18AQ-C226)",
+        "publisher": "Washington State Department of Ecology",
+        "retrievedAt": "2026-09-17",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/813688320",
+        "label": "OSM way 813688320 - 'Actapio', telecom=data_center, operator=Actapio, website actap.io",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/813688319",
+        "label": "OSM way 813688319 - data-center building at 207 North United Sakura Drive, East Wenatchee 98802",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Actapio is the US subsidiary through which Yahoo! JAPAN built data centers in central Washington; Ecology's index lists a second, earlier Actapio permit in Wenatchee (08AQ-C071, formerly Yahoo CTC), which is a different site and is not this record. Coordinates are the OSM building polygon carrying the street address, inside the OSM site boundary named 'Actapio'. Current ownership of the operating entity was not independently verified this session, so no parent company is asserted.",
+    "facilityType": "data_center"
   },
   {
     "id": "active-infrastructure-spring-valley-tech-park-loudoun-va",
@@ -9253,11 +9305,23 @@
         "publisher": "Government Technology",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.timesjournal1886.com/story/2026/07/16/news/arlington-pushes-ahead-with-municipal-water-system/2056.html",
+        "label": "Arlington pushes ahead with municipal water system — The Times-Journal (2026-07-16, updated 2026-07-29)",
+        "publisher": "The Times-Journal (Condon, OR)",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-09-17",
     "energy": {
-      "utility": "PacifiCorp"
+      "utility": "PacifiCorp",
+      "notes": "The Times-Journal (July 2026): AWS will not proceed with the Arlington water infrastructure until it has reliable electricity, which is not expected before 2031; the article cites a six-to-seven-year BPA transmission backlog and AWS's Oregon PUC complaint against PacifiCorp over data center service."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The Times-Journal (July 2026) quotes city officials that 'AWS intends to build this closed-loop system at its Arlington campus' to reduce consumption; AWS's $19.4M Columbia River water system (reservoir, booster station, port pump station, water lines) is on hold until grid power is available."
     },
     "landAcres": 406,
     "facilityType": "data_center"
@@ -9515,6 +9579,167 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "aws-boardman-bombing-range-road-or",
+    "name": "AWS Boardman — Bombing Range Road Campus (PDX-178)",
+    "operator": "Amazon Web Services",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.8193,
+      "lon": -119.6342,
+      "city": "Boardman",
+      "county": "Morrow",
+      "street": "Bombing Range Road",
+      "postalCode": "97818",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2022-03",
+        "note": "Morrow County approved Amazon's application in March 2022 for a 127-acre campus on the west side of Bombing Range Road, one mile south of the Highway 730 / I-84 interchange: four single-story data center buildings of 215,461 sq ft each, plus water storage tanks, an industrial water treatment building, a security building and a 14,000 sq ft data storage building (Yost Grube Hall Architecture).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2024",
+        "note": "Baxtel lists the campus (PDX-178) as operational with a 2024 build year; OSM maps four AWS data-center buildings on the parcel.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/aws-expanding-presence-in-oregon-with-four-more-data-centers-in-morrow-county",
+        "label": "AWS expanding presence in Oregon with four more data centers in Morrow County — Baxtel News (2022-05-05)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/amazon-bombing-range-campus",
+        "label": "Amazon: Bombing Range (PDX-178) Data Center — Baxtel (operational; built 2024; 127 acres; four buildings)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1280344157",
+        "label": "OSM way 1280344157 — Amazon Web Services data center, Bombing Range Road, Boardman (owner Vadata Inc)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1386017492",
+        "label": "OSM way 1386017492 — Amazon Web Services data center, Bombing Range Road, Boardman",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.governing.com/resilience/oregons-rural-power-utility-has-become-a-big-polluter",
+        "label": "Oregon's rural power utility has become a big polluter — The Oregonian via Governing (2024-02-20)",
+        "publisher": "Governing / The Oregonian",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "127-acre AWS campus west of Bombing Range Road, south of the Port of Morrow: four 215,461 sq ft single-story data center buildings approved March 2022, with the first phase delivering one building. Baxtel reports the campus operational (2024); OSM maps four AWS buildings at the site. IT capacity not published. Distinct from the tracked PDX154 Boardman Airport campus ~14 km west and from the proposed Threemile 'Exascale' record. Coordinates are the centroid of the four OSM building footprints.",
+    "energy": {
+      "source": "grid",
+      "utility": "Umatilla Electric Cooperative",
+      "notes": "The Oregonian (2024) reports Umatilla Electric Cooperative serves Amazon's data center buildout in the region; the 2022 approval coverage describes an on-site substation for the campus."
+    },
+    "landAcres": 127,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "aws-boardman-lewis-clark-west-or",
+    "name": "AWS Boardman — Lewis and Clark Drive West Campus (PDX1)",
+    "operator": "Amazon Web Services",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.8523,
+      "lon": -119.6302,
+      "city": "Boardman",
+      "county": "Morrow",
+      "street": "73575 Lewis and Clark Drive",
+      "postalCode": "97818",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011",
+        "note": "Amazon's original Port of Morrow campus (OSM building refs PDX1, PDX50/53, PDX56/59 at 73575–73579 Lewis and Clark Dr). Amazon states it has been 'an active member of eastern Oregon communities since 2011'; per-building opening dates are not published.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.openstreetmap.org/way/460070147",
+        "label": "OSM way 460070147 — Amazon Web Services data center 'PDX1', 73575 Lewis and Clark Drive, Boardman (owner Vadata Inc)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/460070145",
+        "label": "OSM way 460070145 — Amazon Web Services data center 'PDX50/53', 73577 Lewis and Clark Drive, Boardman",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/697415323",
+        "label": "OSM way 697415323 — Amazon Web Services data center 'PDX56/59', 73579 Lewis and Clark Drive, Boardman",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://fortune.com/2023/05/11/amazon-1-billion-tax-breaks-oregon-building-5-new-data-centers/",
+        "label": "Amazon to get $1 billion in tax breaks in Oregon for 5 new data centers — Fortune/AP (2023-05-11): 'four giant data centers in Morrow County'; 'active member of eastern Oregon communities since 2011'",
+        "publisher": "Fortune / Associated Press",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.opb.org/article/2023/05/19/amazon-data-center-oregon-morrow-county/",
+        "label": "Morrow County OKs $1 billion deal in tax breaks with Amazon — OPB (2023-05-19)",
+        "publisher": "Oregon Public Broadcasting",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.aboutamazon.com/news/aws/committed-to-our-communities-the-economic-impact-of-awss-15-6-billion-investment-in-oregon",
+        "label": "The economic impact of AWS's $15.6 billion investment in Oregon — Amazon (Boardman, Hermiston, Umatilla)",
+        "publisher": "Amazon",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.governing.com/resilience/oregons-rural-power-utility-has-become-a-big-polluter",
+        "label": "Oregon's rural power utility has become a big polluter — The Oregonian via Governing (2024-02-20): Umatilla Electric Cooperative serves Amazon's data centers",
+        "publisher": "Governing / The Oregonian",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "One of four AWS data center campuses at the Port of Morrow that pre-date the 2023 enterprise-zone deal. Compute Atlas's existing 'Amazon Boardman Exascale' record covers only the proposed 1,300-acre Threemile Canyon site and explicitly excludes Amazon's ~800 acres of operating Morrow County facilities, of which this is the original cluster. Capacity per campus is not published (Amazon reports $15.6B invested in Morrow and Umatilla counties 2012–2021 — an entity-level figure, not this site's). Coordinates are the OSM footprint centroid of the three mapped buildings.",
+    "energy": {
+      "source": "grid",
+      "utility": "Umatilla Electric Cooperative",
+      "notes": "The Oregonian (2024) reports Umatilla Electric Cooperative serves Amazon's data center buildout; with federal hydropower already allocated, the cooperative buys market power that is largely fossil-generated."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "aws-boardman-morrow-county-or",
     "name": "Amazon Boardman Exascale Data Center Campus",
     "operator": "Amazon Web Services",
@@ -9596,6 +9821,76 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "aws-boardman-rippee-road-or",
+    "name": "AWS Boardman — Rippee Road Campus (PDX4)",
+    "operator": "Amazon Web Services",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.8408,
+      "lon": -119.654,
+      "city": "Boardman",
+      "county": "Morrow",
+      "street": "79539 Rippee Road",
+      "postalCode": "97818",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-05",
+        "note": "One of the 'four giant data centers in Morrow County' Amazon already operated when the May 2023 enterprise-zone deal for new buildings was approved (Fortune/AP; OPB). OSM maps AWS data-center buildings PDX4, PDX52, PDX55 and PDX58/61 at 78531–79539 Rippee Road; per-building opening dates are not published.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.openstreetmap.org/way/460070144",
+        "label": "OSM way 460070144 — Amazon Web Services data center 'PDX4', 79539 Rippee Road, Boardman (owner Vadata Inc)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/592171280",
+        "label": "OSM way 592171280 — Amazon Web Services data center 'PDX52', 79536 Rippee Road, Boardman",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://fortune.com/2023/05/11/amazon-1-billion-tax-breaks-oregon-building-5-new-data-centers/",
+        "label": "Amazon to get $1 billion in tax breaks in Oregon for 5 new data centers — Fortune/AP (2023-05-11): 'four giant data centers in Morrow County'",
+        "publisher": "Fortune / Associated Press",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.opb.org/article/2023/05/19/amazon-data-center-oregon-morrow-county/",
+        "label": "Morrow County OKs $1 billion deal in tax breaks with Amazon — OPB (2023-05-19): four existing, six new",
+        "publisher": "Oregon Public Broadcasting",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.governing.com/resilience/oregons-rural-power-utility-has-become-a-big-polluter",
+        "label": "Oregon's rural power utility has become a big polluter — The Oregonian via Governing (2024-02-20)",
+        "publisher": "Governing / The Oregonian",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "AWS campus on Rippee Road south of the Port of Morrow industrial park: OSM maps six AWS data-center buildings (refs PDX4, PDX52, PDX55, PDX58/61 and two unlabelled) at 78531–79539 Rippee Road, owner Vadata Inc. IT capacity not published. Coordinates are the centroid of the mapped buildings. Distinct from the Lewis and Clark Drive campuses ~2 km northeast and from the proposed Threemile 'Exascale' record.",
+    "energy": {
+      "source": "grid",
+      "utility": "Umatilla Electric Cooperative",
+      "notes": "The Oregonian (2024) reports Umatilla Electric Cooperative serves Amazon's data center buildout in the region, buying largely fossil-generated market power beyond its federal hydro allocation."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "aws-butts-county-ga",
@@ -18314,6 +18609,36 @@
     ],
     "lastUpdated": "2026-08-02",
     "notes": "Officially named 'LAX5' on Centersquare's own current site; 'LAX2' is a deprecated Evoque-era code for this same building that persists on some aggregator pages. Capacity corrected to 17.3MW (Centersquare's current disclosed figure) from a stale/legacy 15MW aggregator figure. Centersquare = Brookfield's April 2024 combination of Evoque Data Center Solutions + acquired Cyxtera Technologies assets. No AI/HPC-specific marketing found for this building specifically (only portfolio-wide language). Distinct building from Centersquare's other Irvine facility, LAX3 (17836 Gillette Avenue), approximately 0.7 miles away - same operator, not the same campus. First Orange County, CA facility tracked in this dataset.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "centersquare-lynnwood-se1-wa",
+    "name": "Centersquare Lynnwood SE1",
+    "operator": "Centersquare",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.841809,
+      "lon": -122.3016653,
+      "city": "Lynnwood",
+      "county": "Snohomish",
+      "street": "17300 Highway 99",
+      "postalCode": "98037",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.openstreetmap.org/way/396296733",
+        "label": "OSM way 396296733 - 'Centersquare Lynnwood SE1', telecom=data_center, operator=Centersquare, ref=SE1, CLLI LYWDWAJG, 17300 Highway 99 Lynnwood 98037",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Single-sourced, hence confidence 'reported'. Centersquare is the entity formed when Cyxtera and Evoque merged; the facility has traded under the Evoque and Cyxtera brands, so it may appear elsewhere under those names. No capacity asserted: colocation marketplaces quote figures ranging from 4 MW to 20 MW for this building and none was read from a primary source this session.",
     "facilityType": "data_center"
   },
   {
@@ -33117,6 +33442,49 @@
     }
   },
   {
+    "id": "digital-fortress-lynnwood-wa",
+    "name": "Digital Fortress Lynnwood (SEA1)",
+    "operator": "Digital Fortress",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.8224039,
+      "lon": -122.2896138,
+      "city": "Lynnwood",
+      "county": "Snohomish",
+      "street": "4200 194th Street SW",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2006",
+        "note": "Baxtel gives 2006 as the year opened.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.openstreetmap.org/way/589360530",
+        "label": "OSM way 589360530 - 'Digital Fortress Lynnwood', telecom=data_center, website digital-fortress.com/lynnwood-data-center/",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://baxtel.com/data-center/digital-fortress-lynnwood",
+        "label": "Digital Fortress Lynnwood - 4200 194th Street SW, Lynnwood WA; 15,941 sq ft data floor; opened 2006",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Operated by Digital Fortress; the building itself has changed hands repeatedly (NetRiver, Bytegrid, Lincoln Rackhouse, Landmark Infrastructure), so no owner is asserted here - only the operator. Total power is not published by the operator and is not recorded.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "digital-fortress-pnj-piscataway-nj",
     "name": "Digital Fortress PNJ (Piscataway)",
     "operator": "Digital Fortress",
@@ -33161,6 +33529,148 @@
     ],
     "lastUpdated": "2026-09-14",
     "notes": "96,500 sq ft facility with 9,700 sq ft of white space and 14,000 sq ft of shell space; 1.8 MW UPS N+1 power with 15 kW per cabinet available and 800 tons of chilled-water cooling. Heat-rejection method is not published, so water.coolingType is omitted rather than guessed.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-fortress-ptl-portland-or",
+    "name": "Digital Fortress PTL (Downtown Portland 1)",
+    "operator": "Digital Fortress",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.52115,
+      "lon": -122.68189,
+      "city": "Portland",
+      "county": "Multnomah",
+      "street": "511 SW 10th Avenue",
+      "postalCode": "97205",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2.1
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-01-19",
+        "note": "Operating colocation facility; Digital Fortress acquired Atmosera's Portland-area colocation business (three facilities in downtown Portland and Beaverton, 100+ customers) on 2021-01-19.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://digital-fortress.com/portland-interconnected-data-centers/",
+        "label": "Portland Interconnected Data Centers — Digital Fortress (PTL, PTL2, PTL3 addresses)",
+        "publisher": "Digital Fortress",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://digital-fortress.com/digital-fortress-acquires-three-datacenter-facilities-in-portland-oregon/",
+        "label": "Digital Fortress Acquires Three Datacenter Facilities in Portland, Oregon (press release, 2021-01-19)",
+        "publisher": "Digital Fortress",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/digital-fortress-portland",
+        "label": "Digital Fortress: Portland Data Center — Baxtel (511 SW 10th Ave; 10,700 sq ft; 2.1 MW)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Downtown Portland carrier-neutral colocation site adjacent to the Pittock Block, 10,700 sq ft with 6,700 sq ft of white space and 2.1 MW capacity (Baxtel); NWAX member. Coordinates are the OSM address point for 511 SW 10th Ave (multi-tenant building).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-fortress-ptl2-beaverton-or",
+    "name": "Digital Fortress PTL2 (Beaverton)",
+    "operator": "Digital Fortress",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.47633,
+      "lon": -122.77615,
+      "city": "Beaverton",
+      "county": "Washington",
+      "street": "9705 SW Sunshine Court",
+      "postalCode": "97005",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-01-19",
+        "note": "Operating colocation facility; one of the Beaverton sites Digital Fortress acquired from Atmosera on 2021-01-19.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://digital-fortress.com/portland-interconnected-data-centers/",
+        "label": "Portland Interconnected Data Centers — Digital Fortress (PTL2: 9705 SW Sunshine Ct)",
+        "publisher": "Digital Fortress",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://digital-fortress.com/digital-fortress-acquires-three-datacenter-facilities-in-portland-oregon/",
+        "label": "Digital Fortress Acquires Three Datacenter Facilities in Portland, Oregon (press release, 2021-01-19)",
+        "publisher": "Digital Fortress",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Suburban colocation site in the Quad 217 Corporate Center, Beaverton; operator describes it as 15 minutes from downtown Portland in a low to low-mid seismic risk area and an NWAX member. Capacity not published. Coordinates are the OSM building footprint for 9705 SW Sunshine Ct.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-fortress-ptl3-beaverton-or",
+    "name": "Digital Fortress PTL3 (Beaverton)",
+    "operator": "Digital Fortress",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.47556,
+      "lon": -122.77617,
+      "city": "Beaverton",
+      "county": "Washington",
+      "street": "9610 SW Sunshine Court",
+      "postalCode": "97005",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-01-19",
+        "note": "Operating colocation facility; one of the Beaverton sites Digital Fortress acquired from Atmosera on 2021-01-19.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://digital-fortress.com/portland-interconnected-data-centers/",
+        "label": "Portland Interconnected Data Centers — Digital Fortress (PTL3: 9610 SW Sunshine Ct)",
+        "publisher": "Digital Fortress",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://digital-fortress.com/digital-fortress-acquires-three-datacenter-facilities-in-portland-oregon/",
+        "label": "Digital Fortress Acquires Three Datacenter Facilities in Portland, Oregon (press release, 2021-01-19)",
+        "publisher": "Digital Fortress",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Second Beaverton colocation site in the Quad 217 Corporate Center, across the street from PTL2; operator lists it as DEEP Gold certified and outside airport flight patterns. Capacity not published. Coordinates are the OSM building footprint for 9610 SW Sunshine Ct.",
     "facilityType": "data_center"
   },
   {
@@ -33808,6 +34318,64 @@
     ],
     "lastUpdated": "2026-09-12",
     "notes": "Two Digital Realty buildings in Clifton, NJ, both confirmed via the operator's own site pages: EWR20 at 100 Delawanna Avenue (183,000 sq ft, 7 stories, N+1 power/cooling, operator states it is 100% renewable-energy powered) and EWR21 at 2 Peekay Drive (215,000 sq ft, 3 stories, N+1 UPS, onsite substation with 2N utility redundancy, LEED Platinum, ~37 miles from Manhattan). Represented as a single record (precision representative_multi_site) because neither operator page gave a distinguishable parcel-level geocode for the two buildings and no independent source was fetched to separate them; location used is Clifton's town center. Both buildings carry SOC2/SOC3/PCI-DSS/ISO 9001/ISO 14001/ISO 27001 certification per the operator.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-cornelius-pass-cornell-hillsboro-or",
+    "name": "Digital Realty 'Corny' Data Center (Cornelius Pass Rd & NE Cornell Rd, Hillsboro)",
+    "operator": "Digital Realty",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.53957,
+      "lon": -122.90018,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07-21",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-21",
+        "note": "'Corny Data Center' application filed with the City of Hillsboro on 2026-07-21 for a new data center on nearly 29 acres with a 10% height adjustment request; it predates the 2026-07-27 moratorium and continues through review.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hillsboronewstimes.com/2026/08/08/data-center-proposals-filed-days-hours-before-hillsboro-moratorium-approved/",
+        "label": "Data center proposals filed days, hours before Hillsboro moratorium approved — Hillsboro News-Times (2026-08-08)",
+        "publisher": "Hillsboro News-Times",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://hillsboroherald.com/next-wave-7-hillsboro-data-center-projects-march-ahead-as-humans-fight-it-out/",
+        "label": "Next Wave: 7 Hillsboro data center projects march ahead — The Hillsboro Herald (2026-08-13)",
+        "publisher": "The Hillsboro Herald",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://hillsboroherald.com/hillsboros-latest-data-center-now-in-permitting-is-across-from-liberty-high-and-near-rock-creek-homes/",
+        "label": "Hillsboro's latest data center now in permitting — The Hillsboro Herald (2026-08-11)",
+        "publisher": "The Hillsboro Herald",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://hillsboroherald.com/the-real-story-data-centers-are-encroaching-on-hillsboros-schools-and-we-are-out-of-time/",
+        "label": "The Real Story: data centers are encroaching on Hillsboro's schools — The Hillsboro Herald",
+        "publisher": "The Hillsboro Herald",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "The News-Times reports the 'Corny Data Center' application (nearly 29 acres, filed 2026-07-21) without naming the applicant; The Hillsboro Herald identifies the corner of Cornelius Pass Road and NE Cornell Road as a recently purchased open farmed parcel held by a Digital Realty entity, with an application for two buildings 'from the same group' as the Wagon Data Center. Operator attribution therefore rests on the Herald's reporting. Coordinates are the Cornelius Pass / Cornell intersection (OSM node 38738445); the exact parcel has not been published. Power capacity not published.",
+    "landAcres": 29,
     "facilityType": "data_center"
   },
   {
@@ -42355,6 +42923,101 @@
     ],
     "lastUpdated": "2026-09-13",
     "notes": "Equinix-operated colocation floors (Suites 518, 536, 734, and 1533) within 111 8th Avenue, a large multi-tenant carrier hotel in Manhattan's Chelsea neighborhood. Distinct facility record from the existing digital-realty-jfk10-manhattan-ny record (Digital Realty's separately-leased floors in the same building) -- this is genuinely a different operator's colocation space, not a duplicate of the same footprint. Hosts 78 networks and 4 internet exchanges (DE-CIX New York, Equinix Internet Exchange New York, MegaIX New York, NetIX) per PeeringDB. No capacity, investment, or AI-use figure found as of 2026-09-13, omitted rather than guessed. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed suite/floor footprint), hence approximate precision. aiClassification omitted -- general-purpose colocation, no AI/GPU capacity confirmed at this specific site.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-se3-seattle-wa",
+    "name": "Equinix Seattle SE3",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.6144229,
+      "lon": -122.3397427,
+      "city": "Seattle",
+      "county": "King",
+      "street": "2020 5th Avenue",
+      "postalCode": "98121",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2013",
+        "note": "Baxtel gives 2013 as the year opened.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.openstreetmap.org/way/359930465",
+        "label": "OSM way 359930465 - 'Equinix SE3 Data Center', building=data_center, operator=Equinix, ref=SE3, 2020 5th Avenue Seattle 98121",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://baxtel.com/data-center/equinix-seattle-se3",
+        "label": "Equinix Seattle SE3 - 2020 Fifth Ave, Seattle, WA; opened 2013; adjacent to SE2",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "A separate building from the Westin Building (2001 6th Avenue), which the projection already tracks as Digital Realty SEA10 and which houses Equinix SE2. Baxtel loosely describes SE3 as 'in the Westin Building'; OSM maps it as its own five-storey building at 2020 5th Avenue, sourced to a King County Assessor parcel record, and that is the location used here. No capacity asserted - Equinix does not publish one and the megawatt figures circulating on colocation marketplaces were not retrieved from a primary source this session.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-se4-kent-wa",
+    "name": "Equinix Seattle SE4",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.4215254,
+      "lon": -122.2473931,
+      "city": "Kent",
+      "county": "King",
+      "street": "6906 South 204th Street",
+      "postalCode": "98032",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2000",
+        "note": "Opened 2000; acquired by Equinix from Verizon in May 2017, formerly named Verizon SEA1.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://leg.wa.gov/jlarc/taxReports/2026/data/1/report.html",
+        "label": "2026 tax preference review: Data Centers in Urban Counties - names Equinix's SE4 facility in Kent (King County) as an exemption beneficiary",
+        "publisher": "Washington State Legislature, JLARC",
+        "retrievedAt": "2026-09-17",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://baxtel.com/data-center/equinix-seattle-se4",
+        "label": "Equinix Seattle SE4 - 6906 S. 204th Street, Kent, WA; opened 2000; acquired from Verizon May 2017",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Named in a Washington State legislative audit (JLARC) as one of four urban-county data centers claiming the state's nonrural data center sales-and-use-tax exemption, alongside two Sabey facilities in Tukwila and Benaroya's Centeris in Puyallup. No dollar amount is recorded: JLARC publishes only a combined beneficiary-savings figure (approximately $42.4 million across FY2023-2026), which cannot be attributed to this site. Coordinates are the OpenStreetMap address record for 6906 South 204th Street, which is not itself tagged as a data center - hence precision 'approximate'. No capacity asserted; Equinix does not publish one.",
+    "subsidies": [
+      {
+        "program": "Sales and use tax exemption for data centers in nonrural (urban) counties",
+        "jurisdiction": "Washington State",
+        "sourceIndex": 0
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -52851,9 +53514,16 @@
         "publisher": "Google",
         "retrievedAt": "2026-09-05",
         "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/hyperscalers/google-confirms-600-million-expansion-in-the-dalles",
+        "label": "Google Confirms $600 Million Expansion in The Dalles — Data Center Knowledge (2013-09-26)",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-05",
+    "lastUpdated": "2026-09-17",
     "energy": {
       "source": "hydro",
       "utility": "Northern Wasco County PUD",
@@ -55982,6 +56652,58 @@
     ],
     "lastUpdated": "2026-09-14",
     "notes": "Roughly 300,000 sq ft data center building within the four-building Hayward Exchange @92 campus. The contractor's project page names Hines and MetLife Investment Management as owners and describes partial occupancy by Amazon; the city register names Hines as developer.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "hines-walker-road-hillsboro-or",
+    "name": "Hines Walker Road Data Center Site (10500 NE Walker Road, Hillsboro)",
+    "operator": "Hines",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 45.52707,
+      "lon": -122.87139,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "street": "10500 NE Walker Road",
+      "postalCode": "97006",
+      "state": "OR",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-13",
+        "note": "Hillsboro development review case DR-032-25 ('Hines Data Center', 185th & Walker Road) reported as application complete and under staff review, no public hearing yet scheduled, as of 2026-08-13.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hillsboroherald.com/next-wave-7-hillsboro-data-center-projects-march-ahead-as-humans-fight-it-out/",
+        "label": "Next Wave: 7 Hillsboro data center projects march ahead — The Hillsboro Herald (2026-08-13)",
+        "publisher": "The Hillsboro Herald",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://hillsboroherald.com/the-real-story-data-centers-are-encroaching-on-hillsboros-schools-and-we-are-out-of-time/",
+        "label": "The Real Story: data centers are encroaching on Hillsboro's schools — The Hillsboro Herald",
+        "publisher": "The Hillsboro Herald",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1585101/000158510122000026/wellsfargocenterpressrelea.htm",
+        "label": "Hines Global Income Trust acquires Wells Fargo Center, Hillsboro (SEC exhibit)",
+        "publisher": "U.S. SEC EDGAR / Hines Global Income Trust",
+        "retrievedAt": "2026-09-17",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Single-outlet lead: The Hillsboro Herald reports a ~20-acre data center 'placeholder application' (DR-032-25) at 10500 NE Walker Road, a property owned by Hines Global Income Trust (the 212,000 sq ft Wells Fargo Center, per Hines' 2022 SEC press-release exhibit), about 120 feet from the Beaverton Academy of Science and Engineering. The Herald itself notes the developer, use and size were not publicly confirmed at the time. No operator statement, MW figure or site plan has been published — treat as unconfirmed until the city posts the application.",
+    "landAcres": 20,
     "facilityType": "data_center"
   },
   {
@@ -60700,6 +61422,57 @@
       "notes": "Cave City enacted a 12-month data-center zoning moratorium 2026-05-20. Developer Kentucky Industrial Alliance LLC sued the city 2026-06-08 in Barren District/Circuit Court, arguing its application should be reviewed under the zoning rules in place 2026-05-11 (before the moratorium) and separately challenging the city's annexation of the tract (alleging improper procedure involving a cemetery on the parcel). The two suits were consolidated; first hearing 2026-08-26, status conference set 2026-11-23, no ruling issued as of 2026-08-27. Site is ~10 miles from Mammoth Cave National Park; residents have raised water-resource and land-use concerns.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "komo-plaza-seattle-wa",
+    "name": "KOMO Plaza (formerly Fisher Plaza)",
+    "operator": "GI Partners",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.6192326,
+      "lon": -122.3482873,
+      "city": "Seattle",
+      "county": "King",
+      "street": "140 4th Avenue North",
+      "postalCode": "98109",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2003",
+        "note": "Two-building complex completed in 2003 (OSM records start dates of 2000 for the east building and 2003 for the west).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/komo-plaza-was-fisher-plaza",
+        "label": "KOMO Plaza (was Fisher Plaza) - GI Partners, 140 4th Avenue North Seattle; 293,727 sq ft two-building carrier hotel; data center operators Evocative Seattle SEA1 and TierPoint Seattle DC1/DC2",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/417682780",
+        "label": "OSM way 417682780 - 'KOMO Plaza East' (old_name Fisher Plaza East), telecom=data_center, CLLI STTOWAJM, 140 4th Avenue North Seattle 98109",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/417682781",
+        "label": "OSM way 417682781 - 'KOMO Plaza West' (old_name Fisher Plaza West), telecom=data_center, 100 4th Avenue North Seattle 98109",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "A Seattle carrier hotel: GI Partners owns the two-building complex (140 and 100 4th Avenue North) and multiple operators run data center space inside it, including Evocative and TierPoint. Recorded as one site at the east building's coordinates rather than as per-tenant records. Total power is not recorded - no primary-source figure was retrieved.",
     "facilityType": "data_center"
   },
   {
@@ -71705,6 +72478,78 @@
     "lastUpdated": "2026-09-16",
     "notes": "Microsoft's FIRST Iowa data center campus (planned since 2008, construction from 2010, expanded 2011/2013) - a two-building campus at/near 8855 Grand Ave, distinct from the already-tracked 'Ginger West' campus (11100 Booneville Rd). Address sourced from a secondary aggregator search summary (not independently fetched this session) but independently geocode-verified as a real West Des Moines / Dallas County address via OSM Nominatim. Annual property tax ~$1.6M and $10M public infrastructure investment per WDM Chamber page (not campus construction cost).",
     "landAcres": 41,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-mwh-quincy-wa",
+    "name": "Microsoft MWH Data Center",
+    "operator": "Microsoft Corporation",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.237888,
+      "lon": -119.8875891,
+      "city": "Quincy",
+      "county": "Grant",
+      "street": "1515 Port Industrial Parkway",
+      "postalCode": "98848",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "announcedDate": "2018-06-06",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-09-27",
+        "note": "Ecology Approval Order 22AQ-E035 describes MWH Data Center as an existing data center at 1515 Port Industrial Parkway, Quincy, in Grant County; generator commissioning dates in the order run from 2015.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ecology.wa.gov/Asset-Collections/Doc-Assets/Air-quality/Data-Centers/Microsoft-MWH-formerly-Oxford-data-center/20220937MicrosoftMWH22AQE035",
+        "label": "Approval Order No. 22AQ-E035, Microsoft Corporation MWH Data Center (Notice of Construction, renewable diesel)",
+        "publisher": "Washington State Department of Ecology",
+        "retrievedAt": "2026-09-17",
+        "kind": "permit"
+      },
+      {
+        "url": "https://ecology.wa.gov/air-climate/air-quality/data-centers",
+        "label": "Data centers - air quality permits index (Quincy: Microsoft MWH, formerly Oxford)",
+        "publisher": "Washington State Department of Ecology",
+        "retrievedAt": "2026-09-17",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/700001774",
+        "label": "OSM way 700001774 - 'Microsoft MWH Data Center', landuse=industrial, industrial=data_centre, operator=Microsoft",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "A Microsoft Quincy campus distinct from the Columbia Data Center: Ecology permits them separately (22AQ-E035 for MWH, 25AQ-E009 for Columbia) and gives MWH its own address. Formerly permitted under the name 'Oxford'. Coordinates are the centroid of the OSM industrial-landuse polygon named for the facility. No IT-load capacity is asserted - the permit states emergency-generator ratings, which are not the same thing.",
+    "emissions": {
+      "permittedTpy": {
+        "nox": 53,
+        "co": 11,
+        "pm25": 10,
+        "pm10": 24,
+        "so2": 0.18,
+        "voc": 1.5,
+        "nh3": 3.5
+      },
+      "basis": "facility_wide",
+      "averagingPeriod": "rolling_12_month",
+      "unitsCovered": "Emergency engine generators across buildings MWH 01/02/03/04/05/06",
+      "permitNumber": "22AQ-E035",
+      "permitType": "state_construction",
+      "issuingAgency": "Washington State Department of Ecology",
+      "issuedDate": "2022-09-27",
+      "notes": "Table 7 of the approval order, 'Annual Emissions' column (the 'Annual with Commissioning Emissions' column is higher: PM10 25, PM2.5 10.5, CO 13, NOx 64, VOC 1.7, SO2 0.24, NH3 4.8). The order also caps diesel engine exhaust particulate at 0.97 tpy and NO2 at 5.3 tpy, and limits facility fuel consumption to 1,657,088 gallons. Permitted ceilings, not measured emissions. Permittee is classified as a synthetic minor source.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -87655,7 +88500,7 @@
     "id": "qts-hillsboro-3-or",
     "name": "QTS Hillsboro 3",
     "operator": "QTS Data Centers",
-    "status": "under_construction",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 45.5719248,
@@ -87667,7 +88512,14 @@
       "state": "OR",
       "precision": "exact"
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-17",
+        "note": "Hillsboro Herald (2026-08-13) reports the QTS North/HIL3 campus at Schaff and Pubols (case DR-014-23, approved 2024-01-12, 750,000+ sq ft with generators and a PGE substation) is 'approved. Done deal' but 'ground has not broken yet' — i.e. permitted, not under construction. Cleanview's Oregon list likewise carries QTS Hillsboro 3 DC1/DC2 as planned with no year.",
+        "sourceIndex": 3
+      }
+    ],
     "sources": [
       {
         "url": "https://q.com/data-centers/hillsboro-3/",
@@ -87689,9 +88541,23 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://hillsboroherald.com/next-wave-7-hillsboro-data-center-projects-march-ahead-as-humans-fight-it-out/",
+        "label": "Next Wave: 7 Hillsboro data center projects march ahead — The Hillsboro Herald (2026-08-13): QTS North HIL3 approved, ground not yet broken",
+        "publisher": "The Hillsboro Herald",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/oregon",
+        "label": "Data Centers in Oregon — Cleanview project list (QTS Hillsboro 3 DC1/DC2: planned, TBD)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-09-17",
     "notes": "Confirmed as planned 2-building campus, 100+MW, described as in development/under construction per QTS's own directory listing ('In Development'). Candidate 1465196736 is the same site, ~0.2km away; kept this one, dropped the other as duplicate.",
     "energy": {
       "utility": "Portland General Electric (PGE)"
@@ -92521,6 +93387,118 @@
     "facilityType": "data_center"
   },
   {
+    "id": "sabey-intergate-columbia-building-b-wa",
+    "name": "Sabey Intergate.Columbia Building B",
+    "operator": "Sabey Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.407164,
+      "lon": -120.1875239,
+      "city": "East Wenatchee",
+      "county": "Douglas",
+      "street": "4405 B Grant Road",
+      "postalCode": "98802",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2010-10-05",
+        "note": "Ecology's second-tier review technical support document describes Building B as an existing, occupied multi-tenant data center building at the Intergate Columbia campus.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://sabeydatacenters.com/locations/east-wenatchee-data-center",
+        "label": "SDC Columbia, 4405 Grant Rd, East Wenatchee - 70 MW campus, three buildings operational and a fourth under construction, Douglas County PUD hydro, evaporative and economizer cooling, 1.2 average annualized PUE",
+        "publisher": "Sabey Data Centers",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://ecology.wa.gov/Asset-Collections/Doc-Assets/Air-quality/Data-Centers/Blackrock-and-Sabey/Tier2-TSD-Blackrock-Sabey-CL100510",
+        "label": "Technical Support Document for Second Tier Review of Blackrock and Sabey Data Centers, East Wenatchee (Oct 5, 2010) - Intergate Columbia, 4405 Grant Road, Douglas County",
+        "publisher": "Washington State Department of Ecology",
+        "retrievedAt": "2026-09-17",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/460167186",
+        "label": "OSM way 460167186 - 'Intergate Columbia B', telecom=data_center, operator=Sabey Data Centers, 4405 B Grant Road East Wenatchee 98802",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "The Intergate.Columbia campus is tracked per building (the projection already carries Building A). Building B is the multi-tenant building that Ecology's 2010 second-tier review describes as housing three independently owned data centers - VMware's leased space plus the separately permitted Blackrock and Sabey halls (approval orders 10AQ-C153 and 10AQ-C152). Those tenant-level halls are deliberately NOT emitted as separate facilities: they are the same site. The 70 MW figure on Sabey's page is campus-wide and is therefore not recorded on this building.",
+    "energy": {
+      "source": "hydro",
+      "utility": "Douglas County Public Utility District",
+      "notes": "Sabey states electricity for SDC Columbia 'is supplied by sustainable hydro power through Douglas County Public Utility District'."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Sabey describes SDC Columbia as using evaporative and economizer cooling with hot aisle / cold aisle containment. Campus-level description applied to this building."
+    },
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.2,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
+  },
+  {
+    "id": "sabey-intergate-columbia-building-d-wa",
+    "name": "Sabey Intergate.Columbia Building D",
+    "operator": "Sabey Data Centers",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.4075849,
+      "lon": -120.1915785,
+      "city": "East Wenatchee",
+      "county": "Douglas",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-17",
+        "note": "Sabey's SDC Columbia page states three buildings are currently operational with a fourth under construction; OSM maps a fourth Sabey-operated building, 'Intergate Columbia D', on the campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://sabeydatacenters.com/locations/east-wenatchee-data-center",
+        "label": "SDC Columbia, 4405 Grant Rd, East Wenatchee - 'Three buildings currently operational; a fourth under construction'",
+        "publisher": "Sabey Data Centers",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1071774674",
+        "label": "OSM way 1071774674 - 'Intergate Columbia D', building=industrial, telecom=data_center, operator=Sabey Data Centers",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Identification of OSM's 'Intergate Columbia D' with the fourth building Sabey describes as under construction is an inference from two sources that agree on campus, operator and building count; it is not stated in one document, hence confidence 'reported'. No street number is recorded because OSM carries none for this polygon. The 70 MW campus figure is not attributed to this building.",
+    "energy": {
+      "source": "hydro",
+      "utility": "Douglas County Public Utility District",
+      "notes": "Campus-level: Sabey states SDC Columbia electricity is supplied by hydro power through Douglas County PUD."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "sabey-intergate-east-building-1-wa",
     "name": "Sabey Intergate.East Building 1",
     "operator": "Sabey Data Centers",
@@ -92563,6 +93541,43 @@
     "energy": {
       "utility": "Seattle City Light"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "sabey-intergate-east-building-3-wa",
+    "name": "Sabey Intergate.East Building 3",
+    "operator": "Sabey Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.4934798,
+      "lon": -122.2904647,
+      "city": "Tukwila",
+      "county": "King",
+      "street": "3333 South 120th Place",
+      "postalCode": "98168",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.openstreetmap.org/way/293211686",
+        "label": "OSM way 293211686 - 'Intergate Seattle East Building 3', building=data_center, telecom=data_center, operator=Sabey Data Centers, 3333 South 120th Place Tukwila 98168",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://sabeydatacenters.com/locations/seattle-data-center",
+        "label": "SDC Seattle, Tukwila - 54 MW capacity, single or multi-tenant buildings, evaporative and economizer cooling",
+        "publisher": "Sabey Data Centers",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "OSM tags this building as a data center with operator Sabey Data Centers. Sabey's own real-estate marketing has at times described Building 3 as flex-tech/manufacturing space rather than purely data hall, so the share of the building in data-center use is unverified; status is recorded as operational on the strength of the OSM tagging and the campus being in service, with confidence 'reported'. The campus's 54 MW is not attributed to this building.",
     "facilityType": "data_center"
   },
   {
@@ -92755,6 +93770,43 @@
     "energy": {
       "utility": "Seattle City Light"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "sabey-intergate-west-building-b-wa",
+    "name": "Sabey Intergate.West Building B",
+    "operator": "Sabey Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.4930744,
+      "lon": -122.2936837,
+      "city": "Tukwila",
+      "county": "King",
+      "street": "12201 Tukwila International Boulevard",
+      "postalCode": "98168",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.openstreetmap.org/way/337126741",
+        "label": "OSM way 337126741 - 'Intergate Seattle West Building B', telecom=data_center, operator=Sabey Data Centers, 12201 Tukwila International Boulevard Tukwila 98168",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-17",
+        "kind": "osm"
+      },
+      {
+        "url": "https://sabeydatacenters.com/locations/seattle-data-center",
+        "label": "SDC Seattle, Tukwila - Sabey's Seattle-area campus",
+        "publisher": "Sabey Data Centers",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Completes the Intergate.West address run (12101 = Building C and 12301 = Building A are already tracked; this is 12201). Operator tag and address from OSM.",
     "facilityType": "data_center"
   },
   {
@@ -96828,6 +97880,44 @@
     ],
     "lastUpdated": "2026-07-18",
     "notes": "Phases 1A (25MW) + 1B (25MW) + 2 (48MW) = 98 MW, co-located with the 150 MW Briscoe wind farm. Explicit entry in Soluna's 10-Q.",
+    "facilityType": "crypto_mining"
+  },
+  {
+    "id": "soluna-project-edith-wenatchee-wa",
+    "name": "Project Edith (former Soluna Wenatchee site)",
+    "operator": "Soluna Computing, Inc.",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.4234599,
+      "lon": -120.310349,
+      "city": "Wenatchee",
+      "county": "Chelan",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 3.3
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2022-09-17",
+        "note": "Soluna Computing sold the site's mining and general equipment to a buyer on 17 September 2022, retaining only at-cost facilities contracts on the new owner's behalf. Project Edith generated 0% of Soluna's mining revenue in FY2023 (down from 5% in FY2022), and Soluna's later filings list only Murray, Kentucky and Silverton, Texas as active sites.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/64463/000149315224012303/form10-k.htm",
+        "label": "Soluna Holdings, Inc. Form 10-K for FY2023 - 'Project Edith was a project permitted to consume up to 3.3 MWs located in Wenatchee, Washington'; asset sale September 2022; SCI leases ~19,000 sq ft in four buildings in East Wenatchee",
+        "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
+        "retrievedAt": "2026-09-17",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Recorded as cancelled on the Giga Watt precedent already in the dataset: the operator has exited, and the tracker's status vocabulary has no 'decommissioned' value. The 3.3 MW figure is the permitted consumption ceiling stated in the 10-K, not measured load. The filing is internally inconsistent about the place name - it locates Project Edith in 'Wenatchee' but describes the leased buildings as being in East Wenatchee (a different county); Wenatchee/Chelan is used here because that is the filing's own wording for the project, and the coordinates are the Wenatchee city centroid, not a site footprint. Whoever bought the mining assets in 2022 is not named in the filing, so no current operator is asserted.",
     "facilityType": "crypto_mining"
   },
   {
@@ -111552,6 +112642,46 @@
     }
   },
   {
+    "id": "voltagrid-quincy-gas-generation-wa",
+    "name": "VoltaGrid Quincy On-Site Generation Project (withdrawn)",
+    "operator": "VoltaGrid",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.2343673,
+      "lon": -119.8535054,
+      "city": "Quincy",
+      "county": "Grant",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-07",
+        "note": "VoltaGrid withdrew its air-quality notice of construction application to the Washington Department of Ecology before the public comment period closed, after environmental groups submitted more than 500 opposing comments. Grant County PUD said on-site generation was 'no longer needed for that location'.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kuow.org/climate/2026-07-30/controversial-central-wa-gas-power-plant-for-data-centers-canceled-amid-activist-backlash",
+        "label": "Controversial Central WA gas power plant for data centers canceled amid activist backlash",
+        "publisher": "KUOW",
+        "retrievedAt": "2026-09-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "Single-sourced, hence confidence 'reported'. Capacity is not recorded: the reporting gives a generator count but no megawatt rating, and deriving one would be invented. The coordinates are the Quincy city centroid - the parcel on Grant County PUD land was not identified in the reporting, so precision is 'approximate' and the pin should not be read as a site footprint. Worth tracking despite cancellation: the projection already carries cancelled records (Giga Watt), and a withdrawn behind-the-meter gas permit is a material part of the WA data-center power record.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 14,
+      "notes": "Fourteen gas generators proposed on land owned by Grant County Public Utility District, to serve growing data center demand in Quincy; fuel was to arrive by more than a dozen daily semitruck trips. KUOW reports the nearby beneficiary as the Vantage data center campus, but neither VoltaGrid nor Vantage confirmed this, so no offtaker is recorded."
+    }
+  },
+  {
     "id": "voonami-orem-ut",
     "name": "Voonami Orem Data Center",
     "operator": "Voonami",
@@ -111912,6 +113042,50 @@
     "lastUpdated": "2026-09-09",
     "notes": "Six data center buildings on a 175-acre site — the former CSX Collier Yard property, now city-owned. Developed through Warrenton Group's TWG Data arm, with engineering by Timmons Group. No capacity or investment figure published. Coordinates are an approximate geocode of the cited street address.",
     "landAcres": 175,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "washington-state-data-center-olympia-wa",
+    "name": "Washington State Data Center (1500 Jefferson Building)",
+    "operator": "Washington Technology Solutions",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.0345059,
+      "lon": -122.8945401,
+      "city": "Olympia",
+      "county": "Thurston",
+      "street": "1500 Jefferson Street SE",
+      "postalCode": "98504",
+      "state": "WA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011",
+        "note": "The 1500 Jefferson Building, whose three-storey wing wraps around the state data center, was completed in 2011.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ecology.wa.gov/air-climate/air-quality/data-centers",
+        "label": "Data centers - air quality permits index (Olympia: Washington Department of Information Services, second-tier health impact assessment, 9/16/2010)",
+        "publisher": "Washington State Department of Ecology",
+        "retrievedAt": "2026-09-17",
+        "kind": "permit"
+      },
+      {
+        "url": "https://capitol.wa.gov/discover/buildings/1500-jefferson-building",
+        "label": "1500 Jefferson Building - completed 2011, 245,000 sq ft, six-storey L-shaped office with a three-storey wing wrapping a data center; houses Enterprise Services, Washington Technology Solutions and DCYF",
+        "publisher": "Washington State Capitol Campus",
+        "retrievedAt": "2026-09-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-17",
+    "notes": "The state government's own consolidated data center, on the East Capitol Campus. Ecology's data-center permit index lists it under its former agency name, the Washington Department of Information Services, which was reorganised into Washington Technology Solutions; the operator recorded here is the current occupant named on the Capitol Campus page. Coordinates are the OSM polygon for the 1500 Jefferson Building, which contains but is larger than the data center wing. No capacity figure is published.",
     "facilityType": "data_center"
   },
   {
