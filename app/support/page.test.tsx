@@ -98,3 +98,75 @@ describe("SupportPage", () => {
     }
   });
 });
+
+describe("SupportPage — the personal sections", () => {
+  it("names the maintainer and links his site", () => {
+    render(<SupportPage />);
+    const bio = screen.getByRole("link", { name: /Edward Kubiak/ });
+    expect(bio).toHaveAttribute("href", "https://edwardkubiak.com");
+    expect(bio).toHaveAttribute("target", "_blank");
+    expect(bio).toHaveAttribute("rel", "noreferrer noopener");
+  });
+
+  it("renders the three personal section headings in the order the page argues them", () => {
+    const { container } = render(<SupportPage />);
+    const headings = Array.from(container.querySelectorAll("h2")).map(
+      (h) => h.textContent ?? ""
+    );
+    const why = headings.indexOf("Why I built this");
+    const who = headings.indexOf("Who’s behind it");
+    const guarantee = headings.indexOf("What support does not change");
+    const stand = headings.indexOf("Where I stand");
+    for (const i of [why, who, guarantee, stand]) expect(i).toBeGreaterThan(-1);
+    // "Why" and "Who" make the case before the invoice; the opinion comes
+    // last, and specifically AFTER the neutrality guarantee — see the ⛔ note
+    // in app/support/page.tsx. Reversed, the guarantee reads as a walk-back.
+    expect(why).toBeLessThan(who);
+    expect(guarantee).toBeLessThan(stand);
+  });
+
+  it("disowns the opinion in the dataset's voice and routes disagreement to a correction", () => {
+    render(<SupportPage />);
+    // The load-bearing sentence. Without it the site's neutrality claim and
+    // the maintainer's stated position sit on the page as equals.
+    expect(
+      screen.getByText(/That is my opinion\. It is not this dataset’s\./)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "send me a correction" })
+    ).toHaveAttribute("href", "/contribute");
+    expect(
+      screen.getByRole("link", { name: "public change log" })
+    ).toHaveAttribute("href", "/activity");
+  });
+
+  it("states no figure anywhere in the opinion section", () => {
+    const { container } = render(<SupportPage />);
+    const stand = container.querySelector("section[aria-labelledby='stand-heading']");
+    expect(stand).not.toBeNull();
+    // A number here would be an uncited claim on a site whose whole premise is
+    // that claims carry sources. Mutation-tested: adding one fails this.
+    expect(stand?.textContent ?? "").not.toMatch(/\d/);
+  });
+
+  it("keeps the discovery pipeline's never-published clause attached to the AI disclosure", () => {
+    // Two separate sections now mention the pipeline. Both must carry the
+    // clause: the AI disclosure without it reads as "the dataset is
+    // AI-generated", which is false and is the worst available misreading.
+    const { container } = render(<SupportPage />);
+    const text = container.textContent ?? "";
+    expect(text).toMatch(/has never once published a record/);
+    expect(text).toMatch(/It has never published a record\./);
+    expect(text).toMatch(/a person accepts or rejects each candidate by hand/);
+  });
+
+  it("renders exactly one funding CTA, so its links keep unique accessible names", () => {
+    const { container } = render(<SupportPage />);
+    expect(
+      container.querySelectorAll('a[href="https://ko-fi.com/L2T725R7FV"]')
+    ).toHaveLength(1);
+    expect(
+      container.querySelectorAll('a[href="https://github.com/sponsors/ek33450505"]')
+    ).toHaveLength(1);
+  });
+});
