@@ -2733,6 +2733,25 @@
       "rock": "Sandstone"
     }
   },
+  "atomic-data-minneapolis-central-mn": {
+    "nearestWater": {
+      "name": "Bassett Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "att-redwood-city-ca": {
     "nearestWater": {
       "name": "Smith Slough",
@@ -7085,6 +7104,21 @@
       "rock": "Carbonate-rock"
     }
   },
+  "cloudhq-msp-campus-chaska-mn": {
+    "nearestWater": {
+      "name": "Chaska Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "cloverleaf-carlton-kewaunee-county-wi": {
     "nearestWater": {
       "name": "East Twin River",
@@ -7755,6 +7789,25 @@
     "groundwaterDecline": {
       "cat": 1,
       "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "cologix-minneapolis-511-building-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "cologix-nnj3-parsippany-nj": {
@@ -10043,6 +10096,25 @@
       "rock": "Sandstone"
     }
   },
+  "databank-downtown-minneapolis-msp4-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "databank-east-twin-cities-eagan-mn": {
     "nearestWater": {
       "name": "O'Leary Lake",
@@ -10429,6 +10501,25 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "databank-west-twin-cities-edina-mn": {
+    "nearestWater": {
+      "name": "Lake Girard",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "dataverge-brooklyn-ny": {
@@ -12988,6 +13079,25 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "edgeconnex-msp01-eden-prairie-mn": {
+    "nearestWater": {
+      "name": "South Fork Ninemile Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "edgeconnex-nas01-nashville-tn": {
@@ -20855,6 +20965,25 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "legacy-investing-north-loop-minneapolis-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "leola-data-center-mcpherson-county-sd": {
@@ -34209,6 +34338,25 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "t5-minneapolis-1001-third-avenue-mn": {
+    "nearestWater": {
+      "name": "Bassett Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "t5-nampa-id": {
     "nearestWater": {
       "name": "Aaron Drain",
@@ -36361,6 +36509,25 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "us-signal-mn01-eden-prairie-mn": {
+    "nearestWater": {
+      "name": "South Fork Ninemile Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "us-signal-or01-bend-or": {
     "nearestWater": {
       "name": "Deschutes River",
@@ -36872,6 +37039,21 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "vaultas-alexandria-mn": {
+    "nearestWater": {
+      "name": "Lake Winona",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     }
   },
   "vaultas-st-cloud-mn": {
