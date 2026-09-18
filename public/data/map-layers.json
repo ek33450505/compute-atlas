@@ -7,17 +7,17 @@
   },
   "drought": {
     "attribution": "U.S. Drought Monitor (NDMC / USDA / NOAA)",
-    "asOf": "2026-09-17"
+    "asOf": "2026-09-18"
   },
   "waterStress": {
     "attribution": "WRI Aqueduct 4.0 (CC BY 4.0)",
     "license": "CC-BY-4.0",
-    "total": 1999,
+    "total": 2009,
     "distribution": {
-      "Extremely High (>80%)": 269,
-      "High (40-80%)": 352,
+      "Extremely High (>80%)": 270,
+      "High (40-80%)": 357,
       "Medium - High (20-40%)": 454,
-      "Low - Medium (10-20%)": 308,
+      "Low - Medium (10-20%)": 312,
       "Low (<10%)": 595,
       "Arid and Low Water Use": 21
     }

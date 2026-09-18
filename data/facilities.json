@@ -984,6 +984,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 95,
       "operational": 15
     },
     "statusHistory": [],
@@ -992,7 +993,7 @@
         "url": "https://www.aaimdc.com/data-centers/minnesota/",
         "label": "Minnesota 1 - AAIM Data Centers",
         "publisher": "AAIM Data Centers (official)",
-        "retrievedAt": "2026-08-08",
+        "retrievedAt": "2026-09-18",
         "kind": "other"
       },
       {
@@ -1001,10 +1002,27 @@
         "publisher": "AAIM Data Centers (official)",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.aaimdc.com/news/aaim-to-launch-cutting-edge-data-center-in-blue-earth-minnesota/",
+        "label": "AAIM Data Centers — AAIM to Launch Cutting-Edge Data Center in Blue Earth, Minnesota (relocated under /news/)",
+        "publisher": "AAIM Data Centers",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.aaimdc.com/news/aaim-secures-additional-80-mw-at-minnesota-1/",
+        "label": "AAIM Data Centers — AAIM Secures an Additional 80 MW at Minnesota 1 (2026-08-15): campus goes \"from a 15 MW colocation facility\" to 95 MW, targeted Q3 2027",
+        "publisher": "AAIM Data Centers",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-18",
     "notes": "On Highway 169 in Blue Earth, MN (county seat of FARIBAULT County — note this is NOT 'Blue Earth County', which is a separate county to the east whose seat is Mankato; classic MN city/county name trap, verified via Wikipedia/Data Commons before writing this). AAIM's own site lists this as 'Minnesota 1', 15MW, in-service June 2025, described elsewhere (DCD, 2024) as an 'HPC/cryptomine' facility; AAIM's own copy says it serves 'high-performance computing, enterprise data, and crypto mining needs' — classified facilityType=data_center/aiClassification=mixed_use rather than crypto_mining because AAIM operates it as multi-tenant colocation (landlord model) rather than mining for itself, unlike Revolve Labs. 10,000 sq ft facility. AAIM's CEO (Levesque) is also CTO of crypto-mining-hardware firm Hash House Tech — noted for context, not fact-changing.",
+    "energy": {
+      "notes": "AAIM's launch announcement places the site on Highway 169 near the Blue Earth Light and Water substation, with fiber from Bevcomm. Its 2026-08-15 expansion announcement describes an agreement with an existing utility partner at Blue Earth adding 80 MW targeted for Q3 2027. The serving utility is not named outright in either announcement, so no utility value is asserted."
+    },
     "facilityType": "crypto_mining"
   },
   {
@@ -7003,6 +7021,9 @@
       "state": "MN",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 120
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -7011,11 +7032,30 @@
         "publisher": "southernminn.com",
         "retrievedAt": "2026-08-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.faribaultmn.gov/815/Archer-Datacenters",
+        "label": "City of Faribault — Archer Datacenters project page: ~87 acres, up to six buildings and 500,000 sq ft, EAW history, Court of Appeals ruling 2026-06-08, supplemental EAW due 2027-03-31",
+        "publisher": "City of Faribault, Minnesota",
+        "retrievedAt": "2026-09-18",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.archerdatacenters.com/news-resources/archer-acquires-land-in-faribault-minnesota-for-120mw-data-center-campus-g68bg",
+        "label": "Archer Datacenters — \"Archer acquires land in Faribault, Minnesota, for 120MW data center campus\": 84.3 acres, up to 500,000 sq ft",
+        "publisher": "Archer Datacenters",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-24",
+    "lastUpdated": "2026-09-18",
     "notes": "Up to 500,000 sq ft across six one-story buildings, south of 150th Street West and east of Acorn Trail, north of the Daikin plant. Land acquired 2024; no formal application yet submitted to the city as of the source date. Project on hold pending redo of the city's environmental review after a June 2026 Minnesota Court of Appeals ruling found it non-compliant.",
     "landAcres": 87.6,
+    "community": {
+      "status": "litigation",
+      "notes": "The Minnesota Center for Environmental Advocacy appealed the City's 2025-08-12 findings and negative declaration. The Minnesota Court of Appeals ordered on 2026-06-08 that the City either obtain additional information on environmental impacts or require an EIS; on 2026-07-07 the City Council granted Archer an extension to 2027-03-31 to produce a supplemental EAW addressing water consumption, cooling technology, backup generation, emissions and operational noise.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -8518,6 +8558,64 @@
       "status": "opposed",
       "notes": "Sustained opposition from Montgomery County community and environmental groups. The County Executive issued a six-month permit pause on June 12, 2026, the County Council enacted an 18-month moratorium on July 28, 2026, and the developer challenged the moratorium in court.",
       "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "atomic-data-minneapolis-central-mn",
+    "name": "Atomic Data Minneapolis Central (MSP250)",
+    "operator": "Atomic Data LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.9808119,
+      "lon": -93.2673888,
+      "city": "Minneapolis",
+      "county": "Hennepin",
+      "street": "250 Marquette Avenue South",
+      "postalCode": "55401",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-18",
+        "note": "Listed by Atomic Data as its flagship operating facility and registered in PeeringDB as \"Atomic Data MSP250\".",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.atomicdata.com/infrastructure/",
+        "label": "Atomic Data — Infrastructure (Minneapolis Central at 250 Marquette Ave S., chilled water loop, generator, 99.999% uptime)",
+        "publisher": "Atomic Data LLC",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — Atomic Data MSP250, 250 Marquette Ave, Minneapolis MN 55401",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?street=250+Marquette+Ave&city=Minneapolis&state=MN&country=US&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim geocode — \"Atomic Data\", 250 Marquette Avenue, Minneapolis MN 55401 (Marquette Plaza)",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "Atomic Data lists three facilities — \"Minneapolis Central, MN\", \"Minneapolis East, MN\" and \"Dallas, TX\" — and publishes a street address only for Minneapolis Central. The Minneapolis East site is deliberately not recorded here: no address or coordinates are published and none may be invented. Square footage and MW are not published. OpenStreetMap carries a node explicitly named \"Atomic Data\" at this address.",
+    "energy": {
+      "notes": "Atomic Data publishes \"Dual UPS fed racks, redundant grid entrances, and auto transfer switch\", plus \"a 1,200 horsepower Caterpillar® generator\" with fuel reserves for \"20 days\"."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Atomic Data publishes an \"N+1 HVAC system with dedicated chilled water loop\" — a recirculating water circuit, recorded as closed_loop per the water-circuit tie-breaker rather than as \"air\"."
     },
     "facilityType": "data_center"
   },
@@ -18800,6 +18898,8 @@
       "lon": -93.482,
       "city": "Shakopee",
       "county": "Scott",
+      "street": "4450 Dean Lakes Blvd.",
+      "postalCode": "55379",
       "state": "MN",
       "precision": "approximate"
     },
@@ -18812,11 +18912,18 @@
         "url": "https://www.csquare.com/data-centers/minneapolis",
         "label": "Top Minneapolis Colocation Data Centers | Power Available | Csquare",
         "publisher": "Centersquare / Csquare (official)",
-        "retrievedAt": "2026-08-08",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — Centersquare Minneapolis (MSP1), 4450 Dean Lakes Blvd., Shakopee MN 55379",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-18",
     "notes": "4450 Dean Lakes Boulevard, Shakopee, MN 55379. Built by Compass Datacenters (Phase 1, 1.2MW, opened 2014, originally for Savvis/CenturyLink, ~$26M). Passed to Cyxtera (2017, via $2.8B CenturyLink data-center-portfolio deal), then to Evoque, then rebranded Centersquare in April 2024 after Evoque closed its acquisition of Cyxtera's portfolio. Own site (csquare.com) states 'Utility power: 19.1MW' with separate, smaller UPS (2.4MW) and generator (3.6MW) figures listed — those smaller numbers likely describe currently-installed backup for built-out suites, not total site capacity; used the 19.1MW utility-power figure as capacityMw.operational but flagging the discrepancy for a human sanity-check. 29,800 sq ft raised floor (~28,900–30,000 sq ft consistently reported). Compass's original master plan included 3 more 25,000 sq ft buildings (~$90M) — unclear if built out; not counted here.",
     "facilityType": "data_center"
   },
@@ -22025,6 +22132,63 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cloudhq-msp-campus-chaska-mn",
+    "name": "CloudHQ MSP Campus (Chaska)",
+    "operator": "CloudHQ",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.81068,
+      "lon": -93.63557,
+      "city": "Chaska",
+      "county": "Carver",
+      "street": "2007 Schoolmaster Dr",
+      "postalCode": "55318",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-10-21",
+        "note": "City Council approved the preliminary site plan/plat on 2024-10-21; the conditional use permit was approved 2023-10-16. Final site plan/plat approval is still outstanding.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cloudhq.com/campus/msp-campus/",
+        "label": "CloudHQ — MSP Campus specifications (200 MW critical IT load, 1,100,000 SF)",
+        "publisher": "CloudHQ",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.chaskamn.gov/841/Cloud-HQ",
+        "label": "City of Chaska — Cloud HQ project page (approval dates, water use, no subsidies)",
+        "publisher": "City of Chaska, Minnesota",
+        "retrievedAt": "2026-09-18",
+        "kind": "permit"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=2007+Schoolmaster+Drive%2C+Chaska%2C+MN&format=json&limit=2&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode — 2007 Schoolmaster Drive, Chaska, Carver County, MN 55318",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "CloudHQ markets the campus as \"200 MWs Total Critical IT Load\" across \"one or two data centers\" totalling \"1,100,000 SF\"; the City of Chaska describes a \"Data center totaling approximately 1.5 million square feet in the West Creek Corporate Center\" at 2007 Schoolmaster Dr. Chaska states \"Cloud HQ has not applied for, and the City of Chaska has not offered, any form of tax relief or other subsidies.\" Coordinates are CloudHQ's own published campus point (44.81068, -93.63557), which sits ~200 m from the OSM point for the city-stated street address. Distinct from the two Chaska sites already tracked (Flexential MSP01 at 3500 Lyman Blvd and LightEdge at 1708 W Creek Ln).",
+    "water": {
+      "notes": "The City of Chaska states \"The anticipated water use for Cloud HQ is 14 million gallons per year\" — recorded as published (annual), not converted to a daily figure."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cloverleaf-carlton-kewaunee-county-wi",
     "name": "Cloverleaf Carlton Data Center Site (Kewaunee County)",
     "operator": "Cloverleaf Infrastructure",
@@ -23851,6 +24015,68 @@
     "water": {
       "coolingType": "closed_loop",
       "notes": "Cologix describes a chilled-water cooling system with N+1 perimeter CRAC units located off the data center floor — a recirculating water circuit rather than an evaporative one."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cologix-minneapolis-511-building-mn",
+    "name": "Cologix Minneapolis (511 Building, MIN1–MIN5)",
+    "operator": "Cologix, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.971127,
+      "lon": -93.2546167,
+      "city": "Minneapolis",
+      "county": "Hennepin",
+      "street": "511 11th Avenue South",
+      "postalCode": "55415",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-18",
+        "note": "Cologix lists MIN1–MIN5 as operating colocation and interconnection facilities in the 511 Building; all five are registered in PeeringDB.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cologix.com/data-centers/minneapolis/",
+        "label": "Cologix — Minneapolis colocation & carrier hotel data centers (MIN1–MIN5, 45K+ sq ft at the 511 Building)",
+        "publisher": "Cologix, Inc.",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://cologix.com/data-centers/minneapolis/min5/",
+        "label": "Cologix MIN5 — 10K sq ft, 1.5 MW, 300+ networks, air-cooled chiller with fan wall",
+        "publisher": "Cologix, Inc.",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — Cologix MIN1, MIN2, MIN3, MIN4, MIN5 at 511 11th Ave S, Minneapolis MN",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=511+11th+Ave+S%2C+Minneapolis%2C+MN&format=json&limit=1&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode — Minnesota Gateway Data Center, 511 11th Avenue South, Minneapolis MN 55415",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "Cologix operates \"more than 45K SQFT of data center colocation and interconnection space\" across MIN1–MIN5 in the 511 Building, Minnesota's principal carrier hotel and home of the Midwest Internet Cooperative Exchange (MICE). MIN5 alone is a \"10K SQFT data center\" with \"1.5 MW of power capacity\" and \"300+ unique networks\"; a campus-wide MW figure is not published, so capacityMw is left unset. The same building also houses DataBank's MSP4 suite (tracked separately) — different operators, not a duplicate.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Cologix publishes \"Air-Cooled Chiller with Fan Wall\" for MIN5 — a recirculating chilled-water circuit rejecting heat to air, recorded as closed_loop per the water-circuit tie-breaker. Cologix does not publish a plant description for MIN1–MIN4, so this is MIN5's stated design applied to the campus record."
     },
     "facilityType": "data_center"
   },
@@ -30613,6 +30839,8 @@
       "lon": -93.386,
       "city": "Brooklyn Park",
       "county": "Hennepin",
+      "street": "8111 Oxbow Creek N",
+      "postalCode": "55445",
       "state": "MN",
       "precision": "approximate"
     },
@@ -30633,9 +30861,23 @@
         "label": "DataBank's MSP3 Data Center Officially Qualifies for Minnesota Tax Incentives",
         "retrievedAt": "2026-09-10",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.databank.com/data-centers/minneapolis/",
+        "label": "DataBank — Minneapolis data centers: MSP3 Brooklyn Park, 8111 Oxbow Creek N, 82,231 IT sq ft, 9 MW critical IT load",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — DataBank Minneapolis (MSP3), 8111 Oxbow Creek N, Brooklyn Park MN 55445",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-18",
     "notes": "8111 Oxbow Creek N, Brooklyn Park, MN 55445. Anchored by DataBank's 'MSP3' data hall. Some third-party aggregators (datacentermap.com, datacenterjournal.com) attribute a DataBank facility at '10300 6th Ave N' to 'Plymouth' — that appears to be an older/alternate address or aggregator error for the same Brooklyn Park campus (DataBank's own current site only lists the Oxbow Creek N address for its Minneapolis-market campus); went with the address on DataBank's own official page. Coordinates approximate (Brooklyn Park city-area estimate, not parcel-geocoded this session).",
     "energy": {
       "utility": "Xcel Energy",
@@ -30817,6 +31059,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "databank-downtown-minneapolis-msp4-mn",
+    "name": "DataBank Downtown Minneapolis Data Center (MSP4)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.971127,
+      "lon": -93.2546167,
+      "city": "Minneapolis",
+      "county": "Hennepin",
+      "street": "511 11th Avenue South",
+      "postalCode": "55415",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 0.779
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-18",
+        "note": "Listed as an operating facility on DataBank's own Minneapolis market page and registered in PeeringDB.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/minneapolis/",
+        "label": "DataBank — Minneapolis data centers (MSP4 Downtown: 8,170 IT sq ft, 0.779 MW critical IT load)",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — DataBank Minneapolis (MSP4), 511 11th Ave S, Minneapolis MN",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=511+11th+Ave+S%2C+Minneapolis%2C+MN&format=json&limit=1&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode — Minnesota Gateway Data Center, 511 11th Avenue South, Minneapolis MN 55415",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "DataBank publishes \"8,170 IT Square Feet\" and \"0.779MW Critical IT Load\" for MSP4. Located in the 511 Building carrier hotel — the same address as Cologix MIN1–MIN5, but a separate operator's suite, not the same facility.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "databank-east-twin-cities-eagan-mn",
     "name": "DataBank East Twin Cities Data Center (MSP2)",
     "operator": "DataBank",
@@ -30850,9 +31146,16 @@
         "publisher": "DataBank",
         "retrievedAt": "2026-09-10",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.databank.com/data-centers/minneapolis/",
+        "label": "DataBank — Minneapolis data centers: MSP2 East Twin Cities, 3255 Neil Armstrong Blvd, Eagan, 48,860 IT sq ft, 5 MW critical IT load",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-18",
     "notes": "48,860 IT square feet; FedRAMP-certified multi-tenant carrier-hotel facility with 21 onsite carriers. Distinct from DataBank's Brooklyn Park campus already in this dataset (id: databank-brooklyn-park-mn) — this is DataBank's separate Eagan site. DataBank's own MSP3-qualification release states MSP2 (this facility) previously qualified for Minnesota's DEED-certified data-center sales tax exemption; no amount or certification date disclosed.",
     "energy": {
       "notes": "Operator states the facility runs on 100% renewable power; no MW figure or specific utility named on the page."
@@ -31708,6 +32011,60 @@
     ],
     "lastUpdated": "2026-09-14",
     "notes": "Joint venture with Goodman Group; opening December 2026, phased through September 2027.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-west-twin-cities-edina-mn",
+    "name": "DataBank West Twin Cities Data Center (MSP1)",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.8628296,
+      "lon": -93.3305557,
+      "city": "Edina",
+      "county": "Hennepin",
+      "street": "7700 France Avenue South",
+      "postalCode": "55435",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1.35
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-18",
+        "note": "Listed as an operating facility on DataBank's own Minneapolis market page and registered in PeeringDB.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/minneapolis/",
+        "label": "DataBank — Minneapolis data centers (MSP1 Edina: 26,240 IT sq ft, 1.35 MW critical IT load)",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — DataBank Minneapolis (MSP1), 7700 France Avenue South, Edina MN 55435",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?street=7700+France+Ave+S&city=Edina&state=MN&country=US&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim geocode — 7700 France Avenue South, Pentagon Park, Edina MN 55435",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "DataBank publishes \"26,240 IT Square Feet\" and \"1.35MW Critical IT Load\" for MSP1. Distinct from DataBank's Eagan (MSP2) and Brooklyn Park (MSP3) sites already tracked, and from its MSP4 suite in the 511 Building.",
     "facilityType": "data_center"
   },
   {
@@ -38644,6 +39001,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "edgeconnex-msp01-eden-prairie-mn",
+    "name": "EdgeConneX Minneapolis (EDCMSP01)",
+    "operator": "EdgeConneX Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.878844,
+      "lon": -93.404156,
+      "city": "Eden Prairie",
+      "county": "Hennepin",
+      "street": "6875 Shady Oak Road",
+      "postalCode": "55344",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-18",
+        "note": "Registered as an active facility by EdgeConneX Inc. in the PeeringDB industry registry.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — EdgeConneX Minneapolis (EDCMSP01), 6875 Shady Oak Road, Eden Prairie MN 55344",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=6875+Shady+Oak+Road%2C+Eden+Prairie%2C+MN&format=json&limit=2&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode — 6875 Shady Oak Road, Eden Prairie, Hennepin County, MN 55344",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "Capacity and square footage are deliberately unset: EdgeConneX's own Minneapolis data sheet PDF could not be parsed this session, and the circulating 32,738 sq ft / 2.5 MW figures come only from third-party directories that were not read directly.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "edgeconnex-nas01-nashville-tn",
     "name": "EdgeConneX NAS01 Nashville",
     "operator": "EdgeConneX",
@@ -40042,10 +40443,22 @@
         "publisher": "The Gazette",
         "retrievedAt": "2026-08-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.mprnews.org/story/2026/07/07/elk-river-rejects-changing-rules-to-allow-data-centers",
+        "label": "MPR News — Elk River rejects changing rules to allow data centers (2026-07-07): council rejected the ordinance amendment; residents cited noise, energy use, diesel generator pollution and health impacts; staff directed to draft a one-year moratorium",
+        "publisher": "MPR News",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-24",
+    "lastUpdated": "2026-09-18",
     "notes": "Proposed converting a vacant, ~62,000 sq ft former injection-molding building into a 33MW data center. Elk River City Council unanimously rejected the zoning amendment 2026-07-06; the developer withdrew its application shortly after.",
+    "community": {
+      "status": "opposed",
+      "notes": "Public hearings on the proposed conversion of a 60,000-square-foot industrial building were dominated by opposition. The City Council rejected the zoning-ordinance changes that would have permitted data centers in industrial zones, anticipated denying the permit at its 2026-08-03 meeting, and directed staff to draft a one-year moratorium; the developer then withdrew its application. Resident objections centred on noise, energy consumption, diesel generator emissions and health impacts on nearby homes and schools.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -50744,16 +51157,40 @@
         "publisher": "Duluth News Tribune",
         "retrievedAt": "2026-08-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kaxe.org/local-news/2026-05-20/more-details-emerge-as-google-hermantown-work-out-data-center-agreements",
+        "label": "KAXE — More details emerge as Google, Hermantown work out data center agreements (2026-05-20): waterless/air-cooled design, max 50,000 gal/day, AUAR status, public objections",
+        "publisher": "KAXE",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://mn.gov/puc/activities/v-l-e-c/data-centers/",
+        "label": "Minnesota PUC — Data centers and the PUC's role: Minnesota Power / Harmony Group, LLC electric service agreement for Hermantown, docket 26-159, filed 2026-03-26",
+        "publisher": "Minnesota Public Utilities Commission",
+        "retrievedAt": "2026-09-18",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-24",
+    "lastUpdated": "2026-09-18",
     "notes": "Listed by Google among its US data centers under development. Google has not published a dedicated location page, capacity, investment figure, or timeline for this site — it appears only on Google's US locations index, so this record is intentionally thin. Coordinates are the Hermantown city centroid (approximate).",
     "energy": {
       "source": "mixed",
       "utility": "Minnesota Power",
       "notes": "Google-Minnesota Power electric service agreement calls for 700MW of new clean energy resources (300MW wind + 400MW battery storage) to serve the campus; Google also committed $5M to Minnesota Power's energy-affordability and efficiency programs for low/moderate-income customers."
     },
+    "water": {
+      "coolingType": "air",
+      "reportedMgd": 0.05,
+      "notes": "KAXE reports a waterless/air-cooled system with a maximum of 50,000 gallons daily, used for worker sanitation and emergency fire suppression rather than cooling (50,000 gal/day = 0.05 MGD). A permitted maximum, not a measured draw."
+    },
     "landAcres": 278,
+    "community": {
+      "status": "contested",
+      "notes": "The City Council tabled the tax abatement and land development agreements in May 2026 with no timeline to reconsider, pending completion of a revised Alternative Urban Areawide Review; residents questioned the abatement publicly (\"What tax-based projections would allow a tax abatement of $4 million a year for a single company?\"). The city submitted its updated AUAR to the Environmental Quality Board in August 2026 and a final council vote on adoption had not occurred as of mid-September 2026.",
+      "sourceIndex": 4
+    },
     "facilityType": "data_center"
   },
   {
@@ -52974,7 +53411,7 @@
     "id": "google-skyway-pine-island-mn",
     "name": "Google Project Skyway (Pine Island)",
     "operator": "Google",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "confirmed",
     "location": {
       "lat": 44.2019,
@@ -52992,6 +53429,12 @@
         "date": "2026-02",
         "note": "Xcel Energy signed an agreement to power a new Google data center in Pine Island, MN; Electric Service Agreement pending MPUC approval",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-18",
+        "note": "The City of Pine Island records that on 2026-01-20 it granted final approvals — rezoning, annexation, final plat, final development plan and conditional use permit — and on 2026-02-04 approved a ~$36.5 million tax abatement. The city states \"The developer is now pursuing the required permits through various state agencies\", and its own milestone list records no construction start, so the record moves from proposed to permitted rather than under_construction.",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -53006,16 +53449,70 @@
         "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/data-center-pine-island/",
         "label": "A new data center in Pine Island, Minnesota",
         "publisher": "Google",
-        "retrievedAt": "2026-07-07",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://pineislandmn.gov/skyway",
+        "label": "City of Pine Island — Project Skyway: ~482 acres, ~$36.5M abatement over 28 years, max 152,000 gal/day at full build-out, Xcel Energy as energy provider",
+        "publisher": "City of Pine Island, Minnesota",
+        "retrievedAt": "2026-09-18",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.kttc.com/2026/02/05/pine-island-city-council-approves-financial-incentives-data-center-project/",
+        "label": "KTTC — council approves $36,578,343 abatement 5-0; agreement requires \"at least 38 full time, on-site jobs, paying at least $31 an hour\"",
+        "publisher": "KTTC",
+        "retrievedAt": "2026-09-18",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.postbulletin.com/business/the-company-building-pine-islands-data-center-is-finally-revealed",
+        "label": "Post Bulletin — Ryan Companies building for Google; facility uses \"advanced air-cooling technology\" with water limited to \"domestic needs\"",
+        "publisher": "Post Bulletin",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://pineislandmn.gov/skyway",
+        "label": "City of Pine Island — Project Skyway (approval milestones, abatement, acreage, water, utility)",
+        "publisher": "City of Pine Island, Minnesota",
+        "retrievedAt": "2026-09-18",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.kttc.com/2026/02/05/pine-island-city-council-approves-financial-incentives-data-center-project/",
+        "label": "KTTC — Pine Island City Council approves financial incentives for data center project (5-0 vote, 2026-02-04)",
+        "publisher": "KTTC",
+        "retrievedAt": "2026-09-18",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
+    "lastUpdated": "2026-09-18",
     "notes": "Google's first Minnesota campus, Pine Island (Goodhue County), powered by Xcel Energy; ~250,000 sq ft initial building for AI applications. Electric Service Agreement pending MPUC approval as of Feb 2026 → proposed. The associated 1,900 MW (1,400 MW wind + 200 MW solar + 300 MW storage) is a new clean-energy build-out, NOT the data center's IT load — DC capacity not disclosed (omitted). Faces a local legal challenge. Coordinates are the Pine Island area centroid.",
     "energy": {
       "source": "grid",
       "utility": "Xcel Energy",
       "notes": "Xcel Energy; Google to cover new grid infrastructure costs. A separate 1,900 MW clean-energy build-out (wind/solar/storage) is tied to the ESA but is generation, not DC load."
+    },
+    "water": {
+      "coolingType": "air",
+      "reportedMgd": 0.152,
+      "notes": "The City of Pine Island states water use will be \"a maximum of 152,000 gallons per day or less once the entire project area is built out\" — a permitted maximum for the full build-out, not a measured draw (152,000 gal/day = 0.152 MGD). Post Bulletin reports the facility uses \"advanced air-cooling technology\" rather than water cooling, with water limited to \"domestic needs and operations such as bathroom and kitchen facilities\" — i.e. no cooling-water circuit, hence coolingType \"air\"."
+    },
+    "subsidies": [
+      {
+        "program": "Property tax abatement (Project Skyway business subsidy agreement, 28 years)",
+        "amountUsd": 36578343,
+        "jurisdiction": "City of Pine Island, Minnesota",
+        "year": "2026",
+        "sourceIndex": 3
+      }
+    ],
+    "landAcres": 482,
+    "jobs": {
+      "permanent": 38,
+      "sourceIndex": 3
     },
     "community": {
       "status": "litigation"
@@ -55546,6 +56043,8 @@
       "lon": -93.167,
       "city": "St. Paul",
       "county": "Ramsey",
+      "street": "1125 Energy Park Drive, Suite 100",
+      "postalCode": "55108",
       "state": "MN",
       "precision": "approximate"
     },
@@ -55555,11 +56054,18 @@
         "url": "https://h5datacenters.com/minneapolis-data-center.html",
         "label": "Minneapolis Center - Minnesota Data Center",
         "publisher": "H5 Data Centers (official)",
-        "retrievedAt": "2026-08-08",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — H5 Data Centers Minneapolis, 1125 Energy Park Drive Suite 100, St. Paul MN 55108",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-18",
     "notes": "1125 Energy Park Dr., Suite 100, St. Paul, MN 55108, 17,000 SF. Single-sourced to H5's own dedicated marketing page (no independent MW figure could be verified — aggregator sites gave conflicting, non-primary 5/8/15 MW guesses, none fetched/quotable, so capacityMw omitted rather than guessed). 'Suite 100' in the address raises a flag: could this be a suite within a larger shared building rather than a facility H5 solely owns/operates? H5's own 'about' page lists its core markets (Ashburn, Atlanta, Charlotte, Cleveland, Cincinnati, Denver, Phoenix, San Jose, San Luis Obispo, Seattle) and does NOT mention Minnesota, which is inconsistent with the dedicated St. Paul subpage. Recommend a human double-check ownership/tenancy before promoting — flagged as the weakest of this batch's net-new candidates, not dropped outright since I did successfully fetch a dedicated H5-branded page for this address.",
     "facilityType": "data_center"
   },
@@ -62423,6 +62929,61 @@
     }
   },
   {
+    "id": "legacy-investing-north-loop-minneapolis-mn",
+    "name": "Legacy Investing North Loop (former Star Tribune printing plant)",
+    "operator": "Legacy Investing",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.9906553,
+      "lon": -93.2766429,
+      "city": "Minneapolis",
+      "county": "Hennepin",
+      "street": "800 North 1st Street",
+      "postalCode": "55401",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-30",
+        "note": "Legacy Investing reached an agreement to acquire the 13-acre former Star Tribune Heritage printing site; the project is pending city approvals.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cbsnews.com/minnesota/news/data-center-minnesota-star-tribune-downtown-minneapolis/",
+        "label": "CBS News Minnesota — Data center company acquires former Star Tribune printing site (address, 13 acres, ~566,000 sq ft, 20 MW)",
+        "publisher": "CBS News Minnesota",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox9.com/news/data-center-poised-replace-star-tribune-printing-facility-north-loop",
+        "label": "FOX 9 — Data center proposed for former Star Tribune site sparks debate in Minneapolis",
+        "publisher": "FOX 9 Minneapolis-St. Paul",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=800+North+1st+Street%2C+Minneapolis%2C+MN&format=json&limit=3&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode — Star Tribune Heritage Center, 800 North 1st Street, Minneapolis, MN 55401",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "CBS reports \"approximately 566,000 square feet\" on 13 acres with \"20 megawatts\" of capacity; FOX 9 puts the building at \"nearly 600,000 square feet\". The Star Tribune vacated the Heritage printing facility in December 2025. Minneapolis adopted a moratorium on data centers over 350,000 sq ft; the city's preliminary zoning recommendations would require a conditional use permit and confine new data centers to the DT1/DT2 districts in existing buildings.",
+    "landAcres": 13,
+    "facilityType": "data_center"
+  },
+  {
     "id": "leola-data-center-mcpherson-county-sd",
     "name": "Leola Data Center",
     "operator": "Leola Data Center, LLC",
@@ -62862,6 +63423,8 @@
       "lon": -93.635,
       "city": "Chaska",
       "county": "Carver",
+      "street": "1708 West Creek Lane",
+      "postalCode": "55318",
       "state": "MN",
       "precision": "approximate"
     },
@@ -62884,9 +63447,23 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.lightedge.com/data-center-locations/minneapolis/",
+        "label": "LightEdge — Minneapolis data center: \"1708 West Creek Lane, Chaska, MN 55318\"",
+        "publisher": "LightEdge",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — Stream Data Centers - MN I, 1708 W Creek Ln, Chaska MN 55318 (the site LightEdge acquired)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-18",
     "notes": "1708 West Creek Lane, Chaska, MN — built by Stream Data Centers in 2013 as 'Minneapolis I'; acquired by LightEdge (owned by GI Partners) Jan 17, 2024, LightEdge's entry into the MN market. DISTINCT site from the already-tracked flexential-minneapolis-chaska-msp01-mn (3500 Lyman Boulevard, ~5.4 mi away, different owner) — not a duplicate. Uptime Tier III Design Certified, 76,000 sq ft total / 30,000 sq ft data hall across 3 suites.",
     "facilityType": "data_center"
   },
@@ -103932,6 +104509,76 @@
     "facilityType": "data_center"
   },
   {
+    "id": "t5-minneapolis-1001-third-avenue-mn",
+    "name": "T5@Minneapolis (1001 Third Avenue South)",
+    "operator": "T5 Data Centers (asset owned by a Cloud Capital / Arcapita joint venture since January 2026)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.9714683,
+      "lon": -93.2702827,
+      "city": "Minneapolis",
+      "county": "Hennepin",
+      "street": "1001 3rd Avenue South",
+      "postalCode": "55404",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 31,
+      "operational": 21
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-01-13",
+        "note": "Cloud Capital and Arcapita announced the acquisition of an operating 21 MW Minneapolis data center with a planned 10 MW expansion.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — \"T5@Minneapolis\", T5 Data Centers, 1001 3rd Ave South, Minneapolis MN 55404",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://cloudcapital.com/cloud-capital-and-arcapita-acquire-a-21-megawatt-data-center-in-the-us-with-planned-expansion/",
+        "label": "Cloud Capital — Cloud Capital and Arcapita acquire a 21-megawatt data center in the US with planned expansion (2026-01-13)",
+        "publisher": "Cloud Capital",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.arcapita.com/insights/arcapita-announces-a-partnership-with-cloud-capital-to-acquire-a-21-megawatt-data-center-in-the-us/",
+        "label": "Arcapita — partnership with Cloud Capital to acquire a 21-megawatt data center in the US (2026-01-14)",
+        "publisher": "Arcapita Group Holdings Limited",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox9.com/news/data-center-poised-replace-star-tribune-printing-facility-north-loop",
+        "label": "FOX 9 — notes Legacy Investing previously converted the downtown Sleep Number building into a data center",
+        "publisher": "FOX 9 Minneapolis-St. Paul",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=1001+3rd+Avenue+South%2C+Minneapolis%2C+MN&format=json&limit=2&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim geocode — Sleep Number Building, 1001 3rd Avenue South, Minneapolis, MN",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "PeeringDB registers \"T5@Minneapolis\" (T5 Data Centers) at 1001 3rd Ave South, Minneapolis 55404, with coordinates within ~10 m of the OSM \"Sleep Number Building\" polygon. Cloud Capital and Arcapita announced on 2026-01-13/14 the acquisition of a 21 MW Minneapolis data center \"primarily leased on a long-term basis\" to \"a leading provider of sovereign AI and cloud inferencing solutions\", plus a \"planned 10 MW expansion\" to 31 MW; neither release names a street address, so the identification of that asset with this building is reported, not confirmed by the acquirers. aiClassification set from the acquirers' own description of the anchor tenant's workload.",
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "t5-nampa-id",
     "name": "T5 Nampa",
     "operator": "T5 Data Centers",
@@ -108725,7 +109372,7 @@
         "url": "https://www.farmingtonmn.gov/473/Data-Center-Farmington-Technology-Park",
         "label": "Data Center (Farmington Technology Park)",
         "publisher": "City of Farmington, MN (official)",
-        "retrievedAt": "2026-08-08",
+        "retrievedAt": "2026-09-18",
         "kind": "other"
       },
       {
@@ -108734,12 +109381,35 @@
         "publisher": "Yahoo News",
         "retrievedAt": "2026-08-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.mnlcofarmington.com/",
+        "label": "Farmington Technology Park (Tract) — project site: \"275+ permanent, high-quality skilled jobs, with union support\"; entitlements complete, site preparation underway",
+        "publisher": "Tract Capital Management, LP",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.govtech.com/infrastructure/farmington-minn-residents-sue-to-stop-data-center-park",
+        "label": "Government Technology — Farmington, Minn., residents sue to stop data center park: site at 2830 W. 220th St., 340 acres, up to 12 buildings, ~$5B at full buildout",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-09-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-24",
+    "lastUpdated": "2026-09-18",
     "notes": "Denver-based land developer Tract's speculative hyperscale campus at the former Fountain Valley Golf Club (2830 220th St W) plus adjacent Farmington school-district land, Dakota County. Final plat/PUD unanimously approved by Planning Commission Nov 12, 2024; City Council approved final plat/PUD Nov 18, 2024 and a development contract Dec 2, 2024. Tract closed on the golf-course land purchase Feb 10, 2026 ($18M, per a Tract exec, injecting ~$3,000/student into the school district). City Council split the Technology Park into two phases in April 2026; recording deadline for the final plat extended to May 18, 2026. END USER NOT PUBLICLY DISCLOSED as of source dates — Tract builds speculative 'powered shell' campuses for undisclosed hyperscale tenants, so treat operator as the developer, not a confirmed end-user. Two lawsuits pending (Castle Rock Township + Farmington residents) over water use, noise, and setbacks; judge denied the city's motion to dismiss in November 2025/2026. Facility scope: up to 12 buildings, 2.5M+ sq ft, plus 2 admin buildings. Coordinates are an approximate estimate for 220th St W south of downtown Farmington — not geocoded this session, verify before publish. Operating entities: MNLCO Farmington LLC / MNLCO Farmington Two LLC.",
     "investmentUsd": 5000000000,
     "landAcres": 340,
+    "jobs": {
+      "permanent": 275,
+      "sourceIndex": 5
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "Two residents and the Coalition for Responsible Data Center Development sued to stop the project, alleging violations of the Orderly Annexation Agreement between Farmington and Castle Rock Township and raising water, electricity, noise and air-quality objections. The City of Farmington records the matter as case 19HA-CV-25-992 with plaintiff dismissals filed as of 2026-09-16.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -110499,6 +111169,67 @@
     "facilityType": "data_center"
   },
   {
+    "id": "us-signal-mn01-eden-prairie-mn",
+    "name": "US Signal MN01 Minneapolis (Eden Prairie)",
+    "operator": "US Signal (site registered by OneNeck IT Solutions LLC)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.877094,
+      "lon": -93.407686,
+      "city": "Eden Prairie",
+      "county": "Hennepin",
+      "street": "10290 West 70th Street",
+      "postalCode": "55344",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-18",
+        "note": "Operating facility on US Signal's own data center list; \"Year Built: 2010, expanded in 2011 and 2014\".",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ussignal.com/data-centers/mn01-minneapolis/",
+        "label": "US Signal — MN01 Minneapolis facility page (10290 West 70th Street, Eden Prairie; generator/UPS/utility ratings; 930 tons HVAC N+1; Tier 3 Design Certification)",
+        "publisher": "US Signal",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://ussignal.com/data-centers",
+        "label": "US Signal — data center locations list (MN01 Minneapolis)",
+        "publisher": "US Signal",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — US Signal MN01 - Minneapolis, org OneNeck IT Solutions LLC, 10290 W 70th St, Eden Prairie MN 55344",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?street=10290+West+70th+Street&city=Eden+Prairie&state=MN&country=US&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim geocode — 10290 West 70th Street, Eden Prairie, Hennepin County, MN 55344",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "oneneck.com/datacenter-colocation now 301-redirects to ussignal.com/data-centers, and PeeringDB still registers the site to OneNeck IT Solutions LLC — operator recorded as the current brand with the registered entity noted, per the 'primary is not current' rule.",
+    "energy": {
+      "notes": "US Signal publishes generators at \"8,250 kW, N+1 redundancy\", UPS at \"5,400 kW, N+1 redundancy\" and utility feeds of \"7,500 kVA\". These are plant ratings, not critical IT load, so capacityMw is left unset."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "us-signal-or01-bend-or",
     "name": "US Signal OR01 Bend",
     "operator": "US Signal",
@@ -111881,6 +112612,57 @@
     ],
     "lastUpdated": "2026-08-28",
     "notes": "754,000 sq ft, targeted completion January 2028. Vantage filed a second Fulton County DRI the same period (Stacks Road, ~697,000 sq ft, January 2027) which is not recorded separately here because no fetched source gave it a distinguishable location.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "vaultas-alexandria-mn",
+    "name": "Vaultas Alexandria (ALX1)",
+    "operator": "Vaultas",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.8844516,
+      "lon": -95.3762121,
+      "city": "Alexandria",
+      "county": "Douglas",
+      "street": "720 Hawthorne Street",
+      "postalCode": "56308",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-18",
+        "note": "Listed by Vaultas as an operating colocation facility currently accepting clients.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://vaultas.com/data-centers/alexandria-mn/",
+        "label": "Vaultas — Alexandria MN data center (720 Hawthorne St; 30kW+ high-density workloads; dual substations with standby generators)",
+        "publisher": "Vaultas",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://vaultas.com/data-centers/minnesota/",
+        "label": "Vaultas — Minnesota data centers (Alexandria ALX1 at 720 Hawthorne Street, plus Minneapolis, St. Cloud and St. Paul)",
+        "publisher": "Vaultas",
+        "retrievedAt": "2026-09-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?street=720+Hawthorne+St&city=Alexandria&state=MN&country=US&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim geocode — 720 Hawthorne Street, Alexandria, Douglas County, MN 56308",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-18",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-18",
+    "notes": "Vaultas designates this site ALX1. Distinct from the Vaultas St. Cloud proposal already tracked. Vaultas also references Minneapolis and St. Paul locations but publishes no street address for either, so neither is recorded here.",
     "facilityType": "data_center"
   },
   {
