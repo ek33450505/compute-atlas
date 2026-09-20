@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight, Globe } from "lucide-react";
 
-import { siteConfig } from "@/lib/site";
 import { datasetJsonLdString } from "@/lib/seo";
 import { getDatasetEdition } from "@/lib/dataset-edition";
 import {
@@ -99,11 +98,20 @@ const HOME_SPECULATION_RULES = JSON.stringify({
   prefetch: [{ source: "list", urls: ["/map", "/explore"], eagerness: "moderate" }],
 });
 
-export const metadata: Metadata = {
-  title: "US data center map & database",
-  description: siteConfig.description,
-  alternates: { canonical: "/" },
-};
+/**
+ * `generateMetadata`, not a static `metadata`, so the facility count in the
+ * description is read from the same `getStats()` the page body renders
+ * rather than hardcoded — a literal here would silently go stale on the
+ * next data wave.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const { count } = await getStats();
+  return {
+    title: "US data center map & database",
+    description: `Interactive US data center map and database — ${count.toLocaleString("en-US")} AI, hyperscale, and crypto-mining sites plus the power built to supply them. Every record is source-cited.`,
+    alternates: { canonical: "/" },
+  };
+}
 
 /**
  * Landing page — editorial frontispiece.

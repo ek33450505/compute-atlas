@@ -20,6 +20,19 @@ export const siteConfig = {
   tagline: "Mapping the U.S. compute buildout",
   description:
     "Compute Atlas is an open, source-cited map of the U.S. compute buildout — traditional and hyperscale data centers, AI-specific facilities, crypto-mining operations, and the dedicated power generation built to supply them — from proposed and permitted to under construction and operational. It tracks what the buildout costs as well as what it adds: fuel mix, water stress, and documented community opposition, with a public source behind every record.",
+  /**
+   * The `<meta name="description">` / og / twitter string. Deliberately SHORT
+   * and separate from `description` above, which is 451 chars and feeds the
+   * Dataset + WebSite JSON-LD (`lib/seo.ts`), where length is an asset for
+   * dataset discovery rather than a liability. Google renders ~155 chars on
+   * desktop and ~120 on mobile, so the long one showed only its first third
+   * on the SERP — brand-and-jargon first, with no number and no mention of
+   * power, water, or opposition before the cut.
+   * Keep at or under 160 characters and front-load the terms people search.
+   * Guarded by `lib/site.test.ts`.
+   */
+  metaDescription:
+    "Interactive US data center map and database — AI, hyperscale, and crypto-mining sites plus the power built to supply them. Every record is source-cited.",
   url: "https://www.compute-atlas.com",
   repoUrl: "https://github.com/ek33450505/compute-atlas",
   /**

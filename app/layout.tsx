@@ -28,17 +28,17 @@ export const metadata: Metadata = {
     default: siteConfig.name + " — " + siteConfig.tagline,
     template: "%s · " + siteConfig.name,
   },
-  description: siteConfig.description,
+  description: siteConfig.metaDescription,
   openGraph: {
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: siteConfig.metaDescription,
     siteName: siteConfig.name,
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: siteConfig.metaDescription,
   },
   icons: {
     icon: [
