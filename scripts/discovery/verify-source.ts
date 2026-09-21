@@ -297,6 +297,28 @@ function normalizeWhitespace(input: string): string {
   return input.replace(/\s+/g, " ").trim();
 }
 
+/**
+ * Folds typographic variants (dashes, quotes, spaces) to their plain-ASCII
+ * equivalents. Required because a model-rendered quote and the source page's
+ * raw text can express the SAME character differently, and NFKC alone does
+ * not close that gap — measured directly: U+2011 (non-breaking hyphen)
+ * normalizes under NFKC to U+2010 (hyphen), never to ASCII '-'; U+2013 (en
+ * dash) and U+2019 (curly apostrophe) are left untouched by NFKC entirely.
+ * Only U+00A0 (nbsp) happens to fold via NFKC. Confirmed live: the model
+ * quoted "gas‑fired" (U+2011) for a page that reads "gas-fired" (ASCII
+ * 0x2D) — a true, accurately-quoted claim the exact-substring check in
+ * `applyMechanicalChecks` rejected before this fold existed. Must be applied
+ * to BOTH sides of the comparison — folding only one side trades this bug
+ * for a new asymmetric-mismatch bug.
+ */
+function foldTypography(input: string): string {
+  return input
+    .replace(/[‐‑‒–—―−]/g, "-")
+    .replace(/[‘’‚‛′]/g, "'")
+    .replace(/[“”„‟″]/g, '"')
+    .replace(/[    ⁠]/g, " ");
+}
+
 function hasVisibleContent(quote: string | null): quote is string {
   return quote !== null && normalizeWhitespace(quote).length > 0;
 }
@@ -387,8 +409,8 @@ function applyMechanicalChecks(modelVerdict: ModelVerdict, pageText: string, cla
     };
   }
 
-  const normalizedQuote = normalizeWhitespace(modelVerdict.quote);
-  const normalizedPageText = normalizeWhitespace(pageText);
+  const normalizedQuote = foldTypography(normalizeWhitespace(modelVerdict.quote));
+  const normalizedPageText = foldTypography(normalizeWhitespace(pageText));
 
   const fragments = survivingFragments(normalizedQuote);
   // Vacuous-pass guard: Array.prototype.every() on an empty array is

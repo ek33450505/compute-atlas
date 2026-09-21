@@ -191,6 +191,63 @@ describe("verifySource", () => {
     });
   });
 
+  describe("typographic normalization (dashes/quotes/spaces)", () => {
+    it("verifies a model quote rendered with U+2011 non-breaking hyphens against page text using ASCII hyphens (regression: real discovery-run false rejection, 2026-09-21)", async () => {
+      const pageText =
+        "Project River would include a 1,000-megawatt gas-fired power plant and a 500-megawatt woody biomass plant powered by pulpwood tree";
+      const quote = "Project River would include a 1,000-megawatt gas‑fired power plant and a 500‑meg";
+      const claim: VerifyClaim = { entityName: "Project River", numericHints: [{ label: "capacity", value: 1000 }] };
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk(pageText)),
+        callOllamaImpl: vi.fn(async () => supports(quote)),
+      });
+
+      const result = await verifySource("https://example.com/page", claim, deps);
+
+      expect(result.verdict).toBe("verified");
+    });
+
+    it("still rejects a quote whose content genuinely does not appear on the page, even though it contains typographic characters (gate-not-weakened)", async () => {
+      const pageText = "Project River would include a 1,000-megawatt gas-fired power plant near Somerville.";
+      const quote = "Project River would include a 1,000‑megawatt coal‑fired power plant near Somerville.";
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk(pageText)),
+        callOllamaImpl: vi.fn(async () => supports(quote)),
+      });
+
+      const result = await verifySource("https://example.com/page", CLAIM, deps);
+
+      expect(result.verdict).toBe("rejected");
+    });
+
+    it("verifies a model quote using a curly apostrophe against page text using a straight apostrophe", async () => {
+      const pageText = "Ridgeline Data Center's planned capacity is 1200 MW at the Texas site.";
+      const quote = "Ridgeline Data Center’s planned capacity is 1200 MW at the Texas site.";
+      const claim: VerifyClaim = { entityName: "Ridgeline Data Center", numericHints: [{ label: "capacity", value: 1200 }] };
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk(pageText)),
+        callOllamaImpl: vi.fn(async () => supports(quote)),
+      });
+
+      const result = await verifySource("https://example.com/page", claim, deps);
+
+      expect(result.verdict).toBe("verified");
+    });
+
+    it("verifies a model quote using an en dash against page text using an ASCII hyphen", async () => {
+      const pageText = "Ridgeline Data Center is expected to be built in phases from 2024-2026.";
+      const quote = "Ridgeline Data Center is expected to be built in phases from 2024–2026.";
+      const deps = makeDeps({
+        fetchPageTextImpl: vi.fn(async () => pageOk(pageText)),
+        callOllamaImpl: vi.fn(async () => supports(quote)),
+      });
+
+      const result = await verifySource("https://example.com/page", CLAIM, deps);
+
+      expect(result.verdict).toBe("verified");
+    });
+  });
+
   describe("vacuous-pass guards (Array.prototype.every on an empty array)", () => {
     it("rejects a fabricated quote whose number appears NOWHERE on the page", async () => {
       const pageText = "Example Corp operates a facility that has not disclosed its exact capacity to the public.";
