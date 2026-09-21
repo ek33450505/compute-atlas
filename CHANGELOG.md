@@ -5,6 +5,23 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.34.0](https://github.com/ek33450505/compute-atlas/compare/v1.33.0...v1.34.0) (2026-09-21)
+
+
+### Features
+
+* **map:** add server-rendered content section to /map ([#334](https://github.com/ek33450505/compute-atlas/issues/334)) ([4f4840d](https://github.com/ek33450505/compute-atlas/commit/4f4840d97e8670a0901c85a9a8bb0e978d7b9703))
+
+
+### Bug Fixes
+
+* **chart:** centre composition chart footer and increase caption spacing ([#327](https://github.com/ek33450505/compute-atlas/issues/327)) ([223e955](https://github.com/ek33450505/compute-atlas/commit/223e9552b9fb36710423ee4a7df302c44e9e2b28))
+* **chart:** hide composition chart caption in sr-only table ([#328](https://github.com/ek33450505/compute-atlas/issues/328)) ([597943e](https://github.com/ek33450505/compute-atlas/commit/597943e66f2ee2e980386fa84c675e4e6e5171aa))
+* **chart:** increase caption margin to improve spacing ([#326](https://github.com/ek33450505/compute-atlas/issues/326)) ([755bb8a](https://github.com/ek33450505/compute-atlas/commit/755bb8a89e2f63bc39de7aca0b41f02e031be2fa))
+* **discovery:** verify a failed HEAD with GET before calling a source dead ([#314](https://github.com/ek33450505/compute-atlas/issues/314)) ([1e9549d](https://github.com/ek33450505/compute-atlas/commit/1e9549db590c249f2f9bef2b212dc00aa04cb5aa))
+* **enrichment:** stop re-cited sources from accumulating as duplicates ([#316](https://github.com/ek33450505/compute-atlas/issues/316)) ([2b80fb7](https://github.com/ek33450505/compute-atlas/commit/2b80fb7d656ffff6fbbe8bbc835bd3f2cc6b87c1))
+* **seo:** split meta description from JSON-LD description ([#333](https://github.com/ek33450505/compute-atlas/issues/333)) ([66bdd3a](https://github.com/ek33450505/compute-atlas/commit/66bdd3a903e26a2daec7fa24d113fb9bbb091332))
+
 ## [1.33.0](https://github.com/ek33450505/compute-atlas/compare/v1.32.0...v1.33.0) (2026-09-14)
 
 
