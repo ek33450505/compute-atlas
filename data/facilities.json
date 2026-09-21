@@ -7599,13 +7599,6 @@
         "kind": "iso_queue"
       },
       {
-        "url": "https://www.interconnection.fyi/data-center/state/NY",
-        "label": "New York data center records — 'Arsenal Data Site 1000/500/250', St. Lawrence County, proposed",
-        "publisher": "Interconnection.fyi",
-        "retrievedAt": "2026-09-21",
-        "kind": "iso_queue"
-      },
-      {
         "url": "https://cleanview.co/data-centers/new-york",
         "label": "Data Centers in New York — 'Arsenal Data Site', Arconic Corporation, St. Lawrence, 933 MW planned",
         "publisher": "Cleanview",
@@ -59595,13 +59588,6 @@
         "publisher": "The Examiner News",
         "retrievedAt": "2026-09-21",
         "kind": "press"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/project/proposed-datacenters-at-450-broadway-buchanan-ny-1-295a028c",
-        "label": "Proposed Datacenters at 450 Broadway, Buchanan, NY 10511 — 100-250 MW, Con Edison, application 2024",
-        "publisher": "Interconnection.fyi",
-        "retrievedAt": "2026-09-21",
-        "kind": "iso_queue"
       },
       {
         "url": "https://dcmap.us/states/new-york/",
@@ -117699,13 +117685,6 @@
         "publisher": "NYS Department of Environmental Conservation",
         "retrievedAt": "2026-09-21",
         "kind": "permit"
-      },
-      {
-        "url": "https://www.interconnection.fyi/data-center/state/NY",
-        "label": "New York data center records — Kyndryl (Orange County), operational, < 10 MW",
-        "publisher": "Interconnection.fyi",
-        "retrievedAt": "2026-09-21",
-        "kind": "other"
       }
     ],
     "lastUpdated": "2026-09-21",
