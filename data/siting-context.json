@@ -26745,6 +26745,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "ornl-oak-ridge-leadership-computing-facility-tn": {
+    "nearestWater": {
+      "name": "Whiteoak Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.6
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "otava-ann-arbor-mi": {
     "nearestWater": {
       "name": "Huron River",

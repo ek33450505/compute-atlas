@@ -81673,6 +81673,56 @@
     }
   },
   {
+    "id": "ornl-oak-ridge-leadership-computing-facility-tn",
+    "name": "Oak Ridge Leadership Computing Facility (Frontier supercomputer)",
+    "operator": "Oak Ridge National Laboratory (UT-Battelle for the U.S. Department of Energy)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.92951,
+      "lon": -84.31057,
+      "city": "Oak Ridge",
+      "county": "Roane",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022",
+        "note": "Frontier, an HPE Cray EX exascale system with AMD EPYC CPUs and AMD Instinct MI250X GPUs (74 cabinets, 1.6 EF peak), was delivered in 2021 and opened for early operations in 2022; ranked No. 1 on the TOP500 in 2022",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.olcf.ornl.gov/frontier/",
+        "label": "Frontier — Oak Ridge Leadership Computing Facility (delivered 2021, early operations 2022; HPE Cray EX, AMD EPYC/Instinct; 1.6 EF peak)",
+        "publisher": "Oak Ridge Leadership Computing Facility / ORNL",
+        "retrievedAt": "2026-09-21",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/node/10648552506",
+        "label": "OpenStreetMap node 10648552506: 'Frontier (supercomputer)', operator Oak Ridge National Laboratory, telecom=data_center",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-21",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.olcf.ornl.gov/2026/01/12/call-for-proposals-open-to-develop-discovery-supercomputers-first-science-applications/",
+        "label": "Call for Proposals Open to Develop Discovery Supercomputer's First Science Applications (OLCF, Jan 12, 2026) — Discovery arriving in 2028 at ORNL",
+        "publisher": "Oak Ridge Leadership Computing Facility / ORNL",
+        "retrievedAt": "2026-09-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-21",
+    "notes": "DOE Office of Science user facility housing Frontier (exascale HPC used for simulation and AI training/analysis) and, from 2028, the Discovery supercomputer for the DOE Genesis Mission. Facility power draw and floor area are not stated on the fetched pages, so no capacity is asserted. Distinct from the tracked DOE Oak Ridge Reservation AI data center lease sites.",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "otava-ann-arbor-mi",
     "name": "Otava Ann Arbor Data Center",
     "operator": "Otava",
