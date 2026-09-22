@@ -31,9 +31,10 @@
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { facilitySchema, type Facility } from "../../lib/schema";
-import { statusUpdateIntentSchema } from "../../lib/status-update";
-import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
+import { facilitySchema, type Facility, type Source } from "../../lib/schema";
+import { statusUpdateIntentSchema, type StatusUpdateIntent } from "../../lib/status-update";
+import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../../lib/enrichment-update";
+import { isRestrictedSourceUrl } from "../../lib/restricted-sources";
 import { verifySource, type VerifyClaim, type VerificationResult } from "./verify-source";
 import { fetchPageText } from "./fetch-page-text";
 import { callOllama } from "./ollama-client";
@@ -118,6 +119,19 @@ export interface RunSubmitSummary {
    * this is a verification-gate failure, not a schema failure, and the two
    * must not be blurred together in `run-<runId>.json`. */
   skippedUnverified: number;
+  /** A candidate's cited source(s) included a licence-restricted domain (see
+   * lib/restricted-sources.ts) that could not be safely stripped before
+   * staging — either every source the candidate carried was restricted, or
+   * a sourceIndex/sourceRel reference pointed at the one that was removed
+   * and could not be remapped by URL identity (see
+   * `stripRestrictedFromSources`'s doc comment). Kept distinct from
+   * `skippedInvalid` and `skippedUnverified`: this is neither a schema
+   * failure nor "nothing verified" — the candidate may otherwise be
+   * perfectly good, it is unstageable ONLY because of the licence
+   * restriction. A restricted source that WAS safely stripped is NOT
+   * counted here — the candidate still stages, minus that one citation
+   * (see the "stripped restricted source(s)" log line). */
+  skippedRestrictedSource: number;
   errors: number;
   submittedIds: string[];
 }
@@ -325,6 +339,231 @@ async function verifyCandidateSources(
   };
 }
 
+// --- restricted-source guard ------------------------------------------------
+//
+// A candidate can SURVIVE the verification gate above via a non-restricted
+// source while still carrying a restricted one (isRestrictedSourceUrl,
+// lib/restricted-sources.ts) that verify-source.ts rejected without even
+// fetching it — the gate only decides whether the candidate as a WHOLE
+// survives, it never removes the individual source that failed. Left alone,
+// that restricted URL rides in on the verified sibling and reaches
+// `pending`, then `live` — exactly how 3 NY facilities cited
+// interconnection.fyi in prod despite the gate correctly rejecting it
+// per-source (2026-09-21). This section is the fix: strip every restricted
+// source out of what actually gets staged, independent of whether the
+// verification gate even ran (it is skipped entirely in dry-run and when
+// VERIFY_SOURCES_ENABLED=false, and a restricted source must never reach
+// `pending` in ANY of those runs).
+//
+// The hazard this must respect: removing an entry from a `sources[]` array
+// shifts every LATER index down by one — always back INTO range — so the
+// schema's own bounds validators (`checkSourceIndexBounds` in
+// lib/schema.ts, `enrichmentUpdateIntentSchema`'s superRefine) cannot catch
+// a `sourceIndex`/`sourceRel` that now resolves to the WRONG source; they
+// only reject an index that falls OUT of range. `stripRestrictedFromSources`
+// below builds the old-index -> new-index mapping POSITIONALLY, in the same
+// pass that filters restricted entries out, so the remap can never confuse
+// two sources that share a URL with different metadata (a shape this
+// project's live data actually has: duplicate URLs with different
+// `label`/`kind`). URL IDENTITY is then asserted on top, as a cheap
+// invariant check rather than the lookup mechanism: for every reference a
+// record carries, the URL it resolved to BEFORE the strip must still equal
+// the URL it resolves to AFTER. If a reference's own source was the one
+// removed, there is no honest remap — the candidate is reported unstageable
+// rather than risk pointing a citation at the wrong source.
+
+interface SourceIndexRef {
+  /** Human-readable path for logging, e.g. "subsidies[2].sourceIndex". */
+  path: string;
+  index: number;
+}
+
+/**
+ * Strips restricted-source entries out of `sources` and remaps every
+ * `SourceIndexRef` in `refs` to the new position of its OWN source,
+ * computed positionally in the same pass that filters (see the section doc
+ * comment above for why: two sources can share a URL with different
+ * metadata, and a URL-search remap would silently resolve to the wrong
+ * one). URL identity is still asserted on top, as a verifying invariant.
+ * Returns `{ ok: false }` when a reference cannot be honestly remapped (its
+ * own source was the one restricted, or the identity assertion fails) or
+ * when stripping would leave `sources` empty — both cases mean the
+ * candidate cannot be safely staged and callers must skip it, not submit a
+ * corrupted or citation-less record.
+ *
+ * A restricted source is always verdict "rejected" by verify-source.ts,
+ * never "verified"/"escalate" — so a candidate that SURVIVED the
+ * verification gate can never lose its one surviving source here; only a
+ * candidate that never went through the gate (dry-run, no verifyImpl) can
+ * hit the "would leave sources empty" case from restriction alone.
+ */
+function stripRestrictedFromSources(
+  sources: Source[],
+  refs: SourceIndexRef[]
+):
+  | { ok: true; sources: Source[]; removedUrls: string[]; remapped: Map<string, number> }
+  | { ok: false; removedUrls: string[]; reason: string } {
+  const removedUrls: string[] = [];
+  const oldToNew = new Map<number, number>();
+  const kept: Source[] = [];
+  sources.forEach((s, i) => {
+    if (isRestrictedSourceUrl(s.url)) {
+      removedUrls.push(s.url);
+      return;
+    }
+    oldToNew.set(i, kept.length);
+    kept.push(s);
+  });
+
+  if (removedUrls.length === 0) {
+    // Nothing restricted — identity remap, nothing to rebuild.
+    return { ok: true, sources, removedUrls: [], remapped: new Map(refs.map((r) => [r.path, r.index])) };
+  }
+
+  if (kept.length === 0) {
+    return { ok: false, removedUrls, reason: "stripping restricted source(s) would leave sources empty" };
+  }
+
+  const remapped = new Map<string, number>();
+  for (const ref of refs) {
+    const newIndex = oldToNew.get(ref.index);
+    if (newIndex === undefined) {
+      return {
+        ok: false,
+        removedUrls,
+        reason: `${ref.path} (index ${ref.index}) referenced a restricted source that was stripped`,
+      };
+    }
+    // Verifying invariant, not the lookup mechanism: the positional map
+    // above should make this unfalsifiable by construction, but assert it
+    // anyway so a future edit that desyncs the two paths fails loudly
+    // instead of silently mis-citing a source.
+    if (kept[newIndex]?.url !== sources[ref.index]?.url) {
+      return {
+        ok: false,
+        removedUrls,
+        reason: `${ref.path} (index ${ref.index}) remapped to a source with a mismatched URL — refusing to stage`,
+      };
+    }
+    remapped.set(ref.path, newIndex);
+  }
+
+  return { ok: true, sources: kept, removedUrls, remapped };
+}
+
+/**
+ * Sibling of `stripRestrictedFromSources` for `provenance.sources` — a flat
+ * list of plain URL strings with no index references into it anywhere in
+ * this module, so no remap is needed. Still guards against emptying: if
+ * every cited provenance URL turns out restricted, that candidate cannot be
+ * safely staged either.
+ */
+function stripRestrictedUrls(
+  urls: string[]
+): { ok: true; kept: string[]; removedUrls: string[] } | { ok: false; removedUrls: string[]; reason: string } {
+  const removedUrls: string[] = [];
+  const kept = urls.filter((u) => {
+    if (isRestrictedSourceUrl(u)) {
+      removedUrls.push(u);
+      return false;
+    }
+    return true;
+  });
+  if (removedUrls.length > 0 && kept.length === 0) {
+    return { ok: false, removedUrls, reason: "stripping restricted source(s) would leave provenance.sources empty" };
+  }
+  return { ok: true, kept, removedUrls };
+}
+
+/**
+ * Rebuilds a validated Facility doc with a stripped `sources` array and
+ * every retained sourceIndex remapped. `Facility` is a discriminatedUnion on
+ * `facilityType` — a plain `{...doc, ...overrides}` spread can lose the
+ * branch's literal `facilityType` narrowing across a union (see
+ * lib/status-update.ts's `applyStatusUpdate` for the same pattern), so this
+ * switches on it instead of spreading generically.
+ */
+function applyDocSourceStrip(doc: Facility, sources: Source[], remapped: Map<string, number>): Facility {
+  const statusHistory = doc.statusHistory.map((event, i) => {
+    const idx = remapped.get(`statusHistory[${i}].sourceIndex`);
+    return idx === undefined ? event : { ...event, sourceIndex: idx };
+  });
+  const subsidies = doc.subsidies?.map((s, i) => {
+    const idx = remapped.get(`subsidies[${i}].sourceIndex`);
+    return idx === undefined ? s : { ...s, sourceIndex: idx };
+  });
+  const stakeholders = doc.stakeholders?.map((s, i) => ({
+    ...s,
+    sourceIndex: remapped.get(`stakeholders[${i}].sourceIndex`) ?? s.sourceIndex,
+  }));
+  const jobs = doc.jobs
+    ? { ...doc.jobs, sourceIndex: remapped.get("jobs.sourceIndex") ?? doc.jobs.sourceIndex }
+    : doc.jobs;
+  const community = doc.community
+    ? { ...doc.community, sourceIndex: remapped.get("community.sourceIndex") ?? doc.community.sourceIndex }
+    : doc.community;
+  const emissions = doc.emissions
+    ? { ...doc.emissions, sourceIndex: remapped.get("emissions.sourceIndex") ?? doc.emissions.sourceIndex }
+    : doc.emissions;
+
+  const overrides = {
+    sources,
+    statusHistory,
+    ...(subsidies !== undefined ? { subsidies } : {}),
+    ...(stakeholders !== undefined ? { stakeholders } : {}),
+    ...(jobs !== undefined ? { jobs } : {}),
+    ...(community !== undefined ? { community } : {}),
+    ...(emissions !== undefined ? { emissions } : {}),
+  };
+
+  switch (doc.facilityType) {
+    case "data_center":
+      return { ...doc, ...overrides };
+    case "crypto_mining":
+      return { ...doc, ...overrides };
+    case "power_generation":
+      return { ...doc, ...overrides };
+  }
+}
+
+/**
+ * Sibling of `applyDocSourceStrip` for an enrichment_update intent — a plain
+ * (non-discriminated-union) object, so a direct spread is safe.
+ */
+function applyEnrichmentIntentSourceStrip(
+  intent: EnrichmentUpdateIntent,
+  sources: Source[],
+  remapped: Map<string, number>
+): EnrichmentUpdateIntent {
+  const fields = { ...intent.fields };
+  if (fields.jobs) {
+    fields.jobs = { ...fields.jobs, sourceRel: remapped.get("fields.jobs.sourceRel") ?? fields.jobs.sourceRel };
+  }
+  if (fields.community) {
+    fields.community = {
+      ...fields.community,
+      sourceRel: remapped.get("fields.community.sourceRel") ?? fields.community.sourceRel,
+    };
+  }
+  if (fields.subsidies) {
+    fields.subsidies = fields.subsidies.map((s, i) => ({
+      ...s,
+      sourceRel: remapped.get(`fields.subsidies[${i}].sourceRel`) ?? s.sourceRel,
+    }));
+  }
+  const reSourced = intent.reSourced?.map((r, i) => ({
+    ...r,
+    sourceRel: remapped.get(`reSourced[${i}].sourceRel`) ?? r.sourceRel,
+  }));
+
+  return {
+    ...intent,
+    sources,
+    fields,
+    ...(reSourced !== undefined ? { reSourced } : {}),
+  };
+}
+
 // --- core --------------------------------------------------------------------
 
 /**
@@ -347,6 +586,7 @@ export async function runSubmit(
     skippedInvalid: 0,
     skippedOverCap: 0,
     skippedUnverified: 0,
+    skippedRestrictedSource: 0,
     errors: 0,
     submittedIds: [],
   };
@@ -429,11 +669,68 @@ export async function runSubmit(
         continue;
       }
 
+      // Same asymmetry as the docSourceRefs block above, for the enrichment
+      // schema — but here it is the CONTAINER that is optional, not the
+      // field: fields.jobs and fields.community are optional objects, so
+      // `?.sourceRel` yields undefined when they are absent and the guard is
+      // required. fields.subsidies[] and reSourced[] are arrays whose
+      // elements each declare sourceRel as required (lib/enrichment-update.ts),
+      // so pushing unconditionally there is correct, not an oversight.
+      const enrichmentSourceRefs: SourceIndexRef[] = [];
+      if (parsedIntent.data.fields.jobs?.sourceRel !== undefined) {
+        enrichmentSourceRefs.push({ path: "fields.jobs.sourceRel", index: parsedIntent.data.fields.jobs.sourceRel });
+      }
+      if (parsedIntent.data.fields.community?.sourceRel !== undefined) {
+        enrichmentSourceRefs.push({
+          path: "fields.community.sourceRel",
+          index: parsedIntent.data.fields.community.sourceRel,
+        });
+      }
+      parsedIntent.data.fields.subsidies?.forEach((s, i) => {
+        enrichmentSourceRefs.push({ path: `fields.subsidies[${i}].sourceRel`, index: s.sourceRel });
+      });
+      parsedIntent.data.reSourced?.forEach((r, i) => {
+        enrichmentSourceRefs.push({ path: `reSourced[${i}].sourceRel`, index: r.sourceRel });
+      });
+
+      const enrichmentSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, enrichmentSourceRefs);
+      if (!enrichmentSourceStrip.ok) {
+        console.log(
+          `skip restricted: ${targetFacilityId} — ${enrichmentSourceStrip.reason} (restricted source(s): ${enrichmentSourceStrip.removedUrls.join(", ")})`
+        );
+        summary.skippedRestrictedSource++;
+        continue;
+      }
+      const enrichmentProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+      if (!enrichmentProvenanceStrip.ok) {
+        console.log(
+          `skip restricted: ${targetFacilityId} — ${enrichmentProvenanceStrip.reason} (restricted source(s): ${enrichmentProvenanceStrip.removedUrls.join(", ")})`
+        );
+        summary.skippedRestrictedSource++;
+        continue;
+      }
+      let enrichmentPayload = parsedIntent.data;
+      if (enrichmentSourceStrip.removedUrls.length > 0) {
+        enrichmentPayload = applyEnrichmentIntentSourceStrip(
+          parsedIntent.data,
+          enrichmentSourceStrip.sources,
+          enrichmentSourceStrip.remapped
+        );
+        console.log(
+          `stripped restricted source(s) from ${targetFacilityId}: ${enrichmentSourceStrip.removedUrls.join(", ")}`
+        );
+      }
+
       const envelope = {
         kind: "enrichment_update" as const,
         targetFacilityId,
-        payload: parsedIntent.data,
-        provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt, escalationNote),
+        payload: enrichmentPayload,
+        provenance: buildProvenance(
+          { ...candidate.provenance, sources: enrichmentProvenanceStrip.kept },
+          opts.runId,
+          opts.discoveredAt,
+          escalationNote
+        ),
       };
 
       if (opts.dryRun) {
@@ -513,11 +810,43 @@ export async function runSubmit(
         continue;
       }
 
+      // status_update's intent carries no sourceIndex/sourceRel refs of its
+      // own (sourceIndex is computed at APPLY time as existing.sources.length
+      // — see lib/status-update.ts), so there is nothing to remap here.
+      const statusSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, []);
+      if (!statusSourceStrip.ok) {
+        console.log(
+          `skip restricted: ${targetFacilityId} — ${statusSourceStrip.reason} (restricted source(s): ${statusSourceStrip.removedUrls.join(", ")})`
+        );
+        summary.skippedRestrictedSource++;
+        continue;
+      }
+      const statusProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+      if (!statusProvenanceStrip.ok) {
+        console.log(
+          `skip restricted: ${targetFacilityId} — ${statusProvenanceStrip.reason} (restricted source(s): ${statusProvenanceStrip.removedUrls.join(", ")})`
+        );
+        summary.skippedRestrictedSource++;
+        continue;
+      }
+      let statusPayload: StatusUpdateIntent = parsedIntent.data;
+      if (statusSourceStrip.removedUrls.length > 0) {
+        statusPayload = { ...parsedIntent.data, sources: statusSourceStrip.sources };
+        console.log(
+          `stripped restricted source(s) from ${targetFacilityId}: ${statusSourceStrip.removedUrls.join(", ")}`
+        );
+      }
+
       const envelope = {
         kind: "status_update" as const,
         targetFacilityId,
-        payload: parsedIntent.data,
-        provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt, escalationNote),
+        payload: statusPayload,
+        provenance: buildProvenance(
+          { ...candidate.provenance, sources: statusProvenanceStrip.kept },
+          opts.runId,
+          opts.discoveredAt,
+          escalationNote
+        ),
       };
 
       if (opts.dryRun) {
@@ -604,11 +933,69 @@ export async function runSubmit(
       continue;
     }
 
+    // The undefined-guard below tracks each field's schema optionality, not an
+    // oversight: statusHistory[].sourceIndex (lib/schema.ts:66) and
+    // subsidies[].sourceIndex (lib/schema.ts:330) are `.optional()`, so without
+    // the guard an unset index would push `index: undefined` and spuriously
+    // skip the candidate. stakeholders[].sourceIndex (lib/schema.ts:358) is
+    // required by its schema, so a guard there would be dead code — it pushes
+    // unconditionally on purpose.
+    const docSourceRefs: SourceIndexRef[] = [];
+    doc.statusHistory.forEach((event, i) => {
+      if (event.sourceIndex !== undefined) {
+        docSourceRefs.push({ path: `statusHistory[${i}].sourceIndex`, index: event.sourceIndex });
+      }
+    });
+    doc.subsidies?.forEach((s, i) => {
+      if (s.sourceIndex !== undefined) {
+        docSourceRefs.push({ path: `subsidies[${i}].sourceIndex`, index: s.sourceIndex });
+      }
+    });
+    doc.stakeholders?.forEach((s, i) => {
+      docSourceRefs.push({ path: `stakeholders[${i}].sourceIndex`, index: s.sourceIndex });
+    });
+    if (doc.jobs?.sourceIndex !== undefined) {
+      docSourceRefs.push({ path: "jobs.sourceIndex", index: doc.jobs.sourceIndex });
+    }
+    if (doc.community?.sourceIndex !== undefined) {
+      docSourceRefs.push({ path: "community.sourceIndex", index: doc.community.sourceIndex });
+    }
+    if (doc.emissions?.sourceIndex !== undefined) {
+      docSourceRefs.push({ path: "emissions.sourceIndex", index: doc.emissions.sourceIndex });
+    }
+
+    const docSourceStrip = stripRestrictedFromSources(doc.sources, docSourceRefs);
+    if (!docSourceStrip.ok) {
+      console.log(
+        `skip restricted: ${doc.id} — ${docSourceStrip.reason} (restricted source(s): ${docSourceStrip.removedUrls.join(", ")})`
+      );
+      summary.skippedRestrictedSource++;
+      continue;
+    }
+    const docProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+    if (!docProvenanceStrip.ok) {
+      console.log(
+        `skip restricted: ${doc.id} — ${docProvenanceStrip.reason} (restricted source(s): ${docProvenanceStrip.removedUrls.join(", ")})`
+      );
+      summary.skippedRestrictedSource++;
+      continue;
+    }
+    let finalDoc = doc;
+    if (docSourceStrip.removedUrls.length > 0) {
+      finalDoc = applyDocSourceStrip(doc, docSourceStrip.sources, docSourceStrip.remapped);
+      console.log(`stripped restricted source(s) from ${doc.id}: ${docSourceStrip.removedUrls.join(", ")}`);
+    }
+
     const envelope = {
       kind,
       targetFacilityId: isIdDuplicate ? doc.id : undefined,
-      payload: doc,
-      provenance: buildProvenance(candidate.provenance, opts.runId, opts.discoveredAt, escalationNote),
+      payload: finalDoc,
+      provenance: buildProvenance(
+        { ...candidate.provenance, sources: docProvenanceStrip.kept },
+        opts.runId,
+        opts.discoveredAt,
+        escalationNote
+      ),
     };
 
     if (opts.dryRun) {

@@ -892,3 +892,302 @@ describe("parseCandidatesJson", () => {
     expect(() => parseCandidatesJson("not json at all")).toThrow();
   });
 });
+
+describe("runSubmit — restricted-source guard", () => {
+  const RESTRICTED_URL = "https://interconnection.fyi/queue/999";
+  const RESTRICTED_SUBDOMAIN_URL = "https://www.interconnection.fyi/queue/998";
+  const VERIFIED_URL = "https://example.com/verified";
+
+  it("create/update: strips a restricted source from doc.sources AND provenance.sources while the candidate still stages", async () => {
+    const fetchImpl = makeFetch([{ ok: true, status: 201 }]);
+    const candidate = {
+      facility: makeCandidate({
+        id: "restricted-strip-tx",
+        sources: [
+          { url: VERIFIED_URL, label: "Verified source", retrievedAt: "2026-09-20", kind: "press" },
+          { url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" },
+        ],
+      }),
+      provenance: { sources: [VERIFIED_URL, RESTRICTED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [] });
+
+    expect(summary.submitted).toBe(1);
+    expect(summary.skippedRestrictedSource).toBe(0);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    expect(body.payload.sources).toEqual([
+      { url: VERIFIED_URL, label: "Verified source", retrievedAt: "2026-09-20", kind: "press" },
+    ]);
+    expect(body.provenance.sources).toEqual([VERIFIED_URL]);
+  });
+
+  it("create/update ADVERSARIAL ordering: a restricted source at index 0 with a LATER sourceIndex ref still resolves to the same URL after the strip", async () => {
+    const fetchImpl = makeFetch([{ ok: true, status: 201 }]);
+    const candidate = {
+      facility: makeCandidate({
+        id: "adversarial-order-tx",
+        sources: [
+          { url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" },
+          { url: VERIFIED_URL, label: "Groundbreaking", retrievedAt: "2026-09-20", kind: "press" },
+        ],
+        // References index 1 — the source AFTER the restricted one — on
+        // purpose: the real 2026-09-21 offenders all happened to have refs
+        // only BELOW the restricted index, so a fixture mirroring prod would
+        // pass vacuously even with a naive index-shift (rather than
+        // URL-identity) remap. This ref is deliberately on the other side.
+        statusHistory: [{ status: "under_construction", date: "2026-09-20", sourceIndex: 1 }],
+      }),
+      provenance: { sources: [RESTRICTED_URL, VERIFIED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [] });
+
+    expect(summary.submitted).toBe(1);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    expect(body.payload.sources).toHaveLength(1);
+    // The URL-IDENTITY invariant, asserted directly: whatever index the ref
+    // now carries, it must resolve to the SAME url it resolved to before
+    // the strip (VERIFIED_URL) — never an arithmetic guess that happens to
+    // land in-range.
+    expect(body.payload.sources[body.payload.statusHistory[0].sourceIndex].url).toBe(VERIFIED_URL);
+    expect(body.payload.statusHistory[0].sourceIndex).toBe(0);
+  });
+
+  it("create/update: skips a candidate whose sources are ALL restricted, without POSTing", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      facility: makeCandidate({
+        id: "all-restricted-tx",
+        sources: [{ url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" }],
+      }),
+      // provenance.sources is deliberately a DIFFERENT, non-restricted URL —
+      // isolates this test to doc.sources's own emptiness guard, rather than
+      // also (coincidentally) tripping the separate provenance.sources guard.
+      provenance: { sources: [VERIFIED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [] });
+
+    expect(summary.skippedRestrictedSource).toBe(1);
+    expect(summary.submitted).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("create/update: a strip that would empty sources is skipped rather than staged with an empty sources array", async () => {
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      facility: makeCandidate({
+        id: "all-restricted-multi-tx",
+        sources: [
+          { url: RESTRICTED_URL, label: "Queue listing A", retrievedAt: "2026-09-20", kind: "iso_queue" },
+          { url: RESTRICTED_SUBDOMAIN_URL, label: "Queue listing B (subdomain)", retrievedAt: "2026-09-20", kind: "iso_queue" },
+        ],
+      }),
+      // Isolated from the provenance.sources guard, same reasoning as above.
+      provenance: { sources: [VERIFIED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [] });
+
+    expect(summary.skippedRestrictedSource).toBe(1);
+    expect(summary.submitted).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("logs a 'stripped restricted source(s)' line naming the facility id and URL when a strip succeeds — NOT counted as a skip", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const candidate = {
+      facility: makeCandidate({
+        id: "logged-strip-tx",
+        sources: [
+          { url: VERIFIED_URL, label: "Verified", retrievedAt: "2026-09-20", kind: "press" },
+          { url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" },
+        ],
+      }),
+      provenance: { sources: [VERIFIED_URL, RESTRICTED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [] });
+
+    expect(summary.submitted).toBe(1);
+    expect(summary.skippedRestrictedSource).toBe(0);
+    const strippedLine = logSpy.mock.calls
+      .map(([msg]) => msg)
+      .find((msg) => typeof msg === "string" && msg.startsWith("stripped restricted source(s)"));
+    expect(strippedLine).toBeDefined();
+    expect(strippedLine).toContain("logged-strip-tx");
+    expect(strippedLine).toContain(RESTRICTED_URL);
+    logSpy.mockRestore();
+  });
+
+  it("status_update: strips a restricted source from the intent's own sources and still stages it", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const candidate = {
+      statusUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        status: "under_construction",
+        date: "2026-09-20",
+        sources: [
+          { url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" },
+          { url: VERIFIED_URL, label: "Groundbreaking report", retrievedAt: "2026-09-20", kind: "press" },
+        ],
+      },
+      provenance: { sources: [RESTRICTED_URL, VERIFIED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(1);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    expect(body.payload.sources).toEqual([
+      { url: VERIFIED_URL, label: "Groundbreaking report", retrievedAt: "2026-09-20", kind: "press" },
+    ]);
+    expect(body.provenance.sources).toEqual([VERIFIED_URL]);
+  });
+
+  it("enrichment_update ADVERSARIAL ordering: strips a restricted source and remaps a LATER sourceRel by URL identity", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const candidate = {
+      enrichmentUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        date: "2026-09-20",
+        sources: [
+          { url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" },
+          { url: VERIFIED_URL, label: "Subsidy filing", retrievedAt: "2026-09-20", kind: "filing" },
+        ],
+        fields: {
+          subsidies: [{ program: "Tax abatement", sourceRel: 1 }],
+        },
+      },
+      provenance: { sources: [RESTRICTED_URL, VERIFIED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.submitted).toBe(1);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    expect(body.payload.sources).toHaveLength(1);
+    expect(body.payload.sources[0].url).toBe(VERIFIED_URL);
+    const remappedRel = body.payload.fields.subsidies[0].sourceRel;
+    expect(remappedRel).toBe(0);
+    expect(body.payload.sources[remappedRel].url).toBe(VERIFIED_URL);
+  });
+
+  it("enrichment_update: a reSourced sourceRel pointing DIRECTLY at the restricted source is skipped as unmappable, even though a different source survives the strip", async () => {
+    // Distinct from the "would empty" tests above: here the strip leaves
+    // `sources` non-empty (VERIFIED_URL survives) — the failure must come
+    // from the remap loop finding no honest new home for the reference,
+    // not from the emptiness guard.
+    const fetchImpl = makeFetch([]);
+    const candidate = {
+      enrichmentUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        date: "2026-09-20",
+        sources: [
+          { url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" },
+          { url: VERIFIED_URL, label: "Unrelated filing", retrievedAt: "2026-09-20", kind: "filing" },
+        ],
+        fields: {},
+        reSourced: [{ replacesUrl: "https://example.com/old", sourceRel: 0 }],
+      },
+      // Isolated from the provenance.sources guard, same reasoning as above.
+      provenance: { sources: [VERIFIED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [EXISTING_FACILITY],
+    });
+
+    expect(summary.skippedRestrictedSource).toBe(1);
+    expect(summary.submitted).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("ADVERSARIAL duplicate URL: a ref pointing at the SECOND of two same-URL sources keeps that source's OWN metadata after the strip, not the first occurrence's", async () => {
+    const fetchImpl = makeFetch([{ ok: true, status: 201 }]);
+    const DUP_URL = "https://example.com/duplicate-url";
+    const candidate = {
+      facility: makeCandidate({
+        id: "duplicate-url-tx",
+        sources: [
+          { url: DUP_URL, label: "Report A", retrievedAt: "2026-09-20", kind: "press" },
+          { url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" },
+          { url: DUP_URL, label: "Report B", retrievedAt: "2026-09-20", kind: "subsidy" },
+        ],
+        // References index 2 — the SECOND occurrence of DUP_URL, on the
+        // other side of the restricted entry — on purpose: a URL-search
+        // remap (`kept.findIndex((s) => s.url === url)`) returns the FIRST
+        // match and would silently swap this ref onto "Report A"/press even
+        // though the URL itself is preserved. This shape is real in prod
+        // data: google-skyway-pine-island-mn cites one URL twice with
+        // different kind/label.
+        statusHistory: [{ status: "under_construction", date: "2026-09-20", sourceIndex: 2 }],
+      }),
+      provenance: { sources: [DUP_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [] });
+
+    expect(summary.submitted).toBe(1);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    expect(body.payload.sources).toHaveLength(2);
+    const remappedIndex = body.payload.statusHistory[0].sourceIndex;
+    // Asserting only the URL would pass under the OLD (findIndex) code too,
+    // since both entries share DUP_URL — the metadata is the only thing
+    // that distinguishes correct behavior from the swapped-citation bug.
+    expect(body.payload.sources[remappedIndex].url).toBe(DUP_URL);
+    expect(body.payload.sources[remappedIndex].label).toBe("Report B");
+    expect(body.payload.sources[remappedIndex].kind).toBe("subsidy");
+  });
+
+  it("verification gate ACTIVE + restricted source coexist: the gate approves via the non-restricted source, and the strip still removes the restricted one from doc.sources", async () => {
+    const fetchImpl = makeFetch([{ ok: true, status: 201 }]);
+    const verifyImpl = makeVerifyImpl((url) => ({
+      verdict: url === VERIFIED_URL ? "verified" : "rejected",
+    }));
+    const candidate = {
+      facility: makeCandidate({
+        id: "gate-and-restricted-tx",
+        sources: [
+          { url: VERIFIED_URL, label: "Verified source", retrievedAt: "2026-09-20", kind: "press" },
+          { url: RESTRICTED_URL, label: "Queue listing", retrievedAt: "2026-09-20", kind: "iso_queue" },
+        ],
+      }),
+      provenance: { sources: [VERIFIED_URL] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [],
+      verifyImpl,
+    });
+
+    expect(verifyImpl).toHaveBeenCalled();
+    expect(summary.submitted).toBe(1);
+    expect(summary.skippedUnverified).toBe(0);
+    expect(summary.skippedRestrictedSource).toBe(0);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    // The strip ran despite (not because of) the active gate — it must
+    // remove the restricted entry regardless of whether verification is on,
+    // since the strip lives outside the `!opts.dryRun && deps.verifyImpl`
+    // block entirely.
+    expect(body.payload.sources).toEqual([
+      { url: VERIFIED_URL, label: "Verified source", retrievedAt: "2026-09-20", kind: "press" },
+    ]);
+  });
+});
