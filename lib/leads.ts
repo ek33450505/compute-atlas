@@ -162,6 +162,61 @@ export async function promoteLead(
   return { ok: true, lead: updated };
 }
 
+/**
+ * Returns a lead to `new` — the only way back into the discovery lane's queue
+ * (`scripts/discovery/leads-lane.ts` queues `listLeadsForAdmin("new")` only, so
+ * every other status is a one-way door out of it). Kept as a sibling of
+ * `promoteLead` rather than an optional param on `updateLeadStatus` for the same
+ * reason: this caller needs two behaviours the three admin triage actions must
+ * NOT get, and both of them are hazards if a future edit drops them.
+ *
+ * 1. It CLEARS `promotedSubmissionId`. `promoteLead` is that column's only
+ *    writer and it sets `status` and the id together, so a non-null id means a
+ *    real staged submission exists. Re-queueing a lead with the id still set
+ *    lets the lane stage a SECOND submission for the same site. Cleared in the
+ *    same single `.set()` as `status`, so the two can never race apart.
+ * 2. It NEVER destroys the prior `reviewNote`. `updateLeadStatus` writes
+ *    `reviewNote ?? null`, which would erase the recorded reason a lead was
+ *    dismissed (the UI calls this action with no note at all). With no new note
+ *    the existing text is kept verbatim; with a new note the prior text is
+ *    appended below it so the earlier reason stays readable. A bare `null` is
+ *    only ever written over an already-null note.
+ */
+export async function resetLeadToNew(id: string, reviewNote?: string): Promise<LeadActionResult> {
+  const db = getDb();
+  const rows = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
+  const row = rows[0];
+  if (!row) {
+    return { ok: false, status: 404, error: "Lead not found" };
+  }
+  if (row.status === "new") {
+    return { ok: false, status: 409, error: "Lead already new" };
+  }
+
+  // Newest reason first (it is what the admin is acting on now), prior reason
+  // retained below it. Never `reviewNote ?? null` — see hazard 2 above.
+  // `?.trim() || undefined` collapses "" and whitespace-only to undefined:
+  // an empty incoming note must fall back to the prior note, not erase it.
+  const incomingNote = reviewNote?.trim() || undefined;
+  const nextReviewNote =
+    incomingNote && row.reviewNote
+      ? `${incomingNote}\n\n(previous note: ${row.reviewNote})`
+      : (incomingNote ?? row.reviewNote);
+
+  const [updated] = await db
+    .update(leadsTable)
+    .set({
+      status: "new",
+      reviewedAt: new Date(),
+      reviewNote: nextReviewNote,
+      promotedSubmissionId: null,
+    })
+    .where(eq(leadsTable.id, id))
+    .returning();
+
+  return { ok: true, lead: updated };
+}
+
 /** Records the submit-time server-side fetch result against a lead. Used by POST /api/leads. */
 export async function setLeadTriage(id: string, triage: LeadTriage): Promise<LeadActionResult> {
   const db = getDb();

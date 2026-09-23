@@ -40,18 +40,19 @@
  *    Ollama outage as "nothing found" (mirrors submit-candidates.ts's
  *    `VerificationGateUnavailableError`).
  * 3. If the extraction has no usable identity (`name`/`operator`/`state`),
- *    the lead moves to `researching` — a human should look, never
- *    `dismissed` (only a human dismisses a lead).
+ *    the lead moves to `deferred` — a human should look, never
+ *    `dismissed` (only a human dismisses a lead). `deferred`, not
+ *    `researching`: this lane must never claim a human is on a lead.
  * 4. Verify the extracted name (+ any capacity figure as a numeric hint)
  *    against the page via `verifySource`. Only `"verified"` proceeds.
  *    `"rejected"` (we checked and it didn't hold up) moves the lead to
- *    `researching`, same as an unusable extraction. `"escalate"` (the
+ *    `deferred`, same as an unusable extraction. `"escalate"` (the
  *    fetcher couldn't structurally ingest the page — size cap/content type,
  *    not evidence either way) and `"unavailable"` are NEVER treated as
  *    rejection: escalate leaves the lead untouched (`new`) for a human to
  *    look at from the normal queue; unavailable aborts the entire run.
  * 5. Geocode `city, state` (or bare `state` if no city was extracted) via
- *    `geocodeUS`. Zero results -> `researching` (a real, verified lead a
+ *    `geocodeUS`. Zero results -> `deferred` (a real, verified lead a
  *    human should manually locate), never invent a location.
  * 6. Build the `create` payload in exactly the shape `buildCreatePayload`
  *    (lib/contribute.ts) produces, then validate it against `facilitySchema`
@@ -209,7 +210,15 @@ export interface LeadsLaneDeps {
   callOllamaImpl: <T>(opts: Omit<CallOllamaOptions, "fetchImpl">) => Promise<CallOllamaResult<T>>;
   geocodeImpl: (query: string) => Promise<GeocodeResult[]>;
   createSubmissionImpl: (input: unknown) => Promise<SubmissionResult>;
-  markResearchingImpl: (id: string, note: string) => Promise<LeadActionResult>;
+  /**
+   * Writes `deferred` — the machine-set "I tried and could not extract a
+   * usable candidate" state. ⚠️ Deliberately NOT `researching`, which means
+   * "a human is actively working this" and is set only by the admin control.
+   * This lane once wrote `researching` on its own failure paths, which made
+   * the two indistinguishable and stranded its own inputs outside the `new`
+   * queue it reads. See LEAD_STATUSES in lib/lead-fields.ts.
+   */
+  markDeferredImpl: (id: string, note: string) => Promise<LeadActionResult>;
   promoteLeadImpl: (id: string, submissionId: string, note?: string) => Promise<LeadActionResult>;
   now: () => Date;
   /**
@@ -238,11 +247,11 @@ export interface RunLeadsLaneSummary {
   fetchFailed: number;
   /** No usable identity extracted (missing name/operator/state), OR the
    * extracted claim failed mechanical verification ("rejected") — both are
-   * "nothing usable was confirmed," moved to `researching` for a human. */
+   * "nothing usable was confirmed," moved to `deferred` for a human. */
   unusable: number;
   /** "escalate" verdicts — the fetcher couldn't structurally ingest the page
    * (size cap / content type), ambiguous rather than a clean rejection. The
-   * lead is left untouched (`new`), not moved to `researching`. */
+   * lead is left untouched (`new`), not moved to `deferred`. */
   escalated: number;
   geocodeFailed: number;
   schemaRejected: number;
@@ -299,7 +308,7 @@ function hasUsableIdentity(extraction: LeadExtraction): extraction is LeadExtrac
 /**
  * Processes exactly one lead: fetch -> extract -> verify -> geocode -> stage.
  * Mutates `summary` in place and returns void; every branch either writes
- * nothing (fetch failure, escalate), moves the lead to `researching`
+ * nothing (fetch failure, escalate), moves the lead to `deferred`
  * (unusable/rejected/geocode-failed/schema-rejected), or stages + promotes
  * it. Throws `LeadsLaneUnavailableError` — never caught here — when the model
  * itself could not be reached at either the extraction or verification step.
@@ -310,6 +319,11 @@ async function processLead(
   deps: LeadsLaneDeps,
   summary: RunLeadsLaneSummary
 ): Promise<void> {
+  // Every failure branch below logs unconditionally but only WRITES the
+  // status when this is not a dry run, so the log says what would happen
+  // rather than asserting a mutation that never occurred.
+  const deferLabel = opts.dryRun ? "would defer (dry run)" : "deferred";
+
   const fetchResult = await deps.fetchPageTextImpl(lead.url);
   if (!fetchResult.ok) {
     console.log(`fetch failed for lead ${lead.id} (${lead.url}): ${fetchResult.reason} — leaving lead 'new'`);
@@ -335,10 +349,10 @@ async function processLead(
   const extraction = extractionResult.data;
 
   if (!hasUsableIdentity(extraction)) {
-    console.log(`lead ${lead.id}: no usable name/operator/state extracted — moving to researching`);
+    console.log(`lead ${lead.id}: no usable name/operator/state extracted — ${deferLabel}`);
     summary.unusable++;
     if (!opts.dryRun) {
-      await deps.markResearchingImpl(lead.id, "leads-lane: model found no usable name/operator/state");
+      await deps.markDeferredImpl(lead.id, "leads-lane: model found no usable name/operator/state");
     }
     return;
   }
@@ -364,10 +378,10 @@ async function processLead(
     return;
   }
   if (verification.verdict === "rejected") {
-    console.log(`lead ${lead.id}: verification rejected (${verification.reason}) — moving to researching`);
+    console.log(`lead ${lead.id}: verification rejected (${verification.reason}) — ${deferLabel}`);
     summary.unusable++;
     if (!opts.dryRun) {
-      await deps.markResearchingImpl(lead.id, `leads-lane: verification rejected — ${verification.reason}`);
+      await deps.markDeferredImpl(lead.id, `leads-lane: verification rejected — ${verification.reason}`);
     }
     return;
   }
@@ -376,10 +390,10 @@ async function processLead(
   const geocodeResults = await deps.geocodeImpl(geocodeQuery);
   const top = geocodeResults[0];
   if (!top) {
-    console.log(`lead ${lead.id}: geocoding "${geocodeQuery}" returned no results — moving to researching`);
+    console.log(`lead ${lead.id}: geocoding "${geocodeQuery}" returned no results — ${deferLabel}`);
     summary.geocodeFailed++;
     if (!opts.dryRun) {
-      await deps.markResearchingImpl(lead.id, `leads-lane: could not geocode "${geocodeQuery}"`);
+      await deps.markDeferredImpl(lead.id, `leads-lane: could not geocode "${geocodeQuery}"`);
     }
     return;
   }
@@ -404,11 +418,11 @@ async function processLead(
   const validated = facilitySchema.safeParse(payload);
   if (!validated.success) {
     console.log(
-      `lead ${lead.id}: built payload failed facilitySchema — ${validated.error.issues[0]?.message ?? "unknown"} — moving to researching`
+      `lead ${lead.id}: built payload failed facilitySchema — ${validated.error.issues[0]?.message ?? "unknown"} — ${deferLabel}`
     );
     summary.schemaRejected++;
     if (!opts.dryRun) {
-      await deps.markResearchingImpl(lead.id, "leads-lane: extracted facts did not form a valid facility record");
+      await deps.markDeferredImpl(lead.id, "leads-lane: extracted facts did not form a valid facility record");
     }
     return;
   }
@@ -522,7 +536,7 @@ function buildRealDeps(): LeadsLaneDeps {
     callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
     geocodeImpl: (query) => geocodeUS(query),
     createSubmissionImpl: (input) => createSubmission(input),
-    markResearchingImpl: (id, note) => updateLeadStatus(id, "researching", note),
+    markDeferredImpl: (id, note) => updateLeadStatus(id, "deferred", note),
     promoteLeadImpl: (id, submissionId, note) => promoteLead(id, submissionId, note),
     now: () => new Date(),
     rawFetchImpl: fetch,

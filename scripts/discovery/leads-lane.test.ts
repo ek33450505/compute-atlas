@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import {
   runLeadsLane,
@@ -14,6 +16,7 @@ import type { ModelVerdict } from "./verify-source";
 import type { GeocodeResult } from "../../lib/geocode";
 import type { LeadActionResult } from "../../lib/leads";
 import type { SubmissionResult } from "../../lib/submissions";
+import { LEAD_STATUSES } from "../../lib/lead-fields";
 
 // --- fixtures / helpers -----------------------------------------------------
 
@@ -103,8 +106,8 @@ function makeDeps(overrides: Partial<LeadsLaneDeps> = {}): LeadsLaneDeps {
     createSubmissionImpl: vi.fn(
       async (): Promise<SubmissionResult> => ({ ok: true, id: "22222222-2222-2222-2222-222222222222" })
     ),
-    markResearchingImpl: vi.fn(
-      async (): Promise<LeadActionResult> => ({ ok: true, lead: { status: "researching" } as never })
+    markDeferredImpl: vi.fn(
+      async (): Promise<LeadActionResult> => ({ ok: true, lead: { status: "deferred" } as never })
     ),
     promoteLeadImpl: vi.fn(
       async (): Promise<LeadActionResult> => ({ ok: true, lead: { status: "promoted" } as never })
@@ -140,7 +143,7 @@ describe("runLeadsLane — happy path", () => {
       "22222222-2222-2222-2222-222222222222",
       expect.any(String)
     );
-    expect(deps.markResearchingImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
   });
 });
 
@@ -161,10 +164,11 @@ describe("runLeadsLane — rejected verification", () => {
     expect(summary.unusable).toBe(1);
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
     expect(deps.promoteLeadImpl).not.toHaveBeenCalled();
-    // Moved to researching for a human — never dismissed (there is no
-    // "dismiss" dependency injected at all; only a human dismisses a lead).
-    expect(deps.markResearchingImpl).toHaveBeenCalledTimes(1);
-    expect(deps.markResearchingImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("rejected"));
+    // Deferred for a human — never dismissed (there is no "dismiss"
+    // dependency injected at all; only a human dismisses a lead), and never
+    // `researching`, which means a human is already on it.
+    expect(deps.markDeferredImpl).toHaveBeenCalledTimes(1);
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("rejected"));
   });
 });
 
@@ -178,7 +182,7 @@ describe("runLeadsLane — model unavailable", () => {
 
     await expect(runLeadsLane(baseOpts(), deps)).rejects.toThrow(LeadsLaneUnavailableError);
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
-    expect(deps.markResearchingImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
   });
 
   it("aborts and stages nothing when the VERIFICATION call fails", async () => {
@@ -191,7 +195,7 @@ describe("runLeadsLane — model unavailable", () => {
 
     await expect(runLeadsLane(baseOpts(), deps)).rejects.toThrow(LeadsLaneUnavailableError);
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
-    expect(deps.markResearchingImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
   });
 });
 
@@ -206,7 +210,7 @@ describe("runLeadsLane — fetch failure", () => {
     expect(summary.fetchFailed).toBe(1);
     expect(summary.staged).toBe(0);
     expect(deps.callOllamaImpl).not.toHaveBeenCalled();
-    expect(deps.markResearchingImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
   });
 });
@@ -222,8 +226,8 @@ describe("runLeadsLane — geocode failure", () => {
     expect(summary.geocodeFailed).toBe(1);
     expect(summary.staged).toBe(0);
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
-    expect(deps.markResearchingImpl).toHaveBeenCalledTimes(1);
-    expect(deps.markResearchingImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("geocode"));
+    expect(deps.markDeferredImpl).toHaveBeenCalledTimes(1);
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("geocode"));
   });
 });
 
@@ -238,7 +242,7 @@ describe("runLeadsLane — dry run", () => {
     expect(summary.staged).toBe(1);
     expect(summary.stagedLeadIds).toEqual(["lead-1"]);
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
-    expect(deps.markResearchingImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
     expect(deps.promoteLeadImpl).not.toHaveBeenCalled();
   });
 });
@@ -246,7 +250,7 @@ describe("runLeadsLane — dry run", () => {
 // --- model returns nulls ------------------------------------------------------
 
 describe("runLeadsLane — model finds nothing usable", () => {
-  it("moves the lead to researching, never dismissed, and never calls the verification gate", async () => {
+  it("defers the lead, never dismissed, and never calls the verification gate", async () => {
     const deps = makeDeps({
       callOllamaImpl: sequencedOllama([
         extractionOk({
@@ -268,7 +272,7 @@ describe("runLeadsLane — model finds nothing usable", () => {
     // Only the extraction call happened — verification is never reached
     // without a usable name/operator/state to check.
     expect(deps.callOllamaImpl).toHaveBeenCalledTimes(1);
-    expect(deps.markResearchingImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("no usable"));
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("no usable"));
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
   });
 });
@@ -293,7 +297,7 @@ describe("runLeadsLane — verification escalated", () => {
 
     expect(summary.escalated).toBe(1);
     expect(summary.staged).toBe(0);
-    expect(deps.markResearchingImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
   });
 });
@@ -438,5 +442,81 @@ describe("runLeadsLane — Gap A: promoteLead failure does not block staging cou
 
     // Verify that promoteLead was attempted
     expect(deps.promoteLeadImpl).toHaveBeenCalledTimes(1);
+  });
+});
+
+// --- schema rejection: the fourth (previously untested) defer path -----------
+
+describe("runLeadsLane — built payload fails facilitySchema", () => {
+  it("defers the lead rather than staging an invalid facility record", async () => {
+    // A geocode hit whose latitude is out of range: it passes the "did we get
+    // a result at all" check, then fails `facilitySchema`'s
+    // `lat: z.number().min(-90).max(90)`. This exercises the schemaRejected
+    // branch without touching the extraction or verification gates.
+    const deps = makeDeps({
+      geocodeImpl: vi.fn(async (): Promise<GeocodeResult[]> => [
+        { lat: 999, lon: -97.7, label: "Nowhere" },
+      ]),
+    });
+
+    const summary = await runLeadsLane(baseOpts(), deps);
+
+    expect(summary.schemaRejected).toBe(1);
+    expect(summary.staged).toBe(0);
+    expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
+    expect(deps.promoteLeadImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).toHaveBeenCalledTimes(1);
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith(
+      "lead-1",
+      expect.stringContaining("valid facility record")
+    );
+  });
+
+  it("writes no status at all on a dry run", async () => {
+    const deps = makeDeps({
+      geocodeImpl: vi.fn(async (): Promise<GeocodeResult[]> => [
+        { lat: 999, lon: -97.7, label: "Nowhere" },
+      ]),
+    });
+
+    const summary = await runLeadsLane(baseOpts({ dryRun: true }), deps);
+
+    expect(summary.schemaRejected).toBe(1);
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+  });
+});
+
+// --- the one-way-door wiring: the lane must write `deferred`, not `researching`
+
+describe("leads-lane writes `deferred`, never `researching`", () => {
+  // `buildRealDeps()` is module-private and its closures reach the real
+  // database, so no runtime test can observe the status literal it passes to
+  // `updateLeadStatus`. Every test above injects `markDeferredImpl` as a mock
+  // and therefore CANNOT fail if that literal regresses to "researching" —
+  // which is exactly the defect this change closes. Pin it at the source, the
+  // same way lib/lead-fields.guard.test.ts pins its import boundary.
+  const source = readFileSync(join(process.cwd(), "scripts/discovery/leads-lane.ts"), "utf8");
+
+  it("wires markDeferredImpl to updateLeadStatus(..., 'deferred')", () => {
+    expect(source).toMatch(/markDeferredImpl:\s*\(id,\s*note\)\s*=>\s*updateLeadStatus\(id,\s*"deferred",\s*note\)/);
+
+    // The regexes here scan the WHOLE module, so a SECOND `markDeferredImpl:`
+    // wiring (or the literal in a comment) could satisfy the positive match
+    // above while the real wiring passed something else. Pin it to exactly one.
+    // Scoped to the untyped `(id, note) =>` closure shape that only a wiring
+    // has, so the interface's typed `(id: string, note: string)` declaration --
+    // a legitimate second `markDeferredImpl:` -- is not counted.
+    expect(source.match(/markDeferredImpl:\s*\(id,\s*note\)\s*=>/g)).toHaveLength(1);
+  });
+
+  it("never passes 'researching' to updateLeadStatus anywhere in the lane", () => {
+    // `researching` means "a human is actively working this lead" and is set
+    // only by the admin control (app/admin/leads/actions.ts). If the lane can
+    // write it too, the two meanings become indistinguishable again.
+    expect(source).not.toMatch(/updateLeadStatus\([^)]*["']researching["']/);
+  });
+
+  it("defines `deferred` as a lead status", () => {
+    expect(LEAD_STATUSES).toContain("deferred");
   });
 });

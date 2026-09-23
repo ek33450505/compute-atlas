@@ -391,7 +391,10 @@ export const leadsTable = pgTable(
     note: text("note"), // optional one-line what/where
     attribution: text("attribution"), // optional public handle
     submitterIpHash: text("submitter_ip_hash"), // for lead rate-limiting
-    status: text("status").notNull().default("new"), // new | researching | promoted | dismissed
+    // Plain text, deliberately not a Postgres enum or CHECK: LEAD_STATUSES
+    // (lib/lead-fields.ts) is the single source of truth and `updateLeadStatus`
+    // validates against it, so adding a status is a code-only change.
+    status: text("status").notNull().default("new"), // new | researching | deferred | promoted | dismissed
     triage: jsonb("triage").$type<LeadTriage>(), // submit-time server-side fetch result; null until set
     reviewNote: text("review_note"),
     reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
