@@ -617,6 +617,20 @@
       "rock": "Sandstone"
     }
   },
+  "adapture-cherry-valley-solar-cross-county-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "adp-ladysmith-data-hub-caroline-va": {
     "nearestWater": {
       "name": "Lake Caroline",
@@ -661,6 +675,20 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "aecc-woodruff-county-solar-ar": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "aes-delta-wind-tunica-ms": {
@@ -762,6 +790,16 @@
       "rock": "Sandstone"
     }
   },
+  "aib-clt-01-spartanburg-county-sc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "ainet-cybernap-glen-burnie-md": {
     "nearestWater": {
       "name": "Sawmill Creek",
@@ -848,6 +886,16 @@
     "aquifer": {
       "name": "Southeastern Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "alabama-power-gorgas-bess-parrish-al": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "alabama-supercomputer-center-huntsville-al": {
@@ -2605,6 +2653,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "artemis-power-tech-wolfe-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     },
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
@@ -5281,6 +5339,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "bluegrassnet-louisville-jefferson-ky": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "blusky-ai-delta-millard-county-ut": {
     "nearestWater": {
       "name": "Sevier River",
@@ -5839,6 +5907,12 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cane-creek-solar-clarke-ms": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "cango-greenvolt-soperton-ga": {
@@ -6649,6 +6723,26 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "citynet-bridgeport-harrison-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "citynet-charleston-kanawha-county-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "cleanarc-ruther-glen-va": {
@@ -8472,6 +8566,26 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "continent-8-west-virginia-dc1-south-charleston-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "continent-8-west-virginia-dc2-petersburg-grant-county-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "convergent-technology-park-remington-fauquier-va": {
     "nearestWater": {
       "name": "Tinpot Run",
@@ -9657,6 +9771,20 @@
       "rock": "Carbonate-rock"
     }
   },
+  "cypress-creek-steel-river-energy-center-wilson-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "cyrusone-bosque-county-thad-hill-tx": {
     "nearestWater": {
       "name": "North Bosque River",
@@ -10192,6 +10320,34 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "dartpoints-charleston-ladson-sc": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "dartpoints-columbia-sc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "dartpoints-greenville-sc": {
     "nearestWater": {
       "name": "Laurel Creek",
@@ -10251,6 +10407,16 @@
     "aquifer": {
       "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "dartpoints-spartanburg-sc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "data-city-energy-abundance-laredo-tx": {
@@ -11151,6 +11317,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "dc-blox-north-augusta-sc": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "dc-blox-palm-coast-cable-landing-station-fl": {
     "nearestWater": {
       "name": "Graham Swamp",
@@ -11326,6 +11506,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "dedispec-berkeley-springs-morgan-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "deep-green-lansing-mi": {
     "nearestWater": {
       "name": "Grand River",
@@ -11336,6 +11526,16 @@
       "voltageKv": 345,
       "distanceMi": 12.9
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "deep-lake-energy-center-nicholas-county-wv": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11362,6 +11562,20 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "deltas-edge-solar-carroll-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "deltona-holder-industrial-park-citrus-county-fl": {
@@ -11396,6 +11610,20 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "desri-long-lake-solar-phillips-county-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "detroit-shoemaker-street-data-center-mi": {
@@ -12853,6 +13081,16 @@
       "rock": "Sandstone"
     }
   },
+  "dominion-mount-storm-power-station-grant-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "dp-facilities-mineral-gap-wise-va": {
     "nearestWater": {
       "name": "Bear Creek",
@@ -13202,6 +13440,16 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "east-kentucky-network-ivel-floyd-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "ebay-topaz-south-jordan-ut": {
@@ -13967,6 +14215,34 @@
       "label": "Low (<10%)"
     }
   },
+  "edpr-crooked-lake-solar-mississippi-county-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "edpr-cypress-knee-solar-chicot-county-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "edpr-ragsdale-solar-madison-ms": {
     "nearestWater": {
       "name": "Little Bear Creek",
@@ -13999,6 +14275,22 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "ekpc-cooper-station-unit-3-pulaski-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "ekpc-liberty-station-casey-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "element-critical-austin-one-tx": {
@@ -14378,6 +14670,34 @@
       "label": "High (4-8 cm/y)"
     }
   },
+  "enfinity-eg-saturn-solar-i-perry-al": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "enfinity-eg-saturn-solar-ii-perry-al": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "enseva-hiawatha-ia": {
     "nearestWater": {
       "name": "Dry Creek",
@@ -14499,6 +14819,20 @@
       "voltageKv": 230,
       "distanceMi": 22.2
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "entergy-driver-solar-osceola-ar": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -14703,6 +15037,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "entergy-walnut-bend-solar-lee-county-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "entergy-waterford-power-station-st-charles-la": {
     "nearestWater": {
       "name": "Mississippi River",
@@ -14724,6 +15072,20 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "entergy-west-memphis-solar-crittenden-county-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "entergy-westlake-power-station-calcasieu-la": {
@@ -15441,6 +15803,16 @@
       "rock": "Sandstone"
     }
   },
+  "eurus-ee-gemina-solar-triana-al": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "evocative-bos1-somerville-ma": {
     "nearestWater": {
       "name": "Mystic River",
@@ -15901,6 +16273,12 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "fiddle-falls-solar-pontotoc-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "fidium-des-moines-ia": {
     "nearestWater": {
       "name": "Des Moines River",
@@ -16027,6 +16405,20 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "flat-fork-solar-brinkley-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "fleet-data-centers-storey-county-nv": {
@@ -17078,6 +17470,16 @@
       "rock": "Sandstone"
     }
   },
+  "fort-martin-power-station-maidsville-monongalia-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "fort-spunky-pacifico-energy-hood-county-tx": {
     "nearestWater": {
       "name": "Lake Granbury",
@@ -17647,6 +18049,20 @@
     "groundwaterDecline": {
       "cat": 1,
       "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "girasol-solar-farm-sunflower-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "global-ai-windsor-co": {
@@ -19528,6 +19944,34 @@
       "rock": "Sandstone"
     }
   },
+  "harvest-gold-solar-sunflower-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "hattiesburg-solar-farm-forrest-ms": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "hawaiiantel-endeavor-honolulu-hi": {
     "aquifer": {
       "name": "Hawaiian Sedimentary Deposit Aquifers",
@@ -19747,6 +20191,12 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "hinds-solar-hinds-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "hines-hayward-exchange-92-ca": {
@@ -20510,6 +20960,20 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "invenergy-decoy-solar-arkansas-county-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "invitium-energy-carroll-township-perry-county-pa": {
@@ -21567,6 +22031,12 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "landshark-energy-solar-calhoun-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "lavue-massaponax-tech-campus-spotsylvania-va": {
     "nearestWater": {
       "name": "Ni River",
@@ -21905,6 +22375,30 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "lighthouse-data-centers-spartanburg-sc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "lightsource-bp-black-bear-solar-montgomery-al": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "lightwave-networks-needham-ma": {
@@ -25219,6 +25713,26 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "mn8-mammoth-solar-kanawha-county-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "mon-power-davis-solar-tucker-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "mon-power-maidsville-energy-center-monongalia-county-wv": {
     "nearestWater": {
       "name": "Laurel Run",
@@ -25232,6 +25746,26 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "mon-power-valley-point-solar-preston-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "mon-power-wylie-ridge-solar-hancock-county-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     },
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
@@ -25350,6 +25884,20 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "moonshot-solar-hancock-ms": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "moreland-holding-moreland-ar": {
@@ -25869,6 +26417,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "netl-computational-science-engineering-center-morgantown-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "netrality-210-north-tucker-st-louis-mo": {
     "nearestWater": {
       "name": "Mississippi River",
@@ -26162,6 +26720,20 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "nextera-forgeview-solar-mississippi-county-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "nextera-greer-solar-washington-ms": {
     "nearestWater": {
       "name": "Deer Creek",
@@ -26369,6 +26941,16 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "noaa-environmental-security-computing-center-fairmont-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "noec-core-data-center-vinita-ok": {
@@ -27466,6 +28048,20 @@
       "rock": "Carbonate-rock"
     }
   },
+  "oppidan-clop-aiken-graniteville-sc": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "oppidan-des-moines-ia": {
     "nearestWater": {
       "name": "Des Moines River",
@@ -27633,6 +28229,20 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "origis-covington-solar-ms": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "origis-golden-triangle-i-lowndes-ms": {
     "nearestWater": {
       "name": "Gilmer Creek",
@@ -27676,6 +28286,34 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "origis-walker-springs-i-solar-clarke-al": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "origis-walker-springs-ii-solar-clarke-al": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "ormat-salt-wells-churchill-county-nv": {
@@ -27782,6 +28420,16 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "overwatch-resilience-gsp-greer-sc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "oxbow-solar-pointe-coupee-la": {
@@ -28050,6 +28698,16 @@
     },
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "pearl-river-solar-park-scott-ms": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
     }
   },
@@ -30695,6 +31353,20 @@
       "rock": "Sandstone"
     }
   },
+  "quartz-solar-cross-county-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "quest-roseville-habc-ca": {
     "nearestWater": {
       "name": "South Branch Pleasant Grove Creek",
@@ -30750,6 +31422,16 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "qx-net-lexington-fayette-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Ordovician Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "rack59-oklahoma-city-ok": {
@@ -31747,6 +32429,62 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "rye-arkabutla-lake-hydro-desoto-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "rye-enid-lake-hydro-panola-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "rye-grenada-lake-hydro-grenada-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "rye-sardis-lake-hydro-panola-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "saadia-holding-athens-dover-township-oh": {
     "nearestWater": {
       "name": "Slater Brothers Pond",
@@ -32049,6 +32787,20 @@
     "aquifer": {
       "name": "Columbia Plateau Basaltic-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "sabre-solar-holmes-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "safe-harbor-hydroelectric-lancaster-county-pa": {
@@ -33042,6 +33794,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "shady-spring-data-center-campus-raleigh-county-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "sharpless-wellington-road-bristow-va": {
     "nearestWater": {
       "name": "Cannon Branch",
@@ -33135,6 +33897,20 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "silicon-ranch-lambert-solar-georgetown-county-sc": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "silicon-ranch-stockton-solar-baldwin-al": {
@@ -33736,6 +34512,46 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "sr-jasper-solar-jasper-ms": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "sr-magnolia-solar-monroe-ms": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
+  "sr-meridian-iii-solar-lauderdale-ms": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "sr-mount-pleasant-solar-marshall-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "srp-marigold-energy-center-stanfield-az": {
@@ -34829,6 +35645,34 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "sumrall-i-solar-lamar-ms": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "sumrall-ii-solar-lamar-ms": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "suncap-stowe-township-allegheny-county-pa": {
     "nearestWater": {
       "name": "Chartiers Creek",
@@ -34846,6 +35690,20 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "sunflower-county-solar-station-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "sunlight-road-solar-washington-parish-la": {
@@ -35322,6 +36180,16 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "synergy-south-russellville-al": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "syringa-networks-west-valley-city-ut": {
@@ -36184,6 +37052,20 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "terra-nexus-camden-kershaw-county-sc": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "terra-nexus-custer-avenue-fayetteville-cumberland-county-nc": {
@@ -37454,6 +38336,30 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "tva-new-caledonia-lowndes-ms": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "twisted-gun-solar-mingo-logan-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "type-one-energy-project-infinity-bull-run-tn": {
@@ -39058,6 +39964,20 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "wildflower-solar-desoto-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "williams-aquila-eagle-mountain-ut": {
     "nearestWater": {
       "name": "Utah Lake",
@@ -39426,6 +40346,16 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "youngwoo-project-brookwood-al": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "zafra-plattsburgh-ny": {
