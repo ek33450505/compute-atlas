@@ -12,7 +12,13 @@ import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
-import { createLead, listLeadsForAdmin, updateLeadStatus, promoteLead } from "@/lib/leads";
+import {
+  createLead,
+  listLeadsForAdmin,
+  updateLeadStatus,
+  promoteLead,
+  resetLeadToNew,
+} from "@/lib/leads";
 
 let tdb: TestDbHandle;
 
@@ -198,5 +204,111 @@ describe("promoteLead", () => {
     expect(repeat.ok).toBe(false);
     if (repeat.ok) return;
     expect(repeat.status).toBe(409);
+  });
+});
+
+describe("resetLeadToNew", () => {
+  // Defect 1: promoteLead is promotedSubmissionId's only writer, so a non-null
+  // id means a real staged submission exists. Re-queueing the lead with the id
+  // still set lets the discovery lane stage a SECOND submission for the site.
+  it("clears a non-null promotedSubmissionId when it re-queues the lead", async () => {
+    const created = await createLead({ url: "https://example.com/a" }, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const promoted = await promoteLead(created.id, "55555555-5555-5555-5555-555555555555");
+    expect(promoted.ok).toBe(true);
+    if (!promoted.ok) return;
+    expect(promoted.lead.promotedSubmissionId).toBe("55555555-5555-5555-5555-555555555555");
+
+    const result = await resetLeadToNew(created.id);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.lead.status).toBe("new");
+    expect(result.lead.promotedSubmissionId).toBeNull();
+    expect(result.lead.reviewedAt).not.toBeNull();
+
+    // Read back: the row the lane would queue must carry no submission id.
+    const rows = await listLeadsForAdmin("new");
+    expect(rows).toHaveLength(1);
+    expect(rows[0].promotedSubmissionId).toBeNull();
+  });
+
+  // Defect 2: the UI calls this with no note, and updateLeadStatus would write
+  // `reviewNote ?? null` — silently destroying the recorded dismissal reason.
+  it("preserves the prior reviewNote verbatim when called with no note", async () => {
+    const created = await createLead({ url: "https://example.com/a" }, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const dismissed = await updateLeadStatus(created.id, "dismissed", "duplicate of an existing site");
+    expect(dismissed.ok).toBe(true);
+
+    const result = await resetLeadToNew(created.id);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.lead.status).toBe("new");
+    expect(result.lead.reviewNote).toBe("duplicate of an existing site");
+  });
+
+  it("retains the prior reviewNote alongside a new one", async () => {
+    const created = await createLead({ url: "https://example.com/a" }, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const dismissed = await updateLeadStatus(created.id, "dismissed", "duplicate of an existing site");
+    expect(dismissed.ok).toBe(true);
+
+    const result = await resetLeadToNew(created.id, "dismissed in error, re-opening");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.lead.reviewNote).toBe(
+      "dismissed in error, re-opening\n\n(previous note: duplicate of an existing site)"
+    );
+  });
+
+  // An empty or whitespace-only note is NOT a new note: `reviewNote && …` treated
+  // "" as falsy and fell through to `"" ?? row.reviewNote` → "", wiping the
+  // dismissal reason. Reachable by a direct Server Action call (the UI passes no arg).
+  it("preserves the prior reviewNote when called with an empty-string note", async () => {
+    const created = await createLead({ url: "https://example.com/a" }, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const dismissed = await updateLeadStatus(created.id, "dismissed", "duplicate of an existing site");
+    expect(dismissed.ok).toBe(true);
+
+    const result = await resetLeadToNew(created.id, "");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.lead.status).toBe("new");
+    expect(result.lead.reviewNote).toBe("duplicate of an existing site");
+  });
+
+  it("preserves the prior reviewNote when called with a whitespace-only note", async () => {
+    const created = await createLead({ url: "https://example.com/a" }, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const dismissed = await updateLeadStatus(created.id, "dismissed", "duplicate of an existing site");
+    expect(dismissed.ok).toBe(true);
+
+    const result = await resetLeadToNew(created.id, "   ");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.lead.reviewNote).toBe("duplicate of an existing site");
+  });
+
+  it("409s when the lead is already new", async () => {
+    const created = await createLead({ url: "https://example.com/a" }, "hash-1");
+    if (!created.ok) throw new Error("setup failed");
+
+    const result = await resetLeadToNew(created.id);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(409);
+    expect(result.error).toBe("Lead already new");
+  });
+
+  it("404s on an unknown lead id", async () => {
+    const result = await resetLeadToNew("00000000-0000-0000-0000-000000000000");
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(404);
   });
 });

@@ -7,13 +7,19 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 // blocks the DB call when the cookie is invalid. Shared mocks go through
 // vi.hoisted() so their initialization is hoisted alongside the vi.mock
 // calls themselves, matching app/admin/submissions/actions.test.ts.
-const { mockGetCookie, mockVerifySessionCookie, mockUpdateLeadStatus, mockRevalidatePath } =
-  vi.hoisted(() => ({
-    mockGetCookie: vi.fn(),
-    mockVerifySessionCookie: vi.fn(),
-    mockUpdateLeadStatus: vi.fn(),
-    mockRevalidatePath: vi.fn(),
-  }));
+const {
+  mockGetCookie,
+  mockVerifySessionCookie,
+  mockUpdateLeadStatus,
+  mockResetLeadToNew,
+  mockRevalidatePath,
+} = vi.hoisted(() => ({
+  mockGetCookie: vi.fn(),
+  mockVerifySessionCookie: vi.fn(),
+  mockUpdateLeadStatus: vi.fn(),
+  mockResetLeadToNew: vi.fn(),
+  mockRevalidatePath: vi.fn(),
+}));
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(async () => ({
@@ -32,12 +38,14 @@ vi.mock("@/lib/admin-session", () => ({
 
 vi.mock("@/lib/leads", () => ({
   updateLeadStatus: mockUpdateLeadStatus,
+  resetLeadToNew: mockResetLeadToNew,
 }));
 
 import {
   markLeadResearchingAction,
   markLeadPromotedAction,
   dismissLeadAction,
+  resetLeadToNewAction,
 } from "./actions";
 
 describe("markLeadResearchingAction", () => {
@@ -170,5 +178,83 @@ describe("dismissLeadAction", () => {
     expect(mockUpdateLeadStatus).toHaveBeenCalledWith("lead-1", "dismissed", "duplicate entry");
     expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/leads");
     expect(result.ok).toBe(true);
+  });
+});
+
+// The discovery lane queues listLeadsForAdmin("new") only, so `researching`,
+// `promoted` and `dismissed` are all one-way doors out of that queue. This
+// action is the only way back, and like every other action here it must
+// re-verify the admin session before touching the DB.
+describe("resetLeadToNewAction", () => {
+  beforeEach(() => {
+    mockGetCookie.mockClear();
+    mockVerifySessionCookie.mockClear();
+    mockUpdateLeadStatus.mockClear();
+    mockResetLeadToNew.mockClear();
+    mockRevalidatePath.mockClear();
+    mockGetCookie.mockReturnValue({ value: "some-cookie-value" });
+  });
+
+  it("rejects and never touches the DB when the session cookie is invalid", async () => {
+    mockVerifySessionCookie.mockReturnValue(false);
+
+    await expect(resetLeadToNewAction("lead-1")).rejects.toThrow();
+
+    expect(mockResetLeadToNew).not.toHaveBeenCalled();
+    expect(mockUpdateLeadStatus).not.toHaveBeenCalled();
+    expect(mockRevalidatePath).not.toHaveBeenCalled();
+  });
+
+  it("rejects and never touches the DB when the cookie is entirely missing", async () => {
+    mockGetCookie.mockReturnValue(undefined);
+    mockVerifySessionCookie.mockReturnValue(false);
+
+    await expect(resetLeadToNewAction("lead-1")).rejects.toThrow();
+
+    expect(mockVerifySessionCookie).toHaveBeenCalledWith(undefined);
+    expect(mockResetLeadToNew).not.toHaveBeenCalled();
+    expect(mockUpdateLeadStatus).not.toHaveBeenCalled();
+  });
+
+  // Must route through resetLeadToNew, NOT the generic updateLeadStatus: only
+  // the former clears promotedSubmissionId and preserves the prior reviewNote.
+  it("calls resetLeadToNew(id, note) and revalidates on a valid session + success", async () => {
+    mockVerifySessionCookie.mockReturnValue(true);
+    mockResetLeadToNew.mockResolvedValue({
+      ok: true,
+      lead: { id: "lead-1", status: "new" },
+    });
+
+    const result = await resetLeadToNewAction("lead-1", "re-opening, triaged in error");
+
+    expect(mockVerifySessionCookie).toHaveBeenCalledWith("some-cookie-value");
+    expect(mockResetLeadToNew).toHaveBeenCalledWith("lead-1", "re-opening, triaged in error");
+    expect(mockUpdateLeadStatus).not.toHaveBeenCalled();
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/leads");
+    expect(result.ok).toBe(true);
+  });
+
+  it("passes an undefined note through when none is supplied", async () => {
+    mockVerifySessionCookie.mockReturnValue(true);
+    mockResetLeadToNew.mockResolvedValue({ ok: true, lead: { id: "lead-1", status: "new" } });
+
+    await resetLeadToNewAction("lead-1");
+
+    expect(mockResetLeadToNew).toHaveBeenCalledWith("lead-1", undefined);
+    expect(mockUpdateLeadStatus).not.toHaveBeenCalled();
+  });
+
+  it("does not revalidate when resetLeadToNew itself fails", async () => {
+    mockVerifySessionCookie.mockReturnValue(true);
+    mockResetLeadToNew.mockResolvedValue({
+      ok: false,
+      status: 409,
+      error: "Lead already new",
+    });
+
+    const result = await resetLeadToNewAction("lead-1");
+
+    expect(result.ok).toBe(false);
+    expect(mockRevalidatePath).not.toHaveBeenCalled();
   });
 });

@@ -25,6 +25,7 @@ import {
   markLeadResearchingAction,
   markLeadPromotedAction,
   dismissLeadAction,
+  resetLeadToNewAction,
 } from "@/app/admin/leads/actions";
 
 function formatActionError(result: { error: string }): string {
@@ -136,6 +137,13 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
   const triage = lead.triage as LeadTriage | null;
   const duplicateIds = triage?.ok ? (triage.duplicateFacilityIds ?? []) : [];
   const isTerminal = lead.status === "promoted" || lead.status === "dismissed";
+  // The discovery lane queues `new` leads only, so every other status is a
+  // one-way door out of it. Offer a way back from all three.
+  const canReset = lead.status !== "new";
+  // promoteLead() writes promotedSubmissionId in the same statement that sets
+  // the status, so a promoted lead with a null id was triage-marked by the
+  // button below and has no submission behind it.
+  const promotedWithoutSubmission = lead.status === "promoted" && !lead.promotedSubmissionId;
 
   function handleResearching() {
     startTransition(async () => {
@@ -154,6 +162,18 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
       const result = await markLeadPromotedAction(lead.id);
       if (result.ok) {
         toast.success("Marked promoted.");
+        router.refresh();
+      } else {
+        toast.error(formatActionError(result));
+      }
+    });
+  }
+
+  function handleReset() {
+    startTransition(async () => {
+      const result = await resetLeadToNewAction(lead.id);
+      if (result.ok) {
+        toast.success("Returned to new.");
         router.refresh();
       } else {
         toast.error(formatActionError(result));
@@ -219,26 +239,43 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
         {lead.reviewNote ? (
           <p className="text-xs text-muted-foreground">Note: {lead.reviewNote}</p>
         ) : null}
-        {!isTerminal ? (
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            {lead.status === "new" ? (
-              <Button size="sm" variant="outline" disabled={isPending} onClick={handleResearching}>
-                Start researching
-              </Button>
-            ) : null}
-            <Button size="sm" disabled={isPending} onClick={handlePromoted}>
-              Mark promoted
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={isPending}
-              onClick={() => setDismissOpen(true)}
-            >
-              Dismiss
-            </Button>
-          </div>
+        {promotedWithoutSubmission ? (
+          <p className="text-xs text-muted-foreground">
+            Marked promoted manually — no submission was created.
+          </p>
         ) : null}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          {!isTerminal ? (
+            <>
+              {lead.status === "new" ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isPending}
+                  onClick={handleResearching}
+                >
+                  Start researching
+                </Button>
+              ) : null}
+              <Button size="sm" disabled={isPending} onClick={handlePromoted}>
+                Mark promoted (no submission)
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={isPending}
+                onClick={() => setDismissOpen(true)}
+              >
+                Dismiss
+              </Button>
+            </>
+          ) : null}
+          {canReset ? (
+            <Button size="sm" variant="outline" disabled={isPending} onClick={handleReset}>
+              Return to new
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       <Dialog open={dismissOpen} onOpenChange={setDismissOpen}>

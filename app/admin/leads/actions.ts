@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/admin-session";
-import { updateLeadStatus, type LeadActionResult } from "@/lib/leads";
+import { updateLeadStatus, resetLeadToNew, type LeadActionResult } from "@/lib/leads";
 
 /**
  * Server Actions are independently callable (not gated by middleware page
@@ -26,6 +26,33 @@ export async function markLeadResearchingAction(
   await assertAdminSession();
 
   const result = await updateLeadStatus(id, "researching", reviewNote);
+  if (result.ok) {
+    revalidatePath("/admin/leads");
+  }
+  return result;
+}
+
+/**
+ * Returns a lead to `new` — the only way back into the discovery lane's queue.
+ *
+ * `scripts/discovery/leads-lane.ts` queues `listLeadsForAdmin("new")` and
+ * nothing else, so every other status is a one-way door out of the lane:
+ * `researching` offers only forward moves, and a `promoted`/`dismissed` lead
+ * renders no actions at all. Without this, recovering a mis-triaged lead
+ * required a hand-written Neon UPDATE.
+ *
+ * Delegates to `resetLeadToNew`, NOT the generic `updateLeadStatus`: re-queueing
+ * needs `promotedSubmissionId` cleared (else the lane can stage a second
+ * submission for the same site) and the prior `reviewNote` preserved (else a
+ * dismissal's recorded reason is silently destroyed). See that function's doc.
+ */
+export async function resetLeadToNewAction(
+  id: string,
+  reviewNote?: string
+): Promise<LeadActionResult> {
+  await assertAdminSession();
+
+  const result = await resetLeadToNew(id, reviewNote);
   if (result.ok) {
     revalidatePath("/admin/leads");
   }

@@ -18,6 +18,7 @@ const {
   mockMarkResearching,
   mockMarkPromoted,
   mockDismiss,
+  mockResetToNew,
 } = vi.hoisted(() => ({
   mockPush: vi.fn(),
   mockRefresh: vi.fn(),
@@ -26,6 +27,7 @@ const {
   mockMarkResearching: vi.fn(),
   mockMarkPromoted: vi.fn(),
   mockDismiss: vi.fn(),
+  mockResetToNew: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -43,6 +45,7 @@ vi.mock("./actions", () => ({
   markLeadResearchingAction: mockMarkResearching,
   markLeadPromotedAction: mockMarkPromoted,
   dismissLeadAction: mockDismiss,
+  resetLeadToNewAction: mockResetToNew,
 }));
 
 import { LeadList } from "./lead-list";
@@ -233,11 +236,11 @@ describe("LeadList — row rendering", () => {
     expect(document.querySelector("img")).not.toBeInTheDocument();
   });
 
-  it("does not show status actions for a terminal (promoted) lead", () => {
+  it("does not show forward status actions for a terminal (promoted) lead", () => {
     renderList([makeLead({ status: "promoted" })], "promoted");
 
     expect(screen.queryByRole("button", { name: "Start researching" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Mark promoted" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Mark promoted (no submission)" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Dismiss" })).not.toBeInTheDocument();
   });
 
@@ -245,8 +248,87 @@ describe("LeadList — row rendering", () => {
     renderList([makeLead({ status: "researching" })], "researching");
 
     expect(screen.queryByRole("button", { name: "Start researching" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Mark promoted" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Mark promoted (no submission)" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Dismiss" })).toBeInTheDocument();
+  });
+});
+
+// The discovery lane queues `listLeadsForAdmin("new")` and nothing else, so
+// every status transition the UI offers removes a lead from that queue
+// permanently. "Return to new" is the only way back, and it MUST reach the
+// terminal statuses — a promoted/dismissed lead previously rendered no
+// buttons at all and needed a hand-written Neon UPDATE to recover.
+describe("LeadList — return to new (lane-queue escape hatch)", () => {
+  beforeEach(() => {
+    mockResetToNew.mockClear();
+    mockToastSuccess.mockClear();
+    mockToastError.mockClear();
+    mockRefresh.mockClear();
+  });
+
+  it("renders Return to new for a researching lead", () => {
+    renderList([makeLead({ status: "researching" })], "researching");
+    expect(screen.getByRole("button", { name: "Return to new" })).toBeInTheDocument();
+  });
+
+  it("renders Return to new for a dismissed lead", () => {
+    renderList([makeLead({ status: "dismissed" })], "dismissed");
+    expect(screen.getByRole("button", { name: "Return to new" })).toBeInTheDocument();
+  });
+
+  it("renders Return to new for a promoted lead", () => {
+    renderList([makeLead({ status: "promoted" })], "promoted");
+    expect(screen.getByRole("button", { name: "Return to new" })).toBeInTheDocument();
+  });
+
+  it("does not render Return to new for a lead already in new", () => {
+    renderList([makeLead({ status: "new" })], "new");
+    expect(screen.queryByRole("button", { name: "Return to new" })).not.toBeInTheDocument();
+  });
+
+  it("calls resetLeadToNewAction and refreshes on success", async () => {
+    mockResetToNew.mockResolvedValue({ ok: true });
+    const user = userEvent.setup();
+    renderList([makeLead({ status: "dismissed" })], "dismissed");
+
+    await user.click(screen.getByRole("button", { name: "Return to new" }));
+
+    await waitFor(() => expect(mockResetToNew).toHaveBeenCalledWith("lead-1"));
+    await waitFor(() => expect(mockToastSuccess).toHaveBeenCalledWith("Returned to new."));
+    expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  it("shows an error toast and does not refresh when the reset fails", async () => {
+    mockResetToNew.mockResolvedValue({ ok: false, status: 409, error: "Lead already new" });
+    const user = userEvent.setup();
+    renderList([makeLead({ status: "promoted" })], "promoted");
+
+    await user.click(screen.getByRole("button", { name: "Return to new" }));
+
+    await waitFor(() => expect(mockToastError).toHaveBeenCalledWith("Lead already new"));
+    expect(mockRefresh).not.toHaveBeenCalled();
+  });
+});
+
+describe("LeadList — promoted-without-submission warning", () => {
+  it("warns when a promoted lead has no promotedSubmissionId", () => {
+    renderList([makeLead({ status: "promoted", promotedSubmissionId: null })], "promoted");
+
+    expect(
+      screen.getByText("Marked promoted manually — no submission was created.")
+    ).toBeInTheDocument();
+  });
+
+  it("does not warn when the promoted lead has a submission behind it", () => {
+    renderList([makeLead({ status: "promoted", promotedSubmissionId: "sub-1" })], "promoted");
+
+    expect(screen.queryByText(/no submission was created/)).not.toBeInTheDocument();
+  });
+
+  it("does not warn for a dismissed lead with no submission id", () => {
+    renderList([makeLead({ status: "dismissed", promotedSubmissionId: null })], "dismissed");
+
+    expect(screen.queryByText(/no submission was created/)).not.toBeInTheDocument();
   });
 });
 
@@ -277,7 +359,7 @@ describe("LeadList — status actions", () => {
     const user = userEvent.setup();
     renderList([makeLead()], "new");
 
-    await user.click(screen.getByRole("button", { name: "Mark promoted" }));
+    await user.click(screen.getByRole("button", { name: "Mark promoted (no submission)" }));
 
     await waitFor(() => expect(mockMarkPromoted).toHaveBeenCalledWith("lead-1"));
     expect(mockRefresh).toHaveBeenCalled();
@@ -288,7 +370,7 @@ describe("LeadList — status actions", () => {
     const user = userEvent.setup();
     renderList([makeLead()], "new");
 
-    await user.click(screen.getByRole("button", { name: "Mark promoted" }));
+    await user.click(screen.getByRole("button", { name: "Mark promoted (no submission)" }));
 
     await waitFor(() => expect(mockToastError).toHaveBeenCalledWith("Lead already promoted"));
     expect(mockRefresh).not.toHaveBeenCalled();
