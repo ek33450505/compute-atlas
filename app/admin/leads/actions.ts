@@ -19,6 +19,13 @@ async function assertAdminSession(): Promise<void> {
   }
 }
 
+/**
+ * The ONLY writer of `researching`, which means "a human is actively working
+ * this lead" and nothing else. `scripts/discovery/leads-lane.ts` writes
+ * `deferred` on its own give-up paths — do not let the lane reach this status
+ * again, or the two meanings become indistinguishable. See LEAD_STATUSES in
+ * lib/lead-fields.ts.
+ */
 export async function markLeadResearchingAction(
   id: string,
   reviewNote?: string
@@ -37,8 +44,8 @@ export async function markLeadResearchingAction(
  *
  * `scripts/discovery/leads-lane.ts` queues `listLeadsForAdmin("new")` and
  * nothing else, so every other status is a one-way door out of the lane:
- * `researching` offers only forward moves, and a `promoted`/`dismissed` lead
- * renders no actions at all. Without this, recovering a mis-triaged lead
+ * `researching`/`deferred` offer only forward moves, and a `promoted`/`dismissed`
+ * lead renders no actions at all. Without this, recovering a mis-triaged lead
  * required a hand-written Neon UPDATE.
  *
  * Delegates to `resetLeadToNew`, NOT the generic `updateLeadStatus`: re-queueing

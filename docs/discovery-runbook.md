@@ -396,9 +396,9 @@ For each `new` lead (oldest first):
 
 1. Fetches the lead's URL. A fetch failure leaves the lead `new` — a bot-walled page is not a bad tip — and is not counted against it.
 2. Asks the model to extract `name`, `operator`, `facilityType`, `status`, `city`, `state`, and `capacityMw`, explicitly instructed to return `null` for anything the page does not state. **The model never produces coordinates** — that field does not exist in the extraction schema at all.
-3. If the extraction has no usable identity (`name`/`operator`/`state` all required), the lead moves to `researching` — a human should look. A lead is never `dismissed` automatically; only a human dismisses a lead.
-4. Re-verifies the extracted name (plus any capacity figure, as a numeric hint) against the page via the same mechanical gate discovery submissions already use (`verify-source.ts`). Only a `"verified"` verdict proceeds. `"rejected"` (checked and it didn't hold up) moves the lead to `researching`. `"escalate"` (the fetcher couldn't structurally ingest the page) leaves the lead untouched at `new` for a human to look at from the normal queue — it is deliberately never treated as a rejection. `"unavailable"` (the model itself could not be reached) **aborts the entire run**, exactly like the discovery submission gate — never silently reclassified as "nothing found."
-5. Geocodes the extracted `city, state` via `geocodeUS` (`lib/geocode.ts`) — coordinates are derived ONLY this way, never proposed by the model. Zero geocode results moves the lead to `researching`.
+3. If the extraction has no usable identity (`name`/`operator`/`state` all required), the lead moves to `deferred` — a human should look. A lead is never `dismissed` automatically; only a human dismisses a lead.
+4. Re-verifies the extracted name (plus any capacity figure, as a numeric hint) against the page via the same mechanical gate discovery submissions already use (`verify-source.ts`). Only a `"verified"` verdict proceeds. `"rejected"` (checked and it didn't hold up) moves the lead to `deferred`. `"escalate"` (the fetcher couldn't structurally ingest the page) leaves the lead untouched at `new` for a human to look at from the normal queue — it is deliberately never treated as a rejection. `"unavailable"` (the model itself could not be reached) **aborts the entire run**, exactly like the discovery submission gate — never silently reclassified as "nothing found."
+5. Geocodes the extracted `city, state` via `geocodeUS` (`lib/geocode.ts`) — coordinates are derived ONLY this way, never proposed by the model. Zero geocode results moves the lead to `deferred`.
 6. Builds the `create` payload in exactly the shape `buildCreatePayload` (`lib/contribute.ts`) produces — `confidence: "rumored"`, `location.precision: "approximate"`, the lead's URL as the source — and validates it against `facilitySchema` before ever calling `createSubmission`.
 7. On success, `promoteLead` (`lib/leads.ts`) moves the lead to `promoted` and records the new submission id, in one write.
 
@@ -421,10 +421,14 @@ Needs a local Ollama daemon with `OLLAMA_VERIFY_MODEL` pulled, same as every oth
 
 - **Staging-only, same invariant as the rest of discovery:** the only write
   paths are `createSubmission` (a `pending` row) and `promoteLead`/
-  `updateLeadStatus` (moving a lead between `new`/`researching`/`promoted`).
+  `updateLeadStatus` (moving a lead to `deferred`, or to `promoted`).
+  ⚠️ The lane never writes `researching`: that status means "a human is
+  actively working this lead" and is set only by the admin control. Its own
+  give-up state is `deferred`, so the two are never confusable — and so a
+  human can tell, from the status alone, that the machine already tried.
   Nothing here ever writes a live facility.
 - **A lead is never auto-dismissed.** The worst outcome an unpromising lead
-  can reach on its own is `researching` — flagged for a human, never
+  can reach on its own is `deferred` — flagged for a human, never
   discarded. Only the admin triage UI's explicit dismiss action sets
   `dismissed`.
 - **Fail-loud on an Ollama outage**, identical to `submit-candidates.ts`: any

@@ -7,7 +7,24 @@
 // bundle. lib/leads.ts re-exports these for existing server-side callers.
 import type { LeadRow } from "@/lib/db/schema";
 
-export const LEAD_STATUSES = ["new", "researching", "promoted", "dismissed"] as const;
+/**
+ * Lead lifecycle states, in admin-tab order (the admin UI renders tabs by
+ * mapping this array, so the order here IS the workflow order on screen).
+ *
+ * - `new` — unreviewed; the ONLY state the discovery leads lane queues from.
+ * - `researching` — a human is actively working this lead. Set by a person,
+ *   via the admin control. ⚠️ The leads lane must NEVER write this: it used to,
+ *   which made "a human is on it" indistinguishable from "the machine gave up",
+ *   and stranded the lane's own inputs outside the queue it reads.
+ * - `deferred` — the lane tried and could not extract a usable candidate
+ *   (no identity, verification rejected, geocode miss, or schema failure);
+ *   the `reviewNote` records which. A human needs to look. Machine-set only.
+ * - `promoted` — became a staged submission.
+ * - `dismissed` — a human rejected it.
+ *
+ * Every state is recoverable to `new` via the admin "Return to new" control.
+ */
+export const LEAD_STATUSES = ["new", "researching", "deferred", "promoted", "dismissed"] as const;
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
 /**

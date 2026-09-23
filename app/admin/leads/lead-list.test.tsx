@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { AdminLeadRow } from "@/lib/leads";
+import { type LeadStatus } from "@/lib/lead-fields";
 
 // vi.mock calls are hoisted above imports by Vitest. A plain top-level
 // `const mockX = vi.fn()` is NOT reliably safe to reference inside a
@@ -66,7 +67,7 @@ function makeLead(overrides: Partial<AdminLeadRow> = {}): AdminLeadRow {
   };
 }
 
-function renderList(leads: AdminLeadRow[], activeStatus: "new" | "researching" | "promoted" | "dismissed") {
+function renderList(leads: AdminLeadRow[], activeStatus: LeadStatus) {
   return render(<LeadList leads={leads} activeStatus={activeStatus} />);
 }
 
@@ -76,12 +77,21 @@ describe("LeadList — tabs and empty state", () => {
     mockRefresh.mockClear();
   });
 
-  it("renders all four status tabs", () => {
+  it("renders a tab for every lead status, in LEAD_STATUSES order", () => {
     renderList([], "new");
     expect(screen.getByRole("tab", { name: "New" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Researching" })).toBeInTheDocument();
+    // `deferred` is the lane's own give-up state; it needs a queue a human
+    // can actually find, or the lane's failures are invisible.
+    expect(screen.getByRole("tab", { name: "Deferred" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Promoted" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Dismissed" })).toBeInTheDocument();
+
+    // Literal, NOT `LEAD_STATUSES.map(...)`: asserting the rendered order
+    // against the same constant that produces it cannot fail on a reorder.
+    // The tab order is the admin's workflow order, so pin it explicitly.
+    const tabNames = screen.getAllByRole("tab").map((tab) => tab.textContent);
+    expect(tabNames).toEqual(["New", "Researching", "Deferred", "Promoted", "Dismissed"]);
   });
 
   it("shows an empty-state message when there are no leads for the active tab", () => {
@@ -403,5 +413,46 @@ describe("LeadList — status actions", () => {
 
     await waitFor(() => expect(mockDismiss).toHaveBeenCalledWith("lead-1", "not relevant"));
     expect(mockToastSuccess).toHaveBeenCalled();
+  });
+});
+
+// --- deferred: the lane's give-up state is NOT terminal ----------------------
+
+describe("LeadList — a deferred lead", () => {
+  beforeEach(() => {
+    mockPush.mockClear();
+    mockRefresh.mockClear();
+    mockResetToNew.mockClear();
+  });
+
+  it("shows the forward actions AND 'Return to new' (deferred is not terminal)", () => {
+    renderList(
+      [makeLead({ status: "deferred", reviewNote: "leads-lane: could not geocode \"Austin, TX\"" })],
+      "deferred"
+    );
+
+    // Forward moves stay available: the machine gave up, a human has not.
+    expect(screen.getByRole("button", { name: "Mark promoted (no submission)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Dismiss" })).toBeInTheDocument();
+    // And the way back into the lane's `new` queue.
+    expect(screen.getByRole("button", { name: "Return to new" })).toBeInTheDocument();
+    // "Start researching" is a new-lead-only action.
+    expect(screen.queryByRole("button", { name: "Start researching" })).not.toBeInTheDocument();
+  });
+
+  it("renders the lane's diagnostic note, so a human can see why it gave up", () => {
+    renderList([makeLead({ status: "deferred", reviewNote: "leads-lane: model found no usable name/operator/state" })], "deferred");
+    expect(
+      screen.getByText("Note: leads-lane: model found no usable name/operator/state")
+    ).toBeInTheDocument();
+  });
+
+  it("returns a deferred lead to new", async () => {
+    mockResetToNew.mockResolvedValue({ ok: true, lead: { status: "new" } });
+    renderList([makeLead({ status: "deferred" })], "deferred");
+
+    await userEvent.click(screen.getByRole("button", { name: "Return to new" }));
+
+    await waitFor(() => expect(mockResetToNew).toHaveBeenCalledWith("lead-1"));
   });
 });

@@ -53,6 +53,14 @@ function getStatusBadgeVariant(
   if (status === "promoted") return "default";
   if (status === "dismissed") return "destructive";
   if (status === "researching") return "secondary";
+  // `deferred` (the lane tried and could not extract a usable candidate)
+  // shares `secondary` with `researching`: both are muted, non-final,
+  // in-flight states. It must NOT read as a rejection (`destructive`) or a
+  // success (`default`), and `outline` stays reserved for `new` so the one
+  // status the discovery lane actually queues is visually distinct from every
+  // status that has left that queue. The badge prints the status text itself,
+  // so `deferred` and `researching` are never confusable on screen.
+  if (status === "deferred") return "secondary";
   return "outline"; // new
 }
 
@@ -136,9 +144,12 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
   const attributionLabel = lead.attribution?.trim() ? lead.attribution : "anonymous";
   const triage = lead.triage as LeadTriage | null;
   const duplicateIds = triage?.ok ? (triage.duplicateFacilityIds ?? []) : [];
+  // `deferred` is deliberately NOT terminal: the lane gave up on it, so a
+  // human still needs the forward actions (promote / dismiss) as well as
+  // "Return to new". Only a human-made final decision is terminal.
   const isTerminal = lead.status === "promoted" || lead.status === "dismissed";
   // The discovery lane queues `new` leads only, so every other status is a
-  // one-way door out of it. Offer a way back from all three.
+  // one-way door out of it. Offer a way back from all four.
   const canReset = lead.status !== "new";
   // promoteLead() writes promotedSubmissionId in the same statement that sets
   // the status, so a promoted lead with a null id was triage-marked by the

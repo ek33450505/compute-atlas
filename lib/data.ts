@@ -2538,7 +2538,8 @@ export interface ContributorCredit {
  * lead that is merely `promoted` (staged as a submission) but not yet
  * approved has no facility_history row and is correctly excluded — leads
  * have no "approved" status of their own to filter on (LEAD_STATUSES is
- * `new | researching | promoted | dismissed`; see lib/lead-fields.ts). The
+ * `new | researching | deferred | promoted | dismissed`; see
+ * lib/lead-fields.ts). The
  * `leads` table itself is never queried here.
  *
  * Case-insensitive dedupe: a handle is free text (only charset-restricted,
